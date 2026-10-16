@@ -625,338 +625,136 @@ function ImgurAutoPoster({ platform }) {
       <div style={formContainerStyle(darkMode)}>
         {activeTab === 'immediate' && (
           <form onSubmit={handleSubmitImmediate}>
-            {/* Title Field */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="title-immediate" style={fieldLabelStyle(darkMode)}>
-                Title <span style={{ color: '#ef4444' }}>*</span>
-              </label>
-              <input
-                id="title-immediate"
-                type="text"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                placeholder="Enter image title"
-                style={fieldInputStyle(darkMode, !titleValidation.isValid)}
-                maxLength={TITLE_MAX}
-              />
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  color: darkMode ? '#9ca3af' : '#6b7280',
-                  marginTop: '0.25rem',
-                }}
-              >
-                {trimmedTitle.length} / {TITLE_MAX}
-              </div>
-              {!titleValidation.isValid && (
-                <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                  {titleValidation.error}
-                </p>
-              )}
-            </div>
+            <FormField
+              id="title-immediate"
+              label="Title"
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Enter image title"
+              maxLength={TITLE_MAX}
+              validation={titleValidation}
+            />
 
-            {/* Description Field */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="description-immediate" style={fieldLabelStyle(darkMode)}>
-                Description (Optional)
-              </label>
-              <textarea
-                id="description-immediate"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                placeholder="Enter image description"
-                style={{
-                  ...fieldInputStyle(darkMode, !descriptionValidation.isValid),
-                  minHeight: '100px',
-                  fontFamily: 'inherit',
-                  resize: 'vertical',
-                }}
-                maxLength={DESCRIPTION_MAX}
-              />
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  color: darkMode ? '#9ca3af' : '#6b7280',
-                  marginTop: '0.25rem',
-                }}
-              >
-                {trimmedDescription.length} / {DESCRIPTION_MAX}
-              </div>
-              {!descriptionValidation.isValid && (
-                <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                  {descriptionValidation.error}
-                </p>
-              )}
-            </div>
+            <FormField
+              id="description-immediate"
+              label="Description (Optional)"
+              type="textarea"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="Enter image description"
+              maxLength={DESCRIPTION_MAX}
+              validation={descriptionValidation}
+              isOptional
+            />
 
-            {/* Topic Field */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="topic-immediate" style={fieldLabelStyle(darkMode)}>
-                Topic (Optional)
-              </label>
-              <select
-                id="topic-immediate"
-                value={topic}
-                onChange={e => setTopic(e.target.value)}
-                style={fieldInputStyle(darkMode)}
-              >
-                {IMGUR_TOPICS.map(t => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <FormField
+              id="topic-immediate"
+              label="Topic (Optional)"
+              type="select"
+              value={topic}
+              onChange={e => setTopic(e.target.value)}
+              validation={null}
+              isOptional
+            >
+              {IMGUR_TOPICS.map(t => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </FormField>
 
-            {/* Tags Field */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="tags-immediate" style={fieldLabelStyle(darkMode)}>
-                Tags (Optional)
-              </label>
-              <input
-                id="tags-immediate"
-                type="text"
-                value={tags}
-                onChange={e => setTags(e.target.value)}
-                placeholder="Comma-separated tags"
-                style={fieldInputStyle(darkMode, !tagsValidation.isValid)}
-                maxLength={TAGS_MAX}
-              />
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  color: darkMode ? '#9ca3af' : '#6b7280',
-                  marginTop: '0.25rem',
-                }}
-              >
-                {trimmedTags.length} / {TAGS_MAX}
-              </div>
-              {!tagsValidation.isValid && (
-                <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                  {tagsValidation.error}
-                </p>
-              )}
-            </div>
+            <FormField
+              id="tags-immediate"
+              label="Tags (Optional)"
+              type="text"
+              value={tags}
+              onChange={e => setTags(e.target.value)}
+              placeholder="Comma-separated tags"
+              maxLength={TAGS_MAX}
+              validation={tagsValidation}
+              isOptional
+            />
 
-            {/* Image Upload */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="image-immediate" style={fieldLabelStyle(darkMode)}>
-                Image <span style={{ color: '#ef4444' }}>*</span>
-              </label>
-              <input
-                id="image-immediate"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={fieldInputStyle(darkMode, !imageValidation.isValid)}
-              />
-              {!imageValidation.isValid && selectedImage && (
-                <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                  {imageValidation.error}
-                </p>
-              )}
-            </div>
+            <ImageField
+              id="image-immediate"
+              label="Image"
+              onChange={handleImageChange}
+              validation={imageValidation}
+              imagePreview={imagePreview}
+              onClearImage={handleClearImage}
+            />
 
-            {/* Image Preview */}
-            {imagePreview && (
-              <div style={previewContainerStyle(darkMode)}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '0.5rem',
-                  }}
-                >
-                  <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>Preview</span>
-                  <button
-                    type="button"
-                    onClick={handleClearImage}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: darkMode ? '#9ca3af' : '#6b7280',
-                    }}
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-                <img src={imagePreview} alt="Preview" style={imagePreviewStyle} />
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
-              <button
-                type="submit"
-                disabled={!isFormValid || isSubmitting}
-                style={{
-                  ...buttonStyle('primary', darkMode),
-                  opacity: !isFormValid || isSubmitting ? 0.5 : 1,
-                  cursor: !isFormValid || isSubmitting ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}
-              >
-                {isSubmitting && <Loader size={16} />}
-                Post Now
-              </button>
-              <button
-                type="button"
-                onClick={handleResetForm}
-                disabled={isSubmitting}
-                style={buttonStyle('ghost', darkMode)}
-              >
-                Clear
-              </button>
-            </div>
+            <FormActions
+              isSubmitting={isSubmitting}
+              isFormValid={isFormValid}
+              primaryLabel="Post Now"
+              onReset={handleResetForm}
+            />
           </form>
         )}
 
         {activeTab === 'schedule' && (
           <form onSubmit={handleSubmitScheduled}>
-            {/* Title Field */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="title-schedule" style={fieldLabelStyle(darkMode)}>
-                Title <span style={{ color: '#ef4444' }}>*</span>
-              </label>
-              <input
-                id="title-schedule"
-                type="text"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                placeholder="Enter image title"
-                style={fieldInputStyle(darkMode, !titleValidation.isValid)}
-                maxLength={TITLE_MAX}
-              />
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  color: darkMode ? '#9ca3af' : '#6b7280',
-                  marginTop: '0.25rem',
-                }}
-              >
-                {trimmedTitle.length} / {TITLE_MAX}
-              </div>
-              {!titleValidation.isValid && (
-                <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                  {titleValidation.error}
-                </p>
-              )}
-            </div>
+            <FormField
+              id="title-schedule"
+              label="Title"
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Enter image title"
+              maxLength={TITLE_MAX}
+              validation={titleValidation}
+            />
 
-            {/* Description Field */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="description-schedule" style={fieldLabelStyle(darkMode)}>
-                Description (Optional)
-              </label>
-              <textarea
-                id="description-schedule"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                placeholder="Enter image description"
-                style={{
-                  ...fieldInputStyle(darkMode, !descriptionValidation.isValid),
-                  minHeight: '100px',
-                  fontFamily: 'inherit',
-                  resize: 'vertical',
-                }}
-                maxLength={DESCRIPTION_MAX}
-              />
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  color: darkMode ? '#9ca3af' : '#6b7280',
-                  marginTop: '0.25rem',
-                }}
-              >
-                {trimmedDescription.length} / {DESCRIPTION_MAX}
-              </div>
-            </div>
+            <FormField
+              id="description-schedule"
+              label="Description (Optional)"
+              type="textarea"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="Enter image description"
+              maxLength={DESCRIPTION_MAX}
+              validation={descriptionValidation}
+              isOptional
+            />
 
-            {/* Topic Field */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="topic-schedule" style={fieldLabelStyle(darkMode)}>
-                Topic (Optional)
-              </label>
-              <select
-                id="topic-schedule"
-                value={topic}
-                onChange={e => setTopic(e.target.value)}
-                style={fieldInputStyle(darkMode)}
-              >
-                {IMGUR_TOPICS.map(t => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <FormField
+              id="topic-schedule"
+              label="Topic (Optional)"
+              type="select"
+              value={topic}
+              onChange={e => setTopic(e.target.value)}
+              validation={null}
+              isOptional
+            >
+              {IMGUR_TOPICS.map(t => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </FormField>
 
-            {/* Tags Field */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="tags-schedule" style={fieldLabelStyle(darkMode)}>
-                Tags (Optional)
-              </label>
-              <input
-                id="tags-schedule"
-                type="text"
-                value={tags}
-                onChange={e => setTags(e.target.value)}
-                placeholder="Comma-separated tags"
-                style={fieldInputStyle(darkMode, !tagsValidation.isValid)}
-                maxLength={TAGS_MAX}
-              />
-            </div>
+            <FormField
+              id="tags-schedule"
+              label="Tags (Optional)"
+              type="text"
+              value={tags}
+              onChange={e => setTags(e.target.value)}
+              placeholder="Comma-separated tags"
+              maxLength={TAGS_MAX}
+              validation={tagsValidation}
+              isOptional
+            />
 
-            {/* Image Upload */}
-            <div style={fieldContainerStyle(darkMode)}>
-              <label htmlFor="image-schedule" style={fieldLabelStyle(darkMode)}>
-                Image <span style={{ color: '#ef4444' }}>*</span>
-              </label>
-              <input
-                id="image-schedule"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={fieldInputStyle(darkMode, !imageValidation.isValid)}
-              />
-              {!imageValidation.isValid && selectedImage && (
-                <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                  {imageValidation.error}
-                </p>
-              )}
-            </div>
-
-            {/* Image Preview */}
-            {imagePreview && (
-              <div style={previewContainerStyle(darkMode)}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '0.5rem',
-                  }}
-                >
-                  <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>Preview</span>
-                  <button
-                    type="button"
-                    onClick={handleClearImage}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: darkMode ? '#9ca3af' : '#6b7280',
-                    }}
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-                <img src={imagePreview} alt="Preview" style={imagePreviewStyle} />
-              </div>
-            )}
+            <ImageField
+              id="image-schedule"
+              label="Image"
+              onChange={handleImageChange}
+              validation={imageValidation}
+              imagePreview={imagePreview}
+              onClearImage={handleClearImage}
+            />
 
             {/* Schedule Date & Time */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -982,32 +780,12 @@ function ImgurAutoPoster({ platform }) {
               />
             </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
-              <button
-                type="submit"
-                disabled={!isFormValid || isSubmitting}
-                style={{
-                  ...buttonStyle('primary', darkMode),
-                  opacity: !isFormValid || isSubmitting ? 0.5 : 1,
-                  cursor: !isFormValid || isSubmitting ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}
-              >
-                {isSubmitting && <Loader size={16} />}
-                Schedule Post
-              </button>
-              <button
-                type="button"
-                onClick={handleResetForm}
-                disabled={isSubmitting}
-                style={buttonStyle('ghost', darkMode)}
-              >
-                Clear
-              </button>
-            </div>
+            <FormActions
+              isSubmitting={isSubmitting}
+              isFormValid={isFormValid}
+              primaryLabel="Schedule Post"
+              onReset={handleResetForm}
+            />
           </form>
         )}
       </div>
