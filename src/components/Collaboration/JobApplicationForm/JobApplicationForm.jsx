@@ -109,22 +109,22 @@ function findFormByDeveloperFamily(formsArr, jobTitle) {
 function findFormByManagementFamily(formsArr, jobTitle) {
   const j = normalizeTitleKey(jobTitle);
   if (
-    !j.includes('coordinator') &&
-    !j.includes('planner') &&
-    !j.includes('manager') &&
-    !j.includes('management') &&
-    !j.includes('administrative') &&
-    !j.includes('admin')
+    !/\bcoordinator\b/.test(j) &&
+    !/\bplanner\b/.test(j) &&
+    !/\bmanager\b/.test(j) &&
+    !/\bmanagement\b/.test(j) &&
+    !/\badministrative\b/.test(j) &&
+    !/\badmin\b/.test(j)
   ) {
     return null;
   }
   const candidates = formsArr.filter(f => {
     const t = normalizeTitleKey(f.title || '');
     return (
-      t.includes('management') ||
-      t.includes('manager') ||
-      t.includes('administrative') ||
-      t.includes('admin')
+      /\bmanagement\b/.test(t) ||
+      /\bmanager\b/.test(t) ||
+      /\badministrative\b/.test(t) ||
+      /\badmin\b/.test(t)
     );
   });
   if (candidates.length === 1) return candidates[0];
