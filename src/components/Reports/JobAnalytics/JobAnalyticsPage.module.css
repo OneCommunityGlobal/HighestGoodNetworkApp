@@ -23,8 +23,79 @@
 .jobAnalyticsFilters {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  column-gap: 2rem;
+  row-gap: 1rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filterText {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+}
+
+.dateRangeSelect {
+  min-width: 110px;
+  padding: 0.4rem 2rem 0.4rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.lightSelect {
+  background-color: #fff;
+  color: #111;
+  border-color: #ccc;
+  color-scheme: light;
+}
+
+.darkSelect {
+  background-color: #1b2a41;
+  color: #f5f5f5;
+  border-color: #526d91;
+  color-scheme: dark;
+}
+
+.darkSelect option {
+  background-color: #1b2a41;
+  color: #f5f5f5;
+}
+
+.darkFilterText {
+  color: #f5f5f5;
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.percentageCheckbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.checkboxLabel {
+  margin: 0;
+  font-size: 0.95rem;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 /* Label layout */

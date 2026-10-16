@@ -68,6 +68,53 @@ describe('User Management Actions', () => {
         store.dispatch(actions.updateRehireableStatus(mockUser, isRehireable))
       ).rejects.toThrow('Update failed');
     });
+
+    it('persists a trimmed reason when changing to not rehireable', async () => {
+      const mockUser = { _id: '123', notRehireableReason: 'Previous reason' };
+      axios.patch.mockResolvedValueOnce({ data: {} });
+
+      await store.dispatch(actions.updateRehireableStatus(mockUser, false, '  New reason  '));
+
+      expect(axios.patch).toHaveBeenCalledWith(ENDPOINTS.UPDATE_REHIREABLE_STATUS(mockUser._id), {
+        isRehireable: false,
+        notRehireableReason: 'New reason',
+      });
+      expect(store.getActions()).toEqual([
+        {
+          type: 'USER_PROFILE_UPDATE',
+          user: { _id: '123', isRehireable: false, notRehireableReason: 'New reason' },
+        },
+      ]);
+    });
+
+    it('allows an empty reason and removes a previously saved reason', async () => {
+      const mockUser = { _id: '123', notRehireableReason: 'Previous reason' };
+      axios.patch.mockResolvedValueOnce({ data: {} });
+
+      await store.dispatch(actions.updateRehireableStatus(mockUser, false, ''));
+
+      expect(axios.patch).toHaveBeenCalledWith(ENDPOINTS.UPDATE_REHIREABLE_STATUS(mockUser._id), {
+        isRehireable: false,
+        notRehireableReason: '',
+      });
+      expect(store.getActions()).toEqual([
+        { type: 'USER_PROFILE_UPDATE', user: { _id: '123', isRehireable: false } },
+      ]);
+    });
+
+    it('clears a saved reason when changing back to rehireable', async () => {
+      const mockUser = { _id: '123', notRehireableReason: 'Previous reason' };
+      axios.patch.mockResolvedValueOnce({ data: {} });
+
+      await store.dispatch(actions.updateRehireableStatus(mockUser, true, 'Ignored reason'));
+
+      expect(axios.patch).toHaveBeenCalledWith(ENDPOINTS.UPDATE_REHIREABLE_STATUS(mockUser._id), {
+        isRehireable: true,
+      });
+      expect(store.getActions()).toEqual([
+        { type: 'USER_PROFILE_UPDATE', user: { _id: '123', isRehireable: true } },
+      ]);
+    });
   });
 
   describe('toggleVisibility', () => {
