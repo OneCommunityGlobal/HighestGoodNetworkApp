@@ -1,23 +1,56 @@
-/* stylelint-disable  */
+/* stylelint-disable */
+
 .container {
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
   width: 100%;
   height: 100%;
+  min-height: 650px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+  padding: 24px 20px;
+
+  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/*
+ * This is the important change.
+ *
+ * Title + filters + Submit + chart are one compact block.
+ * The entire block is centered inside the tall dashboard card.
+ */
+.content {
+  width: 100%;
+  max-width: 760px;
+
   display: flex;
   flex-direction: column;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  align-items: center;
 }
+
+/* =========================
+   TITLE
+   ========================= */
 
 .title {
+  width: 100%;
+
+  margin: 0 0 20px;
+
+  color: #111827;
+
   font-size: large;
   font-weight: bold;
-  margin-bottom: 18px;
-  color: #111827;
+  text-align: center;
 }
 
-/* Keep title blue in dark mode */
 :global(.dark) .title,
 :global(.dark-mode) .title,
 :global(.bm-dashboard-dark) .title,
@@ -25,234 +58,512 @@
   color: #2563eb !important;
 }
 
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
+/* =========================
+   FILTERS
+   ========================= */
 
-.filters label {
+.filtersSection {
+  width: 100%;
+
   display: flex;
   flex-direction: column;
-  font-size: 0.9rem;
+  align-items: center;
 }
 
-/* Dark mode: make filter labels readable */
-:global(.dark) .filters label,
-:global(.dark-mode) .filters label,
-:global([data-theme='dark']) .filters label {
+.filterRow {
+  width: 100%;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  justify-content: center;
+  align-items: flex-end;
+
+  column-gap: 18px;
+  row-gap: 12px;
+}
+
+.filterGroup {
+  min-width: 115px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.filterGroup label {
+  margin: 0;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+:global(.dark) .filterGroup label,
+:global(.dark-mode) .filterGroup label,
+:global(.bm-dashboard-dark) .filterGroup label,
+:global([data-theme='dark']) .filterGroup label {
   color: #fff;
 }
 
-/* Scope to date inputs only — react-select renders its own <input> inside
-   .filters, and this box styling must not apply to it. */
-.filters input[type='date'] {
-  height: auto !important;
-  border-radius: 6px;
+/* =========================
+   DATE INPUTS
+   ========================= */
+
+.filterGroup input[type='date'] {
+  min-height: 38px;
+
   box-sizing: border-box;
+
+  padding: 7px 9px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+
   font-size: 0.95rem;
   line-height: 1.2;
 }
 
-/* Give the dropdowns enough width and keep option text on one line */
-:global(.react-select-container) {
-  min-width: 100px;
+:global(.dark) .filterGroup input[type='date'],
+:global(.dark-mode) .filterGroup input[type='date'],
+:global(.bm-dashboard-dark) .filterGroup input[type='date'],
+:global([data-theme='dark']) .filterGroup input[type='date'] {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border-color: #374151 !important;
+
+  color-scheme: dark;
 }
 
-:global(.react-select__option),
-:global(.react-select__single-value) {
+/* =========================
+   REACT SELECT
+   ========================= */
+
+.selectContainer {
+  min-width: 115px;
+}
+
+:global(.labor-hours-select__control) {
+  min-height: 38px !important;
+  cursor: pointer !important;
+}
+
+:global(.labor-hours-select__option),
+:global(.labor-hours-select__single-value) {
   white-space: nowrap;
   font-weight: normal !important;
 }
 
-:global(.dark) :global(.react-select__control),
-:global(.dark-mode) :global(.react-select__control),
-:global([data-theme='dark']) :global(.react-select__control) {
+:global(.labor-hours-select__menu),
+:global(.labor-hours-select__menu-portal) {
+  z-index: 9999 !important;
+}
+
+:global(.labor-hours-select__indicator-separator) {
+  background-color: #ccc !important;
+}
+
+:global(.labor-hours-select__dropdown-indicator) {
+  color: #ccc !important;
+}
+
+/* =========================
+   SELECT DARK MODE
+   ========================= */
+
+:global(.dark) :global(.labor-hours-select__control),
+:global(.dark-mode) :global(.labor-hours-select__control),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__control),
+:global([data-theme='dark']) :global(.labor-hours-select__control) {
   background-color: #1f2937 !important;
   border-color: #374151 !important;
 }
 
-:global(.dark) :global(.react-select__single-value),
-:global(.dark-mode) :global(.react-select__single-value),
-:global([data-theme='dark']) :global(.react-select__single-value),
-:global(.dark) :global(.react-select__input),
-:global(.dark-mode) :global(.react-select__input),
-:global([data-theme='dark']) :global(.react-select__input) {
+:global(.dark) :global(.labor-hours-select__single-value),
+:global(.dark-mode) :global(.labor-hours-select__single-value),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__single-value),
+:global([data-theme='dark']) :global(.labor-hours-select__single-value) {
   color: #f9fafb !important;
 }
 
-:global(.dark) :global(.react-select__placeholder),
-:global(.dark-mode) :global(.react-select__placeholder),
-:global([data-theme='dark']) :global(.react-select__placeholder) {
+:global(.dark) :global(.labor-hours-select__input),
+:global(.dark-mode) :global(.labor-hours-select__input),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__input),
+:global([data-theme='dark']) :global(.labor-hours-select__input) {
+  color: #f9fafb !important;
+}
+
+:global(.dark) :global(.labor-hours-select__placeholder),
+:global(.dark-mode) :global(.labor-hours-select__placeholder),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__placeholder),
+:global([data-theme='dark']) :global(.labor-hours-select__placeholder) {
   color: #9ca3af !important;
 }
 
-/* Dim the vertical separator between the value and the dropdown arrow */
-:global(.react-select__indicator-separator) {
-  background-color: #ccc !important;
+:global(.dark) :global(.labor-hours-select__indicator-separator),
+:global(.dark-mode) :global(.labor-hours-select__indicator-separator),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__indicator-separator),
+:global([data-theme='dark']) :global(.labor-hours-select__indicator-separator) {
+  background-color: #4b5563 !important;
 }
 
-/* Dark mode: use the panel color for the separator */
-:global(.dark) :global(.react-select__indicator-separator),
-:global(.dark-mode) :global(.react-select__indicator-separator),
-:global([data-theme='dark']) :global(.react-select__indicator-separator) {
-  background-color: #2d4059 !important;
-}
-
-/* Make the dropdown arrow a light gray (not bright white) in both modes */
-:global(.react-select__dropdown-indicator) {
-  color: #ccc !important;
-}
-
-:global(.dark) :global(.react-select__menu),
-:global(.dark-mode) :global(.react-select__menu),
-:global([data-theme='dark']) :global(.react-select__menu) {
+:global(.dark) :global(.labor-hours-select__menu),
+:global(.dark-mode) :global(.labor-hours-select__menu),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__menu),
+:global([data-theme='dark']) :global(.labor-hours-select__menu) {
   background-color: #1f2937 !important;
   border: 1px solid #374151 !important;
-  z-index: 10;
 }
 
-:global(.dark) :global(.react-select__option),
-:global(.dark-mode) :global(.react-select__option),
-:global([data-theme='dark']) :global(.react-select__option) {
+:global(.dark) :global(.labor-hours-select__option),
+:global(.dark-mode) :global(.labor-hours-select__option),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__option),
+:global([data-theme='dark']) :global(.labor-hours-select__option) {
   background-color: #1f2937 !important;
   color: #f9fafb !important;
+  cursor: pointer;
 }
 
-:global(.dark) :global(.react-select__option--is-focused),
-:global(.dark-mode) :global(.react-select__option--is-focused),
-:global([data-theme='dark']) :global(.react-select__option--is-focused) {
+:global(.dark) :global(.labor-hours-select__option--is-focused),
+:global(.dark-mode) :global(.labor-hours-select__option--is-focused),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__option--is-focused),
+:global([data-theme='dark']) :global(.labor-hours-select__option--is-focused) {
   background-color: #374151 !important;
-  color: #ffffff !important;
-}
-/* Dark mode: style date inputs only (not react-select's internal input) */
-:global(.dark) .filters input[type='date'],
-:global(.dark-mode) .filters input[type='date'],
-:global([data-theme='dark']) .filters input[type='date'] {
-  background-color: #1f2937 !important;
-  color: #f9fafb !important;
-  border: 1px solid #374151 !important;
-}
-
-:global(.dark) .filters input[type='date'],
-:global(.dark-mode) .filters input[type='date'],
-:global([data-theme='dark']) .filters input[type='date'] {
-  color-scheme: dark;
-}
-
-.chartWrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.legend {
-  display: flex;
-  flex-direction: column;
-  min-width: 150px;
-}
-
-.legendItem {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  font-size: 0.85rem;
-}
-
-.colorBox {
-  width: 12px;
-  height: 12px;
-  margin-right: 8px;
-  border-radius: 2px;
-}
-
-.tooltip {
-  background-color: #f3f4f6;
-  color: #111827; /* darker percentage text in light mode */
-  padding: 8px;
-  border-radius: 6px;
-}
-
-/* Dark mode: ensure tooltip text is white on hover */
-:global(.dark) .tooltip,
-:global(.dark-mode) .tooltip,
-:global([data-theme='dark']) .tooltip {
-  color: #fff;
-}
-
-:global(.dark) .tooltip:hover,
-:global(.dark-mode) .tooltip:hover,
-:global([data-theme='dark']) .tooltip:hover {
-  color: #fff;
-}
-
-/* Dark mode: force ALL tooltip text to white */
-:global(.dark) .tooltip *,
-:global(.dark-mode) .tooltip *,
-:global([data-theme='dark']) .tooltip * {
   color: #fff !important;
 }
 
-.buttonContainer {
-  width: 100%;           
-  display: flex;
-  justify-content: center;
-  margin-top: 5px;
+:global(.dark) :global(.labor-hours-select__option--is-selected),
+:global(.dark-mode) :global(.labor-hours-select__option--is-selected),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__option--is-selected),
+:global([data-theme='dark']) :global(.labor-hours-select__option--is-selected) {
+  background-color: #2563eb !important;
+  color: #fff !important;
 }
 
-/* Submit button – light & dark mode safe */
+/* =========================
+   SUBMIT
+   ========================= */
+
+.submitSection {
+  position: relative;
+
+  width: 100%;
+  height: 42px;
+
+  margin-top: 12px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .button {
-  background-color: #2563eb; /* blue */
-  color: #fff;            /* white text */
+  min-height: 38px;
+
+  padding: 8px 18px;
+
   border: none;
   border-radius: 6px;
-  padding: 8px 16px;
+
+  background-color: #2563eb;
+  color: #fff;
+
   cursor: pointer;
+
   transition: background-color 0.3s ease;
 }
 
-/* Hover */
 .button:hover {
   background-color: #1d4ed8;
 }
 
-/* Dark mode – keep same button color (no brightness jump) */
+.button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
 :global(.dark) .button,
 :global(.dark-mode) .button,
+:global(.bm-dashboard-dark) .button,
 :global([data-theme='dark']) .button {
   background-color: #2563eb;
   color: #fff;
 }
 
-.pieChartContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+.appliedMessage {
+  position: absolute;
+
+  left: calc(50% + 58px);
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  white-space: nowrap;
+
+  color: #166534;
+
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
-@media (width <= 768px) {
-  .chartWrapper {
-    flex-direction: column;
-    align-items: center;
+:global(.dark) .appliedMessage,
+:global(.dark-mode) .appliedMessage,
+:global(.bm-dashboard-dark) .appliedMessage,
+:global([data-theme='dark']) .appliedMessage {
+  color: #86efac;
+}
+
+/* =========================
+   VISUALIZATION
+   ========================= */
+
+/*
+ * Important:
+ * No flex-grow.
+ * No min-height.
+ * No huge padding.
+ *
+ * The chart simply follows the filters with a controlled gap.
+ */
+.visualizationSection {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 34px;
+}
+
+.visualizationContent {
+  width: min(100%, 700px);
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 270px)
+    340px;
+
+  justify-content: center;
+  align-items: center;
+
+  column-gap: 34px;
+}
+
+/* =========================
+   LEGEND
+   ========================= */
+
+.legend {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 9px;
+
+  font-size: 0.85rem;
+}
+
+.legendItem:last-child {
+  margin-bottom: 0;
+}
+
+.legendText {
+  line-height: 1.3;
+}
+
+.colorBox {
+  width: 12px;
+  height: 12px;
+
+  margin-right: 8px;
+
+  border-radius: 2px;
+
+  flex-shrink: 0;
+}
+
+/* =========================
+   PIE
+   ========================= */
+
+.pieChartContainer {
+  width: 340px;
+  height: 300px;
+
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================
+   TOOLTIP
+   ========================= */
+
+.tooltip {
+  padding: 8px 10px;
+
+  border-radius: 6px;
+
+  background-color: #f3f4f6;
+  color: #111827;
+
+  box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
+}
+
+.tooltip p {
+  margin: 2px 0;
+}
+
+:global(.dark) .tooltip,
+:global(.dark-mode) .tooltip,
+:global(.bm-dashboard-dark) .tooltip,
+:global([data-theme='dark']) .tooltip {
+  color: #fff;
+}
+
+:global(.dark) .tooltip *,
+:global(.dark-mode) .tooltip *,
+:global(.bm-dashboard-dark) .tooltip *,
+:global([data-theme='dark']) .tooltip * {
+  color: #fff !important;
+}
+
+/* =========================
+   NO DATA
+   ========================= */
+
+.noData {
+  width: 100%;
+  min-height: 250px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #4b5563;
+
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+:global(.dark) .noData,
+:global(.dark-mode) .noData,
+:global(.bm-dashboard-dark) .noData,
+:global([data-theme='dark']) .noData {
+  color: #d1d5db;
+}
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (width <= 900px) {
+  .container {
+    height: auto;
+    min-height: auto;
+
+    align-items: stretch;
+
+    padding: 24px 18px;
+  }
+
+  .content {
+    max-width: none;
+  }
+
+  .visualizationSection {
+    margin-top: 28px;
+  }
+
+  .visualizationContent {
+    width: 100%;
+
+    grid-template-columns: 1fr;
+
+    justify-items: center;
+
+    row-gap: 18px;
   }
 
   .legend {
-    margin-bottom: 16px;
-    align-items: center;
+    width: auto;
+    max-width: 320px;
   }
 
-  .filters {
+  .pieChartContainer {
+    width: min(340px, 100%);
+    height: 300px;
+  }
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (width <= 768px) {
+  .container {
+    padding: 20px 14px;
+  }
+
+  .filterRow {
     flex-direction: column;
     align-items: center;
+
     gap: 10px;
   }
 
-  .filters label {
+  .filterGroup {
     width: 100%;
+    max-width: 280px;
+  }
+
+  .selectContainer {
+    width: 100%;
+  }
+
+  .submitSection {
+    height: auto;
+
+    margin-top: 12px;
+
+    flex-direction: column;
+
+    gap: 6px;
+  }
+
+  .appliedMessage {
+    position: static;
+    transform: none;
+  }
+
+  .visualizationSection {
+    margin-top: 26px;
+  }
+
+  .visualizationContent {
+    row-gap: 16px;
+  }
+
+  .legend {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .pieChartContainer {
+    width: 300px;
+    max-width: 100%;
+    height: 290px;
   }
 }
