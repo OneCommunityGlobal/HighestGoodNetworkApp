@@ -13,6 +13,7 @@ function GradingTable({
   onRemoveReviewer,
   isCurrentWeek,
   darkMode,
+  canEdit,
 }) {
   return (
     // <div className={styles.tableWrapper}>
@@ -35,6 +36,7 @@ function GradingTable({
               onRemoveReviewer={onRemoveReviewer}
               isCurrentWeek={isCurrentWeek}
               darkMode={darkMode}
+              canEdit={canEdit}
             />
             {openAddModal === grading.reviewer && (
               <tr className={styles.modalRow}>
@@ -69,12 +71,14 @@ GradingTable.propTypes = {
   onRemoveReviewer: PropTypes.func.isRequired,
   isCurrentWeek: PropTypes.bool,
   darkMode: PropTypes.bool,
+  canEdit: PropTypes.bool,
 };
 
 GradingTable.defaultProps = {
   openAddModal: null,
   isCurrentWeek: true,
   darkMode: false,
+  canEdit: false,
 };
 
 export default GradingTable;

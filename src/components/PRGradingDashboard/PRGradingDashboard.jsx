@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import AddReviewerModal from './AddReviewerModal';
 import ConfirmationModal from './ConfirmationModal';
@@ -10,8 +10,8 @@ import { MOCK_WEEK_METADATA, MOCK_WEEK_OPTIONS } from './mockWeeklyAuditData';
 import styles from './PRGradingDashboard.module.css';
 import { SelectionProvider } from './SelectionContext';
 import SummaryList from './SummaryList';
+import hasPermission from '~/utils/permissions';
 
-const TEAM_CODE = 'TeamA';
 const TEAM_NAME = 'Team Alpha';
 
 const getWeekStart = () => {
@@ -60,7 +60,10 @@ const mockData = [
 ];
 
 function PRGradingDashboard() {
+  const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
+  const authUser = useSelector(state => state.auth.user);
+  const canEdit = dispatch(hasPermission('accessPRTeamDashboard'));
   const [gradings, setGradings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -70,10 +73,11 @@ function PRGradingDashboard() {
   const [showAddReviewerModal, setShowAddReviewerModal] = useState(false);
   const [pendingRemoveReviewer, setPendingRemoveReviewer] = useState(null); // reviewer name or null
   const [selectedMockWeek, setSelectedMockWeek] = useState('Current Week');
+  const [selectedTeam, setSelectedTeam] = useState('TeamA');
 
   // Fetch data on mount and whenever the selected week changes
   useEffect(() => {
-    fetchGradings(selectedMockWeek);
+    void fetchGradings(selectedMockWeek);
   }, [selectedMockWeek]);
 
   const fetchGradings = async (weekLabel = 'Current Week') => {
@@ -82,7 +86,7 @@ function PRGradingDashboard() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_APIENDPOINT}/weekly-grading?team=${TEAM_CODE}&date=${weekDate}`,
+        `${process.env.REACT_APP_APIENDPOINT}/weekly-grading?team=${selectedTeam}&date=${weekDate}`,
       );
       if (response.data && Array.isArray(response.data)) {
         // Mark all existing PRs as not new
@@ -194,9 +198,10 @@ function PRGradingDashboard() {
       await axios.delete(
         `${
           process.env.REACT_APP_APIENDPOINT
-        }/weekly-grading?team=${TEAM_CODE}&date=${weekDate}&reviewer=${encodeURIComponent(
+        }/weekly-grading?team=${selectedTeam}&date=${weekDate}&reviewer=${encodeURIComponent(
           pendingRemoveReviewer,
         )}`,
+        { data: { requestor: { requestorId: authUser.userid } } },
       );
       setGradings(prev => prev.filter(g => g.reviewer !== pendingRemoveReviewer));
       toast.success(`Reviewer "${pendingRemoveReviewer}" removed successfully.`);
@@ -253,7 +258,7 @@ function PRGradingDashboard() {
       // Remove isNew flag before sending to API
       const offset = WEEK_OPTION_OFFSETS[selectedMockWeek] ?? 0;
       const payload = {
-        teamCode: TEAM_CODE,
+        teamCode: selectedTeam,
         date: getWeekStartByOffset(offset),
         gradings: gradings.map(g => ({
           reviewer: g.reviewer,
@@ -359,6 +364,7 @@ function PRGradingDashboard() {
               onRemoveReviewer={requestRemoveReviewer}
               isCurrentWeek={isCurrentWeek}
               darkMode={darkMode}
+              canEdit={canEdit}
             />
           </div>
 

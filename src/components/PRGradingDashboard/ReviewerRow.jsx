@@ -10,6 +10,7 @@ function ReviewerRow({
   onRemoveReviewer,
   isCurrentWeek,
   darkMode,
+  canEdit,
 }) {
   const { activeId, selectRow } = useRowSelection();
 
@@ -56,7 +57,7 @@ function ReviewerRow({
         <div className={styles.prsNeeded}>{grading.prsNeeded}</div>
       </td>
       <td className={styles.cell}>
-        {isCurrentWeek ? (
+        {isCurrentWeek && canEdit ? (
           <div className={styles.actionsCell}>
             <button
               onClick={() => onAddPRClick(grading.reviewer)}
@@ -94,11 +95,13 @@ ReviewerRow.propTypes = {
   onRemoveReviewer: PropTypes.func.isRequired,
   isCurrentWeek: PropTypes.bool,
   darkMode: PropTypes.bool,
+  canEdit: PropTypes.bool,
 };
 
 ReviewerRow.defaultProps = {
   isCurrentWeek: true,
   darkMode: false,
+  canEdit: false,
 };
 
 export default ReviewerRow;
