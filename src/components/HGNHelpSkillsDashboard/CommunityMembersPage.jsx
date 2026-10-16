@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import Accordion from './Accordion';
@@ -13,9 +13,14 @@ function CommunityMembersPage() {
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [currentPage, setCurrentPage] = useState(1);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleSortOrderChange = event => setSortOrder(event.target.value);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder]);
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
@@ -60,6 +65,8 @@ function CommunityMembersPage() {
           selectedPreferences={selectedPreferences}
           searchQuery={searchQuery.trim()}
           sortOrder={sortOrder}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
         />
       </div>
     </div>

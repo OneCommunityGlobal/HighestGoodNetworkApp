@@ -8,6 +8,7 @@ import styles from './style/RankedUserList.module.css';
 import UserCard from './UserCard';
 
 const TOP_SKILLS_PER_SECTION = 4;
+const PAGE_SIZE = 20;
 
 const extractSkillEntries = skillData => {
   if (!skillData || typeof skillData !== 'object') return [];
@@ -92,7 +93,14 @@ const normalizeUser = user => {
   };
 };
 
-function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sortOrder }) {
+function RankedUserList({
+  selectedSkills,
+  selectedPreferences,
+  searchQuery,
+  sortOrder,
+  currentPage,
+  setCurrentPage,
+}) {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -162,6 +170,14 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sort
     return 0;
   });
 
+  const totalPages = Math.ceil(sortedUsers.length / PAGE_SIZE);
+  const safeCurrentPage = Math.min(Math.max(currentPage, 1), Math.max(totalPages, 1));
+  const startIndex = (safeCurrentPage - 1) * PAGE_SIZE;
+  const paginatedUsers = sortedUsers.slice(startIndex, startIndex + PAGE_SIZE);
+
+  const handlePrevious = () => setCurrentPage(page => Math.max(page - 1, 1));
+  const handleNext = () => setCurrentPage(page => Math.min(page + 1, totalPages));
+
   if (loading) return <p className={`${styles.message}`}>Loading community members...</p>;
   if (error) return <p className={`${styles.message}`}>{error}</p>;
   if (!sortedUsers.length) return <p className={`${styles.message}`}>No members found.</p>;
@@ -169,12 +185,38 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sort
   return (
     <div className={darkMode ? `${styles.darkMode}` : ''}>
       <div className={`${styles.container}`}>
-        {sortedUsers.map(user => (
+        {paginatedUsers.map(user => (
           <div key={user._id} className={`${styles.userWrapper}`}>
             <UserCard user={user} />
           </div>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className={styles.pagination} aria-label="Community member pagination">
+          <button
+            type="button"
+            className={styles.paginationButton}
+            onClick={handlePrevious}
+            disabled={safeCurrentPage === 1}
+          >
+            Previous
+          </button>
+
+          <span className={styles.paginationInfo}>
+            Page {safeCurrentPage} of {totalPages}
+          </span>
+
+          <button
+            type="button"
+            className={styles.paginationButton}
+            onClick={handleNext}
+            disabled={safeCurrentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -184,6 +226,8 @@ RankedUserList.propTypes = {
   selectedPreferences: PropTypes.arrayOf(PropTypes.string),
   searchQuery: PropTypes.string,
   sortOrder: PropTypes.string,
+  currentPage: PropTypes.number.isRequired,
+  setCurrentPage: PropTypes.func.isRequired,
 };
 
 export default RankedUserList;
