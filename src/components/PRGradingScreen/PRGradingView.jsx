@@ -10,6 +10,7 @@ const PRGradingView = ({
   teamData,
   isFinalized,
   onFinalize,
+  onExport,
   searchTerm,
   onSearchTermChange,
   roleFilter,
@@ -34,7 +35,7 @@ const PRGradingView = ({
   gradingReviewer,
   onGradeChange,
 }) => {
-  const dm = darkMode ? 'dark-mode' : '';
+  const dm = darkMode ? styles['dark-mode'] : '';
 
   return (
     <Container fluid className={`${styles['pr-grading-screen-container']} ${dm}`}>
@@ -53,14 +54,23 @@ const PRGradingView = ({
                     </p>
                   </div>
                 </div>
-                <Button
-                  variant={isFinalized ? 'secondary' : 'outline-dark'}
-                  disabled={isFinalized}
-                  onClick={onFinalize}
-                  className={`${styles['pr-grading-screen-done-button']} ${dm}`}
+                <div
+                  role="group"
+                  aria-label="Grading actions"
+                  className={styles['pr-grading-screen-header-actions']}
                 >
-                  {isFinalized ? 'Finalized' : 'Done'}
-                </Button>
+                  <Button variant="outline-primary" onClick={onExport} className={dm}>
+                    Export to CSV
+                  </Button>
+                  <Button
+                    variant={isFinalized ? 'secondary' : 'outline-dark'}
+                    disabled={isFinalized}
+                    onClick={onFinalize}
+                    className={`${styles['pr-grading-screen-done-button']} ${dm}`}
+                  >
+                    {isFinalized ? 'Finalized' : 'Done'}
+                  </Button>
+                </div>
               </div>
             </Card.Header>
 
@@ -391,6 +401,7 @@ PRGradingView.propTypes = {
   }).isRequired,
   isFinalized: PropTypes.bool.isRequired,
   onFinalize: PropTypes.func.isRequired,
+  onExport: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
   onSearchTermChange: PropTypes.func.isRequired,
   roleFilter: PropTypes.string.isRequired,

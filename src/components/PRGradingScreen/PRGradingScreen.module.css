@@ -536,6 +536,12 @@
     gap: 15px;
   }
 
+  .pr-grading-screen-header-actions {
+    align-self: flex-end;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
   .pr-grading-screen-header-right {
     margin-left: 0;
     align-self: flex-end;
@@ -1157,7 +1163,8 @@
 }
 
 .pr-grading-inline-header-cell.dark-mode {
-  color: #bbb;
+  background-color: #2d4059;
+  color: #fff;
   border-bottom-color: rgb(255 255 255 / 10%);
 }
 
