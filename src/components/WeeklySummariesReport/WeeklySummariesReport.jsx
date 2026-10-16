@@ -7,6 +7,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+// import { useEffect, useState, startTransition } from 'react'; // Unused import removed
 import { MultiSelect } from 'react-multi-select-component';
 import { connect } from 'react-redux';
 import Select, { components } from 'react-select';
@@ -72,10 +73,12 @@ import { permissions } from '../../utils/constants';
 // Keeping this block commented intentionally for future reference
 // import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
 import { setField } from '~/utils/stateHelper';
+import { shouldShowSummaryOnTab } from '~/utils/weeklySummariesFinalWeek';
 import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
 // Keeping this block commented intentionally for future reference —
 import cn from 'classnames';
 import { getCustomStyles } from '~/utils/reactSelectStyles';
+import { isQualifiedForBio } from '~/utils/bioQualification';
 import {
   useDeleteWeeklySummariesFilterMutation,
   useGetWeeklySummariesFiltersQuery,
@@ -129,6 +132,7 @@ const initialState = {
   auth: [],
   selectedLoggedHoursRange: '',
   selectedOverTime: false,
+  // Bio Status filter: false = show everyone, true = only bio-eligible users.
   selectedBioStatus: false,
   selectedTrophies: false,
   chartShow: false,
@@ -353,7 +357,7 @@ const WeeklySummariesReport = props => {
           promisedHoursByWeek,
         };
       })
-      .filter(summary => shouldIncludeSummaryForWeek(summary, weekIndex))
+      .filter(summary => shouldShowSummaryOnTab(summary, weekIndex))
       .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
 
     const teamCodeGroup = {};
@@ -405,40 +409,6 @@ const WeeklySummariesReport = props => {
       colorOptions: newColorOptions,
       tableData: teamCodeGroup,
     };
-  };
-
-  const shouldIncludeSummaryForWeek = (summary, weekIndex) => {
-    if (
-      summary?.isActive === false &&
-      !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
-    ) {
-      return false;
-    }
-
-    if (summary.endDate && summary.finalWeekIndex !== weekIndex) {
-      return false;
-    }
-
-    return true;
-  };
-
-  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
-    const weekStartLA = moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const weekEndLA = moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const summaryStart = new Date(startDateStr);
-    const summaryEnd = new Date(endDateStr);
-
-    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   const getAllRoles = summaries => {
@@ -519,13 +489,31 @@ const WeeklySummariesReport = props => {
       const badgeStatusCode = await fetchAllBadges();
       setPermissionState(prev => ({
         ...prev,
-        bioEditPermission: hasPermission(permissions.putUserProfileImportantInfo),
+        // One of two places that write permissionState; fetchInitialPermissions below
+        // is the other, and both run on mount. Keep the two in step — whichever
+        // resolves last wins.
+        //
+        // Permission keys come from the `permissions` constant rather than string
+        // literals. The Owner/Administrator fallbacks grant the right without an
+        // explicit permission record, matching codeEditPermission and canManageFilter
+        // below.
+        bioEditPermission:
+          hasPermission(permissions.putUserProfileImportantInfo) ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
+        // NOTE: the other effect gates this on `editSummaryHoursCount` instead. Both
+        // spellings predate this merge, so the winner depends on effect ordering.
+        // Left as-is rather than silently picking one — needs a product decision.
         canEditSummaryCount: hasPermission(permissions.putUserProfileImportantInfo),
         codeEditPermission:
           hasPermission(permissions.editTeamCode) ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
-        canSeeBioHighlight: hasPermission(permissions.highlightEligibleBios),
+        // Same fallback for the yellow highlight bar and the Bio Status filter.
+        canSeeBioHighlight:
+          hasPermission(permissions.highlightEligibleBios) ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
         canManageFilter:
           hasPermission(permissions.manageSummariesFilters) ||
           auth.user.role === 'Owner' ||
@@ -739,7 +727,7 @@ const WeeklySummariesReport = props => {
         selectedLoggedHoursRange,
         summaries,
         selectedOverTime,
-        selectedBioStatus,
+        selectedBioStatus, // boolean: false = no filter, true = show only qualified users
         selectedTrophies,
         COLORS,
         selectedSpecialColors,
@@ -765,16 +753,14 @@ const WeeklySummariesReport = props => {
           const { activeTab } = state;
           const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
 
-          if (!shouldIncludeSummaryForWeek(summary, weekIndex)) {
+          if (!shouldShowSummaryOnTab(summary, weekIndex)) {
             return false;
           }
 
-          const isMeetCriteria =
-            summary.totalTangibleHrs > 80 &&
-            summary.weeklySummariesCount >= 8 &&
-            summary.bioPosted !== 'posted';
-
-          const isBio = !selectedBioStatus || isMeetCriteria;
+          // Qualification only — no canSeeBioHighlight gate here, matching the pre-2026-05
+          // behaviour. That permission decides who sees the yellow bar, not who the filter
+          // is allowed to return; gating here would hand a filter-manager an empty list.
+          const isBio = !selectedBioStatus || isQualifiedForBio(summary);
 
           const isOverHours =
             !selectedOverTime ||
@@ -1103,7 +1089,7 @@ const WeeklySummariesReport = props => {
       const weekIndex = navItems.indexOf(prevState.activeTab);
 
       const validSummariesForWeek = summaries.filter(summary =>
-        shouldIncludeSummaryForWeek(summary, weekIndex),
+        shouldShowSummaryOnTab(summary, weekIndex),
       );
 
       const teamCodeCounts = {};
@@ -1162,6 +1148,27 @@ const WeeklySummariesReport = props => {
         tableData: updatedTableData,
         teamCodes,
         selectedCodes: updatedSelectedCodes,
+      };
+    });
+  };
+
+  // `state.summaries` is local component state, so the Redux update dispatched by
+  // toggleUserBio never reaches this list. Patch the row here instead: `state.summaries`
+  // is a dependency of the filtering effect, so the yellow bar hides and the user drops
+  // out of the Bio Status filter in the same render, with no refetch round-trip.
+  const handleBioStatusChange = (userId, newBioStatus) => {
+    setState(prevState => {
+      const summaries = prevState.summaries.map(summary =>
+        summary._id === userId ? { ...summary, bioPosted: newBioStatus } : summary,
+      );
+
+      return {
+        ...prevState,
+        summaries,
+        summariesByTab: {
+          ...prevState.summariesByTab,
+          [prevState.activeTab]: summaries,
+        },
       };
     });
   };
@@ -1693,13 +1700,24 @@ const WeeklySummariesReport = props => {
         await props.fetchAllBadges();
         setPermissionState(prev => ({
           ...prev,
-          bioEditPermission: props.hasPermission(permissions.putUserProfileImportantInfo),
+          // Keep the Owner/Administrator fallbacks identical to the other place that
+          // writes permissionState — both effects run on mount and either may land
+          // last. Keys come from the `permissions` constant, not string literals.
+          bioEditPermission:
+            props.hasPermission(permissions.putUserProfileImportantInfo) ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
           codeEditPermission:
             props.hasPermission(permissions.editTeamCode) ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
+          // NOTE: the effect above gates this on `putUserProfileImportantInfo`. See
+          // the note there — the divergence predates this merge and is unresolved.
           canEditSummaryCount: props.hasPermission(permissions.editSummaryHoursCount),
-          canSeeBioHighlight: props.hasPermission(permissions.highlightEligibleBios),
+          canSeeBioHighlight:
+            props.hasPermission(permissions.highlightEligibleBios) ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
           hasSeeBadgePermission: props.hasPermission(permissions.seeBadges),
           canManageFilter:
             props.hasPermission(permissions.manageSummariesFilters) ||
@@ -2335,8 +2353,8 @@ const WeeklySummariesReport = props => {
                               canSeeBioHighlight={permissionState.canSeeBioHighlight}
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}
+                              handleBioStatusChange={handleBioStatusChange}
                               loadTrophies={state.loadTrophies}
-                              getWeeklySummariesReport={getWeeklySummariesReport}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
                             />
                           </Col>

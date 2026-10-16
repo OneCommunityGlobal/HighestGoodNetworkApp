@@ -5,6 +5,7 @@ import { ApiEndpoint } from '../../utils/URL';
 import { toast } from 'react-toastify';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import styles from './SuggestedJobsList.module.css';
+import { buildApplyPath } from './JobApplicationForm/jobApplicationPublicApi';
 
 function SuggestedJobsList() {
   const history = useHistory();
@@ -42,7 +43,7 @@ function SuggestedJobsList() {
     const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
     const pathname = ad?._id ? `/job-application/${ad._id}` : '/job-application';
     history.push({
-      pathname,
+      pathname: buildApplyPath(title),
       search,
       state: {
         jobId: ad._id,
