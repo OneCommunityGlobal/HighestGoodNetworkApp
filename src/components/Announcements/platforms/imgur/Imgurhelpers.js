@@ -386,7 +386,7 @@ export const fileToBase64 = file => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
+    reader.onerror = () => reject(new Error('Failed to read file'));
   });
 };
 
@@ -404,7 +404,7 @@ export const createImagePreview = file => {
  * @param {string} url - Preview URL to revoke
  */
 export const revokeImagePreview = url => {
-  if (url && url.startsWith('blob:')) {
+  if (url?.startsWith('blob:')) {
     URL.revokeObjectURL(url);
   }
 };
@@ -472,11 +472,14 @@ export const fieldContainerStyle = (darkMode = false) => ({
  * @param {boolean} darkMode - Dark mode enabled
  * @returns {Object} Style object
  */
-export const fieldLabelStyle = (darkMode = false) => ({
-  fontSize: '0.875rem',
-  fontWeight: '600',
-  color: darkMode ? '#e5e7eb' : '#374151',
-});
+export const fieldLabelStyle = (darkMode = false) => {
+  const textColor = darkMode ? '#e5e7eb' : '#374151';
+  return {
+    fontSize: '0.875rem',
+    fontWeight: '600',
+    color: textColor,
+  };
+};
 
 /**
  * Get field input style
@@ -484,28 +487,37 @@ export const fieldLabelStyle = (darkMode = false) => ({
  * @param {boolean} hasError - Field has error
  * @returns {Object} Style object
  */
-export const fieldInputStyle = (darkMode = false, hasError = false) => ({
-  padding: '0.5rem 0.75rem',
-  borderRadius: '0.375rem',
-  border: `1px solid ${hasError ? '#ef4444' : darkMode ? '#4b5563' : '#d1d5db'}`,
-  backgroundColor: darkMode ? '#1f2937' : '#fff',
-  color: darkMode ? '#e5e7eb' : '#111827',
-  fontFamily: 'inherit',
-  fontSize: '0.875rem',
-  transition: 'all 0.2s ease',
-});
+export const fieldInputStyle = (darkMode = false, hasError = false) => {
+  const borderColor = hasError ? '#ef4444' : darkMode ? '#4b5563' : '#d1d5db';
+  const bgColor = darkMode ? '#1f2937' : '#fff';
+  const textColor = darkMode ? '#e5e7eb' : '#111827';
+  return {
+    padding: '0.5rem 0.75rem',
+    borderRadius: '0.375rem',
+    border: `1px solid ${borderColor}`,
+    backgroundColor: bgColor,
+    color: textColor,
+    fontFamily: 'inherit',
+    fontSize: '0.875rem',
+    transition: 'all 0.2s ease',
+  };
+};
 
 /**
  * Get card container style
  * @param {boolean} darkMode - Dark mode enabled
  * @returns {Object} Style object
  */
-export const cardStyle = (darkMode = false) => ({
-  padding: '1rem',
-  borderRadius: '0.5rem',
-  border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
-  backgroundColor: darkMode ? '#111827' : '#f9fafb',
-});
+export const cardStyle = (darkMode = false) => {
+  const borderColor = darkMode ? '#374151' : '#e5e7eb';
+  const bgColor = darkMode ? '#111827' : '#f9fafb';
+  return {
+    padding: '1rem',
+    borderRadius: '0.5rem',
+    border: `1px solid ${borderColor}`,
+    backgroundColor: bgColor,
+  };
+};
 
 // ─── Topic/Category helpers ──────────────────────────────────────────────────
 

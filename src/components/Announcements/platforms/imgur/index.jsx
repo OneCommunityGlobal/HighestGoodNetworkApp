@@ -1,20 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Loader, X } from 'lucide-react';
 
 import {
-  TITLE_MIN,
   TITLE_MAX,
   DESCRIPTION_MAX,
   TAGS_MAX,
-  MAX_IMAGES,
   formatLocalDate,
   formatLocalTime,
-  formatDisplayDateTime,
-  clampScheduleDateTime,
   getMinScheduleDate,
   getMinScheduleTime,
   validateTitle,
@@ -41,17 +36,21 @@ const tabsStyle = darkMode => ({
   marginBottom: '1.5rem',
 });
 
-const tabButtonStyle = (isActive, darkMode) => ({
-  padding: '0.75rem 1rem',
-  border: 'none',
-  background: 'transparent',
-  borderBottom: `3px solid ${isActive ? '#3b82f6' : 'transparent'}`,
-  color: isActive ? (darkMode ? '#60a5fa' : '#2563eb') : darkMode ? '#9ca3af' : '#6b7280',
-  cursor: 'pointer',
-  fontWeight: isActive ? '600' : '500',
-  fontSize: '0.875rem',
-  transition: 'all 0.2s ease',
-});
+const tabButtonStyle = (isActive, darkMode) => {
+  const activeColor = darkMode ? '#60a5fa' : '#2563eb';
+  const inactiveColor = darkMode ? '#9ca3af' : '#6b7280';
+  return {
+    padding: '0.75rem 1rem',
+    border: 'none',
+    background: 'transparent',
+    borderBottom: `3px solid ${isActive ? '#3b82f6' : 'transparent'}`,
+    color: isActive ? activeColor : inactiveColor,
+    cursor: 'pointer',
+    fontWeight: isActive ? '600' : '500',
+    fontSize: '0.875rem',
+    transition: 'all 0.2s ease',
+  };
+};
 
 const formContainerStyle = darkMode => ({
   padding: '1.5rem',
@@ -94,6 +93,221 @@ const scheduledPostItemStyle = darkMode => ({
   alignItems: 'center',
   gap: '1rem',
 });
+
+// ─── FormField Component ────────────────────────────────────────────────────
+
+function FormField({
+  id,
+  label,
+  type = 'text',
+  value,
+  onChange,
+  placeholder,
+  maxLength,
+  validation,
+  isOptional,
+  style = {},
+  children,
+}) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const isInvalid = validation && !validation.isValid;
+
+  return (
+    <div style={fieldContainerStyle(darkMode)}>
+      <label htmlFor={id} style={fieldLabelStyle(darkMode)}>
+        {label} {!isOptional && <span style={{ color: '#ef4444' }}>*</span>}
+      </label>
+      {type === 'textarea' ? (
+        <textarea
+          id={id}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          maxLength={maxLength}
+          style={{
+            ...fieldInputStyle(darkMode, isInvalid),
+            minHeight: '100px',
+            fontFamily: 'inherit',
+            resize: 'vertical',
+            ...style,
+          }}
+        />
+      ) : type === 'select' ? (
+        <select
+          id={id}
+          value={value}
+          onChange={onChange}
+          style={fieldInputStyle(darkMode, isInvalid)}
+        >
+          {children}
+        </select>
+      ) : (
+        <input
+          id={id}
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          maxLength={maxLength}
+          style={fieldInputStyle(darkMode, isInvalid)}
+        />
+      )}
+      {maxLength && (
+        <div
+          style={{
+            fontSize: '0.75rem',
+            color: darkMode ? '#9ca3af' : '#6b7280',
+            marginTop: '0.25rem',
+          }}
+        >
+          {value.length} / {maxLength}
+        </div>
+      )}
+      {isInvalid && (
+        <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+          {validation.error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+FormField.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+  placeholder: PropTypes.string,
+  maxLength: PropTypes.number,
+  validation: PropTypes.shape({ isValid: PropTypes.bool, error: PropTypes.string }),
+  isOptional: PropTypes.bool,
+  style: PropTypes.object,
+  children: PropTypes.node,
+};
+
+FormField.defaultProps = {
+  type: 'text',
+  value: '',
+  onChange: () => {},
+  placeholder: '',
+  maxLength: null,
+  validation: null,
+  isOptional: false,
+  style: {},
+  children: null,
+};
+
+// ─── ImageField Component ───────────────────────────────────────────────────
+
+function ImageField({ id, label, onChange, validation, imagePreview, onClearImage }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const isInvalid = validation && !validation.isValid;
+
+  return (
+    <>
+      <div style={fieldContainerStyle(darkMode)}>
+        <label htmlFor={id} style={fieldLabelStyle(darkMode)}>
+          {label} <span style={{ color: '#ef4444' }}>*</span>
+        </label>
+        <input
+          id={id}
+          type="file"
+          accept="image/*"
+          onChange={onChange}
+          style={fieldInputStyle(darkMode, isInvalid)}
+        />
+        {isInvalid && (
+          <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+            {validation.error}
+          </p>
+        )}
+      </div>
+      {imagePreview && (
+        <div style={previewContainerStyle(darkMode)}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.5rem',
+            }}
+          >
+            <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>Preview</span>
+            <button
+              type="button"
+              onClick={onClearImage}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: darkMode ? '#9ca3af' : '#6b7280',
+              }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+          <img src={imagePreview} alt="Preview" style={imagePreviewStyle} />
+        </div>
+      )}
+    </>
+  );
+}
+
+ImageField.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  validation: PropTypes.shape({ isValid: PropTypes.bool, error: PropTypes.string }),
+  imagePreview: PropTypes.string,
+  onClearImage: PropTypes.func.isRequired,
+};
+
+ImageField.defaultProps = {
+  validation: null,
+  imagePreview: null,
+};
+
+// ─── FormActions Component ──────────────────────────────────────────────────
+
+function FormActions({ isSubmitting, isFormValid, primaryLabel, onReset }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  return (
+    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
+      <button
+        type="submit"
+        disabled={!isFormValid || isSubmitting}
+        style={{
+          ...buttonStyle('primary', darkMode),
+          opacity: !isFormValid || isSubmitting ? 0.5 : 1,
+          cursor: !isFormValid || isSubmitting ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+        }}
+      >
+        {isSubmitting && <Loader size={16} />}
+        {primaryLabel}
+      </button>
+      <button
+        type="button"
+        onClick={onReset}
+        disabled={isSubmitting}
+        style={buttonStyle('ghost', darkMode)}
+      >
+        Clear
+      </button>
+    </div>
+  );
+}
+
+FormActions.propTypes = {
+  isSubmitting: PropTypes.bool.isRequired,
+  isFormValid: PropTypes.bool.isRequired,
+  primaryLabel: PropTypes.string.isRequired,
+  onReset: PropTypes.func.isRequired,
+};
 
 // ─── ScheduleField Component ─────────────────────────────────────────────────
 
@@ -186,7 +400,8 @@ function ImgurAutoPoster({ platform }) {
    * Load scheduled posts on component mount
    */
   useEffect(() => {
-    loadScheduledPosts();
+    // eslint-disable-next-line no-void
+    void loadScheduledPosts();
   }, []);
 
   /**
