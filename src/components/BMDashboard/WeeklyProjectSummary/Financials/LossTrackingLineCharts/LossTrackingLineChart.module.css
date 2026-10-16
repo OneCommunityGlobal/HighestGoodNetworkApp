@@ -88,7 +88,8 @@
   padding: 0.85rem;
 }
 
-.lossTrackingChartFilters label {
+.lossTrackingChartFilters label,
+.field {
   display: flex;
   flex-direction: column;
   font-weight: 600;
@@ -100,7 +101,7 @@
 
 /* Inputs */
 .lossTrackingChartFilters select,
-.lossTrackingChartFilters input[type="month"] {
+.lossTrackingChartFilters input[type='month'] {
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -109,7 +110,8 @@
   min-height: 40px;
   background-color: var(--surface);
   color: var(--text-color);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .monthInputWrapper {
@@ -122,15 +124,15 @@
   padding-right: 2.45rem !important;
 }
 
-.lossTrackingChartFilters input[type="month"] {
+.lossTrackingChartFilters input[type='month'] {
   color-scheme: light;
 }
 
-.darkMode .lossTrackingChartFilters input[type="month"] {
+.darkMode .lossTrackingChartFilters input[type='month'] {
   color-scheme: dark;
 }
 
-.lossTrackingChartFilters input[type="month"]::-webkit-calendar-picker-indicator {
+.lossTrackingChartFilters input[type='month']::-webkit-calendar-picker-indicator {
   opacity: 0;
   cursor: pointer;
 }
@@ -156,7 +158,7 @@
 }
 
 .lossTrackingChartFilters select:focus-visible,
-.lossTrackingChartFilters input[type="month"]:focus-visible {
+.lossTrackingChartFilters input[type='month']:focus-visible {
   outline: none;
   border-color: var(--ring);
   box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset);
@@ -174,15 +176,20 @@
   cursor: pointer;
   min-height: 40px;
   letter-spacing: 0.2px;
-  transition: background-color 0.15s ease, transform 0.02s ease, box-shadow 0.15s ease, color 0.15s ease;
+  transition: background-color 0.15s ease, transform 0.02s ease, box-shadow 0.15s ease,
+    color 0.15s ease;
   box-shadow: 0 1px 0 rgb(0 0 0 / 4%), 0 2px 8px rgb(0 0 0 / 8%);
 
   /* IMPORTANT: no margin-left/auto and no order hacks */
-  place-self: end start; /* align start like labels */     /* baseline alignment with inputs */
+  place-self: end start; /* align start like labels */ /* baseline alignment with inputs */
 }
 
-.resetBtn:hover { background-color: var(--reset-btn-hover); }
-.resetBtn:active { transform: translateY(1px); }
+.resetBtn:hover {
+  background-color: var(--reset-btn-hover);
+}
+.resetBtn:active {
+  transform: translateY(1px);
+}
 
 .resetBtn:focus-visible {
   outline: none;
@@ -206,7 +213,9 @@
 
 /* Optional: on very narrow screens, make the button full width to match stacked inputs */
 @media (width <= 768px) {
-  .resetBtn { justify-self: stretch; }
+  .resetBtn {
+    justify-self: stretch;
+  }
 
   .customLegend {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -217,23 +226,33 @@
 .chartWrapper {
   width: 100%;
 
-  /* Responsive, predictable height for ResponsiveContainer (height="100%") */
+  /* Height applies to the chart area only, not the legend */
   --chart-height: clamp(320px, 42vh, 680px);
 
-  height: var(--chart-height);
   background-color: var(--surface-muted);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 1rem;
-  min-width: 0; /* let SVG measure correctly in flex/grid */
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.chartArea {
+  width: 100%;
+  height: var(--chart-height);
+  min-width: 0;
 }
 
 @media screen and (width >= 1440px) {
-  .chartWrapper { --chart-height: clamp(340px, 40vh, 720px); }
+  .chartWrapper {
+    --chart-height: clamp(340px, 40vh, 720px);
+  }
 }
 
 /* Recharts tweaks */
-.recharts-cartesian-grid line { stroke: var(--grid-color); }
+.recharts-cartesian-grid line {
+  stroke: var(--grid-color);
+}
 
 .customLegend {
   display: grid;
@@ -284,27 +303,143 @@
 /* --- Ultra-narrow phones: <= 400px --- */
 @media (width <= 400px) {
   .lossTrackingChartFilters {
-    grid-template-columns: 1fr;     /* force single column */
-    gap: 0.6rem;                     /* slightly tighter spacing */
-    padding: 0.75rem;                /* reduce inner padding */
+    grid-template-columns: 1fr; /* force single column */
+    gap: 0.6rem; /* slightly tighter spacing */
+    padding: 0.75rem; /* reduce inner padding */
   }
 
   .lossTrackingChartFilters label {
-    min-width: 0;                    /* allow shrink */
+    min-width: 0; /* allow shrink */
   }
 
   .lossTrackingChartFilters select,
-  .lossTrackingChartFilters input[type="month"],
+  .lossTrackingChartFilters input[type='month'],
   .resetBtn {
-    width: 100%;                     /* full width controls */
-    box-sizing: border-box;          /* respect padding/border */
+    width: 100%; /* full width controls */
+    box-sizing: border-box; /* respect padding/border */
   }
 
   .resetBtn {
-    justify-self: stretch;           /* no overflow due to intrinsic width */
+    justify-self: stretch; /* no overflow due to intrinsic width */
   }
 
   .customLegend {
     grid-template-columns: 1fr;
   }
+}
+
+.monthTrigger {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.55rem 2.45rem 0.55rem 0.7rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--surface);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.monthTrigger:focus-visible {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset);
+}
+
+.placeholder {
+  color: var(--muted-text);
+  font-weight: 400;
+}
+
+.calendarPopover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;
+  margin: 0;
+  z-index: 20;
+  width: 240px;
+  max-width: 100%;
+  padding: 0.75rem;
+  background: var(--surface);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.calYear {
+  font-weight: 650;
+  color: var(--text-color);
+}
+
+.calNav {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--surface-muted);
+  color: var(--text-color);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.calNav:disabled,
+.calMonth:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.calMonth {
+  padding: 0.5rem 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--surface-muted);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.calMonth:hover:not(:disabled) {
+  border-color: var(--accent-color);
+}
+
+.calMonthSelected {
+  background: var(--accent-color);
+  color: var(--surface);
+  font-weight: 650;
+}
+
+.calendarFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.6rem;
+}
+
+.calClear {
+  background: none;
+  border: none;
+  color: var(--accent-color);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.calClear:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
