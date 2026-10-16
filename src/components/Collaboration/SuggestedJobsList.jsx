@@ -41,7 +41,6 @@ function SuggestedJobsList() {
   const handleApplyNow = ad => {
     const title = ad.title || '';
     const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
-    const pathname = ad?._id ? `/job-application/${ad._id}` : '/job-application';
     history.push({
       pathname: buildApplyPath(title),
       search,
