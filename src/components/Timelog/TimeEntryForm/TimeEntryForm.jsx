@@ -453,8 +453,9 @@ function TimeEntryForm(props) {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
-        const status = await props.postTimeEntry(timeEntry, {
+        const { status } = await props.postTimeEntry(timeEntry, {
           displayedUserId: props.displayedUserId,
+          detailed: true,
         });
         // The thunk resolves with the HTTP status for failed requests instead of rejecting.
         if (status < 200 || status >= 300) {

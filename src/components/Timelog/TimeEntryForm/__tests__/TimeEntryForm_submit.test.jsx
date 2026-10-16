@@ -97,8 +97,8 @@ describe('<TimeEntryForm /> submitting a new time entry from the timer', () => {
 
   const submitButton = () => screen.getByRole('button', { name: /^(submit|submitting\.\.\.)$/i });
 
-  const respondWithStatus = status => {
-    postTimeEntry.mockImplementation(() => async () => status);
+  const respondWithStatus = (status, code) => {
+    postTimeEntry.mockImplementation(() => async () => (code ? { status, code } : { status }));
   };
 
   const fillAndSubmit = async () => {
@@ -131,6 +131,26 @@ describe('<TimeEntryForm /> submitting a new time entry from the timer', () => {
 
   const taskTimeActions = () => store.getActions().filter(a => a.type === TASK_TIME_ACTION);
 
+  const expectFailedSubmissionLeftEverythingIntact = () => {
+    expect.soft(sendStop).not.toHaveBeenCalled();
+    expect.soft(toggle).not.toHaveBeenCalled();
+    expect.soft(onTimeSubmitted).not.toHaveBeenCalled();
+    expect.soft(taskTimeActions()).toHaveLength(0);
+    expect.soft(toast.success).not.toHaveBeenCalled();
+
+    const [hours, minutes] = screen.getAllByRole('spinbutton');
+    expect.soft(hours).toHaveValue(1);
+    expect.soft(minutes).toHaveValue(30);
+    expect.soft(screen.getByLabelText(/project\/task/i)).toHaveValue(project.projectId);
+    expect.soft(screen.getByLabelText(/notes/i)).toHaveValue(NOTES);
+
+    expect.soft(toast.error).toHaveBeenCalledWith(
+      expect.stringContaining('An error occurred while attempting to submit your time entry'),
+    );
+    expect.soft(submitButton()).toHaveTextContent(/^Submit$/);
+    expect.soft(submitButton()).toBeEnabled();
+  };
+
   it.each([400, 403, 409, 500])(
     'keeps the form open, the timer running and the input intact on HTTP %i',
     async status => {
@@ -138,25 +158,28 @@ describe('<TimeEntryForm /> submitting a new time entry from the timer', () => {
 
       await fillAndSubmit();
 
-      expect.soft(sendStop).not.toHaveBeenCalled();
-      expect.soft(toggle).not.toHaveBeenCalled();
-      expect.soft(onTimeSubmitted).not.toHaveBeenCalled();
-      expect.soft(taskTimeActions()).toHaveLength(0);
-      expect.soft(toast.success).not.toHaveBeenCalled();
-
-      const [hours, minutes] = screen.getAllByRole('spinbutton');
-      expect.soft(hours).toHaveValue(1);
-      expect.soft(minutes).toHaveValue(30);
-      expect.soft(screen.getByLabelText(/project\/task/i)).toHaveValue(project.projectId);
-      expect.soft(screen.getByLabelText(/notes/i)).toHaveValue(NOTES);
-
-      expect.soft(toast.error).toHaveBeenCalledWith(
-        expect.stringContaining('An error occurred while attempting to submit your time entry'),
-      );
-      expect.soft(submitButton()).toHaveTextContent(/^Submit$/);
-      expect.soft(submitButton()).toBeEnabled();
+      expectFailedSubmissionLeftEverythingIntact();
     },
   );
+
+  it('treats a duplicate conflict as an ordinary failed submission until the modal is wired in', async () => {
+    respondWithStatus(409, 'DUPLICATE_TIME_ENTRY');
+
+    await fillAndSubmit();
+
+    expectFailedSubmissionLeftEverythingIntact();
+  });
+
+  it('opts in to the detailed result so duplicate conflicts can be told apart', async () => {
+    respondWithStatus(200);
+
+    await fillAndSubmit();
+
+    expect(postTimeEntry).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({ detailed: true }),
+    );
+  });
 
   it('keeps the form open, the timer running and the input intact when the request rejects', async () => {
     postTimeEntry.mockImplementation(() => async () => {
