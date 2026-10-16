@@ -362,6 +362,10 @@
   position: relative;
 }
 
+tr.darkMode:hover {
+  background: #2f4157 !important;
+}
+
 .hidden {
   visibility: hidden;
 }
@@ -774,8 +778,7 @@
   }
 
   .table-row {
-    border: solid #e9ecef 2px;
-    background: #faf7fc;
+    border: solid #3a506b 2px;
     font-size: 0.75rem !important;
   }
 
