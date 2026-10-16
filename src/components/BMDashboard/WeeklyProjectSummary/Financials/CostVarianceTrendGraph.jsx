@@ -92,9 +92,9 @@ const getOptionColor = (darkMode, isSelected) => {
 
 const generateSelectStyles = darkMode => {
   const bgMain = darkMode ? '#253342' : '#fff';
-  const borderMain = darkMode ? '#2d4059' : '#ccc';
+  const borderMain = darkMode ? '#94a3b8' : '#cbd5e1';
   const textMain = darkMode ? '#ffffff' : '#000';
-  const textMuted = darkMode ? '#94a3b8' : '#999';
+  const textMuted = darkMode ? '#e2e8f0' : '#64748b';
 
   return {
     control: base => ({
@@ -216,7 +216,9 @@ export default function CostVarianceTrendGraph() {
   const [data, setData] = useState([]);
 
   const darkMode = useSelector(state => state.theme.darkMode);
-  const textColor = darkMode ? '#ffffff' : '#666';
+  const textColor = darkMode ? '#e2e8f0' : '#475569';
+  const [chartWidth, setChartWidth] = useState(0);
+  const isNarrowChart = chartWidth > 0 && chartWidth < 500;
 
   const [projectId, setProjectId] = useState('ALL');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
@@ -353,12 +355,32 @@ export default function CostVarianceTrendGraph() {
       </div>
 
       <div className={styles.chartWrapper}>
-        <div className={styles.chartContainer}>
+        <div
+          className={`${styles.chartContainer} cost-variance-trend-chart`}
+          style={{ '--trend-axis-fill': textColor }}
+        >
+          <style>{`
+          .cost-variance-trend-chart .recharts-cartesian-axis-tick-value {
+            fill: var(--trend-axis-fill) !important;
+          }
+        `}</style>
           {chartData.length === 0 ? (
             <div className={styles.emptyState}>No data available for the selected filters.</div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+              onResize={width => setChartWidth(width)}
+            >
+              <BarChart
+                data={chartData}
+                margin={{
+                  top: 20,
+                  right: isNarrowChart ? 2 : 10,
+                  left: isNarrowChart ? 0 : 10,
+                  bottom: 20,
+                }}
+              >
                 <XAxis
                   dataKey="date"
                   stroke={darkMode ? '#475569' : '#94a3b8'}

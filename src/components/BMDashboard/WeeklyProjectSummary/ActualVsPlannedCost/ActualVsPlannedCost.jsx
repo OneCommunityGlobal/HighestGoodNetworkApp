@@ -58,9 +58,13 @@ function getVarianceValueClass(variance, cardStyles) {
 }
 
 function getVarianceLabelColor(variance, darkMode) {
-  if (variance > 0) return darkMode ? '#fca5a5' : OVER_BUDGET_COLOR;
-  if (variance < 0) return darkMode ? '#86efac' : '#15803d';
-  return darkMode ? '#e2e8f0' : '#334155';
+  if (variance > 0) {
+    return darkMode ? '#fca5a5' : '#b91c1c';
+  }
+  if (variance < 0) {
+    return darkMode ? '#86efac' : '#15803d';
+  }
+  return darkMode ? '#e2e8f0' : '#475569';
 }
 
 function VarianceCard({ item, cardStyles }) {
