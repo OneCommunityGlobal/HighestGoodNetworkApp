@@ -6,6 +6,7 @@ import {
   ModalBody,
   ModalHeader,
   UncontrolledTooltip,
+  Util,
 } from 'reactstrap';
 import styles from './DuplicateTimeLogModal.module.css';
 
@@ -51,12 +52,18 @@ function DuplicateTimeLogModal({ isOpen, onCancel, onEdit, onProceed, darkMode }
   // Escape and every other dismissal behave like EDIT, so closing never submits the duplicate.
   const handleDismiss = () => onEdit();
 
+  // onEntering runs after reactstrap focuses the dialog wrapper, so Enter works before the transition ends.
+  const modalTransition = {
+    timeout: Util.TransitionTimeouts.Modal,
+    onEntering: () => editButtonRef.current?.focus(),
+  };
+
   return (
     <Modal
       isOpen={isOpen}
       toggle={handleDismiss}
       backdrop="static"
-      onOpened={() => editButtonRef.current?.focus()}
+      modalTransition={modalTransition}
       labelledBy={TITLE_ID}
       contentClassName={darkMode ? `${styles.content} ${styles.darkContent}` : styles.content}
     >

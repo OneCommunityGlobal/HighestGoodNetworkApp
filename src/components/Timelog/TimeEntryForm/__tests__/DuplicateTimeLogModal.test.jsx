@@ -24,8 +24,8 @@ const INFO = {
 describe('<DuplicateTimeLogModal />', () => {
   const renderModal = (props = {}) => {
     const handlers = { onCancel: vi.fn(), onEdit: vi.fn(), onProceed: vi.fn() };
-    render(<DuplicateTimeLogModal isOpen {...handlers} {...props} />);
-    return { handlers };
+    const { rerender } = render(<DuplicateTimeLogModal isOpen {...handlers} {...props} />);
+    return { handlers, rerender };
   };
 
   const action = name => screen.getByRole('button', { name: LABELS[name] });
@@ -224,6 +224,87 @@ describe('<DuplicateTimeLogModal />', () => {
       await pressEnterOn(action('proceed'));
 
       expectOnlyCalled(handlers, 'onProceed');
+    });
+  });
+
+  describe('keyboard defaults', () => {
+    // The open transition takes about 300ms, so focus must already be on EDIT well before it ends.
+    const EARLY = { timeout: 100 };
+
+    it('focuses EDIT immediately after opening, before the transition finishes', async () => {
+      renderModal();
+
+      await waitFor(() => expect(action('edit')).toHaveFocus(), EARLY);
+    });
+
+    it('activates EDIT when Enter is pressed immediately after opening', async () => {
+      const { handlers } = renderModal();
+      await waitFor(() => expect(action('edit')).toHaveFocus(), EARLY);
+
+      await pressEnterOn(action('edit'));
+
+      expectOnlyCalled(handlers, 'onEdit');
+    });
+
+    it('keeps normal Enter activation of a deliberately focused CANCEL', async () => {
+      const { handlers } = renderModal();
+      await waitFor(() => expect(action('edit')).toHaveFocus(), EARLY);
+
+      await userEvent.tab({ shift: true });
+      await userEvent.tab({ shift: true });
+      expect(action('cancel')).toHaveFocus();
+      await pressEnterOn(action('cancel'));
+
+      expectOnlyCalled(handlers, 'onCancel');
+    });
+
+    it.each([
+      ['cancel', [{ shift: true }]],
+      ['edit', [{}]],
+      ['proceed', [{}, {}, {}]],
+    ])('never invokes an action when Enter is pressed on the %s information icon', async (name, tabs) => {
+      const { handlers } = renderModal();
+      await waitFor(() => expect(action('edit')).toHaveFocus(), EARLY);
+
+      await tabs.reduce(
+        (previous, options) => previous.then(() => userEvent.tab(options)),
+        Promise.resolve(),
+      );
+      expect(infoIcon(name)).toHaveFocus();
+      await pressEnterOn(infoIcon(name));
+
+      expectOnlyCalled(handlers, null);
+    });
+
+    it('treats Escape as EDIT even while PROCEED has focus', async () => {
+      const { handlers } = renderModal();
+      await waitFor(() => expect(action('edit')).toHaveFocus(), EARLY);
+
+      await userEvent.tab();
+      await userEvent.tab();
+      expect(action('proceed')).toHaveFocus();
+      fireEvent.keyDown(action('proceed'), { key: 'Escape', keyCode: 27 });
+      fireEvent.keyUp(action('proceed'), { key: 'Escape', keyCode: 27 });
+
+      expect(handlers.onProceed).not.toHaveBeenCalled();
+      expect(handlers.onCancel).not.toHaveBeenCalled();
+      expect(handlers.onEdit).toHaveBeenCalledTimes(1);
+    });
+
+    it('restores EDIT as the focused default when reopened after PROCEED had focus', async () => {
+      const { handlers, rerender } = renderModal();
+      await waitFor(() => expect(action('edit')).toHaveFocus(), EARLY);
+      await userEvent.tab();
+      await userEvent.tab();
+      expect(action('proceed')).toHaveFocus();
+
+      rerender(<DuplicateTimeLogModal isOpen={false} {...handlers} />);
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+      rerender(<DuplicateTimeLogModal isOpen {...handlers} />);
+
+      await waitFor(() => expect(action('edit')).toHaveFocus(), EARLY);
+      await pressEnterOn(action('edit'));
+      expectOnlyCalled(handlers, 'onEdit');
     });
   });
 });
