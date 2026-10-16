@@ -19,13 +19,44 @@ import styles from './projects.module.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { permissions } from '../../utils/constants';
 
 // Stable reference for the empty case. Returning a fresh [] from a selector
 // gives a new identity on every render, which retriggers effects that depend
 // on it.
 const EMPTY_PROJECT_LIST = [];
 
-import { permissions } from '../../utils/constants';
+const compareProjectNames = (a, b) =>
+  a.projectName.localeCompare(b.projectName, undefined, { sensitivity: 'base' });
+
+const compareInventoryEdits = (a, b) => {
+  const dateA = Date.parse(a.inventoryModifiedDatetime);
+  const dateB = Date.parse(b.inventoryModifiedDatetime);
+  const validA = Number.isFinite(dateA);
+  const validB = Number.isFinite(dateB);
+
+  // Unknown dates stay last; equal dates use a deterministic name/ID order.
+  if (validA !== validB) return validA ? -1 : 1;
+  if (validA && dateA !== dateB) return dateB - dateA;
+  return compareProjectNames(a, b) || a._id.localeCompare(b._id);
+};
+
+const compareProjects = (a, b, { column, direction }, activeMemberCounts) => {
+  if (direction === 'DEFAULT') return 0;
+  const multiplier = direction === 'DESC' ? -1 : 1;
+
+  switch (column) {
+    case 'PROJECTS':
+      return multiplier * compareProjectNames(a, b);
+    case 'MEMBERS':
+      return multiplier * ((activeMemberCounts?.[a._id] || 0) - (activeMemberCounts?.[b._id] || 0));
+    case 'INVENTORY':
+      return compareInventoryEdits(a, b);
+    default:
+      return 0;
+  }
+};
+
 const Projects = function(props) {
   const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
@@ -116,16 +147,14 @@ const Projects = function(props) {
     }
 
     const fetchPersonProjects = async () => {
-      let ids = [];
-      try {
-        const result = await searchProjectsByPerson(searchQuery);
-        if (Array.isArray(result)) ids = result.filter(id => typeof id === 'string');
-      } catch {
-        // The existing search action handles user-facing API errors.
-      }
+      const result = await searchProjectsByPerson(searchQuery);
+      const ids = Array.isArray(result) ? result.filter(id => typeof id === 'string') : [];
       if (current) setPersonSearchResult({ query: searchQuery, ids: new Set(ids) });
     };
-    fetchPersonProjects();
+    fetchPersonProjects().catch(() => {
+      // The search action handles notifications; resolve loading with no matches.
+      if (current) setPersonSearchResult({ query: searchQuery, ids: new Set() });
+    });
     return () => { current = false; };
   }, [searchQuery, debouncedSearchName, searchMode, searchProjectsByPerson]);
 
@@ -259,54 +288,7 @@ const Projects = function(props) {
       return categoryMatches && statusMatches && searchMatches;
     });
 
-    return [...filteredProjects].sort((a, b) => {
-      const { column, direction } = sorter;
-
-      if (column === "PROJECTS") {
-        if (direction === "ASC") {
-          return a.projectName.localeCompare(b.projectName, undefined, { sensitivity: 'base' });
-        } else if (direction === "DESC") {
-          return b.projectName.localeCompare(a.projectName, undefined, { sensitivity: 'base' });
-        } else {
-          return 0; // Default: recently added, retain original order
-        }
-      }
-
-      if (column === "MEMBERS") {
-        if (direction === "ASC") {
-          const countA = activeMemberCounts?.[a._id] || 0;
-          const countB = activeMemberCounts?.[b._id] || 0;
-          return countA - countB;
-        } else if (direction === "DESC") {
-          const countA = activeMemberCounts?.[a._id] || 0;
-          const countB = activeMemberCounts?.[b._id] || 0;
-          return countB - countA;
-        } else {
-          return 0; // Default: keep same order as PROJECT sorting
-        }
-      }
-
-      if (column === "INVENTORY") {
-        if (direction === 'DEFAULT') return 0;
-
-        const dateA = Date.parse(a.inventoryModifiedDatetime);
-        const dateB = Date.parse(b.inventoryModifiedDatetime);
-        const validA = Number.isFinite(dateA);
-        const validB = Number.isFinite(dateB);
-        // Unknown dates stay last regardless of the selected direction.
-        if (validA !== validB) return validA ? -1 : 1;
-        if (validA && dateA !== dateB) {
-          return dateB - dateA;
-        }
-        return (
-          a.projectName.localeCompare(b.projectName, undefined, { sensitivity: 'base' }) ||
-          a._id.localeCompare(b._id)
-        );
-      }
-
-      return 0;
-    });
-
+    return [...filteredProjects].sort((a, b) => compareProjects(a, b, sorter, activeMemberCounts));
   }, [allReduxProjects, archivedReduxProjects, showArchived, categorySelectedForSort,
     showStatus, searchQuery, debouncedSearchName, searchMode, personSearchLoading,
     personSearchResult, sorter, activeMemberCounts]);
