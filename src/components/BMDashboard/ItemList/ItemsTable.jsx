@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Button } from 'reactstrap';
+import { Table, Button, Badge } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -38,6 +38,8 @@ export default function ItemsTable({
   endRow,
   onPageChange,
   onRowsPerPageChange,
+  selectedRowId,
+  onRowSelect,
 }) {
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
@@ -57,7 +59,7 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
-    if (type === 'UsageRecord') {
+    if (isMaterialsView && type === 'UsageRecord') {
       const projectId = data.project?._id || data.projectId;
 
       if (projectId) {
@@ -74,11 +76,16 @@ export default function ItemsTable({
 
   const getNestedValue = (obj, path) => {
     if (!path) return null;
-    if (path === 'product id') return obj.productId ?? 'N/A';
+    if (path === 'product id') return obj['product id'] ?? obj.productId ?? 'N/A';
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
   };
 
-  const emptyStateColSpan = 4 + dynamicColumns.length + (isMaterialsView ? 3 : 0);
+  const filteredDynamicColumns = (dynamicColumns || []).filter(
+    col => col.label !== 'Project' && col.label !== 'Name',
+  );
+
+  const emptyStateColSpan = 2 + filteredDynamicColumns.length + (isMaterialsView ? 5 : 2);
+
   const getIconFor = key => {
     if (!sortConfig?.key || sortConfig.key !== key) return faSort;
     return sortConfig.direction === 'asc' ? faSortUp : faSortDown;
@@ -92,18 +99,18 @@ export default function ItemsTable({
     Hold: 'hold',
   };
 
-  const getColumnStyle = (isAction = false) => {
-    const base = { verticalAlign: 'middle', textAlign: 'center' };
+  const numericKeys = new Set(['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted']);
+  const isMaterials = itemType === 'Materials';
+
+  const getColumnStyle = (key, isAction = false) => {
+    const base = { verticalAlign: 'middle' };
+    if (key && numericKeys.has(key)) base.textAlign = 'right';
     if (isAction) {
       base.borderLeft = '2px solid #dee2e6';
+      base.textAlign = 'center';
     }
     return base;
   };
-
-  // Remove Project and Name from the dynamic list so they don't render twice
-  const filteredDynamicColumns = (dynamicColumns || []).filter(
-    col => col.label !== 'Project' && col.label !== 'Name',
-  );
 
   return (
     <>
@@ -125,45 +132,34 @@ export default function ItemsTable({
       {UpdateItemModal && (
         <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       )}
-      {darkMode && (
-        <style>
-          {`
-            .dark-mode .items_table_container .table thead th {
-              background-color: #1C2541 !important;
-              color: #ffffff !important;
-              border-color: #555 !important;
-            }
 
-            .dark-mode .items_table_container .table thead tr {
-              background-color: #1C2541 !important;
-            }
-
-            .dark-mode .items_table_container .table tbody tr:hover {
-              background-color: #1C2541 !important;
-            }
-          `}
-        </style>
-      )}
-
-      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
-        <Table bordered striped hover className={darkMode ? styles.darkTable : ''}>
+      <div
+        className={[
+          styles.itemsTableContainer,
+          darkMode ? styles.darkTableWrapper : '',
+          isMaterialsView ? styles.materialsTableScroll : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        <Table className={darkMode ? styles.darkTable : ''}>
           <thead className={styles.stickyThead}>
             <tr>
               <th
                 onClick={() => onSort?.('project')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                style={{ verticalAlign: 'middle' }}
               >
                 Project <FontAwesomeIcon icon={getIconFor('project')} size="lg" />
               </th>
               <th
                 onClick={() => onSort?.('name')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                style={{ verticalAlign: 'middle' }}
               >
                 Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
               </th>
-              {(filteredDynamicColumns || []).map(({ label, key }) => {
+              {filteredDynamicColumns.map(({ label, key }) => {
                 const sortKey = dynamicSortKeyByLabel[label];
                 const clickable = Boolean(sortKey);
                 return (
@@ -171,16 +167,16 @@ export default function ItemsTable({
                     key={label || key}
                     onClick={clickable ? () => onSort?.(sortKey) : undefined}
                     className={clickable ? styles.sortableTh : undefined}
-                    style={getColumnStyle()}
+                    style={getColumnStyle(key)}
                   >
                     {label} {clickable && <FontAwesomeIcon icon={getIconFor(sortKey)} size="lg" />}
                   </th>
                 );
               })}
-              {isMaterialsView && <th style={getColumnStyle()}>Usage %</th>}
-              {isMaterialsView && <th style={getColumnStyle()}>Stock Health</th>}
+              {isMaterialsView && <th style={getColumnStyle(null)}>Usage %</th>}
+              {isMaterialsView && <th style={getColumnStyle(null)}>Stock Health</th>}
               {isMaterialsView && (
-                <th style={getColumnStyle(true)} title="View usage history and charts">
+                <th style={getColumnStyle(null, true)} title="View usage history and charts">
                   Usage Record
                 </th>
               )}
@@ -198,63 +194,87 @@ export default function ItemsTable({
               </th>
             </tr>
           </thead>
-
-          <tbody
-            className={darkMode ? 'dark-tbody' : ''}
-            style={darkMode ? { backgroundColor: '#3A506B', color: '#ffffff' } : {}}
-          >
+          <tbody>
             {filteredItems && filteredItems.length > 0 ? (
               filteredItems.map(el => (
                 <tr
                   key={el._id}
-                  className={darkMode ? 'dark-row' : ''}
-                  style={
-                    darkMode ? { backgroundColor: '#3A506B', borderBottom: '1px solid #333' } : {}
-                  }
+                  className={[
+                    isMaterials ? styles.selectableRow : '',
+                    isMaterials && el._id === selectedRowId ? styles.selectedRow : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onClick={isMaterials ? () => onRowSelect?.(el) : undefined}
                 >
-                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
-                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
-                  {filteredDynamicColumns.map(({ label, key }) => (
-                    <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
-                      {getNestedValue(el, key) ?? 'N/A'}
-                    </td>
-                  ))}
+                  <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
+                  <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
+                  {filteredDynamicColumns.map(({ label, key }) => {
+                    const value = getNestedValue(el, key);
+                    if (
+                      key === 'stockAvailable' &&
+                      value !== null &&
+                      value !== undefined &&
+                      Number(value) < 10
+                    ) {
+                      return (
+                        <td key={label || key} style={getColumnStyle(key)}>
+                          <Badge
+                            color="danger"
+                            pill
+                            className="me-2"
+                            style={{ marginRight: '8px' }}
+                          >
+                            Low
+                          </Badge>
+                          {value}
+                        </td>
+                      );
+                    }
+                    return (
+                      <td key={label || key} style={getColumnStyle(key)}>
+                        {value}
+                      </td>
+                    );
+                  })}
                   {isMaterialsView && (
-                    <td style={darkMode ? { color: '#ffffff' } : {}}>
+                    <td style={getColumnStyle(null)}>
                       <UsagePercentageBar material={el} darkMode={darkMode} />
                     </td>
                   )}
                   {isMaterialsView && (
-                    <td style={darkMode ? { color: '#ffffff' } : {}}>
+                    <td style={getColumnStyle(null)}>
                       <StockHealthIndicator material={el} darkMode={darkMode} />
                     </td>
                   )}
                   {isMaterialsView && (
-                    <td style={darkMode ? { color: '#ffffff' } : {}}>
-                      <Button
-                        color="primary"
-                        outline={!darkMode}
-                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                      >
-                        View
-                      </Button>
+                    <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
+                      <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                        <button
+                          type="button"
+                          onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                          aria-label="Edit Record"
+                        >
+                          <BiPencil />
+                        </button>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                        >
+                          View
+                        </Button>
+                      </span>
                     </td>
                   )}
-                  <td className={styles.items_cell}>
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        flexWrap: 'nowrap',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                  <td
+                    className={styles.itemsCell}
+                    style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                  >
+                    <span className={isMaterials ? styles.materialsActionGroup : undefined}>
                       <button
                         type="button"
-                        style={darkMode ? { color: '#4a90e2' } : {}}
                         onClick={() => handleEditRecordsClick(el, 'Update')}
                         aria-label="Edit Record"
                       >
@@ -262,25 +282,25 @@ export default function ItemsTable({
                       </button>
                       <Button
                         color="primary"
-                        outline={!darkMode}
-                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                        outline
                         size="sm"
                         onClick={() => handleViewRecordsClick(el, 'Update')}
                       >
                         View
                       </Button>
-                    </div>
+                    </span>
                   </td>
-                  <td>
-                    <Button
-                      color="primary"
-                      outline={!darkMode}
-                      style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
-                      size="sm"
-                      onClick={() => handleViewRecordsClick(el, 'Purchase')}
-                    >
-                      View
-                    </Button>
+                  <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                    <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
+                      >
+                        View
+                      </Button>
+                    </span>
                   </td>
                 </tr>
               ))
@@ -363,19 +383,31 @@ export default function ItemsTable({
 ItemsTable.propTypes = {
   selectedProject: PropTypes.string,
   selectedItem: PropTypes.string,
-  filteredItems: PropTypes.arrayOf(PropTypes.object),
+  filteredItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      itemType: PropTypes.shape({
+        name: PropTypes.string,
+        unit: PropTypes.string,
+      }),
+      project: PropTypes.shape({
+        _id: PropTypes.string,
+        name: PropTypes.string,
+      }),
+    }),
+  ),
   UpdateItemModal: PropTypes.elementType,
   dynamicColumns: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string,
       key: PropTypes.string,
     }),
-  ).isRequired,
+  ),
   darkMode: PropTypes.bool,
   itemType: PropTypes.string,
   sortConfig: PropTypes.shape({
     key: PropTypes.string,
-    direction: PropTypes.string,
+    direction: PropTypes.oneOf(['asc', 'desc']),
   }),
   onSort: PropTypes.func,
   totalItems: PropTypes.number,
@@ -386,4 +418,25 @@ ItemsTable.propTypes = {
   endRow: PropTypes.number,
   onPageChange: PropTypes.func,
   onRowsPerPageChange: PropTypes.func,
+  selectedRowId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onRowSelect: PropTypes.func,
+};
+
+ItemsTable.defaultProps = {
+  selectedProject: '',
+  selectedItem: '',
+  filteredItems: [],
+  UpdateItemModal: null,
+  dynamicColumns: [],
+  darkMode: false,
+  itemType: '',
+  sortConfig: { key: null, direction: 'asc' },
+  totalItems: 0,
+  currentPage: 1,
+  totalPages: 1,
+  rowsPerPage: 25,
+  startRow: 0,
+  endRow: 0,
+  selectedRowId: null,
+  onRowSelect: null,
 };

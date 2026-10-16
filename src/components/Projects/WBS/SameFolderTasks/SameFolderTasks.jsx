@@ -57,7 +57,7 @@ function SameFolderTasks(props) {
     };
 
     if (wbsId) {
-      setLoading(true);
+      // setLoading(true);
       fetchAllTasks();
       fetchWBSData();
     }
@@ -84,13 +84,16 @@ function SameFolderTasks(props) {
       const res = await axios.get(ENDPOINTS.TASKS(task.wbsId, task.level, task.mother));
       if (isMounted) {
         if (JSON.stringify(res?.data) === '{}') setAllTasks([]);
-        else setAllTasks(res?.data || []);
+        else {
+          console.log("DEBUG: ", res.data);
+          setAllTasks(res?.data || []);
+        }
       }
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.log(error);
-      setLoading(false);
+      console.log("Fetch tasks err:", error);
+      // setLoading(false);
     }
   };
 
