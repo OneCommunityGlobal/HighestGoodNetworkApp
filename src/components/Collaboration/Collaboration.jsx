@@ -403,6 +403,7 @@ function Collaboration() {
       const pathname = buildApplyPath(jobTitle);
       if (history && typeof history.push === 'function') {
         const search = jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
+        const pathname = ad?._id ? `/job-application/${ad._id}` : '/job-application';
         history.push({
           pathname,
           search,
