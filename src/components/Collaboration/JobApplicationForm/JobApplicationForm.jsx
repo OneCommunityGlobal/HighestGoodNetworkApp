@@ -6,7 +6,7 @@ import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
@@ -1055,7 +1055,11 @@ function JobApplicationForm() {
       }
     } catch (error) {
       console.error('Error fetching job data:', error);
-      setJobLookupStatus('not-found');
+      if (error.response?.status === 404) {
+        setJobLookupStatus('not-found');
+      } else {
+        setJobLookupStatus('error');
+      }
     }
   };
 
@@ -1539,7 +1543,11 @@ function JobApplicationForm() {
     }
   };
 
-  if (jobLookupStatus === 'loading' || jobLookupStatus === 'not-found') {
+  if (
+    jobLookupStatus === 'loading' ||
+    jobLookupStatus === 'not-found' ||
+    jobLookupStatus === 'error'
+  ) {
     return (
       <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
         <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
@@ -1555,10 +1563,17 @@ function JobApplicationForm() {
         <main className={styles.header}>
           <section className={styles.formContainer} role="status" aria-live="polite">
             <h1 className={styles.formTitle}>
-              {jobLookupStatus === 'loading' ? 'Loading job…' : 'Job not found'}
+              {jobLookupStatus === 'loading'
+                ? 'Loading job…'
+                : jobLookupStatus === 'error'
+                ? 'Error loading job'
+                : 'Job not found'}
             </h1>
             {jobLookupStatus === 'not-found' && (
               <p>This job may have been removed or the link may be incorrect.</p>
+            )}
+            {jobLookupStatus === 'error' && (
+              <p>Something went wrong while loading the job. Please try again later.</p>
             )}
           </section>
         </main>
