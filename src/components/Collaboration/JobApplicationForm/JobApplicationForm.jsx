@@ -108,6 +108,42 @@ function findFormByDeveloperFamily(formsArr, jobTitle) {
   return candidates[0];
 }
 
+/**
+ * Map roles like "Office Coordinator" and "Environmental Planner" to a Management/Administrative form
+ * if an exact match isn't found.
+ */
+function findFormByManagementFamily(formsArr, jobTitle) {
+  const j = normalizeTitleKey(jobTitle);
+  if (
+    !/\bcoordinator\b/.test(j) &&
+    !/\bplanner\b/.test(j) &&
+    !/\bmanager\b/.test(j) &&
+    !/\bmanagement\b/.test(j) &&
+    !/\badministrative\b/.test(j) &&
+    !/\badmin\b/.test(j)
+  ) {
+    return null;
+  }
+  const candidates = formsArr.filter(f => {
+    const t = normalizeTitleKey(f.title || '');
+    return (
+      /\bmanagement\b/.test(t) ||
+      /\bmanager\b/.test(t) ||
+      /\badministrative\b/.test(t) ||
+      /\badmin\b/.test(t)
+    );
+  });
+  if (candidates.length === 1) return candidates[0];
+  if (candidates.length > 1) {
+    const exact = candidates.find(f => {
+      const t = normalizeTitleKey(f.title || '');
+      return t === 'management' || t === 'manager' || t === 'job application management';
+    });
+    return exact || candidates[0];
+  }
+  return null;
+}
+
 /** Match a job listing title to a saved application form (titles may differ slightly). */
 function findFormForJobTitle(formsArr, jobTitle) {
   if (!jobTitle || !formsArr?.length) return null;
@@ -126,6 +162,8 @@ function findFormForJobTitle(formsArr, jobTitle) {
   m = findFormByTokenOverlap(formsArr, jobTitle);
   if (m) return m;
   m = findFormByDeveloperFamily(formsArr, jobTitle);
+  if (m) return m;
+  m = findFormByManagementFamily(formsArr, jobTitle);
   return m || null;
 }
 
@@ -2158,7 +2196,14 @@ const requirementsPropType = PropTypes.shape({
 });
 
 const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
     <path
       d="M11.6667 3.5L5.25 9.91667L2.33334 7"
       stroke="white"
