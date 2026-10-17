@@ -4,21 +4,28 @@ import emailIcon from './style/email_icon.png';
 import slackIcon from './style/slack_icon.png';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { formatSkillName } from './FilerData.js';
+
+const getNormalizedSkills = ({ displaySkills, topSkills, skills }) => {
+  if (Array.isArray(displaySkills)) return displaySkills;
+  if (Array.isArray(topSkills)) return topSkills.map(formatSkillName);
+  if (Array.isArray(skills)) {
+    return skills
+      .map(skill => {
+        if (typeof skill === 'string') return skill;
+        return skill.name || skill.skill || skill.label || skill.type || '';
+      })
+      .filter(Boolean)
+      .map(formatSkillName);
+  }
+  return [];
+};
 
 function UserCard({ user }) {
-  const { userId, name, email, slack, score, topSkills, skills } = user;
+  const { userId, name, email, slack, score, topSkills, displaySkills, skills } = user;
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const normalizedSkills = Array.isArray(topSkills)
-    ? topSkills
-    : Array.isArray(skills)
-    ? skills
-        .map(skill => {
-          if (typeof skill === 'string') return skill;
-          return skill.name || skill.skill || skill.label || skill.type || '';
-        })
-        .filter(Boolean)
-    : [];
+  const normalizedSkills = getNormalizedSkills({ displaySkills, topSkills, skills });
 
   return (
     <div className={`${styles.userCard} ${darkMode ? styles.darkMode : ''}`}>
@@ -49,19 +56,23 @@ function UserCard({ user }) {
       </div>
 
       <div className={`${styles.scoreSkillsWrapper}`}>
-        <div className={`${styles.scoreLine}`}>
-          <span className={`${styles.scoreLabel}`}>Score:</span>
-          <span
-            className={`${styles.scoreValue} ${score >= 5 ? styles.scoreHigh : styles.scoreLow}`}
-          >
-            {score}
-          </span>
-          <span className={`${styles.scoreMax}`}> / 10</span>
-        </div>
+        {typeof score === 'number' && (
+          <div className={`${styles.scoreLine}`}>
+            <span className={`${styles.scoreLabel}`}>Score:</span>
+            <span
+              className={`${styles.scoreValue} ${score >= 5 ? styles.scoreHigh : styles.scoreLow}`}
+            >
+              {score}
+            </span>
+            <span className={`${styles.scoreMax}`}> / 10</span>
+          </div>
+        )}
 
         <div className={`${styles.skillsSection}`}>
           <div className={`${styles.skillsLabel}`}>Top Skills:</div>
-          <div className={`${styles.skillsText}`}>{normalizedSkills.join(', ')}</div>
+          <div className={`${styles.skillsText}`}>
+            {normalizedSkills.length > 0 ? normalizedSkills.join(', ') : 'No skills listed'}
+          </div>
         </div>
       </div>
     </div>

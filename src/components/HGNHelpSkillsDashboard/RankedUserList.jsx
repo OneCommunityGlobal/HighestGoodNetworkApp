@@ -2,9 +2,12 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ENDPOINTS } from '~/utils/URL';
+import { formatSkillName } from './FilerData.js';
 import styles from './style/RankedUserList.module.css';
 import UserCard from './UserCard';
 
+const TOP_SKILLS_PER_SECTION = 4;
 const PAGE_SIZE = 20;
 
 const extractSkillEntries = skillData => {
@@ -12,24 +15,30 @@ const extractSkillEntries = skillData => {
 
   if (Array.isArray(skillData)) {
     return skillData.flatMap(skill => {
-      if (typeof skill === 'string') return [{ name: skill, rating: undefined }];
+      if (typeof skill === 'string')
+        return [{ name: skill, rating: undefined, section: 'default' }];
       if (skill && typeof skill === 'object') {
         const name = skill.name || skill.skill || skill.label || skill.type;
-        return name ? [{ name, rating: skill.rating ?? skill.score ?? undefined }] : [];
+        return name
+          ? [{ name, rating: skill.rating ?? skill.score ?? undefined, section: 'default' }]
+          : [];
       }
       return [];
     });
   }
 
-  return Object.values(skillData).flatMap(section => {
+  return Object.entries(skillData).flatMap(([sectionName, section]) => {
     if (!section || typeof section !== 'object') return [];
 
     if (Array.isArray(section)) {
       return section.flatMap(skill => {
-        if (typeof skill === 'string') return [{ name: skill, rating: undefined }];
+        if (typeof skill === 'string')
+          return [{ name: skill, rating: undefined, section: sectionName }];
         if (skill && typeof skill === 'object') {
           const name = skill.name || skill.skill || skill.label || skill.type;
-          return name ? [{ name, rating: skill.rating ?? skill.score ?? undefined }] : [];
+          return name
+            ? [{ name, rating: skill.rating ?? skill.score ?? undefined, section: sectionName }]
+            : [];
         }
         return [];
       });
@@ -38,15 +47,16 @@ const extractSkillEntries = skillData => {
     return Object.entries(section).map(([skillName, rating]) => ({
       name: skillName,
       rating: typeof rating === 'number' ? rating : undefined,
+      section: sectionName,
     }));
   });
 };
 
 const normalizeUser = user => {
-  if (Array.isArray(user.topSkills) && user.topSkills.length > 0) return user;
-
   const rawSkills = user.skills;
-  const skillEntries = extractSkillEntries(rawSkills);
+  const skillEntries = Array.isArray(user.topSkills)
+    ? user.topSkills.map(name => ({ name, rating: undefined, section: 'default' }))
+    : extractSkillEntries(rawSkills);
 
   const uniqueSkills = Array.from(
     new Map(
@@ -54,14 +64,33 @@ const normalizeUser = user => {
     ).values(),
   );
 
-  const sortedSkills = uniqueSkills
-    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-    .map(entry => entry.name);
+  // Mirror the backend's strict /ranked rule: a skill only counts for filtering
+  // and search if it's in the top 4 (by score) within its own section, so the
+  // filter stays meaningful instead of matching anyone who rated a skill at all.
+  const skillsBySection = uniqueSkills.reduce((acc, entry) => {
+    const section = entry.section || 'default';
+    if (!acc[section]) acc[section] = [];
+    acc[section].push(entry);
+    return acc;
+  }, {});
+
+  const topSkillNames = Object.values(skillsBySection).flatMap(entries =>
+    entries
+      .slice()
+      .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+      .slice(0, TOP_SKILLS_PER_SECTION)
+      .map(entry => entry.name),
+  );
+
+  // Keep the raw skill keys (used by the filter buttons, which pass FilerData's
+  // keys) separate from the human-readable names search/display should use,
+  // and leave the original `skills` field untouched for other consumers.
+  const displaySkills = topSkillNames.map(formatSkillName);
 
   return {
     ...user,
-    topSkills: sortedSkills,
-    skills: sortedSkills,
+    topSkills: topSkillNames,
+    displaySkills,
   };
 };
 
@@ -69,49 +98,28 @@ function RankedUserList({
   selectedSkills,
   selectedPreferences,
   searchQuery,
-  sortBy,
   sortOrder,
   currentPage,
   setCurrentPage,
 }) {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Load every community member once, then filter/search/sort on the client so all
+  // skills in the filter list work regardless of the backend's skill-key handling.
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
-
+      setError(null);
       try {
-        const params = {};
-        const hasFilters =
-          (selectedSkills && selectedSkills.length > 0) ||
-          (selectedPreferences && selectedPreferences.length > 0) ||
-          (searchQuery && searchQuery.trim().length > 0);
-
-        if (selectedSkills && selectedSkills.length > 0) {
-          params.skills = selectedSkills.join(',');
-        }
-
-        if (selectedPreferences && selectedPreferences.length > 0) {
-          params.preferences = selectedPreferences.join(',');
-        }
-
-        if (searchQuery && searchQuery.trim().length > 0) {
-          params.search = searchQuery.trim();
-        }
-
-        const endpoint = hasFilters
-          ? `${process.env.REACT_APP_APIENDPOINT}/hgnform/ranked`
-          : `${process.env.REACT_APP_APIENDPOINT}/hgnHelp/community`;
-
-        if (!hasFilters && sortBy === 'name' && sortOrder) {
-          params.sortOrder = sortOrder;
-        }
-
-        const response = await axios.get(endpoint, { params });
-        setAllUsers(response.data.map(normalizeUser));
+        const response = await axios.get(ENDPOINTS.HGN_COMMUNITY_MEMBERS);
+        const users = Array.isArray(response.data) ? response.data : [];
+        setAllUsers(users.map(normalizeUser));
       } catch (err) {
+        const detail = err.response?.status ? ` (${err.response.status})` : '';
+        setError(`Unable to load community members. Please try again later.${detail}`);
         setAllUsers([]);
       } finally {
         setLoading(false);
@@ -119,27 +127,43 @@ function RankedUserList({
     };
 
     fetchUsers();
-  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder, sortBy]);
+  }, []);
 
-  const filteredUsers = searchQuery
-    ? allUsers.filter(user => {
-        const name = (user.name || '').toLowerCase();
-        const skills = (user.topSkills || []).join(' ').toLowerCase();
-        const query = searchQuery.toLowerCase();
+  const query = searchQuery.trim().toLowerCase();
 
-        return name.includes(query) || skills.includes(query);
-      })
-    : allUsers;
+  const filteredUsers = allUsers.filter(user => {
+    const userSkills = (user.topSkills || []).map(skill => skill.toLowerCase());
 
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (sortBy === 'score') {
-      const scoreA = typeof a.score === 'number' ? a.score : -Infinity;
-      const scoreB = typeof b.score === 'number' ? b.score : -Infinity;
-
-      if (scoreA < scoreB) return sortOrder === 'desc' ? 1 : -1;
-      if (scoreA > scoreB) return sortOrder === 'desc' ? -1 : 1;
+    if (selectedSkills && selectedSkills.length > 0) {
+      const matchesSkills = selectedSkills.every(skill => userSkills.includes(skill.toLowerCase()));
+      if (!matchesSkills) return false;
     }
 
+    if (selectedPreferences && selectedPreferences.length > 0) {
+      const userPreferences = new Set((user.preferences || []).map(pref => pref.toLowerCase()));
+      const matchesPreferences = selectedPreferences.every(pref =>
+        userPreferences.has(pref.toLowerCase()),
+      );
+      if (!matchesPreferences) return false;
+    }
+
+    if (query) {
+      const name = (user.name || '').toLowerCase();
+      const displaySkills = (user.displaySkills || []).map(skill => skill.toLowerCase());
+      // Match against both the raw skill keys and their human-readable labels,
+      // since the keys (e.g. "UnitTest") don't contain the words a member
+      // would actually type (e.g. "testing").
+      const matchesQuery =
+        name.includes(query) ||
+        userSkills.some(skill => skill.includes(query)) ||
+        displaySkills.some(skill => skill.includes(query));
+      if (!matchesQuery) return false;
+    }
+
+    return true;
+  });
+
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
     const nameA = (a.name || '').toLowerCase();
     const nameB = (b.name || '').toLowerCase();
 
@@ -151,31 +175,21 @@ function RankedUserList({
 
   const totalPages = Math.ceil(sortedUsers.length / PAGE_SIZE);
   const safeCurrentPage = Math.min(Math.max(currentPage, 1), Math.max(totalPages, 1));
-
   const startIndex = (safeCurrentPage - 1) * PAGE_SIZE;
   const paginatedUsers = sortedUsers.slice(startIndex, startIndex + PAGE_SIZE);
 
-  const handlePrevious = () => {
-    setCurrentPage(page => Math.max(page - 1, 1));
-  };
+  const handlePrevious = () => setCurrentPage(page => Math.max(page - 1, 1));
+  const handleNext = () => setCurrentPage(page => Math.min(page + 1, totalPages));
 
-  const handleNext = () => {
-    setCurrentPage(page => Math.min(page + 1, totalPages));
-  };
-
-  if (loading) {
-    return <p className={styles.message}>Loading ranked users...</p>;
-  }
-
-  if (!sortedUsers.length) {
-    return <p className={styles.message}>No users found.</p>;
-  }
+  if (loading) return <p className={`${styles.message}`}>Loading community members...</p>;
+  if (error) return <p className={`${styles.message}`}>{error}</p>;
+  if (!sortedUsers.length) return <p className={`${styles.message}`}>No members found.</p>;
 
   return (
-    <div className={darkMode ? styles.darkMode : ''}>
-      <div className={styles.container}>
+    <div className={darkMode ? `${styles.darkMode}` : ''}>
+      <div className={`${styles.container}`}>
         {paginatedUsers.map(user => (
-          <div key={user._id} className={styles.userWrapper}>
+          <div key={user._id} className={`${styles.userWrapper}`}>
             <UserCard user={user} />
           </div>
         ))}
@@ -214,7 +228,6 @@ RankedUserList.propTypes = {
   selectedSkills: PropTypes.arrayOf(PropTypes.string),
   selectedPreferences: PropTypes.arrayOf(PropTypes.string),
   searchQuery: PropTypes.string,
-  sortBy: PropTypes.string,
   sortOrder: PropTypes.string,
   currentPage: PropTypes.number.isRequired,
   setCurrentPage: PropTypes.func.isRequired,
