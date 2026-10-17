@@ -14,11 +14,22 @@ import hasPermission from '~/utils/permissions';
 
 const TEAM_NAME = 'Team Alpha';
 
+const formatLocalDate = date => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const getWeekStart = () => {
-  const d = new Date();
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
-  return new Date(d.setDate(diff)).toISOString().split('T')[0];
+  const now = new Date();
+  const day = now.getDay();
+  const monday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - day + (day === 0 ? -6 : 1),
+  );
+  return formatLocalDate(monday);
 };
 
 const WEEK_OPTION_OFFSETS = {
@@ -30,11 +41,15 @@ const WEEK_OPTION_OFFSETS = {
 };
 
 const getWeekStartByOffset = weeksAgo => {
-  const d = new Date();
-  const day = d.getDay();
+  const now = new Date();
+  const day = now.getDay();
   const mondayOffset = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + mondayOffset - weeksAgo * 7);
-  return d.toISOString().split('T')[0];
+  const monday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + mondayOffset - weeksAgo * 7,
+  );
+  return formatLocalDate(monday);
 };
 
 // Mock data for fallback
