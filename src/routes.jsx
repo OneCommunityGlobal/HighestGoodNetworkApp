@@ -1091,7 +1091,7 @@ export default (
           component={ResourceUsage}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityid/event"
+          path="/communityportal/activity/:activityid/event-details"
           exact
           component={EventPage}
         />
