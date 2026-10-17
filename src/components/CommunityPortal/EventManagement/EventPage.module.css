@@ -286,9 +286,9 @@
 }
 
 /* Calendar tile highlight - uses global override since react-calendar injects its own classes */
-:global(.react-calendar__tile--active) {
-  background: #0057b8 !important;
-  color: white !important;
+.eventPage :global(.react-calendar__tile--active) {
+  background: #0057b8;
+  color: white;
   font-weight: bold;
 }
 
