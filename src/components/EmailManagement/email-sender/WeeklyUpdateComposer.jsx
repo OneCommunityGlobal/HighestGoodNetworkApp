@@ -529,14 +529,21 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             onDragOver={handleImageDragOver}
             onDragLeave={handleImageDragLeave}
             style={{
-              border: imageDragging ? '3px dashed #3b82f6' : '2px dashed #d1d5db',
+              border: imageDragging
+                ? '3px dashed #3b82f6'
+                : `2px dashed ${darkMode ? '#666' : '#d1d5db'}`,
               borderRadius: '8px',
-              padding: '20px',
+              padding: '30px',
               textAlign: 'center',
-              backgroundColor: imageDragging ? '#eff6ff' : '#f9fafb',
-              transition: 'all 0.2s ease',
-              marginBottom: '10px',
+              backgroundColor: imageDragging
+                ? darkMode
+                  ? '#26374a'
+                  : '#eff6ff'
+                : darkMode
+                ? '#2d2d2d'
+                : '#f9fafb',
               cursor: 'pointer',
+              transition: 'all 0.2s',
             }}
           >
             <input
@@ -550,8 +557,16 @@ const WeeklyUpdateComposer = ({ onClose }) => {
                 }
               }}
             />
-            <FaUpload size={32} color={imageDragging ? '#3b82f6' : '#9ca3af'} />
-            <p style={{ margin: '10px 0', color: imageDragging ? '#3b82f6' : '#6b7280' }}>
+            <FaUpload
+              size={32}
+              color={imageDragging ? '#60a5fa' : darkMode ? '#d1d5db' : '#9ca3af'}
+            />
+            <p
+              style={{
+                margin: '10px 0',
+                color: imageDragging ? '#60a5fa' : darkMode ? '#e5e7eb' : '#6b7280',
+              }}
+            >
               {imageDragging ? 'Drop image here!' : 'Drag & drop an image here'}
             </p>
             <small style={{ color: '#9ca3af' }}>or paste URL below</small>
