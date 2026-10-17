@@ -248,11 +248,19 @@ const VarianceLabel = props => {
   const { x, y, width, value, darkMode, compact } = props;
   const isOver = value?.toString().startsWith('+');
   const theme = getTheme(darkMode);
-  const label = compact
-    ? `${isOver ? '+' : value?.toString().startsWith('-') ? '-' : ''}${formatCompactCost(
-        Number(value?.toString().replace(/[^\d.-]/g, '') || 0),
-      ).replace('$-', '$')}`
-    : value;
+  const valueString = value?.toString() ?? '';
+
+  let sign = '';
+
+  if (isOver) {
+    sign = '+';
+  } else if (valueString.startsWith('-')) {
+    sign = '-';
+  }
+
+  const numericValue = Number(valueString.replace(/[^\d.-]/g, '') || 0);
+
+  const label = compact ? `${sign}${formatCompactCost(numericValue).replace('$-', '$')}` : value;
   return (
     <text
       x={x + width / 2}
@@ -338,9 +346,124 @@ CustomTooltip.propTypes = {
   label: PropTypes.string,
   darkMode: PropTypes.bool,
 };
-export default function ExpenseBarChart({ darkMode }) {
+const ExpenseChartDisplay = ({ data, errorMessage, theme, darkMode }) => {
   const [chartWidth, setChartWidth] = useState(0);
   const isNarrowChart = chartWidth > 0 && chartWidth < 500;
+
+  return (
+    <div style={{ width: '100%', height: '300px' }}>
+      {data.length === 0 && !errorMessage ? (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            color: theme.emptyTextColor,
+            fontStyle: 'italic',
+          }}
+        >
+          No data available for the selected filters.
+        </div>
+      ) : (
+        <div
+          className="expense-cost-chart"
+          style={{ width: '100%', height: '100%', '--expense-axis-fill': theme.axisTick }}
+        >
+          <style>{`
+              .expense-cost-chart .recharts-cartesian-axis-tick-value {
+                fill: var(--expense-axis-fill) !important;
+              }
+            `}</style>
+          <ResponsiveContainer width="100%" height="100%" onResize={width => setChartWidth(width)}>
+            <BarChart
+              data={data}
+              margin={{
+                top: isNarrowChart ? 38 : 25,
+                right: isNarrowChart ? 2 : 10,
+                left: isNarrowChart ? 0 : 52,
+                bottom: 0,
+              }}
+              barGap={isNarrowChart ? 3 : 18}
+              barCategoryGap={isNarrowChart ? '8%' : '28%'}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} vertical={false} />
+              <XAxis
+                dataKey="project"
+                stroke={theme.axisStroke}
+                tick={{
+                  fontSize: isNarrowChart ? 10 : 12,
+                  fill: theme.axisTick,
+                  fontWeight: 500,
+                }}
+                tickFormatter={value => (isNarrowChart ? value.replace(/^Project\s+/, '') : value)}
+                interval={0}
+                tickMargin={8}
+              />
+              <YAxis
+                stroke={theme.axisStroke}
+                tick={{ fontSize: isNarrowChart ? 10 : 12, fill: theme.axisTick }}
+                axisLine
+                tickLine
+                width={isNarrowChart ? 52 : 78}
+                tickFormatter={value => `$${value.toLocaleString()}`}
+                label={{
+                  value: 'Cost ($)',
+                  angle: -90,
+                  position: 'insideLeft',
+                  offset: isNarrowChart ? -12 : -34,
+                  fill: theme.axisTick,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  style: { textAnchor: 'middle' },
+                }}
+              />
+              <Tooltip
+                content={<CustomTooltip darkMode={darkMode} />}
+                cursor={{ fill: theme.cursorFill }}
+                wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
+                contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
+              />
+              <Bar
+                dataKey="planned"
+                fill="#4285F4"
+                name="Planned"
+                radius={[3, 3, 0, 0]}
+                maxBarSize={48}
+              >
+                <LabelList
+                  dataKey="planned"
+                  content={<PlannedCostLabel darkMode={darkMode} compact={isNarrowChart} />}
+                />
+              </Bar>
+              <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]} maxBarSize={48}>
+                <LabelList
+                  dataKey="varianceLabel"
+                  content={<VarianceLabel darkMode={darkMode} compact={isNarrowChart} />}
+                />
+                {data.map(entry => (
+                  <Cell
+                    key={`cell-${entry.project}`}
+                    fill={entry.variance > 0 ? theme.overBudget : theme.underBudget}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </div>
+  );
+};
+
+ExpenseChartDisplay.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  errorMessage: PropTypes.string.isRequired,
+  theme: PropTypes.objectOf(PropTypes.string).isRequired,
+  darkMode: PropTypes.bool,
+};
+
+export default function ExpenseBarChart({ darkMode }) {
   const [projectId, setProjectId] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [startDate, setStartDate] = useState('');
@@ -548,114 +671,12 @@ export default function ExpenseBarChart({ darkMode }) {
           Actual (Under Budget)
         </span>
       </div>
-      <div style={{ width: '100%', height: '300px' }}>
-        {data.length === 0 && !errorMessage ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-              color: theme.emptyTextColor,
-              fontStyle: 'italic',
-            }}
-          >
-            No data available for the selected filters.
-          </div>
-        ) : (
-          <div
-            className="expense-cost-chart"
-            style={{ width: '100%', height: '100%', '--expense-axis-fill': theme.axisTick }}
-          >
-            <style>{`
-              .expense-cost-chart .recharts-cartesian-axis-tick-value {
-                fill: var(--expense-axis-fill) !important;
-              }
-            `}</style>
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-              onResize={width => setChartWidth(width)}
-            >
-              <BarChart
-                data={data}
-                margin={{
-                  top: isNarrowChart ? 38 : 25,
-                  right: isNarrowChart ? 2 : 10,
-                  left: isNarrowChart ? 0 : 52,
-                  bottom: 0,
-                }}
-                barGap={isNarrowChart ? 3 : 18}
-                barCategoryGap={isNarrowChart ? '8%' : '28%'}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} vertical={false} />
-                <XAxis
-                  dataKey="project"
-                  stroke={theme.axisStroke}
-                  tick={{
-                    fontSize: isNarrowChart ? 10 : 12,
-                    fill: theme.axisTick,
-                    fontWeight: 500,
-                  }}
-                  tickFormatter={value =>
-                    isNarrowChart ? value.replace(/^Project\s+/, '') : value
-                  }
-                  interval={0}
-                  tickMargin={8}
-                />
-                <YAxis
-                  stroke={theme.axisStroke}
-                  tick={{ fontSize: isNarrowChart ? 10 : 12, fill: theme.axisTick }}
-                  axisLine
-                  tickLine
-                  width={isNarrowChart ? 52 : 78}
-                  tickFormatter={value => `$${value.toLocaleString()}`}
-                  label={{
-                    value: 'Cost ($)',
-                    angle: -90,
-                    position: 'insideLeft',
-                    offset: isNarrowChart ? -12 : -34,
-                    fill: theme.axisTick,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    style: { textAnchor: 'middle' },
-                  }}
-                />
-                <Tooltip
-                  content={<CustomTooltip darkMode={darkMode} />}
-                  cursor={{ fill: theme.cursorFill }}
-                  wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
-                  contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
-                />
-                <Bar
-                  dataKey="planned"
-                  fill="#4285F4"
-                  name="Planned"
-                  radius={[3, 3, 0, 0]}
-                  maxBarSize={48}
-                >
-                  <LabelList
-                    dataKey="planned"
-                    content={<PlannedCostLabel darkMode={darkMode} compact={isNarrowChart} />}
-                  />
-                </Bar>
-                <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]} maxBarSize={48}>
-                  <LabelList
-                    dataKey="varianceLabel"
-                    content={<VarianceLabel darkMode={darkMode} compact={isNarrowChart} />}
-                  />
-                  {data.map(entry => (
-                    <Cell
-                      key={`cell-${entry.project}`}
-                      fill={entry.variance > 0 ? theme.overBudget : theme.underBudget}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </div>
+      <ExpenseChartDisplay
+        data={data}
+        errorMessage={errorMessage}
+        theme={theme}
+        darkMode={darkMode}
+      />
     </div>
   );
 }

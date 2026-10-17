@@ -105,6 +105,25 @@
   color-scheme: dark;
 }
 
+/* Override library input styles only inside the dark financial chart. */
+.darkMode .datePickerWrapper input.dateInput {
+  background-color: #253342;
+  color: #f8fafc;
+  border-color: #94a3b8;
+  color-scheme: dark;
+  -webkit-text-fill-color: #f8fafc;
+}
+
+.darkMode .datePickerWrapper input.dateInput::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+.darkMode .datePickerWrapper input.dateInput:focus-visible {
+  border-color: #e8a71c;
+  box-shadow: 0 0 0 2px rgb(232 167 28 / 30%);
+}
+
 .darkDateInput::placeholder {
   color: #cbd5e1;
   opacity: 1;

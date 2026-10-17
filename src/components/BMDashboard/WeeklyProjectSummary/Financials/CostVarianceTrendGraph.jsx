@@ -211,14 +211,76 @@ const getCellColor = (variance, darkMode) => {
   return darkMode ? '#4ade80' : '#2ecc71';
 };
 
+const VarianceChart = ({ chartData, darkMode, textColor }) => {
+  const [chartWidth, setChartWidth] = useState(0);
+  const isNarrowChart = chartWidth > 0 && chartWidth < 500;
+  const tooltipCursorFill = darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+
+  return (
+    <div className={styles.chartWrapper}>
+      <div
+        className={`${styles.chartContainer} cost-variance-trend-chart`}
+        style={{ '--trend-axis-fill': textColor }}
+      >
+        <style>{`
+          .cost-variance-trend-chart .recharts-cartesian-axis-tick-value {
+            fill: var(--trend-axis-fill) !important;
+          }
+        `}</style>
+        {chartData.length === 0 ? (
+          <div className={styles.emptyState}>No data available for the selected filters.</div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%" onResize={width => setChartWidth(width)}>
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 20,
+                right: isNarrowChart ? 2 : 10,
+                left: isNarrowChart ? 0 : 10,
+                bottom: 20,
+              }}
+            >
+              <XAxis
+                dataKey="date"
+                stroke={darkMode ? '#475569' : '#94a3b8'}
+                tick={{ fontSize: 11, fill: textColor }}
+                tickFormatter={formatTickDate}
+              />
+              <YAxis
+                stroke={darkMode ? '#475569' : '#94a3b8'}
+                tick={{ fontSize: 11, fill: textColor }}
+                tickFormatter={formatTickValue}
+              />
+              <Tooltip
+                content={<CustomTooltip darkMode={darkMode} />}
+                cursor={{ fill: tooltipCursorFill }}
+              />
+              <ReferenceLine y={0} stroke={darkMode ? '#64748b' : '#94a3b8'} />
+              <Bar dataKey="variance" radius={[4, 4, 4, 4]}>
+                {chartData.map(entry => (
+                  <Cell key={`cell-${entry.date}`} fill={getCellColor(entry.variance, darkMode)} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+    </div>
+  );
+};
+
+VarianceChart.propTypes = {
+  chartData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  textColor: PropTypes.string.isRequired,
+};
+
 export default function CostVarianceTrendGraph() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [data, setData] = useState([]);
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const textColor = darkMode ? '#e2e8f0' : '#475569';
-  const [chartWidth, setChartWidth] = useState(0);
-  const isNarrowChart = chartWidth > 0 && chartWidth < 500;
 
   const [projectId, setProjectId] = useState('ALL');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
@@ -256,7 +318,6 @@ export default function CostVarianceTrendGraph() {
   const containerClass = `${styles.varianceContainer} ${darkMode ? styles.darkMode : ''}`;
   const dateInputClass = `${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`;
   const calendarClass = darkMode ? 'paid-labor-cost-dark-calendar' : '';
-  const tooltipCursorFill = darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
 
   if (initialLoading) {
     return (
@@ -354,62 +415,7 @@ export default function CostVarianceTrendGraph() {
         </span>
       </div>
 
-      <div className={styles.chartWrapper}>
-        <div
-          className={`${styles.chartContainer} cost-variance-trend-chart`}
-          style={{ '--trend-axis-fill': textColor }}
-        >
-          <style>{`
-          .cost-variance-trend-chart .recharts-cartesian-axis-tick-value {
-            fill: var(--trend-axis-fill) !important;
-          }
-        `}</style>
-          {chartData.length === 0 ? (
-            <div className={styles.emptyState}>No data available for the selected filters.</div>
-          ) : (
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-              onResize={width => setChartWidth(width)}
-            >
-              <BarChart
-                data={chartData}
-                margin={{
-                  top: 20,
-                  right: isNarrowChart ? 2 : 10,
-                  left: isNarrowChart ? 0 : 10,
-                  bottom: 20,
-                }}
-              >
-                <XAxis
-                  dataKey="date"
-                  stroke={darkMode ? '#475569' : '#94a3b8'}
-                  tick={{ fontSize: 11, fill: textColor }}
-                  tickFormatter={formatTickDate}
-                />
-                <YAxis
-                  stroke={darkMode ? '#475569' : '#94a3b8'}
-                  tick={{ fontSize: 11, fill: textColor }}
-                  tickFormatter={formatTickValue}
-                />
-                <Tooltip
-                  content={<CustomTooltip darkMode={darkMode} />}
-                  cursor={{ fill: tooltipCursorFill }}
-                />
-                <ReferenceLine y={0} stroke={darkMode ? '#64748b' : '#94a3b8'} />
-                <Bar dataKey="variance" radius={[4, 4, 4, 4]}>
-                  {chartData.map(entry => (
-                    <Cell
-                      key={`cell-${entry.date}`}
-                      fill={getCellColor(entry.variance, darkMode)}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-      </div>
+      <VarianceChart chartData={chartData} darkMode={darkMode} textColor={textColor} />
     </div>
   );
 }

@@ -29,6 +29,13 @@ function formatCurrency(value) {
   return `$${numericValue.toLocaleString()}`;
 }
 
+function formatCompactCurrency(value) {
+  const amount = Number(value) || 0;
+  if (Math.abs(amount) >= 1000000) return `$${(amount / 1000000).toFixed(1).replace(/\.0$/, '')}m`;
+  if (Math.abs(amount) >= 1000) return `$${(amount / 1000).toFixed(0)}k`;
+  return `$${amount}`;
+}
+
 function getBudgetStatus(variance) {
   if (variance > 0) return 'Over Budget';
   if (variance < 0) return 'Under Budget';
@@ -283,40 +290,38 @@ ActualVarianceLabel.defaultProps = {
   item: null,
 };
 
-function buildChartContent({ loading, isFiltering, hasData, chartDataWithVariance, darkMode }) {
-  if (loading || isFiltering) {
-    return (
-      <div className={styles.chartState}>
-        <Spinner color="primary" size="sm" />
-        <span>Updating chart...</span>
-      </div>
-    );
-  }
+function ChartVisualization({ chartDataWithVariance, darkMode }) {
+  const [chartWidth, setChartWidth] = useState(0);
+  const compact = chartWidth > 0 && chartWidth < 420;
 
-  if (hasData) {
-    return (
-      <div className={styles.chartContainer}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartDataWithVariance}
-            margin={{ top: 46, right: 16, left: 40, bottom: 8 }}
-            barGap={32}
-            barCategoryGap="32%"
+  return (
+    <div className={styles.chartContainer}>
+      <ResponsiveContainer width="100%" height="100%" onResize={width => setChartWidth(width)}>
+        <BarChart
+          data={chartDataWithVariance}
+          margin={
+            compact
+              ? { top: 52, right: 4, left: 0, bottom: 6 }
+              : { top: 46, right: 16, left: 40, bottom: 8 }
+          }
+          barGap={compact ? 6 : 32}
+          barCategoryGap={compact ? '12%' : '32%'}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#aab4c2' : '#e0e0e0'} />
+
+          <XAxis
+            dataKey="category"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: darkMode ? '#e2e8f0' : '#334155', fontSize: 12 }}
+          />
+
+          <YAxis
+            tick={{ fill: darkMode ? '#f8fafc' : '#334155', fontSize: compact ? 10 : 12 }}
+            tickFormatter={compact ? formatCompactCurrency : formatCurrency}
+            width={compact ? 48 : 100}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#aab4c2' : '#e0e0e0'} />
-
-            <XAxis
-              dataKey="category"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: darkMode ? '#e2e8f0' : '#334155', fontSize: 12 }}
-            />
-
-            <YAxis
-              tick={{ fill: darkMode ? '#e2e8f0' : '#334155', fontSize: 12 }}
-              tickFormatter={formatCurrency}
-              width={100}
-            >
+            {!compact && (
               <Label
                 value="Cost ($)"
                 angle={-90}
@@ -328,37 +333,42 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
                   fontWeight: 700,
                 }}
               />
-            </YAxis>
+            )}
+          </YAxis>
 
-            <Tooltip
-              cursor={{ fill: 'transparent' }}
-              allowEscapeViewBox={{ x: true, y: true }}
-              content={<VarianceTooltip darkMode={darkMode} />}
-              wrapperStyle={{ pointerEvents: 'none', zIndex: 12 }}
-            />
+          <Tooltip
+            cursor={{ fill: 'transparent' }}
+            allowEscapeViewBox={{ x: false, y: false }}
+            position={compact ? { x: 0, y: 90 } : undefined}
+            content={<VarianceTooltip darkMode={darkMode} />}
+            wrapperStyle={{ pointerEvents: 'none', zIndex: 12 }}
+          />
 
-            <Legend
-              verticalAlign="top"
-              height={36}
-              iconSize={8}
-              formatter={value => (
-                <span style={{ color: darkMode ? '#f8fafc' : '#334155', fontWeight: 600 }}>
-                  {value}
-                </span>
-              )}
-            />
+          <Legend
+            verticalAlign="top"
+            height={36}
+            iconSize={8}
+            formatter={value => (
+              <span style={{ color: darkMode ? '#f8fafc' : '#334155', fontWeight: 600 }}>
+                {value}
+              </span>
+            )}
+          />
 
-            <Bar dataKey="plannedCost" name="Planned" fill={PLANNED_BAR_COLOR} maxBarSize={30}>
+          <Bar dataKey="plannedCost" name="Planned" fill={PLANNED_BAR_COLOR} maxBarSize={30}>
+            {!compact && (
               <LabelList
                 dataKey="plannedCost"
                 content={<PlannedValueLabel darkMode={darkMode} />}
               />
-            </Bar>
+            )}
+          </Bar>
 
-            <Bar dataKey="actualCost" name="Actual" fill={UNDER_BUDGET_COLOR} maxBarSize={30}>
-              {chartDataWithVariance.map(entry => (
-                <Cell key={`actual-cell-${entry.category}`} fill={getActualBarColor(entry)} />
-              ))}
+          <Bar dataKey="actualCost" name="Actual" fill={UNDER_BUDGET_COLOR} maxBarSize={30}>
+            {chartDataWithVariance.map(entry => (
+              <Cell key={`actual-cell-${entry.category}`} fill={getActualBarColor(entry)} />
+            ))}
+            {!compact && (
               <LabelList
                 dataKey="actualCost"
                 content={labelProps => (
@@ -369,13 +379,30 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
                   />
                 )}
               />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+            )}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+ChartVisualization.propTypes = {
+  chartDataWithVariance: PropTypes.arrayOf(PropTypes.object).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
+
+function buildChartContent({ loading, isFiltering, hasData, chartDataWithVariance, darkMode }) {
+  if (loading || isFiltering) {
+    return (
+      <div className={styles.chartState}>
+        <Spinner color="primary" size="sm" />
+        <span>Updating chart...</span>
       </div>
     );
   }
-
+  if (hasData)
+    return <ChartVisualization chartDataWithVariance={chartDataWithVariance} darkMode={darkMode} />;
   return <div className={styles.chartState}>No data available for the selected filters.</div>;
 }
 

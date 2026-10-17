@@ -314,11 +314,12 @@
   border-top-color: #64748b;
 }
 
-.darkMode :global(.recharts-cartesian-axis-tick-value),
+.darkMode :global(.recharts-cartesian-axis-tick-value) {
+  fill: #f8fafc;
+}
 .darkMode :global(.recharts-legend-item-text),
 .darkMode :global(.recharts-label) {
-  fill: #e2e8f0;
-  color: #e2e8f0 !important;
+  fill: #f8fafc;
 }
 
 .darkMode .totalOverrunBadge {
@@ -404,4 +405,51 @@
   .totalOnTrackBadge {
     align-self: flex-start;
   }
+}
+
+/* Narrow financial-tracking cards: preserve chart space and keep tooltip inside. */
+.chartContainer {
+  min-width: 0;
+  position: relative;
+}
+
+.customTooltip {
+  box-sizing: border-box;
+  max-width: min(210px, 100%);
+  min-width: 0;
+}
+
+@media (width <= 480px) {
+  .componentContainer {
+    min-width: 0;
+    padding: 8px 2px;
+  }
+
+  .chartContainer,
+  .chartState {
+    height: 300px;
+  }
+
+  .selectorGroup {
+    min-width: 0;
+  }
+
+  .varianceCardsRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .customTooltip {
+    padding: 8px;
+    font-size: 0.72rem;
+  }
+}
+
+/* App-wide Recharts axis rules can override the SVG tick prop in dark mode. */
+.darkMode .chartContainer :global(.recharts-cartesian-axis-tick-value) {
+  fill: #f8fafc !important;
+  color: #f8fafc;
+}
+
+.darkMode .chartContainer :global(.recharts-label) {
+  fill: #f8fafc;
 }

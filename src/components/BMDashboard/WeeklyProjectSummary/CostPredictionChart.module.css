@@ -129,3 +129,61 @@
 .resetButton:disabled {
   cursor: not-allowed;
 }
+
+/* Keep narrow cards usable without compressing the plot into a thin strip. */
+.titleContainer {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+:global(.dark-mode) .titleContainer :global(.recharts-cartesian-axis-tick-value) {
+  fill: #f8fafc !important;
+}
+
+:global(.dark-mode) .titleContainer :global(.recharts-label) {
+  fill: #f8fafc;
+}
+
+.legendList {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+@media (width <= 480px) {
+  .titleContainer {
+    padding: 10px 6px;
+  }
+
+  .title {
+    font-size: 17px;
+  }
+
+  .filterBar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .filterGroup,
+  .control,
+  .dateInput,
+  .resetButton {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filterGroupSpacerLabel {
+    display: none;
+  }
+
+  .legendList {
+    gap: 6px 10px;
+    padding: 6px 2px;
+    font-size: 10px;
+  }
+
+  .legendListItem {
+    gap: 4px;
+  }
+}
