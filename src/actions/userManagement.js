@@ -299,10 +299,19 @@ export const updateUserPauseStatus = (user, status, reactivationDate) => {
  * @param{*} user - the user whose rehireable status is to be updated
  * @param{boolean} isRehireable - the new rehireable status
  */
-export const updateRehireableStatus = (user, isRehireable) => {
+export const updateRehireableStatus = (user, isRehireable, notRehireableReason = '') => {
   return async dispatch => {
     const userProfile = { ...user, isRehireable };
+    const reason = typeof notRehireableReason === 'string' ? notRehireableReason.trim() : '';
     const requestData = { isRehireable };
+
+    if (!isRehireable && reason) {
+      userProfile.notRehireableReason = reason;
+      requestData.notRehireableReason = reason;
+    } else {
+      delete userProfile.notRehireableReason;
+      if (!isRehireable) requestData.notRehireableReason = '';
+    }
 
     await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
     dispatch(userProfileUpdateAction(userProfile));
