@@ -129,15 +129,18 @@
   color: #f0f0f0;
 }
 
+/* #2563eb keeps white text at 5.17:1 against WCAG AA's 4.5:1 floor for this
+   20px/weight-400 size; the lighter #3b82f6 this replaced only reached
+   3.68:1. See PR #5546 review discussion. */
 .promo_table_container.dark .review_btn,
 .promo_table_container.dark .process_promo_btn {
-  background-color: #3b82f6;
+  background-color: #2563eb;
   color: white;
 }
 
 .promo_table_container.dark .review_btn:hover,
 .promo_table_container.dark .process_promo_btn:hover {
-  background-color: #2563eb;
+  background-color: #1d4ed8;
 }
 
 .promo_table_container.dark .custom_circular_checkbox {
