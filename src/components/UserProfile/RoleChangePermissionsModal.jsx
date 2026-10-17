@@ -94,7 +94,7 @@ function RoleChangePermissionsModal(props) {
 
       // Ensures a change log with reason and user's modified permissions when their role is changed
       const permissionData = {
-        reason: `Role Changed to **${selectedRole}**.`,
+        reason: `Role Changed to **${selectedRole}** from **${userProfile?.role}**.`,
         permissions: updated.permissions,
         requestor: requestor,
       };

@@ -1008,6 +1008,24 @@ setUpdatedTasks(prev => {
   }
 
   try {
+    // Ensures a change log with reason and user's modified permissions when their role is changed
+    if(originalUserProfile.role !== userProfileToUpdate.role) {
+      const userId = userProfileToUpdate?._id;
+      const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
+      const frontPermissions = userProfileToUpdate?.permissions.frontPermissions;
+      const removedDefaultPermissions = userProfileToUpdate?.permissions.removedDefaultPermissions;
+      const permissions = {
+          frontPermissions: frontPermissions,
+          removedDefaultPermissions: removedDefaultPermissions,
+      };
+      const requestor = props.auth.user;
+      const permissionData = {
+        reason: `Role Changed from to **${userProfileToUpdate?.role}** **${originalUserProfile?.role}**.`,
+        permissions: permissions,
+        requestor: requestor,
+      };
+      await axios.patch(permissionURL, permissionData);
+    }
     await props.updateUserProfile(userProfileToUpdate);
     clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
@@ -1688,7 +1706,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '1' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1705,7 +1723,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '2' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1722,7 +1740,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '3' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1739,7 +1757,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '4' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1757,7 +1775,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '5' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1770,7 +1788,7 @@ setUpdatedTasks(prev => {
             </div>
             <TabContent
               activeTab={activeTab}
-              className={`tab-content profile-tab ${darkMode ? 'bg-yinmn-blue' : ''}`}
+              className={`tab-content profile-tab ${darkMode ? 'darkMode bg-yinmn-blue' : ''}`}
               id="myTabContent"
               style={{ border: 0 }}
             >
