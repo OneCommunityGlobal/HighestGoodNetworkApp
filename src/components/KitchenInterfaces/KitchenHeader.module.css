@@ -42,7 +42,7 @@
 .brandSubtitle {
   font-size: 11px;
   color: #888;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.5px;
 }
 
@@ -58,7 +58,7 @@
   color: #555;
   font-size: 14px;
   font-weight: 500;
-  padding: 8px 16px;
+  padding: 8px 10px;
   border-radius: 20px;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -72,8 +72,8 @@
 
 /* Active State */
 .activeLink {
-  background-color: #e6f4ea; /* Light green background */
-  color: #2e7d32; /* Darker green text */
+  background-color: #f0fdf4; /* Light green background */
+  color: #16a34a; /* Darker green text */
   font-weight: 600;
 }
 
@@ -106,7 +106,7 @@
 
 
 /* Responsive Adjustments */
-@media (width <= 900px) {
+@media (width <= 1100px) {
   .headerContainer {
     padding: 0 16px;
     height: 64px; /* Fixed height again */
@@ -191,7 +191,7 @@
 }
 
 .darkMode .activeLink {
-  background-color: #2e7d32;
+  background-color: #16a34a;
   color: #fff;
 }
 
@@ -203,9 +203,20 @@
   color: #fff;
 }
 
-@media (width <= 900px) {
+@media (width <= 1100px) {
   .darkMode .navContainer {
     background-color: #1c2541;
     box-shadow: 0 4px 6px rgb(0 0 0 / 50%);
   }
+}
+
+.logoTile {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #16a34a;
+  color: white;
+  flex-shrink: 0;
 }

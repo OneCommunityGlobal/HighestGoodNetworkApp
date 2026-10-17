@@ -43,6 +43,7 @@ import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityL
 import EquipmentUpdateLog from './components/BMDashboard/Equipment/EHistory';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import OrdersPage from './components/KitchenInventory/Orders/OrdersPage';
+import PreservationEfficiency from './components/KitchenandInventory/Reports/PreservationEfficiency';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
@@ -1104,6 +1105,16 @@ export default (
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
         {/* ----- Kitchen and Inventory Portal Routes ----- */}
+        <Redirect
+          exact
+          from="/kitchenandinventory/reports"
+          to="/kitchenandinventory/reports/preservation-efficiency"
+        />
+        <ProtectedRoute
+          path="/kitchenandinventory/reports/preservation-efficiency"
+          exact
+          component={PreservationEfficiency}
+        />
         <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
         <ProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
         <ProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />

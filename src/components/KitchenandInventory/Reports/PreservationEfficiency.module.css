@@ -1,0 +1,313 @@
+.page {
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  background: #f9fafb;
+  color: #111827;
+  font-family: Inter, 'Nunito Sans', sans-serif;
+  font-size: 14px;
+}
+
+.pageHeader,
+.controls,
+.metricCard,
+.panel h3,
+.chips li {
+  display: flex;
+  align-items: center;
+}
+
+.pageHeader {
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.page h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.description {
+  margin: 0;
+  color: #6b7280;
+}
+
+.controls {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.controls button,
+.controls select {
+  min-height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  color: #374151;
+  font: inherit;
+}
+
+.controls button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.controls select {
+  background: #f3f4f6;
+  border-color: transparent;
+}
+
+.tabs {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 4px;
+  margin-bottom: 24px;
+  border-radius: 10px;
+  background: #f3f4f6;
+}
+
+.tabs button {
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #4b5563;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tabs button[aria-current] {
+  background: #fff;
+  color: #111827;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metricCard,
+.impactCard {
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.metricCard {
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.metricCard h2 {
+  margin: 0 0 8px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.metricCard p {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.purple {
+  color: #9333ea;
+}
+
+.green {
+  color: #16a34a;
+}
+
+.amber {
+  color: #d97706;
+}
+
+.impactCard > h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.itemsTitle {
+  margin: 24px 0 10px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0 0 24px;
+  list-style: none;
+}
+
+.chips li {
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #f3f4f6;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.panel {
+  padding: 24px;
+  border: 1px solid;
+  border-radius: 8px;
+}
+
+.panel h3 {
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.panel p {
+  color: #4b5563;
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+.achievement {
+  background: #faf5ff;
+  border-color: #e9d5ff;
+}
+
+.achievement h3 svg {
+  color: #9333ea;
+}
+
+.environment {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.environment h3 svg {
+  color: #16a34a;
+}
+
+.panel dl {
+  margin: 0;
+}
+
+.panel dt {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.panel dd {
+  margin: 0;
+}
+
+.achievementMetrics {
+  display: flex;
+  gap: 48px;
+}
+
+.achievementMetrics > div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+}
+
+.achievementMetrics dd {
+  color: #9333ea;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.environmentMetrics > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.environmentMetrics dd {
+  font-weight: 600;
+}
+
+.page button:focus-visible,
+.page select:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 3px;
+}
+
+@media (width <= 1100px) {
+  .pageHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 700px) {
+  .panels {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 480px) {
+  .page {
+    padding: 16px;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .impactCard,
+  .panel {
+    padding: 18px;
+  }
+
+  .controls {
+    gap: 8px;
+  }
+}
+
+@media print {
+  .controls,
+  .tabs {
+    display: none;
+  }
+
+  .page {
+    padding: 0;
+    min-height: auto;
+  }
+
+  .metricCard,
+  .impactCard,
+  .panel {
+    break-inside: avoid;
+  }
+}
