@@ -15,10 +15,12 @@ import { useHistory, useLocation } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import styles from './Announcements.module.css';
+
 import EmailPanel from './platforms/email';
 import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
 import SocialMediaComposer from './platforms/social/SocialMediaComposer';
+import MediumAutoPoster from './platforms/medium';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -245,6 +247,9 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'reddit':
                 PlatformComposer = RedditAutoPoster;
+                break;
+              case 'medium':
+                PlatformComposer = MediumAutoPoster;
                 break;
               default:
                 PlatformComposer = SocialMediaComposer;
