@@ -6,6 +6,8 @@
   3. Header <-> body alignment, dark mode header, small-device layout
   4. Full task names (wrap instead of truncating)
   5. Tasks column minimum width (no letter-by-letter wrapping)
+  6. Header clock icon colors in dark mode (class-based, beats body.dark-mode * !important)
+  7. Column headers stay visible at narrow widths
 */
 
 /* stylelint-disable  */
@@ -839,6 +841,9 @@
 }
 
 @media (width <= 768px) {
+  /* NOTE: .pc-component is no longer applied to the table header, so the column
+     headers stay visible at narrow widths. It is kept here for any other desktop-only
+     element that still uses it. */
   .pc-component {
     display: none;
   }
@@ -1186,6 +1191,12 @@
   color: #fff;
 }
 
+/* Header clock icons / legend colors.
+   Classes (not inline styles) so they can use !important and beat
+   `body.dark-mode * { color: #fff !important }`. */
+/* Committed hours have no color in light mode (the row's number is plain text),
+   so .hoursCommitted only sets a color in dark mode (see .darkContainer rules below). */
+
 .hoursDone {
   color: green !important;
 }
@@ -1220,12 +1231,27 @@
   border-color: #17a2b8;
 }
 
+/* Two selectors + !important so these outrank body.dark-mode * { color: #fff !important }.
+   Values match the row icons (.hoursCommittedDark / .hoursCompletedDark / .hoursRemainingDark). */
+.darkContainer .hoursCommitted {
+  color: #339cff !important;
+}
+
 .darkContainer .hoursDone {
-  color: #4cd964 !important;
+  color: #5cd65c !important;
 }
 
 .darkContainer .hoursLeft {
   color: #ff6b6b !important;
+}
+
+/* FontAwesome renders <svg><path fill="currentColor">. `body.dark-mode * { color: #fff !important }`
+   also matches the <path> itself, so coloring only the <svg> is not enough: the path keeps its own
+   white color. Make the path inherit the svg's class color. */
+.darkContainer .hoursCommitted path,
+.darkContainer .hoursDone path,
+.darkContainer .hoursLeft path {
+  color: inherit !important;
 }
 
 /* badge ring should match the dark row, not white */
@@ -1303,6 +1329,52 @@
   .team-member-task-review-button > *,
   .team-member-task-review-button button {
     max-width: 220px !important;
+  }
+
+  /* ---- keep column headers visible when rows stack into cards ----
+     The global `.team-member-tasks tr/.table { display: block }` rule above would
+     stack the header cells vertically, so the header rows are turned back into
+     flex rows here. */
+  .task-table > thead > tr,
+  .task-table > thead .table tr {
+    display: flex;
+    width: 100%;
+  }
+
+  .task-table > thead > tr > th {
+    flex: 1 1 50%;
+    padding: 0 !important;
+  }
+
+  .task-table > thead .table {
+    width: 100%;
+    margin: 0;
+  }
+
+  .task-table > thead th {
+    font-size: 0.75rem;
+    padding: 2px 4px !important;
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  .task-table > thead .header-col-status {
+    flex: 1 1 33.333%;
+    width: auto;
+  }
+
+  .task-table > thead .header-col-member {
+    flex: 1 1 66.667%;
+    width: auto;
+  }
+
+  .task-table > thead .task-align,
+  .task-table > thead .team-task-progress,
+  .task-table > thead .status-align {
+    flex: 1 1 33.333%;
+    width: auto;
+    min-width: 0;
+    max-width: none;
   }
 }
 

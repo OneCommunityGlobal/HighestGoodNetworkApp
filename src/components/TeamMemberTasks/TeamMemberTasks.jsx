@@ -669,9 +669,14 @@ const TeamMemberTasks = React.memo(props => {
             Only the outer sticky <thead> carries darkStickyHeader. The inner
             <thead>/<th> elements take their colors from `.dark-teammember-row th`
             so there are no mixed navy / blue patches in dark mode.
+
+            NOTE: this <thead> intentionally does NOT use the `pc-component` class.
+            That class is display:none at <= 768px, which hid the column headers on
+            narrow windows. The headers now stay visible and get a compact layout
+            from the "Small devices" media query in style.module.css.
           */}
           <thead
-            className={[styles['pc-component'], darkMode ? styles.darkStickyHeader : ''].join(' ')}
+            className={darkMode ? styles.darkStickyHeader : ''}
             style={{ position: 'sticky', top: 0 }}
           >
             <tr>
@@ -695,21 +700,26 @@ const TeamMemberTasks = React.memo(props => {
                       <th className={styles['header-col-member']}>
                         <div className={styles['team-clocks-header-inner']}>
                           <span>Team Member</span>
+                          {/*
+                            Icon colors come from classes (not inline styles) because
+                            `body.dark-mode * { color: #fff !important }` overrides inline
+                            colors. The classes carry !important plus an extra selector.
+                          */}
                           <div className={styles['team-clocks-icons-row']}>
                             <FontAwesomeIcon
-                              style={{ color: darkMode ? 'lightgray' : '' }}
+                              className={styles.hoursCommitted}
                               icon={faClock}
                               title="Weekly Committed Hours"
                             />
                             /
                             <FontAwesomeIcon
-                              style={{ color: 'green' }}
+                              className={styles.hoursDone}
                               icon={faClock}
                               title="Total Hours Completed this Week"
                             />
                             /
                             <FontAwesomeIcon
-                              style={{ color: 'red' }}
+                              className={styles.hoursLeft}
                               icon={faClock}
                               title="Total Remaining Hours"
                             />
@@ -757,7 +767,7 @@ const TeamMemberTasks = React.memo(props => {
                 >
                   <thead>
                     <tr>
-                      <th className={styles['task-align']}>Tasks(s)</th>
+                      <th className={styles['task-align']}>Task(s)</th>
                       <th className={styles['team-task-progress']}>Progress</th>
                       {/*
                         Status header is unconditional so the header and body always
