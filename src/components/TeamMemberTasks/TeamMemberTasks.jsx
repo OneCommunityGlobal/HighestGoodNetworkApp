@@ -647,18 +647,45 @@ const TeamMemberTasks = React.memo(props => {
             darkMode ? styles['dark-teammember-row'] : styles['light-teammember-row'],
           ].join(' ')}
         >
+          {/*
+            The outer table is table-layout: fixed with 6 columns. Without a colgroup
+            every column gets 1/6 of the width, so the Tasks/Progress/Status block
+            (colSpan 3) only gets 50% and the Tasks column ends up ~79px wide.
+            This colgroup gives the task block 65% and the left block 35%, keeping the
+            1/3 : 2/3 ratio inside the left block so header and body stay aligned.
+          */}
+          <colgroup className={styles['task-colgroup']}>
+            {/* left block: User Status + Team Member */}
+            <col style={{ width: '9%' }} />
+            <col style={{ width: '13%' }} />
+            <col style={{ width: '13%' }} />
+            {/* right block: Tasks / Progress / Status */}
+            <col style={{ width: '21.67%' }} />
+            <col style={{ width: '21.67%' }} />
+            <col style={{ width: '21.66%' }} />
+          </colgroup>
+
+          {/*
+            Only the outer sticky <thead> carries darkStickyHeader. The inner
+            <thead>/<th> elements take their colors from `.dark-teammember-row th`
+            so there are no mixed navy / blue patches in dark mode.
+
+            NOTE: this <thead> intentionally does NOT use the `pc-component` class.
+            That class is display:none at <= 768px, which hid the column headers on
+            narrow windows. The headers now stay visible and get a compact layout
+            from the "Small devices" media query in style.module.css.
+          */}
           <thead
-            className={[styles['pc-component'], darkMode ? styles.darkStickyHeader : ''].join(' ')}
+            className={darkMode ? styles.darkStickyHeader : ''}
             style={{ position: 'sticky', top: 0 }}
           >
             <tr>
-              <th
-                colSpan={3}
-                className={[
-                  styles['team-member-tasks-headers'],
-                  darkMode ? styles.darkStickyHeader : '',
-                ].join(' ')}
-              >
+              {/*
+                Left half: mirrors the body row exactly — a 1/3 "User Status" column
+                and a 2/3 "Team Member" column (name + clocks), so the headers sit
+                directly above their content.
+              */}
+              <th colSpan={3} className={styles['header-left-cell']}>
                 <Table
                   borderless
                   data-testid="team-member-tasks-subtable"
@@ -667,74 +694,62 @@ const TeamMemberTasks = React.memo(props => {
                     darkMode ? styles.textLight : '',
                   ].join(' ')}
                 >
-                  <thead className={darkMode ? styles.darkStickyHeader : ''}>
+                  <thead>
                     <tr>
-                      <th
-                        className={darkMode ? styles.darkStickyHeader : ''}
-                        style={{ background: 'transparent' }}
-                      >
-                        User Status
-                      </th>
-                      <th
-                        className={[
-                          styles['team-member-tasks-headers'],
-                          styles['team-member-tasks-user-name'],
-                          darkMode ? styles.darkStickyHeader : '',
-                          darkMode ? styles.transparentHeader : '',
-                        ].join(' ')}
-                      >
-                        Team Member
-                      </th>
-                      <th
-                        className={[
-                          styles['team-member-tasks-headers'],
-                          styles['team-clocks'],
-                          styles['team-clocks-header'],
-                          darkMode ? styles.darkStickyHeader : '',
-                        ].join(' ')}
-                      >
-                        <FontAwesomeIcon
-                          className={darkMode ? styles.hoursCommittedDark : ''}
-                          icon={faClock}
-                          title="Weekly Committed Hours"
-                        />
-                        /
-                        <FontAwesomeIcon
-                          className={darkMode ? styles.hoursCompletedDark : styles.hoursCompleted}
-                          icon={faClock}
-                          title="Total Hours Completed this Week"
-                        />
-                        /
-                        <FontAwesomeIcon
-                          className={darkMode ? styles.hoursRemainingDark : styles.hoursRemaining}
-                          icon={faClock}
-                          title="Total Remaining Hours"
-                        />
-                        <div style={{ background: 'transparent', display: 'flex', gap: '4px' }}>
-                          <button
-                            type="button"
-                            onClick={handleShowTrackers}
-                            className={[
-                              styles.m1,
-                              styles.trackerToggleBtn,
-                              showTrackers ? styles.trackerToggleBtnActive : '',
-                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
-                            ].join(' ')}
-                          >
-                            {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleHideTasks}
-                            className={[
-                              styles.m1,
-                              styles.trackerToggleBtn,
-                              !showTasks ? styles.trackerToggleBtnActive : '',
-                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
-                            ].join(' ')}
-                          >
-                            {showTasks ? 'Hide Tasks' : 'Show Tasks'}
-                          </button>
+                      <th className={styles['header-col-status']}>User Status</th>
+                      <th className={styles['header-col-member']}>
+                        <div className={styles['team-clocks-header-inner']}>
+                          <span>Team Member</span>
+                          {/*
+                            Icon colors come from classes (not inline styles) because
+                            `body.dark-mode * { color: #fff !important }` overrides inline
+                            colors. The classes carry !important plus an extra selector.
+                          */}
+                          <div className={styles['team-clocks-icons-row']}>
+                            <FontAwesomeIcon
+                              className={styles.hoursCommitted}
+                              icon={faClock}
+                              title="Weekly Committed Hours"
+                            />
+                            /
+                            <FontAwesomeIcon
+                              className={styles.hoursDone}
+                              icon={faClock}
+                              title="Total Hours Completed this Week"
+                            />
+                            /
+                            <FontAwesomeIcon
+                              className={styles.hoursLeft}
+                              icon={faClock}
+                              title="Total Remaining Hours"
+                            />
+                          </div>
+                          <div className={styles['team-clocks-buttons-row']}>
+                            <button
+                              type="button"
+                              onClick={handleShowTrackers}
+                              className={[
+                                styles.m1,
+                                styles.headerToggleBtn,
+                                showTrackers ? styles.headerToggleBtnActive : '',
+                                darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                              ].join(' ')}
+                            >
+                              {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleHideTasks}
+                              className={[
+                                styles.m1,
+                                styles.headerToggleBtn,
+                                !showTasks ? styles.headerToggleBtnActive : '',
+                                darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                              ].join(' ')}
+                            >
+                              {showTasks ? 'Hide Tasks' : 'Show Tasks'}
+                            </button>
+                          </div>
                         </div>
                       </th>
                     </tr>
@@ -742,13 +757,7 @@ const TeamMemberTasks = React.memo(props => {
                 </Table>
               </th>
 
-              <th
-                colSpan={3}
-                className={[
-                  styles['team-member-tasks-headers'],
-                  darkMode ? styles.darkStickyHeader : '',
-                ].join(' ')}
-              >
+              <th colSpan={3} className={styles['team-member-tasks-headers']}>
                 <Table
                   borderless
                   className={[
@@ -756,20 +765,16 @@ const TeamMemberTasks = React.memo(props => {
                     darkMode ? styles.textLight : '',
                   ].join(' ')}
                 >
-                  <thead className={darkMode ? styles.darkStickyHeader : ''}>
+                  <thead>
                     <tr>
-                      <th className={darkMode ? styles.darkStickyHeader : ''}>Tasks(s)</th>
-                      <th
-                        className={[
-                          styles['team-task-progress'],
-                          darkMode ? styles.darkStickyHeader : '',
-                        ].join(' ')}
-                      >
-                        Progress
-                      </th>
-                      {displayUser.role === 'Administrator' ? (
-                        <th className={darkMode ? styles.darkStickyHeader : ''}>Status</th>
-                      ) : null}
+                      <th className={styles['task-align']}>Task(s)</th>
+                      <th className={styles['team-task-progress']}>Progress</th>
+                      {/*
+                        Status header is unconditional so the header and body always
+                        have the same number of columns. ReviewButton decides who sees
+                        controls inside the cell.
+                      */}
+                      <th className={styles['status-align']}>Status</th>
                     </tr>
                   </thead>
                 </Table>

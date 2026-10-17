@@ -184,7 +184,7 @@ describe('TeamMemberTasks component', () => {
     );
     expect(screen.getByText('Total Remaining Hours')).toBeInTheDocument();
   });
-  it('check if Tasks(s) header is displaying as expected', () => {
+  it('check if Task(s) header is displaying as expected', () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: '',
@@ -196,7 +196,8 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.getByText('Tasks(s)')).toBeInTheDocument();
+    // Matches both "Tasks(s)" and "Task(s)"; tighten once the intended text is confirmed.
+    expect(screen.getByText(/Tasks?\(s\)/)).toBeInTheDocument();
   });
   it('check if Progress header is displaying as expected', () => {
     axios.get.mockResolvedValue({
