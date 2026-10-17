@@ -25,8 +25,8 @@ function MetricCard({ metric, value }) {
 
 function PreservationImpact({ report }) {
   const achievement = report.achievementTemplate
-    .replace('{totalPreserved}', report.totalPreserved.toLocaleString())
-    .replace('{wasteSavedLbs}', report.wasteSavedLbs.toLocaleString());
+    .replaceAll('{totalPreserved}', report.totalPreserved.toLocaleString())
+    .replaceAll('{wasteSavedLbs}', report.wasteSavedLbs.toLocaleString());
   return (
     <section className={styles.impactCard} aria-labelledby="preservation-impact-title">
       <h2 id="preservation-impact-title">{report.impactTitle}</h2>
@@ -93,7 +93,7 @@ export default function PreservationEfficiency({ report = mockReport }) {
       ]),
     ];
     const csv = rows
-      .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
+      .map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(','))
       .join('\r\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
     const link = document.createElement('a');

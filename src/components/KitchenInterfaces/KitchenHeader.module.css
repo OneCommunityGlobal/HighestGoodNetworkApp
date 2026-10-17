@@ -41,7 +41,7 @@
 
 .brandSubtitle {
   font-size: 11px;
-  color: #888;
+  color: #6b7280;
   text-transform: none;
   letter-spacing: 0.5px;
 }
@@ -73,7 +73,7 @@
 /* Active State */
 .activeLink {
   background-color: #f0fdf4; /* Light green background */
-  color: #16a34a; /* Darker green text */
+  color: #15803d; /* Darker green text */
   font-weight: 600;
 }
 
@@ -86,7 +86,7 @@
 .dropdownArrow {
   font-size: 10px;
   margin-left: 4px;
-  color: #777;
+  color: #6b7280;
 }
 
 /* Mobile Menu Button */
@@ -191,7 +191,7 @@
 }
 
 .darkMode .activeLink {
-  background-color: #16a34a;
+  background-color: #15803d;
   color: #fff;
 }
 
@@ -216,7 +216,11 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #16a34a;
+  background: #15803d;
   color: white;
   flex-shrink: 0;
+}
+
+.darkMode .dropdownArrow {
+  color: #b0b0b0;
 }
