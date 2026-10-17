@@ -49,6 +49,14 @@ const MODAL_TITLES = {
 
 const BLOCK_LABELS = { audio: '🎧 Audio', video: '📹 Video', link: '🔗 Link' };
 
+// datetime-local expects local time as "YYYY-MM-DDTHH:mm" (not UTC / toISOString).
+const toLocalInputValue = date => {
+  const pad = n => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(
+    date.getHours(),
+  )}:${pad(date.getMinutes())}`;
+};
+
 const newTextBlock = () => ({ id: crypto.randomUUID(), type: 'text', text: '' });
 
 const notify = (type, message) => toast[type](message, { toastId: message });
@@ -63,7 +71,8 @@ export default function TumblrComposer() {
   // Core state
   const [activeSubTab, setActiveSubTab] = useState('make');
   const [title, setTitle] = useState('');
-  const [tags, setTags] = useState('');
+  const [tagList, setTagList] = useState([]);
+  const [tagDraft, setTagDraft] = useState('');
   const [visibility, setVisibility] = useState('everyone');
   const [blocks, setBlocks] = useState(() => [newTextBlock()]);
   const [scheduleAt, setScheduleAt] = useState('');
@@ -81,10 +90,51 @@ export default function TumblrComposer() {
   // Scheduled posts
   const [scheduled, setScheduled] = useState({ status: 'idle', items: [], error: '' });
 
+  /* ── tags ── */
+  const addTags = raw => {
+    const incoming = String(raw)
+      .split(/[,#\n]/)
+      .map(t => t.trim())
+      .filter(Boolean);
+    if (!incoming.length) return;
+    setTagList(prev => {
+      const seen = new Set(prev.map(t => t.toLowerCase()));
+      const next = [...prev];
+      incoming.forEach(t => {
+        if (!seen.has(t.toLowerCase())) {
+          seen.add(t.toLowerCase());
+          next.push(t);
+        }
+      });
+      return next;
+    });
+  };
+
+  const removeTag = tag => setTagList(prev => prev.filter(t => t !== tag));
+
+  const handleTagKeyDown = e => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault(); // also stops Enter from submitting any parent form
+      addTags(tagDraft);
+      setTagDraft('');
+    } else if (e.key === 'Backspace' && !tagDraft && tagList.length) {
+      setTagList(prev => prev.slice(0, -1));
+    }
+  };
+
+  const handleTagPaste = e => {
+    const text = e.clipboardData.getData('text');
+    if (/[,#\n]/.test(text)) {
+      e.preventDefault();
+      addTags(text);
+    }
+  };
+
   const isConnected = connection.status === 'connected';
   const hasContent = blocks.some(b => b.type !== 'text' || b.text.trim());
   const scheduleDate = scheduleAt ? new Date(scheduleAt) : null;
-  const scheduleValid = scheduleDate && scheduleDate.getTime() > Date.now();
+  const scheduleValid = !!scheduleDate && scheduleDate.getTime() > Date.now();
+  const scheduleMin = toLocalInputValue(new Date());
   const busy = submitting !== null;
 
   /* ── connection ── */
@@ -243,7 +293,8 @@ export default function TumblrComposer() {
 
   const handleReset = () => {
     setTitle('');
-    setTags('');
+    setTagList([]);
+    setTagDraft('');
     setVisibility('everyone');
     setBlocks([newTextBlock()]);
     setScheduleAt('');
@@ -258,7 +309,9 @@ export default function TumblrComposer() {
 
     setSubmitting(mode);
     try {
-      const post = buildNpfPost({ title, blocks, tags, visibility });
+      // Include any half-typed tag so it isn't silently dropped on submit.
+      const pending = tagDraft.trim() ? [...tagList, tagDraft.trim().replace(/^#/, '')] : tagList;
+      const post = buildNpfPost({ title, blocks, tags: pending.join(','), visibility });
       if (mode === 'post') {
         await api.post('/api/tumblr/post', { blog: selectedBlog, post });
         notify('success', `Posted to ${selectedBlog}.`);
@@ -271,7 +324,8 @@ export default function TumblrComposer() {
         notify('success', `Scheduled for ${scheduleDate.toLocaleString()}.`);
       }
       setTitle('');
-      setTags('');
+      setTagList([]);
+      setTagDraft('');
       setBlocks([newTextBlock()]);
       setScheduleAt('');
     } catch (err) {
@@ -537,15 +591,38 @@ export default function TumblrComposer() {
               {blocks.map(renderBlock)}
 
               <div className={styles['tumblr-composer-footer']}>
-                <input
-                  type="text"
-                  value={tags}
-                  onChange={e => setTags(e.target.value)}
-                  className={styles['tumblr-tag-input']}
-                  placeholder="#add tags"
-                  aria-label="Tags"
-                />
-                <span className={styles['tumblr-field__hint']}>Separate tags with commas or #</span>
+                <div className={styles['tumblr-tags']}>
+                  {tagList.map(tag => (
+                    <span key={tag} className={styles['tumblr-tag-chip']}>
+                      <span className={styles['tumblr-tag-chip__text']}>#{tag}</span>
+                      <button
+                        type="button"
+                        className={styles['tumblr-tag-chip__remove']}
+                        onClick={() => removeTag(tag)}
+                        aria-label={`Remove tag ${tag}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    value={tagDraft}
+                    onChange={e => setTagDraft(e.target.value.replace(/^#/, ''))}
+                    onKeyDown={handleTagKeyDown}
+                    onPaste={handleTagPaste}
+                    onBlur={() => {
+                      if (tagDraft.trim()) {
+                        addTags(tagDraft);
+                        setTagDraft('');
+                      }
+                    }}
+                    className={styles['tumblr-tag-input']}
+                    placeholder={tagList.length ? 'add another…' : '#add tags'}
+                    aria-label="Tags"
+                  />
+                </div>
+                <span className={styles['tumblr-field__hint']}>Press Enter to add a tag</span>
               </div>
             </div>
           </div>
@@ -568,8 +645,12 @@ export default function TumblrComposer() {
                     id="tumblr-schedule-at"
                     type="datetime-local"
                     value={scheduleAt}
+                    min={scheduleMin}
                     onChange={e => setScheduleAt(e.target.value)}
-                    className={styles['tumblr-field__input']}
+                    className={classNames(
+                      styles['tumblr-field__input'],
+                      styles['tumblr-schedule-input'],
+                    )}
                   />
                 </div>
                 <button
