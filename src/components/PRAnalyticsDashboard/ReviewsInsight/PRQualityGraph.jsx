@@ -50,10 +50,9 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedT
   const options = {
     responsive: true,
     interaction: {
-      // Per-slice hover so the tooltip describes the single slice under the
-      // cursor, not the whole dataset.
-      mode: 'nearest',
-      intersect: true,
+      // Dataset mode lists every category in one tooltip rather than only the
+      // hovered slice, per the "pie tooltip lists all values" requirement.
+      mode: 'dataset',
     },
     plugins: {
       // ProjectStatus.jsx registers a "centerText" plugin globally, so it draws
@@ -68,6 +67,10 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedT
         },
       },
       tooltip: {
+        // Chart.js defaults this to true, which paints a colour swatch next
+        // to each line. Keeping it false matches the pre-existing light-mode
+        // appearance.
+        displayColors: false,
         enabled: true,
         callbacks: {
           // Heading: the chart's own title ("PR Quality Distribution for <team>").
