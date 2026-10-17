@@ -510,8 +510,8 @@ export function TeamReport({ match }) {
           </div>
 
           <table className="table tableHeader" style={{ marginTop: '10px' }}>
-            <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}`}>
-              <tr className={darkMode ? 'bg-space-cadet' : ''}>
+            <thead className={`table table-hover ${darkMode ? 'text-light' : ''}`}>
+              <tr className={darkMode ? styles['table-head-dark'] : ''}>
                 <td>
                   <strong>All</strong>
                 </td>
@@ -540,9 +540,11 @@ export function TeamReport({ match }) {
               {allTeamsMembers && allTeamsMembers.length > 0 ? (
                 handleSearch().map((teamData, index) => (
                   <tr
-                    className={`${styles['table-row']} ${
-                      darkMode ? 'bg-yinmn-blue text-light table-hover-dark' : ''
-                    }`}
+                    className={
+                      darkMode
+                        ? `${styles['table-row-dark']} ${styles['table-hover-dark']} text-light`
+                        : styles['table-row']
+                    }
                     key={teamData._id}
                   >
                     <td>

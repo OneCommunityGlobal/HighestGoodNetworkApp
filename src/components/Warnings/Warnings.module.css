@@ -140,6 +140,15 @@
   opacity: 0.6;
 }
 
+/* Dark mode forces text white, which vanished on the light warning rows */
+.warningTrackerDark .warnings__descriptions {
+  background: #2f4157;
+}
+
+.warningTrackerDark .warnings__descriptions__title {
+  color: #fff;
+}
+
 .btn__container {
   display: flex;
   justify-content: center;

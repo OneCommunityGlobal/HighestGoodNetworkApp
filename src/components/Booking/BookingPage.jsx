@@ -202,7 +202,11 @@ export default function BookingPage() {
                     />
                     <div className={styles.photoCaption}>
                       Unit 405, Earthbag Village –{' '}
-                      <button href="#" onClick={e => e.preventDefault()}>
+                      <button
+                        type="button"
+                        className={styles.morePhotosBtn}
+                        onClick={e => e.preventDefault()}
+                      >
                         More photos
                       </button>
                     </div>

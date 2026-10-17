@@ -341,7 +341,7 @@ function WarningTrackerModal({
     <Modal
       isOpen={toggleWarningTrackerModal}
       toggle={() => setToggleWarningTrackerModal(false)}
-      className={styles.warnings__tracker__modal}
+      className={`${styles.warnings__tracker__modal} ${darkMode ? styles.warningTrackerDark : ''}`}
     >
       <ModalHeader className="modal__header">
         Current Warning Descriptions

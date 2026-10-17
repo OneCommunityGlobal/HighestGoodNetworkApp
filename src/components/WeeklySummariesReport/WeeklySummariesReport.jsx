@@ -1792,7 +1792,7 @@ const WeeklySummariesReport = props => {
           `}
         </style>
         <Col lg={{ size: 10, offset: 1 }}>
-          <h3 className="mt-3 mb-5">
+          <h3 className={`mt-3 mb-5 ${darkMode ? 'text-light' : ''}`}>
             <div className="d-flex align-items-center">
               <span className="mr-2">Weekly Summaries Reports page</span>
               <EditableInfoModal
@@ -2255,7 +2255,7 @@ const WeeklySummariesReport = props => {
       )}
       <Row className={styles['mx-max-sm-0']}>
         <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
-          <Nav tabs>
+          <Nav tabs className={darkMode ? styles.weekTabsDark : ''}>
             {navItems.map(item => (
               <NavItem key={item}>
                 <NavLink
@@ -2363,7 +2363,9 @@ const WeeklySummariesReport = props => {
                     ) : (
                       <Row>
                         <Col>
-                          <Alert color="info">No data available for this tab.</Alert>
+                          <Alert color="info" className={darkMode ? styles.emptyTabAlertDark : ''}>
+                            No data available for this tab.
+                          </Alert>
                         </Col>
                       </Row>
                     )}
