@@ -1,34 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchStudentTasks } from '~/actions/studentTasks';
+import TaskTimer from '../StudentDashboard/TaskTimer';
 import styles from './StudentDashboard.module.css';
 
 const LIFE_CARD_IDS = ['lc-a', 'lc-b', 'lc-c', 'lc-d', 'lc-e', 'lc-f'];
 
 export default function StudentDashboard() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme?.darkMode);
+  const tasks = useSelector(state => state.studentTasks?.taskItems || []);
 
-  const tasks = [
-    {
-      id: 1,
-      title: 'Activity 1: Technology, Art, Trades, Health',
-      subtitle: 'Technology, Art, Trades, Health',
-      progress: 25,
-    },
-    {
-      id: 2,
-      title: 'Activity 2: Math, Science, Innovation',
-      subtitle: 'Math, Science, Innovation',
-      progress: 50,
-    },
-    {
-      id: 3,
-      title: 'Activity 3: Social Sciences, English, Values',
-      subtitle: 'Social Sciences, English, Values',
-      progress: 33,
-    },
-  ];
+  useEffect(() => {
+    dispatch(fetchStudentTasks());
+  }, [dispatch]);
 
   const subjects = [
     'Arts/ Trades',
@@ -46,6 +33,7 @@ export default function StudentDashboard() {
       <div className={`${styles.content} ${darkMode ? styles.contentDark : ''}`}>
         <div className={styles.headerRow}>
           <h1 className={styles.title}>Dashboard</h1>
+          <TaskTimer tasks={tasks} />
           <div className={styles.welcomeArea}>
             <span className={styles.welcomeLabel}>Welcome, Student Name</span>
             <div className={styles.icons}>
@@ -79,21 +67,28 @@ export default function StudentDashboard() {
             <hr className={styles.todoDivider} />
 
             <ul className={styles.todoList}>
-              {tasks.map(t => (
-                <li key={t.id} className={styles.todoItem}>
+              {tasks.map(task => (
+                <li key={task.id || task._id} className={styles.todoItem}>
                   <button
                     className={styles.todoBtn}
                     type="button"
-                    onClick={() => history.push(`/educationportal/student/tasks/${t.id}`)}
-                    aria-label={`Open ${t.title}`}
+                    onClick={() =>
+                      history.push(`/educationportal/student/tasks/${task.id || task._id}`)
+                    }
+                    aria-label={`Open ${task.course_name || task.title}`}
                   >
                     <div className={styles.todoText}>
-                      <div className={styles.todoName}>{t.title}</div>
-                      <div className={styles.todoSub}>{t.subtitle}</div>
+                      <div className={styles.todoName}>{task.course_name || task.title}</div>
+                      <div className={styles.todoSub}>
+                        {task.subtitle || task.lessonPlan?.title}
+                      </div>
                     </div>
                     <div className={styles.todoRight}>
                       <div className={styles.progressTrack} aria-hidden="true">
-                        <div className={styles.progressFill} style={{ width: `${t.progress}%` }} />
+                        <div
+                          className={styles.progressFill}
+                          style={{ width: `${task.progress || 0}%` }}
+                        />
                       </div>
                       <span className={styles.chev} aria-hidden="true">
                         →
