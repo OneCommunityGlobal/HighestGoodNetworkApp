@@ -2,11 +2,16 @@
 .svgContainer {
   margin: 10px 0;
   padding: 0;
+  /* Ensure the container spans full width and allows overflowing elements (like rotated labels) to remain visible */
+  width: 100%;
+  overflow: visible;
 }
 
 .svgChart {
   width: 100%;
   height: 100%;
+  /* Allow chart to fill container and prevent clipping of axis labels */
+  overflow: visible;
 }
 
 .bar {
@@ -20,5 +25,18 @@
 /* Dark Mode Styles - Using global dark-mode class for consistency across builds */
 :global(.dark-mode) .svgContainer {
   color: #d1d5db;
+}
+
+/* Reduce base font size for chart text to prevent crowding */
+.svgContainer text {
+  font-size: 10px; 
+}
+
+/* Rotate X-axis year labels and adjust font size to prevent horizontal overlapping on narrow screens */
+.svgContainer g.x-axis text,
+.svgContainer .tick text {
+  transform: rotate(-35deg);
+  text-anchor: end;
+  font-size: 9px;
 }
 
