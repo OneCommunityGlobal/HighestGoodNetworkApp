@@ -40,12 +40,13 @@ export default function useReportExport() {
       link.download = config.fileName;
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      link.remove();
       window.URL.revokeObjectURL(downloadUrl);
 
       toast.success(`${format.toUpperCase()} report downloaded successfully!`);
     } catch (error) {
-      toast.error(`Failed to export ${format.toUpperCase()} report. Please try again.`);
+      const message = error?.message || `Failed to export ${format.toUpperCase()} report.`;
+      toast.error(`${message} Please try again.`);
     } finally {
       setLoadingFormat(null);
     }
