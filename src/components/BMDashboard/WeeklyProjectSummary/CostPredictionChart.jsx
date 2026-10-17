@@ -33,7 +33,7 @@ const THEME = {
     border: '#3A506B',
     text: '#f3f4f6',
     mutedText: '#d1d5db',
-    axisText: '#c7ccd6',
+    axisText: '#f8fafc',
     accent: '#6FFFE9',
   },
 };
@@ -279,8 +279,10 @@ function CostPredictionChart({ projectId }) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [chartWidth, setChartWidth] = useState(0);
   const darkMode = useSelector(state => state.theme.darkMode);
   const theme = getTheme(darkMode);
+  const compact = chartWidth > 0 && chartWidth < 420;
 
   // filter state
   const [selectedProjectId, setSelectedProjectId] = useState('');
@@ -489,8 +491,19 @@ function CostPredictionChart({ projectId }) {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={filteredData} margin={{ top: 40, right: 50, left: 20, bottom: 40 }}>
+      <ResponsiveContainer
+        width="100%"
+        height={compact ? 320 : 400}
+        onResize={width => setChartWidth(width)}
+      >
+        <LineChart
+          data={filteredData}
+          margin={
+            compact
+              ? { top: 22, right: 12, left: 0, bottom: 8 }
+              : { top: 40, right: 50, left: 20, bottom: 40 }
+          }
+        >
           {/* Grid */}
           <CartesianGrid
             strokeDasharray="3 3"
@@ -503,27 +516,37 @@ function CostPredictionChart({ projectId }) {
           {/* Axes: tick text, tick marks, baseline lines */}
           <XAxis
             dataKey="month"
-            tick={({ x, y, payload }) => (
-              <text x={x} y={y + 15} textAnchor="middle" fill={theme.axisText} fontSize={13}>
-                {payload.value}
-              </text>
-            )}
-            tickMargin={0} // apply margin at XAxis level, not inside <text>
+            tick={{ fill: theme.axisText, fontSize: compact ? 10 : 13 }}
+            tickFormatter={value =>
+              compact
+                ? String(value)
+                    .split(' ')[0]
+                    .slice(0, 3)
+                : value
+            }
+            interval={compact ? 'preserveStartEnd' : 0}
+            minTickGap={compact ? 16 : 5}
+            tickMargin={8}
           />
           <YAxis
             domain={[0, dataMax => Math.ceil(dataMax * 1.15)]}
-            tick={({ x, y, payload }) => (
-              <text x={x} y={y} textAnchor="end" fill={theme.axisText} fontSize={13}>
-                {payload.value}
-              </text>
-            )}
+            tick={{ fill: theme.axisText, fontSize: compact ? 10 : 13 }}
+            width={compact ? 38 : 60}
+            tickFormatter={value =>
+              compact && Math.abs(value) >= 1000 ? `${(value / 1000).toFixed(1)}k` : value
+            }
           />
           {/* Tooltip & Legend */}
-          <Tooltip content={<CustomTooltip theme={theme} />} cursor={{ stroke: theme.accent }} />
+          <Tooltip
+            content={<CustomTooltip theme={theme} />}
+            cursor={{ stroke: theme.accent }}
+            allowEscapeViewBox={{ x: false, y: false }}
+            position={compact ? { x: 4, y: 8 } : undefined}
+          />
           <Legend
             verticalAlign="bottom"
-            height={48}
-            wrapperStyle={{ paddingTop: 10 }}
+            height={compact ? 64 : 48}
+            wrapperStyle={{ paddingTop: compact ? 2 : 10 }}
             content={() => (
               <ul
                 className={styles.legendList}
@@ -560,7 +583,7 @@ function CostPredictionChart({ projectId }) {
             x={currentMonth}
             stroke="#ff0000"
             strokeDasharray="3 3"
-            label={<CurrentMonthLabel />}
+            label={compact ? undefined : <CurrentMonthLabel />}
           />
           {/* Series (kept fixed colors) */}
           <Line
@@ -569,7 +592,11 @@ function CostPredictionChart({ projectId }) {
             stroke={SERIES_COLORS.planned}
             strokeWidth={2}
             name="Planned Cost"
-            dot={renderDotTopOrBottom('plannedCost', SERIES_COLORS.planned, filteredData.length)}
+            dot={
+              compact
+                ? false
+                : renderDotTopOrBottom('plannedCost', SERIES_COLORS.planned, filteredData.length)
+            }
           />
           <Line
             type="monotone"
@@ -577,7 +604,11 @@ function CostPredictionChart({ projectId }) {
             stroke={SERIES_COLORS.actual}
             strokeWidth={2}
             name="Actual Cost"
-            dot={renderDotTopOrBottom('actualCost', SERIES_COLORS.actual, filteredData.length)}
+            dot={
+              compact
+                ? false
+                : renderDotTopOrBottom('actualCost', SERIES_COLORS.actual, filteredData.length)
+            }
           />
           <Line
             type="monotone"
@@ -586,11 +617,15 @@ function CostPredictionChart({ projectId }) {
             strokeWidth={2}
             strokeDasharray="5 5"
             name="Predicted Cost"
-            dot={renderDotTopOrBottom(
-              'predictedCost',
-              SERIES_COLORS.predicted,
-              filteredData.length,
-            )}
+            dot={
+              compact
+                ? false
+                : renderDotTopOrBottom(
+                    'predictedCost',
+                    SERIES_COLORS.predicted,
+                    filteredData.length,
+                  )
+            }
           />
         </LineChart>
       </ResponsiveContainer>
