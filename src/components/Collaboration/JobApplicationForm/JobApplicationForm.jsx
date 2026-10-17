@@ -1081,6 +1081,8 @@ function JobApplicationForm() {
       }
     } else if (jobId) {
       void fetchJobData(jobId);
+    } else if (positionSlug && isMongoObjectId(positionSlug)) {
+      void fetchJobData(positionSlug);
     } else if (positionSlug) {
       const hint = titleHintFromSlug(positionSlug);
       if (hint) setJobTitleInput(hint);
