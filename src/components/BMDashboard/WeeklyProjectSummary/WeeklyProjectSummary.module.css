@@ -17,12 +17,11 @@
   width: 95%;
   margin: auto;
   padding: 20px;
-  background: var(--bg-color);
   color: var(--text-color);
 }
 
 .weeklyProjectSummaryHeaderWrapper {
-  background-color: var(--bg-color) !important;
+  background-color: var(--bg-color);
 }
 
 /* ---------------- HEADER ---------------- */
@@ -68,11 +67,11 @@
 /* Reactstrap Input adds .form-control — match box model to the Share PDF button */
 .weeklySummaryHeaderControls :global(.form-control) {
   box-sizing: border-box;
-  height: 38px !important;
+  height: 38px;
   min-height: 38px;
-  padding: 0 12px !important;
-  margin: 0 !important;
-  line-height: 1.25 !important;
+  padding: 0 12px;
+  margin: 0;
+  line-height: 1.25;
   font-size: 14px;
   flex: 1 1 auto;
   min-width: 0;
@@ -99,9 +98,9 @@
 
 .darkMode .weeklySummaryHeaderControls select {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-color: var(--card-bg) !important;
-  color: var(--text-color) !important;
-  border-color: var(--card-shadow) !important;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border-color: var(--card-shadow);
 }
 
 .weeklySummaryHeaderControls select:focus {
@@ -110,45 +109,49 @@
 }
 
 .weeklySummaryHeaderControls select:hover {
-  background-color: var(--section-title-hover) !important;
+  background-color: var(--section-title-hover);
 }
 
 /* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
 
 /* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
-   the label overflows outside the painted background (overlapping the last dropdown). */
-.weeklySummaryShareBtn {
-  height: 38px !important;
+   the label overflows outside the painted background (overlapping the last dropdown).
+   .weeklySummaryShareBtn ties reactstrap's own .btn/.btn-secondary on specificity, so the
+   class is repeated below to add one specificity unit instead of using !important. */
+/* stylelint-disable-next-line no-duplicate-selectors -- repeated class raises specificity to beat
+   reactstrap's .btn/.btn-secondary rules without !important */
+.weeklySummaryShareBtn.weeklySummaryShareBtn {
+  height: 38px;
   min-height: 38px;
   min-width: 7.25rem;
-  padding: 0 14px !important;
-  margin: 0 !important;
-  display: inline-flex !important;
+  padding: 0 14px;
+  margin: 0;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  line-height: 1.25 !important;
+  line-height: 1.25;
   box-sizing: border-box;
   border-width: 1px;
   vertical-align: middle;
   align-self: center;
   flex: 0 0 auto;
   flex-shrink: 0;
-  background-color: var(--button-bg) !important;
+  background-color: var(--button-bg);
   color: white;
   font-family: inherit;
   white-space: nowrap;
-  border-radius: 6px !important;
+  border-radius: 6px;
   transition: background 0.2s ease-in-out;
 }
 
 /* Bootstrap .btn can add vertical offset; align with selects */
-.weeklySummaryHeaderControls :global(button.btn) {
-  margin: 0 !important;
+.weeklySummaryHeaderControls :global(button.btn.btn) {
+  margin: 0;
   vertical-align: middle;
 }
 
-.darkMode .weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
+.darkMode .weeklySummaryShareBtn.weeklySummaryShareBtn {
+  background-color: var(--button-bg);
 }
 
 .weeklySummaryShareBtn:focus {
@@ -161,12 +164,12 @@
   cursor: not-allowed;
 }
 
-.darkMode .weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
+.darkMode .weeklySummaryShareBtn.weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover);
 }
 
-.weeklySummaryShareBtn:hover:not(:disabled) {
-  background-color: var(--button-hover) !important;
+.weeklySummaryShareBtn.weeklySummaryShareBtn:hover:not(:disabled) {
+  background-color: var(--button-hover);
 }
 
 /* Spinner for PDF generation */
@@ -241,25 +244,20 @@
 }
 
 .weeklyProjectSummaryCard :global(.container) {
-  background: #fff !important;
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
-  border: none !important;
-  box-shadow: none !important;
+  background: #fff;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .darkMode .weeklyProjectSummaryCard :global(.container) {
-  background: #1e293b !important;
-}
-
-.weeklyProjectSummaryCard :global(.recharts-wrapper) {
-  width: 100% !important;
-  height: 100% !important;
+  background: #1e293b;
 }
 
 .weeklyProjectSummaryCard :global(.recharts-surface) {
-  overflow: visible !important;
+  overflow: visible;
 }
 
 .weeklyProjectSummaryCard :global(.chartContainer) {
@@ -269,15 +267,15 @@
 }
 
 .weeklyProjectSummaryCard :global(.recharts-bar-rectangle) {
-  shape-rendering: geometricprecision !important;
+  shape-rendering: geometricprecision;
 }
 
 .weeklyProjectSummaryCard :global(.recharts-cartesian-axis-tick-value) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .weeklyProjectSummaryCard :global(.recharts-cartesian-grid-horizontal line) {
-  stroke-dasharray: 3 3 !important;
+  stroke-dasharray: 3 3;
 }
 
 .financialSmall {
@@ -522,13 +520,14 @@
   border-radius: 25px;
   width: 100%;
   max-width: 284px;
-  height: 190px;
+  min-height: 190px;
   text-align: center;
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
   border: 1px solid rgb(0 0 0 / 10%);
   position: relative;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .weeklyCardTitle {
@@ -538,36 +537,46 @@
   transition: color 0.3s ease;
 }
 
+/* The status oval's background is always the color-coded pastel from
+   projectStatusButtons, so its value text must stay dark for contrast
+   in both themes. */
 .weeklyStatusValue {
   color: #000;
-  font-size: 40px;
+  font-size: clamp(22px, 3.2vw, 40px);
   font-weight: 600;
   transition: color 0.3s ease;
+  white-space: nowrap;
 }
 
-.weekly-status-change {
+.weeklyStatusChange {
   transition: color 0.3s ease;
   font-size: 14px;
   font-weight: 500;
 }
 
 .darkMode .statusCard {
-  background: var(--card-bg) !important;
-  color: var(--text-color) !important;
-  border-color: rgb(255 255 255 / 10%) !important;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-color: rgb(255 255 255 / 10%);
 }
 
-.darkMode .weeklyCardTitle,
-.darkMode .weeklyStatusValue,
-.darkMode .weekly-status-change {
-  color: var(--text-color) !important;
+.darkMode .weeklyCardTitle {
+  color: var(--text-color);
+}
+
+/* The change text sits on the card background, which does switch with the
+   theme, so give it a dark-safe color instead of the light-mode inline one.
+   In dark mode the JSX passes style={undefined} for this element, so there is
+   no inline style left to beat here. */
+.darkMode .weeklyStatusChange {
+  color: var(--text-color);
 }
 
 /* Tooltip styles */
 .quantityOfMaterialsUsedChartTooltip {
-  max-height: 80vh !important;
-  overflow-y: auto !important;
-  padding-right: 15px !important;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 15px;
 
   /* Firefox */
   scrollbar-width: thin;
@@ -646,7 +655,7 @@
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-  width: 130px;
+  width: min(130px, 100%);
   height: 65px;
   border-radius: 50px / 32px;
   display: flex;
@@ -654,6 +663,8 @@
   justify-content: center;
   box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
   margin: 12px 0;
+  box-sizing: border-box;
+  padding: 0 8px;
 }
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
@@ -719,13 +730,13 @@
   }
 
   .darkMode .weeklySummaryHeaderTitle {
-    color: #fff !important; /* bright white title */
+    color: #fff; /* bright white title */
   }
 
   .darkMode .weeklySummaryHeaderControls select {
-    background: #2d4059 !important;
-    color: #fff !important;
-    border: 1px solid rgb(255 255 255 / 30%) !important;
+    background: #2d4059;
+    color: #fff;
+    border: 1px solid rgb(255 255 255 / 30%);
   }
 
   .darkMode .weeklySummaryHeaderControls select option {
@@ -733,12 +744,14 @@
     color: #fff;
   }
 
-  .darkMode .weeklySummaryShareBtn {
-    background: #e8a71c !important;
-    color: #000 !important; /* readable in dark mode */
-  /* Tools and Equipment Tracking - 2 column layout on tablet */
+  /* Matches .weeklySummaryShareBtn.weeklySummaryShareBtn's specificity above so this
+     tablet-width dark override keeps winning by source order without !important. */
+  .darkMode .weeklySummaryShareBtn.weeklySummaryShareBtn {
+    background: #e8a71c;
+    color: #000; /* readable in dark mode */
   }
-  
+
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
   .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;

@@ -1,12 +1,12 @@
-:global(.react-datepicker__navigation .react-datepicker__navigation-icon) {
-  width: 9px !important;
+:global(.react-datepicker__navigation.react-datepicker__navigation .react-datepicker__navigation-icon) {
+  width: 9px;
 }
 
-:global(.react-datepicker__navigation .react-datepicker__navigation-icon::before) {
-  border-color: #555 !important;
-  border-width: 2px 2px 0 0 !important;
-  width: 9px !important;
-  height: 9px !important;
+:global(.react-datepicker__navigation.react-datepicker__navigation .react-datepicker__navigation-icon::before) {
+  border-color: #555;
+  border-width: 2px 2px 0 0;
+  width: 9px;
+  height: 9px;
 }
 
 
@@ -124,6 +124,19 @@
   color: #f3f4f6 !important;
 } */
 
+/* Filter row spacing so the date fields and their separator arrow are not cramped */
+:global(.injury-chart-filters) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-end;
+}
+
+:global(.injury-chart-filters .injury-filter) {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ---- HOTFIX: react-select classNamePrefix is `injury-select` (with a hyphen), so we must target those global classes ---- */
 
 :global(.darkMode .injury-select__control) {
@@ -233,7 +246,7 @@
 }
 
 .darkMode .injury-chart-label {
-  color: #e0e0e0 !important;
+  color: #e0e0e0;
 }
 
 .darkMode .injury-chart-filters {
@@ -340,65 +353,71 @@
   box-shadow: 0 0 0 1px #0d55b3 !important;
 }
 
-:global(.darkMode .react-datepicker) {
-  background-color: #3A506B !important;
-  border-color: #555 !important;
-  color: #ffffff !important;
+:global(.darkMode.darkMode .react-datepicker) {
+  background-color: #3A506B;
+  border-color: #555;
+  color: #ffffff;
 }
 
-:global(.darkMode .react-datepicker__header) {
-  background-color: #1C2541 !important;
-  border-bottom-color: #555 !important;
+:global(.darkMode.darkMode .react-datepicker__header) {
+  background-color: #1C2541;
+  border-bottom-color: #555;
 }
 
-:global(.darkMode .react-datepicker__current-month),
-:global(.darkMode .react-datepicker__day-name),
-:global(.darkMode .react-datepicker__day),
-:global(.darkMode .react-datepicker__time-name) {
-  color: #ffffff !important;
+:global(.darkMode.darkMode .react-datepicker__current-month),
+:global(.darkMode.darkMode .react-datepicker__day-name),
+:global(.darkMode.darkMode .react-datepicker__day),
+:global(.darkMode.darkMode .react-datepicker__time-name) {
+  color: #ffffff;
 }
 
-:global(.darkMode .react-datepicker__day:hover),
-:global(.darkMode .react-datepicker__day--keyboard-selected) {
-  background-color: #0d55b3 !important;
-  color: #ffffff !important;
+:global(.darkMode.darkMode .react-datepicker__day:hover),
+:global(.darkMode.darkMode .react-datepicker__day--keyboard-selected) {
+  background-color: #0d55b3;
+  color: #ffffff;
 }
 
-:global(.darkMode .react-datepicker__day--selected),
-:global(.darkMode .react-datepicker__day--in-selecting-range),
-:global(.darkMode .react-datepicker__day--in-range) {
-  background-color: #0d55b3 !important;
-  color: #ffffff !important;
+:global(.darkMode.darkMode .react-datepicker__day--selected),
+:global(.darkMode.darkMode .react-datepicker__day--in-selecting-range),
+:global(.darkMode.darkMode .react-datepicker__day--in-range) {
+  background-color: #0d55b3;
+  color: #ffffff;
 }
 
-.darkMode :global(.react-datepicker__navigation-icon::before) {
-  border-color: #fff !important;
+.darkMode :global(.react-datepicker__navigation-icon.react-datepicker__navigation-icon::before) {
+  border-color: #fff;
 }
 
 /* Chart elements dark mode */
 .darkMode :global(.recharts-cartesian-axis-tick-value) {
-  fill: #ffffff !important;
+  fill: #ffffff;
 }
 
 .darkMode :global(.recharts-legend-item-text) {
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 /* Loading and error text in dark mode */
+/* Note: `.darkMode` here is the CSS-module local class, which in this
+   component's JSX is only ever applied directly to the <p> element itself
+   (see InjuryCategoryBarChart.jsx), never to an ancestor. This descendant
+   selector therefore never matches any real DOM in this component; kept
+   as-is (forced-priority flag removed) rather than removed, since deleting
+   the rule is out of scope for this pass. */
 .darkMode :global(p) {
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 .darkMode .error {
-  color: #ff6b6b !important;
+  color: #ff6b6b;
 }
 
 .darkMode .empty {
-  color: #a0a0a0 !important;
+  color: #a0a0a0;
 }
 /* Recharts default tick text selector (X axis) */
 :global(.darkMode .recharts-xAxis .recharts-cartesian-axis-tick-value) {
-  fill: #fff !important;
+  fill: #fff;
 }
 :global(.darkMode .injurySelect__multi-value) {
   background-color: #375071 !important;
@@ -419,18 +438,64 @@
 }
 
 .tooltipSeriesRow {
-  color: var(--tooltip-series-color) !important;
+  color: var(--tooltip-series-color);
   margin: 8px 0 0;
 }
 
 .tooltipSeriesRow * {
-  color: inherit !important;
+  color: inherit;
 }
 
 :global(.darkMode) .tooltipSeriesRow {
-  color: var(--tooltip-series-color) !important;
+  color: var(--tooltip-series-color);
 }
 
 :global(.darkMode) .tooltipSeriesRow * {
-  color: inherit !important;
+  color: inherit;
+}
+
+/* ================= DARK MODE CALENDAR POPUP ================= */
+/* Self-contained so the popup stays readable even when the shared
+   paid-labor-cost calendar styles are not bundled on this page. */
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar.react-datepicker) {
+  background-color: #253342;
+  border-color: #2d4059;
+  color: #fff;
+}
+
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__header) {
+  background-color: #2d4059;
+  border-bottom-color: #3a506b;
+}
+
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__current-month),
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__day-name) {
+  color: #fff;
+}
+
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__day) {
+  color: #e0e0e0;
+}
+
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__day:hover) {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__day--selected),
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__day--keyboard-selected) {
+  background-color: #e8a71c;
+  color: #1a1a1a;
+}
+
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__day--outside-month) {
+  color: #8a94a3;
+}
+
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__day--disabled) {
+  color: #5a6472;
+}
+
+:global(.paid-labor-cost-dark-calendar.paid-labor-cost-dark-calendar .react-datepicker__navigation-icon.react-datepicker__navigation-icon::before) {
+  border-color: #fff;
 }

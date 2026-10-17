@@ -35,7 +35,7 @@
   width: 100%;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .filtersGrid {
     grid-template-columns: 1fr; 
   }
@@ -173,8 +173,61 @@
   display: inline-block;
 }
 
-.varianceOverLight { color: #e74c3c !important; }
-.varianceOverDark { color: #ff4444 !important; }
+.varianceOverLight { color: #e74c3c; }
+.varianceOverDark { color: #f44; }
 
-.varianceUnderLight { color: #2ecc71 !important; }
-.varianceUnderDark { color: #4ade80 !important; }
+.varianceUnderLight { color: #2ecc71; }
+.varianceUnderDark { color: #4ade80; }
+
+:global(.cost-variance-dark-calendar.react-datepicker) {
+  background-color: #253342;
+  border-color: #2d4059;
+  color: #fff;
+}
+
+:global(.cost-variance-dark-calendar .react-datepicker__header) {
+  background-color: #2d4059;
+  border-bottom-color: #3a506b;
+}
+
+:global(.cost-variance-dark-calendar .react-datepicker__current-month),
+:global(.cost-variance-dark-calendar .react-datepicker__day-name) {
+  color: #fff;
+}
+
+:global(.cost-variance-dark-calendar .react-datepicker__day) {
+  color: #e0e0e0;
+}
+
+:global(.cost-variance-dark-calendar .react-datepicker__day:hover) {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+:global(.cost-variance-dark-calendar .react-datepicker__day--outside-month) {
+  color: #8a94a3;
+}
+
+:global(.cost-variance-dark-calendar .react-datepicker__day--disabled) {
+  color: #5a6472;
+}
+
+:global(.cost-variance-dark-calendar .react-datepicker__day--selected),
+:global(.cost-variance-dark-calendar .react-datepicker__day--keyboard-selected),
+:global(.cost-variance-dark-calendar .react-datepicker__day--range-start),
+:global(.cost-variance-dark-calendar .react-datepicker__day--range-end) {
+  background-color: #e8a71c;
+  color: #000;
+  font-weight: 600;
+}
+
+/* stylelint-disable-next-line no-duplicate-selectors -- repeated class raises specificity to beat
+   react-datepicker's own :not() compound selector for --in-selecting-range without !important */
+:global(.cost-variance-dark-calendar.cost-variance-dark-calendar .react-datepicker__day--in-selecting-range) {
+  background-color: rgb(232 167 28 / 55%);
+  color: #1a1a1a;
+}
+
+:global(.cost-variance-dark-calendar .react-datepicker__navigation-icon::before) {
+  border-color: #fff;
+}

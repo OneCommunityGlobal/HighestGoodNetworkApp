@@ -39,6 +39,22 @@
   font-size: 0.9rem;
 }
 
+/* Dark mode: make filter labels and native date inputs readable */
+:global(.dark-mode) .filters label,
+:global(.bm-dashboard-dark) .filters label {
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .filters input[type='date'],
+:global(.bm-dashboard-dark) .filters input[type='date'] {
+  background-color: #1f2d44 !important;
+  color: #f3f4f6 !important;
+  border: 1px solid #3b4d6b !important;
+  border-radius: 4px;
+  padding: 4px 6px;
+  color-scheme: dark;
+}
+
 /* Dark mode: make filter labels readable */
 :global(.dark) .filters label,
 :global(.dark-mode) .filters label,
@@ -195,6 +211,23 @@
 :global(.dark-mode) .tooltip *,
 :global([data-theme='dark']) .tooltip * {
   color: #fff !important;
+}
+
+.emptyMessage {
+  background-color: #f3f4f6;
+  color: #111827;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* Dark mode: give the empty/error message its own dark background so the
+   white text stays readable (reusing .tooltip's light background made it
+   unreadable in dark mode). */
+:global(.dark) .emptyMessage,
+:global(.dark-mode) .emptyMessage,
+:global([data-theme='dark']) .emptyMessage {
+  background-color: #2e3e5a;
+  color: #fff;
 }
 
 .buttonContainer {

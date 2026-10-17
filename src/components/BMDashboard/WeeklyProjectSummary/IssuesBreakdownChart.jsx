@@ -82,6 +82,20 @@ const getSelectStyles = darkMode => {
         ...baseStyles,
         color: '#aaaaaa',
       }),
+      clearIndicator: baseStyles => ({
+        ...baseStyles,
+        color: '#e0e0e0',
+        ':hover': {
+          color: '#fff',
+        },
+      }),
+      dropdownIndicator: baseStyles => ({
+        ...baseStyles,
+        color: '#e0e0e0',
+        ':hover': {
+          color: '#fff',
+        },
+      }),
     };
   }
 
@@ -566,12 +580,13 @@ export default function IssuesBreakdownChart() {
             </div>
           </div>
         ) : (
-          <ResponsiveContainer>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
               <XAxis dataKey="projectName" tick={{ fill: textColor }} />
               <YAxis allowDecimals={false} tick={{ fill: textColor }} />
               <Tooltip
+                cursor={{ fill: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
                 contentStyle={{
                   backgroundColor: tooltipBg,
                   border: `1px solid ${tooltipBorderColor}`,
