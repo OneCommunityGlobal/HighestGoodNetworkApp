@@ -185,7 +185,7 @@
   color: #fff;
 }
 
-/* Dark-mode body overrides for Recharts (replaces injected <style>) */
+/* Dark-mode body overrides for Recharts (replaces injected \3c style>) */
 :global(.dark-mode-body) :global(.recharts-wrapper),
 :global(.dark-mode-body) :global(.recharts-surface) {
   background-color: #1e2736 !important;

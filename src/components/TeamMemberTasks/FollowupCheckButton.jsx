@@ -6,7 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUserFollowUp } from '../../actions/followUpActions';
 import styles from './FollowUpCheckButton.module.css';
 
-function FollowupCheckButton({ mouseoverText, user, task }) {
+// Replaced deprecated defaultProps with ES6 default parameters to prevent React deprecation warnings
+function FollowupCheckButton({ mouseoverText = '', user, task }) {
   const dispatch = useDispatch();
   const userFollowUps = useSelector(state => state.userFollowUp?.followUps[user.personId] || []);
   const userFollowUpTask = userFollowUps.filter(ele => ele.taskId === task._id);
@@ -123,8 +124,6 @@ FollowupCheckButton.propTypes = {
   }).isRequired,
 };
 
-FollowupCheckButton.defaultProps = {
-  mouseoverText: '',
-};
+// FollowupCheckButton.defaultProps has been removed in favor of function default parameters above.
 
 export default FollowupCheckButton;

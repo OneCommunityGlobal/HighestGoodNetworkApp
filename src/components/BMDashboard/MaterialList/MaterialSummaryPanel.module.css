@@ -1,4 +1,5 @@
 /* Material Summary Panel Styles */
+
 /* Displays key material metrics in a responsive grid of cards */
 
 .summaryPanel {
@@ -20,12 +21,12 @@
   border-radius: 8px;
   padding: 1.25rem;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
   transition: all 0.3s ease;
 }
 
 .summaryCard:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   transform: translateY(-2px);
 }
 
@@ -62,7 +63,7 @@
 }
 
 .darkMode .summaryCard:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
 }
 
 .darkMode .cardLabel {
@@ -78,13 +79,13 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .summaryGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .summaryGrid {
     grid-template-columns: 1fr;
   }

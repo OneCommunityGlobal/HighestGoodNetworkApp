@@ -1,0 +1,55 @@
+/* Kitchen & Inventory Header Styles - Navigation Wrapping */
+
+/**
+ * Override the menuContainer to enable multi-line wrapping specifically for KIHeader.
+ * KIHeader has more navigation items (Dashboard, Production, Processing, Recipes, 
+ * Inventory, Orders, Reports, Food Bars, Calendar) that exceed single-line width.
+ */
+
+/* Large screens: > 1280px - Enable flex-wrap for multi-line navigation */
+@media (width > 1280px) {
+  .kiMenuContainer {
+    flex-flow: row wrap !important; /* Enable wrapping instead of nowrap */
+    gap: 0.75rem; /* Increased gap for wrapped items visibility */
+    justify-content: flex-end !important; /* Right-align wrapped items to match navigation block position */
+    flex-basis: 100% !important; /* Take full width to allow wrapping */
+    order: 2 !important;
+    width: auto;
+    max-width: none;
+    overflow: visible;
+    margin-right: 0;
+    padding-right: 0;
+  }
+
+  .kiMenuContainer > * {
+    flex-shrink: 0; /* Prevent menu items from shrinking */
+    white-space: nowrap; /* Prevent text wrapping within items */
+  }
+}
+
+/* Tablets/Laptops: 769px - 1280px - Enable wrapping with better spacing */
+@media (width > 768px) and (width <= 1280px) {
+  .kiMenuContainer {
+    flex-flow: row wrap !important; /* Enable wrapping */
+    gap: 0.75rem;
+    justify-content: flex-end !important; /* Right-align wrapped items */
+    flex-basis: 100% !important;
+    order: 2 !important;
+    width: 100%;
+    max-width: none;
+  }
+
+  .kiMenuContainer > * {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
+/* Mobile: ≤768px - Keep hamburger menu as is */
+@media (width <= 768px) {
+  .kiMenuContainer {
+    /* Inherit from Header.module.css mobile styles */
+
+    /* No changes needed for mobile view */
+  }
+}

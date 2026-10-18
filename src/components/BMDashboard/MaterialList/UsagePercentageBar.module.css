@@ -96,7 +96,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .barWrapper {
     height: 20px;
   }
