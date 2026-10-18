@@ -205,6 +205,133 @@ function buildPalette(darkMode) {
   };
 }
 
+/* ------------------------------------------------------------------ */
+/* Bubble layout helpers (kept outside the component to keep           */
+/* cognitive complexity of getPositions low).                          */
+/* ------------------------------------------------------------------ */
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+const ORBIT_FACTORS = { 'extra-small': 0.22, tablet: 0.28, large: 0.3 };
+const ORBIT_MIN_GAPS = { 'extra-small': 12, small: 18, tablet: 25 };
+const COLLISION_GAPS = { 'extra-small': 10, small: 15, tablet: 18 };
+
+function computeBounds(sizes, width, height, maxBubbleRadius) {
+  return {
+    width,
+    height,
+    padding: sizes.padding,
+    horizontalPadding: sizes.padding + maxBubbleRadius + 8,
+    topPadding: sizes.padding + maxBubbleRadius * 0.75 + 12,
+    bottomPadding:
+      sizes.padding + maxBubbleRadius * 1.15 + sizes.countFontSize + sizes.centerSize * 0.5 + 28,
+  };
+}
+
+function computeOrbitRadius(sizes, bounds, centerY, maxBubbleRadius) {
+  const { width, height, horizontalPadding, topPadding, bottomPadding } = bounds;
+  const availableOrbitX = Math.max(0, width / 2 - horizontalPadding);
+  const availableOrbitY = Math.max(
+    0,
+    Math.min(centerY - topPadding, height - bottomPadding - centerY),
+  );
+
+  const orbitFactor = ORBIT_FACTORS[sizes.deviceType] ?? 0.26;
+  const minGap = ORBIT_MIN_GAPS[sizes.deviceType] ?? 30;
+
+  const idealRadius = Math.min(
+    Math.min(width, height) * orbitFactor,
+    availableOrbitX,
+    availableOrbitY,
+  );
+  if (idealRadius <= 0) return 0;
+
+  const minRequiredRadius = sizes.centerSize + maxBubbleRadius + minGap;
+  const desired = Math.max(idealRadius, minRequiredRadius);
+  return Math.max(Math.min(desired, availableOrbitX, availableOrbitY), 0);
+}
+
+function clampToBounds(pos, bounds) {
+  pos.x = clamp(pos.x, bounds.padding + pos.r + 5, bounds.width - bounds.padding - pos.r - 5);
+  pos.y = clamp(pos.y, bounds.topPadding + 5, bounds.height - bounds.bottomPadding - 5);
+}
+
+function placeOnOrbit({ index, total, radius, r, center, centerSize, isMobile, bounds }) {
+  const angle = (index * 2 * Math.PI) / total - Math.PI / 2; // start from top
+  let x = center.x + radius * Math.cos(angle);
+  let y = center.y + radius * Math.sin(angle);
+
+  const distFromCenter = Math.hypot(x - center.x, y - center.y);
+  const minCenterDist = centerSize + r + (isMobile ? 15 : 20);
+  if (distFromCenter > 0 && distFromCenter < minCenterDist) {
+    const scale = minCenterDist / distFromCenter;
+    x = center.x + (x - center.x) * scale;
+    y = center.y + (y - center.y) * scale;
+  }
+
+  const pos = { x, y, r };
+  clampToBounds(pos, bounds);
+  return pos;
+}
+
+// Push two overlapping bubbles apart. Returns true if they collided.
+function separatePair(a, b, gap, bounds) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const dist = Math.hypot(dx, dy);
+  const minDist = a.r + b.r + gap;
+  if (dist >= minDist) return false;
+
+  const angle = Math.atan2(dy, dx);
+  const push = (minDist - dist) / 2 + 2;
+  a.x -= Math.cos(angle) * push;
+  a.y -= Math.sin(angle) * push;
+  b.x += Math.cos(angle) * push;
+  b.y += Math.sin(angle) * push;
+  clampToBounds(a, bounds);
+  clampToBounds(b, bounds);
+  return true;
+}
+
+function separateAllPairs(positions, gap, bounds) {
+  let collided = false;
+  for (let i = 0; i < positions.length; i++) {
+    for (let j = i + 1; j < positions.length; j++) {
+      if (separatePair(positions[i], positions[j], gap, bounds)) collided = true;
+    }
+  }
+  return collided;
+}
+
+// Keep every bubble (ellipse: rx = r, ry = 0.6r) clear of the center circle.
+function pushClearOfCenter(positions, center, centerSize) {
+  let moved = false;
+  positions.forEach(p => {
+    const dx = p.x - center.x;
+    const dy = p.y - center.y;
+    const phi = Math.atan2(dy, dx);
+    const rx = p.r;
+    const ry = p.r * 0.6;
+    const extent = (rx * ry) / Math.hypot(ry * Math.cos(phi), rx * Math.sin(phi));
+    const minD = centerSize + extent + 10;
+    if (Math.hypot(dx, dy) < minD) {
+      moved = true;
+      p.x = center.x + Math.cos(phi) * minD;
+      p.y = center.y + Math.sin(phi) * minD;
+    }
+  });
+  return moved;
+}
+
+function resolveCollisions(positions, { sizes, bounds, center, maxIterations = 30 }) {
+  const gap = COLLISION_GAPS[sizes.deviceType] ?? 20;
+  for (let i = 0; i < maxIterations; i++) {
+    const pairsMoved = separateAllPairs(positions, gap, bounds);
+    const centerMoved = pushClearOfCenter(positions, center, sizes.centerSize);
+    if (!pairsMoved && !centerMoved) break;
+  }
+}
+
 function applyDarkCalendarStyles() {
   const poppers = Array.from(document.querySelectorAll('.react-datepicker-popper'));
   const activePopper = poppers.find(popper => popper.offsetParent !== null) || poppers.at(-1);
@@ -721,162 +848,39 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     [getResponsiveSizes, isMobile],
   );
 
-  // Improved position calculation with collision avoidance
+  // Position calculation with collision avoidance (logic lives in the helpers above)
   const getPositions = useCallback(
     (tags, width, height, centerX, centerY) => {
       if (!tags.length) return [];
 
       const sizes = getResponsiveSizes();
       const counts = tags.map(t => t.count);
-      const centerSize = sizes.centerSize;
-
-      // Calculate bubble layouts (radius grows to fit the full label)
       const layouts = tags.map((t, i) => getLabelLayout(t.tag, getBubbleSize(counts[i], counts)));
-      const radii = layouts.map(l => l.r);
-      const maxBubbleRadius = Math.max(...radii, sizes.minBubbleSize);
-      const horizontalPadding = sizes.padding + maxBubbleRadius + 8;
-      const topPadding = sizes.padding + maxBubbleRadius * 0.75 + 12;
-      const bottomPadding =
-        sizes.padding + maxBubbleRadius * 1.15 + sizes.countFontSize + centerSize * 0.5 + 28;
+      const maxBubbleRadius = Math.max(...layouts.map(l => l.r), sizes.minBubbleSize);
 
-      // Keep the orbit inside the visible area with room for labels and the center text.
-      const availableOrbitX = Math.max(0, width / 2 - horizontalPadding);
-      const availableOrbitY = Math.max(
-        0,
-        Math.min(centerY - topPadding, height - bottomPadding - centerY),
-      );
+      const center = { x: centerX, y: centerY };
+      const bounds = computeBounds(sizes, width, height, maxBubbleRadius);
+      const radius = computeOrbitRadius(sizes, bounds, centerY, maxBubbleRadius);
 
-      // IMPROVED: Adaptive orbit radius based on device size
-      let orbitFactor = 0.26;
-      if (sizes.deviceType === 'extra-small') orbitFactor = 0.22;
-      else if (sizes.deviceType === 'tablet') orbitFactor = 0.28;
-      else if (sizes.deviceType === 'large') orbitFactor = 0.3;
+      const positions = tags.map((t, i) => ({
+        ...placeOnOrbit({
+          index: i,
+          total: tags.length,
+          radius,
+          r: layouts[i].r,
+          center,
+          centerSize: sizes.centerSize,
+          isMobile,
+          bounds,
+        }),
+        tag: t.tag,
+        fullTag: t.tag,
+        count: t.count,
+        lines: layouts[i].lines,
+        fontSize: layouts[i].fontSize,
+      }));
 
-      const idealRadius = Math.min(
-        Math.min(width, height) * orbitFactor,
-        availableOrbitX,
-        availableOrbitY,
-      );
-
-      let minGap = 30;
-      if (sizes.deviceType === 'extra-small') minGap = 12;
-      else if (sizes.deviceType === 'small') minGap = 18;
-      else if (sizes.deviceType === 'tablet') minGap = 25;
-
-      const minRequiredRadius = centerSize + maxBubbleRadius + minGap;
-      const radius =
-        idealRadius > 0
-          ? Math.max(
-              Math.min(Math.max(idealRadius, minRequiredRadius), availableOrbitX, availableOrbitY),
-              0,
-            )
-          : 0;
-
-      const positions = [];
-
-      for (let i = 0; i < tags.length; i++) {
-        const angle = (i * 2 * Math.PI) / tags.length - Math.PI / 2; // Start from top
-        const r = radii[i];
-
-        let x = centerX + radius * Math.cos(angle);
-        let y = centerY + radius * Math.sin(angle);
-
-        // Ensure minimum distance from center
-        const distFromCenter = Math.hypot(x - centerX, y - centerY);
-        const minCenterDist = centerSize + r + (isMobile ? 15 : 20);
-
-        if (distFromCenter < minCenterDist && distFromCenter > 0) {
-          const scale = minCenterDist / distFromCenter;
-          x = centerX + (x - centerX) * scale;
-          y = centerY + (y - centerY) * scale;
-        }
-
-        // Keep within bounds with extra padding
-        x = Math.max(sizes.padding + r + 5, Math.min(width - sizes.padding - r - 5, x));
-        y = Math.max(topPadding + 5, Math.min(height - bottomPadding - 5, y));
-
-        positions.push({
-          x,
-          y,
-          angle: Math.atan2(y - centerY, x - centerX),
-          r,
-          tag: tags[i].tag,
-          count: tags[i].count,
-          fullTag: tags[i].tag,
-          lines: layouts[i].lines,
-          fontSize: layouts[i].fontSize,
-        });
-      }
-
-      // COLLISION DETECTION: Iteratively adjust overlapping bubbles
-      let hasCollision = true;
-      let iterations = 0;
-      const maxIterations = 30;
-
-      while (hasCollision && iterations < maxIterations) {
-        hasCollision = false;
-        iterations++;
-
-        for (let i = 0; i < positions.length; i++) {
-          for (let j = i + 1; j < positions.length; j++) {
-            const pos1 = positions[i];
-            const pos2 = positions[j];
-
-            const dx = pos2.x - pos1.x;
-            const dy = pos2.y - pos1.y;
-            const dist = Math.hypot(dx, dy);
-
-            // Minimum distance = sum of radii + gap (adaptive gap based on device)
-            let gap = 20;
-            if (sizes.deviceType === 'extra-small') gap = 10;
-            else if (sizes.deviceType === 'small') gap = 15;
-            else if (sizes.deviceType === 'tablet') gap = 18;
-            const minDist = pos1.r + pos2.r + gap;
-
-            if (dist < minDist) {
-              hasCollision = true;
-
-              // Push bubbles apart from each other
-              const angle = Math.atan2(dy, dx);
-              const overlap = minDist - dist;
-              const push = overlap / 2 + 2; // Extra push to separate
-
-              pos1.x -= Math.cos(angle) * push;
-              pos1.y -= Math.sin(angle) * push;
-              pos2.x += Math.cos(angle) * push;
-              pos2.y += Math.sin(angle) * push;
-
-              // Keep within bounds after push
-              pos1.x = Math.max(
-                sizes.padding + pos1.r + 5,
-                Math.min(width - sizes.padding - pos1.r - 5, pos1.x),
-              );
-              pos1.y = Math.max(topPadding + 5, Math.min(height - bottomPadding - 5, pos1.y));
-              pos2.x = Math.max(
-                sizes.padding + pos2.r + 5,
-                Math.min(width - sizes.padding - pos2.r - 5, pos2.x),
-              );
-              pos2.y = Math.max(topPadding + 5, Math.min(height - bottomPadding - 5, pos2.y));
-            }
-          }
-        }
-
-        // Keep every bubble (an ellipse, rx = r, ry = 0.6r) clear of the center circle.
-        positions.forEach(p => {
-          const dx = p.x - centerX;
-          const dy = p.y - centerY;
-          const phi = Math.atan2(dy, dx);
-          const rx = p.r;
-          const ry = p.r * 0.6;
-          const extent = (rx * ry) / Math.hypot(ry * Math.cos(phi), rx * Math.sin(phi));
-          const minD = centerSize + extent + 10;
-          if (Math.hypot(dx, dy) < minD) {
-            hasCollision = true;
-            p.x = centerX + Math.cos(phi) * minD;
-            p.y = centerY + Math.sin(phi) * minD;
-          }
-        });
-      }
+      resolveCollisions(positions, { sizes, bounds, center });
 
       // Pushing moves bubbles, so recompute angles for the connector lines.
       positions.forEach(p => {
