@@ -300,7 +300,11 @@ const TeamMemberTask = React.memo(
               <tbody>
                 <tr className="remove-child-borders">
                   {/* green if member has met committed hours for the week, red if not */}
-                  <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
+                  <td
+                    colSpan={1}
+                    data-label="User Status"
+                    className={`${darkMode ? 'bg-yinmn-blue' : ''}`}
+                  >
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
                       <div className={styles['member-links-wrapper']}>
                         <div className={styles['committed-hours-circle']}>
@@ -407,6 +411,7 @@ const TeamMemberTask = React.memo(
                   </td>
                   <td
                     colSpan={2}
+                    data-label="Team Member"
                     className={`${darkMode ? 'bg-yinmn-blue' : ''}`}
                     style={{ textAlign: 'center' }}
                   >
@@ -538,20 +543,12 @@ const TeamMemberTask = React.memo(
                                   {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
                                 </u>{' '}
                                 /
-                                <span
-                                  className={
-                                    darkMode ? styles.hoursCompletedDark : styles.hoursCompleted
-                                  }
-                                >
+                                <span className={styles.hoursDone}>
                                   {' '}
                                   {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
                                 </span>{' '}
                                 /
-                                <span
-                                  className={
-                                    darkMode ? styles.hoursRemainingDark : styles.hoursRemaining
-                                  }
-                                >
+                                <span className={styles.hoursLeft}>
                                   {' '}
                                   {totalHoursRemaining.toFixed(1)}
                                 </span>
@@ -599,7 +596,9 @@ const TeamMemberTask = React.memo(
                                             className={styles['team-member-tasks-content-link']}
                                             to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                                             data-testid={`${task.taskName}`}
-                                            title={`Created by: ${getTaskCreatorName(task)}`}
+                                            title={`${
+                                              task.taskName
+                                            } (Created by: ${getTaskCreatorName(task)})`}
                                             style={{ color: darkMode ? '#339CFF' : undefined }}
                                           >
                                             <span className={styles.taskTitle}>
@@ -667,26 +666,21 @@ const TeamMemberTask = React.memo(
 
                                           <TeamMemberTaskIconsInfo />
                                         </div>
-
-                                        {/* Review Button */}
-                                        <div className={styles['team-member-task-review-button']}>
-                                          <ReviewButton
-                                            user={user}
-                                            userId={userId}
-                                            task={task}
-                                            updateTask={updateTaskStatus}
-                                            onTimeOff={onTimeOff}
-                                          />
-                                        </div>
                                       </div>
                                     </td>
-                                    {task.hoursLogged != null && task.estimatedHours != null && (
-                                      <td
-                                        data-label="Progress"
-                                        className={`${styles['team-task-progress']} ${
-                                          darkMode ? 'bg-yinmn-blue text-light' : ''
-                                        }`}
-                                      >
+
+                                    {/*
+                                      Always render the Progress cell (even when there's no
+                                      hours data) so the column count for every row matches the
+                                      "Tasks(s) / Progress / Status" header exactly.
+                                    */}
+                                    <td
+                                      data-label="Progress"
+                                      className={`${styles['team-task-progress']} ${
+                                        darkMode ? 'bg-yinmn-blue text-light' : ''
+                                      }`}
+                                    >
+                                      {task.hoursLogged != null && task.estimatedHours != null && (
                                         <div className={styles['progress-wrapper']}>
                                           <div className={styles['team-task-progress-container']}>
                                             <div
@@ -780,14 +774,38 @@ const TeamMemberTask = React.memo(
                                               );
                                             })()}
                                         </div>
-                                      </td>
-                                    )}
+                                      )}
+                                    </td>
+
+                                    {/*
+                                      Status cell — rendered for EVERY role so the column count
+                                      matches the header. ReviewButton itself decides what to show
+                                      (Submit on your own unsubmitted task, review controls for
+                                      Owner/Admin/Manager/Mentor or putReviewStatus, otherwise a
+                                      disabled button or nothing).
+                                    */}
+                                    <td
+                                      data-label="Status"
+                                      className={`${styles['status-align']} ${
+                                        darkMode ? 'bg-yinmn-blue text-light' : ''
+                                      }`}
+                                    >
+                                      <div className={styles['team-member-task-review-button']}>
+                                        <ReviewButton
+                                          user={user}
+                                          userId={userId}
+                                          task={task}
+                                          updateTask={updateTaskStatus}
+                                          onTimeOff={onTimeOff}
+                                        />
+                                      </div>
+                                    </td>
                                   </tr>
                                 );
                               })}
                             {canTruncate && (
                               <tr key="truncate-button-row" className={styles['task-break']}>
-                                <td className={styles['task-align']}>
+                                <td className={styles['task-align']} colSpan={3}>
                                   <button
                                     type="button"
                                     onClick={handleTruncateTasksButtonClick}
