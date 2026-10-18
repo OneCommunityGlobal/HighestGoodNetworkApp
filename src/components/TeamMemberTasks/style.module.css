@@ -268,8 +268,44 @@
   margin: 0 0 5px 5px;
 }
 
-.dashboard-team-clocks {
+/* public/index.css forces `body.dark-mode * { color: #fff !important; }` app-wide, which
+   turns these hour colors and tracker buttons white. Two-class selectors + !important
+   outrank it so the colors stay distinguishable in dark mode. */
+.team-clocks .hoursCompleted {
+  color: green !important;
+}
+
+.team-clocks .hoursRemaining {
+  color: red !important;
+}
+
+.team-clocks .hoursCommittedDark {
   color: #339cff !important;
+}
+
+.team-clocks .hoursCompletedDark {
+  color: #5cd65c !important;
+}
+
+.team-clocks .hoursRemainingDark {
+  color: #ff6b6b !important;
+}
+
+.team-clocks-header .trackerToggleBtn {
+  margin-top: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid #17a2b8;
+  background-color: #fff;
+  color: #17a2b8 !important;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.team-clocks-header .trackerToggleBtnActive {
+  background-color: #17a2b8;
+  color: #fff !important;
 }
 
 .team-clocks-header {
@@ -931,6 +967,11 @@
 .multiSelectFilter {
   position: relative;
   z-index: 20;
+}
+
+/* Lift the open filter above its sibling filters so its dropdown is not covered */
+.multiSelectFilter:focus-within {
+  z-index: 30;
 }
 
 .multiSelectDark :global(.dropdown-container) {

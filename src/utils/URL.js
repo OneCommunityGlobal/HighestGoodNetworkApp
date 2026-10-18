@@ -114,6 +114,7 @@ export const ENDPOINTS = {
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/${wbsId}`,
   TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
   TASKS_BY_USERID: userId => `${APIEndpoint}/tasks/user/${userId}`,
+  RESOLVED_TASKS: (page, limit) => `${APIEndpoint}/tasks/resolved?page=${page}&limit=${limit}`,
   // TASKS_BY_userID: userId => `${APIEndpoint}/tasks/userProfile/${userId}`,
   TASK_DEL: (taskId, motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
@@ -380,6 +381,8 @@ export const ENDPOINTS = {
   BM_PROJECTS_WITH_LOCATION: `${APIEndpoint}/bm/projects/location`,
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_DELETE_INVENTORTY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
+  BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
 
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
@@ -535,9 +538,12 @@ export const ENDPOINTS = {
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
+  /** Admin/Owner only — never call from the public apply UI. */
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
   SUBMIT_JOB_APPLICATION: formId =>
   `${APIEndpoint}/jobforms/${formId}/responses`,
+  /** Public: distinct job titles for the apply-page position dropdown. */
+  GET_JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
   UPDATE_QUESTION: (formId, questionIndex) =>
@@ -684,16 +690,22 @@ export const ENDPOINTS = {
     return `${APIEndpoint}/job-analytics-router${qs}`;
   },
 
-  JOB_ANALYTICS_ROLES: `${APIEndpoint}/job-analytics-router/roles`,
+  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+  JOB_ANALYTICS_EXPERIENCE_BREAKDOWN: `${APIEndpoint}/applicant-analytics/experience-breakdown`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
+  PROMOTION_PENDING: `${APIEndpoint}/promotion-pending`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
   // LinkedIn autoposter endpoints
   LINKEDIN_POST: `${APIEndpoint}/postToLinkedIn`,
   LINKEDIN_SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
   LINKEDIN_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/scheduledPosts/${postId}`,
+  MASTODON_POST: `${APIEndpoint}/mastodon/createPin`,
+  MASTODON_SCHEDULED_POSTS: `${APIEndpoint}/mastodon/schedule`,
+  MASTODON_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/mastodon/schedule/${postId}`,
+  MASTODON_POST_HISTORY: limit => `${APIEndpoint}/mastodon/history?limit=${limit}`,
 
   // actual cost endpoints
   ACTUAL_COST_BREAKDOWN: projectId => `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,

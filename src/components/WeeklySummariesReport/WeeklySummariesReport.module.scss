@@ -3,8 +3,43 @@
   background-color: #f6f6f3;
 }
 
+.bioToggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bioToggleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
 .bioToggle {
-  display: inline-block;
+  display: inline-flex;
+  margin: 0;
+  
+  button {
+    margin-top: 0;
+  }
+}
+
+.toggleLabel {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+/* public/index.css forces white text via "body.dark-mode *", which is unreadable on the
+   yellow bio bar; the body prefix is needed to out-rank that selector */
+:global(body.dark-mode) .bioHighlightDark,
+:global(body.dark-mode) .bioHighlightDark *,
+:global(body.bm-dashboard-dark) .bioHighlightDark,
+:global(body.bm-dashboard-dark) .bioHighlightDark * {
+  color: #000000 !important;
 }
 
 .nameInfo {
@@ -116,6 +151,90 @@
   width: 150px !important;
 }
 
+.teamCodeInput {
+  width: 90px !important;
+  height: 28px;
+  padding: 2px 6px;
+}
+
+.summaryCountInputWrapper {
+  flex: 0 0 auto;
+  padding-left: 6px;
+}
+
+/* "Requested Week Off" notice beside the team code, and its click-to-show reason.
+   Same colors in light and dark mode. In dark mode the global `body.dark-mode *` rule
+   (public/index.css) forces white text on every element with !important, so the
+   notice, its button and icon repeat their colors under that selector to win. */
+.weekOffBadge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  background-color: #f8d7da;
+  color: #000;
+}
+
+.weekOffInfoButton {
+  /* A flex container drops the trailing space after the text, so the gap
+     before the icon comes from this margin. */
+  margin-left: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #000;
+  line-height: 1;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: 1px;
+    border-radius: 50%;
+  }
+}
+
+/* Opens to the right of the notice, level with it, so it does not cover the
+   name and Bio lines above; on narrow screens it opens below instead. */
+.weekOffReason {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 6px);
+  z-index: 10;
+  min-width: 220px;
+  max-width: 320px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  background-color: #222;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+@media screen and (width <= 576px) {
+  .weekOffReason {
+    top: calc(100% + 6px);
+    left: 0;
+  }
+}
+
+:global(body.dark-mode),
+:global(body.bm-dashboard-dark) {
+  .weekOffBadge,
+  .weekOffInfoButton,
+  .weekOffInfoButton i {
+    color: #000 !important;
+  }
+
+  .weekOffReason {
+    color: #fff !important;
+  }
+}
+
 .teamcodeWrapper {
     display: flex;
     white-space: wrap;
@@ -203,6 +322,7 @@
   color: #b00020; /* accessible red on light bg */
   font-weight: 700;
   background: rgb(255 235 59 / 18%);
+  border-left: 4px solid #b00020;
   padding: 6px 10px;
   border-radius: 6px;
   line-height: 1.3;
@@ -217,6 +337,7 @@
 }
 
 .finalWeekNoticeDark {
-  color: #ffd1d1; /* light red for dark bg */
-  background: rgb(255 255 255 / 8%);
+  color: #ffc8be; /* light red for dark bg, 5:1 contrast on the tinted card */
+  background: rgb(255 82 82 / 16%);
+  border-left-color: #ff6b6b;
 }
