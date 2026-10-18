@@ -209,11 +209,15 @@ export default function DistributionLaborHours() {
                 id="labor-from-date"
                 type="date"
                 value={dateRange.from}
+                max={dateRange.to || undefined}
                 onChange={e => {
+                  const newFrom = e.target.value;
+
                   setDateRange(previous => ({
-                    ...previous,
-                    from: e.target.value,
+                    from: newFrom,
+                    to: previous.to && newFrom && newFrom > previous.to ? '' : previous.to,
                   }));
+
                   setFiltersApplied(false);
                 }}
               />
@@ -225,11 +229,15 @@ export default function DistributionLaborHours() {
                 id="labor-to-date"
                 type="date"
                 value={dateRange.to}
+                min={dateRange.from || undefined}
                 onChange={e => {
+                  const newTo = e.target.value;
+
                   setDateRange(previous => ({
-                    ...previous,
-                    to: e.target.value,
+                    from: previous.from && newTo && newTo < previous.from ? '' : previous.from,
+                    to: newTo,
                   }));
+
                   setFiltersApplied(false);
                 }}
               />

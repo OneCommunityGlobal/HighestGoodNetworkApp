@@ -5,30 +5,29 @@
   height: 100%;
   min-height: 650px;
   box-sizing: border-box;
+  container-type: inline-size;
 
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
   border-radius: 8px;
-  padding: 24px 20px;
-
+  padding: 20px;
   box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
 
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /*
- * This is the important change.
- *
- * Title + filters + Submit + chart are one compact block.
- * The entire block is centered inside the tall dashboard card.
+ * Keep the title, filters, Submit button, and chart
+ * grouped together with consistent vertical spacing.
+ * The content starts near the top of the card.
  */
 .content {
   width: 100%;
-  max-width: 760px;
+  max-width: 100%;
+  min-width: 0;
 
   display: flex;
   flex-direction: column;
@@ -328,27 +327,28 @@
  */
 .visualizationSection {
   width: 100%;
+  min-width: 0;
+  flex: 0 0 auto;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-top: 34px;
+  margin-top: 28px;
+  padding: 0;
 }
 
 .visualizationContent {
-  width: min(100%, 700px);
+  width: 100%;
+  max-width: 700px;
+  min-width: 0;
 
   display: grid;
-
-  grid-template-columns:
-    minmax(220px, 270px)
-    340px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
 
   justify-content: center;
   align-items: center;
-
-  column-gap: 34px;
+  column-gap: 24px;
 }
 
 /* =========================
@@ -357,10 +357,10 @@
 
 .legend {
   width: 100%;
+  min-width: 0;
 
   display: flex;
   flex-direction: column;
-
   justify-content: center;
 }
 
@@ -378,6 +378,8 @@
 }
 
 .legendText {
+  min-width: 0;
+  overflow-wrap: anywhere;
   line-height: 1.3;
 }
 
@@ -397,9 +399,9 @@
    ========================= */
 
 .pieChartContainer {
-  width: 340px;
+  width: 100%;
+  max-width: 340px;
   height: 300px;
-
   min-width: 0;
 
   display: flex;
@@ -465,6 +467,28 @@
   color: #d1d5db;
 }
 
+@container (max-width: 620px) {
+  .visualizationContent {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    row-gap: 16px;
+  }
+
+  .legend {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .pieChartContainer {
+    width: 100%;
+    max-width: 300px;
+    height: 290px;
+  }
+
+  .visualizationSection {
+    margin-top: 24px;
+  }
+}
 /* =========================
    TABLET
    ========================= */
@@ -473,38 +497,11 @@
   .container {
     height: auto;
     min-height: auto;
-
-    align-items: stretch;
-
     padding: 24px 18px;
   }
 
   .content {
     max-width: none;
-  }
-
-  .visualizationSection {
-    margin-top: 28px;
-  }
-
-  .visualizationContent {
-    width: 100%;
-
-    grid-template-columns: 1fr;
-
-    justify-items: center;
-
-    row-gap: 18px;
-  }
-
-  .legend {
-    width: auto;
-    max-width: 320px;
-  }
-
-  .pieChartContainer {
-    width: min(340px, 100%);
-    height: 300px;
   }
 }
 
@@ -546,24 +543,5 @@
   .appliedMessage {
     position: static;
     transform: none;
-  }
-
-  .visualizationSection {
-    margin-top: 26px;
-  }
-
-  .visualizationContent {
-    row-gap: 16px;
-  }
-
-  .legend {
-    width: 100%;
-    max-width: 280px;
-  }
-
-  .pieChartContainer {
-    width: 300px;
-    max-width: 100%;
-    height: 290px;
   }
 }
