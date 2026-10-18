@@ -254,7 +254,15 @@ function WeeklyProjectSummary() {
         key: 'Tools and Equipment Tracking',
         className: 'full',
         content: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gridColumn: '1 / -1',
+              gap: '20px',
+              width: '100%',
+            }}
+          >
             <div
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ width: '100%' }}
