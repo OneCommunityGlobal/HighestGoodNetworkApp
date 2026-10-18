@@ -384,6 +384,7 @@ export const ENDPOINTS = {
   BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
 
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
+  BM_MATERIAL_COST_CORRELATION: `${APIEndpoint}/bm/materials/cost-correlation`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,

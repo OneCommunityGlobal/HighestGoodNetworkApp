@@ -6,6 +6,7 @@ import QuantityOfMaterialsUsed from '../QuantityOfMaterialsUsed/QuantityOfMateri
 import TotalMaterialCostPerProject from '../TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from '../WeeklyProjectSummary.module.css';
 import materialStyles from './MaterialConsumption.module.css';
+import MaterialCostCorrelationChart from '../../MaterialCostCorrelation';
 
 function useMaterialConsumptionData(quantityOfMaterialsUsedData) {
   const dispatch = useDispatch();
@@ -25,6 +26,13 @@ function useMaterialConsumptionData(quantityOfMaterialsUsedData) {
 }
 
 function renderMaterialCard(cardKey, quantityOfMaterialsUsedData) {
+  if (cardKey === 'correlation') {
+    return (
+      <div className={materialStyles.materialConsumptionContent}>
+        <MaterialCostCorrelationChart />
+      </div>
+    );
+  }
   if (cardKey === 'quantity') {
     return (
       <div
@@ -36,7 +44,7 @@ function renderMaterialCard(cardKey, quantityOfMaterialsUsedData) {
   }
 
   if (cardKey === 'issue') {
-    // The issue chart is part of the three-card Material Consumption group on this PR.
+    // The issue chart is part of the four-card Material Consumption group on this PR.
     return (
       <div
         className={`${materialStyles.materialConsumptionContent} ${materialStyles.issueContent}`}
@@ -59,7 +67,7 @@ export function MaterialConsumptionCards({ quantityOfMaterialsUsedData }) {
   const materialData = useMaterialConsumptionData(quantityOfMaterialsUsedData);
   const darkMode = useSelector(state => state.theme.darkMode);
   // Keep this order aligned with the PR requirement for the Material Consumption section and route.
-  const cards = ['quantity', 'issue', 'totalCost'];
+  const cards = ['correlation', 'quantity', 'issue', 'totalCost'];
   const cardClassNames = {
     issue: materialStyles.issueCard,
   };

@@ -136,6 +136,90 @@ const projectStatusButtons = [
   },
 ];
 
+function renderFinancialCard(i) {
+  if (i === 2) return <CostPredictionChart projectId={1} />;
+  if (i === 3) return <ActualVsPlannedCost />;
+  return <div>📊 Card</div>;
+}
+
+function renderProjectStatusGrid() {
+  return (
+    <div className={styles.projectStatusGrid}>
+      {projectStatusButtons.map(button => (
+        <div
+          key={uuidv4()}
+          className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
+          style={{ backgroundColor: button.bgColor }}
+        >
+          <div
+            className={styles.weeklyCardTitle}
+            style={{ color: '#000' }} // FIX: always visible
+          >
+            {button.title}
+          </div>
+
+          <div
+            className={styles.weeklyStatusButton}
+            style={{ backgroundColor: button.buttonColor }}
+          >
+            <span className={styles.weeklyStatusValue}>{button.value}</span>
+          </div>
+
+          <div className="weekly-status-change" style={{ color: button.textColor }}>
+            {button.change}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function renderMaterialConsumptionCards(quantityOfMaterialsUsedData) {
+  return [0, 1, 2, 3].map(idx => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderMaterialCard(idx, quantityOfMaterialsUsedData)}
+    </div>
+  ));
+}
+
+function renderLaborTrackingCard(i) {
+  return i === 1 ? <PaidLaborCost /> : <DistributionLaborHours />;
+}
+
+function renderLaborTrackingCards() {
+  return [0, 1].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderLaborTrackingCard(i)}
+    </div>
+  ));
+}
+
+function renderFinancialsTrackingCards() {
+  return [0, 1, 2, 3].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderFinancialCard(i)}
+    </div>
+  ));
+}
+
+function DashboardSection({ title, sectionKey, className, content, isOpen, onToggle }) {
+  return (
+    <div className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}>
+      <button
+        type="button"
+        className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+        onClick={() => onToggle(sectionKey)}
+      >
+        {title} <span>{isOpen ? '∧' : '∨'}</span>
+      </button>
+
+      {isOpen && (
+        <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>{content}</div>
+      )}
+    </div>
+  );
+}
+
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -240,7 +324,7 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
-        // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
+        // Shared with /bmdashboard/issuechart so the PR-required four-card grouping stays in sync.
         content: (
           <MaterialConsumptionCards quantityOfMaterialsUsedData={quantityOfMaterialsUsedData} />
         ),
