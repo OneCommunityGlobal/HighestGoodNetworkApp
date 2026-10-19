@@ -1,10 +1,13 @@
 // src/components/SupportPortal/SupportLogin.jsx
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styles from './SupportLogin.module.css';
 import axios from 'axios';
 
 export default function SupportLogin() {
+  // Keep the login page in sync with the shared HGN theme preference.
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +38,7 @@ export default function SupportLogin() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.card}>
         <h1 className={styles.title}>Support Portal Login</h1>
 

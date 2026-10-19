@@ -1,10 +1,13 @@
 // src/components/SupportPortal/SupportDashboard.jsx
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styles from './SupportDashboard.module.css';
 import axios from 'axios';
 
 export default function SupportDashboard() {
+  // Keep the dashboard in sync with the shared HGN theme preference.
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [search, setSearch] = useState('');
@@ -57,7 +60,7 @@ export default function SupportDashboard() {
   }, [search, students]);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <header className={styles.header}>
         <h1 className={styles.title}>Support Dashboard</h1>
         <input

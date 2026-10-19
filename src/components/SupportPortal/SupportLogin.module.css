@@ -89,6 +89,53 @@
   cursor: default;
 }
 
+/* Darkmode */
+.darkMode {
+  background-color: #1a1d23;
+}
+
+.darkMode .card {
+  background-color: #1e293b;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 40%);
+}
+
+.darkMode .title,
+.darkMode .label {
+  color: #fff;
+}
+
+.darkMode .input {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #fff;
+}
+
+.darkMode .input:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 2px rgb(0 123 255 / 25%);
+}
+
+/* Use Bootstrap's primary blue and hover colors from the standard login's btn-primary. */
+.darkMode .submitButton {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.darkMode .submitButton:hover:not(:disabled) {
+  background-color: #0069d9;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 40%);
+}
+
+.darkMode .submitButton:disabled {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.darkMode .errorBanner {
+  background-color: #4a1c24;
+  color: #f8d7da;
+}
+
 @media (width <= 480px) {
   .card {
     padding: 1.5rem;

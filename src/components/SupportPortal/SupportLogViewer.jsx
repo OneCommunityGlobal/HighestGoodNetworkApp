@@ -1,10 +1,13 @@
 // src/components/SupportPortal/SupportLogViewer.jsx
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styles from './SupportLogViewer.module.css';
 import axios from 'axios';
 
 export default function SupportLogViewer({ match }) {
+  // Keep the log viewer in sync with the shared HGN theme preference.
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const { studentId } = match.params; // ← get :studentId from route props
 
   const [studentName, setStudentName] = useState('');
@@ -53,7 +56,7 @@ export default function SupportLogViewer({ match }) {
   }, [studentId]);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <header className={styles.header}>
         <div>
           <h1 className={styles.title}>{studentName} — Daily Log</h1>
