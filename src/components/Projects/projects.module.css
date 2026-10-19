@@ -218,11 +218,8 @@
   z-index: 2;
 }
 
-/* :global(.bg-oxford-blue) span.project-member-badge,
-span.project-member-badge {
-  color: #111 !important;
-} */
- .badgeTextBlack {
+/* Increased specificity to ensure badge text remains strictly black in both light and dark modes */
+ .project-member-badge.badgeTextBlack {
   color: #111 !important;
 }
 
