@@ -10,7 +10,10 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
-import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
+import {
+  getUploadSizeError,
+  isJobApplicationFileUploadQuestion,
+} from './jobApplicationQuestionUtils';
 import { checkEmail } from '../../../utils/emailValidation';
 import {
   ensurePositionOption,
@@ -754,7 +757,9 @@ function FileUploadField({
   inputRef,
   optional = false,
   required = false,
+  error = '',
 }) {
+  const errorId = `${id}-error`;
   const statusText = file ? `${file.name} (${formatFileSize(file.size)})` : 'No file selected';
   const statusClass = file ? styles.fileStatusSelected : styles.fileStatusEmpty;
 
@@ -785,6 +790,8 @@ function FileUploadField({
             onChange={onChange}
             className={styles.hiddenFileInput}
             required={required && !file}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : undefined}
           />
         </label>
         <span className={`${styles.fileStatus} ${statusClass}`} aria-live="polite">
@@ -796,6 +803,11 @@ function FileUploadField({
           </button>
         )}
       </div>
+      {error && (
+        <p id={errorId} className={styles.fieldError} role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -813,6 +825,7 @@ FileUploadField.propTypes = {
   inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
   optional: PropTypes.bool,
   required: PropTypes.bool,
+  error: PropTypes.string,
 };
 
 FileUploadField.defaultProps = {
@@ -823,6 +836,7 @@ FileUploadField.defaultProps = {
   inputRef: undefined,
   optional: false,
   required: false,
+  error: '',
 };
 
 function JobPositionSelect({ value, options, onChange }) {
@@ -935,6 +949,8 @@ function JobApplicationForm() {
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const [questionFiles, setQuestionFiles] = useState({});
+  const [resumeFileError, setResumeFileError] = useState('');
+  const [questionFileErrors, setQuestionFileErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const resumeInputRef = useRef(null);
   const emailInputRef = useRef(null);
@@ -1136,6 +1152,7 @@ function JobApplicationForm() {
     const qs = getVisibleQuestionsForForm(form);
     setAnswers(initialAnswersForQuestions(qs));
     setQuestionFiles({});
+    setQuestionFileErrors({});
     questionFileInputRefs.current = {};
     setFieldErrors({});
   }, [selectedJob, forms]);
@@ -1157,6 +1174,7 @@ function JobApplicationForm() {
       setFilteredForm(null);
       setAnswers([]);
       setQuestionFiles({});
+      setQuestionFileErrors({});
       questionFileInputRefs.current = {};
       setFieldErrors({});
       return;
@@ -1285,8 +1303,17 @@ function JobApplicationForm() {
 
     if (!allowedTypes.includes(f.type)) {
       setResumeFile(null);
+      setResumeFileError('');
       if (resumeInputRef.current) resumeInputRef.current.value = '';
       toast.error('Invalid file type. Please upload PDF or DOC/DOCX.');
+      return;
+    }
+
+    const sizeError = getUploadSizeError(f);
+    setResumeFileError(sizeError);
+    if (sizeError) {
+      setResumeFile(null);
+      if (resumeInputRef.current) resumeInputRef.current.value = '';
       return;
     }
 
@@ -1296,11 +1323,29 @@ function JobApplicationForm() {
 
   const clearResumeFile = () => {
     setResumeFile(null);
+    setResumeFileError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
+  };
+
+  const setQuestionFileError = (idx, message) => {
+    setQuestionFileErrors(prev => {
+      const next = { ...prev };
+      if (message) next[idx] = message;
+      else delete next[idx];
+      return next;
+    });
   };
 
   const handleQuestionFileChange = (idx, e) => {
     const f = e.target.files?.[0] || null;
+    const sizeError = getUploadSizeError(f);
+    setQuestionFileError(idx, sizeError);
+    if (sizeError) {
+      const ref = questionFileInputRefs.current[idx];
+      if (ref) ref.value = '';
+      setQuestionFiles(prev => ({ ...prev, [idx]: null }));
+      return;
+    }
     setQuestionFiles(prev => ({ ...prev, [idx]: f }));
   };
 
@@ -1310,6 +1355,7 @@ function JobApplicationForm() {
       delete next[idx];
       return next;
     });
+    setQuestionFileError(idx, '');
     const ref = questionFileInputRefs.current[idx];
     if (ref) ref.value = '';
   };
@@ -1410,8 +1456,10 @@ function JobApplicationForm() {
     setCompanyPosition('');
     setWebsiteSocial('');
     setResumeFile(null);
+    setResumeFileError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
     setQuestionFiles({});
+    setQuestionFileErrors({});
     questionFileInputRefs.current = {};
     setFullTimeYears('');
     setMonthsVolunteer('');
@@ -1991,6 +2039,7 @@ function JobApplicationForm() {
                   inputRef={resumeInputRef}
                   optional={!resumeRequired}
                   required={resumeRequired}
+                  error={resumeFileError}
                 />
               </div>
               {visibleQuestions.map((q, idx) => {
@@ -2166,6 +2215,7 @@ function JobApplicationForm() {
                           questionFileInputRefs.current[idx] = el;
                         }}
                         required={req}
+                        error={questionFileErrors[idx]}
                       />
                     )}
                     {![
