@@ -597,7 +597,7 @@ function validateEmail(email) {
 
   if (!trimmed) return 'Email is required.';
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+  if (!/^\S+@\S+\.\S+$/.test(trimmed)) {
     return 'Please enter a valid email address.';
   }
 
