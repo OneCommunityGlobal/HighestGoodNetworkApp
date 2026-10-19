@@ -65,6 +65,53 @@ const dateToYYYYMMDD = date => {
   return date.toISOString().split('T')[0];
 };
 
+const formatNumber = number => {
+  if (number === null || number === undefined) return '0';
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
+// Descriptive x-axis label, e.g. "Weekly for year 2026" or "Monthly from 2024 to 2026"
+const getXAxisLabel = (data, requestOffset) => {
+  if (!data?.length) return '';
+  const years = [...new Set(data.map(d => d.year))].filter(Boolean);
+  if (years.length === 0) return '';
+  const period = requestOffset === 'week' ? 'Weekly' : 'Monthly';
+  if (years.length === 1) return `${period} for year ${years[0]}`;
+  return `${period} from ${years[0]} to ${years.at(-1)}`;
+};
+
+function CustomTooltip({ active, payload, label, darkMode }) {
+  if (!active || !payload?.length) return null;
+
+  const { year, interval } = payload[0].payload;
+  const bgColor = darkMode ? '#222' : 'white';
+  const textColor = darkMode ? '#fff' : '#222';
+  const labelColor = darkMode ? '#90cdf4' : '#222';
+
+  // label is e.g. "W40" -> "Week 40"; months are shown as-is (e.g. "Oct")
+  const formattedLabel = interval === 'week' ? String(label).replace(/^W/, 'Week ') : label;
+
+  return (
+    <div
+      style={{
+        backgroundColor: bgColor,
+        color: textColor,
+        border: '1px solid #ccc',
+        minWidth: '180px',
+        padding: '10px',
+      }}
+    >
+      <h6 style={{ color: labelColor }}>
+        {formattedLabel}
+        {year ? `, ${year}` : ''}
+      </h6>
+      <h6 style={{ color: darkMode ? '#90ee90' : '#328D1B' }}>
+        {formatNumber(payload[0].value)} hours
+      </h6>
+    </div>
+  );
+}
+
 export default function VolunteerTrendsLineChart({ darkMode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -137,22 +184,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
     };
   }, []);
 
-  const formatNumber = number => {
-    if (number === null || number === undefined) return '0';
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  };
-
-  // Descriptive x-axis label, e.g. "Weekly for year 2026" or "Monthly from 2024 to 2026"
-  const getXAxisLabel = () => {
-    if (!data || data.length === 0) return '';
-    const years = [...new Set(data.map(d => d.year))].filter(Boolean);
-    if (years.length === 0) return '';
-    const period = requestOffset === 'week' ? 'Weekly' : 'Monthly';
-    if (years.length === 1) return `${period} for year ${years[0]}`;
-    return `${period} from ${years[0]} to ${years[years.length - 1]}`;
-  };
-
-  const xAxisLabel = getXAxisLabel();
+  const xAxisLabel = getXAxisLabel(data, requestOffset);
 
   const renderCustomDot = ({ cx, cy, index, value }) => {
     if (!data || data.length === 0) return null;
@@ -175,39 +207,6 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
             {formattedNumber}
           </text>
         </g>
-      );
-    }
-    return null;
-  };
-
-  const renderCustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      const { year, interval } = payload[0].payload;
-      const bgColor = darkMode ? '#222' : 'white';
-      const textColor = darkMode ? '#fff' : '#222';
-      const labelColor = darkMode ? '#90cdf4' : '#222';
-
-      // label is e.g. "W40" -> "Week 40"; months are shown as-is (e.g. "Oct")
-      const formattedLabel = interval === 'week' ? String(label).replace(/^W/, 'Week ') : label;
-
-      return (
-        <div
-          style={{
-            backgroundColor: bgColor,
-            color: textColor,
-            border: '1px solid #ccc',
-            minWidth: '180px',
-            padding: '10px',
-          }}
-        >
-          <h6 style={{ color: labelColor }}>
-            {formattedLabel}
-            {year ? `, ${year}` : ''}
-          </h6>
-          <h6 style={{ color: darkMode ? '#90ee90' : '#328D1B' }}>
-            {formatNumber(payload[0].value)} hours
-          </h6>
-        </div>
       );
     }
     return null;
@@ -378,7 +377,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
             dot={renderCustomDot}
             strokeLinecap="round"
           />
-          <Tooltip content={renderCustomTooltip} />
+          <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
         </LineChart>
       )}
     </div>
