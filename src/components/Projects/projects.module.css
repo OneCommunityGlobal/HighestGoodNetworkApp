@@ -14,31 +14,31 @@
    whatever is left (~25%). Keeping them as percentages lets the table shrink to
    its wrapper instead of overflowing it. */
 :global(#projects__order) {
-  width: 5%;
+  width: 4%;
 }
 
 :global(#projects__active) {
-  width: 8%;
+  width: 12%;
 }
 
 :global(#projects__category) {
-  width: 15%;
+  width: 14%;
 }
 
 :global(#projects__members) {
-  width: 12%;
+  width: 13%;
 }
 
 :global(#projects__inv) {
-  width: 12%;
+  width: 16%;
 }
 
 :global(#projects__wbs) {
-  width: 12%;
+  width: 10%;
 }
 
 :global(#projects__delete) {
-  width: 11%;
+  width: 10%;
 }
 
 /* Fixed layout ties column widths to the header row, so long values in a cell
