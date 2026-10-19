@@ -114,6 +114,7 @@ export const ENDPOINTS = {
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/${wbsId}`,
   TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
   TASKS_BY_USERID: userId => `${APIEndpoint}/tasks/user/${userId}`,
+  RESOLVED_TASKS: (page, limit) => `${APIEndpoint}/tasks/resolved?page=${page}&limit=${limit}`,
   // TASKS_BY_userID: userId => `${APIEndpoint}/tasks/userProfile/${userId}`,
   TASK_DEL: (taskId, motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
@@ -696,6 +697,7 @@ export const ENDPOINTS = {
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
+  PROMOTION_PENDING: `${APIEndpoint}/promotion-pending`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
   // LinkedIn autoposter endpoints

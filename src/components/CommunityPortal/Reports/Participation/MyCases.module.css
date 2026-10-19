@@ -323,6 +323,30 @@
   border: 1px solid #c084fc;
 }
 
+.caseCardDark .eventBadge[data-type='Workshop'] {
+  background-color: #1e3a5f;
+  color: #60a5fa;
+  border: 1px solid #60a5fa;
+}
+
+.caseCardDark .eventBadge[data-type='Meeting'] {
+  background-color: #4d3d1e;
+  color: #fbbf24;
+  border: 1px solid #fbbf24;
+}
+
+.caseCardDark .eventBadge[data-type='Webinar'] {
+  background-color: #3d1e4d;
+  color: #c084fc;
+  border: 1px solid #c084fc;
+}
+
+.caseCardDark .eventBadge[data-type='Social Gathering'] {
+  background-color: #1e4d2e;
+  color: #4ade80;
+  border: 1px solid #4ade80;
+}
+
 .eventTime {
   font-size: 14px;
   color: #555;
