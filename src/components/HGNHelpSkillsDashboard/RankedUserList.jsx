@@ -123,14 +123,14 @@ const normalizeUser = user => {
 };
 
 function RankedUserList({
-  selectedSkills,
-  selectedPreferences,
-  searchQuery,
-  sortBy,
-  sortOrder,
+  selectedSkills = [],
+  selectedPreferences = [],
+  searchQuery = '',
+  sortBy = 'name',
+  sortOrder = 'asc',
   currentPage,
   setCurrentPage,
-  softwareDevTeamOnly,
+  softwareDevTeamOnly = false,
 }) {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -289,15 +289,6 @@ RankedUserList.propTypes = {
   currentPage: PropTypes.number.isRequired,
   setCurrentPage: PropTypes.func.isRequired,
   softwareDevTeamOnly: PropTypes.bool,
-};
-
-RankedUserList.defaultProps = {
-  selectedSkills: [],
-  selectedPreferences: [],
-  searchQuery: '',
-  sortBy: 'name',
-  sortOrder: 'asc',
-  softwareDevTeamOnly: false,
 };
 
 export default RankedUserList;
