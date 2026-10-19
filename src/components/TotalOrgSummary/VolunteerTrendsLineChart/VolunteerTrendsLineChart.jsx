@@ -38,13 +38,12 @@ const formatChartData = rawData => {
 
   return sorted.map((item, index) => {
     const year = item._id?.year;
-    const shortYear = year ? `'${String(year).slice(-2)}` : '';
 
     if (isMonthly) {
       const monthStr = integerToMonths[item._id?.month] || `M${item._id?.month}`;
       return {
         id: `${year}-${item._id?.month}-${index}`,
-        xLabel: shortYear ? `${monthStr} ${shortYear}` : monthStr,
+        xLabel: monthStr,
         totalHours: Number(item.totalHours) || 0,
         year,
         interval: 'month',
@@ -54,7 +53,7 @@ const formatChartData = rawData => {
     const weekNum = Number(item._id?.week) || 0;
     return {
       id: `${year}-W${weekNum}-${index}`,
-      xLabel: shortYear ? `W${weekNum} ${shortYear}` : `W${weekNum}`,
+      xLabel: `W${weekNum}`,
       totalHours: Number(item.totalHours) || 0,
       year,
       interval: 'week',
@@ -143,6 +142,18 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
+  // Descriptive x-axis label, e.g. "Weekly for year 2026" or "Monthly from 2024 to 2026"
+  const getXAxisLabel = () => {
+    if (!data || data.length === 0) return '';
+    const years = [...new Set(data.map(d => d.year))].filter(Boolean);
+    if (years.length === 0) return '';
+    const period = requestOffset === 'week' ? 'Weekly' : 'Monthly';
+    if (years.length === 1) return `${period} for year ${years[0]}`;
+    return `${period} from ${years[0]} to ${years[years.length - 1]}`;
+  };
+
+  const xAxisLabel = getXAxisLabel();
+
   const renderCustomDot = ({ cx, cy, index, value }) => {
     if (!data || data.length === 0) return null;
     const isLastPoint = index === data.length - 1;
@@ -176,7 +187,8 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
       const textColor = darkMode ? '#fff' : '#222';
       const labelColor = darkMode ? '#90cdf4' : '#222';
 
-      const formattedLabel = interval === 'week' ? `Week ${label}` : label;
+      // label is e.g. "W40" -> "Week 40"; months are shown as-is (e.g. "Oct")
+      const formattedLabel = interval === 'week' ? String(label).replace(/^W/, 'Week ') : label;
 
       return (
         <div
@@ -314,7 +326,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           width={chartSize.width}
           height={chartSize.height}
           data={data}
-          margin={{ right: 50, top: 50, left: 90 }}
+          margin={{ right: 50, top: 50, left: 90, bottom: 30 }}
         >
           <CartesianGrid stroke="#ccc" vertical={false} />
 
@@ -326,6 +338,16 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
             axisLine={false}
             tickLine={false}
             tick={{ fill: darkMode ? '#ccc' : undefined, fontSize: 11 }}
+            label={{
+              value: xAxisLabel,
+              position: 'insideBottom',
+              offset: -20,
+              style: {
+                fontSize: 14,
+                fill: darkMode ? '#ccc' : undefined,
+                textAnchor: 'middle',
+              },
+            }}
           />
 
           <YAxis
