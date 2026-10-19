@@ -127,4 +127,28 @@ describe('PR grading persistence', () => {
       gradedPrs: [{ id: 'pr1', prNumbers: '1234 + 5678', grade: 'Exceptional' }],
     });
   });
+
+  it('displays the backend image grade for built-in and newly saved PRs', () => {
+    const reviewers = [
+      {
+        id: '1',
+        reviewer: 'Alice',
+        gradedPrs: [{ id: 'pr1', prNumbers: '1234', grade: 'Okay' }],
+      },
+    ];
+    const saved = [
+      {
+        reviewer: 'Alice',
+        gradedPrs: [
+          { prNumbers: '1234', grade: 'No Correct Image' },
+          { prNumbers: '5678', grade: 'No Correct Image' },
+        ],
+      },
+    ];
+
+    expect(mergeSavedGradings(reviewers, saved)[0].gradedPrs).toMatchObject([
+      { prNumbers: '1234', grade: 'Cannot find image' },
+      { prNumbers: '5678', grade: 'Cannot find image' },
+    ]);
+  });
 });

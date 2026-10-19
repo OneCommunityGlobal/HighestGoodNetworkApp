@@ -2,6 +2,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 
 const getPRNumbers = value => value.split('+').map(number => number.trim());
+const toDisplayGrade = grade => (grade === 'No Correct Image' ? 'Cannot find image' : grade);
 
 const getGradingKey = teamData => {
   const [month, day, year] = teamData.dateRange.start.split('/').map(Number);
@@ -57,7 +58,7 @@ export const mergeSavedGradings = (reviewers, savedGradings) => {
   return reviewers.map(reviewer => {
     const savedPrs = savedByReviewer.get(reviewer.reviewer)?.gradedPrs || [];
     const savedGrades = new Map(
-      savedPrs.map(pr => [getPRNumbers(pr.prNumbers).join('+'), pr.grade]),
+      savedPrs.map(pr => [getPRNumbers(pr.prNumbers).join('+'), toDisplayGrade(pr.grade)]),
     );
     const seen = new Set(reviewer.gradedPrs.flatMap(pr => getPRNumbers(pr.prNumbers)));
     const additions = savedPrs
@@ -67,7 +68,11 @@ export const mergeSavedGradings = (reviewers, savedGradings) => {
         numbers.forEach(number => seen.add(number));
         return true;
       })
-      .map(pr => ({ ...pr, id: String(pr._id || pr.id || pr.prNumbers) }));
+      .map(pr => ({
+        ...pr,
+        id: String(pr._id || pr.id || pr.prNumbers),
+        grade: toDisplayGrade(pr.grade),
+      }));
     const gradedPrs = [
       ...reviewer.gradedPrs.map(pr => ({
         ...pr,
