@@ -7,6 +7,7 @@ import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
 import FAQSection from './FAQSection';
+import { buildApplyPath } from './JobApplicationForm/jobApplicationPublicApi';
 
 function getColumnsFromMQ() {
   if (typeof globalThis.matchMedia !== 'function') return 1;
@@ -23,6 +24,31 @@ function clampPage(page, totalPages) {
   if (page < 1) return 1;
   if (page > totalPages) return totalPages;
   return page;
+}
+
+const PLACEHOLDER_LINK_HOSTS = new Set(['example.com', 'jobs.example.com']);
+
+/** True when jobDetailsLink is a real external details URL (not placeholder / fake app paths). */
+function isUsableJobDetailsLink(link) {
+  if (typeof link !== 'string' || !link.trim()) return false;
+  try {
+    const url = new URL(link.trim());
+    if (PLACEHOLDER_LINK_HOSTS.has(url.hostname.toLowerCase())) return false;
+    // Bad seed data: jobs store localhost:/jobDetailsLink/:id — that route does not exist.
+    if (/\/jobDetailsLink(\/|$)/i.test(url.pathname)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Resolve a safe job details URL, falling back to the internal apply page
+ * when jobDetailsLink is missing, placeholder, or a non-existent app path. */
+function getSafeJobDetailsLink(summary) {
+  const link = summary?.jobDetailsLink;
+  if (isUsableJobDetailsLink(link)) return link.trim();
+  if (summary?.title) return buildApplyPath(summary.title);
+  return '/job-application';
 }
 
 /** Keep first listing per title+category (API may return duplicate job records). */
@@ -143,6 +169,20 @@ function Collaboration() {
         url:
           'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=640&h=480&fit=crop&q=80',
       },
+      {
+        keywords: ['architecture', 'landscape', 'environment'],
+        url:
+          'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['creative', 'media', 'graphic'],
+        url: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['skilled', 'trades', 'craft', 'carpenter'],
+        url:
+          'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=640&h=480&fit=crop&q=80',
+      },
     ];
 
     // Find matching category
@@ -239,16 +279,41 @@ function Collaboration() {
     );
   };
 
-  const handleCategoryChange = e => {
-    const selectedValue = e.target.value;
-    setSelectedCategory(selectedValue || '');
+  const selectCategory = (selectedValue = '') => {
+    setSelectedCategory(selectedValue);
     setCurrentPage(1);
     setSummaries(null);
     setActiveTab('jobPostings');
-    // The job refresh runs independently of the category state updates above.
-    fetchJobAds({ category: selectedValue || '', page: 1 }).catch(() =>
+    if (!selectedValue && !submittedSearchTerm) {
+      setJobAds([]);
+      setTotalPages(0);
+      setLoadingJobs(false);
+      return;
+    }
+    fetchJobAds({ category: selectedValue, page: 1 }).catch(() =>
       toast.error('Error fetching jobs'),
     );
+  };
+
+  const handleCategoryChange = e => {
+    selectCategory(e.target.value);
+  };
+
+  const handleCategoryCardClick = event => {
+    const { category } = event.currentTarget.dataset;
+    if (category) selectCategory(category);
+  };
+
+  const handleBackToCategories = () => {
+    setSelectedCategory('');
+    setSubmittedSearchTerm('');
+    setSearchTerm('');
+    setCurrentPage(1);
+    setJobAds([]);
+    setTotalPages(0);
+    setSummaries(null);
+    setActiveTab('jobPostings');
+    globalThis.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const showBothFiltersTooltip =
@@ -272,19 +337,21 @@ function Collaboration() {
 
       if (!response.ok) throw new Error(`Failed to reset filters: ${response.statusText}`);
 
-      const data = await response.json();
       if (requestId !== requestIdRef.current) return;
       setSearchTerm('');
       setSubmittedSearchTerm('');
       setSelectedCategory('');
       setCurrentPage(1);
-      setJobAds(dedupeJobsByTitle(Array.isArray(data?.jobs) ? data.jobs : []));
-      setTotalPages(data?.pagination?.totalPages || 0);
+      // Return to category cards; jobs load after the next category/search choice.
+      setJobAds([]);
+      setTotalPages(0);
+      setJobsFetchError(null);
       setSummaries(null);
       setSummariesAll([]);
       setSummariesPage(1);
       setSummariesTotalPages(0);
       setActiveTab('jobPostings');
+      await fetchCategories();
       globalThis.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
       if (requestId !== requestIdRef.current) return;
@@ -333,10 +400,11 @@ function Collaboration() {
 
   const navigateToJobApplication = (ad, jobTitle, jobCategory) => {
     try {
+      const pathname = buildApplyPath(jobTitle);
       if (history && typeof history.push === 'function') {
         const search = jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
         history.push({
-          pathname: '/job-application',
+          pathname,
           search,
           state: {
             jobId: ad._id,
@@ -344,10 +412,11 @@ function Collaboration() {
             jobDescription: ad.description || '',
             requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
             category: jobCategory,
+            jobDetailsLink: ad.jobDetailsLink || '',
           },
         });
       } else {
-        globalThis.location.href = '/job-application';
+        globalThis.location.href = pathname;
       }
     } catch {
       toast.error('Error opening job application');
@@ -370,10 +439,31 @@ function Collaboration() {
     setPage(Number(event.currentTarget.dataset.page));
   };
 
+  const showCategoryBrowse = !selectedCategory && !submittedSearchTerm;
+
   const renderCategoryOption = category => (
     <option key={category} value={category}>
       {category}
     </option>
+  );
+
+  const renderCategoryCard = category => (
+    <button
+      type="button"
+      key={category}
+      className={styles.jobAd}
+      data-category={category}
+      aria-label={`Browse ${category} jobs`}
+      onClick={handleCategoryCardClick}
+    >
+      <img
+        src={getCategoryImage(category)}
+        alt={category}
+        loading="lazy"
+        onError={handleImageError}
+      />
+      <h3 className={styles.categoryTitle}>{category}</h3>
+    </button>
   );
 
   const renderJobAd = ad => {
@@ -405,6 +495,13 @@ function Collaboration() {
   };
 
   const renderJobContent = () => {
+    if (showCategoryBrowse) {
+      if (!categories.length) {
+        return <p className={styles.noJobads}>No job categories available.</p>;
+      }
+      return <>{categories.map(renderCategoryCard)}</>;
+    }
+
     if (loadingJobs) {
       return <p className={styles.noJobads}>Loading jobs...</p>;
     }
@@ -431,10 +528,9 @@ function Collaboration() {
     </button>
   );
 
-  // Initial fetch and setup
+  // Initial fetch and setup — categories first; jobs load after category/search.
   useEffect(() => {
-    // Initial API requests intentionally run in the background during mount.
-    fetchJobAds().catch(() => toast.error('Error fetching jobs'));
+    setLoadingJobs(false);
     fetchCategories().catch(() => toast.error('Error fetching categories'));
     const handleResize = () => {
       if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
@@ -444,8 +540,9 @@ function Collaboration() {
         columnsRef.current = newCols;
         setColumns(newCols);
         setCurrentPage(1);
-        // Resize-triggered refresh intentionally runs in the background to keep resizing responsive.
-        fetchJobAds({ page: 1 }).catch(() => toast.error('Error fetching jobs'));
+        if (selectedCategory || submittedSearchTerm) {
+          fetchJobAds({ page: 1 }).catch(() => toast.error('Error fetching jobs'));
+        }
       }, 200);
     };
     globalThis.addEventListener('resize', handleResize);
@@ -518,7 +615,7 @@ function Collaboration() {
                 value={selectedCategory}
                 onChange={handleCategoryChange}
               >
-                <option value="">Select from Categories</option>
+                <option value="">Select From Categories</option>
                 {categories.map(c => (
                   <option key={c} value={c}>
                     {c}
@@ -532,23 +629,31 @@ function Collaboration() {
             <h1>Summaries</h1>
 
             {pageItems.length > 0 ? (
-              pageItems.map(summary => (
-                <div
-                  key={summary._id || summary.jobDetailsLink || summary.title}
-                  className={styles.summariesItem}
-                >
-                  <h3>
-                    <a href={summary.jobDetailsLink} target="_blank" rel="noreferrer">
-                      {summary.title}
-                    </a>
-                  </h3>
-                  <p>{summary.description}</p>
-                  <p className={styles.date}>
-                    Date Posted:{' '}
-                    {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
-                  </p>
-                </div>
-              ))
+              pageItems.map(summary => {
+                const jobDetailsLink = getSafeJobDetailsLink(summary);
+                const isExternalLink = /^https?:\/\//i.test(jobDetailsLink);
+
+                return (
+                  <div
+                    key={summary._id || summary.jobDetailsLink || summary.title}
+                    className={styles.summariesItem}
+                  >
+                    <h3>
+                      <a
+                        href={jobDetailsLink}
+                        {...(isExternalLink ? { target: '_blank', rel: 'noreferrer' } : {})}
+                      >
+                        {summary.title}
+                      </a>
+                    </h3>
+                    <p>{summary.description}</p>
+                    <p className={styles.date}>
+                      Date Posted:{' '}
+                      {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
+                    </p>
+                  </div>
+                );
+              })
             ) : (
               <p>No summaries found.</p>
             )}
@@ -624,7 +729,7 @@ function Collaboration() {
               value={selectedCategory}
               onChange={handleCategoryChange}
             >
-              <option value="">Select From Positions</option>
+              <option value="">Select From Categories</option>
               {categories.map(renderCategoryOption)}
             </select>
           </div>
@@ -647,12 +752,25 @@ function Collaboration() {
           <>
             <div className={styles.headings}>
               <h1 className={styles.mainHeading}>LIKE TO WORK WITH US? APPLY NOW!</h1>
+              {showCategoryBrowse && <p>Choose a category to see open positions.</p>}
+              {!showCategoryBrowse && selectedCategory && (
+                <div className={styles.categoryBrowseHeader}>
+                  <button
+                    type="button"
+                    className={styles.backToCategories}
+                    onClick={handleBackToCategories}
+                  >
+                    ← All categories
+                  </button>
+                  <p>{`Positions in '${selectedCategory}'`}</p>
+                </div>
+              )}
               {submittedSearchTerm && <p>{`Showing results for '${submittedSearchTerm}'`}</p>}
             </div>
 
             <div className={styles.jobList}>{renderJobContent()}</div>
 
-            {totalPages > 1 && (
+            {!showCategoryBrowse && totalPages > 1 && (
               <div className={styles.pagination}>
                 {Array.from({ length: totalPages }, renderPaginationButton)}
               </div>
