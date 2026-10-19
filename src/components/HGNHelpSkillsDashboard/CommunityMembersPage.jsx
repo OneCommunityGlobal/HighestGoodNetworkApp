@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import Accordion from './Accordion';
@@ -14,11 +14,16 @@ function CommunityMembersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [currentPage, setCurrentPage] = useState(1);
   const softwareDevTeamOnly = Boolean(location.state?.softwareDevTeamOnly);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleSortByChange = event => setSortBy(event.target.value);
   const handleSortOrderChange = event => setSortOrder(event.target.value);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSkills, selectedPreferences, searchQuery, sortBy, sortOrder, softwareDevTeamOnly]);
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
@@ -77,6 +82,8 @@ function CommunityMembersPage() {
           searchQuery={searchQuery.trim()}
           sortBy={sortBy}
           sortOrder={sortOrder}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
           softwareDevTeamOnly={softwareDevTeamOnly}
         />
       </div>

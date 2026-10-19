@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -9,7 +9,10 @@ import httpService from '../../services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './HelpModal.module.css';
 
-const SOFTWARE_DEV_TEAM_NAME = 'software development team';
+const SOFTWARE_DEV_TEAM_ALIASES = new Set([
+  'software development team',
+  'hgn software development team',
+]);
 
 /** Maps common help-category labels to questionnaire skill keys. */
 const TOPIC_TO_SKILL_KEY = {
@@ -83,8 +86,11 @@ function HelpModal({ show, onHide, auth }) {
           setOptions(buildSkillFallbackOptions());
         }
       } catch {
+        // Still offer skill fallback, but surface that the categories endpoint failed.
         setOptions(buildSkillFallbackOptions());
-        setError(null);
+        setError(
+          'Failed to load help categories from the server. Showing questionnaire skills instead.',
+        );
       } finally {
         setLoading(false);
       }
@@ -169,27 +175,23 @@ function HelpModal({ show, onHide, auth }) {
   };
 
   const role = auth?.user?.role?.trim().toLowerCase() || '';
-  const allowedRoles = useMemo(() => new Set(['owner', 'administrator']), []);
 
-  const isSoftwareDevMember = useMemo(() => {
-    return (
-      allowedRoles.has(role) ||
-      teams.some(team => team.teamName?.trim().toLowerCase() === SOFTWARE_DEV_TEAM_NAME)
-    );
-  }, [allowedRoles, teams, role]);
+  const isSoftwareDevMember =
+    ['owner', 'administrator'].includes(role) ||
+    teams.some(team => SOFTWARE_DEV_TEAM_ALIASES.has(team.teamName?.trim().toLowerCase()));
 
   const selectedLabel =
     options.find(option => option.value === selectedOption)?.label || selectedOption;
 
   const renderContent = () => {
     if (loading) return <div>Loading categories...</div>;
-    if (error) return <div className="text-danger">{error}</div>;
     if (!options.length) {
-      return <div className="text-danger">No help categories available.</div>;
+      return <div className="text-danger">{error || 'No help categories available.'}</div>;
     }
 
     return (
       <>
+        {error && <div className="alert alert-warning mb-3">{error}</div>}
         <div
           className={`${styles.selectButton} ${darkMode ? styles.selectButtonDark : ''}`}
           onClick={() => setIsOpen(!isOpen)}
@@ -266,7 +268,7 @@ function HelpModal({ show, onHide, auth }) {
           If you have any suggestions please click{' '}
           <button
             type="button"
-            className="p-0 border-0 align-baseline"
+            className={`${styles.suggestionsLink} ${darkMode ? styles.suggestionsLinkDark : ''}`}
             onClick={handleSuggestionsClick}
           >
             here
