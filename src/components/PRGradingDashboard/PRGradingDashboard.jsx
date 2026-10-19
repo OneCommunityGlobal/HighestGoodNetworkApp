@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { downloadPRGradingCsv } from '../PRGradingScreen/csvExport';
 import AddReviewerModal from './AddReviewerModal';
 import ConfirmationModal from './ConfirmationModal';
 import GradingTable from './GradingTable';
@@ -231,6 +232,8 @@ function PRGradingDashboard() {
     day: 'numeric',
   });
   const selectedMockWeekMeta = MOCK_WEEK_METADATA[selectedMockWeek];
+  // Apply future week filtering here so the table, summary, and CSV use the same rows.
+  const displayedGradings = gradings;
 
   if (loading) {
     return (
@@ -253,7 +256,23 @@ function PRGradingDashboard() {
               <h1 className={styles.title}>{TEAM_NAME}</h1>
               <p className={styles.date}>{currentDate}</p>
             </div>
-            <div className={styles.headerControls}>
+            <div className={styles.headerControls} role="group" aria-label="Review week actions">
+              <button
+                type="button"
+                onClick={() =>
+                  downloadPRGradingCsv(
+                    displayedGradings,
+                    'team-alpha-pr-grading-displayed-data.csv',
+                    {
+                      useStoredCount: true,
+                    },
+                  )
+                }
+                className={styles.exportButton}
+                title="Exports the rows displayed below; the Review Week selector does not filter grading records yet."
+              >
+                Export to CSV
+              </button>
               <div className={styles.mockWeekControl}>
                 <label htmlFor="mock-week-selector" className={styles.mockWeekLabel}>
                   Review Week
@@ -289,7 +308,7 @@ function PRGradingDashboard() {
               </button>
             </div>
             <GradingTable
-              gradings={gradings}
+              gradings={displayedGradings}
               onUpdatePRsReviewed={updatePRsReviewed}
               onAddPRClick={setOpenAddModal}
               openAddModal={openAddModal}
@@ -302,7 +321,7 @@ function PRGradingDashboard() {
           <div className={styles.summarySection}>
             <h2 className={styles.summaryTitle}>Summary</h2>
             <SummaryList
-              gradings={gradings}
+              gradings={displayedGradings}
               onUpdateGrade={updateGrade}
               onRemovePR={removeGradedPR}
             />

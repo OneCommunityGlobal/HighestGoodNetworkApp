@@ -24,10 +24,10 @@ const getNotes = reviewer => {
     .join('; ');
 };
 
-export const buildWeeklyPRGradingCsv = reviewers => {
+export const buildWeeklyPRGradingCsv = (reviewers, { useStoredCount = false } = {}) => {
   const rows = reviewers.map(reviewer => [
     reviewer.reviewer,
-    reviewer.gradedPrs.length,
+    useStoredCount ? reviewer.prsReviewed ?? reviewer.gradedPrs.length : reviewer.gradedPrs.length,
     reviewer.prsNeeded ?? '',
     reviewer.gradedPrs.map(pr => pr.prNumbers).join('; '),
     reviewer.gradedPrs.map(pr => pr.grade ?? '').join('; '),
@@ -50,16 +50,19 @@ export const getWeeklyPRGradingFilename = dateRange => {
   return `weekly-pr-grading-${start}-to-${end}.csv`;
 };
 
-export const downloadWeeklyPRGradingCsv = (reviewers, dateRange) => {
-  const csv = buildWeeklyPRGradingCsv(reviewers);
+export const downloadPRGradingCsv = (reviewers, filename, options = {}) => {
+  const csv = buildWeeklyPRGradingCsv(reviewers, options);
   const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
 
   link.href = url;
-  link.download = getWeeklyPRGradingFilename(dateRange);
+  link.download = filename;
   document.body.appendChild(link);
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 0);
 };
+
+export const downloadWeeklyPRGradingCsv = (reviewers, dateRange) =>
+  downloadPRGradingCsv(reviewers, getWeeklyPRGradingFilename(dateRange));

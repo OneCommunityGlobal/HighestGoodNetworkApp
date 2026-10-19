@@ -55,6 +55,24 @@ describe('weekly PR grading CSV export', () => {
     expect(csv).toContain('"1000; 2000; 3000","Exceptional; ; Unsatisfactory"');
   });
 
+  it('can export the dashboard count exactly as displayed, even with fewer listed PRs', () => {
+    const reviewers = [
+      {
+        reviewer: 'Alice',
+        prsReviewed: 7,
+        prsNeeded: 10,
+        gradedPrs: [{ prNumbers: '1070 + 1256', grade: 'Exceptional' }],
+      },
+    ];
+
+    expect(buildWeeklyPRGradingCsv(reviewers, { useStoredCount: true })).toContain(
+      '"Alice","7","10","1070 + 1256","Exceptional",""',
+    );
+    expect(buildWeeklyPRGradingCsv(reviewers)).toContain(
+      '"Alice","1","10","1070 + 1256","Exceptional",""',
+    );
+  });
+
   it('creates a clear filename from the visible week date range', () => {
     expect(getWeeklyPRGradingFilename({ start: 'Sep 21, 2026', end: 'Sep 27, 2026' })).toBe(
       'weekly-pr-grading-sep-21-2026-to-sep-27-2026.csv',
