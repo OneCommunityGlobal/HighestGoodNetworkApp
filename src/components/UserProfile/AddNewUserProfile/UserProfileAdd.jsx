@@ -35,6 +35,7 @@ import { fetchAllProjects } from '~/actions/projects';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import phoneInputStyles from '../phoneInputDark.module.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -488,6 +489,7 @@ class UserProfileAdd extends Component {
               <Col md="6">
                 <FormGroup>
                   <PhoneInput
+                    containerClass={darkMode ? phoneInputStyles.phoneInputDark : ''}
                     country="US"
                     regions={['america', 'europe', 'asia', 'oceania', 'africa']}
                     limitMaxLength="true"

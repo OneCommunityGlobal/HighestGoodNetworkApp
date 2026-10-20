@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import SubmissionCard from './SubmissionCard';
 import styles from './TaskSubmissionsPage.module.css';
 import { FiChevronDown, FiChevronUp, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
@@ -30,8 +31,8 @@ const loadStoredViewState = () => {
 };
 
 const TaskSubmissionsPage = () => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const storedViewState = useRef(loadStoredViewState()).current;
-
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -231,7 +232,7 @@ const TaskSubmissionsPage = () => {
 
   if (loading) {
     return (
-      <div className={styles.container}>
+      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
         <div className={styles.loadingState}>
           <div className={styles.spinner} />
           <p>Loading Submissions...</p>
@@ -242,7 +243,7 @@ const TaskSubmissionsPage = () => {
 
   if (error) {
     return (
-      <div className={styles.container}>
+      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
         <div className={styles.errorState}>
           <p>{error}</p>
           <button
@@ -258,7 +259,7 @@ const TaskSubmissionsPage = () => {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>Submissions Overview</h1>
         <div className={styles.filterWrapper}>
@@ -367,6 +368,7 @@ const TaskSubmissionsPage = () => {
                         `${submission.studentEmail}-${submission.taskName}-${submission.submittedAt}`
                       }
                       submission={submission}
+                      darkMode={darkMode}
                     />
                   ))}
                 </div>

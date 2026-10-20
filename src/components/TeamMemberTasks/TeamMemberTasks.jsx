@@ -680,7 +680,6 @@ const TeamMemberTasks = React.memo(props => {
                           styles['team-member-tasks-headers'],
                           styles['team-member-tasks-user-name'],
                           darkMode ? styles.darkStickyHeader : '',
-                          darkMode ? styles.transparentHeader : '',
                         ].join(' ')}
                       >
                         Team Member
@@ -718,6 +717,7 @@ const TeamMemberTasks = React.memo(props => {
                               styles.m1,
                               styles.trackerToggleBtn,
                               showTrackers ? styles.trackerToggleBtnActive : '',
+                              darkMode ? styles.trackerToggleBtnDark : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
                           >
@@ -730,6 +730,7 @@ const TeamMemberTasks = React.memo(props => {
                               styles.m1,
                               styles.trackerToggleBtn,
                               !showTasks ? styles.trackerToggleBtnActive : '',
+                              darkMode ? styles.trackerToggleBtnDark : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
                           >

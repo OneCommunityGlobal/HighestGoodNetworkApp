@@ -28,3 +28,10 @@
   background-color: #111831;
   color: #ffffff;
 }
+
+/* Long member names wrap inside the list instead of running past its right edge.
+   Bootstrap's .dropdown-item and .btn both set nowrap; the doubled class outranks them. */
+.memberOption.memberOption {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

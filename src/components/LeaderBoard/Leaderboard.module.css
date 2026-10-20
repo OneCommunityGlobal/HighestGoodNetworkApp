@@ -18,8 +18,14 @@
   color: white;
 }
 
-.dark-leaderboard-row:hover {
+.dark-leaderboard-row:hover,
+.dark-leaderboard-row:active,
+.dark-leaderboard-row:focus-within,
+.dark-leaderboard-row:hover > td,
+.dark-leaderboard-row:active > td,
+.dark-leaderboard-row:focus-within > td {
   background-color: #111831;
+  color: white;
 }
 
 .light-leaderboard-row {
@@ -51,11 +57,10 @@
   border-top: 1px solid rgb(222 226 230);
 }
 
-.leaderboard tbody tr td, 
+.leaderboard tbody tr td,
 .leaderboard thead tr th {
   text-align: left !important;
 }
-
 
 /* Small devices (landscape phones, 544px and up) */
 @media (545px <= width <= 1119px) {
@@ -70,7 +75,7 @@
   }
 
   .leaderboard thead th {
-    white-space: nowrap; 
+    white-space: nowrap;
     top: 0;
     border-top: 1px solid rgb(222 226 230);
   }
@@ -84,7 +89,7 @@
   0% {
     transform: rotate(0deg);
   }
-  
+
   100% {
     transform: rotate(360deg);
   }
