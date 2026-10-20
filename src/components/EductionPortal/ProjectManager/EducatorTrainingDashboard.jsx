@@ -1,24 +1,26 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import CertificationProfile from './CertificationProfile';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './EducatorTrainingDashboard.module.css';
 
 export default function EducatorTrainingDashboard() {
+  const darkMode = useSelector(state => state.theme?.darkMode);
+
   const [educators, setEducators] = useState([]);
   const [selectedEducator, setSelectedEducator] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  // === FETCH ALL CERTIFICATION DATA AND GROUP BY EDUCATOR ===
-  useEffect(async () => {
+
+  useEffect(() => {
     const fetchCertifications = async () => {
       setLoading(true);
       try {
         const response = await axios.get(ENDPOINTS.PM_EDUCATOR_CERTIFICATIONS());
         const data = response.data || [];
 
-        // Group by educator
         const grouped = {};
         data.forEach(item => {
           const educator = item.educatorId;
@@ -52,22 +54,18 @@ export default function EducatorTrainingDashboard() {
       }
     };
 
-    await fetchCertifications();
+    fetchCertifications();
   }, [refreshKey]);
 
-  // === UPDATE LOCAL STATE AFTER SAVE ===
-  const updateEducatorCerts = (educatorId, updatedCert) => {
-    setEducators(setRefreshKey(prev => prev + 1));
+  const updateEducatorCerts = () => {
+    setRefreshKey(prev => prev + 1);
   };
 
   if (loading) return <div className={styles.loader}>Loading...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
-  // const getStatusClass = status => {
-  //   if (!status) return '';
-  //   return status.toLowerCase().replace(/[\s-]/g, ''); // remove dash/space
-  // };
+
   return (
-    <div className={styles.etdContainer}>
+    <div className={styles.etdContainer} data-theme={darkMode ? 'dark' : 'light'}>
       <h1 className={styles.etdTitle}>Educator Training Dashboard</h1>
 
       <div className={styles.etdTableWrapper}>
@@ -79,7 +77,6 @@ export default function EducatorTrainingDashboard() {
               <th>Actions</th>
             </tr>
           </thead>
-
           <tbody>
             {(educators || []).map(edu => (
               <tr key={edu.educator._id}>
@@ -87,22 +84,23 @@ export default function EducatorTrainingDashboard() {
                   {edu.educator.firstName} {edu.educator.lastName}
                   <div className={styles.etdSubtext}>{edu.educator.email}</div>
                 </td>
-
                 <td>
-                  {edu.certifications.map(cert => (
-                    <div key={cert._id} className={styles.etdCertItem}>
-                      <strong>{cert.certificationId?.name || 'Unnamed Certification'}</strong> —{' '}
-                      <span
-                        className={`${styles.etdCertStatus} ${
-                          styles[`etdStatus_${cert.status.toLowerCase().replace(/[\s-]/g, '')}`]
-                        }`}
-                      >
-                        {cert.status}
-                      </span>
-                    </div>
-                  ))}
-                </td>
+                  {edu.certifications.map(cert => {
+                    // Normalize the status string down to safely match CSS selectors
+                    const cleanStatus = (cert.status || '').toLowerCase().replace(/[\s-]/g, '');
+                    const statusClassName = styles[`etdStatus_${cleanStatus}`] || '';
 
+                    return (
+                      <div key={cert._id} className={styles.etdCertItem}>
+                        <strong>{cert.certificationId?.name || 'Unnamed Certification'}</strong>
+                        {' — '}
+                        <span className={`${styles.etdCertStatus} ${statusClassName}`}>
+                          {cert.status}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </td>
                 <td>
                   <button
                     className={styles.etdActionButton}
@@ -120,6 +118,7 @@ export default function EducatorTrainingDashboard() {
       {selectedEducator && (
         <CertificationProfile
           educator={selectedEducator}
+          darkMode={darkMode}
           onClose={() => setSelectedEducator(null)}
           onSave={updateEducatorCerts}
         />

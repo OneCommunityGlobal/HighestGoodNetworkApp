@@ -3,12 +3,12 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './CertificationProfile.module.css';
 
-export default function CertificationProfile({ educator, onClose, onSave }) {
+export default function CertificationProfile({ educator, darkMode, onClose, onSave }) {
   const modalRef = useRef(null);
 
   const [editing, setEditing] = useState(null);
-  const [selectedCertId, setSelectedCertId] = useState(''); // For existing PM certification
-  const [certName, setCertName] = useState(''); // For new certification name
+  const [selectedCertId, setSelectedCertId] = useState('');
+  const [certName, setCertName] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('in-progress');
   const [expiryDate, setExpiryDate] = useState('');
@@ -30,8 +30,8 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
     if (modalRef.current && !modalRef.current.contains(e.target)) onClose();
   };
 
-  // Fetch all PM certifications
-  useEffect(async () => {
+  // FIXED: The outer function is no longer async, preventing the Promise unmount crash
+  useEffect(() => {
     const fetchAllCerts = async () => {
       try {
         const res = await axios.get(ENDPOINTS.PM_CERTIFICATIONS());
@@ -41,7 +41,8 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
         setError('Failed to load certifications.');
       }
     };
-    await fetchAllCerts();
+
+    fetchAllCerts();
   }, []);
 
   // Start editing
@@ -64,7 +65,6 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
     setExpiryDate('');
   };
 
-  // Helper function to validate required states before starting the request
   const validateSaveInput = (selectedCertId, certName, educatorId, token) => {
     if (!selectedCertId && !certName) {
       return 'Please select a certification or enter a new name';
@@ -78,11 +78,8 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
     return null;
   };
 
-  // Helper function to isolate conditional payload building
   const buildCertPayload = (editing, selectedCertId, certName, description, status, expiryDate) => {
     const payload = {};
-
-    // Apply shared optional fields safely
     if (status) payload.status = status;
     if (expiryDate) payload.expiryDate = expiryDate;
 
@@ -93,23 +90,19 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
       return payload;
     }
 
-    // Handle ADD new workflow
     if (selectedCertId) {
       payload.certificationId = selectedCertId;
     } else if (certName) {
       payload.certificationName = certName;
       if (description) payload.description = description;
     }
-
     return payload;
   };
 
-  // 3. The cleaned-up handler function
   const handleSave = async () => {
     const token = localStorage.getItem('token');
     const educatorId = educator?.educator?._id;
 
-    // Run validation
     const validationError = validateSaveInput(selectedCertId, certName, educatorId, token);
     if (validationError) {
       setError(validationError);
@@ -130,27 +123,9 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
       );
 
       const url = ENDPOINTS.PM_ASSIGN_CERTIFICATIONS(educatorId);
-      const response = await axios.post(url, payload, {
+      await axios.post(url, payload, {
         headers: { Authorization: token },
       });
-
-      // Determine certification name cleanly
-      const certNameFromList =
-        selectedCertId && certList?.find(c => c._id === selectedCertId)?.name;
-      const finalCertName = certNameFromList || certName || 'Unnamed Certification';
-
-      // Note: If you need to use updatedCert downstream, pass it into your state or callbacks here
-      // const updatedCert = {
-      //   _id: response.data._id,
-      //   status: response.data.status,
-      //   expiryDate: response.data.expiryDate,
-      //   assignedAt: response.data.assignedAt,
-      //   assignedBy: response.data.assignedBy,
-      //   certificationId: {
-      //     _id: response.data.certificationId,
-      //     name: finalCertName,
-      //   },
-      // };
 
       onSave();
       onClose();
@@ -167,6 +142,7 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
   return (
     <div
       className={styles.modalBackdrop}
+      data-theme={darkMode ? 'dark' : 'light'}
       onClick={handleBackdropClick}
       role="button"
       tabIndex={0}
@@ -180,23 +156,22 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
 
           {/* Existing Certifications */}
           <div className={styles.certList}>
-            {certList.map(cert => (
-              <div key={cert._id} className={styles.certItem}>
-                <div>
-                  <div className={styles.certName}>{cert.certificationId?.name}</div>
-                  <div
-                    className={`${styles.certStatus} ${
-                      styles[`status_${cert.status.replace(/-/g, '')}`]
-                    }`}
-                  >
-                    {cert.status}
+            {certList.map(cert => {
+              const cleanStatus = (cert.status || '').toLowerCase().replace(/[\s-]/g, '');
+              const statusClassName = styles[`status_${cleanStatus}`] || '';
+
+              return (
+                <div key={cert._id} className={styles.certItem}>
+                  <div>
+                    <div className={styles.certName}>{cert.certificationId?.name}</div>
+                    <div className={`${styles.certStatus} ${statusClassName}`}>{cert.status}</div>
                   </div>
+                  <button className={styles.editButton} onClick={() => startEdit(cert)}>
+                    Edit
+                  </button>
                 </div>
-                <button className={styles.editButton} onClick={() => startEdit(cert)}>
-                  Edit
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <button className={styles.addButton} onClick={startAdd}>
@@ -205,7 +180,6 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
 
           {/* FORM */}
           <div className={styles.formSection}>
-            {/* SELECT EXISTING */}
             <div className={styles.formGroup}>
               <label htmlFor="existingCertSelect">Select Existing Certification</label>
               <select
@@ -224,7 +198,6 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
               </select>
             </div>
 
-            {/* NEW CERT NAME */}
             {!editing && !selectedCertId && (
               <div className={styles.formGroup}>
                 <label htmlFor="newCertName">New Certification Name</label>
@@ -239,7 +212,6 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
               </div>
             )}
 
-            {/* DESCRIPTION */}
             {(!editing && !selectedCertId) || editing ? (
               <div className={styles.formGroup}>
                 <label htmlFor="description">Description</label>
@@ -254,7 +226,6 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
               </div>
             ) : null}
 
-            {/* STATUS */}
             <div className={styles.formGroup}>
               <label htmlFor="status">Status</label>
               <select
@@ -271,7 +242,6 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
               </select>
             </div>
 
-            {/* EXPIRY */}
             <div className={styles.formGroup}>
               <label htmlFor="expiryDate">Expiry Date</label>
               <input
@@ -284,7 +254,7 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
               />
             </div>
           </div>
-          {/* ACTIONS */}
+
           <div className={styles.modalActions}>
             <button className={styles.saveButton} onClick={handleSave} disabled={saving}>
               {saving ? 'Saving...' : editing ? 'Update' : 'Add'}

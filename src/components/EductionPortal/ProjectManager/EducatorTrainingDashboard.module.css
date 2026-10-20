@@ -1,183 +1,171 @@
-/* === Container === */
 .etdContainer {
-  padding: 20px 40px;
+  padding: 24px 40px;
   max-width: 1200px;
   margin: 0 auto;
+
+  --bg-dashboard: #fafafa;
+  --bg-table: #fff;
+  --bg-thead: #f1f5f9;
+  --bg-hover: #f8fafc;
+  --border-main: #e2e8f0;
+  --border-inner: #f1f5f9;
+  --text-main: #0f172a;
+  --text-sub: #64748b;
+  --text-thead: #475569;
+  --text-tbody: #1e293b;
+  --shadow: rgb(17 24 39 / 5%);
+  --badge-active-bg: #e6f8ec;
+  --badge-active-txt: #1a8b3c;
+  --badge-progress-bg: #fff5d9;
+  --badge-progress-txt: #d19900;
+  --badge-neutral-bg: #f1f5f9;
+  --badge-neutral-txt: #475569;
+  --badge-expired-bg: #f8d7da;
+  --badge-expired-txt: #842029;
 }
 
-/* Title & Subtitle */
+.etdContainer,
+div.etdContainer[data-theme] {
+  background: var(--bg-dashboard) !important;
+  color: var(--text-main) !important;
+  border-radius: 16px;
+  margin-top: 16px;
+  box-shadow: 0 4px 12px var(--shadow);
+  border: 1px solid var(--border-main);
+}
+
+div.etdContainer[data-theme='dark'] {
+  --bg-dashboard: #1b2a41;
+  --bg-table: #152036;
+  --bg-thead: #0f172a;
+  --bg-hover: #22314d;
+  --border-main: #334155;
+  --border-inner: #27324a;
+  --text-main: #e5e7eb;
+  --text-sub: #94a3b8;
+  --text-thead: #94a3b8;
+  --text-tbody: #cbd5e1;
+  --shadow: rgb(0 0 0 / 40%);
+  --badge-active-bg: rgb(34 197 94 / 15%);
+  --badge-active-txt: #4ade80;
+  --badge-progress-bg: rgb(234 179 8 / 15%);
+  --badge-progress-txt: #fde047;
+  --badge-neutral-bg: #27314a;
+  --badge-neutral-txt: #cbd5e1;
+  --badge-expired-bg: rgb(239 68 68 / 20%);
+  --badge-expired-txt: #fca5a5;
+}
+
 .etdTitle {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 10px;
-  color: #222;
+  margin-bottom: 20px;
+  color: var(--text-main) !important;
+  letter-spacing: -0.5px;
 }
 
-.etdSubtitle {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 25px;
-}
-
-/* === Table Wrapper === */
 .etdTableWrapper {
-  margin-top: 20px;
   overflow-x: auto;
-  border-radius: 10px;
-  border: 1px solid #e2e2e2;
-  box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  border: 1px solid var(--border-main) !important;
+  background: var(--bg-table) !important;
 }
 
-/* === Table === */
 .etdTable {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--bg-table) !important;
 }
 
 .etdTable thead {
-  background: #f5f6f8;
+  background: var(--bg-thead) !important;
 }
 
 .etdTable thead th {
-  padding: 14px;
+  padding: 14px 16px;
   text-align: left;
   font-weight: 600;
-  color: #333;
-  font-size: 14px;
-  border-bottom: 1px solid #ddd;
+  color: var(--text-thead) !important;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-main) !important;
 }
 
 .etdTable tbody tr {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-inner) !important;
+  background: transparent !important;
+}
+
+.etdTable tbody tr:last-child {
+  border-bottom: none !important;
 }
 
 .etdTable tbody tr:hover {
-  background-color: #fafafa;
+  background-color: var(--bg-hover) !important;
 }
 
 .etdTable tbody td {
-  padding: 14px;
+  padding: 16px;
   font-size: 14px;
-  color: #444;
-  vertical-align: top;
+  color: var(--text-tbody) !important;
+  vertical-align: middle;
 }
 
-/* Subtext (email under name) */
 .etdSubtext {
   font-size: 12px;
-  color: #777;
-  margin-top: 3px;
+  color: var(--text-sub) !important;
+  margin-top: 4px;
 }
 
-/* === Certification Item === */
 .etdCertItem {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.etdCertName {
-  font-weight: 500;
+.etdCertItem strong {
+  color: var(--text-tbody) !important;
 }
 
-/* Status Color Tags */
 .etdCertStatus {
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-/* Green = Completed / active */
 .etdStatus_active,
-.etdStatus_Completed {
-  background: #e6f8ec;
-  color: #1a8b3c;
+.etdStatus_completed {
+  background: var(--badge-active-bg) !important;
+  color: var(--badge-active-txt) !important;
 }
 
-/* Yellow = In progress */
-.etdStatus_inprogress,
-.etdStatus_InProgress {
-  background: #fff5d9;
-  color: #d19900;
+.etdStatus_inprogress {
+  background: var(--badge-progress-bg) !important;
+  color: var(--badge-progress-txt) !important;
 }
 
-/* Gray = Not started */
-.etdStatus_NotStarted,
-.etdStatus_notstarted {
-  background: #f0f0f0;
-  color: #666;
-}
-
-/* === Action Button === */
-.etdActionButton {
-  background: #007bff;
-  color: white;
-  padding: 8px 14px;
-  font-size: 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.etdActionButton:hover {
-  background: #0069d9;
-}
-
-.etdActionButton:active {
-  background: #005bb5;
-}
-
-/* === Loader & Error === */
-.loader {
-  margin-top: 50px;
-  text-align: center;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.error {
-  margin-top: 20px;
-  color: #d60000;
-  font-size: 16px;
-  text-align: center;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .etdContainer {
-    padding: 15px;
-  }
-
-  .etdTable thead {
-    display: none;
-  }
-
-  .etdTable tbody tr {
-    display: block;
-    margin-bottom: 12px;
-    background: #fff;
-    padding: 12px;
-    border-radius: 8px;
-  }
-
-  .etdTable tbody td {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-  }
-
-  .etdTable tbody td strong {
-    display: block;
-  }
+.etdStatus_notstarted,
+.etdStatus_revoked {
+  background: var(--badge-neutral-bg) !important;
+  color: var(--badge-neutral-txt) !important;
 }
 
 .etdStatus_expired {
-  background: #f8d7da;
-  color: #842029;
+  background: var(--badge-expired-bg) !important;
+  color: var(--badge-expired-txt) !important;
 }
 
-.etdStatus_revoked {
-  background: #f0f0f0;
-  color: #666;
+.etdActionButton {
+  background: #4f46e5 !important;
+  color: white !important;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }

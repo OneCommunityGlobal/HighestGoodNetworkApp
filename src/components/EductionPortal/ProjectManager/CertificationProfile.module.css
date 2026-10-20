@@ -1,190 +1,243 @@
-/* Modal backdrop */
 .modalBackdrop {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(15 23 42 / 60%);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1300;
+
+  --bg-modal: #fff;
+  --text-main: #0f172a;
+  --text-sub: #475569;
+  --border-modal: #e2e8f0;
+  --input-border: #cbd5e1;
+  --input-bg: #fff;
+  --input-text: #0f172a;
+  --placeholder-color: #94a3b8;
+  --sys-scheme: light;
+  --calendar-filter: invert(0);
+  --shadow: rgb(0 0 0 / 15%);
+  --badge-active-bg: #e6f8ec;
+  --badge-active-txt: #1a8b3c;
+  --badge-progress-bg: #fff5d9;
+  --badge-progress-txt: #d19900;
+  --badge-neutral-bg: #f1f5f9;
+  --badge-neutral-txt: #475569;
 }
 
-/* Modal container */
+.modalBackdrop[data-theme='dark'] {
+  --bg-modal: #1b2a41;
+  --text-main: #e5e7eb;
+  --text-sub: #94a3b8;
+  --border-modal: #334155;
+  --input-border: #475569;
+  --input-bg: #0f172a;
+  --input-text: #e5e7eb;
+  --placeholder-color: #64748b;
+  --sys-scheme: dark;
+  --calendar-filter: invert(1);
+  --shadow: rgb(0 0 0 / 40%);
+  --badge-active-bg: rgb(34 197 94 / 15%);
+  --badge-active-txt: #4ade80;
+  --badge-progress-bg: rgb(234 179 8 / 15%);
+  --badge-progress-txt: #fde047;
+  --badge-neutral-bg: #27314a;
+  --badge-neutral-txt: #cbd5e1;
+}
+
 .modal {
-  background: #fff;
-  border-radius: 12px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 80vh; /* limit modal height */
+  background: var(--bg-modal) !important;
+  border-radius: 14px;
+  width: min(600px, 94%);
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* prevent content spilling out */
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
-  position: relative;
-  padding: 0; /* remove padding here; we’ll add inside modalBody */
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px var(--shadow);
+  border: 1px solid var(--border-modal);
+  color: var(--text-main) !important;
 }
 
 .modalBody {
-  padding: 30px; /* your old modal padding */
-  overflow-y: auto; /* scroll if content is too tall */
+  padding: 24px;
+  overflow-y: auto;
   flex-grow: 1;
 }
 
-/* Modal title */
 .modalTitle {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #222;
+  line-height: 1.2;
+  color: var(--text-main) !important;
 }
 
-/* Certification list */
 .certList {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--border-modal);
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: rgb(0 0 0 / 5%) !important;
+}
+
+.modalBackdrop[data-theme='dark'] .certList {
+  background: #0f172a !important;
 }
 
 .certItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-modal);
+}
+
+.certItem:last-child {
+  border-bottom: none;
 }
 
 .certName {
-  font-weight: 500;
-  font-size: 15px;
-  color: #333;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-main) !important;
 }
 
 .certStatus {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 10px;
   border-radius: 6px;
   display: inline-block;
+  margin-top: 6px;
 }
 
-/* Status colors */
-.status_active {
-  background: #e6f8ec;
-  color: #1a8b3c;
+.status_active,
+.status_completed {
+  background: var(--badge-active-bg) !important;
+  color: var(--badge-active-txt) !important;
 }
 
 .status_inprogress {
-  background: #fff5d9;
-  color: #d19900;
+  background: var(--badge-progress-bg) !important;
+  color: var(--badge-progress-txt) !important;
 }
 
+.status_revoked,
+.status_expired,
 .status_inactive {
-  background: #f0f0f0;
-  color: #666;
+  background: var(--badge-neutral-bg) !important;
+  color: var(--badge-neutral-txt) !important;
 }
 
-/* Edit & Add buttons */
-.editButton,
-.addButton {
-  background: #007bff;
-  color: #fff;
-  border: none;
-  padding: 5px 12px;
-  border-radius: 6px;
+.editButton {
+  background: transparent !important;
+  color: #4f46e5 !important;
+  border: 1px solid var(--border-modal) !important;
+  padding: 6px 12px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
-  transition: 0.2s ease;
+  font-weight: 600;
 }
 
-.editButton:hover,
-.addButton:hover {
-  background: #0069d9;
+.modalBackdrop[data-theme='dark'] .editButton {
+  color: #818cf8 !important;
 }
 
-/* Add button spacing */
 .addButton {
-  margin-top: 10px;
+  background: #4f46e5 !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  width: 100%;
+  margin-bottom: 16px;
 }
 
-/* Form section */
 .formSection {
-  margin-top: 20px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border-modal);
+  padding-top: 20px;
 }
 
 .formGroup {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
 }
 
 .formGroup label {
-  font-weight: 500;
-  font-size: 14px;
-  margin-bottom: 5px;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: var(--text-sub) !important;
 }
 
-.input,
-.select {
-  padding: 8px 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+.modalBody input,
+.modalBody select,
+.modalBody textarea,
+.modalBody input[type="date"] {
+  padding: 10px 12px !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--input-border) !important;
+  background: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  color-scheme: var(--sys-scheme) !important;
+  outline: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  font-family: inherit !important;
 }
 
-.input:focus,
-.select:focus {
-  outline: none;
-  border-color: #007bff;
+.modalBody input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: var(--calendar-filter) !important;
+  cursor: pointer;
 }
 
-/* Modal actions */
+.modalBody input::placeholder,
+.modalBody textarea::placeholder {
+  color: var(--placeholder-color) !important;
+}
+
+.modalBody input:focus,
+.modalBody select:focus,
+.modalBody textarea:focus {
+  border-color: #4f46e5 !important;
+  box-shadow: 0 0 0 3px rgb(79 70 229 / 15%) !important;
+}
+
 .modalActions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .saveButton {
-  background: #28a745;
-  color: #fff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: 0.2s ease;
-}
-
-.saveButton:hover {
-  background: #218838;
+  background: #16a34a !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
 }
 
 .cancelButton {
-  background: #ccc;
-  color: #333;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
+  background: transparent !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--input-border) !important;
+  padding: 10px 20px;
+  border-radius: 10px;
   font-weight: 600;
-  transition: 0.2s ease;
-}
-
-.cancelButton:hover {
-  background: #b3b3b3;
-}
-
-/* Responsive */
-@media (max-width: 500px) {
-  .modal {
-    padding: 20px;
-  }
-
-  .modalTitle {
-    font-size: 20px;
-  }
 }
