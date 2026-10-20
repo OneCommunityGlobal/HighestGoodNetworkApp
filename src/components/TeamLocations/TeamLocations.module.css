@@ -1,11 +1,13 @@
-.leaflet-container {
+/* Scoped under .teamLocations (the page container); everything inside is rendered with
+   plain class strings or by Leaflet, so inner selectors are :global */
+.teamLocations :global(.leaflet-container) {
   width: 100%;
   min-height: 500px;
   height: 90vh;
   z-index: 0; /* Will block navbar dropdowns otherwise */
 }
 
-.map-dropdown-table {
+.teamLocations :global(.map-dropdown-table) {
   background-color: white;
   padding: 0 5px 20px 20px;
   top: 100%;
@@ -15,11 +17,11 @@
   width: auto;
 }
 
-#map-container {
+.teamLocations :global(#map-container) {
   height: calc(100vh - 225px);
 }
 
-.text-and-table-icon-container {
+.teamLocations :global(.text-and-table-icon-container) {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -28,34 +30,34 @@
 
 }
 
-.cursor-pointer {
+.teamLocations :global(.cursor-pointer) {
   cursor: pointer;
 }
 
-.small-column {
+.teamLocations :global(.small-column) {
   width: 15px;
 }
 
-.medium-column {
+.teamLocations :global(.medium-column) {
   max-width: 124px;
   width: 124px;
 }
 
-.large-column {
+.teamLocations :global(.large-column) {
   max-width: 100px;
 }
 
-.column-header {
+.teamLocations :global(.column-header) {
   font-size: .75rem;
 }
 
-.column-content {
+.teamLocations :global(.column-content) {
   width: 40px;
   height: 20px;
   cursor: pointer;
 }
 
-.map-table-container {
+.teamLocations :global(.map-table-container) {
   position: absolute;
   top: 10px; 
   right: 10px; 
@@ -74,24 +76,24 @@
   border-radius: 10px;
 }
 
-.map-table-container.visible {
+.teamLocations :global(.map-table-container.visible) {
   opacity: 1; 
 }
 
 @media screen and (width <= 350px) {
-  .map-table-container {
+  .teamLocations :global(.map-table-container) {
     display: none;
   }
 }
 
-.team-locations-table { 
+.teamLocations :global(.team-locations-table) {
   border-collapse: collapse;
   width: 100%;
   font-size: 0.8rem;
 }
 
 
-.team-locations-table-header {
+.teamLocations :global(.team-locations-table-header) {
   background-color: #282828 !important;
   color: white;
   padding: 10px;
@@ -99,39 +101,39 @@
 }
 
 @media screen and (width <= 768px) {
-  .map-table-container {
+  .teamLocations :global(.map-table-container) {
     width: 60%; 
     max-width: 60%; 
     max-height: 40vh;
   }
 
-  .team-locations-table-header {
+  .teamLocations :global(.team-locations-table-header) {
     background-color: #282828;
   }
 } 
 
-.team-locations-table-data {
+.teamLocations :global(.team-locations-table-data) {
   padding: 10px;
   text-align: left;
 }
 
 
-.team-locations-table-row-even {
+.teamLocations :global(.team-locations-table-row-even) {
   background-color: #f2f2f2;
 }
 
 
-.team-locations-table-row:hover {
+.teamLocations :global(.team-locations-table-row:hover) {
   background-color: #cfcaca;
 }
 
-.team-locations-table thead th {
+.teamLocations :global(.team-locations-table thead th) {
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-.search-bar {
+.teamLocations :global(.search-bar) {
   margin-bottom: 10px;
   padding: 5px;
   background-color: rgb(255 255 255 / 90%);
@@ -141,11 +143,11 @@
   transition: opacity 0.5s ease;
 }
 
-.search-bar.visible {
+.teamLocations :global(.search-bar.visible) {
   opacity: 1;
 }
 
-.search-bar input[type='text'] {
+.teamLocations :global(.search-bar input[type='text']) {
   width: 100%;
   padding: 8px;
   border: none;
@@ -153,39 +155,41 @@
   font-size: 0.7rem;
 }
 
-.search-bar input[type='text']::placeholder {
+.teamLocations :global(.search-bar input[type='text']::placeholder) {
   color: #888;
 }
 
-.dark-mode .leaflet-layer,
-.dark-mode .leaflet-control-zoom-in,
-.dark-mode .leaflet-control-zoom-out,
-.dark-mode .leaflet-control-attribution {
+.teamLocations:global(.dark-mode) :global(.leaflet-layer),
+.teamLocations:global(.dark-mode) :global(.leaflet-control-zoom-in),
+.teamLocations:global(.dark-mode) :global(.leaflet-control-zoom-out),
+.teamLocations:global(.dark-mode) :global(.leaflet-control-attribution) {
   filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(85%);
 }
 
-.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+.teamLocations :global(.leaflet-popup-content-wrapper),
+.teamLocations :global(.leaflet-popup-tip) {
   background-color: #fff;
 }
 
-.dark-mode .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+.teamLocations:global(.dark-mode) :global(.leaflet-popup-content-wrapper),
+.teamLocations:global(.dark-mode) :global(.leaflet-popup-tip) {
   background-color: #3A506B;
   color: #fff;
 }
 
 /* Dark mode styles */
-.team-locations-container.dark-mode {
+.teamLocations:global(.dark-mode) {
   background-color: #0d1b2a !important;
   color: #fff !important;
 }
 
-.team-locations-container .dark-mode-input {
+.teamLocations :global(.dark-mode-input) {
   background-color: #1a2b3c !important;
   color: #fff !important;
   border: 1px solid #4a4a4a !important;
 }
 
-.team-locations-container .dark-mode-dropdown {
+.teamLocations :global(.dark-mode-dropdown) {
   background-color: #1a2b3c !important;
   color: #fff !important;
 }
