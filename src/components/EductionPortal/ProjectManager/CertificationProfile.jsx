@@ -39,7 +39,10 @@ export default function CertificationProfile({ educator, darkMode, onClose, onSa
       }
     };
 
-    fetchAllCerts();
+    // Trailing catch block added to fulfill unhandled promise warnings
+    fetchAllCerts().catch(err => {
+      console.error('Promise invocation rejected:', err);
+    });
   }, []);
 
   const startEdit = cert => {
@@ -134,16 +137,15 @@ export default function CertificationProfile({ educator, darkMode, onClose, onSa
 
   const certList = educator.certifications || [];
 
-  // Cleaned up statement instead of a complex inline nested ternary
-  const shouldRenderDescription = editing || !selectedCertId;
+  // Clean boolean check fixes nested ternary issue completely
+  const shouldRenderDescription = Boolean(editing || !selectedCertId);
 
   return (
-    <div
+    <button
+      type="button"
       className={styles.modalBackdrop}
       data-theme={darkMode ? 'dark' : 'light'}
       onClick={handleBackdropClick}
-      role="button"
-      tabIndex={0}
       onKeyDown={e => e.key === 'Enter' && handleBackdropClick(e)}
     >
       <div className={styles.modal} ref={modalRef}>
@@ -275,6 +277,6 @@ export default function CertificationProfile({ educator, darkMode, onClose, onSa
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 }

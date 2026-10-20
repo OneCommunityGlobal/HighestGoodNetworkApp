@@ -54,7 +54,10 @@ export default function EducatorTrainingDashboard() {
       }
     };
 
-    fetchCertifications();
+    // Trailing catch block handles raw script runtime lifecycle rejections cleanly
+    fetchCertifications().catch(err => {
+      console.error('Data retrieval chain failure:', err);
+    });
   }, [refreshKey]);
 
   const updateEducatorCerts = () => {
@@ -86,7 +89,6 @@ export default function EducatorTrainingDashboard() {
                 </td>
                 <td>
                   {edu.certifications.map(cert => {
-                    // Normalize the status string down to safely match CSS selectors
                     const cleanStatus = (cert.status || '').toLowerCase().replace(/[\s-]/g, '');
                     const statusClassName = styles[`etdStatus_${cleanStatus}`] || '';
 
@@ -103,6 +105,7 @@ export default function EducatorTrainingDashboard() {
                 </td>
                 <td>
                   <button
+                    type="button"
                     className={styles.etdActionButton}
                     onClick={() => setSelectedEducator(edu)}
                   >

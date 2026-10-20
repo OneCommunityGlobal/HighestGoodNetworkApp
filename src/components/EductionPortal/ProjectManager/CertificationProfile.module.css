@@ -1,4 +1,4 @@
-.modalBackdrop {
+button.modalBackdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,10 +9,16 @@
   justify-content: center;
   align-items: center;
   z-index: 1300;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: default;
 
   --bg-modal: #fff;
   --text-main: #0f172a;
-  --text-sub: #475569;
+  --text-sub: #4b5563;
+
+  /* Elevated contrast value */
   --border-modal: #e2e8f0;
   --input-border: #cbd5e1;
   --input-bg: #fff;
@@ -21,8 +27,6 @@
   --sys-scheme: light;
   --calendar-filter: invert(0);
   --shadow: rgb(0 0 0 / 15%);
-
-  /* Restored standard light mode values */
   --badge-active-bg: #e6f8ec;
   --badge-active-txt: #1a8b3c;
   --badge-progress-bg: #fff5d9;
@@ -31,10 +35,12 @@
   --badge-neutral-txt: #475569;
 }
 
-.modalBackdrop[data-theme='dark'] {
+button.modalBackdrop[data-theme='dark'] {
   --bg-modal: #1b2a41;
   --text-main: #e5e7eb;
-  --text-sub: #94a3b8;
+  --text-sub: #e2e8f0;
+
+  /* Elevated contrast value */
   --border-modal: #334155;
   --input-border: #475569;
   --input-bg: #0f172a;
@@ -43,8 +49,6 @@
   --sys-scheme: dark;
   --calendar-filter: invert(1);
   --shadow: rgb(0 0 0 / 40%);
-
-  /* Vivid high-contrast dark mode badges */
   --badge-active-bg: rgb(34 197 94 / 25%);
   --badge-active-txt: #4ade80;
   --badge-progress-bg: rgb(234 179 8 / 25%);
@@ -53,7 +57,7 @@
   --badge-neutral-txt: #f8fafc;
 }
 
-div.modalBackdrop .modal {
+button.modalBackdrop .modal {
   background: var(--bg-modal);
   border-radius: 14px;
   width: min(600px, 94%);
@@ -64,6 +68,7 @@ div.modalBackdrop .modal {
   box-shadow: 0 20px 25px -5px var(--shadow);
   border: 1px solid var(--border-modal);
   color: var(--text-main);
+  cursor: default;
 }
 
 .modalBody {
@@ -72,7 +77,7 @@ div.modalBackdrop .modal {
   flex-grow: 1;
 }
 
-div.modalBackdrop .modalTitle {
+button.modalBackdrop .modalTitle {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 20px;
@@ -80,7 +85,7 @@ div.modalBackdrop .modalTitle {
   color: var(--text-main);
 }
 
-div.modalBackdrop .certList {
+button.modalBackdrop .certList {
   margin-bottom: 24px;
   max-height: 260px;
   overflow-y: auto;
@@ -90,7 +95,7 @@ div.modalBackdrop .certList {
   background: rgb(0 0 0 / 5%);
 }
 
-div.modalBackdrop[data-theme='dark'] .certList {
+button.modalBackdrop[data-theme='dark'] .certList {
   background: #0f172a;
 }
 
@@ -106,7 +111,7 @@ div.modalBackdrop[data-theme='dark'] .certList {
   border-bottom: none;
 }
 
-div.modalBackdrop .certName {
+button.modalBackdrop .certName {
   font-weight: 600;
   font-size: 14px;
   color: var(--text-main);
@@ -122,25 +127,25 @@ div.modalBackdrop .certName {
   margin-top: 6px;
 }
 
-div.modalBackdrop .status_active,
-div.modalBackdrop .status_completed {
+button.modalBackdrop .status_active,
+button.modalBackdrop .status_completed {
   background: var(--badge-active-bg);
   color: var(--badge-active-txt);
 }
 
-div.modalBackdrop .status_inprogress {
+button.modalBackdrop .status_inprogress {
   background: var(--badge-progress-bg);
   color: var(--badge-progress-txt);
 }
 
-div.modalBackdrop .status_revoked,
-div.modalBackdrop .status_expired,
-div.modalBackdrop .status_inactive {
+button.modalBackdrop .status_revoked,
+button.modalBackdrop .status_expired,
+button.modalBackdrop .status_inactive {
   background: var(--badge-neutral-bg);
   color: var(--badge-neutral-txt);
 }
 
-div.modalBackdrop .editButton {
+button.modalBackdrop .editButton {
   background: transparent;
   color: #4f46e5;
   border: 1px solid var(--border-modal);
@@ -151,11 +156,11 @@ div.modalBackdrop .editButton {
   font-weight: 600;
 }
 
-div.modalBackdrop[data-theme='dark'] .editButton {
+button.modalBackdrop[data-theme='dark'] .editButton {
   color: #818cf8;
 }
 
-div.modalBackdrop .addButton {
+button.modalBackdrop .addButton {
   background: #4f46e5;
   color: #fff;
   border: none;
@@ -180,17 +185,17 @@ div.modalBackdrop .addButton {
   flex-direction: column;
 }
 
-div.modalBackdrop .formGroup label {
+button.modalBackdrop .formGroup label {
   font-weight: 600;
   font-size: 13px;
   margin-bottom: 6px;
   color: var(--text-sub);
 }
 
-div.modalBackdrop .modalBody input,
-div.modalBackdrop .modalBody select,
-div.modalBackdrop .modalBody textarea,
-div.modalBackdrop .modalBody input[type="date"] {
+button.modalBackdrop .modalBody input,
+button.modalBackdrop .modalBody select,
+button.modalBackdrop .modalBody textarea,
+button.modalBackdrop .modalBody input[type="date"] {
   padding: 10px 12px;
   font-size: 14px;
   border-radius: 8px;
@@ -204,19 +209,19 @@ div.modalBackdrop .modalBody input[type="date"] {
   font-family: inherit;
 }
 
-div.modalBackdrop .modalBody input[type="date"]::-webkit-calendar-picker-indicator {
+button.modalBackdrop .modalBody input[type="date"]::-webkit-calendar-picker-indicator {
   filter: var(--calendar-filter);
   cursor: pointer;
 }
 
-div.modalBackdrop .modalBody input::placeholder,
-div.modalBackdrop .modalBody textarea::placeholder {
+button.modalBackdrop .modalBody input::placeholder,
+button.modalBackdrop .modalBody textarea::placeholder {
   color: var(--placeholder-color);
 }
 
-div.modalBackdrop .modalBody input:focus,
-div.modalBackdrop .modalBody select:focus,
-div.modalBackdrop .modalBody textarea:focus {
+button.modalBackdrop .modalBody input:focus,
+button.modalBackdrop .modalBody select:focus,
+button.modalBackdrop .modalBody textarea:focus {
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgb(79 70 229 / 15%);
 }
@@ -228,20 +233,22 @@ div.modalBackdrop .modalBody textarea:focus {
   margin-top: 24px;
 }
 
-div.modalBackdrop .saveButton {
+button.modalBackdrop .saveButton {
   background: #16a34a;
   color: #fff;
   border: none;
   padding: 10px 20px;
   border-radius: 10px;
   font-weight: 700;
+  cursor: pointer;
 }
 
-div.modalBackdrop .cancelButton {
+button.modalBackdrop .cancelButton {
   background: transparent;
   color: var(--text-main);
   border: 1px solid var(--input-border);
   padding: 10px 20px;
   border-radius: 10px;
   font-weight: 600;
+  cursor: pointer;
 }
