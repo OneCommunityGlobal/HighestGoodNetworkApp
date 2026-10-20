@@ -14,6 +14,8 @@
   --text-thead: #475569;
   --text-tbody: #1e293b;
   --shadow: rgb(17 24 39 / 5%);
+
+  /* Restored standard light mode values */
   --badge-active-bg: #e6f8ec;
   --badge-active-txt: #1a8b3c;
   --badge-progress-bg: #fff5d9;
@@ -24,10 +26,9 @@
   --badge-expired-txt: #842029;
 }
 
-.etdContainer,
 div.etdContainer[data-theme] {
-  background: var(--bg-dashboard) !important;
-  color: var(--text-main) !important;
+  background: var(--bg-dashboard);
+  color: var(--text-main);
   border-radius: 16px;
   margin-top: 16px;
   box-shadow: 0 4px 12px var(--shadow);
@@ -46,75 +47,77 @@ div.etdContainer[data-theme='dark'] {
   --text-thead: #94a3b8;
   --text-tbody: #cbd5e1;
   --shadow: rgb(0 0 0 / 40%);
-  --badge-active-bg: rgb(34 197 94 / 15%);
+
+  /* Vivid high-contrast dark mode badges */
+  --badge-active-bg: rgb(34 197 94 / 25%);
   --badge-active-txt: #4ade80;
-  --badge-progress-bg: rgb(234 179 8 / 15%);
+  --badge-progress-bg: rgb(234 179 8 / 25%);
   --badge-progress-txt: #fde047;
-  --badge-neutral-bg: #27314a;
-  --badge-neutral-txt: #cbd5e1;
-  --badge-expired-bg: rgb(239 68 68 / 20%);
-  --badge-expired-txt: #fca5a5;
+  --badge-neutral-bg: rgb(148 163 184 / 30%);
+  --badge-neutral-txt: #f8fafc;
+  --badge-expired-bg: rgb(239 68 68 / 35%);
+  --badge-expired-txt: #ff8787;
 }
 
-.etdTitle {
+div.etdContainer .etdTitle {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: var(--text-main) !important;
+  color: var(--text-main);
   letter-spacing: -0.5px;
 }
 
-.etdTableWrapper {
+div.etdContainer .etdTableWrapper {
   overflow-x: auto;
   border-radius: 12px;
-  border: 1px solid var(--border-main) !important;
-  background: var(--bg-table) !important;
+  border: 1px solid var(--border-main);
+  background: var(--bg-table);
 }
 
-.etdTable {
+div.etdContainer .etdTable {
   width: 100%;
   border-collapse: collapse;
-  background: var(--bg-table) !important;
+  background: var(--bg-table);
 }
 
-.etdTable thead {
-  background: var(--bg-thead) !important;
+div.etdContainer .etdTable thead {
+  background: var(--bg-thead);
 }
 
-.etdTable thead th {
+div.etdContainer .etdTable thead th {
   padding: 14px 16px;
   text-align: left;
   font-weight: 600;
-  color: var(--text-thead) !important;
+  color: var(--text-thead);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border-main) !important;
+  border-bottom: 1px solid var(--border-main);
 }
 
-.etdTable tbody tr {
-  border-bottom: 1px solid var(--border-inner) !important;
-  background: transparent !important;
+div.etdContainer .etdTable tbody tr {
+  border-bottom: 1px solid var(--border-inner);
+  background: transparent;
 }
 
-.etdTable tbody tr:last-child {
-  border-bottom: none !important;
+div.etdContainer .etdTable tbody tr:last-child {
+  border-bottom: none;
 }
 
-.etdTable tbody tr:hover {
-  background-color: var(--bg-hover) !important;
+div.etdContainer .etdTable tbody tr:hover {
+  background-color: var(--bg-hover);
 }
 
-.etdTable tbody td {
+div.etdContainer .etdTable tbody td {
   padding: 16px;
   font-size: 14px;
-  color: var(--text-tbody) !important;
+  color: var(--text-tbody);
   vertical-align: middle;
 }
 
-.etdSubtext {
+div.etdContainer .etdSubtext {
   font-size: 12px;
-  color: var(--text-sub) !important;
+  color: var(--text-sub);
   margin-top: 4px;
 }
 
@@ -125,8 +128,8 @@ div.etdContainer[data-theme='dark'] {
   gap: 8px;
 }
 
-.etdCertItem strong {
-  color: var(--text-tbody) !important;
+div.etdContainer .etdCertItem strong {
+  color: var(--text-tbody);
 }
 
 .etdCertStatus {
@@ -137,31 +140,31 @@ div.etdContainer[data-theme='dark'] {
   text-transform: uppercase;
 }
 
-.etdStatus_active,
-.etdStatus_completed {
-  background: var(--badge-active-bg) !important;
-  color: var(--badge-active-txt) !important;
+div.etdContainer .etdStatus_active,
+div.etdContainer .etdStatus_completed {
+  background: var(--badge-active-bg);
+  color: var(--badge-active-txt);
 }
 
-.etdStatus_inprogress {
-  background: var(--badge-progress-bg) !important;
-  color: var(--badge-progress-txt) !important;
+div.etdContainer .etdStatus_inprogress {
+  background: var(--badge-progress-bg);
+  color: var(--badge-progress-txt);
 }
 
-.etdStatus_notstarted,
-.etdStatus_revoked {
-  background: var(--badge-neutral-bg) !important;
-  color: var(--badge-neutral-txt) !important;
+div.etdContainer .etdStatus_notstarted,
+div.etdContainer .etdStatus_revoked {
+  background: var(--badge-neutral-bg);
+  color: var(--badge-neutral-txt);
 }
 
-.etdStatus_expired {
-  background: var(--badge-expired-bg) !important;
-  color: var(--badge-expired-txt) !important;
+div.etdContainer .etdStatus_expired {
+  background: var(--badge-expired-bg);
+  color: var(--badge-expired-txt);
 }
 
-.etdActionButton {
-  background: #4f46e5 !important;
-  color: white !important;
+div.etdContainer .etdActionButton {
+  background: #4f46e5;
+  color: white;
   padding: 8px 14px;
   font-size: 13px;
   font-weight: 600;

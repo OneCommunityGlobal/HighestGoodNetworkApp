@@ -21,6 +21,8 @@
   --sys-scheme: light;
   --calendar-filter: invert(0);
   --shadow: rgb(0 0 0 / 15%);
+
+  /* Restored standard light mode values */
   --badge-active-bg: #e6f8ec;
   --badge-active-txt: #1a8b3c;
   --badge-progress-bg: #fff5d9;
@@ -41,16 +43,18 @@
   --sys-scheme: dark;
   --calendar-filter: invert(1);
   --shadow: rgb(0 0 0 / 40%);
-  --badge-active-bg: rgb(34 197 94 / 15%);
+
+  /* Vivid high-contrast dark mode badges */
+  --badge-active-bg: rgb(34 197 94 / 25%);
   --badge-active-txt: #4ade80;
-  --badge-progress-bg: rgb(234 179 8 / 15%);
+  --badge-progress-bg: rgb(234 179 8 / 25%);
   --badge-progress-txt: #fde047;
-  --badge-neutral-bg: #27314a;
-  --badge-neutral-txt: #cbd5e1;
+  --badge-neutral-bg: rgb(148 163 184 / 30%);
+  --badge-neutral-txt: #f8fafc;
 }
 
-.modal {
-  background: var(--bg-modal) !important;
+div.modalBackdrop .modal {
+  background: var(--bg-modal);
   border-radius: 14px;
   width: min(600px, 94%);
   max-height: 85vh;
@@ -59,7 +63,7 @@
   overflow: hidden;
   box-shadow: 0 20px 25px -5px var(--shadow);
   border: 1px solid var(--border-modal);
-  color: var(--text-main) !important;
+  color: var(--text-main);
 }
 
 .modalBody {
@@ -68,26 +72,26 @@
   flex-grow: 1;
 }
 
-.modalTitle {
+div.modalBackdrop .modalTitle {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 20px;
   line-height: 1.2;
-  color: var(--text-main) !important;
+  color: var(--text-main);
 }
 
-.certList {
+div.modalBackdrop .certList {
   margin-bottom: 24px;
   max-height: 260px;
   overflow-y: auto;
   border: 1px solid var(--border-modal);
   border-radius: 10px;
   padding: 8px 12px;
-  background: rgb(0 0 0 / 5%) !important;
+  background: rgb(0 0 0 / 5%);
 }
 
-.modalBackdrop[data-theme='dark'] .certList {
-  background: #0f172a !important;
+div.modalBackdrop[data-theme='dark'] .certList {
+  background: #0f172a;
 }
 
 .certItem {
@@ -102,10 +106,10 @@
   border-bottom: none;
 }
 
-.certName {
+div.modalBackdrop .certName {
   font-weight: 600;
   font-size: 14px;
-  color: var(--text-main) !important;
+  color: var(--text-main);
 }
 
 .certStatus {
@@ -118,28 +122,28 @@
   margin-top: 6px;
 }
 
-.status_active,
-.status_completed {
-  background: var(--badge-active-bg) !important;
-  color: var(--badge-active-txt) !important;
+div.modalBackdrop .status_active,
+div.modalBackdrop .status_completed {
+  background: var(--badge-active-bg);
+  color: var(--badge-active-txt);
 }
 
-.status_inprogress {
-  background: var(--badge-progress-bg) !important;
-  color: var(--badge-progress-txt) !important;
+div.modalBackdrop .status_inprogress {
+  background: var(--badge-progress-bg);
+  color: var(--badge-progress-txt);
 }
 
-.status_revoked,
-.status_expired,
-.status_inactive {
-  background: var(--badge-neutral-bg) !important;
-  color: var(--badge-neutral-txt) !important;
+div.modalBackdrop .status_revoked,
+div.modalBackdrop .status_expired,
+div.modalBackdrop .status_inactive {
+  background: var(--badge-neutral-bg);
+  color: var(--badge-neutral-txt);
 }
 
-.editButton {
-  background: transparent !important;
-  color: #4f46e5 !important;
-  border: 1px solid var(--border-modal) !important;
+div.modalBackdrop .editButton {
+  background: transparent;
+  color: #4f46e5;
+  border: 1px solid var(--border-modal);
   padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
@@ -147,14 +151,14 @@
   font-weight: 600;
 }
 
-.modalBackdrop[data-theme='dark'] .editButton {
-  color: #818cf8 !important;
+div.modalBackdrop[data-theme='dark'] .editButton {
+  color: #818cf8;
 }
 
-.addButton {
-  background: #4f46e5 !important;
-  color: #fff !important;
-  border: none !important;
+div.modalBackdrop .addButton {
+  background: #4f46e5;
+  color: #fff;
+  border: none;
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
@@ -176,45 +180,45 @@
   flex-direction: column;
 }
 
-.formGroup label {
+div.modalBackdrop .formGroup label {
   font-weight: 600;
   font-size: 13px;
   margin-bottom: 6px;
-  color: var(--text-sub) !important;
+  color: var(--text-sub);
 }
 
-.modalBody input,
-.modalBody select,
-.modalBody textarea,
-.modalBody input[type="date"] {
-  padding: 10px 12px !important;
-  font-size: 14px !important;
-  border-radius: 8px !important;
-  border: 1px solid var(--input-border) !important;
-  background: var(--input-bg) !important;
-  color: var(--input-text) !important;
-  color-scheme: var(--sys-scheme) !important;
-  outline: none !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  font-family: inherit !important;
+div.modalBackdrop .modalBody input,
+div.modalBackdrop .modalBody select,
+div.modalBackdrop .modalBody textarea,
+div.modalBackdrop .modalBody input[type="date"] {
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-text);
+  color-scheme: var(--sys-scheme);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
 }
 
-.modalBody input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: var(--calendar-filter) !important;
+div.modalBackdrop .modalBody input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: var(--calendar-filter);
   cursor: pointer;
 }
 
-.modalBody input::placeholder,
-.modalBody textarea::placeholder {
-  color: var(--placeholder-color) !important;
+div.modalBackdrop .modalBody input::placeholder,
+div.modalBackdrop .modalBody textarea::placeholder {
+  color: var(--placeholder-color);
 }
 
-.modalBody input:focus,
-.modalBody select:focus,
-.modalBody textarea:focus {
-  border-color: #4f46e5 !important;
-  box-shadow: 0 0 0 3px rgb(79 70 229 / 15%) !important;
+div.modalBackdrop .modalBody input:focus,
+div.modalBackdrop .modalBody select:focus,
+div.modalBackdrop .modalBody textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgb(79 70 229 / 15%);
 }
 
 .modalActions {
@@ -224,19 +228,19 @@
   margin-top: 24px;
 }
 
-.saveButton {
-  background: #16a34a !important;
-  color: #fff !important;
-  border: none !important;
+div.modalBackdrop .saveButton {
+  background: #16a34a;
+  color: #fff;
+  border: none;
   padding: 10px 20px;
   border-radius: 10px;
   font-weight: 700;
 }
 
-.cancelButton {
-  background: transparent !important;
-  color: var(--text-main) !important;
-  border: 1px solid var(--input-border) !important;
+div.modalBackdrop .cancelButton {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--input-border);
   padding: 10px 20px;
   border-radius: 10px;
   font-weight: 600;
