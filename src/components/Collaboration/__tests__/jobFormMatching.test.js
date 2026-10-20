@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
+  buildInitialSelection,
   findApplicantFormBySlug,
   findDefaultSoftwareForm,
   findFormForJobTitle,
@@ -12,6 +13,8 @@ import {
   slugifyPositionTitle,
 } from '../JobApplicationForm/jobApplicationPublicApi';
 import catalog from './fixtures/devJobCatalog.json';
+
+vi.mock('react-toastify', () => ({ toast: { warn: vi.fn(), info: vi.fn(), error: vi.fn() } }));
 
 /* Real shared-dev catalog: /api/jobs/positions titles and /api/jobforms/all titles (API order). */
 const { positions } = catalog;
@@ -149,5 +152,48 @@ describe('pickInitialForm', () => {
 
   it('returns null with no navigation context', () => {
     expect(pickInitialForm(forms, {}, '')).toBeNull();
+  });
+});
+
+describe('buildInitialSelection', () => {
+  const select = ({ navTitle = '', positionSlug = '', positionList = positions } = {}) =>
+    buildInitialSelection({
+      formsArr: retiredFirst,
+      positions: positionList,
+      navTitle,
+      positionSlug,
+      routerLocation: { state: null },
+      formId: '',
+    });
+
+  it.each([
+    ['?jobTitle=Applied through site', { navTitle: 'Applied through site' }],
+    ['?jobTitle=T.A.S.T', { navTitle: 'T.A.S.T' }],
+    ['/apply/dehllo', { positionSlug: 'dehllo' }],
+    ['/apply/dehllo with /jobs/positions down', { positionSlug: 'dehllo', positionList: [] }],
+  ])('%s selects the default form title with no fake dropdown option', (_link, args) => {
+    const { options, selected, bannerTitle, initial } = select(args);
+    expect(selected).toBe('SEEKING SOFTWARE POSITION');
+    expect(bannerTitle).toBe('SEEKING SOFTWARE POSITION');
+    expect(initial.filteredForm?.title).toBe('SEEKING SOFTWARE POSITION');
+    // Dropdown is exactly the real positions (or live form titles when /jobs/positions fails).
+    const expectedOptions = args.positionList
+      ? retiredFirst.filter(isApplicantFacingForm).map(f => f.title)
+      : positions;
+    expect(options).toEqual(expectedOptions);
+  });
+
+  it('keeps the exact position for a matched deep link', () => {
+    const { options, selected } = select({ positionSlug: 't-a-s-t-hgn' });
+    expect(selected).toBe('T.A.S.T. - HGN');
+    expect(options).toEqual(positions);
+  });
+
+  it('maps a near-miss title to the real position', () => {
+    const { options, selected } = select({
+      navTitle: 'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
+    });
+    expect(selected).toBe('SEEKING SOFTWARE POSITION');
+    expect(options).toEqual(positions);
   });
 });

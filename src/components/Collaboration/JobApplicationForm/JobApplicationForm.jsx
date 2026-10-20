@@ -348,7 +348,7 @@ async function loadJobForms(formId) {
   return parseFormsResponse(res);
 }
 
-function buildInitialSelection({
+export function buildInitialSelection({
   formsArr,
   positions,
   navTitle: explicitTitle,
@@ -380,11 +380,15 @@ function buildInitialSelection({
   const chosen = pickInitialForm(formsArr, navState, positionSlug);
   notifyInitialFormSelection(navTitle, formMatch, chosen);
 
-  // Near-miss titles (e.g. an old link) select the real position instead of adding a fake option.
-  const canonicalTitle =
+  // Show a real position or form title, never the raw query / slug: near-miss titles select the
+  // matched position, and unmatched ones (e.g. "Applied through site", /apply/<unknown>) select
+  // the default form they fell back to instead of adding a fake dropdown option.
+  const matchedTitle = formMatch ? formMatch.title : chosen?.title;
+  const bannerTitle =
     matchPositionOption(baseOptions, navTitle) ||
-    (formMatch ? matchPositionOption(baseOptions, formMatch.title) : '');
-  const bannerTitle = canonicalTitle || navTitle || chosen?.title || '';
+    matchPositionOption(baseOptions, matchedTitle) ||
+    matchedTitle ||
+    '';
   const options = ensurePositionOption(baseOptions, bannerTitle);
   const initial = getInitialFormState(chosen, bannerTitle);
   const selected =
