@@ -1,5 +1,5 @@
 import { Table, Button, Modal, Form, Spinner } from 'react-bootstrap';
-import { connect, useSelector, useDispatch } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import React, { useState } from 'react';
 import { addInvType } from '../../../actions/bmdashboard/invTypeActions';
 import TypeRow from './TypeRow';

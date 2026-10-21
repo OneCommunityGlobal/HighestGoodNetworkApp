@@ -157,11 +157,6 @@
   background-color: var(--color-h100);
 }
 
-.modalBtnCancel:hover {
-  background-color: #3d4349 !important;
-  border-color: #3d4349 !important;
-}
-
 .modalBtnCancel:disabled {
   background-color: #6c757d !important;
   border-color: #6c757d !important;
@@ -339,8 +334,8 @@
 :global(.dark-mode) #timestamp,
 :global(.bm-dashboard-dark) #timestamp {
   background-color: #1c3354 !important;
-  color: #fff !important;
-  border-color: rgb(255 255 255 / 20%) !important;
+  color: #fff;
+  border-color: rgb(255 255 255 / 20%);
 }
 
 :global(.dark-mode) .timestampContainer,
@@ -804,33 +799,33 @@
 
 /* Inventory modal - light mode */
 .inventoryModal .modal-content {
-  background-color: #fff !important;
-  color: #212529 !important;
+  background-color: #fff;
+  color: #212529;
 }
 
 .inventoryModal .modal-title,
 .inventoryModal .modal-body,
 .inventoryModal .form-label {
-  color: #212529 !important;
+  color: #212529;
 }
 
 /* Cancel button - light mode */
 .inventoryModal .modal-footer .modalBtnCancel {
-  background-color: #198754 !important;
-  border-color: #198754 !important;
+  background-color: #198754;
+  border-color: #198754;
   color: #fff !important;
 }
 
 .inventoryModal .modal-footer .modalBtnCancel:hover {
-  background-color: #157347 !important;
-  border-color: #146c43 !important;
+  background-color: #157347;
+  border-color: #146c43;
 }
 
 /* Inventory modal - dark mode */
 :global(.dark-mode) .inventoryModal .modal-content,
 :global(.bm-dashboard-dark) .inventoryModal .modal-content {
-  background-color: #242424 !important;
-  color: #f5f5f5 !important;
+  background-color: #242424;
+  color: #f5f5f5;
 }
 
 :global(.dark-mode) .inventoryModal .modal-title,
@@ -839,14 +834,14 @@
 :global(.bm-dashboard-dark) .inventoryModal .modal-title,
 :global(.bm-dashboard-dark) .inventoryModal .modal-body,
 :global(.bm-dashboard-dark) .inventoryModal .form-label {
-  color: #f5f5f5 !important;
+  color: #f5f5f5;
 }
 
 :global(.dark-mode) .inventoryModal .form-control,
 :global(.bm-dashboard-dark) .inventoryModal .form-control {
-  background-color: #333 !important;
-  border-color: #555 !important;
-  color: #f5f5f5 !important;
+  background-color: #333;
+  border-color: #555;
+  color: #f5f5f5;
 }
 
 /* Preserve the existing dark-mode Cancel button color */
@@ -858,45 +853,45 @@
 }
 
 .inventoryModal .modal-content .form-label {
-  color: #212529 !important;
-  font-weight: 600 !important;
+  color: #212529;
+  font-weight: 600;
 }
 
 :global(.dark-mode) .inventoryModal .modal-content .form-label,
 :global(.bm-dashboard-dark) .inventoryModal .modal-content .form-label {
-  color: #f5f5f5 !important;
+  color: #f5f5f5;
 }
 
 /* Inventory modal labels - light mode */
 .modalLabel {
-  color: #212529 !important;
-  font-weight: 600 !important;
+  color: #212529;
+  font-weight: 600;
 }
 
 /* Inventory modal - dark mode */
 :global(.dark-mode) .modalLabel,
 :global(.bm-dashboard-dark) .modalLabel {
-  color: #f5f5f5 !important;
+  color: #f5f5f5;
 }
 
 /* Modal Cancel button */
 .modalBtnCancel {
-  background-color: #198754 !important;
-  border-color: #198754 !important;
-  color: #fff !important;
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
 }
 
 .modalBtnCancel:hover {
-  background-color: #157347 !important;
-  border-color: #146c43 !important;
+  background-color: #157347;
+  border-color: #146c43;
 }
 
 /* Preserve the existing Cancel color in dark mode */
 :global(.dark-mode) .modalBtnCancel,
 :global(.bm-dashboard-dark) .modalBtnCancel {
-  background-color: #495057 !important;
-  border-color: #495057 !important;
-  color: #fff !important;
+  background-color: #495057;
+  border-color: #495057;
+  color: #fff;
 }
 
 .actionsCell {
@@ -954,14 +949,14 @@
 :global(body.dark-mode) .deleteButton,
 :global(body.bm-dashboard-dark) .deleteButton {
   background-color: #dc3545 !important;
-  border-color: #dc3545 !important;
-  color: #fff !important;
+  border-color: #dc3545;
+  color: #fff;
 }
 
 :global(body.dark-mode) .deleteButton:hover,
 :global(body.bm-dashboard-dark) .deleteButton:hover {
-  background-color: #bb2d3b !important;
-  border-color: #b02a37 !important;
+  background-color: #bb2d3b;
+  border-color: #b02a37;
 }
 
 /* Keyboard accessibility */
