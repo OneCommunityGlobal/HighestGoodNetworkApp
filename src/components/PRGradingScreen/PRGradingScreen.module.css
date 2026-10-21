@@ -32,8 +32,8 @@
 }
 
 /* =========================================================
-       HEADER
-       ========================================================= */
+         HEADER
+         ========================================================= */
 
 .pr-grading-screen-header {
   background-color: #fff;
@@ -74,8 +74,8 @@
 }
 
 /* =========================================================
-       CARD BODY
-       ========================================================= */
+         CARD BODY
+         ========================================================= */
 
 .pr-grading-screen-card .card-body {
   width: 100%;
@@ -85,8 +85,8 @@
 }
 
 /* =========================================================
-       SEARCH
-       ========================================================= */
+         SEARCH
+         ========================================================= */
 
 .pr-grading-screen-search-bar {
   display: flex;
@@ -154,8 +154,8 @@
 }
 
 /* =========================================================
-       MAIN TABLE
-       ========================================================= */
+         MAIN TABLE
+         ========================================================= */
 
 .pr-grading-screen-table {
   width: 100%;
@@ -222,8 +222,8 @@
 }
 
 /* =========================================================
-       PRS NEEDED
-       ========================================================= */
+         PRS NEEDED
+         ========================================================= */
 
 .pr-grading-screen-pr-needed-input {
   width: 58px;
@@ -256,8 +256,8 @@
 }
 
 /* =========================================================
-       PRS REVIEWED
-       ========================================================= */
+         PRS REVIEWED
+         ========================================================= */
 
 .pr-grading-screen-pr-input {
   width: 58px;
@@ -276,8 +276,8 @@
 }
 
 /* =========================================================
-       HISTORY
-       ========================================================= */
+         HISTORY
+         ========================================================= */
 
 .pr-grading-screen-history-cell {
   text-align: center;
@@ -317,8 +317,8 @@
 }
 
 /* =========================================================
-       PR NUMBERS
-       ========================================================= */
+         PR NUMBERS
+         ========================================================= */
 
 .pr-grading-screen-td-numbers {
   padding: 10px 8px !important;
@@ -359,8 +359,8 @@
 }
 
 /* =========================================================
-       ADD NEW BUTTON
-       ========================================================= */
+         ADD NEW BUTTON
+         ========================================================= */
 
 .pr-grading-screen-add-btn {
   min-height: 28px;
@@ -380,8 +380,8 @@
 }
 
 /* =========================================================
-       ADD PR INPUT
-       ========================================================= */
+         ADD PR INPUT
+         ========================================================= */
 
 .pr-grading-screen-input-container {
   display: flex;
@@ -426,8 +426,8 @@
 }
 
 /* =========================================================
-       NO RESULTS
-       ========================================================= */
+         NO RESULTS
+         ========================================================= */
 
 .pr-grading-screen-no-results {
   padding: 25px !important;
@@ -438,8 +438,8 @@
 }
 
 /* =========================================================
-       GRADING MODAL
-       ========================================================= */
+         GRADING MODAL
+         ========================================================= */
 
 .pr-grading-screen-modal {
   width: min(700px, 95vw);
@@ -460,8 +460,8 @@
 }
 
 /* =========================================================
-       MODAL HEADER
-       ========================================================= */
+         MODAL HEADER
+         ========================================================= */
 
 .pr-grading-screen-modal-header {
   min-height: 56px;
@@ -522,8 +522,8 @@
 }
 
 /* =========================================================
-       MODAL BODY
-       ========================================================= */
+         MODAL BODY
+         ========================================================= */
 
 .pr-grading-screen-modal-body {
   padding: 18px;
@@ -554,8 +554,8 @@
 }
 
 /* =========================================================
-       RATING COLORS
-       ========================================================= */
+         RATING COLORS
+         ========================================================= */
 
 .pr-rating-did-not-review {
   color: #b42318;
@@ -597,8 +597,8 @@
 }
 
 /* =========================================================
-       GRADING TABLE
-       ========================================================= */
+         GRADING TABLE
+         ========================================================= */
 
 .pr-grading-screen-grading-table {
   width: 100%;
@@ -657,8 +657,8 @@
 }
 
 /* =========================================================
-     RATING COLOR ACCESSIBILITY / STATE OVERRIDES
-     ========================================================= */
+       RATING COLOR ACCESSIBILITY / STATE OVERRIDES
+       ========================================================= */
 
 /* Rating state must override the generic PR-number dark-mode styles. */
 .pr-grading-screen-pr-number.pr-rating-did-not-review,
@@ -776,8 +776,8 @@
 }
 
 /* =========================================================
-       MODAL FOOTER
-       ========================================================= */
+         MODAL FOOTER
+         ========================================================= */
 
 .pr-grading-screen-modal-footer {
   display: flex;
@@ -787,8 +787,8 @@
 }
 
 /* =========================================================
-       DARK MODE
-       ========================================================= */
+         DARK MODE
+         ========================================================= */
 
 .pr-grading-screen-container.dark-mode {
   background-color: #1b2a41;
@@ -1042,8 +1042,8 @@
 }
 
 /* =========================================================
-       RESPONSIVE
-       ========================================================= */
+         RESPONSIVE
+         ========================================================= */
 
 @media (width <= 992px) {
   .pr-grading-screen-container {
@@ -1131,9 +1131,9 @@
   }
 
   /*
-       * Allow the table to scroll horizontally rather than
-       * squeezing all columns into unreadable sizes.
-       */
+         * Allow the table to scroll horizontally rather than
+         * squeezing all columns into unreadable sizes.
+         */
   .pr-grading-screen-table {
     display: block;
     overflow-x: auto;
@@ -1216,9 +1216,9 @@
 }
 
 /* ==========================================================
-   Inline PR Summary Styles (PR #5493)
-   Scoped strictly with pr-grading-inline-* to avoid global pollution
-   ========================================================== */
+     Inline PR Summary Styles (PR #5493)
+     Scoped strictly with pr-grading-inline-* to avoid global pollution
+     ========================================================== */
 
 .pr-grading-inline-summary-container {
   padding: 16px 20px;
@@ -1236,8 +1236,8 @@
 }
 
 /* Horizontal scroll rail. Without this the four grade columns are squeezed until
-   the rightmost ones ("Unsatisfactory" / "Cannot find image") clip off the edge
-   on narrow screens. The table keeps a usable minimum width and scrolls instead. */
+     the rightmost ones ("Unsatisfactory" / "Cannot find image") clip off the edge
+     on narrow screens. The table keeps a usable minimum width and scrolls instead. */
 .pr-grading-inline-table-scroll {
   width: 100%;
   overflow-x: auto;
@@ -1245,7 +1245,7 @@
   overscroll-behavior-x: contain;
 
   /* Firefox. Webkit equivalents below — without this Firefox keeps the default
-     near-invisible overlay bar that prompted this change. */
+       near-invisible overlay bar that prompted this change. */
   scrollbar-width: thin;
   scrollbar-color: #b9b9b9 #ededed;
 }
@@ -1261,7 +1261,7 @@
 }
 
 /* The transparent border + padding-box clip insets the thumb so it reads as a
-   separate object instead of fusing with the track at the ends. */
+     separate object instead of fusing with the track at the ends. */
 .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb {
   background-color: #b9b9b9;
   border: 2px solid transparent;
@@ -1274,14 +1274,14 @@
 }
 
 /* Dark mode: the light thumb above all but disappears on the #2b2b2b card, so
-   go high-contrast. Scoped through the container, which already carries the
-   dark-mode class, so the scroll wrapper itself needs no extra class. */
+     go high-contrast. Scoped through the container, which already carries the
+     dark-mode class, so the scroll wrapper itself needs no extra class. */
 .pr-grading-inline-summary-container.dark-mode .pr-grading-inline-table-scroll {
   scrollbar-color: #666 #2b2b2b;
 }
 
 /* Darker than the #2b2b2b card, so the track and thumb separate from each other
-   as well as from the card behind them. */
+     as well as from the card behind them. */
 .pr-grading-inline-summary-container.dark-mode
   .pr-grading-inline-table-scroll::-webkit-scrollbar-track {
   background-color: #1f1f1f;
@@ -1301,7 +1301,7 @@
   width: 100%;
 
   /* Floor for the five columns. Below this the table stops shrinking and the
-     scroll rail above takes over rather than crushing the grade columns. */
+       scroll rail above takes over rather than crushing the grade columns. */
   min-width: 380px;
   margin-bottom: 0;
   border-collapse: collapse;
@@ -1380,8 +1380,8 @@
 }
 
 /* Narrow phones (~420px and below). Reclaim horizontal space so the four grade
-   columns fit without scrolling where possible; the scroll rail above is the
-   fallback when they still don't. */
+     columns fit without scrolling where possible; the scroll rail above is the
+     fallback when they still don't. */
 @media (width <= 480px) {
   .pr-grading-inline-summary-cell {
     padding: 6px 8px 12px !important;
@@ -1402,7 +1402,7 @@
   }
 
   /* The PR column is fixed-width on desktop; let the grade columns take the
-     remaining space instead of it hogging a quarter of a 420px viewport. */
+       remaining space instead of it hogging a quarter of a 420px viewport. */
   .pr-grading-inline-pr-cell {
     width: auto;
     white-space: nowrap;

@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { MemoryRouter } from 'react-router-dom';
 import moment from 'moment';
+import momentTz from 'moment-timezone';
 import FormattedReport from '../FormattedReport';
 import '@testing-library/jest-dom/extend-expect';
 
@@ -71,7 +72,6 @@ const dummySummary = {
     .add(1, 'days')
     .format(),
   totalTangibleHrs: 100,
-  daysInTeam: 70,
   bioPosted: 'default',
   weeklySummaryOption: 'Default',
 };
@@ -282,5 +282,81 @@ describe('FormattedReport final week banner', () => {
     );
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
     expect(screen.queryByText(FINAL_WEEK_TEXT)).toBeNull();
+  });
+});
+
+describe('FormattedReport requested week off notice', () => {
+  // A request covering the current week, keyed by user id like the reducer state.
+  // Dates are built in Pacific time, like the report, so the test does not depend
+  // on the machine's timezone (CI runs in UTC).
+  const timeOffRequests = {
+    [dummySummary._id]: [
+      {
+        _id: 'req1',
+        reason: 'Family trip',
+        startingDate: momentTz
+          .tz('America/Los_Angeles')
+          .startOf('week')
+          .toISOString(),
+        endingDate: momentTz
+          .tz('America/Los_Angeles')
+          .endOf('week')
+          .toISOString(),
+      },
+    ],
+  };
+
+  const renderReport = (weekIndex = 0) =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            summaries={defaultProps.summaries}
+            weekIndex={weekIndex}
+            bioCanEdit={defaultProps.bioCanEdit}
+            allRoleInfo={defaultProps.allRoleInfo}
+            badges={defaultProps.badges}
+            loadBadges={defaultProps.loadBadges}
+            canEditTeamCode={defaultProps.canEditTeamCode}
+            auth={defaultProps.auth}
+            canSeeBioHighlight={defaultProps.canSeeBioHighlight}
+            handleTeamCodeChange={defaultProps.handleTeamCodeChange}
+            handleSpecialColorDotClick={defaultProps.handleSpecialColorDotClick}
+            timeOffRequests={timeOffRequests}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+  it('shows the notice on the week the request covers, with the reason hidden', () => {
+    renderReport(0);
+    expect(screen.getByText('Requested Week Off')).toBeInTheDocument();
+    expect(screen.queryByText('Family trip')).toBeNull();
+  });
+
+  it('does not show the notice on a week the request does not cover', () => {
+    renderReport(1);
+    expect(screen.queryByText('Requested Week Off')).toBeNull();
+  });
+
+  it('toggles the reason when the info button is clicked', () => {
+    renderReport(0);
+    const button = screen.getByRole('button', { name: 'Show time off reason' });
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(button);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Family trip');
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(button);
+    expect(screen.queryByText('Family trip')).toBeNull();
+  });
+
+  it('closes the reason on Escape', () => {
+    renderReport(0);
+    const button = screen.getByRole('button', { name: 'Show time off reason' });
+    fireEvent.click(button);
+    fireEvent.keyDown(button, { key: 'Escape' });
+    expect(screen.queryByText('Family trip')).toBeNull();
   });
 });

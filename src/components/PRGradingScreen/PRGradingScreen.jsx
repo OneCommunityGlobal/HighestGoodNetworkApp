@@ -40,6 +40,7 @@ const getRatingClass = (grade, styles) => {
 const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Reviewer & grading state
   const [reviewerData, setReviewerData] = useState(reviewers || []);
 
   const [activeInput, setActiveInput] = useState(null);
@@ -325,7 +326,6 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
 
     setActiveInput(null);
     setInputValue('');
-    setInputError('');
   };
 
   /*
