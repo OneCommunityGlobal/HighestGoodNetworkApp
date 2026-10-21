@@ -8,9 +8,25 @@
 
 /* Card Header */
 .lessonCardHeader {
+  position: relative;
   background-color: var(--primary-bg, #78bdda) !important;
   padding: 0.3rem 1.25rem !important;
   color: var(--primary-text) !important;
+}
+
+/* Keep selection outside the existing title/date/tag layout. */
+.selectableHeader {
+  padding-left: 3rem !important;
+}
+
+.lessonSelection {
+  position: absolute;
+  top: 0.4rem;
+  left: 1rem;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
 }
 
 /* Main Body */

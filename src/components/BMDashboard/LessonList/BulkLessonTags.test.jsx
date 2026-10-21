@@ -1,0 +1,173 @@
+import React from 'react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import axios from 'axios';
+import BulkLessonTags from './BulkLessonTags';
+
+vi.mock('axios', () => ({ default: { post: vi.fn(), get: vi.fn() } }));
+vi.mock('~/utils/URL', () => ({ ENDPOINTS: { BM_LESSONS: '/api/bm/lessons' } }));
+
+describe('bulk lesson tag workflow', () => {
+  let props;
+  const changes = [
+    { lessonId: 'lesson1', title: 'Safety', before: ['old'], after: ['old', 'new'] },
+  ];
+  beforeEach(() => {
+    vi.clearAllMocks();
+    props = {
+      filteredLessons: [
+        { _id: 'lesson1', title: 'Safety' },
+        { _id: 'lesson2', title: 'Tools' },
+      ],
+      selectedIds: ['lesson1'],
+      setSelectedIds: vi.fn(),
+      availableTags: ['old', 'new'],
+      darkMode: false,
+      onRefresh: vi.fn().mockResolvedValue(undefined),
+    };
+    axios.post.mockResolvedValue({ data: { changes } });
+  });
+
+  const chooseTag = () => {
+    fireEvent.click(screen.getByText('Choose tags (0/20 selected)'));
+    fireEvent.click(screen.getByLabelText('Tag new'));
+  };
+
+  it('selects exactly the filtered lessons', () => {
+    render(<BulkLessonTags {...props} />);
+    fireEvent.click(screen.getByLabelText('Select all filtered lessons'));
+    expect(props.setSelectedIds).toHaveBeenCalledWith(['lesson1', 'lesson2']);
+  });
+  it('disables preview without a selection', () => {
+    render(<BulkLessonTags {...props} selectedIds={[]} />);
+    chooseTag();
+    expect(screen.getByText('Add selected tags').disabled).toBe(true);
+  });
+  it('previews server snapshots before applying and refreshes after success', async () => {
+    render(<BulkLessonTags {...props} />);
+    chooseTag();
+    fireEvent.click(screen.getByText('Add selected tags'));
+    await screen.findByText('Confirm bulk tag changes');
+    expect(screen.getByText('Before: old')).toBeTruthy();
+    expect(screen.getByText('After: old, new')).toBeTruthy();
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByText('Confirm adding tags'));
+    await waitFor(() => expect(props.onRefresh).toHaveBeenCalled());
+    expect(axios.post).toHaveBeenLastCalledWith('/api/bm/lessons/bulk-tags', {
+      lessonIds: ['lesson1'],
+      tags: ['new'],
+      operation: 'add',
+      expected: [{ lessonId: 'lesson1', tags: ['old'] }],
+    });
+    expect(props.setSelectedIds).toHaveBeenCalledWith([]);
+  });
+  it('cancels without applying', async () => {
+    render(<BulkLessonTags {...props} />);
+    chooseTag();
+    fireEvent.click(screen.getByText('Add selected tags'));
+    await screen.findByText('Confirm bulk tag changes');
+    fireEvent.click(screen.getByText('Cancel'));
+    expect(axios.post).toHaveBeenCalledTimes(1);
+  });
+  it('shows backend conflicts and retains selection', async () => {
+    axios.post.mockRejectedValue({ response: { data: { error: 'Refresh the preview.' } } });
+    render(<BulkLessonTags {...props} />);
+    chooseTag();
+    fireEvent.click(screen.getByText('Add selected tags'));
+    await screen.findByRole('alert');
+    expect(screen.getByText('Refresh the preview.')).toBeTruthy();
+    expect(props.setSelectedIds).not.toHaveBeenCalled();
+  });
+  it('disables confirmation for no-op previews', async () => {
+    axios.post.mockResolvedValue({ data: { changes: [{ ...changes[0], after: ['old'] }] } });
+    render(<BulkLessonTags {...props} darkMode />);
+    chooseTag();
+    fireEvent.click(screen.getByText('Add selected tags'));
+    await screen.findByText('Confirm bulk tag changes');
+    expect(screen.getByText('Confirm adding tags').disabled).toBe(true);
+    expect(screen.getByText('No change needed')).toBeTruthy();
+  });
+
+  it('sends removal as a distinct bulk action', async () => {
+    render(<BulkLessonTags {...props} />);
+    chooseTag();
+    fireEvent.click(screen.getByText('Remove selected tags'));
+    await screen.findByText('Confirm bulk tag changes');
+    expect(axios.post).toHaveBeenCalledWith('/api/bm/lessons/bulk-tags/preview', {
+      lessonIds: ['lesson1'],
+      tags: ['new'],
+      operation: 'remove',
+    });
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('Safety', { exact: true })).toBeTruthy();
+    expect(within(dialog).getByText('#new', { exact: true })).toBeTruthy();
+    expect(within(dialog).getByText('Confirm removing tags')).toBeTruthy();
+  });
+
+  it('shows full selected titles with individual deselection controls', () => {
+    const title = 'A full lesson title that must remain visible';
+    render(
+      <BulkLessonTags
+        {...props}
+        selectedIds={['lesson1', 'lesson2']}
+        filteredLessons={[
+          { _id: 'lesson1', title },
+          { _id: 'lesson2', title: 'Tools' },
+        ]}
+      />,
+    );
+    const selected = screen.getByRole('list', { name: 'Selected lessons' });
+    expect(within(selected).getByText(title)).toBeTruthy();
+    expect(within(selected).getByText('Tools')).toBeTruthy();
+    fireEvent.click(within(selected).getByRole('button', { name: `Deselect lesson ${title}` }));
+    const update = props.setSelectedIds.mock.calls[0][0];
+    expect(update(['lesson1', 'lesson2'])).toEqual(['lesson2']);
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('keeps both actions disabled when no tags are chosen', () => {
+    render(<BulkLessonTags {...props} />);
+    expect(screen.getByText('Add selected tags').disabled).toBe(true);
+    expect(screen.getByText('Remove selected tags').disabled).toBe(true);
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('requires confirmation before undoing a historical batch', async () => {
+    axios.get.mockResolvedValue({
+      data: [
+        {
+          _id: 'batch1',
+          actor: 'user1',
+          tags: ['new'],
+          operation: 'add',
+          createdAt: new Date().toISOString(),
+          changes,
+        },
+      ],
+    });
+    render(<BulkLessonTags {...props} />);
+    fireEvent.click(screen.getByText('Tag change history'));
+    await screen.findByText('Undo this batch');
+    fireEvent.click(screen.getByText('Undo this batch'));
+    expect(axios.post).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByText('Confirm undo'));
+    await waitFor(() =>
+      expect(axios.post).toHaveBeenCalledWith('/api/bm/lessons/bulk-tags/batch1/undo'),
+    );
+    await waitFor(() => expect(props.onRefresh).toHaveBeenCalled());
+  });
+
+  it('selects every displayed record, including Tag Storage', () => {
+    render(
+      <BulkLessonTags
+        {...props}
+        filteredLessons={[
+          ...props.filteredLessons,
+          { _id: 'storage', title: 'Tag Storage', author: { id: '000000000000000000000000' } },
+        ]}
+      />,
+    );
+    fireEvent.click(screen.getByLabelText('Select all filtered lessons'));
+    expect(props.setSelectedIds).toHaveBeenCalledWith(['lesson1', 'lesson2', 'storage']);
+  });
+});

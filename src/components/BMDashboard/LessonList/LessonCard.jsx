@@ -9,7 +9,14 @@ import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 import styles from './LessonCard.module.css';
 
-function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, handleLike }) {
+function LessonCard({
+  filteredLessons,
+  onEditLessonSummary,
+  onDeliteLessonCard,
+  handleLike,
+  selectedLessonIds = [],
+  setSelectedLessonIds,
+}) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const maxSummaryLength = 1500;
   const [expandedCards, setExpandedCards] = useState([]);
@@ -83,8 +90,27 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
         <Card.Header
           onClick={() => toggleCardExpansion(lesson._id)}
           style={{ cursor: 'pointer' }}
-          className={styles.lessonCardHeader}
+          className={`${styles.lessonCardHeader} ${
+            setSelectedLessonIds ? styles.selectableHeader : ''
+          }`}
         >
+          {setSelectedLessonIds && (
+            <input
+              type="checkbox"
+              className={styles.lessonSelection}
+              onClick={event => event.stopPropagation()}
+              aria-label={`Select lesson ${lesson.title}`}
+              checked={selectedLessonIds.includes(lesson._id)}
+              disabled={!selectedLessonIds.includes(lesson._id) && selectedLessonIds.length >= 100}
+              onChange={() =>
+                setSelectedLessonIds(previous =>
+                  previous.includes(lesson._id)
+                    ? previous.filter(id => id !== lesson._id)
+                    : [...previous, lesson._id],
+                )
+              }
+            />
+          )}
           <Nav className={styles.lessonCardNav}>
             <div className={styles.navTitleAndDate}>
               <Nav.Item className={`${styles.lessonCardNavItem} ${styles.navItemTitle}`}>
