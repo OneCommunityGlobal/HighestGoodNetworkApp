@@ -209,12 +209,6 @@ export default function LossTrackingLineChart() {
     });
   }, [material, year, startDate, endDate]);
 
-  // Enforces valid boundary limitations on HTML pickers dynamically
-  const dateBounds = useMemo(() => {
-    if (year === 'All') return { min: '2022-01-01', max: '2024-12-31' };
-    return { min: `${year}-01-01`, max: `${year}-12-31` };
-  }, [year]);
-
   // Clears date pickers gracefully if they don't belong to the newly active year selection
   const handleYearChange = newYear => {
     setYear(newYear);
