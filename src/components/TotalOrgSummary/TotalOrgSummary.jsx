@@ -213,10 +213,11 @@ function buildPDFStyles(darkMode) {
       background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
       border: 1px solid ${darkMode ? '#3a3a3a' : '#e0e0e0'} !important;
       border-radius: 10px !important;
-      box-shadow: ${darkMode
-      ? '0 2px 12px 0 rgba(255,255,255,0.18), 0 1.5px 8px 0 rgba(255,255,255,0.10)'
-      : '0 2px 4px rgba(0, 0, 0, 0.08)'
-    } !important;
+      box-shadow: ${
+        darkMode
+          ? '0 2px 12px 0 rgba(255,255,255,0.18), 0 1.5px 8px 0 rgba(255,255,255,0.10)'
+          : '0 2px 4px rgba(0, 0, 0, 0.08)'
+      } !important;
       overflow: hidden !important;
     }
     img, svg { max-width: 100% !important; height: auto !important; page-break-inside: avoid !important; }
@@ -245,8 +246,9 @@ function buildPDFStyles(darkMode) {
       border-color: ${darkMode ? '#64748b' : '#e0e0e0'} !important;
       opacity: 1 !important;
     }
-    ${darkMode
-      ? `
+    ${
+      darkMode
+        ? `
       .componentContainer h1, .componentContainer h2, .componentContainer h3,
       .componentContainer h4, .componentContainer h5, .componentContainer h6,
       .componentContainer p, .componentContainer .totalOrgChartTitle,
@@ -258,7 +260,7 @@ function buildPDFStyles(darkMode) {
       .componentContainer [data-pdf-title] p, .componentContainer [data-pdf-title] {
         color: #fff !important; text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
       }`
-      : ''
+        : ''
     }
   `;
   return styleElem;
