@@ -1,17 +1,55 @@
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import cs from 'classnames';
 import { Provider } from 'react-redux';
+import { Router } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import styles from './Timer.module.css';
 import './Countdown.module.css';
 import { store } from '../../store';
 
-function TimerPopout({ authUser, darkMode, TimerComponent }) {
-  const popupRef = useRef(null);
-  const rootRef = useRef(null);
+let activePopup = null;
+let activeRoot = null;
+let removeOpenerUnloadListener = null;
+let activeOwnerCount = 0;
+let orphanCleanupTimer = null;
+
+const clearActivePopup = popup => {
+  if (activePopup !== popup) return;
+  activePopup = null;
+  activeRoot = null;
+  if (orphanCleanupTimer) {
+    clearTimeout(orphanCleanupTimer);
+    orphanCleanupTimer = null;
+  }
+  if (removeOpenerUnloadListener) {
+    removeOpenerUnloadListener();
+    removeOpenerUnloadListener = null;
+  }
+};
+
+function TimerPopout({ authUser, darkMode, TimerComponent, history }) {
+  useEffect(() => {
+    activeOwnerCount += 1;
+    if (orphanCleanupTimer) {
+      clearTimeout(orphanCleanupTimer);
+      orphanCleanupTimer = null;
+    }
+
+    return () => {
+      activeOwnerCount = Math.max(0, activeOwnerCount - 1);
+      orphanCleanupTimer = setTimeout(() => {
+        orphanCleanupTimer = null;
+        if (activeOwnerCount > 0 || !activePopup) return;
+        const popup = activePopup;
+        if (!popup.closed) popup.close();
+        if (activeRoot) activeRoot.unmount();
+        clearActivePopup(popup);
+      }, 0);
+    };
+  }, []);
 
   // Sanitize CSS content to prevent CSS injection attacks
   const sanitizeCSS = cssText => {
@@ -36,27 +74,21 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     return DOMPurify.sanitize(sanitized, { ALLOWED_TAGS: [] });
   };
 
-  useEffect(() => {
-    return () => {
-      if (rootRef.current) {
-        rootRef.current.unmount();
-      }
-      if (popupRef.current && !popupRef.current.closed) {
-        popupRef.current.close();
-      }
-    };
-  }, []);
-
   if (typeof window !== 'undefined' && window.opener) {
     return null;
   }
 
   const openPopoutWindow = () => {
     try {
-      if (popupRef.current && !popupRef.current.closed) {
-        popupRef.current.focus();
+      if (orphanCleanupTimer) {
+        clearTimeout(orphanCleanupTimer);
+        orphanCleanupTimer = null;
+      }
+      if (activePopup && !activePopup.closed) {
+        activePopup.focus();
         return;
       }
+      if (activePopup?.closed) clearActivePopup(activePopup);
 
       const features = {
         width: 350,
@@ -77,12 +109,10 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
       const popup = window.open('', 'Timer', featuresStr);
 
       if (!popup) {
-        // Popup was blocked
         return;
       }
 
-      popupRef.current = popup;
-
+      activePopup = popup;
       popup.document.write(`
         <!DOCTYPE html>
         <html>
@@ -107,7 +137,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
                 box-sizing: border-box;
                 position: relative;
               }
-              /* Perfect timer alignment and centering */
+              /* Perfect timer alignment and centering. */
               #timer-root > div {
                 transform-origin: center center !important;
                 display: flex !important;
@@ -126,7 +156,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
         </html>
       `);
 
-      // Add all stylesheets from the main window to the popout window
+      // Add all stylesheets from the main window to the popout window.
       Array.from(window.document.styleSheets).forEach(styleSheet => {
         try {
           const cssRules = Array.from(styleSheet.cssRules)
@@ -135,42 +165,43 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
           const style = popup.document.createElement('style');
           style.textContent = cssRules;
           popup.document.head.appendChild(style);
-        } catch (e) {
-          // This can happen with CORS stylesheets
-          // Silently ignore CORS errors when copying stylesheets
+        } catch (error) {
+          // This can happen with CORS stylesheets.
+          // Silently ignore CORS errors when copying stylesheets.
         }
       });
 
       const rootElement = popup.document.getElementById('timer-root');
       const root = createRoot(rootElement);
-
+      activeRoot = root;
       root.render(
         <Provider store={store}>
-          <TimerComponent authUser={authUser} darkMode={darkMode} isPopout />
+          <Router history={history}>
+            <TimerComponent authUser={authUser} darkMode={darkMode} isPopout />
+          </Router>
         </Provider>,
       );
 
-      // Perfect responsive scaling and centering function
+      // Perfect responsive scaling and centering function.
       const updateTimerScale = () => {
         const timerElement = popup.document.querySelector('#timer-root > div');
         if (timerElement) {
           const windowWidth = popup.innerWidth;
           const windowHeight = popup.innerHeight;
 
-          // Calculate optimal scale to fit popup perfectly
-          const timerWidth = 280; // Base timer width
-          const timerHeight = 400; // Base timer height
-
+          // Calculate optimal scale to fit popup perfectly.
+          const timerWidth = 280;
+          const timerHeight = 400;
           const scaleX = windowWidth / timerWidth;
           const scaleY = windowHeight / timerHeight;
 
-          // Use smaller scale to ensure it fits in both dimensions
+          // Use smaller scale to ensure it fits in both dimensions.
           const scale = Math.min(scaleX, scaleY) * 0.9; // 90% for better margin
 
-          // Apply constraints
+          // Apply constraints.
           const finalScale = Math.max(0.3, Math.min(scale, 2.0));
 
-          // Apply transform with perfect centering
+          // Apply transform with centering.
           timerElement.style.transform = `translate(-50%, -50%) scale(${finalScale})`;
           timerElement.style.position = 'absolute';
           timerElement.style.top = '50%';
@@ -178,18 +209,26 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
         }
       };
 
-      // Apply scaling with multiple attempts
+      // Apply scaling with multiple attempts.
       setTimeout(updateTimerScale, 50);
       setTimeout(updateTimerScale, 200);
 
-      // Update on resize
+      // Update on resize.
       popup.addEventListener('resize', updateTimerScale);
 
       popup.onbeforeunload = () => {
-        root.unmount();
+        if (activeRoot === root) root.unmount();
+        clearActivePopup(popup);
       };
-    } catch (error) {
-      // Handle popup errors silently
+
+      const closePopoutOnOpenerUnload = () => {
+        if (activePopup === popup && !popup.closed) popup.close();
+      };
+      window.addEventListener('beforeunload', closePopoutOnOpenerUnload, { once: true });
+      removeOpenerUnloadListener = () =>
+        window.removeEventListener('beforeunload', closePopoutOnOpenerUnload);
+    } catch (_error) {
+      if (activePopup && activePopup.closed) clearActivePopup(activePopup);
     }
   };
 
@@ -208,5 +247,19 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     </button>
   );
 }
+
+TimerPopout.propTypes = {
+  authUser: PropTypes.shape({}),
+  darkMode: PropTypes.bool,
+  TimerComponent: PropTypes.elementType.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+TimerPopout.defaultProps = {
+  authUser: undefined,
+  darkMode: false,
+};
 
 export default TimerPopout;

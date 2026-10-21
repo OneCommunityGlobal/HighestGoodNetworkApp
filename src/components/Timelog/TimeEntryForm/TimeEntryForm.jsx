@@ -4,7 +4,7 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable no-param-reassign */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useDispatch } from 'react-redux';
 import {
@@ -34,6 +34,7 @@ import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
+import DuplicateTimeLogModal from './DuplicateTimeLogModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/index.module.css';
 import styles from '../Timelog.module.css';
@@ -82,6 +83,7 @@ function TimeEntryForm(props) {
     userProfile,
     userProjects,
     onTimeSubmitted,
+    onDuplicateCancel,
     sessionId,
     timerConnected,
     maxHoursPerEntry,
@@ -175,6 +177,11 @@ function TimeEntryForm(props) {
   const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const notesEditorRef = useRef(null);
+  const restoreFocusAfterDuplicateEditRef = useRef(false);
+  const [isDuplicateModalVisible, setDuplicateModalVisible] = useState(false);
+  const pendingDuplicatePayloadRef = useRef(null);
+  const postRequestInFlightRef = useRef(false);
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
@@ -354,19 +361,27 @@ function TimeEntryForm(props) {
     if (closed === true && isOpen) toggle();
   };
 
-  const submitTimeEntry = async () => {
+  const submitTimeEntry = async ({ retryPayload, allowDuplicate = false } = {}) => {
+    if (!edit && postRequestInFlightRef.current) return;
+    if (!edit) {
+      postRequestInFlightRef.current = true;
+      setSubmitting(true);
+    }
+
     // Prevent submission when logging timer time but timer is disconnected
     if (from === 'Timer' && timerConnected === false) {
       toast.error('Cannot log time entry while timer is disconnected. Please wait for connection to be restored or refresh the page.');
+      postRequestInFlightRef.current = false;
       setSubmitting(false);
       return;
     }
 
-    const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = formValues;
-    const timeEntry = { ...formValues };
+    const timeEntry = { ...(retryPayload || formValues) };
+    const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = timeEntry;
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
-    if (!validateForm(isTimeModified)) {
+    if (!retryPayload && !validateForm(isTimeModified)) {
+      postRequestInFlightRef.current = false;
       setSubmitting(false);
       return;
     }
@@ -414,7 +429,7 @@ function TimeEntryForm(props) {
           clearForm();
           break;
         case 'TimeLog': {
-          const date = moment(formValues.dateOfWork);
+          const date = moment(timeEntry.dateOfWork);
           const today = moment().tz('America/Los_Angeles');
           const offset = today.week() - date.week();
           props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
@@ -453,22 +468,64 @@ function TimeEntryForm(props) {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
-        const { status } = await props.postTimeEntry(timeEntry, {
+        const payload = allowDuplicate ? { ...timeEntry, allowDuplicate: true } : timeEntry;
+        const result = await props.postTimeEntry(payload, {
           displayedUserId: props.displayedUserId,
           detailed: true,
         });
-        // The thunk resolves with the HTTP status for failed requests instead of rejecting.
-        if (status < 200 || status >= 300) {
+        const { status, code } = result || {};
+
+        if (!allowDuplicate && status === 409 && code === 'DUPLICATE_TIME_ENTRY') {
+          pendingDuplicatePayloadRef.current = { ...timeEntry };
+          setDuplicateModalVisible(true);
+          setSubmitting(false);
+          return;
+        }
+
+        if (!Number.isInteger(status) || status < 200 || status >= 300) {
           handleError(`request failed with status ${status}`);
           return;
         }
       }
 
       await handlePostSubmitActions();
+      pendingDuplicatePayloadRef.current = null;
       handleFormReset();
     } catch (error) {
       handleError(error);
+    } finally {
+      if (!edit) postRequestInFlightRef.current = false;
     }
+  };
+
+  const handleDuplicateCancel = () => {
+    const targetPersonId = timeEntryUserId;
+    pendingDuplicatePayloadRef.current = null;
+    restoreFocusAfterDuplicateEditRef.current = false;
+    setDuplicateModalVisible(false);
+    if (isOpen) toggle();
+    if (onDuplicateCancel) onDuplicateCancel(targetPersonId);
+  };
+
+  const handleDuplicateEdit = () => {
+    restoreFocusAfterDuplicateEditRef.current = true;
+    setDuplicateModalVisible(false);
+    pendingDuplicatePayloadRef.current = null;
+  };
+
+  const handleDuplicateModalClosed = () => {
+    if (!restoreFocusAfterDuplicateEditRef.current) return;
+    restoreFocusAfterDuplicateEditRef.current = false;
+    window.setTimeout(() => notesEditorRef.current?.focus(), 0);
+  };
+
+  const handleDuplicateProceed = async () => {
+    const payload = pendingDuplicatePayloadRef.current;
+    if (!payload || postRequestInFlightRef.current) return;
+    restoreFocusAfterDuplicateEditRef.current = false;
+    setDuplicateModalVisible(false);
+    setSubmitting(true);
+    await submitTimeEntry({ retryPayload: payload, allowDuplicate: true });
   };
 
   const handleSubmit = async event => {
@@ -844,6 +901,9 @@ function TimeEntryForm(props) {
                     name="notes"
                     className="form-control"
                     value={formValues.notes}
+                    onInit={(_event, editor) => {
+                      notesEditorRef.current = editor;
+                    }}
                     onEditorChange={handleEditorChange}
                     disabled={!(isSameDayAuthUserEdit || canEditTimeEntryDescription)}
                   />
@@ -929,6 +989,14 @@ function TimeEntryForm(props) {
         onIntangible={handleTangibleTimelogConfirm}
         darkMode={darkMode}
       />
+      <DuplicateTimeLogModal
+        isOpen={isDuplicateModalVisible}
+        onCancel={handleDuplicateCancel}
+        onEdit={handleDuplicateEdit}
+        onProceed={handleDuplicateProceed}
+        onClosed={handleDuplicateModalClosed}
+        darkMode={darkMode}
+      />
     </>
   );
 }
@@ -949,6 +1017,7 @@ TimeEntryForm.propTypes = {
   }),
   userProjects: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
   onTimeSubmitted: PropTypes.func,
+  onDuplicateCancel: PropTypes.func,
   sessionId: PropTypes.string,
   timerStats: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   timerConnected: PropTypes.bool,

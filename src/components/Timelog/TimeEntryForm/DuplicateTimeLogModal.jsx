@@ -15,7 +15,7 @@ const WARNING =
 
 const TITLE_ID = 'duplicate-time-log-title';
 
-function DuplicateTimeLogModal({ isOpen, onCancel, onEdit, onProceed, darkMode }) {
+function DuplicateTimeLogModal({ isOpen, onCancel, onEdit, onProceed, onClosed, darkMode }) {
   const editButtonRef = useRef(null);
 
   const options = [
@@ -64,6 +64,7 @@ function DuplicateTimeLogModal({ isOpen, onCancel, onEdit, onProceed, darkMode }
       toggle={handleDismiss}
       backdrop="static"
       modalTransition={modalTransition}
+      onClosed={onClosed}
       labelledBy={TITLE_ID}
       contentClassName={darkMode ? `${styles.content} ${styles.darkContent}` : styles.content}
     >
@@ -113,11 +114,13 @@ DuplicateTimeLogModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,
   onProceed: PropTypes.func.isRequired,
+  onClosed: PropTypes.func,
   darkMode: PropTypes.bool,
 };
 
 DuplicateTimeLogModal.defaultProps = {
   darkMode: false,
+  onClosed: undefined,
 };
 
 export default DuplicateTimeLogModal;
