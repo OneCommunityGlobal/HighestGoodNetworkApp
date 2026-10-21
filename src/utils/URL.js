@@ -3,7 +3,9 @@ const APIEndpoint =
 
 
 export const ENDPOINTS = {
+
   APIEndpoint: () => APIEndpoint,
+  JOB_APPLICATION_EMAIL_RECIPIENTS:`${APIEndpoint}/job-application-email-recipients`,
   USER_PROFILES: `${APIEndpoint}/userProfile`,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,

@@ -78,6 +78,7 @@ import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import DisplayBox from '../PRPromotions/DisplayBox';
 import Timer from '../Timer/Timer';
 import BellNotification from './BellNotification';
+import JobApplicationEmailSettings from '../JobApplicationEmailSettings/JobApplicationEmailSettings';
 import DarkModeButton from './DarkModeButton';
 import styles from './Header.module.css';
 import {
@@ -145,6 +146,7 @@ export function Header(props) {
   const { darkMode } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
+  const [jobEmailSettingsOpen, setJobEmailSettingsOpen] = useState(false);
   const { isAuthenticated, user } = props.auth;
   const [firstName, setFirstName] = useState(props.auth.firstName);
   const [profilePic, setProfilePic] = useState(props.auth.profilePic);
@@ -176,7 +178,11 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
   const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
-
+  // Only the signed-in Owner or Administrator can manage recipients.
+  const canManageApplicationEmailSettings =
+  isAuthenticated &&
+  isAuthUser &&
+  ['Owner', 'Administrator'].includes(user.role);
 // Reports / nav access — prefer RoutePermissions lists (OR any key)
   const canGetReports = props.hasPermission(RoutePermissions.reports, !isAuthUser);
   const canGetWeeklySummaries = props.hasPermission(
@@ -755,6 +761,15 @@ export function Header(props) {
     <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
+
+{canManageApplicationEmailSettings && (
+  <JobApplicationEmailSettings
+    isOpen={jobEmailSettingsOpen}
+    onClose={() => setJobEmailSettingsOpen(false)}
+    darkMode={darkMode}
+  />
+)}
+
         {showPromotionsPopup && (
           // Header launches this modal outside the PR Promotions page, so pass the theme explicitly.
           <DisplayBox onClose={() => setShowPromotionsPopup(false)} darkMode={darkMode} />
@@ -835,7 +850,7 @@ export function Header(props) {
                   </NavItem>
                 )}
 
-                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
+                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement|| canManageApplicationEmailSettings) && (
                   <UncontrolledDropdown
                     nav
                     inNavbar
@@ -864,6 +879,17 @@ export function Header(props) {
                           <DropdownItem tag={Link} to="/permissionsmanagement" className={fontColor} disabled={headerDisabled}>{PERMISSIONS_MANAGEMENT}</DropdownItem>
                         </>
                       )}
+
+{canManageApplicationEmailSettings && (
+  <DropdownItem
+    className={fontColor}
+    disabled={headerDisabled}
+    onClick={() => setJobEmailSettingsOpen(true)}
+  >
+    Job Application Email Settings
+  </DropdownItem>
+)}
+
                       {canAccessBlueSquareEmailManagement && (
                         <DropdownItem tag={Link} to="/bluesquare-email-management" className={fontColor} disabled={headerDisabled}>{BLUE_SQUARE_EMAIL_MANAGEMENT}</DropdownItem>
                       )}
