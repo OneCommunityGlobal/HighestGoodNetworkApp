@@ -269,30 +269,6 @@ body.bm-dashboard-dark:not(.no-global-theme) .page-link {
   display: none;
 }
 
-/* back-to-top button */
-.back-to-top {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #2a1b3d;
-  color: #ffffff;
-  border-radius: 50%;
-  font-size: 22px;
-  text-decoration: none;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  z-index: 1000;
-}
-
-.back-to-top:hover {
-  transform: translateY(-4px);
-  opacity: 0.9;
-}
-
 /* Pagination */
 body.dark-mode .page-link,
 body.bm-dashboard-dark .page-link {
@@ -307,14 +283,6 @@ body.bm-dashboard-dark .page-item.active .page-link {
   border-color: #4a6072;
   color: #ffffff !important;
 }
-
-/* Fix the position of the header at the top */
-.top {
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-  }
-  
 
   /* TinyMCE "Get all features" button - force dark text */
 .tox-promotion-link,

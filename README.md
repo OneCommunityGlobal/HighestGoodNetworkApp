@@ -117,6 +117,27 @@ Use this space to show useful examples of how a project can be used. Additional 
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
+### Popular PR analytics synthetic data
+
+On August 22, 2026, synthetic data was added to the `hgnData_dev` database for testing `/pr-team-analytics/popular-prs`. The dataset contains PR `FE-999999`, titled `TEST Popular PR Duration Filtering`, and 41 synthetic reviews.
+
+At the time it was seeded, the expected review counts were:
+
+| Duration | Reviews |
+| --- | ---: |
+| Last Week | 1 |
+| Last 2 Weeks | 2 |
+| Last Month | 3 |
+| All Time | 41 |
+
+The recent-duration totals use rolling date ranges and will change as weekly and monthly boundaries pass. This data is for development testing only and must not be copied to production.
+
+### HGN Help request behavior
+
+The `/hgnhelp` route displays the HGN Help request modal. Owners, administrators, and volunteers on the HGN Software Development Team can submit a request after selecting a help category. Other volunteers see an eligibility warning and cannot submit.
+
+After a successful submission, the success toast is displayed, the modal closes, and the user is intentionally returned to `/dashboard`. This redirect is explicit application behavior, not an automatic result of the modal overlay. The suggestion `here` link also closes the help modal and returns to the dashboard to open the suggestion flow.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## One Community Global Code of Conduct
