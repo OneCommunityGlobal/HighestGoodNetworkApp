@@ -48,6 +48,16 @@
   word-break: break-word;
 }
 
+.profileLink {
+  text-decoration: none;
+}
+
+.profileLink:hover,
+.profileLink:focus {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .contactLine {
   display: flex;
   align-items: center;
@@ -62,6 +72,8 @@
 .contactIcon {
   width: 18px;
   height: 18px;
+  color: #616161;
+  flex-shrink: 0;
 }
 
 .scoreSkillsWrapper {
@@ -139,6 +151,10 @@
 }
 
 .darkMode .contactLine {
+  color: #ccc;
+}
+
+.darkMode .contactIcon {
   color: #ccc;
 }
 

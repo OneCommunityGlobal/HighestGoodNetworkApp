@@ -1,4 +1,3 @@
-// LossTrackingLineChart.jsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -147,16 +146,13 @@ export default function LossTrackingLineChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hostRef = useRef(null);
 
-  // --- Promote parent wrapper (no parent code changes needed) ---
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    // Find the wrapper the page uses around our component
     const wrapper = host.closest('.weekly-project-summary-card.financial-big');
     if (!wrapper) return;
 
-    // Save previous inline styles to restore on unmount
     const prev = {
       gridColumn: wrapper.style.gridColumn,
       flex: wrapper.style.flex,
@@ -165,7 +161,6 @@ export default function LossTrackingLineChart() {
       minWidth: wrapper.style.minWidth,
     };
 
-    // Make the wrapper span the full grid row & fill flex rows
     wrapper.style.gridColumn = '1 / -1';
     wrapper.style.flex = '1 1 100%';
     wrapper.style.width = '100%';
@@ -199,26 +194,63 @@ export default function LossTrackingLineChart() {
   );
 
   const filteredLines = useMemo(() => {
+    const filterStart = startDate ? startDate.substring(0, 7) : '';
+    const filterEnd = endDate ? endDate.substring(0, 7) : '';
+
     return rawData.filter(line => {
-      const yearMatch = year === 'All' || String(line.year) === year;
       const materialMatch = material === 'All' || line.material === material;
+      let yearMatch = year === 'All' || String(line.year) === year;
+
+      // Filter lines dynamically if they sit entirely outside the selected calendar period
+      if (filterStart && `${line.year}-12` < filterStart) yearMatch = false; // Checks through end of year
+      if (filterEnd && `${line.year}-01` > filterEnd) yearMatch = false; // Checks from start of year
+
       return yearMatch && materialMatch;
     });
-  }, [material, year]);
+  }, [material, year, startDate, endDate]);
 
+  // Enforces valid boundary limitations on HTML pickers dynamically
+  const dateBounds = useMemo(() => {
+    if (year === 'All') return { min: '2022-01-01', max: '2024-12-31' };
+    return { min: `${year}-01-01`, max: `${year}-12-31` };
+  }, [year]);
+
+  // Clears date pickers gracefully if they don't belong to the newly active year selection
+  const handleYearChange = newYear => {
+    setYear(newYear);
+    if (newYear !== 'All') {
+      if (startDate && !startDate.startsWith(newYear)) setStartDate('');
+      if (endDate && !endDate.startsWith(newYear)) setEndDate('');
+    }
+  };
+
+  // Groups and explicitly sorts keys chronologically to handle continuous year-over-year transitions smoothly
   const chartData = useMemo(() => {
     const merged = {};
+    const filterStart = startDate ? startDate.substring(0, 7) : '';
+    const filterEnd = endDate ? endDate.substring(0, 7) : '';
+
     filteredLines.forEach(line => {
       line.data.forEach(({ date, month, value }) => {
-        const withinRange = (!startDate || date >= startDate) && (!endDate || date <= endDate);
+        const withinRange =
+          (!filterStart || date >= filterStart) && (!filterEnd || date <= filterEnd);
+
         if (withinRange) {
-          if (!merged[month]) merged[month] = { month };
-          merged[month][`${line.year}-${line.material}`] = value;
+          if (!merged[date]) {
+            merged[date] = {
+              date,
+              displayLabel: year === 'All' ? `${month} ${String(line.year).substring(2)}` : month,
+            };
+          }
+          merged[date][`${line.year}-${line.material}`] = value;
         }
       });
     });
-    return Object.values(merged);
-  }, [filteredLines, startDate, endDate]);
+
+    return Object.keys(merged)
+      .sort((a, b) => a.localeCompare(b))
+      .map(key => merged[key]);
+  }, [filteredLines, startDate, endDate, year]);
 
   const isDefaultFilters =
     material === DEFAULTS.material &&
@@ -264,10 +296,9 @@ export default function LossTrackingLineChart() {
               ))}
             </select>
           </label>
-
           <label>
             <span>Year</span>
-            <select value={year} onChange={e => setYear(e.target.value)}>
+            <select value={year} onChange={e => handleYearChange(e.target.value)}>
               {years.map(y => (
                 <option key={y} value={y}>
                   {y}
@@ -301,7 +332,6 @@ export default function LossTrackingLineChart() {
           <button className={styles.resetBtn} onClick={handleReset} disabled={isDefaultFilters}>
             Reset Filters
           </button>
-
           {!isDateRangeValid && (
             <span className={styles.dateRangeError}>
               Start date must be before or equal to end date.
