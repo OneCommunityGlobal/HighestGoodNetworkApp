@@ -138,7 +138,6 @@ function FormattedReport({
           }
 
           const isFinalWeek = isFinalWeekOnTab(summary, weekIndex);
-          
 
           return !summary.endDate || isFinalWeek;
         })
@@ -536,7 +535,6 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
   );
 }
 
-
 function TeamCodeRow({
   canEditTeamCode,
   summary,
@@ -550,7 +548,7 @@ function TeamCodeRow({
   const [hasError, setHasError] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
-  
+
   const filteredTeamCodes = activeTeamCodes.filter(code =>
     code.toLowerCase().includes((teamCode || '').toLowerCase()),
   );
@@ -591,73 +589,72 @@ function TeamCodeRow({
   return (
     <>
       <div className={styles.teamcodeWrapper}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {canEditTeamCode ? (
+            <div style={{ paddingRight: '5px', position: 'relative' }}>
+              <div className={styles.teamCodeInputWrapper}>
+                <Input
+                  id="codeInput"
+                  autoComplete="off"
+                  value={teamCode}
+                  onFocus={() => setShowSuggestions(true)}
+                  onChange={e => {
+                    setTeamCode(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onBlur={e => {
+                    handleCodeChange(e);
+                    setShowSuggestions(false);
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.currentTarget.blur();
+                    }
 
-       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-  {canEditTeamCode ? (
-    <div style={{ paddingRight: '5px', position: 'relative' }}>
-      <div className={styles.teamCodeInputWrapper}>
-        <Input
-          id="codeInput"
-          autoComplete="off"
-          value={teamCode}
-          onFocus={() => setShowSuggestions(true)}
-          onChange={e => {
-            setTeamCode(e.target.value);
-            setShowSuggestions(true);
-          }}
-          onBlur={e => {
-            handleCodeChange(e);
-            setShowSuggestions(false);
-          }}
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              e.currentTarget.blur();
-            }
+                    if (e.key === 'Escape') {
+                      setShowSuggestions(false);
+                    }
+                  }}
+                  placeholder="X-XXX"
+                  className={`${styles.weeklySummariesCodeInput} ${
+                    darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                  }`}
+                />
 
-            if (e.key === 'Escape') {
-              setShowSuggestions(false);
-            }
-          }}
-          placeholder="X-XXX"
-          className={`${styles.weeklySummariesCodeInput} ${
-            darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-          }`}
-        />
+                {showSuggestions && filteredTeamCodes.length > 0 && (
+                  <div
+                    className={`${styles.teamCodeSuggestions} ${
+                      darkMode ? styles.teamCodeSuggestionsDark : ''
+                    }`}
+                  >
+                    {filteredTeamCodes.map(code => (
+                      <button
+                        key={code}
+                        type="button"
+                        className={`${styles.teamCodeSuggestionItem} ${
+                          darkMode ? styles.teamCodeSuggestionItemDark : ''
+                        }`}
+                        onMouseDown={e => {
+                          e.preventDefault();
+                          setTeamCode(code);
+                          setShowSuggestions(false);
+                        }}
+                      >
+                        {code}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{ paddingRight: '5px' }}>
+              {teamCode === '' ? 'No assigned team code!' : teamCode}
+            </div>
+          )}
 
-        {showSuggestions && filteredTeamCodes.length > 0 && (
-          <div
-            className={`${styles.teamCodeSuggestions} ${
-              darkMode ? styles.teamCodeSuggestionsDark : ''
-            }`}
-          >
-            {filteredTeamCodes.map(code => (
-              <button
-                key={code}
-                type="button"
-                className={`${styles.teamCodeSuggestionItem} ${
-                  darkMode ? styles.teamCodeSuggestionItemDark : ''
-                }`}
-                onMouseDown={e => {
-                  e.preventDefault();
-                  setTeamCode(code);
-                  setShowSuggestions(false);
-                }}
-              >
-                {code}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  ) : (
-    <div style={{ paddingRight: '5px' }}>
-      {teamCode === '' ? 'No assigned team code!' : teamCode}
-    </div>
-  )}
-
-  {weekOffBadge}
-</div>
+          {weekOffBadge}
+        </div>
 
         <div>
           <b>Media URL:</b>
