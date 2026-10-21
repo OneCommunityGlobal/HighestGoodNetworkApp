@@ -114,7 +114,6 @@ function UserPermissionsPopUp({
       permissions: {
         frontPermissions: userPermissions,
         removedDefaultPermissions: userRemovedDefaultPermissions,
-        defaultPermissions: actualUserRolePermission,
       },
       requestor: authUser, // Fixed: use authUser instead of req.body.requestor
     };
