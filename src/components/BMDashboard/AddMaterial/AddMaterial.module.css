@@ -22,6 +22,11 @@ font-size: .8em;
   width: 50%;
 }
 
+.submitButton:hover{
+  background-color: #0d6efd;
+  color: #fff;
+}
+
 .addMaterialTotalPrice{
   display: flex;  
   border-radius: 10px;
@@ -67,7 +72,19 @@ font-size: .8em;
   gap: 0.5rem;
   width: 100%;
   margin-top: 1rem;
-  
+  overflow-x: hidden;
+  flex-wrap: wrap;
+}
+
+.filePreview {
+  max-width: 100%;
+}
+
+.filePreview img {
+  display: block;
+  max-width: 100%;
+  max-height: 12rem;
+  object-fit: contain;
 }
 
 .materialFormError {
@@ -267,7 +284,7 @@ font-size: .8em;
 
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country):hover,
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country.highlight) {
-  background-color: #3a506b !important;
+  background-color: #1a73c0 !important;
 }
 
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country-name),

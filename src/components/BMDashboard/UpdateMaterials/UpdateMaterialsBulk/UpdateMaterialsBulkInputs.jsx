@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
-import styles from './UpdateMaterialsBulk.module.css';
 
 function UpdateMaterialsBulkInputs({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
   const projects = useSelector(state => state.bmProjects);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [formattedProjects, setFormattedProjects] = useState([]);
   const today = moment(new Date()).format('YYYY-MM-DD');
   useEffect(() => {
@@ -36,8 +36,8 @@ function UpdateMaterialsBulkInputs({ date, setDate, project, setProject }) {
   return (
     <div className="container">
       <Form>
-        <Row className={`align-items-center ${styles.logMaterialInputRow}`}>
-          <Col lg={6} md={12} className={`${styles.logMaterialInputCol}`}>
+        <Row className="align-items-center logMaterialInputRow">
+          <Col lg={6} md={12} className="logMaterialInputCol">
             <Row className="justify-content-start align-items-center">
               <Label for="selectdate" lg={2} md={3}>
                 Date:
@@ -55,7 +55,7 @@ function UpdateMaterialsBulkInputs({ date, setDate, project, setProject }) {
             </Row>
           </Col>
 
-          <Col lg={6} md={12} className={`${styles.logMaterialInputCol}`}>
+          <Col lg={6} md={12} className="logMaterialInputCol">
             <Row className="justify-content-start align-items-center">
               <Label lg={3} md={3} for="selectproject">
                 Project:
@@ -66,6 +66,45 @@ function UpdateMaterialsBulkInputs({ date, setDate, project, setProject }) {
                   options={formattedProjects}
                   value={project}
                   defaultValue={{ label: 'All Projects', value: '0' }}
+                  classNamePrefix="react-select"
+                  styles={{
+                    control: base => ({
+                      ...base,
+                      backgroundColor: darkMode ? '#0f172a' : base.backgroundColor,
+                      borderColor: darkMode ? '#475569' : base.borderColor,
+                      color: darkMode ? '#ffffff' : base.color,
+                    }),
+                    menu: base => ({
+                      ...base,
+                      backgroundColor: darkMode ? '#0f172a' : base.backgroundColor,
+                      borderColor: darkMode ? '#475569' : base.borderColor,
+                    }),
+                    option: (base, state) => {
+                      let optionBgColor = base.backgroundColor;
+                      if (darkMode) {
+                        if (state.isSelected) optionBgColor = '#1C8BCC';
+                        else if (state.isFocused) optionBgColor = '#334155';
+                        else optionBgColor = '#0f172a';
+                      }
+                      return {
+                        ...base,
+                        backgroundColor: optionBgColor,
+                        color: darkMode ? '#ffffff' : base.color,
+                      };
+                    },
+                    singleValue: base => ({
+                      ...base,
+                      color: darkMode ? '#ffffff' : base.color,
+                    }),
+                    placeholder: base => ({
+                      ...base,
+                      color: darkMode ? '#cbd5e1' : base.color,
+                    }),
+                    input: base => ({
+                      ...base,
+                      color: darkMode ? '#ffffff' : base.color,
+                    }),
+                  }}
                 />
               </Col>
             </Row>

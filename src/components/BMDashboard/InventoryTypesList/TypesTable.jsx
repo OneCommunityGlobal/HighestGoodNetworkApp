@@ -230,6 +230,7 @@ export function TypesTable(props) {
           {isAdding && (
             <tr>
               <td>{(itemTypes?.length ?? 0) + 1}</td>
+              <td>{(itemTypes?.length ?? 0) + 1}</td>
               <td>
                 <Form.Control
                   type="text"
