@@ -62,7 +62,9 @@
   align-items: center;
   flex-wrap: nowrap;
   margin-left: auto;
-  min-width: 0; /* allow selects to shrink instead of crushing the button */
+  min-width: 0;
+
+  /* allow selects to shrink instead of crushing the button */
 }
 
 /* Reactstrap Input adds .form-control — match box model to the Share PDF button */
@@ -296,9 +298,11 @@
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
+  flex: 1 1 250px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  min-width: 0;
   overflow: hidden visible;
 }
 
@@ -401,9 +405,7 @@
 
 .normalCard {
   width: 100%;
-  max-width: 100%;
-  min-height: 250px;
-  box-sizing: border-box;
+  min-height: 200px;
 }
 
 .mapCard {
@@ -412,6 +414,16 @@
   border-radius: 8px;
   overflow: hidden;
   grid-column: span 4;
+}
+
+/* Stacks cards in one column across every column of the section grid, so the
+   section's 2-column tablet layout can't squeeze them into half the width */
+.fullWidthStack {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 15px;
+  min-width: 0;
 }
 
 /* ---------------- SECTION ---------------- */
@@ -695,10 +707,16 @@
 /* Tooltip styles */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important;
+
+  /* Limit to 80% of viewport height */
   overflow-y: auto !important;
+
+  /* Enable vertical scrolling */
   padding-right: 15px !important;
 
-  /* Firefox */
+  /* Add some padding for the scrollbar */
+
+  /* Support for Firefox */
   scrollbar-width: thin;
   scrollbar-color: rgb(0 0 0 / 30%) rgb(0 0 0 / 10%);
 }
@@ -796,10 +814,10 @@
   padding: 0 18px;
 }
 
-/* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
+/* ---------------- RESPONSIVE DESIGN ---------------- */
 
 /* Large Screens */
-@media (width >= 1400px) {
+@media (width >=1400px) {
   .lessonsLearnedGrid {
     min-height: 650px;
   }
@@ -809,7 +827,7 @@
   }
 }
 
-@media (width <= 1399px) and (width >= 1200px) {
+@media (width <=1399px) and (width >=1200px) {
   .lessonsLearnedGrid {
     min-height: 600px;
   }
@@ -819,7 +837,7 @@
   }
 }
 
-@media (width <= 1199px) and (width >= 992px) {
+@media (width <=1199px) and (width >=992px) {
   .lessonsLearnedGrid {
     min-height: 550px;
     gap: 20px;
@@ -830,7 +848,7 @@
   }
 }
 
-@media (width <= 991px) and (width >= 769px) {
+@media (width <=991px) and (width >=769px) {
   .lessonsLearnedGrid {
     min-height: 500px;
     gap: 16px;
@@ -842,7 +860,7 @@
 }
 
 /* Medium Screens */
-@media (width <= 1024px) {
+@media (width <=1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: center;
@@ -859,7 +877,9 @@
   }
 
   .darkMode .weeklySummaryHeaderTitle {
-    color: #fff !important; /* bright white title */
+    color: #fff !important;
+
+    /* bright white title */
   }
 
   .darkMode .weeklySummaryHeaderControls select {
@@ -894,7 +914,7 @@
 }
 
 /* Small Screens */
-@media (width <= 768px) {
+@media (width <=768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: center;
@@ -912,7 +932,6 @@
   }
 
   .weeklySummaryShareBtn {
-    width: 100%;
     margin-top: 5px;
   }
 
