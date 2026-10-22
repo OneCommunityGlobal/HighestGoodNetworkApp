@@ -37,8 +37,9 @@ body.bm-dashboard-dark #root {
   color: #ffffff !important;
 }
 /* Enhanced text visibility for dark mode */
-body.dark-mode *,
-body.bm-dashboard-dark * {
+/* The expenditure date picker supplies its own accessible theme colors. */
+body.dark-mode *:not(:where(.expenditure-chart-container .react-datepicker *, .expenditure-chart-container .react-datepicker-wrapper input)),
+body.bm-dashboard-dark *:not(:where(.expenditure-chart-container .react-datepicker *, .expenditure-chart-container .react-datepicker-wrapper input)) {
   color: #ffffff !important;
 }
 
