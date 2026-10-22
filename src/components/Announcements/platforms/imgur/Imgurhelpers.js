@@ -488,9 +488,14 @@ export const fieldLabelStyle = (darkMode = false) => {
  * @returns {Object} Style object
  */
 export const fieldInputStyle = (darkMode = false, hasError = false) => {
-  const borderColor = hasError ? '#ef4444' : darkMode ? '#4b5563' : '#d1d5db';
+  let borderColor = darkMode ? '#4b5563' : '#d1d5db';
+  if (hasError) {
+    borderColor = '#ef4444';
+  }
+
   const bgColor = darkMode ? '#1f2937' : '#fff';
   const textColor = darkMode ? '#e5e7eb' : '#111827';
+
   return {
     padding: '0.5rem 0.75rem',
     borderRadius: '0.375rem',
