@@ -59,6 +59,12 @@
 }
 
 /* Lesson Tags & File Text */
+.tagItem {
+  display: inline-block;
+  margin-right: 8px;
+  overflow-wrap: anywhere;
+}
+
 .cardTagAndFile {
   font-size: small;
   color: var(--primary-text) !important;

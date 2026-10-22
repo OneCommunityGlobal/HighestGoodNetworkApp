@@ -823,6 +823,14 @@ function LessonList(props) {
                 darkMode={darkMode}
               />
             </div>
+            <BulkLessonTags
+              filteredLessons={filteredLessons}
+              selectedIds={selectedLessonIds}
+              setSelectedIds={setSelectedLessonIds}
+              availableTags={availableTags}
+              darkMode={darkMode}
+              onRefresh={refreshBulkTags}
+            />
           </Form.Group>
         </Form>
         {isLoading && <div className={styles.loading}>Loading lessons…</div>}
@@ -837,14 +845,6 @@ function LessonList(props) {
           filterDescription={getFilterDescription()}
           darkMode={darkMode}
           isExporting={isExporting}
-        />
-        <BulkLessonTags
-          filteredLessons={filteredLessons}
-          selectedIds={selectedLessonIds}
-          setSelectedIds={setSelectedLessonIds}
-          availableTags={availableTags}
-          darkMode={darkMode}
-          onRefresh={refreshBulkTags}
         />
         <Lessons
           selectedLessonIds={selectedLessonIds}

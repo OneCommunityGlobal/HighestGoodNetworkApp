@@ -8,6 +8,7 @@ import ReactHtmlParser from 'html-react-parser';
 import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 import styles from './LessonCard.module.css';
+import { formatLessonTag } from './lessonTagDisplay';
 
 function LessonCard({
   filteredLessons,
@@ -129,7 +130,7 @@ function LessonCard({
                       key={`tag-in-header-${tag}-${lesson._id}`}
                       className={`text-muted ${styles.tagItem}`}
                     >
-                      #{tag}
+                      {formatLessonTag(tag)}
                     </span>
                   ))}
               </Nav.Item>
@@ -148,7 +149,7 @@ function LessonCard({
                       key={`tag-in-body-${tag}-${lesson._id}`}
                       className={`text-muted ${styles.tagItem}`}
                     >
-                      #{tag}
+                      {formatLessonTag(tag)}
                     </span>
                   ))}
               </Card.Text>

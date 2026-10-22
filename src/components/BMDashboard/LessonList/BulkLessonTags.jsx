@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import axios from 'axios';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Button from 'react-bootstrap/Button';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './BulkLessonTags.module.css';
+import tagStyles from './LessonListForm.module.css';
+import { formatLessonTag } from './lessonTagDisplay';
 
 const baseUrl = `${ENDPOINTS.BM_LESSONS}/bulk-tags`;
 const errorMessage = error =>
@@ -19,7 +21,12 @@ export default function BulkLessonTags({
   onRefresh,
 }) {
   const [tags, setTags] = useState([]);
+  const [lessonSearch, setLessonSearch] = useState('');
+  const [showLessonOptions, setShowLessonOptions] = useState(false);
+  const lessonSearchId = useId();
   const [tagSearch, setTagSearch] = useState('');
+  const [showTagOptions, setShowTagOptions] = useState(false);
+  const tagSearchId = useId();
   const [preview, setPreview] = useState(null);
   const [history, setHistory] = useState(null);
   const [undoBatch, setUndoBatch] = useState(null);
@@ -28,6 +35,13 @@ export default function BulkLessonTags({
   const [error, setError] = useState('');
   const selectable = filteredLessons;
   const selectedLessons = selectable.filter(lesson => selectedIds.includes(lesson._id));
+  const matchingLessons = selectable.filter(lesson =>
+    lesson.title.toLowerCase().includes(lessonSearch.trim().toLowerCase()),
+  );
+  const titleCounts = selectable.reduce((counts, lesson) => {
+    counts[lesson.title] = (counts[lesson.title] || 0) + 1;
+    return counts;
+  }, Object.create(null));
   const allSelected =
     selectable.length > 0 && selectable.every(lesson => selectedIds.includes(lesson._id));
   const validTags = availableTags.filter(tag => tag.trim() && tag.length <= 10);
@@ -105,8 +119,8 @@ export default function BulkLessonTags({
       {changes.map(change => (
         <li key={change.lessonId}>
           <strong>{change.title}</strong>
-          <div>Before: {change.before.join(', ') || 'No tags'}</div>
-          <div>After: {change.after.join(', ') || 'No tags'}</div>
+          <div>Before: {change.before.map(formatLessonTag).join(', ') || 'No tags'}</div>
+          <div>After: {change.after.map(formatLessonTag).join(', ') || 'No tags'}</div>
           {!isChanged(change) && <span>No change needed</span>}
         </li>
       ))}
@@ -118,7 +132,207 @@ export default function BulkLessonTags({
       className={`${styles.panel} ${darkMode ? styles.dark : ''}`}
       aria-label="Bulk tag management"
     >
-      <h2 className={styles.heading}>Bulk tag management</h2>
+      <div className={styles.sectionHeader}>
+        <h2 className={styles.heading}>Bulk tag management</h2>
+        <button type="button" className={styles.historyLink} disabled={busy} onClick={showHistory}>
+          View history
+        </button>
+      </div>
+      <div className={styles.selectionGrid}>
+        <div className={styles.lessonColumn}>
+          <div className={styles.controls}>
+            <div
+              className={styles.tagPicker}
+              onBlur={event => {
+                if (!event.currentTarget.contains(event.relatedTarget)) setShowLessonOptions(false);
+              }}
+            >
+              <label htmlFor={lessonSearchId} className={styles.fieldLabel}>
+                Search lessons
+              </label>
+              <input
+                id={lessonSearchId}
+                type="search"
+                placeholder="Search by lesson title"
+                value={lessonSearch}
+                disabled={busy}
+                onFocus={() => setShowLessonOptions(true)}
+                onChange={event => {
+                  setLessonSearch(event.target.value);
+                  setShowLessonOptions(true);
+                }}
+                onKeyDown={event => {
+                  if (event.key === 'Enter') event.preventDefault();
+                  if (event.key === 'Escape') setShowLessonOptions(false);
+                }}
+              />
+              {showLessonOptions && (
+                <fieldset className={styles.tagOptions} disabled={busy}>
+                  <legend className={styles.heading}>Matching lessons</legend>
+                  {matchingLessons.map(lesson => (
+                    <label key={lesson._id} className={styles.lessonOption}>
+                      <input
+                        type="checkbox"
+                        aria-label={`Select lesson ${lesson.title} from search`}
+                        checked={selectedIds.includes(lesson._id)}
+                        disabled={!selectedIds.includes(lesson._id) && selectedIds.length >= 100}
+                        onChange={() => {
+                          setSelectedIds(previous => {
+                            if (previous.includes(lesson._id))
+                              return previous.filter(id => id !== lesson._id);
+                            return previous.length < 100 ? [...previous, lesson._id] : previous;
+                          });
+                          setPreview(null);
+                        }}
+                      />
+                      <span className={styles.lessonChipText}>
+                        <span>{lesson.title}</span>
+                        {titleCounts[lesson.title] > 1 && (
+                          <small>
+                            {lesson.tags?.length
+                              ? lesson.tags.map(formatLessonTag).join(', ')
+                              : 'No tags'}
+                          </small>
+                        )}
+                      </span>
+                    </label>
+                  ))}
+                  {!matchingLessons.length && (
+                    <p>No matching lessons in the current filtered list.</p>
+                  )}
+                </fieldset>
+              )}
+            </div>
+          </div>
+          {selectedLessons.length > 0 && (
+            <div className={styles.selectionField}>
+              <h3 className={styles.fieldLabel}>Selected lessons ({selectedIds.length})</h3>
+              <ul className={styles.chipList} aria-label="Selected lessons">
+                {selectedLessons.map(lesson => (
+                  <li
+                    key={lesson._id}
+                    className={`${tagStyles.tag} ${darkMode ? tagStyles.tagDark : ''} ${
+                      styles.selectionChip
+                    }`}
+                  >
+                    <span className={styles.lessonChipText}>
+                      <span>{lesson.title}</span>
+                      {titleCounts[lesson.title] > 1 && (
+                        <small>
+                          {lesson.tags?.length
+                            ? lesson.tags.map(formatLessonTag).join(', ')
+                            : 'No tags'}
+                        </small>
+                      )}
+                    </span>
+                    <button
+                      type="button"
+                      className={`${tagStyles.buttonClose} ${
+                        darkMode ? tagStyles.buttonCloseDark : ''
+                      } ${styles.chipRemove}`}
+                      aria-label={`Deselect lesson ${lesson.title}`}
+                      disabled={busy}
+                      onClick={() =>
+                        setSelectedIds(previous => previous.filter(id => id !== lesson._id))
+                      }
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+        <div className={styles.tagColumn}>
+          <div className={styles.controls}>
+            <div
+              className={styles.tagPicker}
+              onBlur={event => {
+                if (!event.currentTarget.contains(event.relatedTarget)) setShowTagOptions(false);
+              }}
+            >
+              <label htmlFor={tagSearchId} className={styles.fieldLabel}>
+                Search existing tags
+              </label>
+              <input
+                id={tagSearchId}
+                type="search"
+                placeholder="Search existing tags"
+                value={tagSearch}
+                onFocus={() => setShowTagOptions(true)}
+                onChange={event => {
+                  setTagSearch(event.target.value);
+                  setShowTagOptions(true);
+                }}
+                onKeyDown={event => {
+                  if (event.key === 'Enter') event.preventDefault();
+                }}
+                disabled={busy}
+              />
+              {showTagOptions && (
+                <fieldset className={styles.tagOptions} disabled={busy}>
+                  <legend className={styles.heading}>Existing tags</legend>
+                  {validTags
+                    .filter(tag => tag.toLowerCase().includes(tagSearch.toLowerCase()))
+                    .map(tag => (
+                      <label key={tag}>
+                        <input
+                          type="checkbox"
+                          aria-label={`Tag ${tag}`}
+                          checked={tags.includes(tag)}
+                          disabled={!tags.includes(tag) && tags.length >= 20}
+                          onChange={() => {
+                            setTags(previous =>
+                              previous.includes(tag)
+                                ? previous.filter(value => value !== tag)
+                                : [...previous, tag],
+                            );
+                            setPreview(null);
+                          }}
+                        />{' '}
+                        {formatLessonTag(tag)}
+                      </label>
+                    ))}
+                  {!validTags.length && <p>No existing tags available.</p>}
+                  {validTags.length > 0 &&
+                    !validTags.some(tag => tag.toLowerCase().includes(tagSearch.toLowerCase())) && (
+                      <p>No matching tags.</p>
+                    )}
+                </fieldset>
+              )}
+            </div>
+          </div>
+          {tags.length > 0 && (
+            <div className={styles.selectionField}>
+              <h3 className={styles.fieldLabel}>Selected tags ({tags.length})</h3>
+              <ul className={styles.chipList} aria-label="Selected tags">
+                {tags.map(tag => (
+                  <li
+                    key={tag}
+                    className={`${tagStyles.tag} ${darkMode ? tagStyles.tagDark : ''} ${
+                      styles.selectionChip
+                    }`}
+                  >
+                    <span title={tag}>{formatLessonTag(tag)}</span>
+                    <button
+                      type="button"
+                      className={`${tagStyles.buttonClose} ${
+                        darkMode ? tagStyles.buttonCloseDark : ''
+                      } ${styles.chipRemove}`}
+                      aria-label={`Deselect tag ${tag}`}
+                      disabled={busy}
+                      onClick={() => setTags(previous => previous.filter(value => value !== tag))}
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
       <div className={styles.controls}>
         <label>
           <input
@@ -132,7 +346,6 @@ export default function BulkLessonTags({
           />{' '}
           Select all filtered lessons
         </label>
-        <span aria-live="polite">{selectedIds.length} selected (maximum 100)</span>
         <button
           type="button"
           disabled={busy || !selectedIds.length}
@@ -144,93 +357,6 @@ export default function BulkLessonTags({
       {selectable.length > 100 && (
         <p>Use filters or individual checkboxes to select up to 100 lessons per batch.</p>
       )}
-      <div className={styles.selectionField}>
-        <h3 className={styles.fieldLabel}>Selected lessons ({selectedIds.length})</h3>
-        {selectedLessons.length ? (
-          <ul className={styles.chipList} aria-label="Selected lessons">
-            {selectedLessons.map(lesson => (
-              <li key={lesson._id} className={styles.selectionChip}>
-                <span>{lesson.title}</span>
-                <button
-                  type="button"
-                  className={styles.chipRemove}
-                  aria-label={`Deselect lesson ${lesson.title}`}
-                  disabled={busy}
-                  onClick={() =>
-                    setSelectedIds(previous => previous.filter(id => id !== lesson._id))
-                  }
-                >
-                  <span aria-hidden="true">×</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className={styles.emptySelection}>
-            Choose lessons using the checkboxes in the list below.
-          </p>
-        )}
-      </div>
-      <div className={styles.controls}>
-        <details className={styles.tagPicker}>
-          <summary>Choose tags ({tags.length}/20 selected)</summary>
-          <input
-            type="search"
-            aria-label="Search bulk tags"
-            placeholder="Search existing tags"
-            value={tagSearch}
-            onChange={event => setTagSearch(event.target.value)}
-            disabled={busy}
-          />
-          <fieldset className={styles.tagOptions} disabled={busy}>
-            <legend className={styles.heading}>Existing tags</legend>
-            {validTags
-              .filter(tag => tag.toLowerCase().includes(tagSearch.toLowerCase()))
-              .map(tag => (
-                <label key={tag}>
-                  <input
-                    type="checkbox"
-                    aria-label={`Tag ${tag}`}
-                    checked={tags.includes(tag)}
-                    disabled={!tags.includes(tag) && tags.length >= 20}
-                    onChange={() => {
-                      setTags(previous =>
-                        previous.includes(tag)
-                          ? previous.filter(value => value !== tag)
-                          : [...previous, tag],
-                      );
-                      setPreview(null);
-                    }}
-                  />{' '}
-                  {tag}
-                </label>
-              ))}
-            {!validTags.length && <p>No existing tags available.</p>}
-          </fieldset>
-        </details>
-      </div>
-      {tags.length > 0 && (
-        <div className={styles.selectionField}>
-          <h3 className={styles.fieldLabel}>Selected tags ({tags.length})</h3>
-          <ul className={styles.chipList} aria-label="Selected tags">
-            {tags.map(tag => (
-              <li key={tag} className={styles.selectionChip}>
-                <span>#{tag}</span>
-                <button
-                  type="button"
-                  className={styles.chipRemove}
-                  aria-label={`Deselect tag ${tag}`}
-                  disabled={busy}
-                  onClick={() => setTags(previous => previous.filter(value => value !== tag))}
-                >
-                  <span aria-hidden="true">×</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <p>Choose lessons and tags, then use an action below to preview the changes before saving.</p>
       <div className={styles.controls}>
         <Button
           type="button"
@@ -250,13 +376,9 @@ export default function BulkLessonTags({
         >
           Remove selected tags
         </Button>
-        <button type="button" disabled={busy} onClick={showHistory}>
-          Tag change history
-        </button>
       </div>
-      <p>Each action applies the selected tags to all {selectedIds.length} selected lesson(s).</p>
-      <p>
-        Removing tags here affects selected lessons only. Global tag deletion is a separate action.
+      <p className={styles.actionHint}>
+        Changes affect only selected lessons. Preview before saving.
       </p>
       {!preview && !history && feedback}
       {message && <p role="status">{message}</p>}
@@ -281,8 +403,13 @@ export default function BulkLessonTags({
               </h3>
               <ul className={styles.chipList} aria-label="Tags in this preview">
                 {preview.tags.map(tag => (
-                  <li key={tag} className={styles.selectionChip}>
-                    #{tag}
+                  <li
+                    key={tag}
+                    className={`${tagStyles.tag} ${darkMode ? tagStyles.tagDark : ''} ${
+                      styles.selectionChip
+                    }`}
+                  >
+                    {formatLessonTag(tag)}
                   </li>
                 ))}
               </ul>
@@ -343,7 +470,8 @@ export default function BulkLessonTags({
           {history?.map(batch => (
             <article key={batch._id} className={styles.historyEntry}>
               <strong>
-                {batch.operation === 'add' ? 'Added' : 'Removed'} {batch.tags.join(', ')}
+                {batch.operation === 'add' ? 'Added' : 'Removed'}{' '}
+                {batch.tags.map(formatLessonTag).join(', ')}
               </strong>
               <div>
                 {new Date(batch.createdAt).toLocaleString()} · User: {batch.actor}

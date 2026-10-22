@@ -29,7 +29,7 @@ describe('bulk lesson tag workflow', () => {
   });
 
   const chooseTag = () => {
-    fireEvent.click(screen.getByText('Choose tags (0/20 selected)'));
+    fireEvent.focus(screen.getByRole('searchbox', { name: 'Search existing tags' }));
     fireEvent.click(screen.getByLabelText('Tag new'));
   };
 
@@ -37,6 +37,64 @@ describe('bulk lesson tag workflow', () => {
     render(<BulkLessonTags {...props} />);
     fireEvent.click(screen.getByLabelText('Select all filtered lessons'));
     expect(props.setSelectedIds).toHaveBeenCalledWith(['lesson1', 'lesson2']);
+  });
+
+  it('searches lesson titles without losing selections when the query changes', () => {
+    function SearchSelection() {
+      const [selectedIds, setSelectedIds] = React.useState([]);
+      return (
+        <BulkLessonTags {...props} selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
+      );
+    }
+    render(<SearchSelection />);
+    const search = screen.getByRole('searchbox', { name: 'Search lessons' });
+    expect(search).toBeVisible();
+    fireEvent.focus(search);
+    fireEvent.change(search, { target: { value: 'sAF' } });
+    expect(screen.queryByLabelText('Select lesson Tools from search')).toBeNull();
+    fireEvent.click(screen.getByLabelText('Select lesson Safety from search'));
+    expect(
+      within(screen.getByRole('list', { name: 'Selected lessons' })).getByText('Safety'),
+    ).toBeTruthy();
+    fireEvent.change(search, { target: { value: 'Tools' } });
+    fireEvent.click(screen.getByLabelText('Select lesson Tools from search'));
+    expect(
+      within(screen.getByRole('list', { name: 'Selected lessons' })).getByText('Safety'),
+    ).toBeTruthy();
+    expect(
+      within(screen.getByRole('list', { name: 'Selected lessons' })).getByText('Tools'),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Deselect lesson Tools' }));
+    expect(screen.getByLabelText('Select lesson Tools from search').checked).toBe(false);
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('shows a helpful result when no lesson title matches', () => {
+    render(<BulkLessonTags {...props} />);
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Search lessons' }), {
+      target: { value: 'does not exist' },
+    });
+    expect(screen.getByText('No matching lessons in the current filtered list.')).toBeTruthy();
+    expect(
+      within(screen.getByRole('list', { name: 'Selected lessons' })).getByText('Safety'),
+    ).toBeTruthy();
+  });
+
+  it('shows search immediately and filters tags without a disclosure step', () => {
+    render(<BulkLessonTags {...props} />);
+    const search = screen.getByRole('searchbox', { name: 'Search existing tags' });
+    expect(search).toBeVisible();
+    expect(screen.queryByText(/Choose tags/)).toBeNull();
+    fireEvent.focus(search);
+    expect(screen.getByLabelText('Tag old')).toBeTruthy();
+    fireEvent.change(search, { target: { value: 'new' } });
+    expect(screen.queryByLabelText('Tag old')).toBeNull();
+    fireEvent.click(screen.getByLabelText('Tag new'));
+    expect(
+      within(screen.getByRole('list', { name: 'Selected tags' })).getByText('#new'),
+    ).toBeTruthy();
+    expect(screen.getByRole('list', { name: 'Selected lessons' })).toBeTruthy();
+    expect(axios.post).not.toHaveBeenCalled();
   });
   it('disables preview without a selection', () => {
     render(<BulkLessonTags {...props} selectedIds={[]} />);
@@ -48,8 +106,8 @@ describe('bulk lesson tag workflow', () => {
     chooseTag();
     fireEvent.click(screen.getByText('Add selected tags'));
     await screen.findByText('Confirm bulk tag changes');
-    expect(screen.getByText('Before: old')).toBeTruthy();
-    expect(screen.getByText('After: old, new')).toBeTruthy();
+    expect(screen.getByText('Before: #old')).toBeTruthy();
+    expect(screen.getByText('After: #old, #new')).toBeTruthy();
     expect(axios.post).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByText('Confirm adding tags'));
     await waitFor(() => expect(props.onRefresh).toHaveBeenCalled());
@@ -132,6 +190,39 @@ describe('bulk lesson tag workflow', () => {
     expect(axios.post).not.toHaveBeenCalled();
   });
 
+  it('distinguishes repeated lesson titles using their existing tags', () => {
+    render(
+      <BulkLessonTags
+        {...props}
+        selectedIds={['first', 'second']}
+        filteredLessons={[
+          { _id: 'first', title: 'Tag Storage', tags: ['maths'] },
+          { _id: 'second', title: 'Tag Storage', tags: ['#history'] },
+        ]}
+      />,
+    );
+    const selection = screen.getByRole('list', { name: 'Selected lessons' });
+    expect(within(selection).getAllByText('Tag Storage')).toHaveLength(2);
+    expect(within(selection).getByText('#maths')).toBeTruthy();
+    expect(within(selection).getByText('#history')).toBeTruthy();
+  });
+
+  it('formats tag labels without changing the stored value sent to the API', async () => {
+    render(<BulkLessonTags {...props} availableTags={['##lesson']} />);
+    fireEvent.focus(screen.getByRole('searchbox', { name: 'Search existing tags' }));
+    fireEvent.click(screen.getByLabelText('Tag ##lesson'));
+    expect(
+      within(screen.getByRole('list', { name: 'Selected tags' })).getByText('#lesson'),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByText('Add selected tags'));
+    await screen.findByText('Confirm bulk tag changes');
+    expect(axios.post).toHaveBeenCalledWith('/api/bm/lessons/bulk-tags/preview', {
+      lessonIds: ['lesson1'],
+      tags: ['##lesson'],
+      operation: 'add',
+    });
+  });
+
   it('requires confirmation before undoing a historical batch', async () => {
     axios.get.mockResolvedValue({
       data: [
@@ -146,7 +237,7 @@ describe('bulk lesson tag workflow', () => {
       ],
     });
     render(<BulkLessonTags {...props} />);
-    fireEvent.click(screen.getByText('Tag change history'));
+    fireEvent.click(screen.getByRole('button', { name: 'View history' }));
     await screen.findByText('Undo this batch');
     fireEvent.click(screen.getByText('Undo this batch'));
     expect(axios.post).not.toHaveBeenCalled();
