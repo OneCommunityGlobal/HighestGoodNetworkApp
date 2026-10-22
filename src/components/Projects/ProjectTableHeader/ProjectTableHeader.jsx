@@ -94,7 +94,7 @@ const ProjectTableHeader = props => {
         </span>
       </th>
       <th scope="col" id="projects__active" className='align-middle text-center'>
-        <span className='d-flex justify-content-center align-items-center mt-1'>
+        <span className='d-flex justify-content-center align-items-center mt-1' style={{ whiteSpace: 'nowrap' }}>
           {ACTIVE}
           <DropdownButton
             id="project-status-filter"
@@ -114,7 +114,7 @@ const ProjectTableHeader = props => {
         </span>
       </th>
       <th scope="col" id="projects__inv" className='align-middle text-center'>
-        <span className='d-flex justify-content-center align-items-center'>
+        <span className='d-flex justify-content-center align-items-center' style={{ whiteSpace: 'nowrap' }}>
           {INVENTORY}
           <div>
             {renderSortButton('INVENTORY')}
