@@ -706,6 +706,10 @@
   color: #fff;
 }
 
+.pr-grading-screen-table.dark-mode .pr-grading-screen-td-needed {
+  color: #fff;
+}
+
 .pr-grading-screen-table.dark-mode .pr-grading-screen-pr-input {
   background-color: #2d4059;
   border-color: #5a6b88;
