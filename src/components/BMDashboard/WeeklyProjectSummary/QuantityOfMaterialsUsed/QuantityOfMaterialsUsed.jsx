@@ -667,12 +667,24 @@ function QuantityOfMaterialsUsed({ data }) {
 
       <ReactTooltip
         id="materials-info"
-        place="left"
+        // Place below the info icon so the long overview panel does not open behind the navbar.
+        place="bottom"
         effect="solid"
         className={`${styles.quantityOfMaterialsUsedChartTooltip}`}
         clickable
         event="click"
         globalEventOff="click"
+        overridePosition={({ left, top }, _event, _trigger, tooltip) => {
+          if (typeof window === 'undefined' || window.innerWidth > 640) return { left, top };
+
+          // Clamp the mobile tooltip inside the viewport because ReactTooltip anchors it near the right-side icon.
+          const margin = 24;
+          const tooltipWidth = tooltip?.offsetWidth || 0;
+          return {
+            left: Math.max(margin, Math.min(left, window.innerWidth - tooltipWidth - margin)),
+            top,
+          };
+        }}
       >
         <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Chart Overview</div>
         <div>This chart compares material quantities across two time periods.</div>
