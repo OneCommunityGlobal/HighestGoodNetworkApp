@@ -505,6 +505,14 @@ function Timer({ authUser, darkMode, isPopout }) {
       ...prev,
       started: true,
       paused: false,
+      // The server resets startAt to now on every START_TIMER, and only resets time to goal
+      // on a *first* start (mirrored here from startTimer() in clientsHandler.js). Without this,
+      // updateRemaining() runs against the stale/invalid startAt left over from before the click
+      // and immediately computes remaining as 0, which pops the time-over modal before the
+      // server's real response arrives - most visible on short goals (1-2 min) since any amount
+      // of staleness is likely to exceed them.
+      startAt: Date.now(),
+      time: prev.started ? prev.time : prev.goal,
     }));
     setRunning(true);
     sendStart();
