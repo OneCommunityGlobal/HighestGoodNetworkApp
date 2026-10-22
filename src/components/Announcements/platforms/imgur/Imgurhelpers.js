@@ -325,20 +325,20 @@ export const formatLocalTime = (date = new Date()) => {
  */
 export const formatDisplayDateTime = (date, time) => {
   if (!date || !time) return '';
-  try {
-    const dateObj = new Date(`${date}T${time}:00`);
-    return dateObj.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  } catch (error) {
-    // Fallback to raw date and time string if parsing fails due to invalid format
+
+  const dateObj = new Date(`${date}T${time}:00`);
+  if (isNaN(dateObj.getTime())) {
     return `${date} ${time}`;
   }
+
+  return dateObj.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
 };
 
 /**
