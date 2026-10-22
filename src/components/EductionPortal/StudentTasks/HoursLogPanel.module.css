@@ -14,18 +14,16 @@ dialog.panel {
   position: relative;
   margin: 0;
   inset: auto;
-  padding: 0;
-  max-width: 420px;
-  width: 100%;
+  box-sizing: border-box;
+  width: min(100% - 32px, 480px);
 }
 
 .panel {
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 1.25rem 1.5rem;
+  padding: 24px;
   box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
-  width: 100%;
 }
 
 .panelDark {
@@ -36,10 +34,12 @@ dialog.panel {
 
 /* ── Header ──────────────────────────────── */
 .header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.9rem;
+  margin-bottom: 1.5rem;
+  padding-right: 2rem;
 }
 
 .title {
@@ -54,6 +54,10 @@ dialog.panel {
 }
 
 .closeBtn {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
   background: none;
   border: none;
   font-size: 1.4rem;
@@ -78,7 +82,7 @@ dialog.panel {
 
 /* ── Progress ─────────────────────────────── */
 .progressSection {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .progressLabel {
@@ -151,7 +155,7 @@ dialog.panel {
 .form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .inputRow {
@@ -161,8 +165,8 @@ dialog.panel {
 }
 
 .stepBtn {
-  width: 2rem;
-  height: 2rem;
+  width: 56px;
+  height: 56px;
   border: 1px solid #d1d5db;
   border-radius: 50%;
   background: #f9fafb;
@@ -194,9 +198,10 @@ dialog.panel {
 
 .hoursInput {
   flex: 1;
+  height: 56px;
   text-align: center;
   border-radius: 6px;
-  padding: 0.35rem 0.5rem;
+  padding: 0.35rem 0.75rem;
   font-size: 1rem;
   font-weight: 600;
   color: #111827;
@@ -233,8 +238,9 @@ dialog.panel {
 }
 
 .submitBtn {
-  width: 100%;
-  padding: 0.5rem 1rem;
+  align-self: center;
+  width: auto;
+  padding: 0.75rem 1.5rem;
   background: #2563eb;
   color: #fff;
   border: none;
@@ -252,4 +258,23 @@ dialog.panel {
 
 .submitBtn:hover:not(:disabled) {
   background: #1d4ed8;
+}
+
+@media (width < 480px) {
+  dialog.panel {
+    width: calc(100% - 32px);
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .stepBtn {
+    width: 48px;
+    height: 48px;
+  }
+
+  .hoursInput {
+    height: 48px;
+  }
 }
