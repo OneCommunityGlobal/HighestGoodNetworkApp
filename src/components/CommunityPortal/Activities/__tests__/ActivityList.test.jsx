@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
@@ -18,6 +19,19 @@ const renderActivityList = (initialState = { theme: { darkMode: false } }) => {
 };
 
 describe('ActivityList', () => {
+  // The list hides past events, and the mock data's only upcoming event
+  // ("Book Club - March", 2026-10-21) used to depend on the real date and the
+  // CI timezone. Freeze "today" at midday UTC so the result is the same on
+  // every day and in every timezone. Only Date is faked; timers stay real.
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-01-01T12:00:00Z'));
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   test('renders Activity List heading', () => {
     renderActivityList();
     expect(screen.getByText('Activity List')).toBeInTheDocument();
