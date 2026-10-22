@@ -57,6 +57,8 @@ describe('ActivityList', () => {
 
   test('sorts activities by date (latest to earliest)', () => {
     renderActivityList();
+    // Sorting must include the fixed fixtures even after their dates have passed.
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
     fireEvent.change(screen.getByLabelText(/Sort By:/i), {
       target: { value: 'latest' },
