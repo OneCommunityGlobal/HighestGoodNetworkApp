@@ -179,7 +179,7 @@
 }
 
 .isActive i {
-  color: lawngreen;
+  color: lawngreen !important;
   box-shadow: none !important;
 }
 
