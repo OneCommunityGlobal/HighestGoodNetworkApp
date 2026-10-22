@@ -50,6 +50,7 @@ export const ENDPOINTS = {
   // Single-user lookup contract: backend reads this as req.query.userId, not a path segment.
   USER_PROFILE_BASIC_INFO_BY_ID: userId => `${APIEndpoint}/userProfile/basicInfo?userId=${userId}`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
+  SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
