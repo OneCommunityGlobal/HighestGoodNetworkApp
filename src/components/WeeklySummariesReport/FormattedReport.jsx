@@ -137,9 +137,7 @@ function FormattedReport({
             return false;
           }
 
-          const isFinalWeek = isFinalWeekOnTab(summary, weekIndex);
-
-          return !summary.endDate || isFinalWeek;
+          return shouldShowSummaryOnTab(summary, weekIndex);
         })
         .map(summary => (typeof summary.teamCode === 'string' ? summary.teamCode.trim() : ''))
         .filter(Boolean),

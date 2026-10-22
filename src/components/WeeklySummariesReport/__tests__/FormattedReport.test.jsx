@@ -169,9 +169,11 @@ describe('FormattedReport minimal test', () => {
       _id: 'expired-1',
       email: 'expired@example.com',
       teamCode: 'OLD01',
+      isActive: false,
       endDate: moment()
         .subtract(6, 'weeks')
         .toISOString(),
+      finalWeekIndex: 6,
     };
 
     render(
@@ -193,6 +195,74 @@ describe('FormattedReport minimal test', () => {
 
     expect(screen.getByText('ACT01')).toBeInTheDocument();
     expect(screen.getByText('ACT02')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('includes an active user with a scheduled end date in team code suggestions', () => {
+    const activeScheduledEndSummary = {
+      ...dummySummary,
+      _id: 'future-end-user',
+      email: 'future@example.com',
+      teamCode: 'FUT01',
+      isActive: true,
+      endDate: moment()
+        .add(2, 'weeks')
+        .toISOString(),
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} summaries={[activeScheduledEndSummary]} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('FUT01')).toBeInTheDocument();
+  });
+
+  it('does not suggest the team code of an inactive user hidden from the current tab', () => {
+    const visibleSummary = {
+      ...dummySummary,
+      _id: 'visible-user',
+      email: 'visible@example.com',
+      teamCode: 'ACT01',
+      isActive: true,
+      endDate: null,
+    };
+
+    const hiddenInactiveSummary = {
+      ...dummySummary,
+      _id: 'inactive-user',
+      email: 'inactive@example.com',
+      teamCode: 'OLD01',
+      isActive: false,
+      endDate: null,
+      finalWeekIndex: 1,
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[visibleSummary, hiddenInactiveSummary]}
+            weekIndex={0}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
     expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
   });
   it('updates active team code suggestions after a successful save', async () => {
