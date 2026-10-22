@@ -444,10 +444,13 @@ function WeeklyProjectSummary() {
               }}
             >
               <div className="weekly-project-summary-card financial-small financial-chart">
-                <CostPredictionChart projectId={1} />
+                <CostPredictionChart
+                  projectId={1}
+                  storageKey="bm_cost_prediction_secondary_project"
+                />
               </div>
               <div className="weekly-project-summary-card financial-small financial-chart">
-                <ActualVsPlannedCost />
+                <ActualVsPlannedCost storageKey="bm_avsp_secondary" />
               </div>
             </div>
           </div>

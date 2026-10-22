@@ -5,9 +5,11 @@ import ExpenditureChart from './ExpenditureChart';
 import styles from './ExpenditureCard.module.css';
 import PropTypes from 'prop-types';
 
-function useProjectList() {
+function useProjectList(storageKey) {
   const [projectList, setProjectList] = useState([]);
-  const [selectedProject, setSelectedProject] = useState('');
+  const [selectedProject, setSelectedProject] = useState(
+    () => localStorage.getItem(storageKey) || '',
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -27,7 +29,9 @@ function useProjectList() {
             }))
           : [];
         setProjectList(labeled);
-        if (labeled.length > 0) setSelectedProject(labeled[0].id);
+        setSelectedProject(current =>
+          labeled.some(project => project.id === current) ? current : labeled[0]?.id || '',
+        );
       })
       .catch(err => {
         if (!cancelled) {
@@ -43,6 +47,10 @@ function useProjectList() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!loading && !error) localStorage.setItem(storageKey, selectedProject);
+  }, [storageKey, selectedProject, loading, error]);
+
   return { projectList, selectedProject, setSelectedProject, loading, error };
 }
 
@@ -54,7 +62,9 @@ function useProjectList() {
  *   pieType  ('actual' | 'planned')     — required when mode === 'stacked'
  */
 function ExpenditureCard({ mode = 'stacked', pieType }) {
-  const { projectList, selectedProject, setSelectedProject, loading, error } = useProjectList();
+  const { projectList, selectedProject, setSelectedProject, loading, error } = useProjectList(
+    `bm_expenditure_${mode === 'stacked' ? pieType : 'comparison'}_project`,
+  );
 
   const isStacked = mode === 'stacked';
   const cardClass = isStacked ? `${styles.card} ${styles.cardStacked}` : styles.card;
