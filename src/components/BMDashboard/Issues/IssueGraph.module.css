@@ -277,17 +277,9 @@
 }
 
 .issueGraphEventContainer .errorText {
-  color: #ff4d4f !important;
+  color: #ff4d4f;
   margin: 10px 0;
   font-weight: 500;
-}
-
-.darkMode input[type='date'],
-.darkMode select,
-.darkMode .goButton {
-  background-color: #253342;
-  color: #f5f5f5;
-  border: 1px solid #555;
 }
 
 .darkMode .goButton {
