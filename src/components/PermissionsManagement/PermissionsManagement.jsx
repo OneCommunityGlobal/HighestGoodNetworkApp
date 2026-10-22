@@ -32,7 +32,7 @@ function PermissionsManagement({
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
   const [reminderModal, setReminderModal] = useState(false);
-  const { modalStatus, reminderUser } = useContext(ModalContext);
+  const { modalStatus, updateModalStatus, reminderUser } = useContext(ModalContext);
 
   const canPostRole = checkPermission(permissions.postRole);
   const canPutRole = checkPermission(permissions.putRole);
@@ -49,11 +49,21 @@ function PermissionsManagement({
   };
 
   const togglePopUpUserPermissions = () => {
-    if (modalStatus === false) {
-      setIsUserPermissionsOpen(previousState => !previousState);
-    } else {
+    if (!isUserPermissionsOpen) {
+      // Opening never depends on the shared flag: clear anything left over from edits on
+      // other screens (role page, New Role pop-up) and open.
+      updateModalStatus(false);
+      setIsUserPermissionsOpen(true);
+    } else if (modalStatus) {
+      // The pop-up has unsaved changes and shows the reminder box: stay open.
       setReminderModal(!reminderModal);
+    } else {
+      setIsUserPermissionsOpen(false);
     }
+  };
+
+  const closePopUpUserPermissions = () => {
+    setIsUserPermissionsOpen(false);
   };
 
   // eslint-disable-next-line
@@ -258,7 +268,7 @@ function PermissionsManagement({
               className={darkMode ? 'bg-yinmn-blue-light' : ''}
             >
               <UserPermissionsPopUp
-                toggle={togglePopUpUserPermissions}
+                closePopUp={closePopUpUserPermissions}
                 setReminderModal={setReminderModal}
                 reminderModal={reminderModal}
                 modalStatus={modalStatus}
