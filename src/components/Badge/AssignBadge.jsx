@@ -50,7 +50,8 @@ function UserList({ filteredUsers, fullName, darkMode, selectedUserIds, onUserSe
     return (
       <div className="table-responsive mb-3">
         <Table
-          className={`table table-bordered ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}
+          className={`table table-bordered ${darkMode ? 'dark-mode text-light' : ''}`}
+          style={darkMode ? { backgroundColor: '#3a506b' } : undefined}
         >
           <thead>
             <tr className={darkMode ? 'bg-space-cadet text-light' : 'table-primary'}>
@@ -180,8 +181,8 @@ function AssignBadge(props) {
 
   return (
     <Form
-      className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-      style={{ padding: 20 }}
+      className={`container-fluid ${darkMode ? 'text-light' : ''}`}
+      style={darkMode ? { padding: 20, backgroundColor: '#3a506b' } : { padding: 20 }}
     >
       <div className="row align-items-center mb-3">
         <Label
@@ -258,7 +259,7 @@ function AssignBadge(props) {
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={handleModalToggle}>
             Assign Badge
           </ModalHeader>
-          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <ModalBody style={darkMode ? { backgroundColor: '#3a506b' } : undefined}>
             <AssignBadgePopup
               allBadgeData={props.allBadgeData}
               submit={handleConfirmAssignment}
@@ -269,7 +270,11 @@ function AssignBadge(props) {
         <FormText color={darkMode ? 'white' : 'muted'}>
           Please select badge(s) from the badge list.
         </FormText>
-        <Alert color="dark" className={`mt-3 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <Alert
+          color="dark"
+          className={`mt-3 ${darkMode ? 'text-light' : ''}`}
+          style={darkMode ? { backgroundColor: '#3a506b' } : undefined}
+        >
           {selectedUserIds?.length} user(s) selected,
           {selectedBadges?.length} badge(s) selected
         </Alert>
