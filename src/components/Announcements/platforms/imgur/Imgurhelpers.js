@@ -336,6 +336,7 @@ export const formatDisplayDateTime = (date, time) => {
       hour12: true,
     });
   } catch (error) {
+    // Fallback to raw date and time string if parsing fails due to invalid format
     return `${date} ${time}`;
   }
 };
