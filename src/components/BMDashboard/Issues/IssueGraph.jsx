@@ -168,18 +168,30 @@ function IssueGraph() {
         {issueSummary && (
           <div className={styles.tileRow}>
             <div className={styles.tile}>
+              <span className={styles.tileTooltip}>
+                The total number of issues reported within the selected date range.
+              </span>
               <h3>Total Issues</h3>
               <p>{issueSummary.total}</p>
             </div>
             <div className={styles.tile}>
-              <h3>New Issues This Week</h3>
+              <span className={styles.tileTooltip}>
+                The number of new issues created within the selected date range.
+              </span>
+              <h3>New Issues</h3>
               <p>{issueSummary.newThisWeek}</p>
             </div>
             <div className={styles.tile}>
+              <span className={styles.tileTooltip}>
+                The number of issues marked as resolved within the selected date range.
+              </span>
               <h3>Resolved Issues</h3>
               <p>{issueSummary.resolved}</p>
             </div>
             <div className={styles.tile}>
+              <span className={styles.tileTooltip}>
+                The average time it takes to resolve an issue within the selected date range.
+              </span>
               <h3>Avg. Resolution Time</h3>
               <p>{issueSummary.avgResolution} days</p>
             </div>

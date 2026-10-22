@@ -114,6 +114,7 @@
 }
 
 .tile {
+  position: relative;
   flex: 1;
   background: #fff;
   padding: 20px;
@@ -121,6 +122,56 @@
   box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   text-align: center;
   min-width: 0;
+  cursor: help;
+}
+
+.tileTooltip {
+  visibility: hidden;
+  width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.8rem;
+  font-weight: normal;
+  line-height: 1.4;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
+}
+
+.darkMode .tileTooltip {
+  background-color: #2b3e59;
+  border: 1px solid #30b8f8;
+  color: #fff;
+}
+
+.tileTooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent;
+}
+
+.tile:hover .tileTooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.darkMode .tileTooltip::after {
+  border-color: #30b8f8 transparent transparent;
+  top: calc(100% + 1px);
 }
 
 .tile h3 {
@@ -137,13 +188,13 @@
 
 @media (width <= 768px) {
   .tileRow {
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .tile {
-    min-width: 250px;
-    flex: 0 0 auto;
+    min-width: 200px;
+    flex: 1 1 auto;
   }
 }
 
