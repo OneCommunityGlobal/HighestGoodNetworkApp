@@ -327,7 +327,7 @@ export const formatDisplayDateTime = (date, time) => {
   if (!date || !time) return '';
 
   const dateObj = new Date(`${date}T${time}:00`);
-  if (isNaN(dateObj.getTime())) {
+  if (Number.isNaN(dateObj.getTime())) {
     return `${date} ${time}`;
   }
 
