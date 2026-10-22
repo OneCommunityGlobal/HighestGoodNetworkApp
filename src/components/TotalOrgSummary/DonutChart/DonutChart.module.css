@@ -1,6 +1,8 @@
 /* stylelint-disable  */
 .donutContainer {
   display: grid;
+  /* Fill the card instead of shrinking to the chart's min-width. */
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -8,6 +10,7 @@
   padding: 0.6rem;
   margin-top: 20px;
   margin-bottom: -35px;
+  container-type: inline-size;
 }
 
 .donutContainerDark {
@@ -21,14 +24,16 @@
   align-items: center;
   width: 100%;
   min-width: 32rem;
+  max-width: 48rem;
+  margin: 0 auto;
 }
 
 .donutChart {
   position: relative;
   width: 100%;
   min-width: 21.25rem;
-  max-width: 24rem;
-  height: 24rem;
+  max-width: 30rem;
+  height: 26rem;
   margin-left: 0;
   overflow: visible;
 }
@@ -49,9 +54,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.28rem;
-  width: 52%;
-  max-width: 6rem;
+  gap: 0.2rem;
+  /* --donut-hole is the measured hole diameter (set by holeSizePlugin). Stay
+     inside it so the ring, drawn on top, never cuts the text off. The text
+     below sizes itself in cqi (% of this box) so it shrinks with the donut. */
+  width: calc(var(--donut-hole, 8rem) * 0.8);
+  container-type: inline-size;
   pointer-events: none;
 }
 
@@ -61,12 +69,11 @@
 
 .donutHeading {
   color: #828282;
-  font-size: 0.88rem;
+  font-size: clamp(0.5rem, 10cqi, 0.88rem);
   letter-spacing: 0.03em;
   line-height: 1.15;
   text-transform: uppercase;
-  white-space: normal;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 .donutHeadingLine {
@@ -79,9 +86,10 @@
 
 .donutCount {
   color: #828282;
-  font-size: 2rem;
+  font-size: clamp(0.85rem, 24cqi, 2rem);
   line-height: 1;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .donutCountDark {
@@ -89,8 +97,13 @@
 }
 
 .donutComparisonPercent {
-  font-size: 0.7rem;
+  font-size: clamp(0.45rem, 8cqi, 0.7rem);
   line-height: 1.1;
+  font-weight: 700;
+
+  /* wrap only between words ("+12% / WEEK OVER WEEK"), never inside one */
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .donutLabels {
@@ -176,5 +189,29 @@
 
   .donutLabel {
     margin-left: 0;
+  }
+}
+/* Narrow slots (e.g. two charts side by side): stack the legend under the donut. */
+@container (width < 36rem) {
+  .donutScrollable {
+    /* .donutContainer's -35px bottom margin suits the side legend; stacked, it
+       pulled the next heading up over the legend. The container can't style
+       itself in its own query, so cancel it here. */
+    padding-bottom: 35px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    min-width: 0;
+  }
+
+  .donutChart {
+    min-width: 0;
+    max-width: 26rem;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .donutLabels {
+    width: auto;
+    margin-top: 1rem;
   }
 }

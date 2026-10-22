@@ -82,7 +82,9 @@ describe('ProjectTableHeader Component', () => {
     const header = screen.getByRole('columnheader', { name: 'Inventory' });
     if (editedActive) expect(header).toHaveAttribute('aria-sort', 'descending');
     else expect(header).not.toHaveAttribute('aria-sort');
-    expect(toggle).toHaveClass(editedActive ? 'btn-secondary' : 'btn-outline-secondary');
+    expect(toggle).toHaveClass('btn-secondary');
+    expect(toggle).toHaveStyle({ width: '30px', height: '30px' });
+    expect(toggle.classList.contains('active')).toBe(editedActive);
     fireEvent.click(toggle);
     expect(onSelect).not.toHaveBeenCalled();
     const menuItems = within(header).getAllByRole('button').filter(button => button !== toggle);
@@ -115,7 +117,8 @@ describe('ProjectTableHeader Component', () => {
   it('uses dark dropdown styling', () => {
     renderProjectTableHeader({ ...sampleProps, darkMode: true, sorted: { column: 'INVENTORY', direction: 'DESC' } });
     const toggle = screen.getByRole('button', { name: 'Inventory sort options' });
-    expect(toggle).toHaveClass('btn-light');
+    expect(toggle).toHaveClass('btn-secondary');
+    expect(toggle).toHaveStyle({ width: '30px', height: '30px', boxShadow: '0.5px 0.5px 5px black' });
     fireEvent.click(toggle);
     expect(screen.getByRole('button', { name: 'Edited', exact: true })).toHaveClass('bg-darkmode-liblack', 'text-light');
   });
@@ -148,9 +151,9 @@ describe('ProjectTableHeader Component', () => {
     };
     const hasPermission = vi.fn((a) => true)
     stateWithDeletePermission.hasPermission = hasPermission;
-    const { getByText } = renderProjectTableHeader(stateWithDeletePermission);
-    // eslint-disable-next-line testing-library/prefer-screen-queries
-    expect(getByText('Archive')).toBeInTheDocument();
+    renderProjectTableHeader(stateWithDeletePermission);
+
+    expect(screen.getByText('Archive')).toBeInTheDocument();
   });
 
   // Test case to check if the delete column is not shown for users without delete permission
@@ -165,9 +168,9 @@ describe('ProjectTableHeader Component', () => {
     };
     const hasPermission = vi.fn((a) => false)
     stateWithoutDeletePermission.hasPermission = hasPermission;
-    const { queryByText } = renderProjectTableHeader(stateWithoutDeletePermission);
-    // eslint-disable-next-line testing-library/prefer-screen-queries
-    expect(queryByText('Archive')).not.toBeInTheDocument();
+    renderProjectTableHeader(stateWithoutDeletePermission);
+    expect(screen.queryByText('Archive')).not.toBeInTheDocument();
+
   });
 
 });

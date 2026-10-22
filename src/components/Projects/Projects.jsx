@@ -41,6 +41,11 @@ const compareInventoryEdits = (a, b) => {
   return compareProjectNames(a, b) || a._id.localeCompare(b._id);
 };
 
+const getActiveMemberCount = (counts, projectId) => {
+  if (projectId === null || projectId === undefined) return 0;
+  return counts?.[String(projectId)] || 0;
+};
+
 const compareProjects = (a, b, { column, direction }, activeMemberCounts) => {
   if (direction === 'DEFAULT') return 0;
   const multiplier = direction === 'DESC' ? -1 : 1;
@@ -49,7 +54,7 @@ const compareProjects = (a, b, { column, direction }, activeMemberCounts) => {
     case 'PROJECTS':
       return multiplier * compareProjectNames(a, b);
     case 'MEMBERS':
-      return multiplier * ((activeMemberCounts?.[a._id] || 0) - (activeMemberCounts?.[b._id] || 0));
+      return multiplier * (getActiveMemberCount(activeMemberCounts, a._id) - getActiveMemberCount(activeMemberCounts, b._id));
     case 'INVENTORY':
       return compareInventoryEdits(a, b);
     default:
@@ -303,7 +308,7 @@ const Projects = function(props) {
       key={`${project._id}-${project.isActive}`}
       index={index}
       projectData={project}
-      activeMemberCounts={activeMemberCounts?.[project._id] || 0}
+      activeMemberCounts={getActiveMemberCount(activeMemberCounts, project._id)}
       onUpdateProject={onUpdateProject}
       onClickArchiveBtn={onClickArchiveBtn}
       onClickProjectStatusBtn={onClickProjectStatusBtn}

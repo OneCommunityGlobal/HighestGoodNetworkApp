@@ -363,6 +363,34 @@ describe('Projects component', () => {
 
     beforeEach(mockAxiosSuccess);
 
+    it('uses normalized member IDs and missing-count fallbacks for both ordering and displayed counts', async () => {
+      const records = [
+        { ...inventoryProjects[0], _id: 0, projectName: 'Numeric ID' },
+        { ...inventoryProjects[0], _id: { toString: () => 'object-id' }, projectName: 'Object ID' },
+        { ...inventoryProjects[0], _id: 'missing-count', projectName: 'Missing count' },
+      ];
+      const memberStore = mockStore({
+        ...makeInventoryStore(records).getState(),
+        projectMembers: { activeMemberCounts: { 0: 2, 'object-id': 3 } },
+      });
+      renderProjects(memberStore);
+      clickSort('Members');
+      await waitFor(() => {
+        expect(screen.getAllByTestId('projects__name--input').map(cell => cell.textContent)).toEqual(
+          ['Missing count', 'Numeric ID', 'Object ID'],
+        );
+      });
+      expect(within(screen.getByRole('row', { name: /Numeric ID/ })).getByRole('cell', { name: '2' })).toBeInTheDocument();
+      expect(within(screen.getByRole('row', { name: /Object ID/ })).getByRole('cell', { name: '3' })).toBeInTheDocument();
+      expect(within(screen.getByRole('row', { name: /Missing count/ })).getByRole('cell', { name: '0' })).toBeInTheDocument();
+      clickSort('Members');
+      await waitFor(() => {
+        expect(screen.getAllByTestId('projects__name--input').map(cell => cell.textContent)).toEqual(
+          ['Object ID', 'Numeric ID', 'Missing count'],
+        );
+      });
+    });
+
     it('opens without sorting, keeps Edited newest-first, and restores default order without mutating data', async () => {
       const source = Object.freeze(inventoryProjects.map(project => Object.freeze({ ...project })));
       renderProjects(makeInventoryStore(source));
