@@ -56,46 +56,56 @@ function FormField({
   const darkMode = useSelector(state => state.theme.darkMode);
   const isInvalid = validation && !validation.isValid;
 
+  // Determine the input element to render based on the field type
+  let inputElement;
+  if (type === 'textarea') {
+    inputElement = (
+      <textarea
+        id={id}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        style={{
+          ...fieldInputStyle(darkMode, isInvalid),
+          minHeight: '100px',
+          fontFamily: 'inherit',
+          resize: 'vertical',
+          ...style,
+        }}
+      />
+    );
+  } else if (type === 'select') {
+    inputElement = (
+      <select
+        id={id}
+        value={value}
+        onChange={onChange}
+        style={fieldInputStyle(darkMode, isInvalid)}
+      >
+        {children}
+      </select>
+    );
+  } else {
+    inputElement = (
+      <input
+        id={id}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        style={fieldInputStyle(darkMode, isInvalid)}
+      />
+    );
+  }
+
   return (
     <div style={fieldContainerStyle(darkMode)}>
       <label htmlFor={id} style={fieldLabelStyle(darkMode)}>
         {label} {!isOptional && <span style={{ color: '#ef4444' }}>*</span>}
       </label>
-      {type === 'textarea' ? (
-        <textarea
-          id={id}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          style={{
-            ...fieldInputStyle(darkMode, isInvalid),
-            minHeight: '100px',
-            fontFamily: 'inherit',
-            resize: 'vertical',
-            ...style,
-          }}
-        />
-      ) : type === 'select' ? (
-        <select
-          id={id}
-          value={value}
-          onChange={onChange}
-          style={fieldInputStyle(darkMode, isInvalid)}
-        >
-          {children}
-        </select>
-      ) : (
-        <input
-          id={id}
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          style={fieldInputStyle(darkMode, isInvalid)}
-        />
-      )}
+      {inputElement}
       {maxLength && (
         <div
           style={{
