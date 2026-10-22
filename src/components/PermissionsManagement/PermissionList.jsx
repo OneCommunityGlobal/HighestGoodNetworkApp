@@ -25,6 +25,8 @@ function PermissionList(props) {
     removedDefaultPermissions = [],
 
     setRemovedDefaultPermissions = () => {},
+
+    editPermission,
   } = props;
   return (
     <div className="user-role-tab__permissionList" data-testid="permission-list">
@@ -43,6 +45,7 @@ function PermissionList(props) {
             description={permission.description}
             editable={editable}
             depth={depth}
+            editPermission={editPermission}
             // eslint-disable-next-line react/destructuring-assignment
             darkMode={props.darkMode}
             // functions
