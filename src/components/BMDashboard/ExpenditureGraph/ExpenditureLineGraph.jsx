@@ -152,8 +152,8 @@ export default function ExpenditureLineGraph() {
       }
     };
 
-    fetchProjectIds();
-    fetchProjectNames();
+    void fetchProjectIds();
+    void fetchProjectNames();
   }, []);
 
   // Fetch the (already aggregated) cost breakdown whenever the project or date filters change.
@@ -188,7 +188,7 @@ export default function ExpenditureLineGraph() {
       }
     };
 
-    fetchCostBreakdown();
+    void fetchCostBreakdown();
   }, [selectedProject, startDate, endDate]);
 
   useEffect(() => {

@@ -94,7 +94,7 @@ const CostBreakdownChart = () => {
 
   useEffect(() => {
     // Fetch projects on component mount
-    dispatch(fetchBMProjects());
+    void dispatch(fetchBMProjects());
   }, [dispatch]);
 
   useEffect(() => {
@@ -158,7 +158,7 @@ const CostBreakdownChart = () => {
   };
 
   const handleFilterChange = () => {
-    fetchCostBreakdown();
+    void fetchCostBreakdown();
   };
 
   const resetFilters = () => {

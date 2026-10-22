@@ -70,7 +70,7 @@
 .calendarDark :global(.react-datepicker__day--selected),
 .calendarDark :global(.react-datepicker__day--keyboard-selected),
 .calendarDark :global(.react-datepicker__day--in-range) {
-  background-color: #468ef9;
+  background-color: #2563eb;
   color: #fff;
 }
 
