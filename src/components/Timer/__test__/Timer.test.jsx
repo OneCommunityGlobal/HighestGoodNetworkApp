@@ -44,6 +44,16 @@ vi.mock('react-use-websocket', async () => {
   };
 });
 
+// TimeEntryForm is the actual Log Time form - heavy (its own API calls, child
+// modals, etc.) and not what these tests are about. Stubbing it lets us assert
+// on exactly the one prop Timer.jsx got wrong: the `data` (hours/minutes) it
+// prefills the form with.
+vi.mock('../../Timelog/TimeEntryForm', () => ({
+  // eslint-disable-next-line react/prop-types
+  default: ({ data, isOpen }) =>
+    isOpen ? <div data-testid="time-entry-form-data">{`${data.hours}:${data.minutes}`}</div> : null,
+}));
+
 const mockStore = configureMockStore([]);
 
 const renderTimer = () => {
@@ -61,29 +71,29 @@ const renderTimer = () => {
   );
 };
 
+let originalPlay;
+let originalPause;
+
+beforeAll(() => {
+  // jsdom has no real <audio> playback; Timer plays a chime element on
+  // mount/modal-open and this avoids noisy "not implemented" errors.
+  originalPlay = window.HTMLMediaElement.prototype.play;
+  originalPause = window.HTMLMediaElement.prototype.pause;
+  window.HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
+  window.HTMLMediaElement.prototype.pause = vi.fn();
+});
+
+afterAll(() => {
+  window.HTMLMediaElement.prototype.play = originalPlay;
+  window.HTMLMediaElement.prototype.pause = originalPause;
+});
+
+beforeEach(() => {
+  mocks.lastJsonMessage = null;
+  mocks.setLastJsonMessage = null;
+});
+
 describe('Timer handleStartButton', () => {
-  let originalPlay;
-  let originalPause;
-
-  beforeAll(() => {
-    // jsdom has no real <audio> playback; Timer plays a chime element on
-    // mount/modal-open and this avoids noisy "not implemented" errors.
-    originalPlay = window.HTMLMediaElement.prototype.play;
-    originalPause = window.HTMLMediaElement.prototype.pause;
-    window.HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
-    window.HTMLMediaElement.prototype.pause = vi.fn();
-  });
-
-  afterAll(() => {
-    window.HTMLMediaElement.prototype.play = originalPlay;
-    window.HTMLMediaElement.prototype.pause = originalPause;
-  });
-
-  beforeEach(() => {
-    mocks.lastJsonMessage = null;
-    mocks.setLastJsonMessage = null;
-  });
-
   it('does not trigger the time-over modal when starting a fresh 1-minute timer', async () => {
     renderTimer();
 
@@ -112,5 +122,38 @@ describe('Timer handleStartButton', () => {
     fireEvent.click(startButton);
 
     expect(screen.queryByText('Time Complete!')).not.toBeInTheDocument();
+  });
+});
+
+describe('Timer Log Time form after a reload', () => {
+  it('prefills the Log Time form with the real elapsed time, not 0:0, after a reload', async () => {
+    renderTimer();
+
+    const oneMinute = 60000;
+
+    // Simulate the GET_TIMER response after a page reload for a 1-minute timer
+    // that already ran out and auto-paused itself (started stays true - only an
+    // explicit Stop/Clear sets it false - but paused is true and time is 0).
+    // This is bug #6's exact repro: run a 1-min timer out, close the Time
+    // Complete popup, refresh, then click Log Time.
+    act(() => {
+      mocks.setLastJsonMessage({
+        started: true,
+        paused: true,
+        chiming: true,
+        forcedPause: false,
+        weekEndPause: false,
+        time: 0,
+        goal: oneMinute,
+        initialGoal: oneMinute,
+        startAt: null,
+      });
+    });
+
+    const stopButton = await screen.findByLabelText('Stop timer and log timer');
+    fireEvent.click(stopButton);
+
+    const formData = await screen.findByTestId('time-entry-form-data');
+    expect(formData).toHaveTextContent('0:1');
   });
 });

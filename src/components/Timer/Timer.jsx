@@ -721,12 +721,21 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   }, [remaining, logHours, logMinutes, goal, lastSubmittedTime, validateTimeForSubmission]);
 
-  // Enhanced useEffect for timer state changes
+  // Reset the submission guard once the timer is no longer started (e.g. after
+  // Reset/Clear, whose server response flips started to false). This used to also
+  // fire on "goal !== lastSubmittedTime?.goal", but lastSubmittedTime is a plain
+  // dedup-key string (see trackTimeSubmission), not an object, so .goal was always
+  // undefined - making that half of the condition always true. That wiped logTimer
+  // back to 0/0 on every goal/started change, including right after a reload synced
+  // the real goal/remaining from the server and the effect above had just computed
+  // the correct hours/minutes still owed. The goal check was also redundant: the
+  // dedup key below already embeds goal, so a changed goal naturally produces a
+  // different key without needing separate invalidation here.
   useEffect(() => {
-    if (!started || goal !== lastSubmittedTime?.goal) {
+    if (!started) {
       clearSubmittedTime();
     }
-  }, [started, goal, clearSubmittedTime]);
+  }, [started, clearSubmittedTime]);
 
   useEffect(() => {
     if (timeIsOverModalOpen) {
