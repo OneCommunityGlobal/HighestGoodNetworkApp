@@ -302,6 +302,95 @@ export const updateScheduledPost = async (postId, updates) => {
   }
 };
 
+// ─── Date/Time Formatting Helpers ────────────────────────────────────────────
+
+/**
+ * Format current date to YYYY-MM-DD
+ *
+ * @param {Date} date Date object
+ * @returns {string} Formatted date
+ */
+export const formatLocalDate = (date = new Date()) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+/**
+ * Format current time to HH:mm
+ *
+ * @param {Date} date Date object
+ * @returns {string} Formatted time
+ */
+export const formatLocalTime = (date = new Date()) => {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
+/**
+ * Format display date/time string
+ *
+ * @param {string} date Date string (YYYY-MM-DD)
+ * @param {string} time Time string (HH:mm)
+ * @returns {string} Formatted display string
+ */
+export const formatDisplayDateTime = (date, time) => {
+  if (!date || !time) return '';
+
+  const dateObj = new Date(`${date}T${time}:00`);
+  if (Number.isNaN(dateObj.getTime())) {
+    return `${date} ${time}`;
+  }
+
+  return dateObj.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+};
+
+/**
+ * Clamp scheduled date/time to minimum (now + 1 hour)
+ *
+ * @param {string} date Date string (YYYY-MM-DD)
+ * @param {string} time Time string (HH:mm)
+ * @returns {Object} { date, time } clamped to valid range
+ */
+export const clampScheduleDateTime = (date, time) => {
+  const now = new Date();
+  const minDate = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+
+  let scheduleDate = new Date(`${date}T${time}:00`);
+
+  if (scheduleDate < minDate) {
+    scheduleDate = minDate;
+  }
+
+  return {
+    date: formatLocalDate(scheduleDate),
+    time: formatLocalTime(scheduleDate),
+  };
+};
+
+/**
+ * Get minimum date for scheduling (today's date)
+ *
+ * @returns {string} Formatted date (YYYY-MM-DD)
+ */
+export const getMinScheduleDate = () => formatLocalDate(new Date());
+
+/**
+ * Get minimum time for scheduling (current time)
+ *
+ * @returns {string} Formatted time (HH:mm)
+ */
+export const getMinScheduleTime = () => formatLocalTime(new Date());
+
 // ─── UI Helper Functions ─────────────────────────────────────────────────────
 
 /**
@@ -421,3 +510,23 @@ export const cardStyle = (darkMode = false) => {
     backgroundColor: bgColor,
   };
 };
+
+// ─── Topic/Category helpers ──────────────────────────────────────────────────
+
+export const IMGUR_TOPICS = [
+  'General',
+  'Technology',
+  'Science',
+  'Art',
+  'Photography',
+  'Humor',
+  'Gaming',
+  'Sports',
+  'Music',
+  'Travel',
+  'Food',
+  'DIY',
+  'Fashion',
+  'Education',
+  'Other',
+];
