@@ -37,7 +37,7 @@ function FAQSection() {
         }
       }
     };
-    fetchFaqs();
+    void fetchFaqs();
   }, []);
 
   return (
