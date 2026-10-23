@@ -173,9 +173,9 @@ function AssignBadge(props) {
   };
 
   // Confirms the picker selection and assigns the badges.
-  const handleConfirmAssignment = () => {
+  const handleConfirmAssignment = async () => {
     if (isOpen) {
-      submit();
+      await submit();
     }
   };
 
