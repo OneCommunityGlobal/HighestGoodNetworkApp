@@ -182,7 +182,6 @@ export const postToImgur = async payload => {
       message: response.data.message || 'Post created successfully',
     };
   } catch (error) {
-    // Mock fallback: Enable local mock mode when API fails or credentials are missing to support UI testing and video recording
     // eslint-disable-next-line no-console
     console.warn(
       'API call failed or missing credentials. Using local mock response for UI testing.',
@@ -229,7 +228,8 @@ export const fetchScheduledPosts = async () => {
       message: response.data.message || 'Posts fetched successfully',
     };
   } catch (error) {
-    // Local mock fallback: Read simulated scheduled posts from localStorage
+    // eslint-disable-next-line no-console
+    console.warn('API fetch failed. Falling back to local mock storage.', error);
     const mockPosts = JSON.parse(localStorage.getItem('mock_scheduled_posts') || '[]');
     return {
       success: true,
@@ -256,7 +256,8 @@ export const deleteScheduledPost = async postId => {
       message: response.data.message || 'Post deleted successfully',
     };
   } catch (error) {
-    // Local mock fallback: Filter out and delete the corresponding ID from localStorage
+    // eslint-disable-next-line no-console
+    console.warn('API delete failed. Falling back to local mock storage.', error);
     const mockPosts = JSON.parse(localStorage.getItem('mock_scheduled_posts') || '[]');
     const filtered = mockPosts.filter(p => p._id !== postId);
     localStorage.setItem('mock_scheduled_posts', JSON.stringify(filtered));
@@ -290,7 +291,8 @@ export const updateScheduledPost = async (postId, updates) => {
       message: response.data.message || 'Post updated successfully',
     };
   } catch (error) {
-    // Local mock fallback: Update the simulated data in localStorage
+    // eslint-disable-next-line no-console
+    console.warn('API update failed. Falling back to local mock storage.', error);
     let mockPosts = JSON.parse(localStorage.getItem('mock_scheduled_posts') || '[]');
     mockPosts = mockPosts.map(p => (p._id === postId ? { ...p, ...updates } : p));
     localStorage.setItem('mock_scheduled_posts', JSON.stringify(mockPosts));
