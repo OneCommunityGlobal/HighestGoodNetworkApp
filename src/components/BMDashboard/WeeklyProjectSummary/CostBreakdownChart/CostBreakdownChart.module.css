@@ -176,23 +176,23 @@
 
 /* Custom tooltip styling */
 .custom-tooltip {
-  background-color: #fff !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 8px !important;
-  padding: 12px !important;
-  box-shadow: 0 10px 25px rgb(0 0 0 / 15%) !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 15%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.custom-tooltip .label {
-  color: #374151 !important;
-  font-weight: 600 !important;
-  margin-bottom: 8px !important;
-  font-size: 14px !important;
+.custom-tooltip .tooltip-label {
+  color: #374151;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
 }
 
 .custom-tooltip p {
-  margin: 4px 0 !important;
-  font-size: 12px !important;
-  line-height: 1.4 !important;
+  margin: 4px 0;
+  font-size: 12px;
+  line-height: 1.4;
 }

@@ -25,26 +25,15 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import costBreakdownService from '../../../../services/costBreakdownService';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
-import './CostBreakdownChart.module.css';
+import styles from './CostBreakdownChart.module.css';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload?.length) {
     return (
-      <div
-        className="custom-tooltip"
-        style={{
-          backgroundColor: '#fff',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          padding: '10px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}
-      >
-        <p className="label" style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>
-          {label}
-        </p>
+      <div className={styles['custom-tooltip']}>
+        <p className={styles['tooltip-label']}>{label}</p>
         {payload.map(entry => (
-          <p key={entry.name} style={{ margin: '2px 0', color: entry.color, fontSize: '12px' }}>
+          <p key={entry.name} style={{ color: entry.color }}>
             {entry.name}: ${entry.value?.toLocaleString()}
           </p>
         ))}
