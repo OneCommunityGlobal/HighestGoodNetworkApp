@@ -1265,7 +1265,7 @@ export default (
           path="/pr-grading-dashboard"
           exact
           component={PRGradingDashboard}
-          fallback
+          routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
