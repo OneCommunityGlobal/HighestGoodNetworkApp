@@ -119,6 +119,32 @@
   color: #fff;
 }
 
+.itemsPerPage {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.itemsPerPage select {
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #334155;
+}
+
+.darkModeResourceManagementDashboard .itemsPerPage select {
+  min-height: 44px;
+  background-color: #172f53;
+  border-color: #2d4a77;
+  color: #fff;
+}
+
 .searchButton {
   padding: 8px 14px;
   background-color: #0056b3;
@@ -297,6 +323,7 @@
 /* --- Pagination --- */
 .paginationContainer {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
   margin-top: 30px;
@@ -363,6 +390,18 @@
   justify-content: center;
   animation: scale-in 0.25s ease-in-out;
   z-index: 1000;
+}
+
+.recordCount {
+  margin-top: -10px;
+  padding-bottom: 20px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.darkModeResourceManagementDashboard .recordCount {
+  color: #cbd5e1;
 }
 
 .modalContent {
@@ -569,4 +608,40 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.paginationContainer > button {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.paginationEllipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 24px;
+  min-height: 44px;
+}
+
+.emptyState {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.emptyState button {
+  min-height: 44px;
+}
+
+.paginationContainer button:focus-visible,
+.itemsPerPage select:focus-visible,
+.emptyState button:focus-visible {
+  outline: 3px solid #007bff;
+  outline-offset: 3px;
+}
+
+.darkModeResourceManagementDashboard button:focus-visible,
+.darkModeResourceManagementDashboard select:focus-visible {
+  outline-color: #90caf9;
 }
