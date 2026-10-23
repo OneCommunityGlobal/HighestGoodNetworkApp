@@ -1020,7 +1020,6 @@ setUpdatedTasks(prev => {
       };
       const requestor = props.auth.user;
       const permissionData = {
-        reason: `Role Changed to **${userProfileToUpdate?.role}** from **${originalUserProfile?.role}**.`,
         previousRole: originalUserProfile?.role,
         newRole: userProfileToUpdate?.role,
         permissions: permissions,

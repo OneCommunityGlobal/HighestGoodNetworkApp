@@ -110,11 +110,12 @@ function UserPermissionsPopUp({
     const userId = actualUserProfile?._id;
     const url = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
     const permissionData = {
-      reason: `User's permissions modified.`,
       permissions: {
         frontPermissions: userPermissions,
         removedDefaultPermissions: userRemovedDefaultPermissions,
       },
+      previousRole: actualUserProfile?.role,
+      newRole: actualUserProfile?.role,
       requestor: authUser, // Fixed: use authUser instead of req.body.requestor
     };
 
