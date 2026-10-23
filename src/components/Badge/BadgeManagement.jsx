@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
@@ -12,6 +12,7 @@ import hasPermission from '../../utils/permissions';
 
 function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
+  const [hoveredTab, setHoveredTab] = useState(null);
   const canAssignBadges = props.hasPermission(permissionKeys.assignBadges);
 
   useEffect(() => {
@@ -20,6 +21,21 @@ function BadgeManagement(props) {
 
   const handleTabChange = tabId => {
     setActiveTab(tabId);
+  };
+
+  const getTabStyle = (isActive, isHovered) => {
+    if (darkMode && !isActive) {
+      return {
+        ...boxStyleDark,
+        cursor: 'pointer',
+        backgroundColor: isHovered ? '#4a6072' : '#3a506b',
+        color: '#ffffff',
+      };
+    }
+    if (darkMode) {
+      return { ...boxStyleDark, cursor: 'pointer' };
+    }
+    return { ...boxStyle, cursor: 'pointer' };
   };
 
   useEffect(() => {
@@ -55,15 +71,11 @@ function BadgeManagement(props) {
         {canAssignBadges && (
           <NavItem>
             <NavLink
-              className={`mr-2 ${classnames({ active: activeTab === '1' })} ${
-                darkMode && activeTab !== '1' ? 'bg-light' : ''
-              }`}
+              className={`mr-2 ${classnames({ active: activeTab === '1' })}`}
               onClick={() => handleTabChange('1')}
-              style={
-                darkMode
-                  ? { ...boxStyleDark, cursor: 'pointer' }
-                  : { ...boxStyle, cursor: 'pointer' }
-              }
+              onMouseEnter={() => setHoveredTab('1')}
+              onMouseLeave={() => setHoveredTab(null)}
+              style={getTabStyle(activeTab === '1', hoveredTab === '1')}
             >
               Badge Assignment
             </NavLink>
@@ -71,13 +83,11 @@ function BadgeManagement(props) {
         )}
         <NavItem>
           <NavLink
-            className={`${classnames({ active: activeTab === '2' })} ${
-              darkMode && activeTab !== '2' ? 'bg-light' : ''
-            }`}
+            className={classnames({ active: activeTab === '2' })}
             onClick={() => handleTabChange('2')}
-            style={
-              darkMode ? { ...boxStyleDark, cursor: 'pointer' } : { ...boxStyle, cursor: 'pointer' }
-            }
+            onMouseEnter={() => setHoveredTab('2')}
+            onMouseLeave={() => setHoveredTab(null)}
+            style={getTabStyle(activeTab === '2', hoveredTab === '2')}
           >
             Badge Development
           </NavLink>
