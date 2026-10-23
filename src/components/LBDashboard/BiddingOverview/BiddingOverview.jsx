@@ -10,6 +10,7 @@ import { IoNotificationsOutline } from 'react-icons/io5';
 import { FiUser } from 'react-icons/fi';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import { toast } from 'react-toastify';
 
 function BiddingOverview() {
   const { listingId } = useParams();
@@ -41,6 +42,8 @@ function BiddingOverview() {
   const notificationCount = flatNotifications.length;
 
   useEffect(() => {
+    setCurrentImageIndex(0);
+    setImageScale(1);
     if (listingId) {
       dispatch(fetchUnitDetails(listingId));
     }
@@ -68,7 +71,7 @@ function BiddingOverview() {
   const handleSubmit = async e => {
     e.preventDefault();
     if (!rentingFrom || !rentingTo || !name || !biddingPrice) {
-      alert('Please fill in all fields.');
+      toast.error('Please fill in all fields.');
       return;
     }
     const bidData = {
@@ -80,7 +83,7 @@ function BiddingOverview() {
     };
     const result = await dispatch(submitBid(listingId, bidData));
     if (result) {
-      alert('Bid submitted successfully!');
+      toast.success('Bid submitted successfully!');
       setRentingFrom('');
       setRentingTo('');
       setName(firstName || '');
@@ -89,7 +92,11 @@ function BiddingOverview() {
   };
 
   if (fetchError) {
-    return <div className={styles.error}>Error: {fetchError}</div>;
+    return (
+      <div className={styles.error} role="alert">
+        Error: {fetchError}
+      </div>
+    );
   }
   if (loading || !unitDetails) {
     return <div className={styles.loading}>Loading...</div>;

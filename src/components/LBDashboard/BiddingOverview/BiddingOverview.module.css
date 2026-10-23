@@ -562,6 +562,10 @@ input[type='date'] {
   border-color: #777;
 }
 
+.darkMode .submitError {
+  color: #ff6b6b;
+}
+
 .darkMode .mapLink {
   color: #4fc3f7;
 }

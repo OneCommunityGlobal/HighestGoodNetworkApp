@@ -22,7 +22,15 @@ const initialState = {
 const bidOverviewReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_UNIT_DETAILS_REQUEST:
-      return { ...state, loading: true, fetchError: null };
+      return {
+        ...state,
+        loading: true,
+        fetchError: null,
+        bidResponse: null,
+        notifications: [],
+        submitError: null,
+        unitDetails: null,
+      };
     case FETCH_UNIT_DETAILS_SUCCESS:
       return { ...state, loading: false, unitDetails: action.payload };
     case FETCH_UNIT_DETAILS_FAILURE:
