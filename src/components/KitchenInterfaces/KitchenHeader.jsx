@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { Leaf } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,6 +7,7 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from './KitchenHeader.module.css';
 
 const KitchenHeader = () => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const NAV_ITEMS = [
@@ -22,7 +24,10 @@ const KitchenHeader = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className={styles.headerContainer}>
+    <header
+      className={`${styles.headerContainer} ${darkMode ? styles.darkMode : ''}`}
+      data-theme={darkMode ? 'dark' : 'light'}
+    >
       <div className={styles.brandSection}>
         <div className={styles.logoTile}>
           <Leaf size={24} aria-hidden="true" />

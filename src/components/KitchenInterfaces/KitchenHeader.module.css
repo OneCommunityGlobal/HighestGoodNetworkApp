@@ -1,4 +1,7 @@
 .headerContainer {
+  box-sizing: border-box;
+  width: 100%;
+  gap: 16px;
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
   padding: 0 32px;
@@ -18,6 +21,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .logoImage {
@@ -60,7 +64,7 @@
   font-weight: 500;
   padding: 8px 10px;
   border-radius: 20px;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
 }
 
@@ -97,6 +101,9 @@
   font-size: 24px;
   color: #333;
   cursor: pointer;
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 /* Background Overlay */
@@ -136,13 +143,19 @@
     transition: transform 0.3s ease-in-out;
     z-index: 999;
     align-items: flex-start;
+    box-sizing: border-box;
+    max-height: calc(100dvh - 64px);
+    overflow-y: auto;
+    visibility: hidden;
   }
   
   .navOpen {
       transform: translateY(0);
+      visibility: visible;
   }
   
   .navItem {
+      box-sizing: border-box;
       width: 100%;
       padding: 12px 24px;
       border-radius: 0;
@@ -162,6 +175,26 @@
    /* Prevent horizontal scrolling on container overrides */
   .navContainer::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@media (width <= 360px) {
+  .headerContainer {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .brandSection {
+    gap: 8px;
+  }
+
+  .brandTitle {
+    font-size: 14px;
+  }
+
+  .brandSubtitle {
+    font-size: 10px;
+    letter-spacing: 0;
   }
 }
 

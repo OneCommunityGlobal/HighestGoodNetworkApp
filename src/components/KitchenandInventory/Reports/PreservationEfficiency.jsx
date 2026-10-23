@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Archive, Trash2, Target, TrendingUp, Leaf, Download, FileText } from 'lucide-react';
 import mockReport from './preservationReport.mock.json';
 import styles from './PreservationEfficiency.module.css';
@@ -82,6 +83,7 @@ function PreservationImpact({ report }) {
 
 // The report prop is the integration boundary for a future API response.
 export default function PreservationEfficiency({ report = mockReport }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [period, setPeriod] = useState(report.period);
   const [activeTab, setActiveTab] = useState('Preservation Efficiency');
   const exportCsv = () => {
@@ -103,7 +105,10 @@ export default function PreservationEfficiency({ report = mockReport }) {
     URL.revokeObjectURL(url);
   };
   return (
-    <main className={styles.page}>
+    <main
+      className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}
+      data-theme={darkMode ? 'dark' : 'light'}
+    >
       <div className={styles.pageHeader}>
         <div>
           <h1>{report.title}</h1>
