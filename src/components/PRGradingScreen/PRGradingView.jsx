@@ -21,6 +21,12 @@ const PRGradingView = ({
   onPromoteClick,
   activeInput,
   inputValue,
+  inputError,
+  loadError,
+  gradeError,
+  isLoadingSaved,
+  isSavingPR,
+  isSavingGrade,
   onInputValueChange,
   onAddNewClick,
   onInputSubmit,
@@ -55,16 +61,26 @@ const PRGradingView = ({
                 </div>
                 <Button
                   variant={isFinalized ? 'secondary' : 'outline-dark'}
-                  disabled={isFinalized}
+                  disabled={isFinalized || isSavingPR || isSavingGrade}
                   onClick={onFinalize}
                   className={`${styles['pr-grading-screen-done-button']} ${dm}`}
                 >
                   {isFinalized ? 'Finalized' : 'Done'}
                 </Button>
               </div>
+              {loadError && (
+                <p role="alert" className={`${styles['pr-grading-screen-error-message']} ${dm}`}>
+                  {loadError}
+                </p>
+              )}
             </Card.Header>
 
             <Card.Body className={dm}>
+              {gradeError && (
+                <p role="alert" className={`${styles['pr-grading-screen-error-message']} ${dm}`}>
+                  {gradeError}
+                </p>
+              )}
               {/* Search and Filter Bar */}
               <div className={`${styles['pr-grading-screen-search-bar']} ${dm}`}>
                 <input
@@ -198,6 +214,7 @@ const PRGradingView = ({
                                   <Button
                                     variant="success"
                                     size="sm"
+                                    disabled={isLoadingSaved || isSavingPR || Boolean(loadError)}
                                     className={styles['pr-grading-screen-add-btn']}
                                     onClick={() => onAddNewClick(reviewer.id)}
                                   >
@@ -211,20 +228,35 @@ const PRGradingView = ({
                                       <input
                                         type="text"
                                         value={inputValue}
+                                        disabled={isSavingPR}
                                         onChange={e => onInputValueChange(e.target.value)}
                                         className={styles['pr-grading-screen-pr-number-input']}
                                         placeholder="1070 or 1070 + 1256"
                                       />
+                                      {inputError && (
+                                        <span
+                                          role="alert"
+                                          className={`${styles['pr-grading-screen-error-message']} ${dm}`}
+                                        >
+                                          {inputError}
+                                        </span>
+                                      )}
                                     </div>
                                     <div className={styles['pr-grading-screen-input-buttons']}>
                                       <Button
                                         variant="primary"
                                         size="sm"
+                                        disabled={isSavingPR}
                                         onClick={() => onInputSubmit(reviewer.id)}
                                       >
-                                        Add
+                                        {isSavingPR ? 'Adding...' : 'Add'}
                                       </Button>
-                                      <Button variant="secondary" size="sm" onClick={onCancelInput}>
+                                      <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        disabled={isSavingPR}
+                                        onClick={onCancelInput}
+                                      >
                                         Cancel
                                       </Button>
                                     </div>
@@ -236,7 +268,7 @@ const PRGradingView = ({
                             <InlinePRSummary
                               reviewer={reviewer}
                               onGradeChange={onGradeChange}
-                              isFinalized={isFinalized}
+                              isFinalized={isFinalized || isSavingGrade}
                               darkMode={darkMode}
                             />
                           </React.Fragment>
@@ -259,6 +291,7 @@ const PRGradingView = ({
               <h3>Grade PR for {gradingReviewer.reviewer}</h3>
               <button
                 className={`${styles['pr-grading-screen-modal-close']} ${dm}`}
+                disabled={isSavingGrade}
                 onClick={onCloseGradingModal}
               >
                 ×
@@ -285,7 +318,7 @@ const PRGradingView = ({
                         <td key={opt.value} className={styles['pr-grading-screen-checkbox-cell']}>
                           <input
                             type="checkbox"
-                            disabled={isFinalized}
+                            disabled={isFinalized || isSavingGrade}
                             checked={pr.grade === opt.value}
                             onChange={() => onGradeChange(gradingReviewer.id, pr.id, opt.value)}
                             className={styles['pr-grading-screen-grade-checkbox']}
@@ -301,6 +334,7 @@ const PRGradingView = ({
               <div className={`${styles['pr-grading-screen-modal-footer']} ${dm}`}>
                 <Button
                   variant="primary"
+                  disabled={isSavingGrade}
                   onClick={onCloseGradingModal}
                   className={`${styles['pr-grading-screen-done-btn']} ${dm}`}
                 >
@@ -413,6 +447,12 @@ PRGradingView.propTypes = {
   onPromoteClick: PropTypes.func.isRequired,
   activeInput: PropTypes.string,
   inputValue: PropTypes.string.isRequired,
+  inputError: PropTypes.string.isRequired,
+  loadError: PropTypes.string.isRequired,
+  gradeError: PropTypes.string.isRequired,
+  isLoadingSaved: PropTypes.bool.isRequired,
+  isSavingPR: PropTypes.bool.isRequired,
+  isSavingGrade: PropTypes.bool.isRequired,
   onInputValueChange: PropTypes.func.isRequired,
   onAddNewClick: PropTypes.func.isRequired,
   onInputSubmit: PropTypes.func.isRequired,
