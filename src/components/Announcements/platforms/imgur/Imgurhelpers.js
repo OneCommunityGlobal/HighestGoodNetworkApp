@@ -297,3 +297,31 @@ export const updateScheduledPost = async (postId, updates) => {
     };
   }
 };
+
+/**
+ * Get field input style
+ *
+ * @param {boolean} darkMode Dark mode enabled
+ * @param {boolean} hasError Has error
+ * @returns {Object} Style object
+ */
+export const fieldInputStyle = (darkMode = false, hasError = false) => {
+  let borderColor = darkMode ? '#4b5563' : '#d1d5db';
+  if (hasError) {
+    borderColor = '#ef4444';
+  }
+
+  const bgColor = darkMode ? '#1f2937' : '#fff';
+  const textColor = darkMode ? '#e5e7eb' : '#111827';
+
+  return {
+    padding: '0.5rem 0.75rem',
+    borderRadius: '0.375rem',
+    border: `1px solid ${borderColor}`,
+    backgroundColor: bgColor,
+    color: textColor,
+    fontFamily: 'inherit',
+    fontSize: '0.875rem',
+    transition: 'all 0.2s ease',
+  };
+};
