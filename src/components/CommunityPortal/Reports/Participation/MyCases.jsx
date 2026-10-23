@@ -12,14 +12,40 @@ function MyCases({ isExporting = false }) {
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [events, setEvents] = useState(mockEvents);
 
   const now = new Date();
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
-    event => new Date(event.eventDate).getTime() >= now.getTime(),
-  );
+  const filteredEvents = filterEventsByDate(events, filter)
+    .filter(event => event.isNew || new Date(event.eventDate).getTime() >= now.getTime())
+    .sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+
+  const handleEventCreated = createdEvent => {
+    if (!createdEvent) return;
+    const eventDate = createdEvent.startTime || createdEvent.date || Date.now();
+    setEvents(prev => [
+      {
+        id: createdEvent._id || createdEvent.id || `local-${Date.now()}`,
+        isNew: true,
+        eventType: createdEvent.type || 'all',
+        eventDate: new Date(eventDate).toISOString(),
+        eventTime: new Date(eventDate).toLocaleString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+        eventName: createdEvent.title,
+        attendees: 0,
+        location: createdEvent.location,
+      },
+      ...prev,
+    ]);
+  };
 
   let visibleEvents = filteredEvents;
 
@@ -206,6 +232,7 @@ function MyCases({ isExporting = false }) {
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+        onEventCreated={handleEventCreated}
       />
     </div>
   );
