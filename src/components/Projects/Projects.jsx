@@ -299,8 +299,11 @@ const Projects = function(props) {
     personSearchResult, sorter, activeMemberCounts]);
 
   const sourceProjects = showArchived ? archivedReduxProjects : allReduxProjects;
+  const noProjectsMessage = showArchived
+    ? 'No archived projects available.'
+    : 'No projects available.';
   const emptyMessage = sourceProjects.length === 0
-    ? (showArchived ? 'No archived projects available.' : 'No projects available.')
+    ? noProjectsMessage
     : 'No projects match your search and filters.';
 
   const projectList = sortedProjects.map((project, index) => (
@@ -317,6 +320,30 @@ const Projects = function(props) {
       taskSelectionReturnPath={taskSelectionReturnPath}
     />
   ));
+
+  let tableBody = projectList;
+  if (personSearchLoading) {
+    tableBody = (
+      <tr>
+        <td colSpan={tableColumnCount}>
+          <output className="sr-only" aria-label="Searching projects">
+            Searching projects...
+          </output>
+          <Loading align="center" darkMode={darkMode} />
+        </td>
+      </tr>
+    );
+  } else if (fetching || !fetched || status !== 200) {
+    tableBody = null;
+  } else if (sortedProjects.length === 0) {
+    tableBody = (
+      <tr>
+        <td colSpan={tableColumnCount} className="text-center py-4">
+          <output className="d-block">{emptyMessage}</output>
+        </td>
+      </tr>
+    );
+  }
 
 
   useEffect(() => {
@@ -444,21 +471,7 @@ const Projects = function(props) {
             />
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-            {personSearchLoading ? (
-              <tr>
-                <td colSpan={tableColumnCount}>
-                  <div role="status" aria-label="Searching projects">
-                    <Loading align="center" darkMode={darkMode} />
-                  </div>
-                </td>
-              </tr>
-            ) : fetching || !fetched || status !== 200 ? null : sortedProjects.length === 0 ? (
-              <tr>
-                <td colSpan={tableColumnCount} className="text-center py-4">
-                  <div role="status">{emptyMessage}</div>
-                </td>
-              </tr>
-            ) : projectList}
+            {tableBody}
           </tbody>
         </table>
         </div>

@@ -135,11 +135,11 @@ describe('Projects component', () => {
         allProjects: { ...base.allProjects, projects: [], archivedProjects: [] },
       };
       const { rerender } = renderProjects(mockStore(state));
-      expect(screen.getByText('No projects available.')).toBeInTheDocument();
+      expect(screen.getByRole('status')).toHaveTextContent('No projects available.');
       expect(screen.getByRole('cell')).toHaveAttribute('colspan', String(screen.getAllByRole('columnheader').length));
       expect(screen.queryByRole('columnheader', { name: 'Archive' }) !== null).toBe(canArchive);
       fireEvent.click(screen.getByRole('button', { name: 'Show Archived' }));
-      expect(screen.getByText('No archived projects available.')).toBeInTheDocument();
+      expect(screen.getByRole('status')).toHaveTextContent('No archived projects available.');
       fireEvent.change(screen.getByPlaceholderText('Search by Person Name'), { target: { value: 'Pending' } });
       expect(screen.getByRole('status', { name: 'Searching projects' })).toBeInTheDocument();
       expect(screen.queryByText('No archived projects available.')).not.toBeInTheDocument();
@@ -169,7 +169,7 @@ describe('Projects component', () => {
       fireEvent.click(status.getByRole('button', { name: '' }));
       fireEvent.click(status.getByRole('button', { name: 'Inactive', exact: true }));
       fireEvent.change(screen.getByPlaceholderText('Search by Project Name'), { target: { value: 'missing' } });
-      expect(screen.getByText('No projects match your search and filters.')).toBeInTheDocument();
+      expect(screen.getByRole('status')).toHaveTextContent('No projects match your search and filters.');
       fireEvent.click(screen.getByRole('button', { name: 'Clear search and filters' }));
       expect(screen.getByPlaceholderText('Search by Project Name')).toHaveValue('');
       expect(screen.getByLabelText('Filter by')).toHaveValue('project');
