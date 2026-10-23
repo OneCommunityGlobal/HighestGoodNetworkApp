@@ -27,6 +27,8 @@ import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSect
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import RentalChart from '../RentalChart/RentalChart';
+import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 
 import styles from './WeeklyProjectSummary.module.css';
@@ -450,6 +452,22 @@ function WeeklyProjectSummary() {
               }}
             >
               <PaidLaborCost />
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: 'Rental Tracking',
+        key: 'Rental Tracking',
+        className: 'full',
+        content: (
+          <div className={styles.fullWidthStack}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <RentalChart />
+            </div>
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ReturnedLateChart />
             </div>
           </div>
         ),
