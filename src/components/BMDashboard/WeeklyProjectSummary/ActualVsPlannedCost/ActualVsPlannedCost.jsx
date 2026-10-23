@@ -188,17 +188,23 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
   );
 }
 
-function ActualVsPlannedCost() {
+function ActualVsPlannedCost({ storageKey = 'bm_avsp' }) {
   const dispatch = useDispatch();
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme.darkMode);
 
   // Persisted filters
   const [selectedProject, setSelectedProject] = useState(
-    () => localStorage.getItem('bm_avsp_project') || '',
+    () =>
+      localStorage.getItem(`${storageKey}_project`) ||
+      localStorage.getItem('bm_avsp_project') ||
+      '',
   );
   const [selectedCategory, setSelectedCategory] = useState(
-    () => localStorage.getItem('bm_avsp_category') || 'Overall',
+    () =>
+      localStorage.getItem(`${storageKey}_category`) ||
+      localStorage.getItem('bm_avsp_category') ||
+      'Overall',
   );
 
   // Component state
@@ -215,19 +221,20 @@ function ActualVsPlannedCost() {
   // Sync filters to local storage
   useEffect(() => {
     if (selectedProject) {
-      localStorage.setItem('bm_avsp_project', selectedProject);
+      localStorage.setItem(`${storageKey}_project`, selectedProject);
     }
-    localStorage.setItem('bm_avsp_category', selectedCategory);
-  }, [selectedProject, selectedCategory]);
+    localStorage.setItem(`${storageKey}_category`, selectedCategory);
+  }, [storageKey, selectedProject, selectedCategory]);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  // Default to first project if none selected
+  // Validate restored selections only after project options arrive.
   useEffect(() => {
-    if (!selectedProject && projects.length > 0) {
+    if (projects.length > 0 && !projects.some(project => project._id === selectedProject)) {
       setSelectedProject(projects[0]._id);
+      setSelectedCategory('Overall');
     }
   }, [projects, selectedProject]);
 
@@ -242,11 +249,18 @@ function ActualVsPlannedCost() {
 
   // Fetch project expenses
   useEffect(() => {
-    if (selectedProject) {
+    if (selectedProject && projects.some(project => project._id === selectedProject)) {
+      let cancelled = false;
       setLoading(true);
       axios
         .get(ENDPOINTS.BM_PROJECT_EXPENSE_BY_ID(selectedProject))
         .then(({ data }) => {
+          if (cancelled) return;
+          setSelectedCategory(current =>
+            current === 'Overall' || data.breakdown.some(item => item.category === current)
+              ? current
+              : 'Overall',
+          );
           setTotals({
             actual: Math.round(data.totalActualCost),
             planned: Math.round(data.totalPlannedCost),
@@ -260,12 +274,19 @@ function ActualVsPlannedCost() {
           );
         })
         .catch(() => {
+          if (cancelled) return;
           setTotals({ actual: 0, planned: 0 });
           setBreakdown([]);
         })
-        .finally(() => setLoading(false));
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+      return () => {
+        cancelled = true;
+      };
     }
-  }, [selectedProject]);
+    return undefined;
+  }, [selectedProject, projects]);
 
   // Derived chart data
   const categories = ['Overall', ...new Set(breakdown.map(d => d.category))];
@@ -323,9 +344,9 @@ function ActualVsPlannedCost() {
 
       <div className={styles.selectorsContainer}>
         <div className={styles.selectorGroup}>
-          <label htmlFor="ActualVsPlannedCost-project-select">Project:</label>
+          <label htmlFor={`${storageKey}-project-select`}>Project:</label>
           <select
-            id="ActualVsPlannedCost-project-select"
+            id={`${storageKey}-project-select`}
             value={selectedProject}
             onChange={e => {
               setSelectedProject(e.target.value);
@@ -341,9 +362,9 @@ function ActualVsPlannedCost() {
         </div>
 
         <div className={styles.selectorGroup}>
-          <label htmlFor="ActualVsPlannedCost-category-select">Category:</label>
+          <label htmlFor={`${storageKey}-category-select`}>Category:</label>
           <select
-            id="ActualVsPlannedCost-category-select"
+            id={`${storageKey}-category-select`}
             value={selectedCategory}
             onChange={e => setSelectedCategory(e.target.value)}
           >
@@ -381,5 +402,9 @@ function ActualVsPlannedCost() {
     </div>
   );
 }
+
+ActualVsPlannedCost.propTypes = {
+  storageKey: PropTypes.string,
+};
 
 export default ActualVsPlannedCost;
