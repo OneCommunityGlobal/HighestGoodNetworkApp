@@ -1,3 +1,12 @@
+/** Per-file upload cap; must match the server limit on POST /jobforms/:formId/responses. */
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+/** Returns a readable error for a file over the upload cap, or '' when it is fine. */
+export function getUploadSizeError(file) {
+  if (file && file.size > MAX_UPLOAD_BYTES) return 'File too large, max 5 MB.';
+  return '';
+}
+
 /** Resume/CV prompts are handled by the dedicated resume upload, not the question list. */
 export function isResumeQuestion(question) {
   const label = String(question?.label || question?.questionText || '').toLowerCase();
