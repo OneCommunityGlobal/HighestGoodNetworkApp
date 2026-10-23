@@ -51,6 +51,7 @@ import GoogleDocIcon from '../common/GoogleDocIcon';
 import TriStateToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch/TriStateToggleSwitch';
 import styles from './WeeklySummariesReport.module.scss';
 import getActiveTimeOffRequest from './getActiveTimeOffRequest';
+import badgeStyles from '../Badge/Badge.module.css';
 
 const TZ = 'America/Los_Angeles';
 
@@ -819,7 +820,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
                 <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className="text-center">
-                    <CardImg className="badge_image_lg" src={value.imageUrl} />
+                    <CardImg className={badgeStyles.badge_image_lg} src={value.imageUrl} />
                     <CardBody>
                       <CardTitle
                         style={{

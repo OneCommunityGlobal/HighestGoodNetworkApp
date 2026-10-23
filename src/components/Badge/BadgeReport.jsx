@@ -31,6 +31,7 @@ import { getUserProfile } from '../../actions/userProfile';
 import hasPermission from '../../utils/permissions';
 import BadgeImage from './BadgeImage';
 import { permissions } from '../../utils/constants';
+import badgeStyles from './Badge.module.css';
 import './BadgeReport.module.css';
 
 function BadgeReport(props) {
@@ -398,7 +399,7 @@ function BadgeReport(props) {
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={value._id || index}>
-                    <td className="badge_image_sm">
+                    <td className={badgeStyles.badge_image_sm}>
                       {' '}
                       <BadgeImage
                         personalBestMaxHrs={props.personalBestMaxHrs}
@@ -580,7 +581,7 @@ function BadgeReport(props) {
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={value._id || index}>
-                    <td className="badge_image_sm">
+                    <td className={badgeStyles.badge_image_sm}>
                       {' '}
                       <BadgeImage
                         personalBestMaxHrs={props.personalBestMaxHrs}
