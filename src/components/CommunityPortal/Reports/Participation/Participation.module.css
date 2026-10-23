@@ -221,11 +221,6 @@
   padding-left: 5px;
 }
 
-.trackingRateLabelDark {
-  color: #fff !important;
-  margin-top: 5px;
-}
-
 .trackingRateValue {
   font-size: 0.9rem;
   color: #f44336;
@@ -495,12 +490,12 @@
   border-bottom: 1px solid var(--color-border-dark);
 }
 
-.trackingRateGreen {
+.trackingTable tbody tr td.trackingRateGreen {
   color: green;
   font-weight: bold;
 }
 
-.trackingRateRed {
+.trackingTable tbody tr td.trackingRateRed {
   color: red;
 }
 
@@ -706,6 +701,10 @@
   font-size: 0.9rem;
   font-weight: bold;
   color: var(--color-text-dark);
+}
+
+.insightItem .insightsPercentage {
+  color: red;
 }
 
 /* ---------- PDF/Print helpers ---------- */
@@ -1325,20 +1324,20 @@
   padding: 2rem;
 }
 
-.analyticsPageDark {
+.analyticsPage.analyticsPageDark {
   background-color: #1b2a41;
   color: #fff;
   min-height: 100vh;
-  max-width: none !important;
-  width: 100vw !important;
-  margin: 0 !important;
+  max-width: none;
+  width: 100vw;
+  margin: 0;
   padding: 2rem;
   box-sizing: border-box;
   position: relative;
   left: 50%;
   right: 50%;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 .pageHeader {
@@ -2096,19 +2095,20 @@
 .participationLandingPageDark .cardDescription,
 .participationLandingPageDark .cardStats,
 .participationLandingPageDark .cardArrow {
-  color: #e5e7eb !important;
+  color: #e5e7eb;
 }
 
 /* Force white text for all dark mode card content */
 .participationLandingPageDark .cardValue,
 .participationLandingPageDark .cardLabel,
 .participationLandingPageDark .cardSubtext {
-  color: #fff !important;
+  color: #fff;
 }
 
 /* Responsive Design */
 @media (width <= 768px) {
-  .analyticsPage {
+  .analyticsPage,
+  .analyticsPage.analyticsPageDark {
     padding: 1rem;
   }
 
@@ -2165,52 +2165,59 @@
   background: #fff0f0;
 }
 
+/* Print rules follow theme rules and explicitly target report content. */
 @media print {
-  .participationLandingPage,
-  .participationLandingPage * {
-    color: #111 !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-    print-color-adjust: exact;
-  }
-
-  .participationLandingPage {
-    background: white !important;
+  :global(body) .participationLandingPage {
+    color: #111;
+    background: white;
     width: 100%;
     padding: 0;
     margin: 0;
+    print-color-adjust: exact;
   }
 
-  .participationHeader {
-    background: white !important;
-    padding: 0;
+  :global(body) .participationLandingPage :is(
+    h1, h2, h3, p, span, th, td, select,
+    .metricValue, .metricLabel, .cardValue, .cardLabel, .cardSubtext,
+    .summaryLabel, .summaryValue, .legendLabel, .legendValue,
+    .yAxisLabel, .yAxisValue, .barLabel, .barValue,
+    .insightLabel, .insightValue, .insightsPercentage,
+    :global(.case-card-global) div
+  ) {
+    color: #111;
+    text-shadow: none;
   }
 
-  .participationLandingPage button,
-  .participationLandingPage nav,
-  .participationLandingPage [role='dialog'],
-  .headerNavigation,
-  .exportError,
-  .analyticsNavigation,
-  .icons,
-  .infoIcon {
-    display: none !important;
-  }
-
-  .participationLandingPage [class*='Dark'],
-  .participationLandingPage section,
-  .participationLandingPage header,
-  .participationLandingPage :global(.my-cases-global),
-  .participationLandingPage :global(.case-card-global),
-  .participationLandingPage :global(.case-list-item-global),
-  .trackingListContainer,
-  .trackingListContainerDark {
-    background: white !important;
+  :global(body) .participationLandingPage :is(
+    .participationHeader, .metricsSummary, .engagementSection, .engagementCard,
+    .pieChartSection, .barChartSection, .chartInsights,
+    .trackingContainer, .trackingRate, .trackingListContainer, .insights,
+    header, h2, select, th, tr,
+    :global(.my-cases-global), :global(.case-card-global),
+    :global(.case-list-item-global)
+  ) {
+    background: white;
+    box-shadow: none;
     max-height: none;
     overflow: visible;
   }
 
-  .chartsRow {
+  .participationLandingPage .trackingTable tbody tr td {
+    color: #111;
+  }
+
+  .participationLandingPage .participationHeader {
+    padding: 0;
+  }
+
+  .participationLandingPage :is(
+    button, nav, [role='dialog'], .headerNavigation, .exportError,
+    .analyticsNavigation, .icons, .infoIcon
+  ) {
+    display: none;
+  }
+
+  .participationLandingPage .chartsRow {
     grid-template-columns: 1fr;
   }
 
@@ -2221,7 +2228,7 @@
 
   .participationLandingPage .insightsTabs button.activeTab,
   .participationLandingPage .insightsTabsDarkMode button.activeTabDarkMode {
-    display: inline-block !important;
+    display: inline-block;
     border: none;
     background: white;
   }
