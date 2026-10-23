@@ -469,3 +469,9 @@ span.activeUser i.fa-circle { color: lawngreen !important; }
 span.notActiveUser i.fa-circle { color: #dee2e6 !important; }
 span.scheduledUser i.fa-circle { color: orange !important; }
 span.pausedUser i.fa-circle { color: red !important; }
+
+/* "edited by" line under the date and time; wraps on narrow screens */
+.editedNotice {
+  display: block;
+  overflow-wrap: anywhere;
+}
