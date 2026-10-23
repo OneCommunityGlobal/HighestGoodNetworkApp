@@ -6,6 +6,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import styles from './BulkLessonTags.module.css';
 import tagStyles from './LessonListForm.module.css';
 import { formatLessonTag } from './lessonTagDisplay';
+import { canEditLesson } from './lessonEditPermissions';
 
 const baseUrl = `${ENDPOINTS.BM_LESSONS}/bulk-tags`;
 const errorMessage = error =>
@@ -19,6 +20,7 @@ export default function BulkLessonTags({
   availableTags,
   darkMode,
   onRefresh,
+  currentUser,
 }) {
   const [tags, setTags] = useState([]);
   const [lessonSearch, setLessonSearch] = useState('');
@@ -33,12 +35,12 @@ export default function BulkLessonTags({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const selectable = filteredLessons;
+  const selectable = filteredLessons.filter(lesson => canEditLesson(lesson, currentUser));
   const selectedLessons = selectable.filter(lesson => selectedIds.includes(lesson._id));
-  const matchingLessons = selectable.filter(lesson =>
+  const matchingLessons = filteredLessons.filter(lesson =>
     lesson.title.toLowerCase().includes(lessonSearch.trim().toLowerCase()),
   );
-  const titleCounts = selectable.reduce((counts, lesson) => {
+  const titleCounts = filteredLessons.reduce((counts, lesson) => {
     counts[lesson.title] = (counts[lesson.title] || 0) + 1;
     return counts;
   }, Object.create(null));
@@ -175,8 +177,17 @@ export default function BulkLessonTags({
                         type="checkbox"
                         aria-label={`Select lesson ${lesson.title} from search`}
                         checked={selectedIds.includes(lesson._id)}
-                        disabled={!selectedIds.includes(lesson._id) && selectedIds.length >= 100}
+                        title={
+                          canEditLesson(lesson, currentUser)
+                            ? undefined
+                            : 'Only the author, an Admin, or an Owner can edit this lesson.'
+                        }
+                        disabled={
+                          !canEditLesson(lesson, currentUser) ||
+                          (!selectedIds.includes(lesson._id) && selectedIds.length >= 100)
+                        }
                         onChange={() => {
+                          if (busy || !canEditLesson(lesson, currentUser)) return;
                           setSelectedIds(previous => {
                             if (previous.includes(lesson._id))
                               return previous.filter(id => id !== lesson._id);
@@ -344,7 +355,7 @@ export default function BulkLessonTags({
               setPreview(null);
             }}
           />{' '}
-          Select all filtered lessons
+          Select all editable lessons
         </label>
         <button
           type="button"

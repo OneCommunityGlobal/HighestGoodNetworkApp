@@ -6,7 +6,14 @@ import { createStore } from 'redux';
 import LessonCard from './LessonCard';
 
 const lessons = [
-  { _id: 'lesson1', title: 'Math', tags: ['algebra'], date: '2026-10-21', likes: [] },
+  {
+    _id: 'lesson1',
+    title: 'Math',
+    author: { id: 'user1' },
+    tags: ['algebra'],
+    date: '2026-10-21',
+    likes: [],
+  },
   {
     _id: 'storage',
     title: 'Tag Storage',
@@ -17,16 +24,16 @@ const lessons = [
   },
 ];
 
-function Cards({ darkMode }) {
+function Cards({ darkMode, userRole = 'Administrator' }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const store = React.useMemo(
     () =>
       createStore(() => ({
         theme: { darkMode },
-        auth: { user: { userid: 'user1' } },
+        auth: { user: { userid: 'user1', role: userRole } },
         lessons: { lessons },
       })),
-    [darkMode],
+    [darkMode, userRole],
   );
   return (
     <Provider store={store}>
@@ -43,6 +50,12 @@ function Cards({ darkMode }) {
 }
 
 describe('lesson card selection', () => {
+  it('keeps other authors records visible but disables selection for volunteers', () => {
+    render(<Cards darkMode={false} userRole="Volunteer" />);
+    expect(screen.getByRole('checkbox', { name: 'Select lesson Math' }).disabled).toBe(false);
+    expect(screen.getByRole('checkbox', { name: 'Select lesson Tag Storage' }).disabled).toBe(true);
+    expect(screen.getByText('Tag Storage', { exact: true })).toBeTruthy();
+  });
   it.each([false, true])('adds an unlabeled checkbox to every record in dark mode=%s', darkMode => {
     render(<Cards darkMode={darkMode} />);
     expect(screen.getAllByRole('checkbox')).toHaveLength(2);

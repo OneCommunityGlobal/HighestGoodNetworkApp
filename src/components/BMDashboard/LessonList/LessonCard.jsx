@@ -9,6 +9,7 @@ import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 import styles from './LessonCard.module.css';
 import { formatLessonTag } from './lessonTagDisplay';
+import { canEditLesson } from './lessonEditPermissions';
 
 function LessonCard({
   filteredLessons,
@@ -85,6 +86,7 @@ function LessonCard({
 
   const lessonCards = (filteredLessons || []).map(lesson => {
     const { isLiked, totalLikes } = getLikeStatus(lesson._id);
+    const editable = canEditLesson(lesson, auth.user);
 
     return (
       <Card key={lesson._id} className={`${styles.lessonCard} ${darkMode ? styles.darkCard : ''}`}>
@@ -102,7 +104,15 @@ function LessonCard({
               onClick={event => event.stopPropagation()}
               aria-label={`Select lesson ${lesson.title}`}
               checked={selectedLessonIds.includes(lesson._id)}
-              disabled={!selectedLessonIds.includes(lesson._id) && selectedLessonIds.length >= 100}
+              title={
+                editable
+                  ? undefined
+                  : 'Only the author, an Admin, or an Owner can edit this lesson.'
+              }
+              disabled={
+                !editable ||
+                (!selectedLessonIds.includes(lesson._id) && selectedLessonIds.length >= 100)
+              }
               onChange={() =>
                 setSelectedLessonIds(previous =>
                   previous.includes(lesson._id)
@@ -199,7 +209,7 @@ function LessonCard({
               </div>
 
               <div className={styles.lessonCardFooterItems}>
-                {currentUserId === lesson.author?.id && (
+                {editable && (
                   <div>
                     <button
                       className="text-muted"

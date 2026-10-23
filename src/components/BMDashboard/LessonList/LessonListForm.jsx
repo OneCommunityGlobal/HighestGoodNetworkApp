@@ -12,9 +12,10 @@ import ExportConfirmationModal from './ExportConfirmationModal';
 import styles from './LessonListForm.module.css';
 import LessonListRemovableTag from './LessonListRemovableTag';
 import BulkLessonTags from './BulkLessonTags';
+import { canEditLesson } from './lessonEditPermissions';
 
 function LessonList(props) {
-  const { lessons, darkMode, dispatch } = props;
+  const { lessons, darkMode, dispatch, currentUser } = props;
   const [tags, setTags] = useState([]);
   const [selectedLessonIds, setSelectedLessonIds] = useState([]);
   const [tagFilterLogic, setTagFilterLogic] = useState('AND');
@@ -38,9 +39,11 @@ function LessonList(props) {
   }, [tags, filterOption, tagFilterLogic]);
   useEffect(() => {
     setSelectedLessonIds(previous =>
-      previous.filter(id => lessons?.some(lesson => lesson._id === id)),
+      previous.filter(id =>
+        lessons?.some(lesson => lesson._id === id && canEditLesson(lesson, currentUser)),
+      ),
     );
-  }, [lessons]);
+  }, [lessons, currentUser]);
   const refreshBulkTags = async () => {
     await dispatch(fetchBMLessons());
     const response = await axios.get(ENDPOINTS.BM_TAGS);
@@ -824,6 +827,7 @@ function LessonList(props) {
               />
             </div>
             <BulkLessonTags
+              currentUser={currentUser}
               filteredLessons={filteredLessons}
               selectedIds={selectedLessonIds}
               setSelectedIds={setSelectedLessonIds}
@@ -862,6 +866,7 @@ function LessonList(props) {
 const mapStateToProps = state => {
   return {
     lessons: state.lessons.lessons,
+    currentUser: state.auth?.user,
     darkMode: state.theme?.darkMode || false,
   };
 };

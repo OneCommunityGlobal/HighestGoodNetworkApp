@@ -19,6 +19,7 @@ describe('bulk lesson tag workflow', () => {
         { _id: 'lesson1', title: 'Safety' },
         { _id: 'lesson2', title: 'Tools' },
       ],
+      currentUser: { userid: 'user1', role: 'Administrator' },
       selectedIds: ['lesson1'],
       setSelectedIds: vi.fn(),
       availableTags: ['old', 'new'],
@@ -35,8 +36,22 @@ describe('bulk lesson tag workflow', () => {
 
   it('selects exactly the filtered lessons', () => {
     render(<BulkLessonTags {...props} />);
-    fireEvent.click(screen.getByLabelText('Select all filtered lessons'));
+    fireEvent.click(screen.getByLabelText('Select all editable lessons'));
     expect(props.setSelectedIds).toHaveBeenCalledWith(['lesson1', 'lesson2']);
+  });
+
+  it('limits select-all and search selection to lessons the user can edit', () => {
+    props.currentUser = { userid: 'user1', role: 'Volunteer' };
+    props.filteredLessons[0].author = { id: 'user1' };
+    props.filteredLessons[1].author = { id: 'other' };
+    render(<BulkLessonTags {...props} selectedIds={[]} />);
+    fireEvent.focus(screen.getByRole('searchbox', { name: 'Search lessons' }));
+    expect(screen.getByLabelText('Select lesson Safety from search').disabled).toBe(false);
+    expect(screen.getByLabelText('Select lesson Tools from search').disabled).toBe(true);
+    fireEvent.click(screen.getByLabelText('Select lesson Tools from search'));
+    expect(props.setSelectedIds).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByLabelText('Select all editable lessons'));
+    expect(props.setSelectedIds).toHaveBeenCalledWith(['lesson1']);
   });
 
   it('searches lesson titles without losing selections when the query changes', () => {
@@ -258,7 +273,7 @@ describe('bulk lesson tag workflow', () => {
         ]}
       />,
     );
-    fireEvent.click(screen.getByLabelText('Select all filtered lessons'));
+    fireEvent.click(screen.getByLabelText('Select all editable lessons'));
     expect(props.setSelectedIds).toHaveBeenCalledWith(['lesson1', 'lesson2', 'storage']);
   });
 });
