@@ -24,6 +24,13 @@
   overflow: inherit;
 }
 
+.badge_image_lg {
+  border-radius: 50%;
+  height: 200px;
+  width: 200px;
+  overflow: inherit;
+}
+
 .badge_image_lg > img {
   border-radius: 50%;
   height: 200px;

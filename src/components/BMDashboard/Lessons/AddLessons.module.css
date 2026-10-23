@@ -59,7 +59,7 @@
   color: #f0f0f0;
   border-radius: 10px;
   padding: 1.5rem;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 12px rgb(0 0 0 / 30%);
 }
 
 .darkPageWrapper :global(.form-control),

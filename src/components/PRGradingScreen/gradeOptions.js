@@ -5,11 +5,28 @@
 // deciding `checked`. Previously each place declared its own list and the
 // "Cannot find image" option carried the value 'No Correct Image' inline but
 // 'Cannot find image' in the modal, so grading it inline left the modal unchecked.
+
 const GRADE_OPTIONS = [
-  { label: 'Exceptional', value: 'Exceptional' },
-  { label: 'Okay', value: 'Okay' },
-  { label: 'Unsatisfactory', value: 'Unsatisfactory' },
-  { label: 'Cannot find image', value: 'Cannot find image' },
+  {
+    value: 'Did not review',
+    label: 'Did not review',
+  },
+  {
+    value: 'Needs more details',
+    label: 'Needs more details',
+  },
+  {
+    value: 'Good',
+    label: 'Good',
+  },
+  {
+    value: 'Exceptional',
+    label: 'Exceptional',
+  },
+  {
+    value: 'No Image',
+    label: 'No Image',
+  },
 ];
 
 export default GRADE_OPTIONS;
