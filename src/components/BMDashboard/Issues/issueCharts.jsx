@@ -276,7 +276,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
   const flatIssueTypeOptions = flattenOptions(issueTypes);
   const uniqueYears = years.map(y => y.value);
-  const latestYear = uniqueYears.length ? uniqueYears[uniqueYears.length - 1] : null;
+  const latestYear = uniqueYears.at(-1) ?? null;
   // Single-year view defaults to the most recent year until the user picks one
   const selectedSingleYear = singleYear ?? latestYear;
 
@@ -758,11 +758,10 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       )}
 
       {/* Switch between comparing several years and focusing on one year */}
-      <div
+      <fieldset
         className={`${styles.issueChartViewToggle} ${
           darkMode ? styles.issueChartViewToggleDark : ''
         }`}
-        role="group"
         aria-label="Chart view"
       >
         <button
@@ -781,7 +780,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         >
           Single Year
         </button>
-      </div>
+      </fieldset>
 
       <div
         className={styles.selectContainer}
