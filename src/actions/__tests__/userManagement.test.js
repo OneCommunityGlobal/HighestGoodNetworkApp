@@ -87,19 +87,48 @@ describe('User Management Actions', () => {
       ]);
     });
 
-    it('allows an empty reason and removes a previously saved reason', async () => {
+    it('stores the audit history returned by the backend', async () => {
+      const mockUser = { _id: '123' };
+      const history = [
+        {
+          action: 'submitted',
+          reason: 'Missed commitments',
+          changedAt: '2026-01-02T03:04:00.000Z',
+          changedBy: { username: 'admin@example.org', firstName: 'Alex', lastName: 'Admin' },
+        },
+      ];
+      axios.patch.mockResolvedValueOnce({
+        data: {
+          notRehireableReason: 'Missed commitments',
+          notRehireableReasonHistory: history,
+        },
+      });
+
+      await store.dispatch(actions.updateRehireableStatus(mockUser, false, 'Missed commitments'));
+
+      expect(store.getActions()).toEqual([
+        {
+          type: 'USER_PROFILE_UPDATE',
+          user: {
+            _id: '123',
+            isRehireable: false,
+            notRehireableReason: 'Missed commitments',
+            notRehireableReasonHistory: history,
+          },
+        },
+      ]);
+    });
+
+    it('does not send an empty reason when changing to not rehireable', async () => {
       const mockUser = { _id: '123', notRehireableReason: 'Previous reason' };
       axios.patch.mockResolvedValueOnce({ data: {} });
 
-      await store.dispatch(actions.updateRehireableStatus(mockUser, false, ''));
+      await expect(
+        store.dispatch(actions.updateRehireableStatus(mockUser, false, '   ')),
+      ).rejects.toThrow('A reason is required');
 
-      expect(axios.patch).toHaveBeenCalledWith(ENDPOINTS.UPDATE_REHIREABLE_STATUS(mockUser._id), {
-        isRehireable: false,
-        notRehireableReason: '',
-      });
-      expect(store.getActions()).toEqual([
-        { type: 'USER_PROFILE_UPDATE', user: { _id: '123', isRehireable: false } },
-      ]);
+      expect(axios.patch).not.toHaveBeenCalled();
+      expect(store.getActions()).toEqual([]);
     });
 
     it('clears a saved reason when changing back to rehireable', async () => {
