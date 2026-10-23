@@ -10,11 +10,15 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
-import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
+import {
+  getUploadSizeError,
+  isJobApplicationFileUploadQuestion,
+} from './jobApplicationQuestionUtils';
 import { checkEmail } from '../../../utils/emailValidation';
 import {
   ensurePositionOption,
   findFormByPositionSlug,
+  findPositionBySlug,
   publicApplyRequestConfig,
   titleHintFromSlug,
 } from './jobApplicationPublicApi';
@@ -109,38 +113,45 @@ function findFormByDeveloperFamily(formsArr, jobTitle) {
   return candidates[0];
 }
 
-/** Match a job listing title to a saved application form (titles may differ slightly). */
-function findFormForJobTitle(formsArr, jobTitle) {
+/**
+ * Match a job listing title to a saved applicant-facing form (titles may differ slightly).
+ * Retired / internal forms are never matched. A fuzzy step that matches more than one form is
+ * treated as no match, so an ambiguous title (e.g. "T.A.S.T") falls back with a warning
+ * instead of a silent guess.
+ */
+export function findFormForJobTitle(formsArr, jobTitle) {
   if (!jobTitle || !formsArr?.length) return null;
+  const candidates = formsArr.filter(isApplicantFacingForm);
+  if (!candidates.length) return null;
   const t = String(jobTitle)
     .trim()
     .toLowerCase();
-  let m = formsArr.find(f => (f.title || '').trim().toLowerCase() === t);
-  if (m) return m;
-  m = formsArr.find(f => {
+  const exact = candidates.find(f => (f.title || '').trim().toLowerCase() === t);
+  if (exact) return exact;
+  const key = normalizeTitleKey(jobTitle);
+  const normalized = key && candidates.find(f => normalizeTitleKey(f.title) === key);
+  if (normalized) return normalized;
+  const bySubstring = candidates.filter(f => {
     const ft = (f.title || '').trim().toLowerCase();
     return ft && (t.includes(ft) || ft.includes(t));
   });
-  if (m) return m;
-  m = formsArr.find(f => titlesLikelyMatch(jobTitle, f.title));
-  if (m) return m;
-  m = findFormByTokenOverlap(formsArr, jobTitle);
-  if (m) return m;
-  m = findFormByDeveloperFamily(formsArr, jobTitle);
-  return m || null;
+  if (bySubstring.length) return bySubstring.length === 1 ? bySubstring[0] : null;
+  const byLikely = candidates.filter(f => titlesLikelyMatch(jobTitle, f.title));
+  if (byLikely.length) return byLikely.length === 1 ? byLikely[0] : null;
+  return (
+    findFormByTokenOverlap(candidates, jobTitle) ||
+    findFormByDeveloperFamily(candidates, jobTitle) ||
+    null
+  );
 }
 
-/** Role clicked on the job board: React Router state, ?jobTitle=, or /apply/:positionSlug. */
-function getJobTitleFromNavigation(location, positionSlug) {
+/** Role clicked on the job board: React Router state or ?jobTitle= (a bare slug is resolved later). */
+function getJobTitleFromNavigation(location) {
   const fromState = location.state?.jobTitle;
   if (fromState != null && String(fromState).trim()) return String(fromState).trim();
   const q = new URLSearchParams(location.search || '');
   const fromQuery = q.get('jobTitle') || q.get('role');
   if (fromQuery != null && String(fromQuery).trim()) return String(fromQuery).trim();
-  if (positionSlug) {
-    const hint = titleHintFromSlug(positionSlug);
-    if (hint) return hint;
-  }
   return '';
 }
 
@@ -154,7 +165,7 @@ function getFormIdFromNavigation(location) {
 }
 
 /** Skip retired / internal ATS templates when picking applicant forms. */
-function isApplicantFacingForm(form) {
+export function isApplicantFacingForm(form) {
   const title = String(form?.title || '')
     .trim()
     .toUpperCase();
@@ -166,7 +177,7 @@ function isApplicantFacingForm(form) {
 }
 
 /** Default questionnaire when a job listing has no dedicated form. */
-function findDefaultSoftwareForm(formsArr) {
+export function findDefaultSoftwareForm(formsArr) {
   if (!formsArr?.length) return null;
   const activeForms = formsArr.filter(isApplicantFacingForm);
   const preferredTitles = ['SEEKING SOFTWARE POSITION', 'Software Developer', 'Software Engineer'];
@@ -189,7 +200,12 @@ function findDefaultSoftwareForm(formsArr) {
   );
 }
 
-function pickInitialForm(formsArr, navState, positionSlug) {
+/** Slug lookup restricted to applicant-facing forms. */
+export function findApplicantFormBySlug(formsArr, positionSlug) {
+  return findFormByPositionSlug((formsArr || []).filter(isApplicantFacingForm), positionSlug);
+}
+
+export function pickInitialForm(formsArr, navState, positionSlug) {
   if (!formsArr?.length) return null;
 
   if (navState?.formId) {
@@ -198,7 +214,7 @@ function pickInitialForm(formsArr, navState, positionSlug) {
   }
 
   if (positionSlug) {
-    const bySlug = findFormByPositionSlug(formsArr, positionSlug);
+    const bySlug = findApplicantFormBySlug(formsArr, positionSlug);
     if (bySlug) return bySlug;
   }
 
@@ -220,20 +236,24 @@ function parseFormsResponse(res) {
   return Array.isArray(res.data.forms) ? res.data.forms : [];
 }
 
-function resolveNavigationJobTitle(jobDataFromRedirect, location, positionSlug) {
+function resolveNavigationJobTitle(jobDataFromRedirect, location) {
   return (
     (jobDataFromRedirect?.jobTitle && String(jobDataFromRedirect.jobTitle).trim()) ||
-    getJobTitleFromNavigation(location, positionSlug)
+    getJobTitleFromNavigation(location)
+  );
+}
+
+function warnDefaultFormFallback(title, form) {
+  toast.warn(
+    `No form is linked to "${title}". Showing the default software engineer application ("${form.title}") — pick another role from the dropdown if this is not the right questionnaire.`,
+    { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
   );
 }
 
 function notifyInitialFormSelection(navTitle, formMatch, chosen) {
   if (!navTitle || formMatch) return;
   if (chosen) {
-    toast.warn(
-      `No form is linked to "${navTitle}". Showing the default software engineer application ("${chosen.title}") — pick another role from the dropdown if this is not the right questionnaire.`,
-      { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
-    );
+    warnDefaultFormFallback(navTitle, chosen);
     return;
   }
   toast.warn('No application form is available. Please contact support or try again later.', {
@@ -332,26 +352,47 @@ async function loadJobForms(formId) {
   return parseFormsResponse(res);
 }
 
-function buildInitialSelection({
+export function buildInitialSelection({
   formsArr,
   positions,
-  navTitle,
+  navTitle: explicitTitle,
   positionSlug,
   routerLocation,
   formId,
 }) {
+  const baseOptions = positions.length
+    ? positions
+    : formsArr
+        .filter(isApplicantFacingForm)
+        .map(f => f.title)
+        .filter(Boolean);
+  const slugMatch = positionSlug ? findApplicantFormBySlug(formsArr, positionSlug) : null;
+  // A bare /apply/<slug> link carries no title — map the slug back to the real position title.
+  const navTitle =
+    explicitTitle ||
+    (positionSlug
+      ? findPositionBySlug(baseOptions, positionSlug) ||
+        slugMatch?.title ||
+        titleHintFromSlug(positionSlug)
+      : '');
   const navState = {
     ...routerLocation.state,
     jobTitle: navTitle || routerLocation.state?.jobTitle,
     formId: formId || routerLocation.state?.formId,
   };
-  const slugMatch = positionSlug ? findFormByPositionSlug(formsArr, positionSlug) : null;
   const formMatch = slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
   const chosen = pickInitialForm(formsArr, navState, positionSlug);
   notifyInitialFormSelection(navTitle, formMatch, chosen);
 
-  const bannerTitle = navTitle || slugMatch?.title || chosen?.title || '';
-  const baseOptions = positions.length ? positions : formsArr.map(f => f.title).filter(Boolean);
+  // Show a real position or form title, never the raw query / slug: near-miss titles select the
+  // matched position, and unmatched ones (e.g. "Applied through site", /apply/<unknown>) select
+  // the default form they fell back to instead of adding a fake dropdown option.
+  const matchedTitle = formMatch ? formMatch.title : chosen?.title;
+  const bannerTitle =
+    matchPositionOption(baseOptions, navTitle) ||
+    matchPositionOption(baseOptions, matchedTitle) ||
+    matchedTitle ||
+    '';
   const options = ensurePositionOption(baseOptions, bannerTitle);
   const initial = getInitialFormState(chosen, bannerTitle);
   const selected =
@@ -754,7 +795,9 @@ function FileUploadField({
   inputRef,
   optional = false,
   required = false,
+  error = '',
 }) {
+  const errorId = `${id}-error`;
   const statusText = file ? `${file.name} (${formatFileSize(file.size)})` : 'No file selected';
   const statusClass = file ? styles.fileStatusSelected : styles.fileStatusEmpty;
 
@@ -785,6 +828,8 @@ function FileUploadField({
             onChange={onChange}
             className={styles.hiddenFileInput}
             required={required && !file}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : undefined}
           />
         </label>
         <span className={`${styles.fileStatus} ${statusClass}`} aria-live="polite">
@@ -796,6 +841,11 @@ function FileUploadField({
           </button>
         )}
       </div>
+      {error && (
+        <p id={errorId} className={styles.fieldError} role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -813,6 +863,7 @@ FileUploadField.propTypes = {
   inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
   optional: PropTypes.bool,
   required: PropTypes.bool,
+  error: PropTypes.string,
 };
 
 FileUploadField.defaultProps = {
@@ -823,6 +874,7 @@ FileUploadField.defaultProps = {
   inputRef: undefined,
   optional: false,
   required: false,
+  error: '',
 };
 
 function JobPositionSelect({ value, options, onChange }) {
@@ -935,6 +987,8 @@ function JobApplicationForm() {
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const [questionFiles, setQuestionFiles] = useState({});
+  const [resumeFileError, setResumeFileError] = useState('');
+  const [questionFileErrors, setQuestionFileErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const resumeInputRef = useRef(null);
   const emailInputRef = useRef(null);
@@ -1086,11 +1140,7 @@ function JobApplicationForm() {
         if (cancelled) return;
 
         setForms(formsArr);
-        const navTitle = resolveNavigationJobTitle(
-          jobDataFromRedirect,
-          routerLocation,
-          positionSlug,
-        );
+        const navTitle = resolveNavigationJobTitle(jobDataFromRedirect, routerLocation);
         const { options, initial, selected, bannerTitle } = buildInitialSelection({
           formsArr,
           positions,
@@ -1127,15 +1177,17 @@ function JobApplicationForm() {
 
   useEffect(() => {
     if (!selectedJob) return;
-    const form =
-      forms.find(f => f.title === selectedJob) ||
-      findFormForJobTitle(forms, selectedJob) ||
-      findDefaultSoftwareForm(forms);
+    let form = findFormForJobTitle(forms, selectedJob);
+    if (!form) {
+      form = findDefaultSoftwareForm(forms);
+      if (form) warnDefaultFormFallback(selectedJob, form);
+    }
     if (!form) return;
     setFilteredForm(form);
     const qs = getVisibleQuestionsForForm(form);
     setAnswers(initialAnswersForQuestions(qs));
     setQuestionFiles({});
+    setQuestionFileErrors({});
     questionFileInputRefs.current = {};
     setFieldErrors({});
   }, [selectedJob, forms]);
@@ -1157,6 +1209,7 @@ function JobApplicationForm() {
       setFilteredForm(null);
       setAnswers([]);
       setQuestionFiles({});
+      setQuestionFileErrors({});
       questionFileInputRefs.current = {};
       setFieldErrors({});
       return;
@@ -1178,8 +1231,7 @@ function JobApplicationForm() {
     // Partial search (e.g. "CAD") should pick the nearest dropdown position.
     const positionMatch = findNearestPositionOption(positionOptions, raw);
     const lookupTitle = positionMatch || raw;
-    let form = forms.find(f => f.title?.toLowerCase() === lookupTitle.toLowerCase());
-    if (!form) form = findFormForJobTitle(forms, lookupTitle);
+    let form = findFormForJobTitle(forms, lookupTitle);
     if (!form && lookupTitle !== raw) form = findFormForJobTitle(forms, raw);
     const usedDefaultSoftware = !form;
     if (!form) form = findDefaultSoftwareForm(forms);
@@ -1189,12 +1241,7 @@ function JobApplicationForm() {
       setSelectedJob(selected);
       setBannerJobTitle(selected);
       setJobTitleInput(selected);
-      if (usedDefaultSoftware && form) {
-        toast.warn(
-          `No form is linked to "${selected}". Showing the default software engineer application ("${form.title}") — pick another role from the dropdown if this is not the right questionnaire.`,
-          { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
-        );
-      }
+      if (usedDefaultSoftware && form) warnDefaultFormFallback(selected, form);
     } else {
       toast.info('No position matches that search. Pick one from the dropdown.');
     }
@@ -1285,8 +1332,17 @@ function JobApplicationForm() {
 
     if (!allowedTypes.includes(f.type)) {
       setResumeFile(null);
+      setResumeFileError('');
       if (resumeInputRef.current) resumeInputRef.current.value = '';
       toast.error('Invalid file type. Please upload PDF or DOC/DOCX.');
+      return;
+    }
+
+    const sizeError = getUploadSizeError(f);
+    setResumeFileError(sizeError);
+    if (sizeError) {
+      setResumeFile(null);
+      if (resumeInputRef.current) resumeInputRef.current.value = '';
       return;
     }
 
@@ -1296,11 +1352,29 @@ function JobApplicationForm() {
 
   const clearResumeFile = () => {
     setResumeFile(null);
+    setResumeFileError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
+  };
+
+  const setQuestionFileError = (idx, message) => {
+    setQuestionFileErrors(prev => {
+      const next = { ...prev };
+      if (message) next[idx] = message;
+      else delete next[idx];
+      return next;
+    });
   };
 
   const handleQuestionFileChange = (idx, e) => {
     const f = e.target.files?.[0] || null;
+    const sizeError = getUploadSizeError(f);
+    setQuestionFileError(idx, sizeError);
+    if (sizeError) {
+      const ref = questionFileInputRefs.current[idx];
+      if (ref) ref.value = '';
+      setQuestionFiles(prev => ({ ...prev, [idx]: null }));
+      return;
+    }
     setQuestionFiles(prev => ({ ...prev, [idx]: f }));
   };
 
@@ -1310,6 +1384,7 @@ function JobApplicationForm() {
       delete next[idx];
       return next;
     });
+    setQuestionFileError(idx, '');
     const ref = questionFileInputRefs.current[idx];
     if (ref) ref.value = '';
   };
@@ -1410,8 +1485,10 @@ function JobApplicationForm() {
     setCompanyPosition('');
     setWebsiteSocial('');
     setResumeFile(null);
+    setResumeFileError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
     setQuestionFiles({});
+    setQuestionFileErrors({});
     questionFileInputRefs.current = {};
     setFullTimeYears('');
     setMonthsVolunteer('');
@@ -1991,6 +2068,7 @@ function JobApplicationForm() {
                   inputRef={resumeInputRef}
                   optional={!resumeRequired}
                   required={resumeRequired}
+                  error={resumeFileError}
                 />
               </div>
               {visibleQuestions.map((q, idx) => {
@@ -2166,6 +2244,7 @@ function JobApplicationForm() {
                           questionFileInputRefs.current[idx] = el;
                         }}
                         required={req}
+                        error={questionFileErrors[idx]}
                       />
                     )}
                     {![
