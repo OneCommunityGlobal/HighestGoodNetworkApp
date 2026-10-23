@@ -324,22 +324,21 @@ function ActivityList() {
                 key={activity.id}
                 className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
               >
-                <button
-                  type="button"
+                <div
                   style={{
                     cursor: 'pointer',
                     display: 'block',
                     width: '100%',
-                    background: 'none',
-                    border: 'none',
-                    padding: 0,
-                    textAlign: 'left',
-                    color: 'inherit',
-                    font: 'inherit',
-                    textDecoration: 'none',
                   }}
                   onClick={() => handleActivityClick(activity)}
+                  tabIndex={0}
+                  role="button"
                   aria-label={`View details for ${activity.name}`}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleActivityClick(activity);
+                    }
+                  }}
                 >
                   <strong>{activity.name}</strong>
 
@@ -361,7 +360,7 @@ function ActivityList() {
                       <span>{activity.date}</span>
                     </div>
                   </div>
-                </button>
+                </div>
 
                 <button
                   type="button"
