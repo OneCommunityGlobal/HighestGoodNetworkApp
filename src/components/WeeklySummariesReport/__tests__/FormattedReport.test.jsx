@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { MemoryRouter } from 'react-router-dom';
 import moment from 'moment';
+import axios from 'axios';
 import momentTz from 'moment-timezone';
 import FormattedReport from '../FormattedReport';
 import '@testing-library/jest-dom/extend-expect';
@@ -146,7 +147,181 @@ describe('FormattedReport minimal test', () => {
     );
     expect(screen.queryByText('Emails')).toBeNull();
   });
+  it('only suggests team codes currently in use on the visible weekly summaries page', () => {
+    const activeSummaryOne = {
+      ...dummySummary,
+      _id: 'active-1',
+      email: 'active1@example.com',
+      teamCode: 'ACT01',
+      endDate: null,
+    };
 
+    const activeSummaryTwo = {
+      ...dummySummary,
+      _id: 'active-2',
+      email: 'active2@example.com',
+      teamCode: 'ACT02',
+      endDate: null,
+    };
+
+    const expiredSummary = {
+      ...dummySummary,
+      _id: 'expired-1',
+      email: 'expired@example.com',
+      teamCode: 'OLD01',
+      isActive: false,
+      endDate: moment()
+        .subtract(6, 'weeks')
+        .toISOString(),
+      finalWeekIndex: 6,
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[activeSummaryOne, activeSummaryTwo, expiredSummary]}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const inputs = screen.getAllByPlaceholderText('X-XXX');
+    fireEvent.focus(inputs[0]);
+    fireEvent.change(inputs[0], {
+      target: { value: '' },
+    });
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
+    expect(screen.getByText('ACT02')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('includes an active user with a scheduled end date in team code suggestions', () => {
+    const activeScheduledEndSummary = {
+      ...dummySummary,
+      _id: 'future-end-user',
+      email: 'future@example.com',
+      teamCode: 'FUT01',
+      isActive: true,
+      endDate: moment()
+        .add(2, 'weeks')
+        .toISOString(),
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} summaries={[activeScheduledEndSummary]} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('FUT01')).toBeInTheDocument();
+  });
+
+  it('does not suggest the team code of an inactive user hidden from the current tab', () => {
+    const visibleSummary = {
+      ...dummySummary,
+      _id: 'visible-user',
+      email: 'visible@example.com',
+      teamCode: 'ACT01',
+      isActive: true,
+      endDate: null,
+    };
+
+    const hiddenInactiveSummary = {
+      ...dummySummary,
+      _id: 'inactive-user',
+      email: 'inactive@example.com',
+      teamCode: 'OLD01',
+      isActive: false,
+      endDate: null,
+      finalWeekIndex: 1,
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[visibleSummary, hiddenInactiveSummary]}
+            weekIndex={0}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('updates active team code suggestions after a successful save', async () => {
+    function StatefulReport() {
+      const [summaries, setSummaries] = React.useState([dummySummary]);
+
+      const handleTeamCodeChange = (userId, newTeamCode) => {
+        setSummaries(prevSummaries =>
+          prevSummaries.map(summary =>
+            summary._id === userId ? { ...summary, teamCode: newTeamCode } : summary,
+          ),
+        );
+      };
+
+      return (
+        <FormattedReport
+          {...defaultProps}
+          summaries={summaries}
+          handleTeamCodeChange={handleTeamCodeChange}
+        />
+      );
+    }
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <StatefulReport />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+
+    fireEvent.focus(input);
+
+    expect(screen.getByText('ABC123')).toBeInTheDocument();
+
+    fireEvent.change(input, {
+      target: { value: 'NEW01' },
+    });
+
+    fireEvent.blur(input);
+
+    await waitFor(() => {
+      expect(axios.patch).toHaveBeenCalledWith(expect.any(String), {
+        userIds: ['1'],
+        replaceCode: 'NEW01',
+      });
+    });
+
+    fireEvent.focus(input);
+
+    fireEvent.change(input, {
+      target: { value: '' },
+    });
+
+    expect(screen.getByText('NEW01')).toBeInTheDocument();
+    expect(screen.queryByText('ABC123')).not.toBeInTheDocument();
+  });
   it('renders fallback text when weekly summary text is missing', () => {
     const summaryNoText = {
       ...dummySummary,
@@ -228,7 +403,7 @@ describe('FormattedReport minimal test', () => {
       </Provider>,
     );
     expect(screen.queryByPlaceholderText('X-XXX')).toBeNull();
-    expect(screen.getByText('ABC123')).toBeInTheDocument();
+    expect(screen.getByText('ABC123', { selector: 'div' })).toBeInTheDocument();
   });
 });
 
