@@ -2,16 +2,22 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import axios from 'axios';
+import { MemoryRouter } from 'react-router-dom';
 import { ENDPOINTS } from '~/utils/URL';
+import httpService from '../../../services/httpService';
 import HelpModal from '../HelpModal';
 import styles from '../HelpModal.module.css';
 
-vi.mock('axios');
+vi.mock('../../../services/httpService', () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
 
 test('supports an HGN software team volunteer in dark mode', async () => {
   const userId = 'test-user';
-  axios.get.mockImplementation(url => {
+  httpService.get.mockImplementation(url => {
     if (url === ENDPOINTS.HELP_CATEGORIES) {
       return Promise.resolve({ data: [{ name: 'Software Support' }] });
     }
@@ -29,7 +35,9 @@ test('supports an HGN software team volunteer in dark mode', async () => {
 
   render(
     <Provider store={store}>
-      <HelpModal show onHide={vi.fn()} />
+      <MemoryRouter>
+        <HelpModal show onHide={vi.fn()} />
+      </MemoryRouter>
     </Provider>,
   );
 
@@ -40,5 +48,5 @@ test('supports an HGN software team volunteer in dark mode', async () => {
   await userEvent.click(screen.getByRole('option', { name: 'Software Support' }));
 
   await waitFor(() => expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled());
-  expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE(userId));
+  expect(httpService.get).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE(userId));
 });
