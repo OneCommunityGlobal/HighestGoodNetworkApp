@@ -10,7 +10,10 @@ function GradingTable({
   onAddPRClick,
   openAddModal,
   onAddGradedPR,
+  onRemoveReviewer,
+  isCurrentWeek,
   darkMode,
+  canEdit,
 }) {
   return (
     // <div className={styles.tableWrapper}>
@@ -30,7 +33,10 @@ function GradingTable({
               grading={grading}
               onUpdatePRsReviewed={onUpdatePRsReviewed}
               onAddPRClick={onAddPRClick}
+              onRemoveReviewer={onRemoveReviewer}
+              isCurrentWeek={isCurrentWeek}
               darkMode={darkMode}
+              canEdit={canEdit}
             />
             {openAddModal === grading.reviewer && (
               <tr className={styles.modalRow}>
@@ -62,12 +68,17 @@ GradingTable.propTypes = {
   onAddPRClick: PropTypes.func.isRequired,
   openAddModal: PropTypes.string,
   onAddGradedPR: PropTypes.func.isRequired,
+  onRemoveReviewer: PropTypes.func.isRequired,
+  isCurrentWeek: PropTypes.bool,
   darkMode: PropTypes.bool,
+  canEdit: PropTypes.bool,
 };
 
 GradingTable.defaultProps = {
   openAddModal: null,
+  isCurrentWeek: true,
   darkMode: false,
+  canEdit: false,
 };
 
 export default GradingTable;
