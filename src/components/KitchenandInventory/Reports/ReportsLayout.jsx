@@ -57,10 +57,10 @@ export default function ReportsLayout({
         </NavLink>
       </nav>
       {isDemo && (
-        <p className={styles.demoNote} role="status">
+        <output className={styles.demoNote}>
           Sample data · {periodLabel} preview. Changing the period keeps the same illustrative
           records.
-        </p>
+        </output>
       )}
       {children}
     </main>

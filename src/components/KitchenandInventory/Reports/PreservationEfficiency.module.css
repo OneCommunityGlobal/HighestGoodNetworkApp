@@ -392,6 +392,7 @@
 }
 
 .demoNote {
+  display: block;
   margin: -8px 0 20px;
   color: var(--report-muted);
   font-size: 12px;

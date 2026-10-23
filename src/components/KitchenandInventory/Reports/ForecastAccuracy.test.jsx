@@ -56,12 +56,12 @@ describe('Forecast Accuracy report', () => {
     expect(screen.getByText('Forecast Accuracy Tracker')).toBeInTheDocument();
     expect(screen.getAllByRole('progressbar')).toHaveLength(5);
     expect(screen.getByRole('progressbar', { name: 'Carrots forecast accuracy' })).toHaveAttribute(
-      'aria-valuenow',
+      'value',
       '88',
     );
     expect(
       screen.getByRole('progressbar', { name: 'Olive Oil forecast accuracy' }),
-    ).toHaveAttribute('aria-valuenow', '100');
+    ).toHaveAttribute('value', '100');
     expect(screen.getAllByText('High accuracy')).toHaveLength(2);
     expect(screen.getAllByText('Moderate accuracy')).toHaveLength(3);
     expect(screen.getByText('92.4%')).toBeInTheDocument();
@@ -71,7 +71,7 @@ describe('Forecast Accuracy report', () => {
     );
   });
 
-  it('renders each ingredient quantity, accessible progress range, and matching fill width', () => {
+  it('renders each ingredient quantity and a native progress element with the matching value', () => {
     renderReport(mockReport);
     mockReport.ingredients.forEach(ingredient => {
       const row = screen
@@ -82,11 +82,10 @@ describe('Forecast Accuracy report', () => {
       const bar = within(row).getByRole('progressbar', {
         name: `${ingredient.name} forecast accuracy`,
       });
-      expect(bar).toHaveAttribute('aria-valuemin', '0');
-      expect(bar).toHaveAttribute('aria-valuemax', '100');
-      expect(bar).toHaveAttribute('aria-valuenow', String(ingredient.demoAccuracyPercent));
-      // eslint-disable-next-line testing-library/no-node-access -- Verify the visual fill, which has no accessible role.
-      expect(bar.firstElementChild).toHaveStyle({ width: `${ingredient.demoAccuracyPercent}%` });
+      expect(bar.tagName).toBe('PROGRESS');
+      expect(bar).toHaveAttribute('max', '100');
+      expect(bar).toHaveAttribute('value', String(ingredient.demoAccuracyPercent));
+      expect(bar).toHaveProperty('position', ingredient.demoAccuracyPercent / 100);
     });
   });
 
@@ -107,8 +106,7 @@ describe('Forecast Accuracy report', () => {
     const badge = screen.getByText(`${accuracy}%`, { exact: false, selector: 'span' });
     expect(screen.getByText(`${high ? 'High' : 'Moderate'} accuracy`)).toBeInTheDocument();
     expect(badge).toHaveClass(high ? styles.high : styles.moderate);
-    // eslint-disable-next-line testing-library/no-node-access -- Verify the semantic status uses the matching visual fill.
-    expect(screen.getByRole('progressbar').firstElementChild).toHaveClass(
+    expect(screen.getByRole('progressbar')).toHaveClass(
       high ? styles.highFill : styles.moderateFill,
     );
   });
@@ -120,7 +118,7 @@ describe('Forecast Accuracy report', () => {
     expect(screen.getByText('Brown Rice')).toBeInTheDocument();
     expect(screen.queryByText('Tomatoes')).not.toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '90');
+    expect(screen.getByRole('progressbar')).toHaveAttribute('value', '90');
     expect(screen.getByText('90%', { selector: 'strong' })).toBeInTheDocument();
   });
 
@@ -254,6 +252,7 @@ describe('Forecast Accuracy report', () => {
     fireEvent.change(screen.getByRole('combobox', { name: 'Report period' }), {
       target: { value: 'week' },
     });
+    expect(screen.getByRole('status').tagName).toBe('OUTPUT');
     expect(screen.getByRole('status')).toHaveTextContent('This Week preview');
     expect(screen.getAllByRole('progressbar')).toHaveLength(5);
   });

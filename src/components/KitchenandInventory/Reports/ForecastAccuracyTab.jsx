@@ -18,19 +18,14 @@ function IngredientAccuracyRow({ ingredient }) {
           <span className={styles.srOnly}>{isHighAccuracy ? 'High' : 'Moderate'} accuracy</span>
         </span>
       </div>
-      <div
-        className={styles.progress}
-        role="progressbar"
+      <progress
+        className={`${styles.progress} ${isHighAccuracy ? styles.highFill : styles.moderateFill}`}
         aria-label={`${name} forecast accuracy`}
-        aria-valuenow={accuracyPercent}
-        aria-valuemin={0}
-        aria-valuemax={100}
+        value={accuracyPercent}
+        max={100}
       >
-        <div
-          className={`${styles.fill} ${isHighAccuracy ? styles.highFill : styles.moderateFill}`}
-          style={{ width: `${accuracyPercent}%` }}
-        />
-      </div>
+        {accuracyPercent}%
+      </progress>
     </li>
   );
 }

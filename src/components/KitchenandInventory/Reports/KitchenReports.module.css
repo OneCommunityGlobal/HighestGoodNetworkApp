@@ -112,23 +112,38 @@
 }
 
 .progress {
+  display: block;
+  width: 100%;
   height: 6px;
+  appearance: none;
+  border: 0;
   overflow: hidden;
   background: var(--forecast-track, #e3e7ef);
   border-radius: 20px;
+  accent-color: var(--forecast-fill);
 }
 
-.fill {
-  height: 100%;
+.progress::-webkit-progress-bar {
+  background: var(--forecast-track, #e3e7ef);
+  border-radius: inherit;
+}
+
+.progress::-webkit-progress-value {
+  background: var(--forecast-fill);
+  border-radius: inherit;
+}
+
+.progress::-moz-progress-bar {
+  background: var(--forecast-fill);
   border-radius: inherit;
 }
 
 .highFill {
-  background: #4aa34c;
+  --forecast-fill: #4aa34c;
 }
 
 .moderateFill {
-  background: #c38a08;
+  --forecast-fill: #c38a08;
 }
 
 .summary .summaryNote {

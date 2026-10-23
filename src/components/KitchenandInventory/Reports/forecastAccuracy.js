@@ -39,5 +39,5 @@ export const forecastReportCSV = ingredients =>
       accuracyPercent,
     ]),
   ]
-    .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
+    .map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(','))
     .join('\r\n');

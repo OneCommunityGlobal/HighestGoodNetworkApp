@@ -64,7 +64,7 @@
   font-weight: 500;
   padding: 8px 10px;
   border-radius: 20px;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
 }
 
