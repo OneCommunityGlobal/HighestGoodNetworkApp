@@ -963,6 +963,52 @@
   color: #fff;
 }
 
+/* =========================================================
+   DARK MODE RATING COLOR OVERRIDES
+   Must override the global body.dark-mode * !important rule.
+   ========================================================= */
+
+:global(body.dark-mode) .pr-rating-did-not-review {
+  color: #ffb3b3 !important;
+}
+
+:global(body.dark-mode) .pr-rating-needs-details {
+  color: #9dccff !important;
+}
+
+:global(body.dark-mode) .pr-rating-good {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .pr-rating-exceptional {
+  color: #fff2a8 !important;
+}
+
+:global(body.dark-mode) .pr-rating-no-image {
+  color: #d0d5db !important;
+}
+
+/* Preserve status colors on PR number badges. */
+:global(body.dark-mode) .pr-grading-screen-pr-number.pr-rating-did-not-review {
+  color: #ffb3b3 !important;
+}
+
+:global(body.dark-mode) .pr-grading-screen-pr-number.pr-rating-needs-details {
+  color: #9dccff !important;
+}
+
+:global(body.dark-mode) .pr-grading-screen-pr-number.pr-rating-good {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .pr-grading-screen-pr-number.pr-rating-exceptional {
+  color: #fff2a8 !important;
+}
+
+:global(body.dark-mode) .pr-grading-screen-pr-number.pr-rating-no-image {
+  color: #d0d5db !important;
+}
+
 /* Rating dark */
 
 .pr-grading-screen-grading-table.dark-mode .pr-rating-did-not-review {
