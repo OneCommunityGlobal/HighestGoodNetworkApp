@@ -400,8 +400,13 @@ function TimeEntryForm(props) {
 
     const handlePostSubmitActions = async () => {
       switch (from) {
-        case 'Timer':
-          sendStop();
+        case 'Timer': {
+          const timerStopped = await sendStop();
+          if (!timerStopped) {
+            toast.warning(
+              'Time was logged, but the timer stop could not be confirmed. Refresh the timer before continuing.',
+            );
+          }
           clearForm();
           // Enhanced callback with additional data
           if (onTimeSubmitted) {
@@ -421,6 +426,7 @@ function TimeEntryForm(props) {
             }),
           );
           break;
+        }
         case 'WeekEnd':
           // Handle week-end time log completion
           if (props.onComplete) {
