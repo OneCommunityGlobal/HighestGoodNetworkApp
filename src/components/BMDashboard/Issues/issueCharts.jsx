@@ -9,6 +9,20 @@ import styles from './issueChart.module.css';
 const NARROW_CARD_CHART_WIDTH = 440; // make card-mode IssueChart X-axis labels rotate at 45° when chart width is below this value, below 1296px
 const X_AXIS_MAX_CHARS_PER_LINE = 10;
 
+// Fixed high-contrast palette so each year keeps a distinct, readable color in both themes
+const YEAR_COLORS = [
+  '#2563EB', // blue
+  '#F97316', // orange
+  '#16A34A', // green
+  '#DC2626', // red
+  '#9333EA', // purple
+  '#0891B2', // cyan
+  '#CA8A04', // amber
+  '#DB2777', // pink
+];
+
+const getYearColor = idx => YEAR_COLORS[idx % YEAR_COLORS.length];
+
 const stripNumericSuffix = value => {
   const str = String(value);
   let end = str.length;
@@ -103,7 +117,36 @@ const issueChartCardTickRotationPlugin = {
   },
 };
 
-const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
+// Draws the issue count above each bar (no extra dependency needed)
+const barValueLabelsPlugin = {
+  id: 'issueChartBarValueLabels',
+  afterDatasetsDraw(chart, _args, pluginOptions = {}) {
+    if (!pluginOptions.enabled) return;
+
+    const { ctx } = chart;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = pluginOptions.color || '#232323';
+
+    chart.data.datasets.forEach((dataset, datasetIndex) => {
+      if (!chart.isDatasetVisible(datasetIndex)) return;
+      const meta = chart.getDatasetMeta(datasetIndex);
+
+      meta.data.forEach((bar, index) => {
+        const value = Number(dataset.data?.[index]) || 0;
+        if (value <= 0) return;
+
+        // Scale text to the bar width so labels stay readable without overlapping neighbours
+        const fontSize = Math.max(8, Math.min(12, Math.floor((bar.width || 10) * 0.9)));
+        ctx.font = `600 ${fontSize}px sans-serif`;
+        ctx.fillText(String(value), bar.x, bar.y - 2);
+      });
+    });
+
+    ctx.restore();
+  },
+};
 
 const handleLegendClick = (e, legendItem, legend) => {
   const index = legendItem.datasetIndex;
@@ -147,11 +190,15 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
+  // 'multi' compares several years side by side; 'single' focuses on one year
+  const [viewMode, setViewMode] = useState('multi');
+  const [singleYear, setSingleYear] = useState(null);
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.innerWidth <= 640 : false,
   );
 
   const isCardVariant = variant === 'card';
+  const isSingleYearView = viewMode === 'single';
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -229,11 +276,14 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
   const flatIssueTypeOptions = flattenOptions(issueTypes);
   const uniqueYears = years.map(y => y.value);
+  const latestYear = uniqueYears.length ? uniqueYears[uniqueYears.length - 1] : null;
+  // Single-year view defaults to the most recent year until the user picks one
+  const selectedSingleYear = singleYear ?? latestYear;
 
   const yearColorMap = useMemo(
     () =>
       uniqueYears.reduce((acc, year, idx) => {
-        acc[year] = generateColor(idx);
+        acc[year] = getYearColor(idx);
         return acc;
       }, {}),
     [uniqueYears],
@@ -266,6 +316,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       issueTypes: [],
       years: [],
     });
+    setSingleYear(null);
   };
 
   const chartData = useMemo(() => {
@@ -307,7 +358,10 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       return aLower.localeCompare(bLower, undefined, { numeric: true });
     });
 
-    const filteredYears = filters.years.length ? filters.years : uniqueYears;
+    let filteredYears = filters.years.length ? filters.years : uniqueYears;
+    if (isSingleYearView) {
+      filteredYears = selectedSingleYear == null ? [] : [selectedSingleYear];
+    }
     const labels = selectedBases;
 
     const datasets = filteredYears.map(year => ({
@@ -324,7 +378,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     }));
 
     return { labels, datasets };
-  }, [issues, filters, uniqueYears, yearColorMap, darkMode]);
+  }, [issues, filters, uniqueYears, yearColorMap, darkMode, isSingleYearView, selectedSingleYear]);
 
   const chartAnalysis = useMemo(() => {
     const labels = chartData?.labels ?? [];
@@ -401,6 +455,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       maintainAspectRatio: false,
       layout: {
         padding: {
+          // Room above the tallest bar for its value label
+          top: 16,
           bottom: isCardVariant ? 8 : 56,
         },
       },
@@ -435,6 +491,10 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         },
         datalabels: {
           display: false,
+        },
+        issueChartBarValueLabels: {
+          enabled: true,
+          color: darkMode ? '#f3f4f6' : '#1f2937',
         },
         issueChartCardTickRotation: {
           enabled: isCardVariant,
@@ -499,7 +559,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   );
 
   const chartPlugins = useMemo(
-    () => [xAxisBackgroundPlugin(darkMode), issueChartCardTickRotationPlugin],
+    () => [xAxisBackgroundPlugin(darkMode), issueChartCardTickRotationPlugin, barValueLabelsPlugin],
     [darkMode],
   );
 
@@ -651,12 +711,29 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
   const activeFilterSummary = useMemo(() => {
     const issueTypeCount = filters.issueTypes.length || getValidIssueTypes(issues).length;
+
+    if (isSingleYearView) {
+      return `${issueTypeCount} Issue Types | ${selectedSingleYear ?? 'No year'}`;
+    }
+
     const yearList = filters.years.length ? filters.years : uniqueYears;
     const range =
       yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
 
     return `${issueTypeCount} Issue Types | ${range}`;
-  }, [filters.issueTypes, filters.years, issues, uniqueYears]);
+  }, [
+    filters.issueTypes,
+    filters.years,
+    issues,
+    uniqueYears,
+    isSingleYearView,
+    selectedSingleYear,
+  ]);
+
+  const viewToggleButtonClass = isActive =>
+    `${styles.issueChartViewToggleButton} ${
+      isActive ? styles.issueChartViewToggleButtonActive : ''
+    }`;
 
   const chartContent = (
     <div
@@ -679,6 +756,32 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           Issue Chart
         </h2>
       )}
+
+      {/* Switch between comparing several years and focusing on one year */}
+      <div
+        className={`${styles.issueChartViewToggle} ${
+          darkMode ? styles.issueChartViewToggleDark : ''
+        }`}
+        role="group"
+        aria-label="Chart view"
+      >
+        <button
+          type="button"
+          className={viewToggleButtonClass(!isSingleYearView)}
+          aria-pressed={!isSingleYearView}
+          onClick={() => setViewMode('multi')}
+        >
+          Compare Years
+        </button>
+        <button
+          type="button"
+          className={viewToggleButtonClass(isSingleYearView)}
+          aria-pressed={isSingleYearView}
+          onClick={() => setViewMode('single')}
+        >
+          Single Year
+        </button>
+      </div>
 
       <div
         className={styles.selectContainer}
@@ -714,19 +817,36 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           >
             Year:
           </label>
-          <Select
-            inputId={`year-select-${variant}`}
-            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
-            isMulti
-            options={years}
-            onChange={selected => handleFilterChange(selected, 'years')}
-            value={years.filter(option => filters.years.includes(option.value))}
-            styles={selectStyles}
-            aria-label="Filter issues by year"
-            placeholder="Select years"
-            components={{ MenuList: FilterMenuList }}
-            filterField="years"
-          />
+          {isSingleYearView ? (
+            <Select
+              inputId={`year-select-${variant}`}
+              className={`${styles.issueChartSelect} ${
+                darkMode ? styles.issueChartSelectDark : ''
+              }`}
+              options={years}
+              onChange={selected => setSingleYear(selected?.value ?? null)}
+              value={years.find(option => option.value === selectedSingleYear) || null}
+              styles={selectStyles}
+              aria-label="Select a year"
+              placeholder="Select a year"
+            />
+          ) : (
+            <Select
+              inputId={`year-select-${variant}`}
+              className={`${styles.issueChartSelect} ${
+                darkMode ? styles.issueChartSelectDark : ''
+              }`}
+              isMulti
+              options={years}
+              onChange={selected => handleFilterChange(selected, 'years')}
+              value={years.filter(option => filters.years.includes(option.value))}
+              styles={selectStyles}
+              aria-label="Filter issues by year"
+              placeholder="Select years"
+              components={{ MenuList: FilterMenuList }}
+              filterField="years"
+            />
+          )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'flex-end' }}>
