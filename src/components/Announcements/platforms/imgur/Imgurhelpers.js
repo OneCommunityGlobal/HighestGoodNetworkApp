@@ -24,7 +24,8 @@ export const IMGUR_ENDPOINTS = {
 
 /**
  * Validates image file against size and type constraints
- * @param {File} file - Image file to validate
+ *
+ * @param {File} file File to validate
  * @returns {Object} { isValid, error }
  */
 export const validateImageFile = file => {
@@ -50,7 +51,8 @@ export const validateImageFile = file => {
 
 /**
  * Validates title field
- * @param {string} title - Title text
+ *
+ * @param {string} title Title text
  * @returns {Object} { isValid, error }
  */
 export const validateTitle = title => {
@@ -73,7 +75,8 @@ export const validateTitle = title => {
 
 /**
  * Validates description field
- * @param {string} description - Description text
+ *
+ * @param {string} description Description text
  * @returns {Object} { isValid, error }
  */
 export const validateDescription = description => {
@@ -91,7 +94,8 @@ export const validateDescription = description => {
 
 /**
  * Validates tags field
- * @param {string} tags - Comma-separated tags
+ *
+ * @param {string} tags Comma-separated tags
  * @returns {Object} { isValid, error }
  */
 export const validateTags = tags => {
@@ -298,6 +302,81 @@ export const updateScheduledPost = async (postId, updates) => {
   }
 };
 
+// ─── UI Helper Functions ─────────────────────────────────────────────────────
+
+/**
+ * Get button style based on variant and dark mode
+ *
+ * @param {string} variant Button variant: 'primary', 'secondary', 'ghost', 'danger'
+ * @param {boolean} darkMode Dark mode enabled
+ * @returns {Object} Style object
+ */
+export const buttonStyle = (variant = 'primary', darkMode = false) => {
+  const baseStyle = {
+    padding: '0.5rem 1rem',
+    borderRadius: '0.375rem',
+    border: 'none',
+    cursor: 'pointer',
+    fontWeight: '500',
+    fontSize: '0.875rem',
+    transition: 'all 0.2s ease',
+  };
+
+  const variants = {
+    primary: {
+      ...baseStyle,
+      background: darkMode ? '#1f4d8f' : '#2563eb',
+      color: '#fff',
+    },
+    secondary: {
+      ...baseStyle,
+      background: darkMode ? '#374151' : '#d1d5db',
+      color: darkMode ? '#fff' : '#111827',
+    },
+    ghost: {
+      ...baseStyle,
+      background: 'transparent',
+      border: `1px solid ${darkMode ? '#4b5563' : '#d1d5db'}`,
+      color: darkMode ? '#e5e7eb' : '#374151',
+    },
+    danger: {
+      ...baseStyle,
+      background: darkMode ? '#7f1d1d' : '#fecaca',
+      color: darkMode ? '#fca5a5' : '#991b1b',
+    },
+  };
+
+  return variants[variant] || variants.primary;
+};
+
+/**
+ * Get field container style
+ *
+ * @param {boolean} darkMode Dark mode enabled
+ * @returns {Object} Style object
+ */
+export const fieldContainerStyle = (darkMode = false) => ({
+  marginBottom: '1rem',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.25rem',
+});
+
+/**
+ * Get field label style
+ *
+ * @param {boolean} darkMode Dark mode enabled
+ * @returns {Object} Style object
+ */
+export const fieldLabelStyle = (darkMode = false) => {
+  const textColor = darkMode ? '#e5e7eb' : '#374151';
+  return {
+    fontSize: '0.875rem',
+    fontWeight: '600',
+    color: textColor,
+  };
+};
+
 /**
  * Get field input style
  *
@@ -323,5 +402,22 @@ export const fieldInputStyle = (darkMode = false, hasError = false) => {
     fontFamily: 'inherit',
     fontSize: '0.875rem',
     transition: 'all 0.2s ease',
+  };
+};
+
+/**
+ * Get card container style
+ *
+ * @param {boolean} darkMode Dark mode enabled
+ * @returns {Object} Style object
+ */
+export const cardStyle = (darkMode = false) => {
+  const borderColor = darkMode ? '#374151' : '#e5e7eb';
+  const bgColor = darkMode ? '#111827' : '#f9fafb';
+  return {
+    padding: '1rem',
+    borderRadius: '0.5rem',
+    border: `1px solid ${borderColor}`,
+    backgroundColor: bgColor,
   };
 };
