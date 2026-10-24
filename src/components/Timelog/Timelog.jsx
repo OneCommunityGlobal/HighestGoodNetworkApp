@@ -69,6 +69,7 @@ import WeeklySummaries from './WeeklySummaries';
 import TimestampsTab from './TimestampsTab';
 import Badge from '../Badge';
 import { ENDPOINTS } from '~/utils/URL';
+import { permissions } from '../../utils/constants';
 // should be clear now too in fixing styling differences
 
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
@@ -252,7 +253,7 @@ const downloadPeriodPdf = () => {
 
 
   // Main Function component
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
 
   // access the store states
   const {

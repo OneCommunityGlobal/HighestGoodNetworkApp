@@ -10,6 +10,7 @@ import {
 } from '../../actions/badgeManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
+import styles from './AssignBadgePopup.module.css';
 import { toast } from 'react-toastify';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 
@@ -61,9 +62,7 @@ function AssignBadgePopup(props) {
       setBadgeList(response.data);
       setisLoadingBadge(false);
     } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Failed to load badges', error);
-      }
+      toast.error(`Failed to load badges: ${error.message}`);
     }
   };
 
@@ -86,31 +85,14 @@ function AssignBadgePopup(props) {
     return filterBadges(badgeList);
   }, [badgeList, searchedName]);
 
-  const addExistBadges = () => {
-    if (props.userProfile?.badgeCollection) {
-      return props.userProfile.badgeCollection
-        .filter(b => b.badge !== null)
-        .map(b => b.badge._id);
-    }
-    return [];
-  };
+  const addExistBadges = () =>
+    props.userProfile?.badgeCollection
+      ?.filter(b => b?.badge?._id && typeof b.badge === 'object')
+      .map(b => b.badge._id) ?? [];
   let existBadges = addExistBadges();
 
   return (
     <div data-testid="test-assignbadgepopup">
-      {/* Comprehensive dark mode hover style fix */}
-      {darkMode && (
-        <style>{`
-          .dark-mode-table tbody tr:hover,
-          .dark-mode-table tbody tr:hover td,
-          .dark-mode-table thead tr:hover,
-          .dark-mode-table thead tr:hover th,
-          .dark-mode-table thead tr:hover i {
-            background-color: #2b3553 !important;
-            color: #ffffff !important;
-          }
-        `}</style>
-      )}
       <input
         data-testid="test-searchBadgeName"
         type="text"
@@ -124,7 +106,7 @@ function AssignBadgePopup(props) {
         {!isLoadingBadge && (props.isTableOpen !== undefined ? props.isTableOpen : filteredBadges.length > 0) ? (
           <Table
             data-testid="test-badgeResults"
-            className={darkMode ? 'text-light dark-mode-table' : ''}
+            className={darkMode ? styles.tableDark : ''}
           >
             <thead
               style={

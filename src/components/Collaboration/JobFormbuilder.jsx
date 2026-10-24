@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import { Prompt } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
@@ -20,22 +21,26 @@ import {
   buildJobFormRequestor,
   isFieldRequired,
   normalizeQuestionForApi,
-  prepareQuestionClone,
   normalizeLoadedQuestions,
+  isDuplicateQuestion,
+  numberedQuestionLabel,
+  stripLeadingQuestionNumber,
 } from './jobFormQuestionUtils';
+import { hasUnsavedJobFormChanges } from './jobFormDirtyState';
 
+import { permissions } from '../../utils/constants';
 function JobFormBuilder() {
   const dispatch = useDispatch();
   const { auth } = useSelector(state => state);
-  const userRole = auth?.user?.role;
   const frontPermissions = auth?.user?.permissions?.frontPermissions;
   const rolePermissions = useSelector(state => state.role?.roles);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const canManageJobForms = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission('manageJobForms')),
-    [dispatch, userRole, frontPermissions, rolePermissions],
-  );
+  const canManageJobForms = useMemo(() => dispatch(hasPermission(permissions.manageJobForms)), [
+    dispatch,
+    frontPermissions,
+    rolePermissions,
+  ]);
 
   const getRequestor = () => buildJobFormRequestor(auth?.user);
   const [formFields, setFormFields] = useState([]);
@@ -63,6 +68,7 @@ function JobFormBuilder() {
   };
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
+  const [initialJobTitle, setInitialJobTitle] = useState('Please Choose an option');
   const jobPositions = JOB_FORM_POSITION_OPTIONS;
 
   const [newOption, setNewOption] = useState('');
@@ -71,10 +77,24 @@ function JobFormBuilder() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const markAsSaved = fields => {
+  const markAsSaved = (fields, savedJobTitle) => {
     setInitialFormFields(structuredClone(fields));
+    if (savedJobTitle !== undefined) setInitialJobTitle(savedJobTitle);
     setHasUnsavedChanges(false);
   };
+
+  // Prevent refresh while unsaved changes exist
+  useEffect(() => {
+    const handler = event => {
+      if (hasUnsavedChanges) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+
+    globalThis.addEventListener('beforeunload', handler);
+    return () => globalThis.removeEventListener('beforeunload', handler);
+  }, [hasUnsavedChanges]);
 
   // Reset builder after template is saved
   const resetBuilderState = () => {
@@ -102,9 +122,12 @@ function JobFormBuilder() {
           const formId = firstForm._id || firstForm.id;
 
           setCurrentFormId(formId);
-          setFormFields(normalizeLoadedQuestions(firstForm.questions || []));
-          setJobTitle(firstForm.title || 'Please Choose an option');
-          markAsSaved(normalizeLoadedQuestions(firstForm.questions || []));
+          const loadedQuestions = normalizeLoadedQuestions(firstForm.questions || []);
+          const loadedTitle = firstForm.title || 'Please Choose an option';
+
+          setFormFields(loadedQuestions);
+          setJobTitle(loadedTitle);
+          markAsSaved(loadedQuestions, loadedTitle);
           setNewField(initialNewField);
 
           console.log('Auto-loaded form:', formId);
@@ -114,62 +137,27 @@ function JobFormBuilder() {
       }
     };
 
-    loadFirstAvailableForm();
+    loadFirstAvailableForm().catch(error => {
+      console.error('Unexpected error auto-loading form:', error);
+    });
   }, []);
 
   // Detect unsaved changes
   useEffect(() => {
-    const changed =
-      JSON.stringify(formFields) !== JSON.stringify(initialFormFields) ||
-      JSON.stringify(newField) !== JSON.stringify(initialNewField) ||
-      templateName !== '' ||
-      selectedTemplate !== '';
+    const changed = hasUnsavedJobFormChanges({
+      formFields,
+      initialFormFields,
+      newField,
+      initialNewField,
+      templateName,
+      jobTitle,
+      initialJobTitle,
+    });
 
     setHasUnsavedChanges(changed);
-  }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
-
-  const syncFieldAction = async (actionLabel, apiCall, rollback) => {
-    try {
-      await apiCall();
-    } catch (error) {
-      console.error(`Error ${actionLabel}:`, error);
-      rollback?.();
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.error?.message ||
-        `Failed to ${actionLabel}. Changes were reverted locally.`;
-      alert(message);
-    }
-  };
+  }, [formFields, initialFormFields, newField, templateName, jobTitle, initialJobTitle]);
 
   // CRUD Functions with Dynamic Form ID
-  const cloneField = async (field, index) => {
-    const clonedField = prepareQuestionClone(field);
-    const previousFields = formFields;
-
-    const newFields = [
-      ...formFields.slice(0, index + 1),
-      clonedField,
-      ...formFields.slice(index + 1),
-    ];
-    setFormFields(newFields);
-
-    if (currentFormId) {
-      await syncFieldAction(
-        'clone question',
-        async () => {
-          await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-            question: clonedField,
-            position: index + 1,
-            requestor: getRequestor(),
-          });
-          markAsSaved(newFields);
-        },
-        () => setFormFields(previousFields),
-      );
-    }
-  };
-
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
 
@@ -221,7 +209,7 @@ function JobFormBuilder() {
   const editField = (field, index) => {
     // Transform the field structure to match what QuestionEditModal expects
     const questionForEdit = {
-      label: field.questionText,
+      label: stripLeadingQuestionNumber(field.questionText),
       type: field.questionType,
       options: field.options,
       required: isFieldRequired(field),
@@ -308,6 +296,11 @@ function JobFormBuilder() {
     }
 
     const fieldToAdd = normalizeQuestionForApi(newField);
+
+    if (isDuplicateQuestion(fieldToAdd, formFields)) {
+      const confirmAdd = window.confirm('You already have a similar question. Add Anyway?');
+      if (!confirmAdd) return;
+    }
     const updatedFields = [...formFields, fieldToAdd];
     setFormFields(updatedFields);
 
@@ -361,7 +354,7 @@ function JobFormBuilder() {
         requestor: getRequestor(),
       });
 
-      markAsSaved(formFields);
+      markAsSaved(formFields, jobTitle);
       console.log('Form updated successfully');
       alert('Form saved successfully!');
     } catch (error) {
@@ -376,6 +369,10 @@ function JobFormBuilder() {
 
   return (
     <div className={`${styles.pageWrapper} ${darkMode ? styles.darkMode : ''}`}>
+      <Prompt
+        when={hasUnsavedChanges}
+        message="You have unsaved changes. Are you sure you want to leave this page?"
+      />
       <div className={styles.formBuilderContainer}>
         <img
           src={OneCommunityImage}
@@ -405,13 +402,13 @@ function JobFormBuilder() {
             </select>
           </div>
         </div>
-        <h1 className={styles.jobformTitle}>FORM CREATION</h1>
+        <h1 className={styles.jobformTitle}>Job Question Set Builder</h1>
         {canManageJobForms ? (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
-              Fill the form with questions about a specific position you want to create an ad for.
-              The default questions will automatically appear and are alredy selected. You can pick
-              and choose them with the checkbox.
+              Use this page to create or edit question templates for job postings. Default questions
+              are preselected automatically, and you can customize the form by adding, removing, or
+              rearranging fields.
             </p>
             <QuestionSetManager
               formFields={formFields}
@@ -473,7 +470,6 @@ function JobFormBuilder() {
                       field={field}
                       index={index}
                       totalFields={formFields.length}
-                      onClone={cloneField}
                       onMove={moveField}
                       onDelete={deleteField}
                       onEdit={editField}
@@ -483,7 +479,7 @@ function JobFormBuilder() {
                     />
                     <div className={styles.formField}>
                       <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                        {field.questionText}
+                        {numberedQuestionLabel(field.questionText, index)}
                         {isFieldRequired(field) && (
                           <span className={styles.requiredMark} aria-hidden="true">
                             {' '}
@@ -578,10 +574,10 @@ function JobFormBuilder() {
                       }));
                     }}
                   >
-                    <option value="textbox">TextBox</option>
+                    <option value="textbox">Text Box</option>
                     <option value="email">Email</option>
-                    <option value="textarea">Textarea</option>
-                    <option value="checkbox">Checkbox</option>
+                    <option value="textarea">Text Area</option>
+                    <option value="checkbox">Check Box</option>
                     <option value="radio">Radio</option>
                     <option value="dropdown">Dropdown</option>
                     <option value="date">Date</option>

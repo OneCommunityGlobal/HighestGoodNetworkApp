@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import ActivityList from '../ActivityList';
 
@@ -9,7 +10,9 @@ const renderActivityList = (initialState = { theme: { darkMode: false } }) => {
   const store = mockStore(initialState);
   return render(
     <Provider store={store}>
-      <ActivityList />
+      <MemoryRouter>
+        <ActivityList />
+      </MemoryRouter>
     </Provider>,
   );
 };
@@ -54,6 +57,8 @@ describe('ActivityList', () => {
 
   test('sorts activities by date (latest to earliest)', () => {
     renderActivityList();
+
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
     fireEvent.change(screen.getByLabelText(/Sort By:/i), {
       target: { value: 'latest' },
