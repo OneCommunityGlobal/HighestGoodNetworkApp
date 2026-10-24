@@ -16,6 +16,7 @@ import ReactTooltip from 'react-tooltip';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import styles from './Announcements.module.css';
 import EmailPanel from './platforms/email';
+import ImgurAutoPoster from './platforms/imgur';
 import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
 import SocialMediaComposer from './platforms/social/SocialMediaComposer';
@@ -240,6 +241,9 @@ function Announcements({ title, email: initialEmail }) {
           ].map(platform => {
             let PlatformComposer;
             switch (platform) {
+              case 'imgur':
+                PlatformComposer = ImgurAutoPoster;
+                break;
               case 'slashdot':
                 PlatformComposer = SlashdotAutoPoster;
                 break;
