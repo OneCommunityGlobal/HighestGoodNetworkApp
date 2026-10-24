@@ -21,10 +21,12 @@
   color: #ffc107;
 }
 
-.darkMode .star.empty {
-  color: #555;
+.darkMode .star.empty,
+:global(body.dark-mode) .darkMode .star.empty {
+  color: #888 !important;
 }
 
-.darkMode .star.filled {
-  color: #ffc107;
-} 
+.darkMode .star.filled,
+:global(body.dark-mode) .darkMode .star.filled {
+  color: #ffc107 !important;
+}
