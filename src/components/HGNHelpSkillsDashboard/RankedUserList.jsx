@@ -1,7 +1,7 @@
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import httpService from '../../services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import { formatSkillName } from './FilerData.js';
 import styles from './style/RankedUserList.module.css';
@@ -9,6 +9,62 @@ import UserCard from './UserCard';
 
 const TOP_SKILLS_PER_SECTION = 4;
 const PAGE_SIZE = 20;
+const SOFTWARE_DEV_TEAM_NAME = 'software development team';
+const SOFTWARE_DEV_TEAM_ALIASES = new Set([
+  SOFTWARE_DEV_TEAM_NAME,
+  'hgn software development team',
+]);
+
+const getMemberFullName = member =>
+  `${member?.firstName || ''} ${member?.lastName || ''}`.trim().toLowerCase();
+
+/**
+ * Restrict ranked users to Software Development Team members.
+ * Fail closed: missing team or lookup errors return [] (never the full ranked list).
+ * Prefer email; only fall back to name when the ranked user has no email.
+ */
+const filterToSoftwareDevTeam = async users => {
+  try {
+    const teamsResponse = await httpService.get(ENDPOINTS.TEAM);
+    const teams = Array.isArray(teamsResponse.data) ? teamsResponse.data : [];
+    const softwareDevTeam = teams.find(team =>
+      SOFTWARE_DEV_TEAM_ALIASES.has(team.teamName?.trim().toLowerCase()),
+    );
+
+    if (!softwareDevTeam?._id) {
+      // Team not found — do not leak non-team ranked users.
+      return [];
+    }
+
+    const membersResponse = await httpService.get(ENDPOINTS.TEAM_MEMBERS(softwareDevTeam._id));
+    const members = Array.isArray(membersResponse.data) ? membersResponse.data : [];
+
+    const memberEmails = new Set(
+      members.map(member => (member.email || '').trim().toLowerCase()).filter(Boolean),
+    );
+    const memberNames = new Set(members.map(getMemberFullName).filter(Boolean));
+    const memberIds = new Set(
+      members.map(member => (member._id || member.userId || '').toString()).filter(Boolean),
+    );
+
+    return users.filter(user => {
+      const userId = (user.userId || user.user_id || '').toString();
+      if (userId && memberIds.has(userId)) return true;
+
+      const email = (user.email || '').trim().toLowerCase();
+      if (email) {
+        // Email is authoritative: never allow a name-only match to override a mismatch.
+        return memberEmails.has(email);
+      }
+
+      const name = (user.name || '').trim().toLowerCase();
+      return Boolean(name && memberNames.has(name));
+    });
+  } catch {
+    // Team membership lookup failed — show empty list rather than all ranked users.
+    return [];
+  }
+};
 
 const extractSkillEntries = skillData => {
   if (!skillData || typeof skillData !== 'object') return [];
@@ -64,9 +120,8 @@ const normalizeUser = user => {
     ).values(),
   );
 
-  // Mirror the backend's strict /ranked rule: a skill only counts for filtering
-  // and search if it's in the top 4 (by score) within its own section, so the
-  // filter stays meaningful instead of matching anyone who rated a skill at all.
+  // Filtering and search use every rated skill, matching the backend's /community rule;
+  // only the card's display list is trimmed to the top skills of each section.
   const skillsBySection = uniqueSkills.reduce((acc, entry) => {
     const section = entry.section || 'default';
     if (!acc[section]) acc[section] = [];
@@ -82,25 +137,30 @@ const normalizeUser = user => {
       .map(entry => entry.name),
   );
 
-  // Keep the raw skill keys (used by the filter buttons, which pass FilerData's
-  // keys) separate from the human-readable names search/display should use,
-  // and leave the original `skills` field untouched for other consumers.
-  const displaySkills = topSkillNames.map(formatSkillName);
-
   return {
     ...user,
+    allSkills: uniqueSkills.map(entry => entry.name),
     topSkills: topSkillNames,
-    displaySkills,
   };
 };
 
+// Put the skills the viewer filtered by at the front so they are never pushed out of view.
+const withMatchedSkillsFirst = (user, selectedSkills) => {
+  const matched = selectedSkills.filter(skill =>
+    (user.allSkills || []).some(own => own.toLowerCase() === skill.toLowerCase()),
+  );
+  const names = Array.from(new Set([...matched, ...(user.topSkills || [])]));
+  return { ...user, displaySkills: names.map(formatSkillName) };
+};
+
 function RankedUserList({
-  selectedSkills,
-  selectedPreferences,
-  searchQuery,
-  sortOrder,
+  selectedSkills = [],
+  selectedPreferences = [],
+  searchQuery = '',
+  sortOrder = 'asc',
   currentPage,
   setCurrentPage,
+  softwareDevTeamOnly = false,
 }) {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -114,9 +174,19 @@ function RankedUserList({
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(ENDPOINTS.HGN_COMMUNITY_MEMBERS);
-        const users = Array.isArray(response.data) ? response.data : [];
-        setAllUsers(users.map(normalizeUser));
+        // Help-request flow always uses ranked questionnaire data (Software Dev skills survey).
+        const endpoint = softwareDevTeamOnly
+          ? ENDPOINTS.HGN_FORM_RANKED
+          : ENDPOINTS.HGN_COMMUNITY_MEMBERS;
+
+        const response = await httpService.get(endpoint);
+        let users = Array.isArray(response.data) ? response.data.map(normalizeUser) : [];
+
+        if (softwareDevTeamOnly) {
+          users = await filterToSoftwareDevTeam(users);
+        }
+
+        setAllUsers(users);
       } catch (err) {
         const detail = err.response?.status ? ` (${err.response.status})` : '';
         setError(`Unable to load community members. Please try again later.${detail}`);
@@ -127,12 +197,12 @@ function RankedUserList({
     };
 
     fetchUsers();
-  }, []);
+  }, [softwareDevTeamOnly]);
 
   const query = searchQuery.trim().toLowerCase();
 
   const filteredUsers = allUsers.filter(user => {
-    const userSkills = (user.topSkills || []).map(skill => skill.toLowerCase());
+    const userSkills = (user.allSkills || []).map(skill => skill.toLowerCase());
 
     if (selectedSkills && selectedSkills.length > 0) {
       const matchesSkills = selectedSkills.every(skill => userSkills.includes(skill.toLowerCase()));
@@ -149,7 +219,9 @@ function RankedUserList({
 
     if (query) {
       const name = (user.name || '').toLowerCase();
-      const displaySkills = (user.displaySkills || []).map(skill => skill.toLowerCase());
+      const displaySkills = (user.allSkills || []).map(skill =>
+        formatSkillName(skill).toLowerCase(),
+      );
       // Match against both the raw skill keys and their human-readable labels,
       // since the keys (e.g. "UnitTest") don't contain the words a member
       // would actually type (e.g. "testing").
@@ -181,16 +253,21 @@ function RankedUserList({
   const handlePrevious = () => setCurrentPage(page => Math.max(page - 1, 1));
   const handleNext = () => setCurrentPage(page => Math.min(page + 1, totalPages));
 
-  if (loading) return <p className={`${styles.message}`}>Loading community members...</p>;
-  if (error) return <p className={`${styles.message}`}>{error}</p>;
-  if (!sortedUsers.length) return <p className={`${styles.message}`}>No members found.</p>;
+  if (loading) return <p className={styles.message}>Loading community members...</p>;
+  if (error) return <p className={styles.message}>{error}</p>;
+  if (!sortedUsers.length) {
+    const emptyMessage = softwareDevTeamOnly
+      ? 'No Software Development Team members match this skill yet'
+      : 'No members found.';
+    return <p className={styles.message}>{emptyMessage}</p>;
+  }
 
   return (
     <div className={darkMode ? `${styles.darkMode}` : ''}>
       <div className={`${styles.container}`}>
         {paginatedUsers.map(user => (
           <div key={user._id} className={`${styles.userWrapper}`}>
-            <UserCard user={user} />
+            <UserCard user={withMatchedSkillsFirst(user, selectedSkills)} />
           </div>
         ))}
       </div>
@@ -231,6 +308,7 @@ RankedUserList.propTypes = {
   sortOrder: PropTypes.string,
   currentPage: PropTypes.number.isRequired,
   setCurrentPage: PropTypes.func.isRequired,
+  softwareDevTeamOnly: PropTypes.bool,
 };
 
 export default RankedUserList;

@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILES: `${APIEndpoint}/userProfile`,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
+  HGN_FORMS: `${APIEndpoint}/form`,
   USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PAUSE: userId => `${APIEndpoint}/userProfile/${userId}/pause`,
@@ -46,6 +47,8 @@ export const ENDPOINTS = {
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
   USER_PROFILE_BASIC_INFO: source => `${APIEndpoint}/userProfile/basicInfo/${source}`,
+  // Single-user lookup contract: backend reads this as req.query.userId, not a path segment.
+  USER_PROFILE_BASIC_INFO_BY_ID: userId => `${APIEndpoint}/userProfile/basicInfo?userId=${userId}`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
   SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
@@ -114,6 +117,7 @@ export const ENDPOINTS = {
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/${wbsId}`,
   TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
   TASKS_BY_USERID: userId => `${APIEndpoint}/tasks/user/${userId}`,
+  RESOLVED_TASKS: (page, limit) => `${APIEndpoint}/tasks/resolved?page=${page}&limit=${limit}`,
   // TASKS_BY_userID: userId => `${APIEndpoint}/tasks/userProfile/${userId}`,
   TASK_DEL: (taskId, motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
@@ -694,6 +698,7 @@ export const ENDPOINTS = {
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
+  PROMOTION_PENDING: `${APIEndpoint}/promotion-pending`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
   // LinkedIn autoposter endpoints

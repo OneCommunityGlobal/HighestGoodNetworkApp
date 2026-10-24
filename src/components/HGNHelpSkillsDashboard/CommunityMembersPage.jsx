@@ -14,13 +14,14 @@ function CommunityMembersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
+  const softwareDevTeamOnly = Boolean(location.state?.softwareDevTeamOnly);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleSortOrderChange = event => setSortOrder(event.target.value);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder]);
+  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder, softwareDevTeamOnly]);
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
@@ -67,6 +68,7 @@ function CommunityMembersPage() {
           sortOrder={sortOrder}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
+          softwareDevTeamOnly={softwareDevTeamOnly}
         />
       </div>
     </div>
