@@ -1,3 +1,4 @@
+/* File version: 1.0.0 */
 /* stylelint-disable no-descending-specificity */
 
 /* Material Stock-Out Risk Indicator Card */
@@ -42,20 +43,6 @@
 
 .card.darkMode .title {
     color: #fff;
-}
-
-.projectLabel {
-    font-size: 12px;
-    color: var(--text-color-secondary, #666);
-    font-weight: 500;
-    padding: 4px 8px;
-    background-color: rgb(0 0 0 / 5%);
-    border-radius: 4px;
-}
-
-.card.darkMode .projectLabel {
-    color: #aaa;
-    background-color: rgb(255 255 255 / 10%);
 }
 
 /* Filter Group */
@@ -120,10 +107,66 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 300px;
+    min-height: 300px;
     font-size: 14px;
     color: var(--text-color, #666);
     text-align: center;
+}
+
+.empty {
+    flex-direction: column;
+    padding: 24px 16px;
+    gap: 12px;
+}
+
+.emptyIcon {
+    color: #65758b;
+    flex-shrink: 0;
+}
+
+.emptyTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.emptyMessage {
+    margin: 0;
+    max-width: 420px;
+}
+
+.prerequisites {
+    text-align: left;
+    max-width: 420px;
+}
+
+.prerequisitesTitle {
+    margin: 0 0 8px;
+    font-weight: 600;
+}
+
+.prerequisites ol {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.prerequisites li + li {
+    margin-top: 6px;
+}
+
+.chartDisabled {
+    background-color: #f3f4f6;
+    border: 1px dashed #9ca3af;
+    border-radius: 6px;
+}
+
+.card.darkMode .chartDisabled {
+    background-color: #252b39;
+    border-color: #65758b;
+}
+
+.card.darkMode .emptyIcon {
+    color: #aab7c9;
 }
 
 .errorContainer {

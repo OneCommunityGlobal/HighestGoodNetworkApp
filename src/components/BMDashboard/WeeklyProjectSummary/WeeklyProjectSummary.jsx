@@ -1,3 +1,4 @@
+// File version: 1.0.0
 // export default WeeklyProjectSummary;
 
 /* eslint-disable import/no-unresolved */
@@ -30,6 +31,7 @@ import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
+import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
 
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 
@@ -246,6 +248,12 @@ function WeeklyProjectSummary() {
         content: (
           <MaterialConsumptionCards quantityOfMaterialsUsedData={quantityOfMaterialsUsedData} />
         ),
+      },
+      {
+        title: 'Material Stock-Out Risk',
+        key: 'Material Stock-Out Risk',
+        className: 'full',
+        content: <MaterialStockOutRiskIndicator />,
       },
       {
         title: 'Issue Tracking',
