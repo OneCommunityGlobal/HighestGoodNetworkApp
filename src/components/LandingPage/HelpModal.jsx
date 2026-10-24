@@ -22,6 +22,8 @@ function HelpModal({ show, onHide, auth }) {
   const previousShowRef = useRef(show);
   const previousUserIdRef = useRef(userId);
   const hasRunEligibilityEffectRef = useRef(false);
+  // Monotonic id so only the most recent eligibility request may update state.
+  const eligibilityRequestIdRef = useRef(0);
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -49,22 +51,30 @@ function HelpModal({ show, onHide, auth }) {
     previousUserIdRef.current = userId;
 
     if (!userId) {
+      // Invalidate any in-flight request so it cannot update state for a signed-out user.
+      eligibilityRequestIdRef.current += 1;
       setEligibilityLoading(false);
       return undefined;
     }
 
     const fetchEligibility = async () => {
+      eligibilityRequestIdRef.current += 1;
+      const requestId = eligibilityRequestIdRef.current;
+      const isLatest = () => requestId === eligibilityRequestIdRef.current;
       setEligibilityLoading(true);
       setEligibilityError(false);
       try {
         const eligibilityResponse = await axios.get(ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+        if (!isLatest()) return;
         setEligible(Boolean(eligibilityResponse.data?.eligible));
       } catch {
+        // A superseded request's failure must not overwrite a newer result.
+        if (!isLatest()) return;
         // A failed eligibility check is not proof of ineligibility; keep eligible unknown (null).
         setEligible(null);
         setEligibilityError(true);
       } finally {
-        setEligibilityLoading(false);
+        if (isLatest()) setEligibilityLoading(false);
       }
     };
 

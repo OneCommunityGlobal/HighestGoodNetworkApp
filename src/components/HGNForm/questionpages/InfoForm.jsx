@@ -11,10 +11,6 @@ function InfoForm() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
   const isOwner = user.role === 'Owner';
-  const userProfiles = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
-  const userProfile = Array.isArray(userProfiles)
-    ? userProfiles.find(p => p._id === user.userid)
-    : userProfiles;
   const [newVolunteer, setNewVolunteer] = useState({
     ...formData,
     name: formData?.name || '',
@@ -27,6 +23,7 @@ function InfoForm() {
   };
   const [touched, setTouched] = useState(false);
   const [isSlackNameWarning, setIsSlackNameWarning] = useState(false);
+  const [validationErrors, setValidationErrors] = useState([]);
 
   const isValid = newVolunteer.name.length >= 2;
   const showError = touched && !isValid;
@@ -46,19 +43,16 @@ function InfoForm() {
 
   useEffect(() => {
     if (user && formData) {
-      const firstName = userProfile?.firstName || user?.firstName || '';
-      const lastName = userProfile?.lastName || user?.lastName || '';
       setNewVolunteer(prevState => ({
         ...formData,
-        ...prevState, // This preserves any user input
-        name: firstName && lastName ? `${firstName} ${lastName}` : '',
+        ...prevState, // This preserves any user input, including Name
         email: user.email,
         github: prevState.github || formData.github || '', // Preserve GitHub value
         slack: prevState.slack || formData.slack || '', // Preserve
       }));
       setLoading(false);
     }
-  }, [userProfile, user, formData]);
+  }, [user, formData]);
 
   const handleSlackChange = e => {
     const { checked } = e.target;
@@ -71,18 +65,23 @@ function InfoForm() {
   const handleNext = e => {
     e.preventDefault();
     updateFormData(newVolunteer);
+
+    // Mirrors the inputs' native required/minLength rules so a blocked Next is always explained.
+    const errors = [];
     if (!isValid) {
       setTouched(true);
-      return;
+      errors.push('Name must be at least 2 characters long.');
     }
-
-    if (
-      newVolunteer.isSlackSameAsName &&
-      newVolunteer.name.trim().toLowerCase() !== newVolunteer.slack.trim().toLowerCase()
-    ) {
+    if (!newVolunteer.github) errors.push('GitHub is required.');
+    if (!newVolunteer.slack) errors.push('Slack is required.');
+    if (!newVolunteer.isSlackSameAsName) {
+      errors.push('Please confirm that your Slack handle is your first and last name.');
+    } else if (newVolunteer.name.trim().toLowerCase() !== newVolunteer.slack.trim().toLowerCase()) {
       setIsSlackNameWarning(true);
-      return;
+      errors.push('Your Slack name must match the full name entered above.');
     }
+    setValidationErrors(errors);
+    if (errors.length > 0) return;
     dispatch(setformData(newVolunteer));
     navigate.push('/hgnform/page2', { isOwner });
   };
@@ -90,6 +89,7 @@ function InfoForm() {
   const handleCancel = e => {
     e.preventDefault();
     setTouched(false);
+    setValidationErrors([]);
 
     setNewVolunteer({
       // Rest all the pages when "Cancel" button is clicked
@@ -153,7 +153,7 @@ function InfoForm() {
 
   return !loading ? (
     <div className={`${styles.infoFormContainer} ${darkMode ? styles.dark : ''}`}>
-      <form onSubmit={handleNext}>
+      <form onSubmit={handleNext} noValidate>
         <div className={`${styles.formInputs}`}>
           <label htmlFor="name">
             Name <span style={{ color: 'red' }}>*</span>
@@ -256,6 +256,20 @@ function InfoForm() {
           Profile Page if they don’t.{' '}
         </span>
 
+        {validationErrors.length > 0 && (
+          <div
+            role="alert"
+            className={`${styles.errorMessage}`}
+            style={{ color: 'red', margin: '20px 20px' }}
+          >
+            Please fix the following before continuing:
+            <ul>
+              {validationErrors.map(message => (
+                <li key={message}>{message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className={`${styles.buttonContainer}`}>
           <button type="button" className={`${styles.hgnReturnButton}`} onClick={handleCancel}>
             Cancel

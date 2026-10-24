@@ -211,4 +211,87 @@ describe('HelpModal', () => {
       expect.not.objectContaining({ userId: expect.anything() }),
     );
   });
+  describe('overlapping eligibility requests', () => {
+    const deferredEligibility = () => {
+      const pending = [];
+      axios.get.mockImplementation(url => {
+        if (url === ENDPOINTS.HELP_CATEGORIES) return Promise.resolve({ data: [] });
+        return new Promise((resolve, reject) => pending.push({ resolve, reject }));
+      });
+      return pending;
+    };
+
+    const triggerVisibility = () => {
+      Object.defineProperty(document, 'visibilityState', {
+        value: 'visible',
+        configurable: true,
+      });
+      document.dispatchEvent(new Event('visibilitychange'));
+    };
+
+    it('does not let an older failed request overwrite a newer successful result', async () => {
+      const pending = deferredEligibility();
+      renderHelpModal(makeStore());
+      await waitFor(() => expect(pending).toHaveLength(1));
+
+      triggerVisibility();
+      await waitFor(() => expect(pending).toHaveLength(2));
+
+      pending[1].resolve({ data: { eligible: true, questionnaireCompleted: true } });
+      await waitFor(() =>
+        expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument(),
+      );
+
+      pending[0].reject(new Error('Request failed with status code 401'));
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(screen.queryByText(/Unable to verify your eligibility/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument();
+    });
+
+    it('does not let an older stale ineligible response overwrite a newer eligible result', async () => {
+      const pending = deferredEligibility();
+      renderHelpModal(makeStore());
+      await waitFor(() => expect(pending).toHaveLength(1));
+
+      triggerVisibility();
+      await waitFor(() => expect(pending).toHaveLength(2));
+
+      pending[1].resolve({ data: { eligible: true, questionnaireCompleted: true } });
+      await waitFor(() =>
+        expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument(),
+      );
+      pending[0].resolve({ data: { eligible: false, questionnaireCompleted: false } });
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument();
+    });
+
+    it('does not refetch help categories on reopen or visibility revalidation', async () => {
+      mockGet({ eligibility: { eligible: true, questionnaireCompleted: true } });
+      const store = makeStore();
+      const { rerender } = renderHelpModal(store, { show: true });
+      await screen.findByText('Select an option');
+
+      rerender(
+        <Provider store={store}>
+          <HelpModal show={false} onHide={vi.fn()} />
+        </Provider>,
+      );
+      rerender(
+        <Provider store={store}>
+          <HelpModal show onHide={vi.fn()} />
+        </Provider>,
+      );
+      triggerVisibility();
+      await waitFor(() => expectEligibilityRequestCount(3));
+
+      const categoryCalls = axios.get.mock.calls.filter(
+        ([url]) => url === ENDPOINTS.HELP_CATEGORIES,
+      );
+      expect(categoryCalls).toHaveLength(1);
+    });
+  });
 });
