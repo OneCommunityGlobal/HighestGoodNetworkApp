@@ -1,11 +1,68 @@
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import httpService from '../../services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
 import styles from './style/RankedUserList.module.css';
 import UserCard from './UserCard';
 
 const PAGE_SIZE = 20;
+const SOFTWARE_DEV_TEAM_NAME = 'software development team';
+const SOFTWARE_DEV_TEAM_ALIASES = new Set([
+  SOFTWARE_DEV_TEAM_NAME,
+  'hgn software development team',
+]);
+
+const getMemberFullName = member =>
+  `${member?.firstName || ''} ${member?.lastName || ''}`.trim().toLowerCase();
+
+/**
+ * Restrict ranked users to Software Development Team members.
+ * Fail closed: missing team or lookup errors return [] (never the full ranked list).
+ * Prefer email; only fall back to name when the ranked user has no email.
+ */
+const filterToSoftwareDevTeam = async users => {
+  try {
+    const teamsResponse = await httpService.get(ENDPOINTS.TEAM);
+    const teams = Array.isArray(teamsResponse.data) ? teamsResponse.data : [];
+    const softwareDevTeam = teams.find(team =>
+      SOFTWARE_DEV_TEAM_ALIASES.has(team.teamName?.trim().toLowerCase()),
+    );
+
+    if (!softwareDevTeam?._id) {
+      // Team not found — do not leak non-team ranked users.
+      return [];
+    }
+
+    const membersResponse = await httpService.get(ENDPOINTS.TEAM_MEMBERS(softwareDevTeam._id));
+    const members = Array.isArray(membersResponse.data) ? membersResponse.data : [];
+
+    const memberEmails = new Set(
+      members.map(member => (member.email || '').trim().toLowerCase()).filter(Boolean),
+    );
+    const memberNames = new Set(members.map(getMemberFullName).filter(Boolean));
+    const memberIds = new Set(
+      members.map(member => (member._id || member.userId || '').toString()).filter(Boolean),
+    );
+
+    return users.filter(user => {
+      const userId = (user.userId || user.user_id || '').toString();
+      if (userId && memberIds.has(userId)) return true;
+
+      const email = (user.email || '').trim().toLowerCase();
+      if (email) {
+        // Email is authoritative: never allow a name-only match to override a mismatch.
+        return memberEmails.has(email);
+      }
+
+      const name = (user.name || '').trim().toLowerCase();
+      return Boolean(name && memberNames.has(name));
+    });
+  } catch {
+    // Team membership lookup failed — show empty list rather than all ranked users.
+    return [];
+  }
+};
 
 const extractSkillEntries = skillData => {
   if (!skillData || typeof skillData !== 'object') return [];
@@ -66,13 +123,14 @@ const normalizeUser = user => {
 };
 
 function RankedUserList({
-  selectedSkills,
-  selectedPreferences,
-  searchQuery,
-  sortBy,
-  sortOrder,
+  selectedSkills = [],
+  selectedPreferences = [],
+  searchQuery = '',
+  sortBy = 'name',
+  sortOrder = 'asc',
   currentPage,
   setCurrentPage,
+  softwareDevTeamOnly = false,
 }) {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -101,17 +159,26 @@ function RankedUserList({
           params.search = searchQuery.trim();
         }
 
-        const endpoint = hasFilters
-          ? `${process.env.REACT_APP_APIENDPOINT}/hgnform/ranked`
-          : `${process.env.REACT_APP_APIENDPOINT}/hgnHelp/community`;
+        // Help-request flow always uses ranked questionnaire data (Software Dev skills survey).
+        const endpoint =
+          hasFilters || softwareDevTeamOnly
+            ? ENDPOINTS.HGN_FORM_RANKED
+            : `${process.env.REACT_APP_APIENDPOINT}/hgnHelp/community`;
 
-        if (!hasFilters && sortBy === 'name' && sortOrder) {
+        if (!hasFilters && !softwareDevTeamOnly && sortBy === 'name' && sortOrder) {
           params.sortOrder = sortOrder;
         }
 
-        const response = await axios.get(endpoint, { params });
-        setAllUsers(response.data.map(normalizeUser));
-      } catch (err) {
+        const response = await httpService.get(endpoint, { params });
+        let users = Array.isArray(response.data) ? response.data.map(normalizeUser) : [];
+
+        if (softwareDevTeamOnly) {
+          users = await filterToSoftwareDevTeam(users);
+        }
+
+        setAllUsers(users);
+      } catch {
+        // Ranked/community fetch failed — show empty state instead of leaving a spinner.
         setAllUsers([]);
       } finally {
         setLoading(false);
@@ -119,7 +186,7 @@ function RankedUserList({
     };
 
     fetchUsers();
-  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder, sortBy]);
+  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder, sortBy, softwareDevTeamOnly]);
 
   const filteredUsers = searchQuery
     ? allUsers.filter(user => {
@@ -168,7 +235,10 @@ function RankedUserList({
   }
 
   if (!sortedUsers.length) {
-    return <p className={styles.message}>No users found.</p>;
+    const emptyMessage = softwareDevTeamOnly
+      ? 'No Software Development Team members match this skill yet'
+      : 'No users found.';
+    return <p className={styles.message}>{emptyMessage}</p>;
   }
 
   return (
@@ -218,6 +288,7 @@ RankedUserList.propTypes = {
   sortOrder: PropTypes.string,
   currentPage: PropTypes.number.isRequired,
   setCurrentPage: PropTypes.func.isRequired,
+  softwareDevTeamOnly: PropTypes.bool,
 };
 
 export default RankedUserList;
