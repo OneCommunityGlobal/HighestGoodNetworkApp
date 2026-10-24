@@ -161,7 +161,7 @@
 }
 
 .addButton:hover{
-  background: #3f844d
+  background: #3f844d;
 }
 
 .cardGrid{
@@ -252,7 +252,7 @@
 .good {
   background: #eef2ff;
   color: #4f46e5;
-    border: 1px solid #c7d2fe;
+  border: 1px solid #c7d2fe;
 }
 
 .cardDetails {
@@ -275,8 +275,8 @@
 }
 
 .detailsButton {
-  width: 100%;
-  padding: 10px 14px;
+  width: auto;
+  padding: 8px 14px;
   border: 1px solid #d1d5db;
   background: #fff;
   border-radius: 8px;
@@ -285,7 +285,7 @@
 }
 
 .detailsButton:hover {
-  background: #f8fafc
+  background: #f8fafc;
 }
 
 .placeholderSection {
@@ -306,6 +306,141 @@
   margin: 0;
   color: #6b7280;
   font-size: 0.95rem;
+}
+
+/* Orders List & Card Styles */
+.ordersList,
+.plantingList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.orderCard,
+.plantingCard {
+  border: 1px solid #dbe4d8;
+  border-radius: 12px;
+  padding: 18px;
+  background-color: #fcfdfb;
+}
+
+.orderCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.orderId {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.orderSupplier {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 2px 0 0;
+}
+
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.statusOrdered {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.statusShipped {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.orderDetails {
+  margin: 14px 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.orderDetails p {
+  margin: 2px 0;
+}
+
+.orderActions {
+  display: flex;
+  gap: 10px;
+}
+
+.statusActionButton {
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.statusActionButton:hover {
+  background-color: #f8fafc;
+}
+
+/* Planting Schedule Styles */
+.scheduleTitleIcon {
+  margin-right: 6px;
+  vertical-align: middle;
+  color: #2f6b3b;
+}
+
+.plantingCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.taskQuantityName {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.taskDetailText {
+  margin: 2px 0;
+  font-size: 0.875rem;
+}
+
+.scheduledDateTag {
+  background-color: #e8f7e9;
+  color: #2f7a38;
+  border: 1px solid #9acb9a;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.addPlantingTaskButton {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px dashed #9acb9a;
+  background-color: transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #2f6b3b;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addPlantingTaskButton:hover {
+  background-color: #e8f3e8;
 }
 
 @media (width <= 1024px) {
@@ -335,8 +470,14 @@
   .cardDetails {
     grid-template-columns: 1fr;
   }
+
+  .plantingCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
+/* Dark Mode Overrides */
 :global(.dark-mode) .container {
   background-color: #1b2a41;
   color: #f3f4f6;
@@ -347,6 +488,7 @@
 :global(.dark-mode) .inventorySubtitle,
 :global(.dark-mode) .cardLocation,
 :global(.dark-mode) .detailLabel,
+:global(.dark-mode) .orderSupplier,
 :global(.dark-mode) .placeholderText {
   color: #b5bac5;
 }
@@ -354,8 +496,11 @@
 :global(.dark-mode) .metricCard,
 :global(.dark-mode) .inventorySection,
 :global(.dark-mode) .orchardCard,
+:global(.dark-mode) .orderCard,
+:global(.dark-mode) .plantingCard,
 :global(.dark-mode) .navButton,
 :global(.dark-mode) .detailsButton,
+:global(.dark-mode) .statusActionButton,
 :global(.dark-mode) .placeholderSection {
   background-color: #2f4157;
   border-color: #3a506b;
@@ -374,6 +519,8 @@
 
 :global(.dark-mode) .inventoryTitle,
 :global(.dark-mode) .cardTitle,
+:global(.dark-mode) .orderId,
+:global(.dark-mode) .taskQuantityName,
 :global(.dark-mode) .placeholderTitle,
 :global(.dark-mode) .detailValue {
   color: #f3f4f6;
@@ -389,11 +536,13 @@
 }
 
 :global(.dark-mode) .navButton:hover,
-:global(.dark-mode) .detailsButton:hover {
+:global(.dark-mode) .detailsButton:hover,
+:global(.dark-mode) .statusActionButton:hover {
   background-color: #3a506b;
 }
 
-:global(.dark-mode) .excellent {
+:global(.dark-mode) .excellent,
+:global(.dark-mode) .scheduledDateTag {
   background-color: #193d31;
   color: #86efac;
   border-color: #2f6b3b;
@@ -403,4 +552,27 @@
   background-color: #312e81;
   color: #c7d2fe;
   border-color: #4f46e5;
+}
+
+:global(.dark-mode) .statusOrdered {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+:global(.dark-mode) .statusShipped {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+:global(.dark-mode) .scheduleTitleIcon {
+  color: #86efac;
+}
+
+:global(.dark-mode) .addPlantingTaskButton {
+  border-color: #2f6b3b;
+  color: #86efac;
+}
+
+:global(.dark-mode) .addPlantingTaskButton:hover {
+  background-color: #193d31;
 }
