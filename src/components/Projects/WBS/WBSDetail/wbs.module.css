@@ -406,8 +406,9 @@
   justify-content: center;
 }
 
-.editTaskTableDark tr:hover {
-  background: #111831;
+.editTaskTableDark tbody tr:hover > td {
+  background-color: #111831 !important;
+  color: #fff !important;
 }
 
 .editTaskTextareaDark {

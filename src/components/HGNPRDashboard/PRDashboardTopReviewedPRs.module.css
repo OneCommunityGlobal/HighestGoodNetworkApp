@@ -1,0 +1,37 @@
+/* stylelint-disable */
+.wrapper {
+  width: 100%;
+  min-height: 100vh;
+  padding: 1rem 2rem 2rem;
+  overflow-x: hidden;
+}
+
+.item {
+  background: #fff;
+  color: #212529;
+}
+
+.subtitle {
+  color: #6c757d;
+}
+
+/* ===== DARK MODE ===== */
+
+.wrapper.dark {
+  background-color: #1b2a41;
+}
+
+.wrapper.dark .title,
+.wrapper.dark .subtitle {
+  color: #fff;
+}
+
+.item.dark {
+  background-color: #24354f;
+  color: #fff;
+  border-color: #3b4f6b;
+}
+
+.item.dark .subtitle {
+  color: #9ab0cc;
+}

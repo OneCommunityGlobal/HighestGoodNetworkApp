@@ -195,6 +195,8 @@
 .trendSection {
   margin-top: 28px;
   padding: 24px;
+  min-width: 0;
+  box-sizing: border-box;
   background: #fafafa;
   border-radius: 8px;
   border: 1px solid #e8e8e8;
@@ -218,7 +220,7 @@
 
 .trendGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -260,9 +262,9 @@
   margin-bottom: 8px;
 }
 
-.trendRow span:first-child { flex: 1; color: #666; font-weight: 500; }
+.trendRow span:first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; color: #666; font-weight: 500; }
 .darkMode .trendRow span:first-child { color: #aaa; }
-.trendRow span:last-child { font-weight: 600; color: #1a1a1a; min-width: 50px; text-align: right; }
+.trendRow span:last-child { font-weight: 600; color: #1a1a1a; min-width: 50px; text-align: right; flex-shrink: 0; }
 .darkMode .trendRow span:last-child { color: #ddd; }
 
 .trendIndicator { font-size: 16px; font-weight: 700; display: inline-block; width: 24px; text-align: center; }
@@ -286,7 +288,7 @@
   padding-top: 0;
 }
 
-.attributeRow .label { flex: 1; color: #666; font-weight: 500; }
+.attributeRow .label { flex: 1; min-width: 0; overflow-wrap: anywhere; color: #666; font-weight: 500; }
 .darkMode .attributeRow .label { color: #aaa; }
 .attributeRow .value { font-weight: 600; color: #1a1a1a; text-align: right; }
 .darkMode .attributeRow .value { color: #ddd; }

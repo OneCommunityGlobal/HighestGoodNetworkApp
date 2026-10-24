@@ -145,18 +145,18 @@
   border-color: #4285F4;
 }
 
-.darkDateInput {
+.dateInput.darkDateInput {
   background-color: #253342;
   color: #fff;
   border-color: #2d4059;
   color-scheme: dark;
 }
 
-.darkDateInput:focus {
+.dateInput.darkDateInput:focus {
   border-color: #3a506b;
 }
 
-.darkDateInput::placeholder {
+.dateInput.darkDateInput::placeholder {
   color: #94a3b8;
 }
 
