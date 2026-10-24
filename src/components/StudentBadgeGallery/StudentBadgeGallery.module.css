@@ -261,7 +261,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card,
+  .card {
+    transition: none;
+  }
+
   .icon {
     transition: none;
   }
