@@ -1,8 +1,8 @@
-// File version: 1.0.0
+// File version: 1.1.0
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import { FolderSearch, PackageOpen } from 'lucide-react';
+import { FolderSearch, Info, PackageOpen } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -115,6 +115,7 @@ function MaterialStockOutRiskIndicator() {
   const [error, setError] = useState(null);
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [chartData, setChartData] = useState([]);
+  const [readiness, setReadiness] = useState(null);
 
   const requestControllerRef = useRef(null);
 
@@ -147,6 +148,7 @@ function MaterialStockOutRiskIndicator() {
     requestControllerRef.current?.abort();
 
     setChartData([]);
+    setReadiness(null);
     setError(null);
 
     if (selectedProjectIds.length === 0) {
@@ -161,7 +163,7 @@ function MaterialStockOutRiskIndicator() {
       setLoading(true);
 
       const response = await axios.get(ENDPOINTS.BM_MATERIAL_STOCK_OUT_RISK, {
-        params: { projectIds: selectedProjectIds.join(',') },
+        params: { projectIds: selectedProjectIds.join(','), includeReadiness: 'true' },
         headers: {
           Authorization: localStorage.getItem('token'),
         },
@@ -169,7 +171,10 @@ function MaterialStockOutRiskIndicator() {
       });
 
       if (!controller.signal.aborted) {
-        setChartData(Array.isArray(response.data) ? response.data : []);
+        // Older backends still return the chart array without readiness metadata.
+        const data = response.data;
+        setChartData(Array.isArray(data) ? data : data?.chartData || []);
+        setReadiness(Array.isArray(data?.readiness) ? data.readiness : null);
       }
     } catch (err) {
       if (!controller.signal.aborted) {
@@ -287,6 +292,44 @@ function MaterialStockOutRiskIndicator() {
           aria-label="Select projects to filter material stock-out risk data"
         />
       </div>
+
+      {hasSelectedProjects && !loading && !error && (
+        <section className={styles.readiness} aria-label="Data Readiness Status">
+          <h5>Data Readiness Status</h5>
+          <details>
+            <summary>
+              <Info size={16} aria-hidden="true" /> About data readiness
+            </summary>
+            <p>
+              Ready means every mapped material can produce an estimate. Partial means some
+              materials lack a material type, positive stock, or a usage rate, or their estimate is
+              outside the chart range. Not Configured means no materials are mapped.
+            </p>
+          </details>
+          {readiness?.length > 0 ? (
+            <ul>
+              {readiness.map(project => (
+                <li key={project.projectId}>
+                  <strong>
+                    {selectedProjects.find(selected => selected.value === project.projectId)?.label}
+                  </strong>
+                  : {project.status}
+                  <p>
+                    {project.readyMaterialCount} of {project.materialCount} materials ready
+                  </p>
+                  {project.missingInputs.map(message => (
+                    <p key={message} className={styles.readinessWarning}>
+                      {message}
+                    </p>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>Data readiness status is unavailable.</p>
+          )}
+        </section>
+      )}
 
       <div
         className={!hasSelectedProjects ? styles.chartDisabled : undefined}
