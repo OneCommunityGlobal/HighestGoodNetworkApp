@@ -221,3 +221,43 @@
   margin-right: 8px;
   color: #555; /* Or whatever color you prefer */
 }
+
+/* Dark mode */
+.container.dark {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.container.dark .tabs {
+  background-color: #253342;
+}
+
+/* Keep the selected tab distinct from the dark tab bar. */
+.container.dark .activeTab {
+  background: #475569;
+  color: #f8fafc;
+}
+
+/* Reserve border space so the hover border outline does not shift the tab layout. */
+.container.dark .tabButton {
+  border: 1px solid transparent;
+}
+
+.container.dark .tabButton:hover {
+  background: #334155;
+  border: 1px solid #fcfcfd;
+}
+
+/* Maintain readable portfolio button text and borders against the dark surface. */
+.container.dark .portfolioBtn {
+  background: #334155;
+  border-color: #475569;
+  color: #f8fafc;
+}
+
+/* Highlight the portfolio action with a brighter surface and green hover border. */
+.container.dark .portfolioBtn:hover {
+  background: #475569;
+  border-color: #41ff01;
+  color: #f8fafc;
+}

@@ -17,6 +17,7 @@ import { useHistory } from 'react-router-dom';
 const StudentProfile = () => {
   const dispatch = useDispatch();
   const { profile, subjectProgress, error } = useSelector(state => state.student);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [activeTab, setActiveTab] = useState('Educational Progress');
   const history = useHistory();
 
@@ -34,7 +35,8 @@ const StudentProfile = () => {
   console.log('Subject Progress:', subjectProgress.completionPercentage);
 
   return (
-    <div className={styles.container}>
+    // Main container with conditional dark mode class
+    <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
       {/* Header Section */}
       <div className={styles.header}>
         <div className={styles.profileSection}>
