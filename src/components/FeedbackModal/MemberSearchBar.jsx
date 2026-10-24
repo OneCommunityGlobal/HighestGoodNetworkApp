@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Input, ListGroup, ListGroupItem } from 'reactstrap';
 import styles from './MemberSearchBar.module.css';
 
 function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [searchTerm, setSearchTerm] = useState(value);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -80,7 +82,7 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
   };
 
   return (
-    <div className={`${styles.memberSearchContainer}`}>
+    <div className={`${styles.memberSearchContainer} ${darkMode ? styles.darkMode : ''}`}>
       <Input
         type="text"
         placeholder="Full Name"
@@ -101,6 +103,7 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
           {suggestions.map(suggestion => (
             <ListGroupItem
               key={`suggestion-${id}-${suggestion.firstName}-${suggestion.lastName}`}
+              className={`${styles.listGroupItem}`}
               onClick={() => handleSuggestionClick(suggestion)}
               action
             >
