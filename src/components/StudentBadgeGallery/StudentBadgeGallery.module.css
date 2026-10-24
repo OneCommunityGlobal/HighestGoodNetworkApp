@@ -56,7 +56,6 @@
   padding: 1.2rem;
   text-align: center;
   box-shadow: 2px 2px 6px rgb(0 0 0 / 15%);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   width: 190px;
   height: 210px;
   display: flex;
@@ -91,7 +90,6 @@
   border-radius: 50%;
   object-fit: contain;
   margin-bottom: 10px; /* 👈 ensures space between image and label */
-  transition: transform 0.2s ease;
 }
 
 .badge_image_container img:hover,
@@ -260,12 +258,12 @@
   filter: grayscale(100%);
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: no-preference) {
   .card {
-    transition: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .icon {
-    transition: none;
+    transition: transform 0.2s ease;
   }
 }
