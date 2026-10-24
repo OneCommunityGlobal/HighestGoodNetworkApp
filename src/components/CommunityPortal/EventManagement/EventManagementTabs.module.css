@@ -14,7 +14,7 @@
   background-color: transparent;
   font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: font-weight 0.2s ease-in-out, border-bottom 0.2s ease-in-out;
   font-weight: normal;
 }
 
@@ -38,7 +38,8 @@
   border: none;
   background-color: lightgray;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
+    font-weight 0.2s ease-in-out;
 }
 
 .sectionBtn.active {
