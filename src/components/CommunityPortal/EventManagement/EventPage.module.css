@@ -285,11 +285,30 @@
   color: #ff5252;
 }
 
-/* Calendar tile highlight - uses global override since react-calendar injects its own classes */
-.eventPage :global(.react-calendar__tile--active) {
-  background: #0057b8;
-  color: white;
+/* Calendar tile highlight - uses global override since react-calendar injects its own classes.
+   Hover/focus are restated so react-calendar's lighter default hover blue cannot lower contrast. */
+.eventPage :global(.react-calendar__tile.react-calendar__tile--active),
+.eventPage :global(.react-calendar__tile.react-calendar__tile--active:enabled:hover),
+.eventPage :global(.react-calendar__tile.react-calendar__tile--active:enabled:focus) {
+  background: #003f87;
+  color: #fff;
   font-weight: bold;
+  box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #003f87;
+}
+
+.eventPageDark :global(.react-calendar__tile.react-calendar__tile--active),
+.eventPageDark :global(.react-calendar__tile.react-calendar__tile--active:enabled:hover),
+.eventPageDark :global(.react-calendar__tile.react-calendar__tile--active:enabled:focus) {
+  background: #ffd54f;
+  color: #0b1a30;
+  font-weight: bold;
+  box-shadow: inset 0 0 0 2px #0b1a30, 0 0 0 2px #ffd54f;
+}
+
+.eventPageDark
+  :global(.react-calendar__tile.react-calendar__tile--now:not(.react-calendar__tile--active)) {
+  background: #3a506b;
+  color: #fff;
 }
 
 /* Dark mode for the third-party react-calendar and react-datepicker widgets,
