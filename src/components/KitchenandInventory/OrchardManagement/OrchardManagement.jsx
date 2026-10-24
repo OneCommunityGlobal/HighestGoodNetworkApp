@@ -107,6 +107,9 @@ function OrchardManagement() {
   const [activeSection, setActiveSection] = useState('Trees & Bushes');
   const [orders, setOrders] = useState(initialOrders);
   const [plantingTasks, setPlantingTasks] = useState(initialPlantingSchedule);
+  const [isPlantingFormOpen, setIsPlantingFormOpen] = useState(false);
+  const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
+  const [selectedDetails, setSelectedDetails] = useState(null);
 
   // Status progression: ordered -> shipped -> delivered
   const handleStatusChange = orderId => {
@@ -120,15 +123,56 @@ function OrchardManagement() {
     );
   };
 
-  const handleAddPlantingTask = () => {
-    const newTask = {
-      id: plantingTasks.length + 1,
-      quantityAndName: '1x Apple Tree',
-      location: 'Row 1, Position 6',
-      notes: 'Water thoroughly after planting',
-      scheduledDate: '2024-12-01',
-    };
-    setPlantingTasks(prev => [...prev, newTask]);
+  const handleAddPlantingTask = event => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const quantity = Number(formData.get('quantity'));
+    const plantName = String(formData.get('plantName') || '').trim();
+    const row = String(formData.get('row') || '').trim();
+    const position = String(formData.get('position') || '').trim();
+    const notes = String(formData.get('notes') || '').trim();
+    const scheduledDate = String(formData.get('scheduledDate') || '');
+
+    if (!plantName || !quantity || quantity < 1 || !row || !position || !scheduledDate) return;
+
+    setPlantingTasks(prev => [
+      ...prev,
+      {
+        id: Math.max(0, ...prev.map(task => Number(task.id) || 0)) + 1,
+        quantityAndName: `${quantity}x ${plantName}`,
+        location: `Row ${row}, Position ${position}`,
+        notes: notes || 'No notes provided',
+        scheduledDate,
+      },
+    ]);
+    setIsPlantingFormOpen(false);
+  };
+
+  const handleAddOrder = event => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const supplier = String(formData.get('supplier') || '').trim();
+    const items = String(formData.get('items') || '').trim();
+    const orderedDate = String(formData.get('orderedDate') || '');
+    const expectedDate = String(formData.get('expectedDate') || '');
+    if (!supplier || !items || !orderedDate || !expectedDate) return;
+
+    setOrders(prev => {
+      const nextNumber =
+        Math.max(0, ...prev.map(order => Number(order.id.replace('OR-', '')) || 0)) + 1;
+      return [
+        ...prev,
+        {
+          id: `OR-${String(nextNumber).padStart(3, '0')}`,
+          supplier,
+          items,
+          orderedDate,
+          expectedDate,
+          status: 'ordered',
+        },
+      ];
+    });
+    setIsOrderFormOpen(false);
   };
 
   // Pending orders exclude delivered items
@@ -238,7 +282,11 @@ function OrchardManagement() {
                   </div>
                 </div>
 
-                <button type="button" className={styles.detailsButton}>
+                <button
+                  type="button"
+                  className={styles.detailsButton}
+                  onClick={() => setSelectedDetails({ type: 'tree', item })}
+                >
                   View Details
                 </button>
               </div>
@@ -256,12 +304,43 @@ function OrchardManagement() {
               <p className={styles.inventorySubtitle}>Track orders from nurseries and suppliers</p>
             </div>
 
-            <button type="button" className={styles.addButton}>
-              + New Order
+            <button
+              type="button"
+              className={styles.addButton}
+              onClick={() => setIsOrderFormOpen(open => !open)}
+            >
+              {isOrderFormOpen ? 'Cancel' : '+ New Order'}
             </button>
           </div>
 
+          {isOrderFormOpen && (
+            <form className={styles.entryForm} onSubmit={handleAddOrder}>
+              <label className={styles.formField}>
+                Supplier
+                <input name="supplier" required />
+              </label>
+              <label className={styles.formField}>
+                Items
+                <input name="items" required placeholder="2x Apple Trees" />
+              </label>
+              <label className={styles.formField}>
+                Ordered date
+                <input name="orderedDate" type="date" required />
+              </label>
+              <label className={styles.formField}>
+                Expected delivery
+                <input name="expectedDate" type="date" required />
+              </label>
+              <button type="submit" className={styles.addButton}>
+                Save Order
+              </button>
+            </form>
+          )}
+
           <div className={styles.ordersList}>
+            {orders.every(order => order.status === 'delivered') && (
+              <p className={styles.placeholderText}>No pending orders.</p>
+            )}
             {orders
               .filter(order => order.status !== 'delivered')
               .map(order => (
@@ -294,7 +373,11 @@ function OrchardManagement() {
                   </div>
 
                   <div className={styles.orderActions}>
-                    <button type="button" className={styles.detailsButton}>
+                    <button
+                      type="button"
+                      className={styles.detailsButton}
+                      onClick={() => setSelectedDetails({ type: 'order', item: order })}
+                    >
                       View Details
                     </button>
 
@@ -359,10 +442,42 @@ function OrchardManagement() {
           <button
             type="button"
             className={styles.addPlantingTaskButton}
-            onClick={handleAddPlantingTask}
+            onClick={() => setIsPlantingFormOpen(open => !open)}
           >
-            + Add Planting Task
+            {isPlantingFormOpen ? 'Cancel' : '+ Add Planting Task'}
           </button>
+
+          {isPlantingFormOpen && (
+            <form className={styles.entryForm} onSubmit={handleAddPlantingTask}>
+              <label className={styles.formField}>
+                Plant name
+                <input name="plantName" required placeholder="Apple Tree" />
+              </label>
+              <label className={styles.formField}>
+                Quantity
+                <input name="quantity" type="number" min="1" defaultValue="1" required />
+              </label>
+              <label className={styles.formField}>
+                Row
+                <input name="row" type="number" min="1" required />
+              </label>
+              <label className={styles.formField}>
+                Position
+                <input name="position" type="number" min="1" required />
+              </label>
+              <label className={styles.formField}>
+                Notes
+                <input name="notes" placeholder="Planting notes" />
+              </label>
+              <label className={styles.formField}>
+                Scheduled date
+                <input name="scheduledDate" type="date" required />
+              </label>
+              <button type="submit" className={styles.addButton}>
+                Save Planting Task
+              </button>
+            </form>
+          )}
         </div>
       )}
 
@@ -373,6 +488,44 @@ function OrchardManagement() {
             <h3 className={styles.placeholderTitle}>{activeSection}</h3>
           </div>
         )}
+
+      {selectedDetails && (
+        <div
+          className={styles.inventorySection}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="details-panel-title"
+        >
+          <h3 id="details-panel-title" className={styles.inventoryTitle}>
+            Details
+          </h3>
+          {selectedDetails.type === 'tree' ? (
+            <>
+              <p>{selectedDetails.item.name}</p>
+              <p>Location: {selectedDetails.item.location}</p>
+              <p>Planted: {selectedDetails.item.plantedDate}</p>
+              <p>Age: {calculateAgeInYears(selectedDetails.item.plantedDate)}</p>
+              <p>Condition: {selectedDetails.item.condition}</p>
+            </>
+          ) : (
+            <>
+              <p>Order: {selectedDetails.item.id}</p>
+              <p>Supplier: {selectedDetails.item.supplier}</p>
+              <p>Items: {selectedDetails.item.items}</p>
+              <p>Status: {selectedDetails.item.status}</p>
+              <p>Ordered: {selectedDetails.item.orderedDate}</p>
+              <p>Expected: {selectedDetails.item.expectedDate}</p>
+            </>
+          )}
+          <button
+            type="button"
+            className={styles.detailsButton}
+            onClick={() => setSelectedDetails(null)}
+          >
+            Close Details
+          </button>
+        </div>
+      )}
     </div>
   );
 }
