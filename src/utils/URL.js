@@ -445,6 +445,8 @@ export const ENDPOINTS = {
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
+  BM_RENTAL_COST_OVER_TIME: `${APIEndpoint}/bm/rentals/cost-over-time`,
+  BM_TOOLS_COST_BREAKDOWN: `${APIEndpoint}/bm/tools/cost-breakdown`,
   BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
   BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
 
