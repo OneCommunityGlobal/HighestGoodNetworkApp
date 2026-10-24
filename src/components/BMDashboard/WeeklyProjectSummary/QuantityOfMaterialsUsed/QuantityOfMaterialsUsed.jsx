@@ -809,6 +809,7 @@ function QuantityOfMaterialsUsed({ data }) {
             className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
               darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
             }`}
+            calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -856,6 +857,7 @@ function QuantityOfMaterialsUsed({ data }) {
             className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
               darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
             }`}
+            calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}

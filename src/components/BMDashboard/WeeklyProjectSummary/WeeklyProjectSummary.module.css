@@ -33,7 +33,7 @@
 
 .weeklySummaryHeaderContainer {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   width: 88%;
@@ -59,7 +59,7 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   margin-left: auto;
   min-width: 0;
 
@@ -376,7 +376,7 @@
 .weeklyProjectSummaryDashboardCategoryContent {
   padding: 15px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 20px;
   border-top: 1px solid var(--card-shadow);
   animation: fade-in 0.3s ease-in-out;
@@ -791,8 +791,27 @@
     width: 100%;
   }
 
+  .weeklySummaryHeaderControls :global(.form-control) {
+    max-width: none;
+  }
+
   .weeklySummaryHeaderControls select {
     width: 100%;
+  }
+
+  .weeklySummaryHeaderTitle {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent,
+  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard,
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 1;
   }
 
   .weeklySummaryShareBtn {
@@ -842,6 +861,15 @@
 }
 
 @media (width <=576px) {
+  .weeklyProjectSummaryDashboardContainer {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .weeklySummaryHeaderTitle {
+    font-size: 20px;
+  }
+
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
   }
