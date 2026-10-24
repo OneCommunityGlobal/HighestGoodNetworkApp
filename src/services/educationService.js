@@ -66,3 +66,57 @@ export const submitTaskUploads = async (taskId, uploadUrls) => {
     throw new Error('Failed to submit task uploads');
   }
 };
+
+/**
+ * Get all comments a student has posted on a task (student's own view)
+ * @param {string} taskId
+ */
+export const getStudentTaskComments = async taskId => {
+  try {
+    const response = await axios.get(ENDPOINTS.TASK_COMMENTS_STUDENT(taskId));
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch task comments');
+  }
+};
+
+/**
+ * Get all student comments on a task (educator's aggregated view)
+ * @param {string} taskId
+ */
+export const getEducatorTaskComments = async taskId => {
+  try {
+    const response = await axios.get(ENDPOINTS.TASK_COMMENTS_EDUCATOR(taskId));
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch task comments');
+  }
+};
+
+/**
+ * Post a new comment on a task (student only)
+ * @param {string} taskId
+ * @param {string} commentText
+ */
+export const postTaskComment = async (taskId, commentText) => {
+  try {
+    const response = await axios.post(ENDPOINTS.TASK_COMMENTS_STUDENT(taskId), { commentText });
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to post comment');
+  }
+};
+
+/**
+ * Soft-delete a comment (student, own comment only)
+ * @param {string} taskId
+ * @param {string} commentId
+ */
+export const deleteTaskComment = async (taskId, commentId) => {
+  try {
+    const response = await axios.delete(ENDPOINTS.TASK_COMMENT_DELETE(taskId, commentId));
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to delete comment');
+  }
+};
