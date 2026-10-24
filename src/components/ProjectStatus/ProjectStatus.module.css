@@ -1,31 +1,33 @@
 .wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(1.5rem, 4vw, 3rem);
-  align-items: flex-start;
-  padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2rem); /* <-- adds spacing from page edges */
-  min-height: 100vh; /* fills the page so dark mode has no leftover white gap below short content */
+  display: grid;
+  grid-template-columns: minmax(0, 640px) minmax(260px, 340px);
+  gap: 1rem clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  place-content: start center;
+  padding: 1rem clamp(1rem, 4vw, 2rem) 2rem;
+  min-height: 100vh;
   box-sizing: border-box;
-  max-width: 2200px; /* keeps the chart from stranding on the left with a wall of empty space on ultra-wide screens, without clipping normal desktop widths */
   margin: 0 auto;
 }
 
 .leftSection {
-  flex: 1 1 320px;
-  min-width: 0; /* lets flex item (and the chart inside it) shrink below its content size instead of overflowing */
+  display: contents;
 }
 
 .header {
+  grid-column: 1 / -1;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .title {
   font-weight: 700;
   font-size: 22px;
-  margin-bottom: 1rem;
+  margin: 0;
 }
 
 .controls {
@@ -36,6 +38,7 @@
 }
 
 .btn {
+  min-height: 38px;
   padding: 6px 14px;
   border: none;
   border-radius: 6px;
@@ -48,6 +51,8 @@
 }
 
 .chartWrapper {
+  grid-column: 1;
+  grid-row: 2;
   position: relative;
   width: 100%;
   min-width: 0;
@@ -101,13 +106,22 @@
 }
 
 .legend {
+  grid-column: 1;
+  grid-row: 3;
   display: flex;
   justify-content: center;
-  margin-top: 84px;
+  flex-wrap: wrap;
+  margin-top: 0;
   gap: 1rem;
 }
 
 .legendItem {
+  padding: 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -122,6 +136,8 @@
 }
 
 .total {
+  grid-column: 1;
+  grid-row: 4;
   text-align: center;
   margin-top: 10px;
   font-weight: 600;
@@ -130,13 +146,14 @@
 
 /* Panel styling */
 .panel {
+  grid-column: 2;
+  grid-row: 2;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   font-size: 14px;
-  flex: 1 1 240px;
-  min-width: 220px;
-  max-width: 320px;
+  width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   padding: 1.2rem;
   background: #f9fafb;
@@ -145,8 +162,11 @@
 }
 
 .stat {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.25rem 0.5rem;
+  padding: 0.5rem;
+  border-radius: 6px;
   align-items: center;
   font-weight: 600;
 }
@@ -157,9 +177,85 @@
 }
 
 .statValue {
+  font-variant-numeric: tabular-nums;
   font-size: 18px;
   font-weight: bold;
   color: #111;
+}
+
+.statHighlighted,
+.legendItem[aria-pressed='true'] {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+
+.statChange {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.infoButton {
+  position: relative;
+  margin-left: 0.35rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: help;
+}
+
+.kpiTooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: 180px;
+  max-width: 60vw;
+  padding: 8px;
+  border-radius: 6px;
+  background: #111;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
+  visibility: hidden;
+}
+
+.infoButton:hover .kpiTooltip,
+.infoButton:focus .kpiTooltip {
+  visibility: visible;
+}
+
+.legendItem:focus-visible,
+.infoButton:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+
+.comparisonNote,
+.delayedTrend {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.comparisonNote {
+  color: #666;
+}
+
+.delayedTrend {
+  font-weight: 600;
+}
+
+.darkMode .comparisonNote {
+  color: #e2e8f0;
+}
+
+.loading,
+.error,
+.emptyState {
+  grid-column: 1;
+  grid-row: 2;
 }
 
 /* Loading and Error States */
@@ -223,6 +319,8 @@
 
 /* Date Validation Error */
 .dateError {
+  grid-column: 1 / -1;
+  grid-row: 2;
   background: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: 8px;
@@ -294,7 +392,17 @@
    border of its own, so without this the box relies entirely on the
    browser's native default input chrome, which renders inconsistently
    (sometimes missing edges) on mobile viewports. */
-:global(.react-datepicker-wrapper) input {
+.controls :global(.react-datepicker-wrapper) {
+  flex: 1 1 150px;
+  max-width: 180px;
+  min-width: 0;
+}
+
+.controls :global(.react-datepicker-wrapper) input {
+  width: 100%;
+  min-height: 38px;
+  padding: 6px 28px 6px 10px;
+  font: inherit;
   box-sizing: border-box;
   border: 2px solid #6b7280;
   border-radius: 4px;
@@ -391,29 +499,32 @@
   background: #334155;
 }
 
-/* Responsive: stack the stats panel below the chart instead of letting it
-   overlap the title/date filters on narrow (mobile) viewports. */
+/* Keep controls and KPIs readable on narrow screens. */
 @media (width <= 768px) {
   .wrapper {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
     padding: 1rem;
   }
 
-  .panel {
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-  }
-
   .header {
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .controls {
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .controls :global(.react-datepicker-wrapper) {
+    width: 100%;
+    max-width: none;
+  }
+
+  .panel {
+    grid-column: 1;
+    grid-row: 5;
   }
 }
