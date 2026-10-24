@@ -16,6 +16,7 @@ import {
   faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../../utils/URL';
+import CopyQuestionnaireLinkButton from '../../HGNForm/access/CopyQuestionnaireLinkButton';
 import styles from './AccessManagementModal.module.css';
 
 const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false }) => {
@@ -536,6 +537,11 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                 <div className={`${styles.textMuted} ${styles.small}`}>
                   Invited: {app?.invitedOn ? new Date(app.invitedOn).toLocaleDateString() : 'N/A'}
                 </div>
+              )}
+
+              {/* Dropbox invite unlocks the permanent HGN questionnaire link for this user */}
+              {status === 'invited' && isDropbox && (
+                <CopyQuestionnaireLinkButton className={styles.btnAction} />
               )}
 
               {(status === 'active' || status === 'invited') && appName !== 'slack' && (
