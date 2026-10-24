@@ -101,17 +101,26 @@ function renderDotTopOrBottom(lineKey, color, dataLength) {
     const isLast = dataLength != null && index === dataLength - 1;
     if (!isFirst && !isLast) return null;
 
-    const planned = payload.plannedCost;
-    const actual = payload.actualCost;
-    const predicted = payload.predictedCost;
-    const values = [planned, actual, predicted].filter(v => v != null);
-    if (values.length === 0) return null;
+    // Rank this series among the values actually plotted at this point (highest first)
+    // and stack labels by rank rather than a plain "am I the max" check. When two series'
+    // values are close, their y-positions (cy) are nearly identical too, so a binary
+    // top/bottom split put both labels at the same offset and they overlapped; ranked
+    // offsets keep every label at its own vertical tier regardless of how close the
+    // underlying values are.
+    const entries = [
+      { key: 'plannedCost', value: payload.plannedCost },
+      { key: 'actualCost', value: payload.actualCost },
+      { key: 'predictedCost', value: payload.predictedCost },
+    ].filter(entry => entry.value != null);
+    if (entries.length === 0) return null;
 
-    const max = Math.max(...values);
+    entries.sort((a, b) => b.value - a.value);
+    const rank = entries.findIndex(entry => entry.key === lineKey);
+
     const dx = isFirst ? 32 : -18;
     const textAnchor = isLast ? 'end' : 'middle';
 
-    const y = value === max ? cy - 20 : cy + 18;
+    const y = cy - 20 + rank * 18;
 
     return (
       <text
