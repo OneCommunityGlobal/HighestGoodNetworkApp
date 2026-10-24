@@ -65,7 +65,7 @@
   font-size: 24px;
   font-weight: bold;
   background-color: #1c2541;
-  color: #fff !important;
+  color: #fff;
   margin: 0;
 }
 
@@ -383,7 +383,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #fff !important;
+  color: #fff;
 }
 
 .avatars img {
@@ -552,8 +552,8 @@
   }
 
  .caseCard {
-  background: white !important;
-  color: #333 !important;
+  background: white;
+  color: #333;
   border: 1px solid #ddd !important;
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
@@ -562,8 +562,8 @@
 }
 
 .caseCardDark {
-  background: #3a506b !important;
-  color: #fff !important;
+  background: #3a506b;
+  color: #fff;
   border: 1px solid #555 !important;
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
