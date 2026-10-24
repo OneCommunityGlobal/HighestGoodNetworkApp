@@ -459,12 +459,13 @@ export default function RentalChart() {
 
         setRentalCostData(rentalResponse.data);
         setCostBreakdownData(breakdownWithNames);
-      } catch (err) {
+      } catch {
         toast.error('Error fetching rental cost chart data');
+        setError('Error loading rental cost chart data');
       }
     };
 
-    fetchChartData();
+    void fetchChartData();
   }, [selectedProject, dateRange]);
 
   // Track the chart area's width so fonts and labels can shrink on small screens
@@ -635,11 +636,11 @@ export default function RentalChart() {
       );
     }
 
-    // if (error) {
-    //   return (
-    //     <div className={`${styles.error} ${darkMode ? styles['text-light'] : ''}`}>{error}</div>
-    //   );
-    // }
+    if (error) {
+      return (
+        <div className={`${styles.error} ${darkMode ? styles['text-light'] : ''}`}>{error}</div>
+      );
+    }
 
     if (chartData.datasets.length === 0) {
       return (
