@@ -96,53 +96,53 @@
 
 /* Mode button variants */
 .mode-buttons .btn-primary {
-  background: #007bff;
-  border-color: #007bff;
+  background: #0056b3;
+  border-color: #0056b3;
   color: white;
 }
 
 .mode-buttons .btn-outline-primary {
   background: white;
-  color: #007bff;
-  border-color: #007bff;
+  color: #0056b3;
+  border-color: #0056b3;
 }
 
 .mode-buttons .btn-outline-primary:hover {
-  background: #007bff;
+  background: #0056b3;
   color: white;
 }
 
 .mode-buttons .btn-success {
-  background: #28a745;
-  border-color: #28a745;
+  background: #1e7e34;
+  border-color: #1e7e34;
   color: white;
 }
 
 .mode-buttons .btn-outline-success {
   background: white;
-  color: #28a745;
-  border-color: #28a745;
+  color: #1e7e34;
+  border-color: #1e7e34;
 }
 
 .mode-buttons .btn-outline-success:hover {
-  background: #28a745;
+  background: #1e7e34;
   color: white;
 }
 
 .mode-buttons .btn-info {
-  background: #17a2b8;
-  border-color: #17a2b8;
+  background: #0f6674;
+  border-color: #0f6674;
   color: white;
 }
 
 .mode-buttons .btn-outline-info {
   background: white;
-  color: #17a2b8;
-  border-color: #17a2b8;
+  color: #0f6674;
+  border-color: #0f6674;
 }
 
 .mode-buttons .btn-outline-info:hover {
-  background: #17a2b8;
+  background: #0f6674;
   color: white;
 }
 
@@ -906,9 +906,9 @@ body.dark-mode .alert-warning * {
 }
 
 .dark-mode .mode-buttons .btn-outline-primary:hover {
-  background: #3182ce;
+  background: #0056b3;
   color: white;
-  border-color: #3182ce;
+  border-color: #0056b3;
 }
 
 .dark-mode .mode-buttons .btn-outline-success {
@@ -918,9 +918,9 @@ body.dark-mode .alert-warning * {
 }
 
 .dark-mode .mode-buttons .btn-outline-success:hover {
-  background: #38a169;
+  background: #1e7e34;
   color: white;
-  border-color: #38a169;
+  border-color: #1e7e34;
 }
 
 .dark-mode .mode-buttons .btn-outline-info {
@@ -930,9 +930,9 @@ body.dark-mode .alert-warning * {
 }
 
 .dark-mode .mode-buttons .btn-outline-info:hover {
-  background: #17a2b8;
+  background: #0f6674;
   color: white;
-  border-color: #17a2b8;
+  border-color: #0f6674;
 }
 
 .dark-mode .action-buttons .btn-outline-secondary {
