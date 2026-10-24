@@ -3,7 +3,7 @@
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
+import { UncontrolledTooltip } from 'reactstrap';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
@@ -12,6 +12,10 @@ import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+import {
+  fetchWeeklyProjectSummaryProjectStatus,
+  getWeeklyProjectSummaryProjectStatusRequestKey,
+} from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
 import IssuesCharts from '../Issues/LongestOpenIssuesChart';
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
@@ -38,105 +42,113 @@ import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
+import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
 
-const projectStatusButtons = [
-  {
-    title: 'Total Projects',
-    value: 426,
-    change: '+16% week over week',
-    bgColor: '#F0FFEE',
-    buttonColor: '#BAF0B6',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Completed Projects',
-    value: 127,
-    change: '+14% week over week',
-    bgColor: '#F3FCFF',
-    buttonColor: '#C1EFFB',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Delayed Projects',
-    value: 34,
-    change: '-18% week over week',
-    bgColor: '#FFE9FA',
-    buttonColor: '#FECFF3',
-    textColor: '#C82F2F',
-  },
-  {
-    title: 'Active Projects',
-    value: 265,
-    change: '+3% week over week',
-    bgColor: '#E8E8FF',
-    buttonColor: '#CBCBFE',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Avg Project Duration',
-    value: '17 hrs',
-    change: '+13% week over week',
-    bgColor: '#FFF6EE',
-    buttonColor: '#FFD8A5',
-    textColor: '#FFD8A5',
-  },
-  {
-    title: 'Total Material Cost',
-    value: '$27.6K',
-    change: '+9% week over week',
-    bgColor: '#FFF3F3',
-    buttonColor: '#FBC1C2',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Total Material Used',
-    value: '2714',
-    change: '+11% week over week',
-    bgColor: '#DAC8FF',
-    buttonColor: '#B28ECC',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Active Projects',
-    value: '265',
-    change: '+3% week over week',
-    bgColor: '#E8E8FF',
-    buttonColor: '#CBCBFE',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Total Labor Hours Invested',
-    value: '12.8K',
-    change: '+17% week over week',
-    bgColor: '#E5C1FC',
-    buttonColor: '#F6E1FB',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Total Labor Cost',
-    value: '$18.4K',
-    change: '+14% week over week',
-    bgColor: '#FFFDF3',
-    buttonColor: '#FBF9C1',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Material Available',
-    value: 693,
-    change: '-8% week over week',
-    bgColor: '#B4D9C5',
-    buttonColor: '#31BD41',
-    textColor: '#C82F2F',
-  },
-  {
-    title: 'Material Wasted',
-    value: 879,
-    change: '+14% week over week',
-    bgColor: '#EFBABB',
-    buttonColor: '#F79395',
-    textColor: '#328D1B',
-  },
+const projectStatusButtonData = [
+  ['Total Projects', 'totalProjects', '#F0FFEE', '#BAF0B6', '#328D1B'],
+  ['Completed Projects', 'completedProjects', '#F3FCFF', '#C1EFFB', '#328D1B'],
+  ['Delayed Projects', 'delayedProjects', '#FFE9FA', '#FECFF3', '#C82F2F'],
+  ['Active Projects', 'activeProjects', '#E8E8FF', '#CBCBFE', '#328D1B'],
+  ['Avg Project Duration', 'avgProjectDuration', '#FFF6EE', '#FFD8A5', '#FFD8A5'],
+  ['Total Material Cost', 'totalMaterialCost', '#FFF3F3', '#FBC1C2', '#328D1B'],
+  ['Total Material Used', 'totalMaterialUsed', '#DAC8FF', '#B28ECC', '#328D1B'],
+  ['Total Labor Hours Invested', 'totalLaborHoursInvested', '#E5C1FC', '#F6E1FB', '#328D1B'],
+  ['Total Labor Cost', 'totalLaborCost', '#FFFDF3', '#FBF9C1', '#328D1B'],
+  ['Material Available', 'materialAvailable', '#B4D9C5', '#31BD41', '#C82F2F'],
+  ['Material Wasted', 'materialWasted', '#EFBABB', '#F79395', '#328D1B'],
 ];
+
+const projectStatusButtons = projectStatusButtonData.map(
+  ([title, metricKey, bgColor, buttonColor, textColor]) => ({
+    title,
+    metricKey,
+    bgColor,
+    buttonColor,
+    textColor,
+  }),
+);
+
+const PERIOD_COMPARABLE = 'PERIOD_COMPARABLE';
+const UNAVAILABLE = 'UNAVAILABLE';
+const EMPTY_PROJECT_STATUS_METRICS = {};
+
+function formatProjectStatusValue(metric) {
+  if (!metric || metric.comparisonType === UNAVAILABLE || metric.value === null) {
+    return 'N/A';
+  }
+
+  if (metric.unit === 'USD') {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(metric.value);
+  }
+
+  if (metric.unit === 'hrs') {
+    return `${metric.value} hrs`;
+  }
+
+  if (typeof metric.value === 'number') {
+    return new Intl.NumberFormat('en-US').format(metric.value);
+  }
+
+  return metric.value;
+}
+
+function getProjectStatusUnavailableReason(metric) {
+  if (!metric || (metric.comparisonType !== UNAVAILABLE && metric.value !== null)) {
+    return null;
+  }
+
+  return metric.unavailableReason || 'Data does not exist for the selected period.';
+}
+
+function getProjectStatusComparisonUnavailableText(comparisonPeriodFilter) {
+  return `No ${comparisonPeriodFilter.toLowerCase()} comparison available`;
+}
+
+function formatProjectStatusChange(metric, comparisonPeriodFilter) {
+  const percentageChange = metric?.percentageChange;
+
+  if (comparisonPeriodFilter === 'No Comparison') {
+    return null;
+  }
+
+  if (
+    metric?.comparisonType !== PERIOD_COMPARABLE ||
+    percentageChange === null ||
+    percentageChange === undefined ||
+    typeof percentageChange === 'string'
+  ) {
+    return getProjectStatusComparisonUnavailableText(comparisonPeriodFilter);
+  }
+
+  const percent = Math.round(percentageChange * 100);
+  const prefix = percent > 0 ? '+' : '';
+  return `${prefix}${percent}% ${comparisonPeriodFilter.toLowerCase()}`;
+}
+
+function getProjectStatusChangeColor(metric) {
+  if (typeof metric?.percentageChange !== 'number') {
+    return '#C82F2F';
+  }
+
+  if (metric.percentageChange === 0) {
+    return '#000';
+  }
+
+  return metric.percentageChange > 0 ? '#328D1B' : '#C82F2F';
+}
+
+function getProjectStatusErrorMessage(error) {
+  return (
+    error?.response?.data?.message ||
+    error?.message ||
+    'Unable to load Project Status data. Please try again.'
+  );
+}
 
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
@@ -146,7 +158,36 @@ function WeeklyProjectSummary() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
+  const comparisonPeriodFilter = useSelector(
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'No Comparison',
+  );
+  const projectStatusData = useSelector(state => state.weeklyProjectSummary?.projectStatusData);
+  const projectStatusLoading = useSelector(
+    state => state.weeklyProjectSummary?.projectStatusLoading || false,
+  );
+  const projectStatusError = useSelector(state => state.weeklyProjectSummary?.projectStatusError);
+  const projectStatusDataRequestKey = useSelector(
+    state => state.weeklyProjectSummary?.projectStatusDataRequestKey,
+  );
+  const projectStatusErrorRequestKey = useSelector(
+    state => state.weeklyProjectSummary?.projectStatusErrorRequestKey,
+  );
   const containerRef = useRef(null);
+  const comparisonEnabled = comparisonPeriodFilter !== 'No Comparison';
+
+  const currentDateRange = useMemo(() => parseWeeklySummaryDateRange(dateRangeFilter), [
+    dateRangeFilter,
+  ]);
+
+  const comparisonDateRange = useMemo(
+    () =>
+      calculateComparisonDates(
+        comparisonPeriodFilter,
+        currentDateRange.startDate,
+        currentDateRange.endDate,
+      ),
+    [comparisonPeriodFilter, currentDateRange.startDate, currentDateRange.endDate],
+  );
 
   useEffect(() => {
     if (materials.length === 0) {
@@ -169,6 +210,49 @@ function WeeklyProjectSummary() {
 
   const bmProjects = useSelector(state => state.bmProjects || []);
 
+  const selectedProjectId = useMemo(() => {
+    const selectedProject = bmProjects.find(project => project.name === projectFilter);
+    return selectedProject?._id;
+  }, [bmProjects, projectFilter]);
+
+  const projectStatusRequestParams = useMemo(() => {
+    if (!currentDateRange.startDate || !currentDateRange.endDate) return null;
+
+    const params = {
+      startDate: currentDateRange.startDate,
+      endDate: currentDateRange.endDate,
+    };
+
+    if (selectedProjectId) {
+      params.projectId = selectedProjectId;
+    }
+
+    if (comparisonEnabled) {
+      if (!comparisonDateRange.comparisonStartDate || !comparisonDateRange.comparisonEndDate) {
+        return null;
+      }
+      params.comparisonStartDate = comparisonDateRange.comparisonStartDate;
+      params.comparisonEndDate = comparisonDateRange.comparisonEndDate;
+    }
+
+    return params;
+  }, [
+    currentDateRange.startDate,
+    currentDateRange.endDate,
+    selectedProjectId,
+    comparisonEnabled,
+    comparisonDateRange.comparisonStartDate,
+    comparisonDateRange.comparisonEndDate,
+  ]);
+
+  const projectStatusRequestKey = useMemo(
+    () =>
+      projectStatusRequestParams
+        ? getWeeklyProjectSummaryProjectStatusRequestKey(projectStatusRequestParams)
+        : null,
+    [projectStatusRequestParams],
+  );
+
   // Fetch initial data
   useEffect(() => {
     if (materials.length === 0) {
@@ -179,6 +263,43 @@ function WeeklyProjectSummary() {
       dispatch(fetchBMProjects());
     }
   }, [dispatch, materials.length, bmProjects.length]);
+
+  useEffect(() => {
+    if (!projectStatusRequestParams) return;
+
+    dispatch(fetchWeeklyProjectSummaryProjectStatus(projectStatusRequestParams));
+  }, [dispatch, projectStatusRequestParams]);
+
+  const isProjectStatusDataCurrent =
+    Boolean(projectStatusData) && projectStatusDataRequestKey === projectStatusRequestKey;
+  const isProjectStatusErrorCurrent =
+    Boolean(projectStatusError) && projectStatusErrorRequestKey === projectStatusRequestKey;
+  const isProjectStatusLoading =
+    Boolean(projectStatusRequestParams) &&
+    (projectStatusLoading || (!isProjectStatusDataCurrent && !isProjectStatusErrorCurrent));
+  const projectStatusDisplayError = isProjectStatusErrorCurrent ? projectStatusError : null;
+  const showProjectStatusComparison =
+    comparisonEnabled && !isProjectStatusLoading && !projectStatusDisplayError;
+
+  const projectStatusMetrics =
+    isProjectStatusDataCurrent && !isProjectStatusLoading && !projectStatusDisplayError
+      ? projectStatusData?.current?.metrics || EMPTY_PROJECT_STATUS_METRICS
+      : EMPTY_PROJECT_STATUS_METRICS;
+
+  const projectStatusCards = useMemo(
+    () =>
+      projectStatusButtons.map(button => {
+        const metric = projectStatusMetrics[button.metricKey];
+        return {
+          ...button,
+          value: formatProjectStatusValue(metric),
+          unavailableReason: getProjectStatusUnavailableReason(metric),
+          change: formatProjectStatusChange(metric, comparisonPeriodFilter),
+          changeColor: getProjectStatusChangeColor(metric),
+        };
+      }),
+    [comparisonPeriodFilter, projectStatusMetrics],
+  );
 
   const sections = useMemo(
     () => [
@@ -193,29 +314,79 @@ function WeeklyProjectSummary() {
         key: 'Project Status',
         className: 'full',
         content: (
-          <div className={`${styles.projectStatusGrid}`}>
-            {projectStatusButtons.map(button => {
-              const uniqueId = uuidv4();
-              return (
-                <div
-                  key={uniqueId}
-                  className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }}
-                >
-                  <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
+          <>
+            {isProjectStatusLoading && (
+              <div role="status" aria-live="polite">
+                Loading Project Status data...
+              </div>
+            )}
+            {projectStatusDisplayError && (
+              <div role="alert">{getProjectStatusErrorMessage(projectStatusDisplayError)}</div>
+            )}
+            <div className={`${styles.projectStatusGrid}`}>
+              {projectStatusCards.map(button => {
+                const unavailableTooltipId = `project-status-unavailable-${button.metricKey}`;
+                return (
                   <div
-                    className={`${styles.weeklyStatusButton}`}
-                    style={{ backgroundColor: button.buttonColor }}
+                    key={button.metricKey}
+                    className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
+                    style={{ backgroundColor: button.bgColor }}
                   >
-                    <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
+                    <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
+                    <div
+                      className={`${styles.weeklyStatusButton}`}
+                      style={{ backgroundColor: button.buttonColor }}
+                    >
+                      <span className={`${styles.weeklyStatusValue}`}>
+                        {button.value}
+                        {button.unavailableReason && (
+                          <>
+                            <span
+                              id={unavailableTooltipId}
+                              className={styles.projectStatusUnavailableInfo}
+                            >
+                              <button
+                                type="button"
+                                className={styles.projectStatusUnavailableButton}
+                                aria-label={button.unavailableReason}
+                              >
+                                i
+                              </button>
+                            </span>
+                            <UncontrolledTooltip
+                              placement="top"
+                              target={unavailableTooltipId}
+                              trigger="hover focus"
+                              className={styles.projectStatusUnavailableTooltip}
+                              container="body"
+                              autohide={false}
+                              modifiers={{
+                                offset: { offset: '0, 12' },
+                                preventOverflow: { boundariesElement: 'viewport' },
+                              }}
+                            >
+                              {button.unavailableReason}
+                            </UncontrolledTooltip>
+                          </>
+                        )}
+                      </span>
+                    </div>
+                    {showProjectStatusComparison && button.change && (
+                      <div
+                        className="weekly-status-change"
+                        style={{
+                          color: button.changeColor,
+                          '--project-status-change-color': button.changeColor,
+                        }}
+                      >
+                        {button.change}
+                      </div>
+                    )}
                   </div>
-                  <div className="weekly-status-change" style={{ color: button.textColor }}>
-                    {button.change}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          </>
         ),
       },
       {
@@ -244,7 +415,12 @@ function WeeklyProjectSummary() {
         className: 'large',
         // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
         content: (
-          <MaterialConsumptionCards quantityOfMaterialsUsedData={quantityOfMaterialsUsedData} />
+          <MaterialConsumptionCards
+            quantityOfMaterialsUsedData={quantityOfMaterialsUsedData}
+            comparisonMode={comparisonPeriodFilter}
+            currentDateRange={currentDateRange}
+            comparisonDateRange={comparisonDateRange}
+          />
         ),
       },
       {
@@ -454,7 +630,17 @@ function WeeklyProjectSummary() {
         ),
       },
     ],
-    [quantityOfMaterialsUsedData, darkMode],
+    [
+      quantityOfMaterialsUsedData,
+      darkMode,
+      comparisonPeriodFilter,
+      projectStatusCards,
+      isProjectStatusLoading,
+      projectStatusDisplayError,
+      showProjectStatusComparison,
+      currentDateRange,
+      comparisonDateRange,
+    ],
   );
 
   const handleSaveAsPDF = async () => {
