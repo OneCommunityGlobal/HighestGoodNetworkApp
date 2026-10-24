@@ -1,6 +1,7 @@
 // PST week fix, 48/24 thresholds, dev time-travel (no reload), week-safe localStorage
 // + Task progress alerts at 50% / 75% / 90% with modal list & view-to-reset
 import axios from 'axios';
+import moment from 'moment-timezone';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -10,24 +11,47 @@ import {
 import { getMessagingSocket } from '../../utils/messagingSocket';
 import { ENDPOINTS } from '../../utils/URL';
 
-// Import getUserTasks action for fetching user-specific tasks
-import { getUserTasks } from '../../actions/userProfile';
-
 // Pacific Time week boundary helpers
-const toLA = d => new Date(d.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+const LA_TZ = 'America/Los_Angeles';
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const laFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: LA_TZ,
+  hourCycle: 'h23',
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+});
+
+// LA wall-clock time at instant `d`, encoded as a UTC timestamp (independent of the browser's TZ)
+const laWallMs = d => {
+  const p = Object.fromEntries(
+    laFormatter.formatToParts(d).map(({ type, value }) => [type, Number(value)]),
+  );
+  return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+};
+
+// LA offset from UTC at instant `t` (whole seconds, so no stray milliseconds leak in)
+const laOffsetMs = t => laWallMs(new Date(t)) - Math.floor(t / 1000) * 1000;
 
 // Start of Pacific week = Sunday 00:00 PT for the given instant `d`
 const startOfPSTWeek = (d = new Date()) => {
-  const laNow = toLA(d);
-  const laStart = new Date(laNow);
-  laStart.setHours(0, 0, 0, 0);
-  laStart.setDate(laStart.getDate() - laNow.getDay()); // back to Sunday 00:00 LA
-  const offsetMs = d.getTime() - laNow.getTime(); // convert LA wall time back to true instant
-  return new Date(laStart.getTime() + offsetMs);
+  const wall = new Date(laWallMs(d));
+  const sundayWall = Date.UTC(
+    wall.getUTCFullYear(),
+    wall.getUTCMonth(),
+    wall.getUTCDate() - wall.getUTCDay(),
+  );
+  // Use the offset in effect at Sunday 00:00 itself (DST switches at 2am, so this is DST-safe)
+  const guess = sundayWall - laOffsetMs(d.getTime());
+  return new Date(sundayWall - laOffsetMs(guess));
 };
 
-// End of Pacific week = next Sunday 00:00 PT
-const endOfPSTWeek = d => new Date(startOfPSTWeek(d).getTime() + 7 * 24 * 60 * 60 * 1000);
+// End of Pacific week = next Sunday 00:00 PT (weeks with a DST switch are 167h / 169h long)
+const endOfPSTWeek = d => startOfPSTWeek(new Date(startOfPSTWeek(d).getTime() + 8 * DAY_MS));
 
 // Key for week-scoped storage, anchored to PT Sunday 00:00
 const weekKey = d => startOfPSTWeek(d).toISOString();
@@ -113,6 +137,7 @@ function BellNotificationPanel({
   handleNotificationClick,
   taskHoursAlerts,
   handleMarkTaskAlertsAsRead,
+  handleMarkMessagesAsRead,
   allNotifications,
 }) {
   return (
@@ -203,6 +228,15 @@ function BellNotificationPanel({
             // eslint-disable-next-line react/no-array-index-key
             <div key={notification._id || index}>{notification.message || notification}</div>
           ))}
+          <div style={{ marginTop: 8 }}>
+            <button
+              type="button"
+              onClick={handleMarkMessagesAsRead}
+              className="btn btn-sm btn-primary"
+            >
+              Mark as read
+            </button>
+          </div>
         </div>
       )}
 
@@ -227,6 +261,7 @@ BellNotificationPanel.propTypes = {
   handleNotificationClick: PropTypes.func.isRequired,
   taskHoursAlerts: PropTypes.arrayOf(PropTypes.object).isRequired,
   handleMarkTaskAlertsAsRead: PropTypes.func.isRequired,
+  handleMarkMessagesAsRead: PropTypes.func.isRequired,
   allNotifications: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.object, PropTypes.string]))
     .isRequired,
 };
@@ -253,30 +288,12 @@ export default function BellNotification({
 
   // Redux selectors
   const notifications = useSelector(state => state.messages?.notifications || []);
-  const timeEntries = useSelector(state => state.timeEntries?.weeks?.[0] || []);
-  const weeklycommittedHours = useSelector(state => state.userProfile?.weeklycommittedHours || 0);
   const darkMode = useSelector(state => state.theme?.darkMode);
 
-  
-  const tasksFromStore = useSelector(state => 
-    Array.isArray(state.userTask) ? state.userTask : []
-  );
-
-  // Fetch user-specific tasks using getUserTasks action
-  useEffect(() => {
-    if (!userId) {
-      return;
-    }
-
-    dispatch(getUserTasks(userId));
-
-    // Refetch every 5 minutes to keep data fresh
-    const interval = setInterval(() => {
-      dispatch(getUserTasks(userId));
-    }, 5 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [dispatch, userId]);
+  // Shared Redux slices can hold another user's data (Timelog / PeopleReport for a viewed user),
+  // so the bell fetches its own copy and only uses these as "something changed, refetch" signals.
+  const timeEntriesSignal = useSelector(state => state.timeEntries?.weeks?.[0]);
+  const tasksSignal = useSelector(state => state.userTask);
 
   // Time source
   // Tick every hour so time-based UI updates naturally
@@ -286,8 +303,24 @@ export default function BellNotification({
     return () => clearInterval(id);
   }, []);
 
+  // Dev time-travel: window.__setBellNow(iso) re-renders every mounted bell, null resets
+  const [testNowOverride, setTestNowOverride] = useState(null);
+  useEffect(() => {
+    const onSetNow = e => setTestNowOverride(e.detail || null);
+    window.addEventListener('bell:setNow', onSetNow);
+    window.__setBellNow = iso => {
+      if (iso) window.__BELL_TEST_NOW = iso;
+      else delete window.__BELL_TEST_NOW;
+      window.dispatchEvent(new CustomEvent('bell:setNow', { detail: iso || null }));
+    };
+    window.__bellStartOfPSTWeek = startOfPSTWeek;
+    window.__bellEndOfPSTWeek = endOfPSTWeek;
+    return () => window.removeEventListener('bell:setNow', onSetNow);
+  }, []);
+
   // Choose "now": dev override or live clock
-  const testNow = (typeof window !== 'undefined' && window.__BELL_TEST_NOW) || null;
+  const testNow =
+    testNowOverride || (typeof window !== 'undefined' && window.__BELL_TEST_NOW) || null;
   const now = testNow ? new Date(testNow) : new Date(nowTick);
 
   // Deadline (Pacific): Sunday 00:00 PT
@@ -296,29 +329,111 @@ export default function BellNotification({
   const hoursLeft = Math.max(0, Math.floor(msLeft / 36e5));
   const minutesLeft = Math.max(0, Math.floor((msLeft % 36e5) / 6e4));
 
-  // Hours math
+  const currentWeekKey = weekKey(now);
+
+  // The bell user's own committed hours
+  const [weeklycommittedHours, setWeeklyCommittedHours] = useState(0);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  useEffect(() => {
+    if (!userId) return undefined;
+    let cancelled = false;
+    setProfileLoaded(false);
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+        if (cancelled) return;
+        setWeeklyCommittedHours(Number(res?.data?.weeklycommittedHours) || 0);
+        setProfileLoaded(true);
+      } catch (error) {
+        console.error('Error fetching bell user profile:', error);
+      }
+    };
+    fetchProfile();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  // The bell user's own time entries for the current PT week
+  const [weekEntries, setWeekEntries] = useState({ week: null, entries: [] });
+  useEffect(() => {
+    if (!userId) return undefined;
+    let cancelled = false;
+    const weekStart = moment(currentWeekKey).tz(LA_TZ);
+    const fromDate = weekStart.format('YYYY-MM-DDTHH:mm:ss');
+    const toDate = weekStart
+      .clone()
+      .add(6, 'days')
+      .endOf('day')
+      .format('YYYY-MM-DDTHH:mm:ss');
+    const fetchEntries = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate));
+        if (cancelled) return;
+        setWeekEntries({
+          week: currentWeekKey,
+          entries: Array.isArray(res?.data) ? res.data : [],
+        });
+      } catch (error) {
+        console.error('Error fetching bell time entries:', error);
+      }
+    };
+    fetchEntries();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, currentWeekKey, timeEntriesSignal]);
+
+  // The bell user's own tasks (refetch every 5 minutes and whenever tasks change elsewhere)
+  const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    if (!userId) return undefined;
+    let cancelled = false;
+    const fetchTasks = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId));
+        if (!cancelled) setTasks(Array.isArray(res?.data) ? res.data : []);
+      } catch (error) {
+        console.error('Error fetching bell tasks:', error);
+      }
+    };
+    fetchTasks();
+    const interval = setInterval(fetchTasks, 5 * 60 * 1000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [userId, tasksSignal]);
+
+  // Hours math (tangible only, same as committed hours)
   const totalEffort = useMemo(() => {
-    return timeEntries.reduce((total, entry) => {
+    return weekEntries.entries.reduce((total, entry) => {
+      if (!entry.isTangible) return total;
       const hours = parseInt(entry.hours, 10) || 0;
       const minutes = parseInt(entry.minutes, 10) || 0;
       return total + hours + minutes / 60;
     }, 0);
-  }, [timeEntries]);
+  }, [weekEntries]);
 
-  const underGoal = weeklycommittedHours > 0 && totalEffort < weeklycommittedHours;
+  // Only judge hours once this user's profile and this week's entries are loaded
+  const hoursDataReady = profileLoaded && weekEntries.week === currentWeekKey;
+  const underGoal =
+    hoursDataReady && weeklycommittedHours > 0 && totalEffort < weeklycommittedHours;
+  const goalMet = hoursDataReady && weeklycommittedHours > 0 && !underGoal;
 
   // Per-week "seen" flags
-  const currentWeekKey = weekKey(now);
   const base = `${userId}::${currentWeekKey}`;
   const SEEN_48 = `${base}::hours::seen48`;
   const SEEN_24 = `${base}::hours::seen24`;
   const LAST_WEEK_KEY = `${userId}::lastWeekKey`;
 
-  // Reset week-scoped flags when the Pacific week flips
+  // Reset week-scoped hours flags when the Pacific week flips.
+  // Task flags (::taskProgress::) are kept on purpose: a task only re-alerts when it reaches a
+  // higher bucket. ::taskHours:: is a legacy key from the first version of this PR.
   useEffect(() => {
+    if (!userId) return;
     const last = localStorage.getItem(LAST_WEEK_KEY);
     if (last !== currentWeekKey) {
-      // Clear both hours and task progress flags for this user
       Object.keys(localStorage)
         .filter(
           k =>
@@ -336,18 +451,16 @@ export default function BellNotification({
 
   // If they meet the goal, auto-resolve both thresholds for this week
   useEffect(() => {
-    if (weeklycommittedHours > 0 && !underGoal) {
+    if (userId && goalMet) {
       localStorage.setItem(SEEN_48, '1');
       localStorage.setItem(SEEN_24, '1');
     }
-  }, [underGoal, weeklycommittedHours, SEEN_24, SEEN_48]);
+  }, [userId, goalMet, SEEN_24, SEEN_48]);
 
-  // HOURS-logged vs task estimate
-  // Enhanced logging for debugging
-  // Build task alerts directly from task.hoursLogged / task.estimatedHours
-  const taskHoursAlerts = useMemo(() => {
+  // Task progress: current bucket for every open task with an estimate
+  const taskProgress = useMemo(() => {
     const list = [];
-    for (const t of tasksFromStore) {
+    for (const t of tasks) {
       const id = t._id || t.id;
       const name = t.taskName || t.name || '(unnamed task)';
       const logged = Number(t.hoursLogged) || 0;
@@ -355,34 +468,74 @@ export default function BellNotification({
       if (!id || estimate <= 0) continue;
 
       // Skip completed/submitted tasks
-      const isDone = t.resources?.some(
-        r => r.completedTask || r.reviewStatus === 'Submitted'
-      );
+      const isDone = t.resources?.some(r => r.completedTask || r.reviewStatus === 'Submitted');
       if (isDone) continue;
 
       const pct = hoursPercent(logged, estimate);
       if (pct >= 100) continue;
 
-      const bucket = bucketForHoursPct(pct); // 50 / 75 / 90 / null
+      const bucket = bucketForHoursPct(pct) || 0; // 50 / 75 / 90 / 0
+      list.push({ id, name, logged, estimate, percent: pct, bucket, task: t });
+    }
+    return list;
+  }, [tasks]);
+
+  // Per-task week state: { week, baseline, last }. `baseline` is the bucket the task had at the
+  // end of the previous week, so a new week only alerts when the task actually progressed.
+  const taskWeekStateKey = id => `${userId}::taskProgress::${id}::weekState`;
+  const readTaskWeekState = id => {
+    try {
+      return JSON.parse(localStorage.getItem(taskWeekStateKey(id)));
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const taskHoursAlerts = useMemo(() => {
+    const list = [];
+    for (const p of taskProgress) {
+      const { id, bucket } = p;
       if (!bucket) continue;
 
-      // Reset seen key when a higher bucket is reached
-      const higherBuckets = [90, 75, 50].filter(b => b > bucket);
-      const seenKey = `${userId}::taskProgress::${id}::seen::${bucket}`;
-      const higherSeen = higherBuckets.some(b =>
-        localStorage.getItem(`${userId}::taskProgress::${id}::seen::${b}`)
-      );
-      // If a higher bucket was already seen, skip lower ones
-      if (higherSeen) continue;
-      if (localStorage.getItem(seenKey)) continue;
+      const state = readTaskWeekState(id);
+      let baseline = 0;
+      if (state) baseline = state.week === currentWeekKey ? state.baseline : state.last;
+      if (bucket <= (Number(baseline) || 0)) continue;
 
-      list.push({ id, name, logged, estimate, percent: pct, bucket, seenKey, task: t });
+      // If this or a higher bucket was already marked as read, skip
+      const seenKey = `${userId}::taskProgress::${id}::seen::${bucket}`;
+      const seen = [90, 75, 50]
+        .filter(b => b >= bucket)
+        .some(b => localStorage.getItem(`${userId}::taskProgress::${id}::seen::${b}`));
+      if (seen) continue;
+
+      list.push({ ...p, seenKey });
     }
 
     // Sort: highest bucket first
     list.sort((a, b) => b.bucket - a.bucket);
     return list;
-  }, [tasksFromStore, userId, taskAlertsVersion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskProgress, userId, currentWeekKey, taskAlertsVersion]);
+
+  // Record each task's bucket for this week (feeds next week's baseline)
+  useEffect(() => {
+    if (!userId) return;
+    taskProgress.forEach(({ id, bucket }) => {
+      const state = readTaskWeekState(id);
+      let next;
+      if (!state) next = { week: currentWeekKey, baseline: 0, last: bucket };
+      else if (state.week !== currentWeekKey)
+        next = { week: currentWeekKey, baseline: state.last, last: bucket };
+      else next = { ...state, last: bucket };
+      try {
+        localStorage.setItem(taskWeekStateKey(id), JSON.stringify(next));
+      } catch (e) {
+        console.error('Error setting localStorage:', e);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskProgress, userId, currentWeekKey]);
 
   const hasTaskAlerts = taskHoursAlerts.length > 0;
 
@@ -480,15 +633,6 @@ export default function BellNotification({
 
     // Close the notification panel
     setShowNotification(false);
-    setHasMessageNotification(false);
-
-    // Clear any message notifications if needed
-      try {
-        dispatch(clearNotifications());
-        dispatch(clearDBNotifications());
-      } catch (e) {
-        console.error('Error clearing notifications:', e);
-    }
   };
 
   const handleNotificationClick = () => {
@@ -497,12 +641,18 @@ export default function BellNotification({
     if (show24) localStorage.setItem(SEEN_24, '1');
 
     setShowNotification(false);
+  };
+
+  const handleMarkMessagesAsRead = () => {
+    setShowNotification(false);
     setHasMessageNotification(false);
+    setDbNotifications([]);
+    setMessageNotifications([]);
     try {
-        dispatch(clearNotifications());
-        dispatch(clearDBNotifications());
-      } catch (e) {
-        console.error('Error clearing notifications:', e);
+      dispatch(clearNotifications());
+      dispatch(clearDBNotifications());
+    } catch (e) {
+      console.error('Error clearing notifications:', e);
     }
   };
 
@@ -606,6 +756,7 @@ export default function BellNotification({
             handleNotificationClick={handleNotificationClick}
             taskHoursAlerts={taskHoursAlerts}
             handleMarkTaskAlertsAsRead={handleMarkTaskAlertsAsRead}
+            handleMarkMessagesAsRead={handleMarkMessagesAsRead}
             allNotifications={allNotifications}
           />
         </div>
@@ -628,19 +779,12 @@ BellNotification.propTypes = {
 // To test the feature time travel in browser you can paste this iife in the console and then you can use function calls for bellTest.goto(48)/(24)
 // ==== Bell test helpers (no reloads needed) ====
 // (() => {
-//   const toLA = d => new Date(d.toLocaleString('en-US',{ timeZone: 'America/Los_Angeles' }));
-//   const startOfPSTWeek = d => {
-//     const laNow = toLA(d);
-//     const laStart = new Date(laNow);
-//     laStart.setHours(0,0,0,0);
-//     laStart.setDate(laStart.getDate() - laNow.getDay());
-//     const offset = d.getTime() - laNow.getTime();
-//     return new Date(laStart.getTime() + offset); // true Sun 00:00 PT instant
-//   };
-//   const endOfPSTWeek = d => new Date(startOfPSTWeek(d).getTime() + 7*24*3600*1000);
+//   // Same week helpers the component uses (exposed once the bell is mounted)
+//   const startOfPSTWeek = d => window.__bellStartOfPSTWeek(d);
+//   const endOfPSTWeek = d => window.__bellEndOfPSTWeek(d);
 
 //   window.bellTest = {
-//     toLA, startOfPSTWeek, endOfPSTWeek,
+//     startOfPSTWeek, endOfPSTWeek,
 //     setNow(iso) {
 //       if (!window.__setBellNow) throw new Error('Component not mounted yet');
 //       window.__setBellNow(iso);
