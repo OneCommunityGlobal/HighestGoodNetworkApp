@@ -90,7 +90,9 @@
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
-  transition: all 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
   appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
@@ -134,7 +136,7 @@
   align-self: center;
   flex: 0 0 auto;
   flex-shrink: 0;
-  background-color: var(--button-bg) !important;
+  background-color: var(--button-bg);
   color: white;
   font-family: inherit;
   white-space: nowrap;
@@ -142,8 +144,12 @@
   transition: background 0.2s ease-in-out;
 }
 
+/* No !important here or on the two overrides below (tablet-width dark mode, further down
+   this file): all three target the same .darkMode .weeklySummaryShareBtn / plain
+   .weeklySummaryShareBtn selectors at matching specificity, so later-in-file simply wins
+   the cascade without needing to force it. */
 .darkMode .weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
+  background-color: var(--button-bg);
 }
 
 .weeklySummaryShareBtn:focus {
@@ -427,7 +433,7 @@
   flex-direction: column;
   border-radius: 12px;
   box-shadow: 0 4px 6px var(--card-shadow);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 /* ---------------- TOOLS TRACKING LAYOUT ---------------- */
@@ -547,7 +553,7 @@
   padding: 20px;
   border: 1px solid rgb(0 0 0 / 10%);
   position: relative;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
   box-sizing: border-box;
 }
 
@@ -644,6 +650,12 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    animation: none;
   }
 }
 
@@ -787,8 +799,8 @@
   }
 
   .darkMode .weeklySummaryShareBtn {
-    background: #e8a71c !important;
-    color: #000 !important; /* readable in dark mode */
+    background: #e8a71c;
+    color: #000; /* readable in dark mode */
   }
 
   /* Tools and Equipment Tracking - 2 column layout on tablet */

@@ -583,10 +583,9 @@ function WeeklyProjectSummary() {
       // Tag every live SVG with a stable id before cloning, so the clone's SVGs can be
       // paired back to their original after cleanup removes some of them (see below).
       // cloneNode(true) copies attributes, so this id survives onto the clone.
-      const livePdfSvgIdAttr = 'data-pdf-svg-id';
       const liveSvgsBeforeClone = Array.from(contentElement.querySelectorAll('svg'));
       liveSvgsBeforeClone.forEach((svg, index) => {
-        svg.setAttribute(livePdfSvgIdAttr, String(index));
+        svg.dataset.pdfSvgId = String(index);
       });
 
       const clonedContent = contentElement.cloneNode(true);
@@ -632,14 +631,12 @@ function WeeklyProjectSummary() {
       // the Stack/Compare toggle icons in FinancialsTrackingSection) from the clone only, so
       // clonedSvgs is shorter than liveSvgsBeforeClone and a plain index pairing drifts —
       // every chart after the first removed icon gets the wrong live SVG's image.
-      const liveSvgById = new Map(
-        liveSvgsBeforeClone.map(svg => [svg.getAttribute(livePdfSvgIdAttr), svg]),
-      );
+      const liveSvgById = new Map(liveSvgsBeforeClone.map(svg => [svg.dataset.pdfSvgId, svg]));
       const clonedSvgs = Array.from(clonedContent.querySelectorAll('svg'));
 
       await Promise.all(
         clonedSvgs.map(async clonedSvg => {
-          const liveSvg = liveSvgById.get(clonedSvg.getAttribute(livePdfSvgIdAttr));
+          const liveSvg = liveSvgById.get(clonedSvg.dataset.pdfSvgId);
           if (!liveSvg) return;
 
           const width = liveSvg.clientWidth || Number(liveSvg.getAttribute('width')) || 0;
@@ -783,9 +780,7 @@ function WeeklyProjectSummary() {
     } finally {
       // Strip the temporary pairing id added to the live SVGs for export (see above) so it
       // doesn't linger on the real page.
-      document
-        .querySelectorAll('[data-pdf-svg-id]')
-        .forEach(svg => svg.removeAttribute('data-pdf-svg-id'));
+      document.querySelectorAll('[data-pdf-svg-id]').forEach(svg => delete svg.dataset.pdfSvgId);
       setOpenSections(currentOpenSections);
       setIsGeneratingPDF(false);
     }
