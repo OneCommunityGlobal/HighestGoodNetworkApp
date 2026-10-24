@@ -387,7 +387,7 @@ function WeeklyProjectSummary() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(400px, 100%), 1fr))',
               gap: '15px',
               width: '100%',
             }}
