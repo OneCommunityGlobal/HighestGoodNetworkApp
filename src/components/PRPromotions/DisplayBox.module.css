@@ -1,6 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
+  z-index: 2000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -44,6 +45,22 @@
 
 .popupHeadingDark {
   color: #e5e7eb;
+}
+
+.statusMessage {
+  display: block;
+  margin: 0 0 12px;
+  color: #1d4ed8;
+  font-size: 14px;
+  text-align: center;
+}
+
+.popupDark .statusMessage {
+  color: #93c5fd;
+}
+
+.messageCell {
+  text-align: center;
 }
 
 /* ======================================================
