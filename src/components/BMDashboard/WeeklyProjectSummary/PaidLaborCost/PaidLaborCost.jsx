@@ -27,7 +27,12 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const updateTaskLabelRotation = (chart, width) => {
   const spacePerTask = (width - 70) / Math.max(chart.data.labels.length, 1);
   const longestLabel = Math.max(0, ...chart.data.labels.map(label => String(label).length * 7));
-  const rotation = spacePerTask < 65 ? 90 : spacePerTask < longestLabel + 12 ? 45 : 0;
+  let rotation = 0;
+  if (spacePerTask < 65) {
+    rotation = 90;
+  } else if (spacePerTask < longestLabel + 12) {
+    rotation = 45;
+  }
   chart.options.scales.x.ticks.minRotation = rotation;
   chart.options.scales.x.ticks.maxRotation = rotation;
 };
@@ -370,7 +375,11 @@ Option.propTypes = {
 const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode, allTasks) => {
   const totals = aggregation[labels[0]];
   // Use the full task list so filtering and selection order never reassign colors.
-  const colorOrder = [...allTasks].sort();
+  const colorOrder = [...allTasks].sort((first, second) => {
+    if (first < second) return -1;
+    if (first > second) return 1;
+    return 0;
+  });
   const hues = tasksToInclude.map(task => Math.round((colorOrder.indexOf(task) * 137.508) % 360));
   const actualColors = hues.map(hue => `hsl(${hue}, 65%, ${darkMode ? 60 : 40}%)`);
   const budgetColors = hues.map(hue => `hsl(${hue}, 65%, ${darkMode ? 82 : 78}%)`);
@@ -681,10 +690,9 @@ export default function PaidLaborCost() {
             </div>
           </div>
           {labels.length > 0 && (
-            <div
+            <fieldset
               ref={legendRef}
               className={styles.chartLegend}
-              role="group"
               aria-label="Paid labor cost legend"
             >
               {taskDatasets.map(dataset => (
@@ -717,7 +725,7 @@ export default function PaidLaborCost() {
                   </ul>
                 </div>
               ))}
-            </div>
+            </fieldset>
           )}
         </div>
       </div>

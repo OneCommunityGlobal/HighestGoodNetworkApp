@@ -285,8 +285,10 @@
 }
 
 .chartLegend {
+  min-width: 0;
+  border: 0;
   padding: 0 var(--plot-right, 8px) 0 var(--plot-left, 60px);
-  margin-bottom: 20px;
+  margin: 0 0 20px;
   color: #334155;
   font-size: 11px;
 }
