@@ -211,3 +211,86 @@
 .injuryChartDark .tooltipSeriesRow * {
   color: inherit !important;
 }
+
+/* ===== Grouped / Stacked toggle ===== */
+.injuryViewToggle {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 0;
+  min-width: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.injuryViewToggleButton {
+  padding: 6px 14px;
+  border: none;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.injuryViewToggleButton + .injuryViewToggleButton {
+  border-left: 1px solid #cbd5e1;
+}
+
+.injuryViewToggleButtonActive {
+  background: #007fff;
+  color: #fff;
+}
+
+.injuryViewToggleDark {
+  border-color: #6b7280;
+}
+
+.injuryViewToggleDark .injuryViewToggleButton {
+  background: #2b3e59;
+  color: #f3f4f6;
+}
+
+.injuryViewToggleDark .injuryViewToggleButton + .injuryViewToggleButton {
+  border-left-color: #6b7280;
+}
+
+.injuryViewToggleDark .injuryViewToggleButtonActive {
+  background: #007fff;
+  color: #fff;
+}
+
+/* ===== Key Insights ===== */
+.injuryInsights {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+.injuryChartDark .injuryInsights {
+  border-color: #4a5a77;
+  background-color: #1e2a3a;
+  color: #f3f4f6;
+}
+
+.injuryInsightsTitle {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.injuryInsightsList {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.injuryInsightsEmpty {
+  margin: 0;
+  font-size: 0.9rem;
+}
