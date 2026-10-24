@@ -20,6 +20,7 @@ import logger from '../../../../services/logService';
 import config from '../../../../config.json';
 import { ENDPOINTS } from '../../../../utils/URL';
 import { MOCK_DB } from './mockLaborCostData';
+import { buildLaborCostTooltip } from './laborCostTooltip';
 import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -44,7 +45,7 @@ const barValueLabelPlugin = {
         const value = dataset.data[index];
         if (!value) return;
 
-        const label = `$${(value * 1000).toLocaleString()}`;
+        const label = `$${value.toLocaleString()}`;
         const { x, y, base } = bar.getProps(['x', 'y', 'base'], true);
 
         const barHeight = Math.abs(base - y);
@@ -335,6 +336,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
     return [
       {
         label: `${task} (Actual)`,
+        costType: 'actual',
         backgroundColor: actualColor,
         borderRadius: 4,
         data: labels.map(label => aggregation[label][task]?.cost || 0),
@@ -344,6 +346,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
       },
       {
         label: `${task} (Budget)`,
+        costType: 'budget',
         backgroundColor: budgetColor,
         borderColor: actualColor,
         borderWidth: { top: 2, right: 2, bottom: 0, left: 2 },
@@ -358,7 +361,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
   });
 };
 
-const buildChartOptions = (textColor, darkMode) => ({
+const buildChartOptions = (textColor, darkMode, totalCost, totalBudget) => ({
   responsive: true,
   maintainAspectRatio: false,
   layout: { padding: { top: 35, left: 15, right: 15, bottom: 10 } },
@@ -389,9 +392,7 @@ const buildChartOptions = (textColor, darkMode) => ({
       borderWidth: 1,
       callbacks: {
         label(context) {
-          const project = context.chart.data.labels[context.dataIndex];
-          const costDollars = context.parsed.y || 0;
-          return `${project}, ${context.dataset.label}: $${costDollars.toLocaleString()}`;
+          return buildLaborCostTooltip(context, totalCost, totalBudget);
         },
       },
     },
@@ -494,7 +495,10 @@ export default function PaidLaborCost() {
   );
 
   const chartData = { labels, datasets: taskDatasets };
-  const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
+  const options = useMemo(
+    () => buildChartOptions(textColor, darkMode, displayTotalCost, displayTotalBudget),
+    [textColor, darkMode, displayTotalCost, displayTotalBudget],
+  );
 
   if (initialLoading) {
     return (
