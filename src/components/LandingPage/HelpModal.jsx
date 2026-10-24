@@ -1,13 +1,59 @@
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { connect, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { availableSkills, formatSkillName } from '../HGNHelpSkillsDashboard/FilerData';
+import httpService from '../../services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './HelpModal.module.css';
 
+/** Maps common help-category labels to questionnaire skill keys. */
+const TOPIC_TO_SKILL_KEY = {
+  figma: 'UIUXTools',
+  'ui/ux': 'UIUXTools',
+  'frontend and backend overall': 'combined_frontend_backend',
+  'frontend/backend': 'combined_frontend_backend',
+  mern: 'mern_skills',
+  leadership: 'leadership_skills',
+};
+
+const buildSkillFallbackOptions = () =>
+  availableSkills.map(skillKey => ({
+    value: skillKey,
+    label: formatSkillName(skillKey),
+  }));
+
+const normalizeCategoryOptions = categories => {
+  if (!Array.isArray(categories) || categories.length === 0) return [];
+
+  return categories
+    .map(category => {
+      if (typeof category === 'string') {
+        return { value: category, label: category };
+      }
+      const name = category?.name;
+      if (!name) return null;
+      return { value: name, label: name };
+    })
+    .filter(Boolean);
+};
+
+const resolveSkillKey = selectedTopic => {
+  if (!selectedTopic) return null;
+  if (availableSkills.includes(selectedTopic)) return selectedTopic;
+
+  const byLabel = availableSkills.find(
+    skillKey => formatSkillName(skillKey).toLowerCase() === selectedTopic.toLowerCase(),
+  );
+  if (byLabel) return byLabel;
+
+  return TOPIC_TO_SKILL_KEY[selectedTopic.trim().toLowerCase()] || null;
+};
+
 function HelpModal({ show, onHide, auth }) {
+  const history = useHistory();
   const [selectedOption, setSelectedOption] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -29,11 +75,25 @@ function HelpModal({ show, onHide, auth }) {
 
   useEffect(() => {
     const fetchHelpCategories = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        const categoriesResponse = await axios.get(ENDPOINTS.HELP_CATEGORIES);
-        setOptions(categoriesResponse.data.map(category => category.name));
+        const categoriesResponse = await httpService.get(ENDPOINTS.HELP_CATEGORIES);
+        const apiOptions = normalizeCategoryOptions(categoriesResponse.data);
+
+        if (apiOptions.length > 0) {
+          setOptions(apiOptions);
+        } else {
+          // DB may be empty — fall back to questionnaire skills so the dropdown is usable
+          setOptions(buildSkillFallbackOptions());
+        }
       } catch {
-        setError('Failed to load help categories');
+        // Still offer skill fallback, but surface that the categories endpoint failed.
+        setOptions(buildSkillFallbackOptions());
+        setError(
+          'Failed to load help categories from the server. Showing questionnaire skills instead.',
+        );
       } finally {
         setLoading(false);
       }
@@ -64,7 +124,7 @@ function HelpModal({ show, onHide, auth }) {
       setEligibilityLoading(true);
       setEligibilityError(false);
       try {
-        const eligibilityResponse = await axios.get(ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+        const eligibilityResponse = await httpService.get(ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
         if (!isLatest()) return;
         setEligible(Boolean(eligibilityResponse.data?.eligible));
       } catch {
@@ -92,8 +152,8 @@ function HelpModal({ show, onHide, auth }) {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [userId, show]);
 
-  const handleSelect = option => {
-    setSelectedOption(option);
+  const handleSelect = optionValue => {
+    setSelectedOption(optionValue);
     setIsOpen(false);
   };
 
@@ -111,16 +171,28 @@ function HelpModal({ show, onHide, auth }) {
     setIsSubmitting(true);
 
     try {
-      await axios.post(ENDPOINTS.HELP_REQUEST_CREATE, {
+      await httpService.post(ENDPOINTS.HELP_REQUEST_CREATE, {
         topic: selectedOption,
         description: `Help request for: ${selectedOption}`,
       });
 
       toast.success('Help request submitted successfully!');
+
+      const helpTopic = selectedOption;
+      const selectedSkillKey = resolveSkillKey(helpTopic);
+
       setSelectedOption('');
-      onHide();
+
+      // Navigate to community helpers; do not call onHide() (HelpPage would redirect to dashboard).
+      history.push({
+        pathname: '/hgnhelp/community',
+        state: {
+          initialSkills: selectedSkillKey ? [selectedSkillKey] : [],
+          softwareDevTeamOnly: true,
+          helpTopic,
+        },
+      });
     } catch (err) {
-      console.error('Help request submission error:', err);
       if (err.code === 'ERR_NETWORK' || !err.response) {
         toast.error('Cannot connect to server. Please ensure the backend is running.');
       } else {
@@ -138,12 +210,18 @@ function HelpModal({ show, onHide, auth }) {
     onHide();
   };
 
+  const selectedLabel =
+    options.find(option => option.value === selectedOption)?.label || selectedOption;
+
   const renderContent = () => {
     if (loading) return <div>Loading categories...</div>;
-    if (error) return <div className="text-danger">{error}</div>;
+    if (!options.length) {
+      return <div className="text-danger">{error || 'No help categories available.'}</div>;
+    }
 
     return (
       <>
+        {error && <div className="alert alert-warning mb-3">{error}</div>}
         <div
           className={`${styles.selectButton} ${darkMode ? styles.selectButtonDark : ''}`}
           onClick={() => setIsOpen(!isOpen)}
@@ -160,7 +238,7 @@ function HelpModal({ show, onHide, auth }) {
               ${darkMode && selectedOption ? styles.selectedDark : ''}
             `}
           >
-            {selectedOption || 'Select an option'}
+            {selectedLabel || 'Select an option'}
           </span>
 
           <span
@@ -177,17 +255,17 @@ function HelpModal({ show, onHide, auth }) {
           >
             {options.map(option => (
               <div
-                key={option}
+                key={option.value}
                 className={`${styles.selectOption} ${darkMode ? styles.selectOptionDark : ''}`}
-                onClick={() => handleSelect(option)}
+                onClick={() => handleSelect(option.value)}
                 role="option"
                 tabIndex={0}
                 onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') handleSelect(option);
+                  if (e.key === 'Enter' || e.key === ' ') handleSelect(option.value);
                 }}
-                aria-selected={selectedOption === option}
+                aria-selected={selectedOption === option.value}
               >
-                {option}
+                {option.label}
               </div>
             ))}
           </div>
@@ -227,7 +305,7 @@ function HelpModal({ show, onHide, auth }) {
           If you have any suggestions please click{' '}
           <button
             type="button"
-            className="p-0 border-0 align-baseline"
+            className={`${styles.suggestionsLink} ${darkMode ? styles.suggestionsLinkDark : ''}`}
             onClick={handleSuggestionsClick}
           >
             here
@@ -248,7 +326,6 @@ function HelpModal({ show, onHide, auth }) {
   );
 }
 
-/* ---------------- PropTypes ---------------- */
 HelpModal.propTypes = {
   show: PropTypes.bool.isRequired,
   onHide: PropTypes.func.isRequired,

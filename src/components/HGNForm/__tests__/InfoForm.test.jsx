@@ -6,15 +6,10 @@ import { createStore, combineReducers } from 'redux';
 import hgnForm from '~/reducers/hgnFormReducers';
 import InfoForm from '../questionpages/InfoForm';
 
-const authUser = {
-  userid: 'u1',
-  role: 'Administrator',
-  email: 'a@b.com',
-  firstName: 'Pat',
-  lastName: 'Lee',
-};
+const editableUser = { userid: 'u1', role: 'Administrator', email: 'a@b.com' };
+const profileUser = { ...editableUser, firstName: 'Pat', lastName: 'Lee' };
 
-const setup = () => {
+const setup = (authUser = editableUser) => {
   const store = createStore(
     combineReducers({
       hgnForm,
@@ -53,10 +48,11 @@ const expectBlockedWith = (history, message) => {
 const NAME_TOO_SHORT = 'Name must be at least 2 characters long.';
 
 describe('InfoForm state retention and validation', () => {
-  it('starts with an empty Name and a read-only Email', () => {
+  it('starts with an empty editable Name when the profile has no name, and a read-only Email', () => {
     const { ui } = setup();
     render(ui());
     expect(nameInput()).toHaveValue('');
+    expect(nameInput()).toBeEnabled();
     expect(screen.getByLabelText(/^Email/i)).toHaveValue('a@b.com');
   });
 
@@ -101,6 +97,26 @@ describe('InfoForm state retention and validation', () => {
     expect(nameInput()).toHaveValue('');
     clickNext();
     expectBlockedWith(history, NAME_TOO_SHORT);
+  });
+
+  it('prefills and locks Name from the profile, and keeps it after Next then Back', () => {
+    const { history, ui } = setup(profileUser);
+    const { unmount } = render(ui());
+
+    expect(nameInput()).toHaveValue('Pat Lee');
+    expect(nameInput()).toBeDisabled();
+
+    changeField(/GitHub/i, 'patlee');
+    changeField(/^Slack/i, 'Pat Lee');
+    fireEvent.click(screen.getByLabelText(/my Slack handle is my first and last name/i));
+    clickNext();
+    expect(history.location.pathname).toBe('/hgnform/page2');
+    unmount();
+
+    history.goBack();
+    render(ui());
+    expect(nameInput()).toHaveValue('Pat Lee');
+    expect(screen.getByLabelText(/GitHub/i)).toHaveValue('patlee');
   });
 
   it('advances to page 2 when the form is valid', () => {

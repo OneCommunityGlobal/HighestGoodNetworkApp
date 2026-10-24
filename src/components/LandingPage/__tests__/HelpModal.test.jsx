@@ -4,6 +4,7 @@ import configureMockStore from 'redux-mock-store';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import HelpModal from '../HelpModal';
+import styles from '../HelpModal.module.css';
 
 vi.mock('axios');
 vi.mock('react-toastify');
@@ -290,5 +291,25 @@ describe('HelpModal', () => {
       );
       expect(categoryCalls).toHaveLength(1);
     });
+  });
+  it('supports an eligible HGN software team volunteer in dark mode', async () => {
+    mockGet({
+      categories: [{ name: 'Software Support' }],
+      eligibility: { eligible: true, questionnaireCompleted: true },
+    });
+    const store = mockStore({
+      theme: { darkMode: true },
+      auth: { user: { userid: 'test-user', role: 'Volunteer' } },
+    });
+    renderHelpModal(store);
+
+    const suggestionsLink = await screen.findByRole('button', { name: 'here' });
+    expect(suggestionsLink).toHaveClass(styles.suggestionsLink, styles.suggestionsLinkDark);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select an option' }));
+    fireEvent.click(await screen.findByRole('option', { name: 'Software Support' }));
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled());
+    expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
   });
 });

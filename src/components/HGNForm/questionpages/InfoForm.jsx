@@ -11,6 +11,10 @@ function InfoForm() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
   const isOwner = user.role === 'Owner';
+  const userProfiles = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
+  const userProfile = Array.isArray(userProfiles)
+    ? userProfiles.find(p => p._id === user.userid)
+    : userProfiles;
   const [newVolunteer, setNewVolunteer] = useState({
     ...formData,
     name: formData?.name || '',
@@ -25,6 +29,9 @@ function InfoForm() {
   const [isSlackNameWarning, setIsSlackNameWarning] = useState(false);
   const [validationErrors, setValidationErrors] = useState([]);
 
+  // Lock the name field only when it was prefilled from the profile,
+  // not whenever the user has typed something.
+  const [nameFromProfile, setNameFromProfile] = useState(false);
   const isValid = newVolunteer.name.length >= 2;
   const showError = touched && !isValid;
 
@@ -43,16 +50,22 @@ function InfoForm() {
 
   useEffect(() => {
     if (user && formData) {
+      const firstName = userProfile?.firstName || user?.firstName || '';
+      const lastName = userProfile?.lastName || user?.lastName || '';
+      setNameFromProfile(Boolean(firstName && lastName));
       setNewVolunteer(prevState => ({
         ...formData,
-        ...prevState, // This preserves any user input, including Name
+        ...prevState, // This preserves any user input
+        // A profile Name is locked (not editable), so it is safe to apply. An editable Name is
+        // always kept as entered, including when intentionally cleared.
+        name: firstName && lastName ? `${firstName} ${lastName}` : prevState.name,
         email: user.email,
         github: prevState.github || formData.github || '', // Preserve GitHub value
         slack: prevState.slack || formData.slack || '', // Preserve
       }));
       setLoading(false);
     }
-  }, [user, formData]);
+  }, [userProfile, user, formData]);
 
   const handleSlackChange = e => {
     const { checked } = e.target;
@@ -170,6 +183,7 @@ function InfoForm() {
             pattern=".{2,}"
             title="Name must be at least 2 characters long"
             placeholder="Your First and Last Name"
+            disabled={nameFromProfile}
           />
           {showError && (
             <span className={`${styles.errorMessage}`}>
@@ -189,7 +203,7 @@ function InfoForm() {
             onChange={e => setNewVolunteer({ ...newVolunteer, email: e.target.value })}
             required
             placeholder="Your Email"
-            disabled={!!(user.email !== undefined || user.email !== null)}
+            disabled={!!user.email}
           />
         </div>
         <div className={`${styles.formInputs}`}>
