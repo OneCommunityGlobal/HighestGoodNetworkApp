@@ -77,7 +77,13 @@ export default function WeeklyProjectSummaryHeader({
       <header className={`${styles.weeklySummaryHeaderContainer}`}>
         <h1 className={`${styles.weeklySummaryHeaderTitle}`}>Weekly Project Summary</h1>
 
-        <div className={`${styles.weeklySummaryHeaderControls}`}>
+        {/* no-print: Share PDF clones this page's container and strips anything matching
+            that class before capture (see WeeklyProjectSummary.jsx). The clone also can't
+            preserve a controlled <select>'s live-selected value — cloneNode(true) only
+            copies the "selected" HTML attribute, not the DOM property React sets — so these
+            dropdowns would render back at their first option in the export regardless; the
+            "Showing summary for" banner already carries the actual selection into the PDF. */}
+        <div className={`${styles.weeklySummaryHeaderControls} no-print`}>
           <Input
             type="select"
             value={projectFilter}

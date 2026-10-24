@@ -147,7 +147,6 @@ function WeeklyProjectSummary() {
 
   const [openSections, setOpenSections] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [compareWithPreviousWeek, setCompareWithPreviousWeek] = useState(false);
 
   const selectedProjectLabel = projectFilter || 'One Community';
@@ -158,16 +157,6 @@ function WeeklyProjectSummary() {
     if (materials.length === 0) dispatch(fetchAllMaterials());
     if (bmProjects.length === 0) dispatch(fetchBMProjects());
   }, [dispatch, materials.length, bmProjects.length]);
-
-  useEffect(() => {
-    setIsRefreshing(true);
-
-    const refreshTimer = setTimeout(() => {
-      setIsRefreshing(false);
-    }, 400);
-
-    return () => clearTimeout(refreshTimer);
-  }, [projectFilter, dateRangeFilter, comparisonPeriodFilter]);
 
   const quantityOfMaterialsUsedData = useMemo(() => {
     if (!materials.length) return [];
@@ -189,7 +178,11 @@ function WeeklyProjectSummary() {
         hasData: true,
         emptyMessage: 'No risk profile data for this week.',
         comparisonText: `Risk profile: comparison period is ${selectedComparisonRangeLabel}.`,
-        content: <ProjectRiskProfileOverview />,
+        content: (
+          <div className={styles.fullWidthContent}>
+            <ProjectRiskProfileOverview />
+          </div>
+        ),
       },
       {
         title: 'Project Status',
@@ -199,7 +192,13 @@ function WeeklyProjectSummary() {
         // cards don't come from real per-week data yet, so a bare count of them would
         // misrepresent itself as a data-driven figure (this is what reviewers flagged).
         badgeLabel: 'Status',
-        hasData: projectStatusButtons.length > 0,
+        // `projectStatusButtons` is a static module-level constant (always non-empty), so
+        // checking its length isn't a real data check — it just always evaluates true while
+        // looking like one. Most sections below are in the same position: their charts fetch
+        // their own data internally and don't report back to this component, so there's no
+        // real signal here to derive hasData from yet (reviewer-flagged, tracked against
+        // HGNRest#2381). Left explicitly `true` rather than a fake length check.
+        hasData: true,
         emptyMessage: 'No project status data for this week.',
         comparisonText: `Project status: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
@@ -581,6 +580,15 @@ function WeeklyProjectSummary() {
         zIndex: '-1',
       });
 
+      // Tag every live SVG with a stable id before cloning, so the clone's SVGs can be
+      // paired back to their original after cleanup removes some of them (see below).
+      // cloneNode(true) copies attributes, so this id survives onto the clone.
+      const livePdfSvgIdAttr = 'data-pdf-svg-id';
+      const liveSvgsBeforeClone = Array.from(contentElement.querySelectorAll('svg'));
+      liveSvgsBeforeClone.forEach((svg, index) => {
+        svg.setAttribute(livePdfSvgIdAttr, String(index));
+      });
+
       const clonedContent = contentElement.cloneNode(true);
 
       // Section headings are interactive <button> elements (for expand/collapse), but the
@@ -599,9 +607,7 @@ function WeeklyProjectSummary() {
         });
 
       clonedContent
-        .querySelectorAll(
-          'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
-        )
+        .querySelectorAll('button, .weekly-project-summary-dropdown-icon, .no-print')
         .forEach(el => {
           el.remove();
         });
@@ -620,12 +626,20 @@ function WeeklyProjectSummary() {
       // even though the cloned markup is present. Work around this by rendering each chart
       // SVG (from the still-live, already-correctly-rendered original) to a canvas and
       // swapping the cloned <svg> for that rasterized <img>, which html2canvas handles fine.
-      const liveSvgs = Array.from(contentElement.querySelectorAll('svg'));
+      //
+      // Pair clone and live SVGs by the stable id tagged above, not by array position: the
+      // cleanup pass above removes <button> elements (and any SVG icons inside them, e.g.
+      // the Stack/Compare toggle icons in FinancialsTrackingSection) from the clone only, so
+      // clonedSvgs is shorter than liveSvgsBeforeClone and a plain index pairing drifts —
+      // every chart after the first removed icon gets the wrong live SVG's image.
+      const liveSvgById = new Map(
+        liveSvgsBeforeClone.map(svg => [svg.getAttribute(livePdfSvgIdAttr), svg]),
+      );
       const clonedSvgs = Array.from(clonedContent.querySelectorAll('svg'));
 
       await Promise.all(
-        clonedSvgs.map(async (clonedSvg, index) => {
-          const liveSvg = liveSvgs[index];
+        clonedSvgs.map(async clonedSvg => {
+          const liveSvg = liveSvgById.get(clonedSvg.getAttribute(livePdfSvgIdAttr));
           if (!liveSvg) return;
 
           const width = liveSvg.clientWidth || Number(liveSvg.getAttribute('width')) || 0;
@@ -767,6 +781,11 @@ function WeeklyProjectSummary() {
         pdfContainer.remove();
       }
     } finally {
+      // Strip the temporary pairing id added to the live SVGs for export (see above) so it
+      // doesn't linger on the real page.
+      document
+        .querySelectorAll('[data-pdf-svg-id]')
+        .forEach(svg => svg.removeAttribute('data-pdf-svg-id'));
       setOpenSections(currentOpenSections);
       setIsGeneratingPDF(false);
     }
@@ -787,6 +806,11 @@ function WeeklyProjectSummary() {
       />
 
       <div className={`${styles.weeklySummaryControls} no-print`}>
+        {/* The project/date/comparison filters only drive this banner text today — the
+            section charts below each fetch their own data independently of these
+            selections (see HGNRest#2381), so there is nothing yet for the filters to
+            actually apply to. Treat them as "what you're labeling the report as" rather
+            than "what's filtering the report" until that backend support lands. */}
         <div className={styles.activeSummaryBanner}>
           <span className={styles.activeSummaryLabel}>Showing summary for:</span>
           <span className={styles.activeSummaryValue}>
@@ -813,8 +837,6 @@ function WeeklyProjectSummary() {
             </button>
           </div>
         </div>
-
-        {isRefreshing && <div className={styles.loadingBanner}>Updating weekly summary...</div>}
       </div>
 
       <div className={styles.weeklyProjectSummaryDashboardContainer}>

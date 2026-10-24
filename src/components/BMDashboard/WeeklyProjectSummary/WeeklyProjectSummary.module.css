@@ -653,6 +653,12 @@
 
 /* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
+  /* Must span every column of the parent .weeklyProjectSummaryDashboardCategoryContent
+     grid, not just auto-place into one. That parent's auto-fit column count is driven by
+     container width alone, not item count, so once a sibling (the comparison banner)
+     forces those columns to exist, this unspanned single item would otherwise land in
+     just the first ~220-300px column and squeeze its 12 cards into a narrow strip. */
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
@@ -661,6 +667,15 @@
   width: 100%;
   max-width: 1600px;
   margin: auto;
+}
+
+/* Generic full-span wrapper for sections whose content is a single block (not a set of
+   independent cards), so it isn't auto-placed into one narrow grid column when the
+   comparison banner's full-width sibling forces the parent's auto-fit columns to persist.
+   See .projectStatusGrid above for the full explanation. */
+.fullWidthContent {
+  grid-column: 1 / -1;
+  width: 100%;
 }
 
 /* .projectStatusGrid {
