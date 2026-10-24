@@ -1,48 +1,51 @@
-/* stylelint-disable  */
-.container{
+/* stylelint-disable */
+
+.container {
   padding: 24px;
   min-height: 100vh;
-  background-color: var(--color-background, #f9fafb);
+  background-color: var(--color-background, #f9fbf9);
   color: var(--color-text, #1f2937);
 }
 
-.header{
+.header {
   margin-bottom: 24px;
 }
 
-.title{
+.title {
   font-size: 2rem;
   font-weight: 700;
   margin: 0 0 8px;
 }
 
-.subtitle{
+.subtitle {
   font-size: 1rem;
   margin: 0;
   color: var(--color-text-secondary, #6b7280);
 }
 
-.metricsGrid{
+/* Metrics */
+
+.metricsGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(180px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
 
-.metricCard{
+.metricCard {
   background: #fff;
   border: 1px solid #dbe4d8;
   border-radius: 12px;
   padding: 18px;
 }
 
-.metricTitle{
+.metricTitle {
   margin: 0 0 10px;
   font-size: 0.95rem;
   color: #6b7280;
 }
 
-.metricValue{
+.metricValue {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
@@ -93,14 +96,16 @@
   color: #fdba74;
 }
 
-.sectionNav{
+/* Section Navigation */
+
+.sectionNav {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 20px;
 }
 
-.navButton{
+.navButton {
   border: 1px solid #d1d5db;
   background: #fff;
   color: #2f3b52;
@@ -113,25 +118,27 @@
   transition: all 0.2s ease;
 }
 
-.navButton:hover{
+.navButton:hover {
   background: #e8f3e8;
 }
 
-.activeNav{
+.activeNav {
   background: #e8f3e8;
   border-color: #9acb9a;
   color: #2f6b3b;
   font-weight: 600;
 }
 
-.inventorySection{
+/* Inventory */
+
+.inventorySection {
   background: #fff;
   border: 1px solid #dbe4d8;
   border-radius: 16px;
   padding: 20px;
 }
 
-.inventoryHeader{
+.inventoryHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -139,33 +146,43 @@
   margin-bottom: 20px;
 }
 
-.inventoryTitle{
+.inventoryTitle {
   margin: 0 0 4px;
   font-size: 1.2rem;
   font-weight: 700;
 }
 
-.inventorySubtitle{
+.inventorySubtitle {
   margin: 0;
   color: #6b7280;
 }
 
-.addButton{
-  border: none;
+.addButton {
+  border: 1px solid #24552e;
+  border-bottom: 3px solid #24552e;
   background: #2f6b3b;
   color: #fff;
   padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  transition: all 0.15s ease;
 }
 
-.addButton:hover{
-  background: #3f844d
+.addButton:hover {
+  background: #24552e;
+  transform: translateY(-1px);
 }
 
-.cardGrid{
-  display:grid;
+.addButton:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+}
+
+/* Orchard Cards */
+
+.cardGrid {
+  display: grid;
   grid-template-columns: repeat(2, minmax(280px, 1fr));
   gap: 16px;
 }
@@ -175,11 +192,13 @@
   border-radius: 14px;
   padding: 16px;
   background: #fcfdfb;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .orchardCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 118px rgb(0 0 0 / 8%);
+  box-shadow: 0 10px 24px rgb(0 0 0 / 8%);
   border-color: #b9d7bd;
 }
 
@@ -252,12 +271,12 @@
 .good {
   background: #eef2ff;
   color: #4f46e5;
-    border: 1px solid #c7d2fe;
+  border: 1px solid #c7d2fe;
 }
 
 .cardDetails {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 16px;
 }
@@ -274,19 +293,48 @@
   font-weight: 500;
 }
 
-.detailsButton {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #d1d5db;
-  background: #fff;
+/* Buttons: raised appearance in light and dark modes */
+
+.detailsButton,
+.statusActionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-height: 38px;
+  padding: 9px 16px;
+  background: #e5e7eb;
+  color: #1f2937;
+  border: 1px solid #9ca3af;
+  border-bottom: 3px solid #9ca3af;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.4;
+  transition: all 0.15s ease;
 }
 
-.detailsButton:hover {
-  background: #f8fafc
+.detailsButton:hover,
+.statusActionButton:hover {
+  background: #d1d5db;
+  border-color: #6b7280;
+  transform: translateY(-1px);
 }
+
+.detailsButton:active,
+.statusActionButton:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+}
+
+.detailsButton:focus-visible,
+.statusActionButton:focus-visible {
+  outline: 2px solid #4f9d5d;
+  outline-offset: 2px;
+}
+
+/* Placeholder Sections */
 
 .placeholderSection {
   background: #fff;
@@ -307,6 +355,341 @@
   color: #6b7280;
   font-size: 0.95rem;
 }
+
+/* Orders and Planting Lists */
+
+.ordersList,
+.plantingList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.orderCard,
+.plantingCard {
+  border: 1px solid #dbe4d8;
+  border-radius: 12px;
+  padding: 18px;
+  background-color: #fcfdfb;
+}
+
+.orderCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.orderId {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.orderSupplier {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 2px 0 0;
+}
+
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.statusOrdered {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.statusShipped {
+  background-color: #111827;
+  color: #fff;
+}
+
+.orderDetails {
+  margin: 14px 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.orderDetails p {
+  margin: 2px 0;
+}
+
+.orderActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Planting Schedule */
+
+.scheduleTitleIcon {
+  margin-right: 6px;
+  vertical-align: middle;
+  color: #2f6b3b;
+}
+
+.plantingCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.taskQuantityName {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.taskDetailText {
+  margin: 2px 0;
+  font-size: 0.875rem;
+}
+
+.scheduledDateTag {
+  background-color: #e8f7e9;
+  color: #2f7a38;
+  border: 1px solid #9acb9a;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.addPlantingTaskButton {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  border: 2px dashed #9acb9a;
+  border-bottom-width: 3px;
+  background-color: #f0fdf4;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #24552e;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.addPlantingTaskButton:hover {
+  background-color: #dcfce7;
+  border-color: #4f9d5d;
+  transform: translateY(-1px);
+}
+
+.addPlantingTaskButton:active {
+  transform: translateY(1px);
+}
+
+/* Forms */
+
+.entryForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 16px 0 20px;
+  padding: 18px;
+  border: 1px solid #dbe4d8;
+  border-radius: 12px;
+  background: #fcfdfb;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.formField input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f2937;
+  font: inherit;
+  font-weight: 400;
+}
+
+.formField input:focus-visible {
+  outline: 2px solid #4f9d5d;
+  outline-offset: 2px;
+}
+
+/* =========================
+   Dark Mode
+========================= */
+
+:global(.dark-mode) .container {
+  padding: 24px;
+  min-height: 100vh;
+  background-color: var(--color-background, #1f2937);
+  color: var(--color-text, #1f2937);
+}
+
+:global(.dark-mode) .metricCard,
+:global(.dark-mode) .inventorySection,
+:global(.dark-mode) .placeholderSection {
+  background: #1f2937;
+  border-color: #475569;
+}
+
+:global(.dark-mode) .metricTitle,
+:global(.dark-mode) .inventorySubtitle,
+:global(.dark-mode) .cardLocation,
+:global(.dark-mode) .detailLabel,
+:global(.dark-mode) .orderSupplier,
+:global(.dark-mode) .placeholderText,
+:global(.dark-mode) .subtitle {
+  color: #cbd5e1;
+}
+
+:global(.dark-mode) .metricValue {
+  color: #86efac;
+}
+
+:global(.dark-mode) .navButton {
+  background: #263449;
+  color: #f8fafc;
+  border-color: #64748b;
+}
+
+:global(.dark-mode) .navButton:hover {
+  background: #3b4f68;
+  border-color: #cbd5e1;
+}
+
+:global(.dark-mode) .activeNav {
+  background: #166534;
+  color: #fff;
+  border-color: #86efac;
+}
+
+:global(.dark-mode) .addButton {
+  background: #15803d;
+  color: #fff;
+  border-color: #86efac;
+  border-bottom-color: #86efac;
+}
+
+:global(.dark-mode) .addButton:hover {
+  background: #166534;
+  border-color: #bbf7d0;
+}
+
+/* Dark mode button appearance */
+
+:global(.dark-mode) .detailsButton,
+:global(.dark-mode) .statusActionButton {
+  background: #475569;
+  color: #fff;
+  border: 1px solid #94a3b8;
+  border-bottom: 3px solid #94a3b8;
+}
+
+:global(.dark-mode) .detailsButton:hover,
+:global(.dark-mode) .statusActionButton:hover {
+  background: #64748b;
+  color: #fff;
+  border-color: #cbd5e1;
+}
+
+:global(.dark-mode) .detailsButton:active,
+:global(.dark-mode) .statusActionButton:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+}
+
+:global(.dark-mode) .detailsButton:focus-visible,
+:global(.dark-mode) .statusActionButton:focus-visible {
+  outline-color: #86efac;
+}
+
+:global(.dark-mode) .orchardCard,
+:global(.dark-mode) .orderCard,
+:global(.dark-mode) .plantingCard,
+:global(.dark-mode) .entryForm {
+  background: #1f2937;
+  border-color: #475569;
+}
+
+:global(.dark-mode) .orchardCard:hover {
+  border-color: #86efac;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 25%);
+}
+
+:global(.dark-mode) .excellent {
+  background: #193d31;
+  color: #bbf7d0;
+  border-color: #4b8060;
+}
+
+:global(.dark-mode) .good {
+  background: #312e81;
+  color: #c7d2fe;
+  border-color: #6366f1;
+}
+
+:global(.dark-mode) .statusOrdered {
+  background: #374151;
+  color: #f3f4f6;
+  border: 1px solid #64748b;
+}
+
+:global(.dark-mode) .statusShipped {
+  background: #193d31;
+  color: #bbf7d0;
+  border: 1px solid #4b8060;
+}
+
+:global(.dark-mode) .scheduledDateTag {
+  background: #193d31;
+  color: #bbf7d0;
+  border-color: #4b8060;
+}
+
+:global(.dark-mode) .addPlantingTaskButton {
+  background: #263449;
+  color: #bbf7d0;
+  border-color: #86efac;
+}
+
+:global(.dark-mode) .addPlantingTaskButton:hover {
+  background: #193d31;
+  color: #fff;
+  border-color: #bbf7d0;
+}
+
+:global(.dark-mode) .placeholderTitle {
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .formField input {
+  background: #111827;
+  color: #f9fafb;
+  border-color: #64748b;
+}
+
+:global(.dark-mode) .formField input::placeholder {
+  color: #94a3b8;
+}
+
+:global(.dark-mode) .formField input:focus-visible {
+  outline-color: #86efac;
+}
+
+/* Responsive Layout */
 
 @media (width <= 1024px) {
   .metricsGrid {
@@ -335,72 +718,13 @@
   .cardDetails {
     grid-template-columns: 1fr;
   }
-}
 
-:global(.dark-mode) .container {
-  background-color: #1b2a41;
-  color: #f3f4f6;
-}
+  .plantingCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-:global(.dark-mode) .subtitle,
-:global(.dark-mode) .metricTitle,
-:global(.dark-mode) .inventorySubtitle,
-:global(.dark-mode) .cardLocation,
-:global(.dark-mode) .detailLabel,
-:global(.dark-mode) .placeholderText {
-  color: #b5bac5;
-}
-
-:global(.dark-mode) .metricCard,
-:global(.dark-mode) .inventorySection,
-:global(.dark-mode) .orchardCard,
-:global(.dark-mode) .navButton,
-:global(.dark-mode) .detailsButton,
-:global(.dark-mode) .placeholderSection {
-  background-color: #2f4157;
-  border-color: #3a506b;
-  color: #f3f4f6;
-}
-
-:global(.dark-mode) .activeNav {
-  background-color: #193d31;
-  border-color: #2f6b3b;
-  color: #d1fae5;
-}
-
-:global(.dark-mode) .metricValue {
-  color: #86efac;
-}
-
-:global(.dark-mode) .inventoryTitle,
-:global(.dark-mode) .cardTitle,
-:global(.dark-mode) .placeholderTitle,
-:global(.dark-mode) .detailValue {
-  color: #f3f4f6;
-}
-
-:global(.dark-mode) .addButton {
-  background-color: #2f6b3b;
-  color: #fff;
-}
-
-:global(.dark-mode) .addButton:hover {
-  background-color: #24542f;
-}
-
-:global(.dark-mode) .navButton:hover,
-:global(.dark-mode) .detailsButton:hover {
-  background-color: #3a506b;
-}
-
-:global(.dark-mode) .excellent {
-  background-color: #193d31;
-  color: #86efac;
-  border-color: #2f6b3b;
-}
-
-:global(.dark-mode) .good {
-  background-color: #312e81;
-  color: #c7d2fe;
-  border-color: #4f46e5;
+  .entryForm {
+    grid-template-columns: 1fr;
+  }
 }
