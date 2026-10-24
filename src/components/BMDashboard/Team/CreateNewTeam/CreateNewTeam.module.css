@@ -469,3 +469,70 @@
   -webkit-text-fill-color: #fff !important;
   caret-color: #fff;
 }
+
+/* ========== Character counter ========== */
+.helperTextOver {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+:global(body.dark-mode) .helperTextOver,
+:global(body.bm-dashboard-dark) .helperTextOver {
+  color: #ff6b6b !important;
+}
+
+/* ========== Standardized button states ========== */
+.addBtn:active:not(:disabled),
+.addTeamButtons button:active:not(:disabled),
+.bulkRemoveBtn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.addBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.addTeamButtons button#submit-button:hover:not(:disabled) {
+  background-color: #1b5e20;
+  border-color: #1b5e20;
+}
+
+.addTeamButtons button:disabled,
+.addTeamButtons button#cancel-button:disabled {
+  cursor: not-allowed;
+}
+
+/* Visible keyboard focus for all actions and help icons */
+.addBtn:focus-visible,
+.bulkRemoveBtn:focus-visible,
+.addTeamButtons button:focus-visible,
+.tooltipIcon:focus-visible,
+.badgeRemove:focus-visible {
+  outline: 2px solid #1a73e8;
+  outline-offset: 2px;
+}
+
+:global(body.dark-mode) .addBtn:disabled,
+:global(body.bm-dashboard-dark) .addBtn:disabled {
+  opacity: 0.5;
+}
+
+:global(body.dark-mode) .addTeamButtons button#submit-button:hover:not(:disabled),
+:global(body.bm-dashboard-dark) .addTeamButtons button#submit-button:hover:not(:disabled) {
+  background-color: #1b5e20 !important;
+  border-color: #1b5e20 !important;
+}
+
+:global(body.dark-mode) .addBtn:focus-visible,
+:global(body.dark-mode) .bulkRemoveBtn:focus-visible,
+:global(body.dark-mode) .addTeamButtons button:focus-visible,
+:global(body.dark-mode) .tooltipIcon:focus-visible,
+:global(body.dark-mode) .badgeRemove:focus-visible,
+:global(body.bm-dashboard-dark) .addBtn:focus-visible,
+:global(body.bm-dashboard-dark) .bulkRemoveBtn:focus-visible,
+:global(body.bm-dashboard-dark) .addTeamButtons button:focus-visible,
+:global(body.bm-dashboard-dark) .tooltipIcon:focus-visible,
+:global(body.bm-dashboard-dark) .badgeRemove:focus-visible {
+  outline-color: #8ab4f8;
+}

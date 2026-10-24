@@ -12,11 +12,20 @@ import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
 import { postNewTeam, addTeamMember } from '../../../../actions/allTeamsAction';
 import { ENDPOINTS } from '../../../../utils/URL';
 
+const TEAM_NAME_MAX = 35;
+
 const initialFormState = {
   teamName: '',
   additionalInformation: '',
   teamMembers: [],
   tasks: [],
+};
+
+const initialTouchedState = {
+  teamName: false,
+  assignedMembers: false,
+  additionalInformation: false,
+  assignedTasks: false,
 };
 
 export default function CreateNewTeam() {
@@ -36,17 +45,17 @@ export default function CreateNewTeam() {
   const [taskErrorMessage, setTaskErrorMessage] = useState('');
   const [selectedMembersForBulk, setSelectedMembersForBulk] = useState([]);
   const [selectedTasksForBulk, setSelectedTasksForBulk] = useState([]);
+  // Locks the form while the team is being created to prevent double submits
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [teamNameTooltipOpen, setTeamNameTooltipOpen] = useState(false);
   const [membersTooltipOpen, setMembersTooltipOpen] = useState(false);
   const [tasksTooltipOpen, setTasksTooltipOpen] = useState(false);
 
-  const [touchedFields, setTouchedFields] = useState({
-    teamName: false,
-    assignedMembers: false,
-    additionalInformation: false,
-    assignedTasks: false,
-  });
+  const [touchedFields, setTouchedFields] = useState(initialTouchedState);
+
+  // Members list is still loading until the store has an array
+  const membersLoading = !Array.isArray(userProfilesBasicInfo);
 
   useEffect(() => {
     dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
@@ -72,6 +81,8 @@ export default function CreateNewTeam() {
     if (location.state?.selectedTask) {
       const task = location.state.selectedTask;
       setAssignedTasks(prev => (prev.some(t => t.id === task.id) ? prev : [...prev, task]));
+      // Returning from task selection counts as interacting with the Tasks field
+      setTouchedFields(prev => ({ ...prev, assignedTasks: true }));
       history.replace(location.pathname, {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,8 +99,9 @@ export default function CreateNewTeam() {
       .max(500)
       .allow(''),
     teamName: Joi.string()
+      .trim()
       .required()
-      .max(35),
+      .max(TEAM_NAME_MAX),
   };
 
   const schema = Joi.object(validationObj).unknown();
@@ -100,10 +112,10 @@ export default function CreateNewTeam() {
     if (result.error) {
       result.error.details.forEach(detail => {
         if (detail.path[0] === 'teamName') {
-          if (detail.type === 'any.empty' || detail.type === 'any.required') {
+          if (detail.type === 'string.empty' || detail.type === 'any.required') {
             errorMessages.teamName = 'Team name is required.';
           } else if (detail.type === 'string.max') {
-            errorMessages.teamName = 'Team name must be 35 characters or fewer.';
+            errorMessages.teamName = `Team name must be ${TEAM_NAME_MAX} characters or fewer.`;
           } else {
             errorMessages[detail.path[0]] = detail.message;
           }
@@ -115,26 +127,26 @@ export default function CreateNewTeam() {
     const currentMembers = membersList === undefined ? assignedMembers : membersList;
     if (currentMembers.length === 0) {
       errorMessages.assignedMembers = 'You must assign at least one member.';
-    } else {
-      delete errorMessages.assignedMembers;
     }
     if (assignedTasks.length === 0) {
       errorMessages.assignedTasks = 'You must assign at least one task.';
-    } else {
-      delete errorMessages.assignedTasks;
     }
     return Object.keys(errorMessages).length > 0 ? errorMessages : null;
   };
 
   const isFormValid =
     formData.teamName.trim().length > 0 &&
-    formData.teamName.length <= 35 &&
+    formData.teamName.length <= TEAM_NAME_MAX &&
     assignedMembers.length > 0 &&
     assignedTasks.length > 0;
 
+  // Once the user has interacted with any field, show all missing requirements so it is
+  // clear why Submit is disabled (Submit cannot be clicked to reveal them)
+  const hasInteracted = Object.values(touchedFields).some(Boolean);
+
   useEffect(() => {
     // Only trigger validation if the form is touched (fields are interacted with)
-    if (Object.values(touchedFields).includes(true)) {
+    if (hasInteracted) {
       const validationErrors = validate({ ...formData, teamMembers: assignedMembers });
       setErrors(validationErrors || {});
     }
@@ -142,13 +154,14 @@ export default function CreateNewTeam() {
   }, [assignedMembers, assignedTasks, touchedFields]);
 
   const handleInputChange = (name, value) => {
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const updatedData = { ...formData, [name]: value };
+    setFormData(updatedData);
 
-    // const validationErrors = validate(formData);
-    // setErrors(validationErrors || {});
+    // Live validation after the first interaction, so errors clear as the user fixes them
+    if (hasInteracted) {
+      const validationErrors = validate(updatedData);
+      setErrors(validationErrors || {});
+    }
   };
 
   const handleTeamNameBlur = () => {
@@ -157,8 +170,23 @@ export default function CreateNewTeam() {
     setErrors(validationErrors || {});
   };
 
+  const resetForm = () => {
+    setFormData(initialFormState);
+    setAssignedMembers([]);
+    setAssignedTasks([]);
+    setErrors({});
+    setSelectedMember('');
+    setSelectedMembersForBulk([]);
+    setSelectedTasksForBulk([]);
+    setTaskErrorMessage('');
+    setErrorMessage('');
+    setTouchedFields(initialTouchedState);
+  };
+
   const handleSubmit = async event => {
     event.preventDefault();
+    if (isSubmitting) return;
+
     setTouchedFields({
       teamName: true,
       assignedMembers: true,
@@ -171,8 +199,9 @@ export default function CreateNewTeam() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
-      const res = await dispatch(postNewTeam(formData.teamName, true));
+      const res = await dispatch(postNewTeam(formData.teamName.trim(), true));
       if (res?.status !== 200) {
         const errMsg = res?.data?.error || res?.message || 'Failed to create team.';
         toast.error(errMsg);
@@ -212,48 +241,31 @@ export default function CreateNewTeam() {
         );
       }
 
-      toast.success(`Team "${formData.teamName}" created successfully!`);
+      // Confirmation with next-step guidance
+      const memberCount = assignedMembers.length;
+      const taskCount = assignedTasks.length;
+      toast.success(
+        `Team "${formData.teamName.trim()}" created with ${memberCount} member${
+          memberCount === 1 ? '' : 's'
+        } and ${taskCount} task${
+          taskCount === 1 ? '' : 's'
+        }. You can now manage it from the Teams page, or create another team below.`,
+      );
       // Reset form after successful submission, stay on same page
-      setFormData(initialFormState);
-      setAssignedMembers([]);
-      setAssignedTasks([]);
-      setErrors({});
-      setSelectedMember('');
-      setSelectedMembersForBulk([]);
-      setSelectedTasksForBulk([]);
-      setTaskErrorMessage('');
-      setErrorMessage('');
-      setTouchedFields({
-        teamName: false,
-        assignedMembers: false,
-        additionalInformation: false,
-        assignedTasks: false,
-      });
+      resetForm();
     } catch (err) {
       const errMsg =
         err?.response?.data?.error ||
         err?.message ||
         'An unexpected error occurred. Please try again.';
       toast.error(errMsg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleCancelClick = () => {
-    setSelectedMember('');
-    setAssignedMembers([]);
-    setAssignedTasks([]);
-    setFormData(initialFormState);
-    setErrors({});
-    setSelectedMembersForBulk([]);
-    setSelectedTasksForBulk([]);
-    setTaskErrorMessage('');
-    setErrorMessage('');
-    setTouchedFields({
-      teamName: false,
-      assignedMembers: false,
-      additionalInformation: false,
-      assignedTasks: false,
-    });
+    resetForm();
   };
 
   const handleMemberChange = e => {
@@ -280,12 +292,14 @@ export default function CreateNewTeam() {
       setErrorMessage('');
       return updatedMembers;
     });
+    setTouchedFields(prev => ({ ...prev, assignedMembers: true }));
     setSelectedMember('');
   };
 
   const handleRemoveMember = member => {
     setAssignedMembers(assignedMembers.filter(m => m !== member));
     setSelectedMembersForBulk(prev => prev.filter(m => m !== member));
+    setTouchedFields(prev => ({ ...prev, assignedMembers: true }));
   };
 
   const handleBulkRemoveMembers = () => {
@@ -312,6 +326,7 @@ export default function CreateNewTeam() {
   const handleRemoveTask = task => {
     setAssignedTasks(assignedTasks.filter(t => t.id !== task.id));
     setSelectedTasksForBulk(prev => prev.filter(taskId => taskId !== task.id));
+    setTouchedFields(prev => ({ ...prev, assignedTasks: true }));
   };
 
   const handleBulkRemoveTasks = () => {
@@ -326,20 +341,53 @@ export default function CreateNewTeam() {
     );
   };
 
+  // Lets keyboard users open the "?" tooltips with Enter or Space
+  const handleTooltipKeyDown = (event, toggle) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggle();
+    }
+  };
+
+  const getMemberName = memberId => {
+    const memberInfo = members.find(u => u._id === memberId);
+    return memberInfo ? `${memberInfo.firstName} ${memberInfo.lastName}` : memberId;
+  };
+
+  const teamNameError = touchedFields.teamName ? errors.teamName : undefined;
+  const membersError =
+    (touchedFields.assignedMembers || hasInteracted) && errors.assignedMembers
+      ? errors.assignedMembers
+      : undefined;
+  const tasksError =
+    (touchedFields.assignedTasks || hasInteracted) && errors.assignedTasks
+      ? errors.assignedTasks
+      : undefined;
+  const teamNameLength = formData.teamName.length;
+
   return (
     <main className={`${styles.addTeamContainer}`}>
       <header className={`${styles.addTeamHeader}`}>
         <h2>Create New Team</h2>
       </header>
 
-      <Form className={`${styles.addTeamForm}`} onSubmit={handleSubmit}>
+      <Form className={`${styles.addTeamForm}`} onSubmit={handleSubmit} noValidate>
         {/* Team Details */}
         <div className={styles.formSection}>
           <h5 className={styles.sectionTitle}>Team Details</h5>
           <FormGroup>
             <Label for="team-name">
               Team Name<span className={styles.fieldRequired}>*</span>
-              <span id="teamNameTooltip" className={styles.tooltipIcon}>
+              <span
+                id="teamNameTooltip"
+                className={styles.tooltipIcon}
+                role="button"
+                tabIndex={0}
+                aria-label="Team name help"
+                onKeyDown={e =>
+                  handleTooltipKeyDown(e, () => setTeamNameTooltipOpen(!teamNameTooltipOpen))
+                }
+              >
                 ?
               </span>
             </Label>
@@ -348,7 +396,7 @@ export default function CreateNewTeam() {
               target="teamNameTooltip"
               toggle={() => setTeamNameTooltipOpen(!teamNameTooltipOpen)}
             >
-              Enter a unique name for your team (max 35 characters).
+              Enter a unique name for your team (max {TEAM_NAME_MAX} characters).
             </Tooltip>
             <Input
               id="team-name"
@@ -358,10 +406,23 @@ export default function CreateNewTeam() {
               value={formData.teamName}
               onChange={event => handleInputChange('teamName', event.target.value)}
               onBlur={handleTeamNameBlur}
+              invalid={Boolean(teamNameError)}
+              aria-invalid={Boolean(teamNameError)}
+              aria-describedby="team-name-help team-name-error"
+              disabled={isSubmitting}
             />
-            <small className={styles.helperText}>Max 35 characters</small>
-            {touchedFields.teamName && errors.teamName && (
-              <div className={styles.teamFormError}>{errors.teamName}</div>
+            <small
+              id="team-name-help"
+              className={`${styles.helperText} ${
+                teamNameLength > TEAM_NAME_MAX ? styles.helperTextOver : ''
+              }`}
+            >
+              {teamNameLength}/{TEAM_NAME_MAX} characters
+            </small>
+            {teamNameError && (
+              <div id="team-name-error" className={styles.teamFormError} role="alert">
+                {teamNameError}
+              </div>
             )}
           </FormGroup>
         </div>
@@ -372,7 +433,16 @@ export default function CreateNewTeam() {
           <FormGroup>
             <Label for="members-select">
               Add Members<span className={styles.fieldRequired}>*</span>
-              <span id="membersTooltip" className={styles.tooltipIcon}>
+              <span
+                id="membersTooltip"
+                className={styles.tooltipIcon}
+                role="button"
+                tabIndex={0}
+                aria-label="Members help"
+                onKeyDown={e =>
+                  handleTooltipKeyDown(e, () => setMembersTooltipOpen(!membersTooltipOpen))
+                }
+              >
                 ?
               </span>
             </Label>
@@ -389,9 +459,15 @@ export default function CreateNewTeam() {
                 options={members}
                 getOptionLabel={user => `${user.firstName} ${user.lastName}`}
                 getOptionValue={user => user._id}
+                // Already-assigned members are shown but cannot be picked again
+                isOptionDisabled={user => assignedMembers.includes(user._id)}
                 value={members.find(user => user._id === selectedMember) || null}
                 onChange={user => handleMemberChange({ target: { value: user?._id || '' } })}
-                placeholder="Select a Member"
+                placeholder={membersLoading ? 'Loading members…' : 'Select a Member'}
+                isLoading={membersLoading}
+                isDisabled={membersLoading || isSubmitting}
+                noOptionsMessage={() => 'No members found'}
+                aria-describedby={membersError ? 'members-error' : undefined}
                 isSearchable
                 styles={{
                   container: base => ({
@@ -402,14 +478,20 @@ export default function CreateNewTeam() {
                     '--member-text': '#333',
                     '--member-muted': '#666',
                     '--member-hover': '#fef0db',
+                    '--member-disabled': '#aaa',
                     'body.dark-mode &, body.bm-dashboard-dark &': {
                       '--member-bg': '#2e5061',
                       '--member-text': '#fff',
                       '--member-muted': '#b8c5d1',
                       '--member-hover': '#3a506b',
+                      '--member-disabled': '#7f93a3',
                     },
                   }),
                   input: base => ({ ...base, '& input': { boxShadow: 'none !important' } }),
+                  option: (base, state) =>
+                    state.isDisabled
+                      ? { ...base, color: 'var(--member-disabled)', cursor: 'not-allowed' }
+                      : base,
                 }}
                 theme={theme => ({
                   ...theme,
@@ -425,14 +507,25 @@ export default function CreateNewTeam() {
                   },
                 })}
               />
-              <Button onClick={handleAddMember} type="button" className={styles.addBtn}>
+              <Button
+                onClick={handleAddMember}
+                type="button"
+                className={styles.addBtn}
+                disabled={!selectedMember || membersLoading || isSubmitting}
+              >
                 Add
               </Button>
             </div>
-            {touchedFields.assignedMembers && errors.assignedMembers && (
-              <div className={styles.teamFormError}>{errors.assignedMembers}</div>
+            {membersError && (
+              <div id="members-error" className={styles.teamFormError} role="alert">
+                {membersError}
+              </div>
             )}
-            {errorMessage && <div className={styles.teamFormError}>{errorMessage}</div>}
+            {errorMessage && (
+              <div className={styles.teamFormError} role="alert">
+                {errorMessage}
+              </div>
+            )}
           </FormGroup>
           {assignedMembers.length > 0 && (
             <div className={styles.assignedBlock}>
@@ -446,7 +539,7 @@ export default function CreateNewTeam() {
                     size="sm"
                     className={styles.bulkRemoveBtn}
                     onClick={handleBulkRemoveMembers}
-                    disabled={selectedMembersForBulk.length === 0}
+                    disabled={selectedMembersForBulk.length === 0 || isSubmitting}
                   >
                     Remove Selected ({selectedMembersForBulk.length})
                   </Button>
@@ -455,10 +548,7 @@ export default function CreateNewTeam() {
               <div className={styles.badgeContainer}>
                 {assignedMembers.map(member => {
                   const isSelected = selectedMembersForBulk.includes(member);
-                  const memberInfo = members.find(u => u._id === member);
-                  const memberName = memberInfo
-                    ? `${memberInfo.firstName} ${memberInfo.lastName}`
-                    : member;
+                  const memberName = getMemberName(member);
                   return (
                     <Badge
                       key={member}
@@ -487,7 +577,7 @@ export default function CreateNewTeam() {
                             handleRemoveMember(member);
                           }
                         }}
-                        aria-label={`Remove member ${member}`}
+                        aria-label={`Remove member ${memberName}`}
                       >
                         &times;
                       </span>
@@ -505,7 +595,16 @@ export default function CreateNewTeam() {
           <FormGroup>
             <Label for="tasks-select">
               Add Main Tasks<span className={styles.fieldRequired}>*</span>{' '}
-              <span id="tasksTooltip" className={styles.tooltipIcon}>
+              <span
+                id="tasksTooltip"
+                className={styles.tooltipIcon}
+                role="button"
+                tabIndex={0}
+                aria-label="Tasks help"
+                onKeyDown={e =>
+                  handleTooltipKeyDown(e, () => setTasksTooltipOpen(!tasksTooltipOpen))
+                }
+              >
                 ?
               </span>
             </Label>
@@ -523,16 +622,28 @@ export default function CreateNewTeam() {
                 type="text"
                 value="Select a Task"
                 className={styles.taskSelectInput}
+                aria-describedby={tasksError ? 'tasks-error' : undefined}
                 readOnly
               />
-              <Button onClick={handleOpenTaskModal} type="button" className={styles.addBtn}>
+              <Button
+                onClick={handleOpenTaskModal}
+                type="button"
+                className={styles.addBtn}
+                disabled={isSubmitting}
+              >
                 Select Task
               </Button>
             </div>
-            {touchedFields.assignedTasks && errors.assignedTasks && (
-              <div className={styles.teamFormError}>{errors.assignedTasks}</div>
+            {tasksError && (
+              <div id="tasks-error" className={styles.teamFormError} role="alert">
+                {tasksError}
+              </div>
             )}
-            {taskErrorMessage && <div className={styles.teamFormError}>{taskErrorMessage}</div>}
+            {taskErrorMessage && (
+              <div className={styles.teamFormError} role="alert">
+                {taskErrorMessage}
+              </div>
+            )}
           </FormGroup>
           {assignedTasks.length > 0 && (
             <div className={styles.assignedBlock}>
@@ -546,7 +657,7 @@ export default function CreateNewTeam() {
                     size="sm"
                     className={styles.bulkRemoveBtn}
                     onClick={handleBulkRemoveTasks}
-                    disabled={selectedTasksForBulk.length === 0}
+                    disabled={selectedTasksForBulk.length === 0 || isSubmitting}
                   >
                     Remove Selected ({selectedTasksForBulk.length})
                   </Button>
@@ -605,9 +716,12 @@ export default function CreateNewTeam() {
               placeholder="Specify additional info about team if necessary"
               value={formData.additionalInformation}
               onChange={event => handleInputChange('additionalInformation', event.target.value)}
+              disabled={isSubmitting}
             />
             {errors.additionalInformation && (
-              <div className={styles.teamFormError}>{errors.additionalInformation}</div>
+              <div className={styles.teamFormError} role="alert">
+                {errors.additionalInformation}
+              </div>
             )}
           </FormGroup>
         </div>
@@ -619,11 +733,18 @@ export default function CreateNewTeam() {
             style={boxStyle}
             onClick={handleCancelClick}
             type="button"
+            disabled={isSubmitting}
           >
             Cancel
           </Button>
-          <Button id="submit-button" style={boxStyle} type="submit" disabled={!isFormValid}>
-            Submit
+          <Button
+            id="submit-button"
+            style={boxStyle}
+            type="submit"
+            disabled={!isFormValid || isSubmitting}
+            aria-busy={isSubmitting}
+          >
+            {isSubmitting ? 'Creating…' : 'Submit'}
           </Button>
         </div>
       </Form>
