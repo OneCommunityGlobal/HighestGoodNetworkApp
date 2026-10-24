@@ -28,6 +28,12 @@
   margin: 0 auto;
 }
 
+.trackerInfoIcons {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
 .warning-icon {
   display: flex;
   justify-content: flex-start;
@@ -101,6 +107,10 @@
   background: rgb(245 244 244);
   border-radius: 5px;
   box-shadow: rgb(0 0 0 / 80%) 0 0 0;
+}
+
+.warnings__descriptions.darkMode {
+  background: none;
 }
 
 .warning__descriptions__btn {
