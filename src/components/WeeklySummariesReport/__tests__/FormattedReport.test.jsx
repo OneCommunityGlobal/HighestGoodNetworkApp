@@ -7,7 +7,7 @@ import { MemoryRouter } from 'react-router-dom';
 import moment from 'moment';
 import axios from 'axios';
 import momentTz from 'moment-timezone';
-import FormattedReport from '../FormattedReport';
+import FormattedReport, { isSubmittedAfterDeadline } from '../FormattedReport';
 import '@testing-library/jest-dom/extend-expect';
 
 vi.mock('../../../utils/permissions', () => ({
@@ -533,5 +533,50 @@ describe('FormattedReport requested week off notice', () => {
     fireEvent.click(button);
     fireEvent.keyDown(button, { key: 'Escape' });
     expect(screen.queryByText('Family trip')).toBeNull();
+  });
+});
+
+describe('FormattedReport late submission date', () => {
+  // Saturday 10/17/2026 end of day Pacific is the deadline for that week.
+  const dueDate = momentTz.tz('2026-10-17', 'America/Los_Angeles').endOf('day');
+
+  it('treats a save after Saturday midnight Pacific as late', () => {
+    expect(isSubmittedAfterDeadline(dueDate.clone().add(1, 'minute'), dueDate)).toBe(true);
+    expect(isSubmittedAfterDeadline(dueDate.clone().subtract(1, 'minute'), dueDate)).toBe(false);
+  });
+
+  const renderLastWeek = uploadDate => {
+    const lastWeekDue = momentTz
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(1, 'week');
+    const summary = {
+      ...dummySummary,
+      weeklySummaries: [
+        { summary: '<p>This week</p>' },
+        {
+          summary: '<p>Last week</p>',
+          dueDate: lastWeekDue.toISOString(),
+          uploadDate: uploadDate(lastWeekDue).toISOString(),
+        },
+      ],
+    };
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} summaries={[summary]} weekIndex={1} />
+        </MemoryRouter>
+      </Provider>,
+    );
+  };
+
+  it('shows the submitted date in fuchsia on a past tab when it was late', () => {
+    renderLastWeek(due => due.clone().add(10, 'hours'));
+    expect(screen.getByText(/Summary Submitted On/)).toHaveStyle({ color: '#FF00FF' });
+  });
+
+  it('shows the submitted date in the default color when it was on time', () => {
+    renderLastWeek(due => due.clone().subtract(1, 'day'));
+    expect(screen.getByText(/Summary Submitted On/)).not.toHaveStyle({ color: '#FF00FF' });
   });
 });
