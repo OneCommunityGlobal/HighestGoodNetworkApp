@@ -1,0 +1,271 @@
+.panel {
+  padding: 16px 0 0;
+  margin: 16px 0;
+  color: inherit;
+}
+
+.panel.dark {
+  background: transparent;
+}
+
+.heading {
+  font-size: 1.05rem;
+  color: inherit !important;
+  margin: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.selectionGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.lessonColumn,
+.tagColumn {
+  min-width: 0;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.tagColumn .controls:first-child,
+.lessonColumn .controls:first-child {
+  margin-top: 0;
+}
+
+.controls label {
+  margin: 0;
+}
+
+.tagPicker input[type='search'] {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #727d87;
+  border-radius: 4px;
+  background: #fff;
+  color: #20252a;
+}
+
+.controls select[multiple] {
+  display: block;
+  min-width: 200px;
+  max-width: 100%;
+  min-height: 90px;
+}
+
+.panel button,
+.modalContent button,
+.panel select {
+  padding: 6px 10px;
+  border: 1px solid #727d87;
+  border-radius: 4px;
+  background: #f5f7f9;
+  color: #20252a;
+}
+
+.panel input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.changes {
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  padding-left: 24px;
+}
+
+.changes li {
+  margin-bottom: 12px;
+}
+
+.historyEntry {
+  border-bottom: 1px solid #8b98a5;
+  padding: 12px 0;
+  overflow-wrap: anywhere;
+}
+
+.error {
+  color: #b42318;
+  font-weight: 600;
+}
+
+.modalContent {
+  color: #20252a;
+  background: #fff;
+}
+
+.dark {
+  background: #202b38;
+  color: #f1f5f9;
+  color-scheme: dark;
+}
+
+.dark button,
+.dark select,
+.dark input[type='search'] {
+  background: #34465a;
+  color: #f1f5f9;
+  border-color: #a1afbf;
+}
+
+.dark input[type='search']::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+.dark .error {
+  color: #ffb4ab;
+}
+
+.panel button:focus-visible,
+.panel input:focus-visible,
+.panel select:focus-visible,
+.modalContent button:focus-visible {
+  outline: 3px solid #438ee8;
+  outline-offset: 2px;
+}
+
+.panel button:disabled,
+.modalContent button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.tagOptions {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.tagOptions label {
+  display: block;
+}
+
+.tagOptions .lessonOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.tagPicker {
+  width: 100%;
+  min-width: 0;
+}
+
+.selectionField {
+  margin: 0 0 12px;
+}
+
+.fieldLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: inherit !important;
+  margin: 0 0 8px;
+}
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 2px;
+  margin: 0 0 12px;
+  list-style: none;
+}
+
+.selectionChip {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.selectionChip span {
+  min-width: 0;
+}
+
+.selectionChip button.chipRemove {
+  flex-shrink: 0;
+  padding: 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.lessonChipText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lessonChipText small {
+  font-size: 0.8rem;
+}
+
+.actionHint {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+}
+
+.panel button.historyLink {
+  padding: 3px 0;
+  border: 0;
+  background: transparent;
+  color: #235ea8;
+  font-size: 0.875rem;
+  text-decoration: underline;
+}
+
+.dark button.historyLink {
+  color: #9fc8ff;
+}
+
+.panel button.addAction,
+.modalContent button.addAction {
+  background: #217a39;
+  border-color: #217a39;
+  color: #fff;
+}
+
+.panel button.removeAction,
+.modalContent button.removeAction {
+  background: #c82333;
+  border-color: #c82333;
+  color: #fff;
+}
+
+.panel button.addAction:hover:not(:disabled),
+.modalContent button.addAction:hover:not(:disabled) {
+  background: #19612c;
+}
+
+.panel button.removeAction:hover:not(:disabled),
+.modalContent button.removeAction:hover:not(:disabled) {
+  background: #a51d2a;
+}
+
+@media (width <= 768px) {
+  .selectionGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
