@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './KitchenReports.module.css';
-import { REPORT_TABS, DATE_RANGE_OPTIONS } from './kitchenReportsData';
+import { REPORT_TABS, DATE_RANGE_OPTIONS, EXPORT_ENDPOINTS_READY } from './kitchenReportsData';
 import useReportExport from './useReportExport';
+
+const EXPORT_UNAVAILABLE_MESSAGE =
+  'Export is unavailable until the backend export endpoints are deployed.';
 
 export function KitchenReports() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -41,7 +44,8 @@ export function KitchenReports() {
               type="button"
               className={`${styles.exportButton} ${dm}`}
               onClick={() => exportReport('pdf', dateRange)}
-              disabled={loadingFormat !== null}
+              disabled={!EXPORT_ENDPOINTS_READY || loadingFormat !== null}
+              title={EXPORT_ENDPOINTS_READY ? undefined : EXPORT_UNAVAILABLE_MESSAGE}
               aria-busy={loadingFormat === 'pdf'}
             >
               {loadingFormat === 'pdf' ? 'Exporting...' : 'Export PDF'}
@@ -51,7 +55,8 @@ export function KitchenReports() {
               type="button"
               className={`${styles.exportButton} ${dm}`}
               onClick={() => exportReport('csv', dateRange)}
-              disabled={loadingFormat !== null}
+              disabled={!EXPORT_ENDPOINTS_READY || loadingFormat !== null}
+              title={EXPORT_ENDPOINTS_READY ? undefined : EXPORT_UNAVAILABLE_MESSAGE}
               aria-busy={loadingFormat === 'csv'}
             >
               {loadingFormat === 'csv' ? 'Exporting...' : 'Export CSV'}

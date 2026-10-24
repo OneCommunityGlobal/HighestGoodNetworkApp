@@ -41,7 +41,7 @@ export default function useReportExport() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      window.URL.revokeObjectURL(downloadUrl);
+      setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 100);
 
       toast.success(`${format.toUpperCase()} report downloaded successfully!`);
     } catch (error) {
