@@ -1,10 +1,10 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import PaidLaborCost from './PaidLaborCost';
 
-const chartCapture = vi.hoisted(() => ({ props: null }));
+const chartCapture = vi.hoisted(() => ({ props: null, darkMode: false }));
 vi.mock('react-redux', () => ({
-  useSelector: selector => selector({ theme: { darkMode: false } }),
+  useSelector: selector => selector({ theme: { darkMode: chartCapture.darkMode } }),
 }));
 vi.mock('react-chartjs-2', () => ({
   Bar: props => {
@@ -21,8 +21,27 @@ const records = [
 
 const readChart = () => JSON.parse(screen.getByLabelText('Chart results').textContent);
 
+const colorLuminance = color => {
+  let rgb;
+  if (color.startsWith('#')) {
+    rgb = color.match(/[a-f\d]{2}/gi).map(channel => parseInt(channel, 16) / 255);
+  } else {
+    const [hue, saturation, lightness] = color.match(/\d+/g).map(Number);
+    const l = lightness / 100;
+    const a = (saturation / 100) * Math.min(l, 1 - l);
+    rgb = [0, 8, 4].map(offset => {
+      const k = (offset + hue / 30) % 12;
+      return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    });
+  }
+  return rgb
+    .map(channel => (channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4))
+    .reduce((total, channel, index) => total + channel * [0.2126, 0.7152, 0.0722][index], 0);
+};
+
 describe('Paid Labor Cost', () => {
   beforeEach(() => {
+    chartCapture.darkMode = false;
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -33,6 +52,82 @@ describe('Paid Labor Cost', () => {
   });
 
   afterEach(() => vi.unstubAllGlobals());
+
+  it.each([false, true])(
+    'aligns the two legend rows with displayed tasks (dark mode: %s)',
+    async darkMode => {
+      chartCapture.darkMode = darkMode;
+      render(<PaidLaborCost />);
+      await screen.findByLabelText('Chart results');
+      expect(screen.queryByRole('table')).not.toBeInTheDocument();
+      const legend = screen.getByRole('group', { name: 'Paid labor cost legend' });
+      const actual = within(legend).getByRole('list', { name: 'Actual colors' });
+      const budget = within(legend).getByRole('list', { name: 'Budget colors' });
+      expect(
+        within(actual)
+          .getAllByRole('listitem')
+          .map(item => item.textContent),
+      ).toEqual(['', '']);
+      expect(
+        within(budget)
+          .getAllByRole('listitem')
+          .map(item => item.textContent),
+      ).toEqual(['', '']);
+      chartCapture.props.plugins[0].afterLayout({
+        width: 500,
+        chartArea: { left: 65, right: 480 },
+        data: { labels: Array(12).fill('Task') },
+      });
+      expect(legend).toHaveStyle('--plot-left: 65px; --plot-right: 20px');
+      chartCapture.props.plugins[0].afterLayout({
+        width: 1500,
+        chartArea: { left: 65, right: 1480 },
+        data: { labels: ['Deployment', 'Review'] },
+      });
+      expect(legend).toHaveStyle('--plot-left: 65px; --plot-right: 20px');
+      await userEvent.click(screen.getByLabelText('Tasks'));
+      await userEvent.click(within(screen.getByRole('listbox')).getByText('Review'));
+      expect(within(actual).getAllByRole('listitem')).toHaveLength(1);
+      expect(within(actual).getByRole('listitem', { name: 'Review Actual' })).toBeInTheDocument();
+      expect(within(budget).getByRole('listitem', { name: 'Review Budget' })).toBeInTheDocument();
+      await userEvent.click(screen.getByLabelText('Tasks'));
+      await userEvent.click(within(screen.getByRole('listbox')).getByText('Review'));
+      expect(within(actual).getAllByRole('listitem')).toHaveLength(2);
+    },
+  );
+  it.each([false, true])(
+    'keeps task-specific shade pairs stable through filtering (dark mode: %s)',
+    async darkMode => {
+      chartCapture.darkMode = darkMode;
+      render(<PaidLaborCost />);
+      await screen.findByLabelText('Chart results');
+      const initial = readChart();
+      expect(initial.datasets.map(dataset => dataset.borderWidth)).toEqual(
+        darkMode ? [1, 1] : [0, 0],
+      );
+      const actual = initial.datasets[0].backgroundColor;
+      const budget = initial.datasets[1].backgroundColor;
+      const background = colorLuminance(darkMode ? '#2b3e50' : '#ffffff');
+      initial.datasets[0].borderColor.forEach(color => {
+        const outline = colorLuminance(color);
+        const contrast =
+          (Math.max(outline, background) + 0.05) / (Math.min(outline, background) + 0.05);
+        expect(contrast).toBeGreaterThanOrEqual(3);
+      });
+      expect(new Set(actual).size).toBe(2);
+      actual.forEach((color, index) => {
+        const actualParts = color.match(/\d+/g).map(Number);
+        const budgetParts = budget[index].match(/\d+/g).map(Number);
+        expect(actualParts.slice(0, 2)).toEqual(budgetParts.slice(0, 2));
+        expect(actualParts[2]).toBeLessThan(budgetParts[2]);
+      });
+      await userEvent.click(screen.getByLabelText('Tasks'));
+      await userEvent.click(within(screen.getByRole('listbox')).getByText('Review'));
+      expect(readChart().datasets[0].backgroundColor).toEqual([actual[1]]);
+      expect(readChart().datasets[1].backgroundColor).toEqual([budget[1]]);
+      expect(chartCapture.props.options.plugins.barValueLabelPlugin.darkMode).toBe(darkMode);
+    },
+  );
 
   it('recalculates task label rotation when filters change without a browser resize', async () => {
     render(<PaidLaborCost />);
@@ -84,6 +179,7 @@ describe('Paid Labor Cost', () => {
       beginPath: vi.fn(),
       arc: vi.fn(),
       fill: vi.fn(),
+      stroke: vi.fn(),
     };
     const chart = {
       ctx,
@@ -122,6 +218,7 @@ describe('Paid Labor Cost', () => {
       beginPath: vi.fn(),
       arc: vi.fn(),
       fill: vi.fn(),
+      stroke: vi.fn(),
       measureText: () => ({ width: 35 }),
       fillText: vi.fn(function() {
         colors.push(this.fillStyle);
@@ -153,8 +250,61 @@ describe('Paid Labor Cost', () => {
     expect(ctx.rotate.mock.calls).toEqual([[-Math.PI / 3], [-Math.PI / 3]]);
     expect(colors).toEqual(['#334155', '#334155']);
     expect(ctx.arc).toHaveBeenCalledTimes(2);
-    expect(options.plugins.legend.align).toBe('center');
+    expect(options.plugins.legend.display).toBe(false);
   });
+
+  it.each([false, true])(
+    'matches each marker to its task shade with readable value text (dark mode: %s)',
+    async darkMode => {
+      chartCapture.darkMode = darkMode;
+      render(<PaidLaborCost />);
+      await screen.findByLabelText('Chart results');
+      const { plugins, data } = chartCapture.props;
+      const fills = [];
+      const textColors = [];
+      const ctx = {
+        save: vi.fn(),
+        restore: vi.fn(),
+        translate: vi.fn(),
+        rotate: vi.fn(),
+        beginPath: vi.fn(),
+        arc: vi.fn(),
+        stroke: vi.fn(),
+        measureText: () => ({ width: 35 }),
+        fill: vi.fn(function() {
+          fills.push(this.fillStyle);
+        }),
+        fillText: vi.fn(function() {
+          textColors.push(this.fillStyle);
+        }),
+      };
+      plugins[0].afterDatasetsDraw(
+        {
+          ctx,
+          data,
+          chartArea: { left: 0, right: 600, top: 0, bottom: 300 },
+          getDatasetMeta: datasetIndex => ({
+            data: data.labels.map((_, index) => ({
+              getProps: () => ({ x: 100 + index * 200 + datasetIndex * 50, y: 150 }),
+            })),
+          }),
+        },
+        {},
+        { darkMode },
+      );
+      expect(fills).toEqual(
+        data.labels.flatMap((_, index) =>
+          data.datasets.map(dataset => dataset.backgroundColor[index]),
+        ),
+      );
+      const text = colorLuminance(textColors[0]);
+      const background = colorLuminance(darkMode ? '#2b3e50' : '#ffffff');
+      expect(
+        (Math.max(text, background) + 0.05) / (Math.min(text, background) + 0.05),
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(new Set(textColors).size).toBe(1);
+    },
+  );
 
   it('groups Actual and Budget by task and preserves totals across projects', async () => {
     render(<PaidLaborCost />);
@@ -174,16 +324,16 @@ describe('Paid Labor Cost', () => {
     render(<PaidLaborCost />);
     await screen.findByLabelText('Chart results');
     await user.click(screen.getByLabelText('Tasks'));
-    await user.click(screen.getByText('Review'));
+    await user.click(within(screen.getByRole('listbox')).getByText('Review'));
     expect(readChart().labels).toEqual(['Review']);
     expect(readChart().datasets[0].data).toEqual([26000]);
     await user.click(screen.getByLabelText('Tasks'));
-    await user.click(screen.getByText('Deployment'));
+    await user.click(within(screen.getByRole('listbox')).getByText('Deployment'));
     expect(readChart().labels).toEqual(['Review', 'Deployment']);
     await user.click(screen.getByLabelText('Tasks'));
-    await user.click(screen.getByText('Review'));
+    await user.click(within(screen.getByRole('listbox')).getByText('Review'));
     await user.click(screen.getByLabelText('Tasks'));
-    await user.click(screen.getByText('Deployment'));
+    await user.click(within(screen.getByRole('listbox')).getByText('Deployment'));
     expect(readChart().labels).toEqual(['Deployment', 'Review']);
   });
 

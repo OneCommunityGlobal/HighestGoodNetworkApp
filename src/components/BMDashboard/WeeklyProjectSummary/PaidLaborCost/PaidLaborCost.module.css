@@ -1,5 +1,6 @@
 /* Container for the Paid Labor Cost card */
 .paidLaborCostContainer {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -228,6 +229,19 @@
   margin-bottom: 16px;
 }
 
+.chartAndLegendScroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.chartAndLegendContent {
+  width: 100%;
+
+  /* Shrink naturally until each bar pair has 36px, plus space for the cost axis. */
+  min-width: max(240px, calc(var(--task-count, 1) * 36px + 80px));
+}
+
 .paidLaborCostChartContainer {
   height: 360px;
   width: 100%;
@@ -268,6 +282,54 @@
   background-color: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
+}
+
+.chartLegend {
+  padding: 0 var(--plot-right, 8px) 0 var(--plot-left, 60px);
+  margin-bottom: 20px;
+  color: #334155;
+  font-size: 11px;
+}
+
+.chartLegendRow {
+  position: relative;
+  margin-top: 10px;
+}
+
+.chartLegendLabel {
+  position: absolute;
+  right: calc(100% + 6px);
+  top: 0;
+  font-weight: 600;
+}
+
+.chartLegendValues {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.chartLegendValue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.taskLegendSwatch {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border: 1px solid;
+  border-radius: 2px;
+}
+
+.darkMode .chartLegend {
+  color: #f8fafc;
 }
 
 .darkSummaryContainer {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -58,7 +58,12 @@ const barValueLabelPlugin = {
             x,
             y: y - 10,
             length: ctx.measureText(label).width + 12,
-            color: dataset.backgroundColor,
+            color: Array.isArray(dataset.backgroundColor)
+              ? dataset.backgroundColor[index]
+              : dataset.backgroundColor,
+            outline: Array.isArray(dataset.borderColor)
+              ? dataset.borderColor[index]
+              : dataset.borderColor,
           },
         ];
       }),
@@ -97,6 +102,9 @@ const barValueLabelPlugin = {
       ctx.beginPath();
       ctx.arc(0, 0, 3, 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = entry.outline || entry.color;
+      ctx.lineWidth = 1;
+      if (pluginOptions.darkMode) ctx.stroke();
       ctx.fillStyle = pluginOptions.darkMode ? '#f8fafc' : '#334155';
       ctx.fillText(entry.label, 7, 0);
       ctx.restore();
@@ -359,12 +367,20 @@ Option.propTypes = {
   label: PropTypes.string.isRequired,
 };
 
-const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
+const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode, allTasks) => {
   const totals = aggregation[labels[0]];
+  // Use the full task list so filtering and selection order never reassign colors.
+  const colorOrder = [...allTasks].sort();
+  const hues = tasksToInclude.map(task => Math.round((colorOrder.indexOf(task) * 137.508) % 360));
+  const actualColors = hues.map(hue => `hsl(${hue}, 65%, ${darkMode ? 60 : 40}%)`);
+  const budgetColors = hues.map(hue => `hsl(${hue}, 65%, ${darkMode ? 82 : 78}%)`);
+  const outlines = hues.map(hue => `hsl(${hue}, 65%, ${darkMode ? 85 : 28}%)`);
   return [
     {
       label: 'Actual',
-      backgroundColor: darkMode ? '#60a5fa' : '#2563eb',
+      backgroundColor: actualColors,
+      borderColor: outlines,
+      borderWidth: darkMode ? 1 : 0,
       borderRadius: 4,
       data: tasksToInclude.map(task => totals?.[task]?.cost || 0),
       maxBarThickness: 40,
@@ -373,10 +389,9 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
     },
     {
       label: 'Budget',
-      backgroundColor: darkMode ? '#fbbf24' : '#d97706',
-      borderColor: darkMode ? '#fbbf24' : '#d97706',
-      borderWidth: { top: 2, right: 2, bottom: 0, left: 2 },
-      borderDash: [4, 4],
+      backgroundColor: budgetColors,
+      borderColor: outlines,
+      borderWidth: darkMode ? 1 : 0,
       borderRadius: 4,
       data: tasksToInclude.map(task => totals?.[task]?.budget || 0),
       maxBarThickness: 40,
@@ -396,11 +411,7 @@ const buildChartOptions = (textColor, darkMode) => ({
   interaction: { mode: 'index', intersect: false },
   plugins: {
     barValueLabelPlugin: { darkMode },
-    legend: {
-      position: 'top',
-      align: 'center',
-      labels: { font: { size: 12 }, color: textColor, padding: 28, usePointStyle: true },
-    },
+    legend: { display: false },
     datalabels: {
       display: false,
       anchor: 'end',
@@ -524,10 +535,26 @@ export default function PaidLaborCost() {
   const selectStyles = useMemo(() => generateSelectStyles(darkMode), [darkMode]);
 
   const taskDatasets = useMemo(
-    () => buildChartDatasets(tasksToInclude, labels, aggregation, darkMode),
-    [tasksToInclude, labels, aggregation, darkMode],
+    () => buildChartDatasets(tasksToInclude, labels, aggregation, darkMode, allAvailableTasks),
+    [tasksToInclude, labels, aggregation, darkMode, allAvailableTasks],
   );
 
+  const legendRef = useRef(null);
+  const chartPlugins = useMemo(
+    () => [
+      {
+        ...barValueLabelPlugin,
+        afterLayout(chart) {
+          const legend = legendRef.current;
+          if (!legend || !chart.chartArea) return;
+          const { left, right } = chart.chartArea;
+          legend.style.setProperty('--plot-left', `${left}px`);
+          legend.style.setProperty('--plot-right', `${chart.width - right}px`);
+        },
+      },
+    ],
+    [],
+  );
   const chartData = { labels: tasksToInclude, datasets: taskDatasets };
   const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
 
@@ -543,7 +570,6 @@ export default function PaidLaborCost() {
   return (
     <div className={`${styles.paidLaborCostContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
-
       <div className={styles.filtersGrid}>
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel} htmlFor="task-filter">
@@ -633,24 +659,68 @@ export default function PaidLaborCost() {
           </div>
         </div>
       </div>
-
-      <div className={styles.paidLaborCostChartWrapper}>
-        <div className={styles.paidLaborCostChartContainer}>
-          {labels.length === 0 ? (
-            <div className={styles.emptyState}>No data available for the selected filters.</div>
-          ) : (
-            <Bar
-              key="filter-responsive-labor-values"
-              data={chartData}
-              options={options}
-              plugins={[barValueLabelPlugin]}
-              role="img"
-              aria-label={`Paid labor cost by task for ${projectFilter}: Actual and Budget`}
-            />
+      <div className={styles.chartAndLegendScroll}>
+        <div
+          className={styles.chartAndLegendContent}
+          style={{ '--task-count': tasksToInclude.length }}
+        >
+          <div className={styles.paidLaborCostChartWrapper}>
+            <div className={styles.paidLaborCostChartContainer}>
+              {labels.length === 0 ? (
+                <div className={styles.emptyState}>No data available for the selected filters.</div>
+              ) : (
+                <Bar
+                  key="theme-consistent-labor-chart"
+                  data={chartData}
+                  options={options}
+                  plugins={chartPlugins}
+                  role="img"
+                  aria-label={`Paid labor cost by task for ${projectFilter}: Actual and Budget`}
+                />
+              )}
+            </div>
+          </div>
+          {labels.length > 0 && (
+            <div
+              ref={legendRef}
+              className={styles.chartLegend}
+              role="group"
+              aria-label="Paid labor cost legend"
+            >
+              {taskDatasets.map(dataset => (
+                <div key={dataset.label} className={styles.chartLegendRow}>
+                  <span className={styles.chartLegendLabel}>{dataset.label}</span>
+                  <ul
+                    className={styles.chartLegendValues}
+                    aria-label={`${dataset.label} colors`}
+                    style={{
+                      gridTemplateColumns: `repeat(${tasksToInclude.length}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {tasksToInclude.map((task, index) => (
+                      <li
+                        key={task}
+                        className={styles.chartLegendValue}
+                        aria-label={`${task} ${dataset.label}`}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={styles.taskLegendSwatch}
+                          style={{
+                            backgroundColor: dataset.backgroundColor[index],
+                            borderColor: dataset.borderColor[index],
+                            borderWidth: darkMode ? 1 : 0,
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
-
       <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
         <div className={styles.summaryItem}>
           <span className={styles.summaryLabel}>Total Budget</span>
