@@ -46,7 +46,7 @@ const projectStatusButtons = [
     change: '+16% week over week',
     bgColor: '#F0FFEE',
     buttonColor: '#BAF0B6',
-    textColor: '#328D1B',
+    textColor: '#155c0a',
   },
   {
     title: 'Completed Projects',
@@ -54,7 +54,7 @@ const projectStatusButtons = [
     change: '+14% week over week',
     bgColor: '#F3FCFF',
     buttonColor: '#C1EFFB',
-    textColor: '#328D1B',
+    textColor: '#155c0a',
   },
   {
     title: 'Delayed Projects',
@@ -62,7 +62,7 @@ const projectStatusButtons = [
     change: '-18% week over week',
     bgColor: '#FFE9FA',
     buttonColor: '#FECFF3',
-    textColor: '#C82F2F',
+    textColor: '#8f1a1a',
   },
   {
     title: 'Active Projects',
@@ -70,7 +70,7 @@ const projectStatusButtons = [
     change: '+3% week over week',
     bgColor: '#E8E8FF',
     buttonColor: '#CBCBFE',
-    textColor: '#328D1B',
+    textColor: '#155c0a',
   },
   {
     title: 'Avg Project Duration',
@@ -78,7 +78,7 @@ const projectStatusButtons = [
     change: '+13% week over week',
     bgColor: '#FFF6EE',
     buttonColor: '#FFD8A5',
-    textColor: '#FFD8A5',
+    textColor: '#95580b',
   },
   {
     title: 'Total Material Cost',
@@ -86,7 +86,7 @@ const projectStatusButtons = [
     change: '+9% week over week',
     bgColor: '#FFF3F3',
     buttonColor: '#FBC1C2',
-    textColor: '#328D1B',
+    textColor: '#155c0a',
   },
   {
     title: 'Total Material Used',
@@ -94,7 +94,7 @@ const projectStatusButtons = [
     change: '+11% week over week',
     bgColor: '#DAC8FF',
     buttonColor: '#B28ECC',
-    textColor: '#328D1B',
+    textColor: '#155c0a',
   },
   {
     title: 'Active Projects',
@@ -102,7 +102,7 @@ const projectStatusButtons = [
     change: '+3% week over week',
     bgColor: '#E8E8FF',
     buttonColor: '#CBCBFE',
-    textColor: '#328D1B',
+    textColor: '#155c0a',
   },
   {
     title: 'Total Labor Hours Invested',
@@ -110,7 +110,7 @@ const projectStatusButtons = [
     change: '+17% week over week',
     bgColor: '#E5C1FC',
     buttonColor: '#F6E1FB',
-    textColor: '#328D1B',
+    textColor: '#155c0a',
   },
   {
     title: 'Total Labor Cost',
@@ -118,7 +118,7 @@ const projectStatusButtons = [
     change: '+14% week over week',
     bgColor: '#FFFDF3',
     buttonColor: '#FBF9C1',
-    textColor: '#328D1B',
+    textColor: '#155c0a',
   },
   {
     title: 'Material Available',
@@ -126,7 +126,7 @@ const projectStatusButtons = [
     change: '-8% week over week',
     bgColor: '#B4D9C5',
     buttonColor: '#31BD41',
-    textColor: '#C82F2F',
+    textColor: '#8f1a1a',
   },
   {
     title: 'Material Wasted',
@@ -134,7 +134,7 @@ const projectStatusButtons = [
     change: '+14% week over week',
     bgColor: '#EFBABB',
     buttonColor: '#F79395',
-    textColor: '#328D1B',
+    textColor: '#155c0a',
   },
 ];
 
@@ -200,7 +200,7 @@ function WeeklyProjectSummary() {
                 <div
                   key={uniqueId}
                   className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }}
+                  style={darkMode ? undefined : { backgroundColor: button.bgColor }}
                 >
                   <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
                   <div
@@ -209,7 +209,10 @@ function WeeklyProjectSummary() {
                   >
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-                  <div className="weekly-status-change" style={{ color: button.textColor }}>
+                  <div
+                    className={styles.weeklyStatusChange}
+                    style={darkMode ? undefined : { color: button.textColor }}
+                  >
                     {button.change}
                   </div>
                 </div>
