@@ -90,7 +90,7 @@
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
@@ -421,7 +421,7 @@
   flex-direction: column;
   border-radius: 12px;
   box-shadow: 0 4px 6px var(--card-shadow);
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* ---------------- TOOLS TRACKING LAYOUT ---------------- */
@@ -536,7 +536,7 @@
   padding: 20px;
   border: 1px solid rgb(0 0 0 / 10%);
   position: relative;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   box-sizing: border-box;
 }
 
@@ -891,5 +891,11 @@
   .weeklySummaryShareBtn,
   .weeklySummaryHeaderControls select {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    animation: none;
   }
 }

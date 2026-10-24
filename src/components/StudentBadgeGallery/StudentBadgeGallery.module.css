@@ -259,3 +259,10 @@
   opacity: 0.55;
   filter: grayscale(100%);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .icon {
+    transition: none;
+  }
+}
