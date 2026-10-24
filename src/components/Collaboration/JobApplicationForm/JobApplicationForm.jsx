@@ -6,7 +6,7 @@ import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
@@ -996,6 +996,7 @@ function JobApplicationForm() {
   /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
   const [bannerJobTitle, setBannerJobTitle] = useState('');
   const [jobDataFromRedirect, setJobDataFromRedirect] = useState(null);
+  const [jobLookupStatus, setJobLookupStatus] = useState('idle');
   const [fullTimeYears, setFullTimeYears] = useState('');
   const [monthsVolunteer, setMonthsVolunteer] = useState('');
   const [hoursPerWeek, setHoursPerWeek] = useState('');
@@ -1097,10 +1098,17 @@ function JobApplicationForm() {
         if (job.title) {
           setJobTitleInput(job.title);
         }
+        setJobLookupStatus('loaded');
+      } else {
+        setJobLookupStatus('not-found');
       }
     } catch (error) {
       console.error('Error fetching job data:', error);
-      toast.error('Failed to load job details');
+      if (error.response?.status === 404) {
+        setJobLookupStatus('not-found');
+      } else {
+        setJobLookupStatus('error');
+      }
     }
   };
 
@@ -1115,12 +1123,15 @@ function JobApplicationForm() {
     }
 
     if (routerLocation.state) {
+      setJobLookupStatus('idle');
       setJobDataFromRedirect(routerLocation.state);
       if (routerLocation.state.jobTitle) {
         setJobTitleInput(routerLocation.state.jobTitle);
       }
     } else if (jobId) {
       void fetchJobData(jobId);
+    } else if (positionSlug && isMongoObjectId(positionSlug)) {
+      void fetchJobData(positionSlug);
     } else if (positionSlug) {
       const hint = titleHintFromSlug(positionSlug);
       if (hint) setJobTitleInput(hint);
@@ -1538,18 +1549,13 @@ function JobApplicationForm() {
 
     setFieldErrors(prev => {
       const next = { ...prev };
-
       delete next.firstName;
       delete next.lastName;
       delete next.applicantEmail;
       delete next.location;
       delete next.timeZone;
       delete next.phone;
-
-      return {
-        ...next,
-        ...profileErrors,
-      };
+      return { ...next, ...profileErrors };
     });
 
     if (missing.length > 0) {
@@ -1632,6 +1638,44 @@ function JobApplicationForm() {
       setIsSubmitting(false);
     }
   };
+
+  const getJobLookupTitle = () => {
+    if (jobLookupStatus === 'loading') return 'Loading job…';
+    if (jobLookupStatus === 'error') return 'Error loading job';
+    return 'Job not found';
+  };
+
+  if (
+    jobLookupStatus === 'loading' ||
+    jobLookupStatus === 'not-found' ||
+    jobLookupStatus === 'error'
+  ) {
+    return (
+      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+        <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
+        <header className={styles.logo}>
+          <a
+            href="https://www.onecommunityglobal.org/collaboration/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img src={OneCommunityImage} alt="One Community Logo" />
+          </a>
+        </header>
+        <main className={styles.header}>
+          <section className={styles.formContainer} role="status" aria-live="polite">
+            <h1 className={styles.formTitle}>{getJobLookupTitle()}</h1>
+            {jobLookupStatus === 'not-found' && (
+              <p>This job may have been removed or the link may be incorrect.</p>
+            )}
+            {jobLookupStatus === 'error' && (
+              <p>Something went wrong while loading the job. Please try again later.</p>
+            )}
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
@@ -2292,7 +2336,14 @@ const requirementsPropType = PropTypes.shape({
 });
 
 const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
     <path
       d="M11.6667 3.5L5.25 9.91667L2.33334 7"
       stroke="white"
