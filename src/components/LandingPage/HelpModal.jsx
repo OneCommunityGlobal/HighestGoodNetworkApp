@@ -79,12 +79,12 @@ function HelpModal({ show, onHide, auth }) {
     };
 
     if (isInitialRun || isReopening || userChanged) {
-      fetchEligibility();
+      void fetchEligibility();
     }
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        fetchEligibility();
+        void fetchEligibility();
       }
     };
 

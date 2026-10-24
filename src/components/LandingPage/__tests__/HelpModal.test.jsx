@@ -229,44 +229,41 @@ describe('HelpModal', () => {
       document.dispatchEvent(new Event('visibilitychange'));
     };
 
-    it('does not let an older failed request overwrite a newer successful result', async () => {
+    const startOverlappingRequests = async () => {
       const pending = deferredEligibility();
       renderHelpModal(makeStore());
       await waitFor(() => expect(pending).toHaveLength(1));
-
       triggerVisibility();
       await waitFor(() => expect(pending).toHaveLength(2));
+      return pending;
+    };
 
+    const resolveLatestAsEligible = async pending => {
       pending[1].resolve({ data: { eligible: true, questionnaireCompleted: true } });
       await waitFor(() =>
         expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument(),
       );
+    };
 
-      pending[0].reject(new Error('Request failed with status code 401'));
+    const expectStillEligible = async () => {
       await Promise.resolve();
       await Promise.resolve();
-
       expect(screen.queryByText(/Unable to verify your eligibility/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument();
+    };
+
+    it('does not let an older failed request overwrite a newer successful result', async () => {
+      const pending = await startOverlappingRequests();
+      await resolveLatestAsEligible(pending);
+      pending[0].reject(new Error('Request failed with status code 401'));
+      await expectStillEligible();
     });
 
     it('does not let an older stale ineligible response overwrite a newer eligible result', async () => {
-      const pending = deferredEligibility();
-      renderHelpModal(makeStore());
-      await waitFor(() => expect(pending).toHaveLength(1));
-
-      triggerVisibility();
-      await waitFor(() => expect(pending).toHaveLength(2));
-
-      pending[1].resolve({ data: { eligible: true, questionnaireCompleted: true } });
-      await waitFor(() =>
-        expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument(),
-      );
+      const pending = await startOverlappingRequests();
+      await resolveLatestAsEligible(pending);
       pending[0].resolve({ data: { eligible: false, questionnaireCompleted: false } });
-      await Promise.resolve();
-      await Promise.resolve();
-
-      expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument();
+      await expectStillEligible();
     });
 
     it('does not refetch help categories on reopen or visibility revalidation', async () => {

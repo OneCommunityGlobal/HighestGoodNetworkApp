@@ -36,30 +36,40 @@ const setup = () => {
 };
 
 const fillValid = (name = 'Pat Lee') => {
-  fireEvent.change(screen.getByLabelText(/^Name/i), { target: { value: name } });
-  fireEvent.change(screen.getByLabelText(/GitHub/i), { target: { value: 'patlee' } });
-  fireEvent.change(screen.getByLabelText(/^Slack/i), { target: { value: 'Pat Lee' } });
+  changeField(/^Name/i, name);
+  changeField(/GitHub/i, 'patlee');
+  changeField(/^Slack/i, 'Pat Lee');
   fireEvent.click(screen.getByLabelText(/my Slack handle is my first and last name/i));
 };
+
+const nameInput = () => screen.getByLabelText(/^Name/i);
+const clickNext = () => fireEvent.click(screen.getByRole('button', { name: /next/i }));
+const changeField = (label, value) =>
+  fireEvent.change(screen.getByLabelText(label), { target: { value } });
+const expectBlockedWith = (history, message) => {
+  expect(screen.getByRole('alert')).toHaveTextContent(message);
+  expect(history.location.pathname).toBe('/hgnform');
+};
+const NAME_TOO_SHORT = 'Name must be at least 2 characters long.';
 
 describe('InfoForm state retention and validation', () => {
   it('starts with an empty Name and a read-only Email', () => {
     const { ui } = setup();
     render(ui());
-    expect(screen.getByLabelText(/^Name/i)).toHaveValue('');
+    expect(nameInput()).toHaveValue('');
     expect(screen.getByLabelText(/^Email/i)).toHaveValue('a@b.com');
   });
 
   it('keeps the entered Name, GitHub and Slack after Next then Back', () => {
     const { history, ui } = setup();
     const { unmount } = render(ui());
-    expect(screen.getByLabelText(/^Name/i)).toHaveValue('');
+    expect(nameInput()).toHaveValue('');
 
-    fireEvent.change(screen.getByLabelText(/^Name/i), { target: { value: 'Bosu Test Name' } });
-    fireEvent.change(screen.getByLabelText(/GitHub/i), { target: { value: 'patlee' } });
-    fireEvent.change(screen.getByLabelText(/^Slack/i), { target: { value: 'Bosu Test Name' } });
+    changeField(/^Name/i, 'Bosu Test Name');
+    changeField(/GitHub/i, 'patlee');
+    changeField(/^Slack/i, 'Bosu Test Name');
     fireEvent.click(screen.getByLabelText(/my Slack handle is my first and last name/i));
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    clickNext();
 
     expect(history.location.pathname).toBe('/hgnform/page2');
     unmount();
@@ -67,7 +77,7 @@ describe('InfoForm state retention and validation', () => {
     history.goBack();
     render(ui());
 
-    expect(screen.getByLabelText(/^Name/i)).toHaveValue('Bosu Test Name');
+    expect(nameInput()).toHaveValue('Bosu Test Name');
     expect(screen.getByLabelText(/GitHub/i)).toHaveValue('patlee');
     expect(screen.getByLabelText(/^Slack/i)).toHaveValue('Bosu Test Name');
     expect(screen.getByLabelText(/^Email/i)).toHaveValue('a@b.com');
@@ -77,63 +87,57 @@ describe('InfoForm state retention and validation', () => {
     const { history, ui } = setup();
     const { unmount } = render(ui());
 
-    fireEvent.change(screen.getByLabelText(/^Name/i), { target: { value: 'Bosu Test Name' } });
-    fireEvent.change(screen.getByLabelText(/^Name/i), { target: { value: '' } });
+    changeField(/^Name/i, 'Bosu Test Name');
+    changeField(/^Name/i, '');
     fillValid('');
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Name must be at least 2 characters long.');
-    expect(history.location.pathname).toBe('/hgnform');
+    clickNext();
+    expectBlockedWith(history, NAME_TOO_SHORT);
     unmount();
 
     history.push('/hgnform/page2');
     history.goBack();
     render(ui());
 
-    expect(screen.getByLabelText(/^Name/i)).toHaveValue('');
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Name must be at least 2 characters long.');
-    expect(history.location.pathname).toBe('/hgnform');
+    expect(nameInput()).toHaveValue('');
+    clickNext();
+    expectBlockedWith(history, NAME_TOO_SHORT);
   });
 
   it('advances to page 2 when the form is valid', () => {
     const { history, ui } = setup();
     render(ui());
     fillValid();
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    clickNext();
     expect(history.location.pathname).toBe('/hgnform/page2');
   });
 
   it('explains why Next is blocked when required fields are missing', () => {
     const { history, ui } = setup();
     render(ui());
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    clickNext();
 
-    const alert = screen.getByRole('alert');
-    expect(alert).toHaveTextContent(/GitHub is required/i);
-    expect(alert).toHaveTextContent(/Slack is required/i);
-    expect(alert).toHaveTextContent(/confirm that your Slack handle/i);
-    expect(history.location.pathname).toBe('/hgnform');
+    expectBlockedWith(history, /GitHub is required/i);
+    expectBlockedWith(history, /Slack is required/i);
+    expectBlockedWith(history, /confirm that your Slack handle/i);
   });
 
   it('explains a name that is too short', () => {
     const { history, ui } = setup();
     render(ui());
     fillValid();
-    fireEvent.change(screen.getByLabelText(/^Name/i), { target: { value: 'P' } });
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    changeField(/^Name/i, 'P');
+    clickNext();
 
-    expect(screen.getByRole('alert')).toHaveTextContent(/at least 2 characters/i);
-    expect(history.location.pathname).toBe('/hgnform');
+    expectBlockedWith(history, /at least 2 characters/i);
   });
 
   it('explains a Slack name that does not match the Name', () => {
     const { history, ui } = setup();
     render(ui());
     fillValid();
-    fireEvent.change(screen.getByLabelText(/^Slack/i), { target: { value: 'someone else' } });
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    changeField(/^Slack/i, 'someone else');
+    clickNext();
 
-    expect(screen.getByRole('alert')).toHaveTextContent(/Slack name must match/i);
-    expect(history.location.pathname).toBe('/hgnform');
+    expectBlockedWith(history, /Slack name must match/i);
   });
 });
