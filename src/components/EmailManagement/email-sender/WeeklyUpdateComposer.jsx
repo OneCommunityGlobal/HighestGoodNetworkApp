@@ -7,6 +7,7 @@ import {
   FaImage,
   FaPaperPlane,
   FaTimes,
+  FaTrash,
   FaUpload,
 } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
@@ -522,30 +523,54 @@ const WeeklyUpdateComposer = ({ onClose }) => {
         {/* 1. Header Image */}
         <FormGroup>
           <Label>1. Header Image *</Label>
-
           {/* Drag & Drop Zone */}
           <div
             onDrop={handleImageDrop}
             onDragOver={handleImageDragOver}
             onDragLeave={handleImageDragLeave}
             style={{
-              border: imageDragging ? '3px dashed #3b82f6' : '2px dashed #d1d5db',
+              border: imageDragging
+                ? '3px dashed #3b82f6'
+                : `2px dashed ${darkMode ? '#666' : '#d1d5db'}`,
               borderRadius: '8px',
-              padding: '20px',
+              padding: '30px',
               textAlign: 'center',
-              backgroundColor: imageDragging ? '#eff6ff' : '#f9fafb',
-              transition: 'all 0.2s ease',
-              marginBottom: '10px',
+              backgroundColor: imageDragging
+                ? darkMode
+                  ? '#26374a'
+                  : '#eff6ff'
+                : darkMode
+                ? '#2d2d2d'
+                : '#f9fafb',
               cursor: 'pointer',
+              transition: 'all 0.2s',
             }}
           >
-            <FaUpload size={32} color={imageDragging ? '#3b82f6' : '#9ca3af'} />
-            <p style={{ margin: '10px 0', color: imageDragging ? '#3b82f6' : '#6b7280' }}>
+            <input
+              id="header-image-upload"
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={e => {
+                if (e.target.files?.[0]) {
+                  handleImageDrop({ dataTransfer: { files: e.target.files } });
+                }
+              }}
+            />
+            <FaUpload
+              size={32}
+              color={imageDragging ? '#60a5fa' : darkMode ? '#d1d5db' : '#9ca3af'}
+            />
+            <p
+              style={{
+                margin: '10px 0',
+                color: imageDragging ? '#60a5fa' : darkMode ? '#e5e7eb' : '#6b7280',
+              }}
+            >
               {imageDragging ? 'Drop image here!' : 'Drag & drop an image here'}
             </p>
-            <small style={{ color: '#9ca3af' }}>or paste URL below</small>
+            <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>or paste URL below</small>
           </div>
-
           <Input
             type="url"
             value={headerImage}
@@ -560,11 +585,29 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             <FaImage className="me-1" />
             Supports: Drag & drop image files, or paste image URLs
           </small>
-
           {/* Image Preview */}
           {imagePreview && (
             <div className="mt-3">
-              <Label>Preview:</Label>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <Label className="mb-0">Preview:</Label>
+                <Button
+                  type="button"
+                  color="danger"
+                  size="sm"
+                  onClick={() => {
+                    setHeaderImage('');
+                    setImagePreview('');
+                    setValidationErrors(prev => ({
+                      ...prev,
+                      headerImage: null,
+                    }));
+                  }}
+                >
+                  <FaTrash className="me-1" />
+                  Delete Image
+                </Button>
+              </div>
+
               <img
                 src={imagePreview}
                 alt="Header preview"
@@ -578,12 +621,12 @@ const WeeklyUpdateComposer = ({ onClose }) => {
                 onError={() => {
                   toast.error('Invalid image URL');
                   setImagePreview('');
+                  setHeaderImage('');
                 }}
               />
             </div>
           )}
         </FormGroup>
-
         {/* 2. Intro Paragraph */}
         <FormGroup>
           <Label>2. Opening Paragraph *</Label>
@@ -610,21 +653,36 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             onDragOver={handleVideoDragOver}
             onDragLeave={handleVideoDragLeave}
             style={{
-              border: videoDragging ? '3px dashed #ef4444' : '2px dashed #d1d5db',
+              border: videoDragging
+                ? '3px dashed #ef4444'
+                : `2px dashed ${darkMode ? '#666' : '#d1d5db'}`,
               borderRadius: '8px',
-              padding: '20px',
+              padding: '30px',
               textAlign: 'center',
-              backgroundColor: videoDragging ? '#fef2f2' : '#f9fafb',
-              transition: 'all 0.2s ease',
-              marginBottom: '10px',
+              backgroundColor: videoDragging
+                ? darkMode
+                  ? '#452626'
+                  : '#fef2f2'
+                : darkMode
+                ? '#2d2d2d'
+                : '#f9fafb',
               cursor: 'pointer',
+              transition: 'all 0.2s',
             }}
           >
-            <FaImage size={32} color={videoDragging ? '#ef4444' : '#9ca3af'} />
-            <p style={{ margin: '10px 0', color: videoDragging ? '#ef4444' : '#6b7280' }}>
+            <FaImage
+              size={32}
+              color={videoDragging ? '#f87171' : darkMode ? '#d1d5db' : '#9ca3af'}
+            />
+            <p
+              style={{
+                margin: '10px 0',
+                color: videoDragging ? '#f87171' : darkMode ? '#e5e7eb' : '#6b7280',
+              }}
+            >
               {videoDragging ? 'Drop YouTube link here!' : 'Drag & drop YouTube link here'}
             </p>
-            <small style={{ color: '#9ca3af' }}>or paste URL below</small>
+            <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>or paste URL below</small>
           </div>
 
           <Input
