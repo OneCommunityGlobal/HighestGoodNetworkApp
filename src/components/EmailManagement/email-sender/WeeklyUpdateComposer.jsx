@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   FaExclamationTriangle,
   FaEye,
@@ -149,7 +149,7 @@ const EMAIL_TEMPLATE_STYLES = `
 const WeeklyUpdateComposer = ({ onClose }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const currentUser = useSelector(state => state.auth?.user);
-
+  const imageInputRef = useRef(null);
   // Form state - only what changes each week
   const [headerImage, setHeaderImage] = useState('');
   const [introParagraph, setIntroParagraph] = useState('');
@@ -194,30 +194,39 @@ const WeeklyUpdateComposer = ({ onClose }) => {
   }, []);
 
   // Handle image file drop
-  const handleImageDrop = useCallback(e => {
-    e.preventDefault();
-    e.stopPropagation();
-    setImageDragging(false);
+  // Process an image file from either the file picker or drag-and-drop
+  const handleImageFile = useCallback(file => {
+    if (!file) return;
 
-    const files = e.dataTransfer?.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-
-      // Check if it's an image
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = event => {
-          const base64Image = event.target.result;
-          setHeaderImage(base64Image);
-          setImagePreview(base64Image);
-          toast.success('Image loaded successfully!');
-        };
-        reader.readAsDataURL(file);
-      } else {
-        toast.error('Please drop an image file (jpg, png, gif, etc.)');
-      }
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please drop an image file (jpg, png, gif, etc.)');
+      return;
     }
+
+    const reader = new FileReader();
+
+    reader.onload = event => {
+      const base64Image = event.target.result;
+      setHeaderImage(base64Image);
+      setImagePreview(base64Image);
+      toast.success('Image loaded successfully!');
+    };
+
+    reader.readAsDataURL(file);
   }, []);
+
+  // Handle image drag-and-drop events
+  const handleImageDrop = useCallback(
+    e => {
+      e.preventDefault();
+      e.stopPropagation();
+      setImageDragging(false);
+
+      const file = e.dataTransfer?.files?.[0];
+      handleImageFile(file);
+    },
+    [handleImageFile],
+  );
 
   const handleImageDragOver = useCallback(e => {
     e.preventDefault();
@@ -525,6 +534,16 @@ const WeeklyUpdateComposer = ({ onClose }) => {
           <Label>1. Header Image *</Label>
           {/* Drag & Drop Zone */}
           <div
+            role="button"
+            tabIndex={0}
+            aria-label="Upload header image"
+            onClick={() => imageInputRef.current?.click()}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                imageInputRef.current?.click();
+              }
+            }}
             onDrop={handleImageDrop}
             onDragOver={handleImageDragOver}
             onDragLeave={handleImageDragLeave}
@@ -547,30 +566,41 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             }}
           >
             <input
+              ref={imageInputRef}
               id="header-image-upload"
               type="file"
               accept="image/*"
               style={{ display: 'none' }}
+              onClick={e => e.stopPropagation()}
               onChange={e => {
-                if (e.target.files?.[0]) {
-                  handleImageDrop({ dataTransfer: { files: e.target.files } });
+                const file = e.target.files?.[0];
+
+                if (file) {
+                  handleImageFile(file);
                 }
+
+                // Allow selecting the same file again.
+                e.target.value = '';
               }}
             />
+
             <FaUpload
               size={32}
               color={imageDragging ? '#60a5fa' : darkMode ? '#d1d5db' : '#9ca3af'}
             />
+
             <p
               style={{
                 margin: '10px 0',
                 color: imageDragging ? '#60a5fa' : darkMode ? '#e5e7eb' : '#6b7280',
               }}
             >
-              {imageDragging ? 'Drop image here!' : 'Drag & drop an image here'}
+              {imageDragging ? 'Drop image here' : 'Click to upload or drag and drop'}
             </p>
-            <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>or paste URL below</small>
+
+            <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>JPG, PNG, GIF, etc.</small>
           </div>
+
           <Input
             type="url"
             value={headerImage}
