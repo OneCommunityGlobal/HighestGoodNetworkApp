@@ -268,7 +268,6 @@ export default function InteractiveMap() {
   const [orgs, setOrgs] = useState([]);
   const [filteredOrgs, setFilteredOrgs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filtering, setFiltering] = useState(false);
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -334,9 +333,7 @@ export default function InteractiveMap() {
     );
 
   const getProjectEndDate = org =>
-    parseDateSafe(
-      org.endDate || org.end_date || org.projectEndDate || org.project_end_date || org.updatedAt,
-    );
+    parseDateSafe(org.endDate || org.end_date || org.projectEndDate || org.project_end_date);
 
   const fetchOrgs = async () => {
     try {
@@ -363,20 +360,25 @@ export default function InteractiveMap() {
   };
 
   const handleApplyFilters = () => {
-    setFiltering(true);
     setErrMsg('');
 
     if (startDate && endDate && endDate < startDate) {
       setErrMsg('End date cannot be earlier than start date');
       setFilteredOrgs([]);
-      setMapKey(k => k + 1);
-      setFiltering(false);
       return;
     }
 
     const filtered = orgs.filter(org => {
       const orgStartDate = getProjectStartDate(org);
-      const orgEndDate = getProjectEndDate(org) || orgStartDate;
+      const rawEndDate = getProjectEndDate(org);
+      // The backend response has no end-date field at all today, so rawEndDate is always
+      // null. Falling back to the start date collapsed every project into a one-day event
+      // on that date, which hid still-running active/delayed projects from any date filter
+      // that didn't happen to include their exact start date. Treat those as ongoing
+      // through today instead; projects in other statuses (e.g. completed) keep the
+      // original one-day fallback, since a real end date is the expected case there.
+      const isOngoing = !rawEndDate && ['active', 'delayed'].includes(org.status?.toLowerCase());
+      const orgEndDate = rawEndDate || (isOngoing ? new Date() : orgStartDate);
 
       if (!orgStartDate) return false;
 
@@ -402,8 +404,6 @@ export default function InteractiveMap() {
     });
 
     setFilteredOrgs(filtered);
-    setMapKey(k => k + 1);
-    setFiltering(false);
   };
 
   const handleResetFilters = () => {
@@ -412,7 +412,6 @@ export default function InteractiveMap() {
     setStatusFilter('');
     setErrMsg('');
     setFilteredOrgs(orgs);
-    setMapKey(k => k + 1);
   };
 
   const handleProjectClick = org => history.push(`/bmdashboard/projects/${org.orgId}`);
@@ -506,16 +505,14 @@ export default function InteractiveMap() {
               type="button"
               onClick={handleApplyFilters}
               className={`${styles.filterButton} ${darkMode ? styles.filterButtonDark : ''}`}
-              disabled={filtering}
             >
-              {filtering ? 'Applying...' : 'Apply'}
+              Apply
             </button>
 
             <button
               type="button"
               onClick={handleResetFilters}
               className={`${styles.filterButton} ${darkMode ? styles.filterButtonDark : ''}`}
-              disabled={filtering}
             >
               Reset
             </button>
