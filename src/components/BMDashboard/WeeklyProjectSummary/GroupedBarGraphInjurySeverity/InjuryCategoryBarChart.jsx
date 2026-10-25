@@ -48,6 +48,10 @@ function InjuryCategoryBarChart() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [unfilteredProjects, setUnfilteredProjects] = useState([]);
+  // 'grouped' compares projects side by side; 'stacked' shows total impact per category
+  const [viewMode, setViewMode] = useState('grouped');
+  // Project series hidden by clicking their legend entry
+  const [hiddenSeries, setHiddenSeries] = useState([]);
 
   // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
   const [chartKey, setChartKey] = useState(0);
@@ -176,7 +180,62 @@ function InjuryCategoryBarChart() {
     return Array.from(set);
   }, [unfilteredProjects, projects, seriesProjectIds]);
 
-  const showLabels = seriesProjectIds.length <= 4;
+  const isStacked = viewMode === 'stacked';
+  const visibleSeriesIds = useMemo(
+    () => seriesProjectIds.filter(pid => !hiddenSeries.includes(pid)),
+    [seriesProjectIds, hiddenSeries],
+  );
+  const lastVisibleSeriesId = visibleSeriesIds.at(-1);
+  // Per-bar labels only when few projects are visible, so they do not overlap
+  const showLabels = !isStacked && visibleSeriesIds.length <= 4;
+
+  // Add the visible total per worker category (used for stacked totals and insights)
+  const displayData = useMemo(
+    () =>
+      chartData.map(row => ({
+        ...row,
+        __total: visibleSeriesIds.reduce((sum, pid) => sum + (Number(row[pid]) || 0), 0),
+      })),
+    [chartData, visibleSeriesIds],
+  );
+
+  const insights = useMemo(() => {
+    const grandTotal = displayData.reduce((sum, row) => sum + row.__total, 0);
+    if (grandTotal === 0) return null;
+
+    const topCategoryRow = displayData.reduce((best, row) =>
+      row.__total > best.__total ? row : best,
+    );
+
+    let topProjectId = null;
+    let topProjectTotal = 0;
+    visibleSeriesIds.forEach(pid => {
+      const total = displayData.reduce((sum, row) => sum + (Number(row[pid]) || 0), 0);
+      if (total > topProjectTotal) {
+        topProjectTotal = total;
+        topProjectId = pid;
+      }
+    });
+
+    return {
+      grandTotal,
+      categoryCount: displayData.filter(row => row.__total > 0).length,
+      topCategory: topCategoryRow.workerCategory,
+      topCategoryTotal: topCategoryRow.__total,
+      topCategoryShare: Math.round((topCategoryRow.__total / grandTotal) * 100),
+      topProjectId,
+      topProjectTotal,
+    };
+  }, [displayData, visibleSeriesIds]);
+
+  const topCategory = insights?.topCategory;
+
+  const toggleSeries = pid => {
+    setHiddenSeries(prev => (prev.includes(pid) ? prev.filter(id => id !== pid) : [...prev, pid]));
+  };
+
+  // Rotate x-axis labels only when there are many categories
+  const xTickAngle = displayData.length > 6 ? -35 : 0;
 
   const COLOR_PALETTE = [
     '#34D399', // green
@@ -219,6 +278,8 @@ function InjuryCategoryBarChart() {
     injuryTypeFilter,
     startDate,
     endDate,
+    viewMode,
+    hiddenSeries.length,
   ]);
 
   // Theme-aware react-select styles for both modes. Styling lives here instead of global
@@ -272,6 +333,41 @@ function InjuryCategoryBarChart() {
   }`;
   // Applied to the calendar popup itself so dark styles don't depend on global classes
   const calendarClassName = darkMode ? styles.injuryDarkCalendar : undefined;
+
+  const highlightColor = darkMode ? '#f87171' : '#b91c1c';
+  const axisTextColor = darkMode ? '#fff' : '#000';
+
+  // Abbreviates long category names (full name on hover) and highlights the top category
+  const renderCategoryTick = ({ x, y, payload }) => {
+    const fullName = String(payload?.value ?? '');
+    const shortName = fullName.length > 12 ? `${fullName.slice(0, 11)}…` : fullName;
+    const isTop = fullName === topCategory;
+
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text
+          dy={16}
+          textAnchor={xTickAngle ? 'end' : 'middle'}
+          transform={xTickAngle ? `rotate(${xTickAngle})` : undefined}
+          fill={isTop ? highlightColor : axisTextColor}
+          fontSize={12}
+          fontWeight={isTop ? 700 : 400}
+        >
+          <title>{isTop ? `${fullName} (highest injuries)` : fullName}</title>
+          {isTop ? `▲ ${shortName}` : shortName}
+        </text>
+      </g>
+    );
+  };
+
+  const viewToggleButtonClass = isActive =>
+    `${styles.injuryViewToggleButton} ${isActive ? styles.injuryViewToggleButtonActive : ''}`;
+
+  const topProjectLabel = insights?.topProjectId
+    ? projectLabelById.get(insights.topProjectId) ||
+      projectNameById.get(insights.topProjectId) ||
+      'Unknown Project'
+    : null;
 
   return (
     <div className={containerClassName}>
@@ -388,6 +484,29 @@ function InjuryCategoryBarChart() {
         </div>
       </div>
 
+      {/* Switch between comparing projects and seeing total impact per category */}
+      <fieldset
+        className={`${styles.injuryViewToggle} ${darkMode ? styles.injuryViewToggleDark : ''}`}
+        aria-label="Bar layout"
+      >
+        <button
+          type="button"
+          className={viewToggleButtonClass(!isStacked)}
+          aria-pressed={!isStacked}
+          onClick={() => setViewMode('grouped')}
+        >
+          Grouped
+        </button>
+        <button
+          type="button"
+          className={viewToggleButtonClass(isStacked)}
+          aria-pressed={isStacked}
+          onClick={() => setViewMode('stacked')}
+        >
+          Stacked
+        </button>
+      </fieldset>
+
       {loading && <p className={styles.injuryStatusText}>Loading…</p>}
       {!loading && error && <p className={styles.injuryErrorText}>Error: {String(error)}</p>}
 
@@ -395,7 +514,7 @@ function InjuryCategoryBarChart() {
         <div className={styles.chartArea}>
           <ResponsiveContainer key={chartKey} width="100%" height="100%">
             <BarChart
-              data={chartData}
+              data={displayData}
               margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
               style={{
                 backgroundColor: darkMode ? '#1e2a3a' : '#fff',
@@ -406,10 +525,8 @@ function InjuryCategoryBarChart() {
               <XAxis
                 dataKey="workerCategory"
                 interval={0}
-                angle={-45}
-                textAnchor="end"
-                height={80}
-                tick={{ fill: darkMode ? '#fff' : '#000' }}
+                height={xTickAngle ? 70 : 40}
+                tick={renderCategoryTick}
                 axisLine={{ stroke: darkMode ? '#888' : '#000' }}
                 tickLine={{ stroke: darkMode ? '#888' : '#000' }}
               />
@@ -458,14 +575,19 @@ function InjuryCategoryBarChart() {
                 }}
               />
               <Legend
+                // Legend sits above the chart; click an entry to hide/show that project
+                verticalAlign="top"
                 wrapperStyle={{
                   color: darkMode ? '#fff' : '#000',
                   paddingBottom: 10,
+                  cursor: 'pointer',
                 }}
+                onClick={entry => entry?.id && toggleSeries(entry.id)}
                 payload={allSeriesProjectIds.map(pid => ({
                   id: pid,
                   type: 'square',
                   color: projectColorById.get(pid),
+                  inactive: hiddenSeries.includes(pid),
                   value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
                 }))}
               />
@@ -473,6 +595,8 @@ function InjuryCategoryBarChart() {
                 <Bar
                   key={pid}
                   dataKey={pid}
+                  stackId={isStacked ? 'injuries' : undefined}
+                  hide={hiddenSeries.includes(pid)}
                   fill={projectColorById.get(pid)}
                   stroke={darkMode ? '#E5E7EB' : '#ffffff'}
                   strokeWidth={1}
@@ -486,6 +610,15 @@ function InjuryCategoryBarChart() {
                       fill={darkMode ? '#f3f4f6' : '#374151'}
                     />
                   )}
+                  {/* Stacked view: show the category total on top of the stack */}
+                  {isStacked && pid === lastVisibleSeriesId && (
+                    <LabelList
+                      position="top"
+                      valueAccessor={entry => entry?.payload?.__total}
+                      formatter={v => (v > 0 ? v : '')}
+                      fill={darkMode ? '#f3f4f6' : '#374151'}
+                    />
+                  )}
                 </Bar>
               ))}
             </BarChart>
@@ -493,8 +626,39 @@ function InjuryCategoryBarChart() {
         </div>
       )}
 
+      {!loading && !error && chartData.length > 0 && (
+        <section className={styles.injuryInsights} aria-label="Key insights">
+          <h4 className={styles.injuryInsightsTitle}>Key Insights</h4>
+          {insights ? (
+            <ul className={styles.injuryInsightsList}>
+              <li>
+                <strong>{insights.grandTotal}</strong> injuries across{' '}
+                <strong>{insights.categoryCount}</strong> worker categories.
+              </li>
+              <li>
+                <strong>{insights.topCategory}</strong> has the most injuries (
+                {insights.topCategoryTotal}, {insights.topCategoryShare}% of the total).
+              </li>
+              {topProjectLabel && (
+                <li>
+                  <strong>{topProjectLabel}</strong> reports the most injuries (
+                  {insights.topProjectTotal}).
+                </li>
+              )}
+            </ul>
+          ) : (
+            <p className={styles.injuryInsightsEmpty}>
+              All projects are hidden. Click a legend entry to show it again.
+            </p>
+          )}
+        </section>
+      )}
+
       {!loading && !error && chartData.length === 0 && (
-        <div className={styles.injuryEmptyText}>No data for selected filters.</div>
+        <div className={styles.injuryEmptyText}>
+          No injury records match the selected filters. Try widening the date range or clearing some
+          filters.
+        </div>
       )}
     </div>
   );
