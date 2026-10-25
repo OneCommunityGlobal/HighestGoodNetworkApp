@@ -57,7 +57,6 @@ describe('ActivityList', () => {
 
   test('sorts activities by date (latest to earliest)', () => {
     renderActivityList();
-    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
     fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
