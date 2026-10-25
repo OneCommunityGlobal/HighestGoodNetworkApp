@@ -446,6 +446,23 @@
   font-size: 0.85rem;
 }
 
+/* Hint line: suggested address in bold, followed by a "Use this" button styled like the resume Remove button */
+.fieldHint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 4px 0 0;
+  color: #555;
+  font-size: 0.85rem;
+}
+
+.fieldHint strong {
+  font-size: inherit; /* a global rule sets strong to 16px */
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
 .submitButton {
   background-color: #006b32;
   color: #fff;
@@ -803,8 +820,14 @@
   cursor: pointer;
 }
 
+/* !important: the global `body.dark-mode * { color: #fff !important }` rule would otherwise
+   turn the error and suggestion white */
 .darkMode .fieldError {
-  color: #ff8a80;
+  color: #ff8a80 !important;
+}
+
+.darkMode .fieldHint {
+  color: #e0e0e0 !important;
 }
 
 .darkMode .inputFieldError {
