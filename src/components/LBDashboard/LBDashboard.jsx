@@ -662,6 +662,7 @@ export function LBDashboard() {
                 showMetricPill={false}
                 metricLabel={metricLabel}
                 selectedMetricKey={selectedMetricKey}
+                listingType={listingBiddingFilter}
               />
             </Col>
           </Row>
