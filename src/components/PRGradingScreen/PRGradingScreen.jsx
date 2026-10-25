@@ -13,12 +13,12 @@ import { usePRPromotion } from './usePRPromotion';
 
 const hasDuplicatePR = (gradedPrs, value) => {
   const enteredNumbers = value.split('+').map(number => number.trim());
-  const existingNumbers = gradedPrs.flatMap(pr =>
-    pr.prNumbers.split('+').map(number => number.trim()),
+  const existingNumbers = new Set(
+    gradedPrs.flatMap(pr => pr.prNumbers.split('+').map(number => number.trim())),
   );
   return (
     new Set(enteredNumbers).size !== enteredNumbers.length ||
-    enteredNumbers.some(number => existingNumbers.includes(number))
+    enteredNumbers.some(number => existingNumbers.has(number))
   );
 };
 
