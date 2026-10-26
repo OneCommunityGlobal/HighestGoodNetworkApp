@@ -13,6 +13,7 @@ import {
   FaStopCircle,
   FaUndoAlt,
 } from 'react-icons/fa';
+import jwtDecode from 'jwt-decode';
 import { connect, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
@@ -26,6 +27,23 @@ import css from './Timer.module.css';
 import TimerPopout from './TimerPopout';
 import TimerStatus from './TimerStatus';
 
+// Reconnect backoff: 1s, 2s, 4s, 8s, 16s, then every 30s thereafter, forever,
+// for as long as the stored token is usable. A real backend restart/deploy can
+// easily take longer than a short attempt ladder (this one used to give up
+// after ~61s and strand a visible, still-open tab on "Disconnected" with
+// nothing left to retry it - no visibilitychange/online event fires for a tab
+// that was never backgrounded or actually offline). Only a bad/expired token
+// should ever show Disconnected + the manual refresh button.
+const RECONNECT_BASE_DELAY_MS = 1000;
+const RECONNECT_MAX_DELAY_MS = 30000;
+// Caps the backoff exponent, not the number of attempts - purely to keep
+// 2 ** n from ever overflowing across a very long-running disconnection.
+const RECONNECT_BACKOFF_EXPONENT_CAP = 10;
+// After this many failed attempts in a row, assume we're genuinely offline (sleep,
+// wifi drop, etc.) and chime locally if a session was actually running when the
+// connection dropped - we may not be able to reach the server to confirm either way.
+const OFFLINE_CHIME_ATTEMPT_THRESHOLD = 3;
+
 function Timer({ authUser, darkMode, isPopout }) {
   const dispatch = useDispatch();
   const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!globalThis.opener;
@@ -37,14 +55,128 @@ function Timer({ authUser, darkMode, isPopout }) {
    * */
   const [customReadyState, setCustomReadyState] = useState(ReadyState.CONNECTING);
   const [wsKey, setWsKey] = useState(0);
+  // True only once the stored token is unusable - that's the one thing that
+  // should ever stop auto-reconnect and show "Disconnected" + the manual
+  // refresh button instead of "Reconnecting...". While the token stays valid,
+  // reconnect attempts never give up.
+  const [reconnectExhausted, setReconnectExhausted] = useState(false);
+  const reconnectAttemptRef = useRef(0);
+  const reconnectTimeoutRef = useRef(null);
+  const offlineChimeFiredRef = useRef(false);
+  // The heartbeat-miss path calls handleConnectionLost() directly (for immediate
+  // feedback) and then best-effort closes the socket, whose resulting onClose would
+  // call handleConnectionLost() again for the same outage. This guards against that
+  // double count; it's cleared whenever a new connection attempt actually begins
+  // (scheduleReconnect's timeout, onOpen, or a manual/immediate reconnect), so each
+  // *new* attempt's own failure still counts once.
+  const connectionLostHandledRef = useRef(false);
+  // started/paused aren't declared until later (they come from the message state),
+  // but WSoptions/handleConnectionLost must exist before the useWebSocket() call that
+  // produces them, so this ref (kept in sync below, once they exist) lets the
+  // close/error handlers check "was a session actually running when we dropped?"
+  // without a direct reference that would be used before it's declared.
+  const timerFlagsRef = useRef({ started: false, paused: false });
+
+  const clearScheduledReconnect = useCallback(() => {
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+  }, []);
+
+  // No point retrying with a token the server will reject anyway (expired, or just
+  // malformed/missing) - same expiry convention as utils/authInit.js.
+  const isStoredTokenUsable = useCallback(() => {
+    const token = localStorage.getItem(config.tokenKey);
+    if (!token) return false;
+    try {
+      const decoded = jwtDecode(token);
+      const expirySec = new Date(decoded.expiryTimestamp).getTime() / 1000;
+      return expirySec > Date.now() / 1000;
+    } catch (_error) {
+      return false;
+    }
+  }, []);
+
+  // Once exhausted, nothing was going to retry on its own again - without this, a
+  // tab left on "Disconnected" stays stuck until the user notices and clicks the
+  // manual refresh button. Re-checking the token here (rather than just retrying
+  // blindly) means a genuinely bad/expired token is the only thing that still
+  // leaves it stuck - everything else gets a fresh attempt.
+  const resetAndReconnectIfTokenUsable = useCallback(() => {
+    if (!isStoredTokenUsable()) return false;
+    clearScheduledReconnect();
+    reconnectAttemptRef.current = 0;
+    connectionLostHandledRef.current = false;
+    setReconnectExhausted(false);
+    setWsKey(k => k + 1);
+    return true;
+  }, [isStoredTokenUsable, clearScheduledReconnect]);
+
+  const scheduleReconnect = useCallback(() => {
+    clearScheduledReconnect();
+
+    if (!isStoredTokenUsable()) {
+      setReconnectExhausted(true);
+      return;
+    }
+
+    const exponent = Math.min(reconnectAttemptRef.current - 1, RECONNECT_BACKOFF_EXPONENT_CAP);
+    const delay = Math.min(RECONNECT_BASE_DELAY_MS * 2 ** exponent, RECONNECT_MAX_DELAY_MS);
+    reconnectTimeoutRef.current = setTimeout(() => {
+      connectionLostHandledRef.current = false; // this next attempt's own failure should count
+      setWsKey(k => k + 1);
+    }, delay);
+  }, [clearScheduledReconnect, isStoredTokenUsable]);
+
+  // Shared handling for "the socket just went down" - called from onClose, onError,
+  // and the heartbeat-miss path below, so there's one place deciding whether to
+  // chime and/or keep retrying, instead of each path guessing independently.
+  const handleConnectionLost = useCallback(() => {
+    if (connectionLostHandledRef.current) return; // already processed this disconnect once
+    connectionLostHandledRef.current = true;
+
+    setRunning(false);
+    setCustomReadyState(ReadyState.CLOSED);
+
+    reconnectAttemptRef.current += 1;
+
+    const { started: wasStarted, paused: wasPaused } = timerFlagsRef.current;
+    if (
+      reconnectAttemptRef.current >= OFFLINE_CHIME_ATTEMPT_THRESHOLD &&
+      wasStarted &&
+      !wasPaused &&
+      !offlineChimeFiredRef.current
+    ) {
+      offlineChimeFiredRef.current = true;
+      setInacModal(true);
+    }
+
+    scheduleReconnect();
+  }, [scheduleReconnect]);
+
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
-    onOpen: () => setCustomReadyState(ReadyState.OPEN),
-    onClose: () => setCustomReadyState(ReadyState.CLOSED),
+    onOpen: () => {
+      setCustomReadyState(ReadyState.OPEN);
+      clearScheduledReconnect();
+      reconnectAttemptRef.current = 0;
+      offlineChimeFiredRef.current = false;
+      connectionLostHandledRef.current = false;
+      setReconnectExhausted(false);
+    },
+    onClose: () => handleConnectionLost(),
+    // A real WebSocket always follows an error with a close event, which does the
+    // actual reconnect bookkeeping - this just gets the UI/countdown out of a
+    // "connected" state immediately instead of waiting for that close to land.
     onError: () => {
+      setRunning(false);
       setCustomReadyState(ReadyState.CLOSED);
     },
+    // We drive all reconnection ourselves via wsKey (see scheduleReconnect) so the
+    // library never also retries on its own.
+    shouldReconnect: () => false,
   };
 
   /**
@@ -102,6 +234,10 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   const [message, setMessage] = useState(defaultMessage);
   const { time, paused, started, goal, startAt } = message;
+
+  useEffect(() => {
+    timerFlagsRef.current = { started, paused };
+  }, [started, paused]);
 
   const [running, setRunning] = useState(false);
   const [confirmationResetModal, setConfirmationResetModal] = useState(false);
@@ -279,11 +415,16 @@ function Timer({ authUser, darkMode, isPopout }) {
   );
 
   const handleRefreshTimer = useCallback(() => {
+    clearScheduledReconnect();
+    reconnectAttemptRef.current = 0;
+    offlineChimeFiredRef.current = false;
+    connectionLostHandledRef.current = false;
+    setReconnectExhausted(false);
     getWebSocket()?.close();
     setCustomReadyState(ReadyState.CONNECTING);
     setMessage(defaultMessage);
     setWsKey(k => k + 1);
-  }, [getWebSocket]);
+  }, [getWebSocket, clearScheduledReconnect]);
 
   // Initialize session ID on component mount
   useEffect(() => {
@@ -648,13 +789,8 @@ function Timer({ authUser, darkMode, isPopout }) {
       return; // Exit early to prevent other modal logic
     }
 
-    const {
-      paused: pausedLJM,
-      forcedPause: forcedPauseLJM,
-      started: startedLJM,
-      chiming: chimingLJM,
-      weekEndPause: weekEndPauseLJM,
-    } = lastJsonMessage || defaultMessage;
+    const { paused: pausedLJM, forcedPause: forcedPauseLJM, started: startedLJM } =
+      lastJsonMessage || defaultMessage;
 
     // console.log('DEBUG WS TIMER RECEIVED', {
     //   time: lastJsonMessage?.time,
@@ -669,8 +805,30 @@ function Timer({ authUser, darkMode, isPopout }) {
       setRemaining(lastJsonMessage?.time ?? defaultMessage.time);
     }
 
-    // Show inactivity or time-over modals based on message state
+    // Show inactivity modal based on message state
     setInacModal(forcedPauseLJM);
+    // Deliberately NOT depending on customReadyState/weekEndModal here: this effect
+    // should only re-derive message/running/remaining when a genuinely NEW message
+    // arrives. Reconnecting (customReadyState flipping CLOSED -> OPEN) with no fresh
+    // GET_TIMER reply yet must not re-apply a stale lastJsonMessage and resurrect
+    // running=true from before the disconnect - see the time-over-modal effect below
+    // for the one case that does want to react to customReadyState.
+  }, [lastJsonMessage]);
+
+  // The time-over ("Time Complete!") modal specifically does want to react to
+  // reconnects/week-end-pause changes (e.g. show it once back online if the
+  // session was already chiming), so this stays a separate effect rather than
+  // folding it into the one above.
+  useEffect(() => {
+    if (
+      lastJsonMessage &&
+      (lastJsonMessage.heartbeat === 'pong' ||
+        lastJsonMessage.type === 'TIMELOG_EVENT' ||
+        lastJsonMessage.action === 'WEEK_CLOSE_PAUSE')
+    ) {
+      return;
+    }
+    const { chiming: chimingLJM } = lastJsonMessage || defaultMessage;
     setTimeIsOverModalIsOpen(chimingLJM && (customReadyState === ReadyState.OPEN || !weekEndModal));
   }, [lastJsonMessage, customReadyState, weekEndModal]);
 
@@ -683,10 +841,14 @@ function Timer({ authUser, darkMode, isPopout }) {
         setTimeout(() => {
           // make sure to notify the user if the heartbeat is not responded for 3 times
           if (isWSOpenRef.current > 3) {
-            setRunning(false);
-            setInacModal(true);
-            getWebSocket().close(); // try to close the WS connection, but it might not work when internet is cut off
-            setCustomReadyState(ReadyState.CLOSED);
+            // Don't decide locally that this is a genuine forced pause - a background/
+            // throttled tab can miss heartbeats for a long time and then "wake up" with
+            // a wildly stale assumption. Route through the same handling as a real
+            // close/error so reconnecting resyncs with the server's actual state
+            // (already logged elsewhere, or a real forced pause) instead of guessing.
+            handleConnectionLost();
+            getWebSocket()?.close(); // best-effort; may not fire a close event if truly offline
+            isWSOpenRef.current = 0;
           }
         }, 10000); // close the WS if no response after 10 seconds
       }
@@ -791,6 +953,51 @@ function Timer({ authUser, darkMode, isPopout }) {
 
     sendGetTimer();
   }, [customReadyState, viewingUserId, wsKey]);
+
+  // Resync with the server as soon as a backgrounded tab becomes visible again, and
+  // either resync or jump straight to a reconnect attempt (instead of waiting out
+  // the rest of the backoff) as soon as the browser reports it's back online.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') return;
+      if (customReadyState === ReadyState.OPEN) {
+        sendGetTimer();
+      } else if (reconnectExhausted) {
+        // Only a still-bad/expired token should leave this stuck - anything else
+        // deserves a fresh attempt now that the tab is actually being looked at.
+        resetAndReconnectIfTokenUsable();
+      }
+    };
+
+    const handleOnline = () => {
+      if (customReadyState === ReadyState.OPEN) {
+        sendGetTimer();
+      } else if (reconnectExhausted) {
+        resetAndReconnectIfTokenUsable();
+      } else {
+        // Already mid-backoff (not yet exhausted) - don't make the user wait out
+        // the rest of it now that the browser says we're back online.
+        clearScheduledReconnect();
+        setWsKey(k => k + 1);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    globalThis.addEventListener('online', handleOnline);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      globalThis.removeEventListener('online', handleOnline);
+    };
+  }, [
+    customReadyState,
+    reconnectExhausted,
+    sendGetTimer,
+    clearScheduledReconnect,
+    resetAndReconnectIfTokenUsable,
+  ]);
+
+  // Cancel any pending reconnect attempt on unmount.
+  useEffect(() => clearScheduledReconnect, [clearScheduledReconnect]);
 
   // Enhanced cleanup when viewing user changes
   useEffect(() => {
@@ -1013,6 +1220,7 @@ function Timer({ authUser, darkMode, isPopout }) {
               message={message}
               toggleTimer={() => globalThis.close()}
               handleRefreshTimer={handleRefreshTimer}
+              reconnectExhausted={reconnectExhausted}
             />
           )}
         </div>
@@ -1057,16 +1265,18 @@ function Timer({ authUser, darkMode, isPopout }) {
           </button>
         ) : (
           <div className={css.disconnected}>
-            <span>Disconnected</span>
-            <button
-              type="button"
-              onClick={handleRefreshTimer}
-              className={css.disconnectedRefreshBtn}
-              aria-label="Reload timer"
-              title="Reload timer"
-            >
-              <BsArrowClockwise />
-            </button>
+            <span>{reconnectExhausted ? 'Disconnected' : 'Reconnecting...'}</span>
+            {reconnectExhausted && (
+              <button
+                type="button"
+                onClick={handleRefreshTimer}
+                className={css.disconnectedRefreshBtn}
+                aria-label="Reload timer"
+                title="Reload timer"
+              >
+                <BsArrowClockwise />
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -1221,6 +1431,7 @@ function Timer({ authUser, darkMode, isPopout }) {
                 message={message}
                 toggleTimer={toggleTimer}
                 handleRefreshTimer={handleRefreshTimer}
+                reconnectExhausted={reconnectExhausted}
               />
             )}
           </div>
