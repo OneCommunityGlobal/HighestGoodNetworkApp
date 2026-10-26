@@ -28,7 +28,7 @@
   margin: 12px 0;
 }
 
-.toolbar p {
+.toolbar output {
   margin: 0;
 }
 
@@ -50,6 +50,19 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
   gap: 12px;
   margin-bottom: 16px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filtersLegend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .filter {

@@ -100,9 +100,9 @@ function ProjectLog({ members = DummyData, darkMode = false }) {
     <Card className={`${styles.projectLog} ${darkMode ? styles.dark : ''}`}>
       <h2>Members working on site today</h2>
       <div className={styles.toolbar}>
-        <p role="status">
+        <output>
           Showing {filtered.length} of {members.length} members
-        </p>
+        </output>
         <button
           type="button"
           className={styles.clearButton}
@@ -112,7 +112,8 @@ function ProjectLog({ members = DummyData, darkMode = false }) {
           Clear All Filters
         </button>
       </div>
-      <div className={styles.filters} role="group" aria-label="Filter members">
+      <fieldset className={styles.filters}>
+        <legend className={styles.filtersLegend}>Filter members</legend>
         {MEMBER_COLUMNS.map(column => (
           <MemberSearchInput
             key={column.key}
@@ -127,7 +128,7 @@ function ProjectLog({ members = DummyData, darkMode = false }) {
             }}
           />
         ))}
-      </div>
+      </fieldset>
       <Table hover responsive striped className={styles.membersTable}>
         <caption className={styles.caption}>
           Members working on site today, filtered by the fields above
