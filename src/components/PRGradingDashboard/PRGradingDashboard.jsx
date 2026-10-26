@@ -49,7 +49,7 @@ function PRGradingDashboard() {
 
   // Fetch data on mount
   useEffect(() => {
-    fetchGradings();
+    void fetchGradings();
   }, []);
 
   const fetchGradings = async () => {
