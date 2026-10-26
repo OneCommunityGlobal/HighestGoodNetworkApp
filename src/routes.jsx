@@ -63,6 +63,7 @@ import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
 import DatabaseDesign from './components/CommunityPortal/DatabaseDesign/DatabaseDesign';
 import Page1 from './components/HGNForm/pages/Page1';
+import HGNFormListPage from './components/HGNForm/pages/HGNFormListPage';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
 import Page4 from './components/HGNForm/pages/Page4';
@@ -180,6 +181,7 @@ import GardenManagement from './components/KitchenandInventory/GardenManagement/
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import KitchenReports from './components/KitchenandInventory/KitchenReports/KitchenReports';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 
@@ -1128,6 +1130,7 @@ export default (
           exact
           component={GardenManagement}
         />
+        <ProtectedRoute path="/kitchenandinventory/reports" exact component={KitchenReports} />
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
@@ -1168,7 +1171,8 @@ export default (
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
         <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
-        <ProtectedRoute path="/hgnform" exact component={Page1} />
+        <ProtectedRoute path="/hgnform" exact component={HGNFormListPage} />
+        <ProtectedRoute path="/hgnform/page1" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
         <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
         <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
@@ -1263,7 +1267,7 @@ export default (
           path="/pr-grading-dashboard"
           exact
           component={PRGradingDashboard}
-          fallback
+          routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
