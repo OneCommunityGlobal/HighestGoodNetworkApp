@@ -505,8 +505,8 @@
 }
 
 .availabilityModal--dark .availabilityError--dark {
-  /* stylelint-disable-next-line declaration-no-important */
-  color: #f4a3a3 !important; /* beats the global `body.dark-mode *` !important rule */
+  color: #f4a3a3;
+  -webkit-text-fill-color: #f4a3a3; /* global `body.dark-mode *` forces color, fill color is unaffected */
 }
 
 .sendInfoBtn--dark {
