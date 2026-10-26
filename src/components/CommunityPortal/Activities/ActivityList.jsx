@@ -16,10 +16,18 @@ import {
 import { fuzzySearch } from '../../../utils/fuzzySearch';
 import { mockActivities } from './mockActivities';
 
+// Builds YYYY-MM-DD from LOCAL date parts (toISOString() uses UTC and can be off by a day)
+const getLocalDateString = (date = new Date()) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 function ActivityList() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -34,7 +42,7 @@ function ActivityList() {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [dateError, setDateError] = useState('');
-  const todayDate = new Date().toISOString().split('T')[0];
+  const todayDate = getLocalDateString();
   const [sortOrder, setSortOrder] = useState('earliest');
   const [showPastEvents, setShowPastEvents] = useState(false);
 
@@ -84,15 +92,30 @@ function ActivityList() {
     setCurrentPage(1);
   }, [filter, sortOrder, showPastEvents]);
 
+  // Unique locations matching the typed text
+  const getLocationSuggestions = useCallback(
+    query => {
+      if (!query) return [];
+      const uniqueLocations = Array.from(new Set(activities.map(a => a.location).filter(Boolean)));
+      return uniqueLocations.filter(location => fuzzySearch(location, query, 0.5));
+    },
+    [activities],
+  );
+
+  const handleSuggestionClick = location => {
+    setFilter(prev => ({ ...prev, location }));
+    setLocationSuggestions([]);
+    setShowSuggestions(false);
+  };
+
   const handleFilterChange = e => {
     const { name, value } = e.target;
+
     if (name === 'date') {
       if (value) {
-        // Split Date
         const [year, month, day] = value.split('-').map(Number);
         const selectedDate = new Date(year, month - 1, day);
 
-        //today's date without timezone
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -107,7 +130,14 @@ function ActivityList() {
         setDateError('');
       }
     }
-    setFilter({ ...filter, [name]: value });
+
+    if (name === 'location') {
+      const suggestions = getLocationSuggestions(value);
+      setLocationSuggestions(suggestions);
+      setShowSuggestions(suggestions.length > 0);
+    }
+
+    setFilter(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSortChange = e => {
@@ -171,21 +201,21 @@ function ActivityList() {
     return d;
   }, []);
 
-  const filteredActivities = activities
-    .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
-    .filter(activity => {
-      return (
-        (!filter.type || fuzzySearch(activity.type, filter.type, 0.5)) &&
-        (!filter.date || activity.date === filter.date) &&
-        (!filter.location || fuzzySearch(activity.location, filter.location, 0.5))
-      );
-    })
-    .sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-
-      return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
-    });
+  const filteredActivities = useMemo(
+    () =>
+      activities
+        .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
+        .filter(
+          activity =>
+            (!filter.type || fuzzySearch(activity.type, filter.type, 0.5)) &&
+            (!filter.date || activity.date === filter.date) &&
+            (!filter.location || fuzzySearch(activity.location, filter.location, 0.5)),
+        )
+        .sort((a, b) =>
+          sortOrder === 'earliest' ? a._dateObj - b._dateObj : b._dateObj - a._dateObj,
+        ),
+    [activities, showPastEvents, startOfToday, filter, sortOrder],
+  );
 
   // Pagination
   const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
@@ -194,6 +224,7 @@ function ActivityList() {
 
   const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
   const hasActivities = paginatedActivities.length > 0;
+
   return (
     <div
       className={`${styles.activityListContainer} ${
@@ -240,7 +271,7 @@ function ActivityList() {
                   if (filter.location) {
                     const suggestions = getLocationSuggestions(filter.location);
                     setLocationSuggestions(suggestions);
-                    setShowSuggestions(true);
+                    setShowSuggestions(suggestions.length > 0);
                   }
                 }}
                 onBlur={() => {
@@ -320,51 +351,53 @@ function ActivityList() {
         {!loading && hasActivities && (
           <ul>
             {paginatedActivities.map(activity => (
-              <div
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+              <li
                 key={activity.id}
+                className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
                 style={{ cursor: 'pointer' }}
                 onClick={() => handleActivityClick(activity)}
                 tabIndex={0}
-                role="button"
                 aria-label={`View details for ${activity.name}`}
                 onKeyDown={e => {
+                  // Ignore key presses coming from the nested Reschedule button
+                  if (e.target !== e.currentTarget) return;
                   if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
                     handleActivityClick(activity);
                   }
                 }}
               >
-                <li className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}>
-                  <strong>{activity.name}</strong>
+                <strong>{activity.name}</strong>
 
-                  {/* Type */}
-                  <div className={styles.altypeRow}>
-                    {getTypeIcon(activity.type)}
-                    <span className={styles.altypeText}>{activity.type}</span>
+                {/* Type */}
+                <div className={styles.altypeRow}>
+                  {getTypeIcon(activity.type)}
+                  <span className={styles.altypeText}>{activity.type}</span>
+                </div>
+
+                {/* Location + Date */}
+                <div className={styles.allocationDateRow}>
+                  <div className={styles.allocation}>
+                    <FaMapMarkerAlt className={styles.alactivityIcon} />
+                    <span>{activity.location}</span>
                   </div>
 
-                  {/* Location + Date */}
-                  <div className={styles.allocationDateRow}>
-                    <div className={styles.allocation}>
-                      <FaMapMarkerAlt className={styles.alactivityIcon} />
-                      <span>{activity.location}</span>
-                    </div>
-
-                    <div className={styles.aldate}>
-                      <FaCalendarAlt className={styles.alactivityIcon} />
-                      <span>{activity.date}</span>
-                    </div>
+                  <div className={styles.aldate}>
+                    <FaCalendarAlt className={styles.alactivityIcon} />
+                    <span>{activity.date}</span>
                   </div>
+                </div>
 
-                  <button
-                    type="button"
-                    onClick={event => goToReschedule(event, activity)}
-                    className="btn btn-primary btn-sm mt-2"
-                    aria-label={`Reschedule ${activity.name}`}
-                  >
-                    Reschedule
-                  </button>
-                </li>
-              </div>
+                <button
+                  type="button"
+                  onClick={event => goToReschedule(event, activity)}
+                  className="btn btn-primary btn-sm mt-2"
+                  aria-label={`Reschedule ${activity.name}`}
+                >
+                  Reschedule
+                </button>
+              </li>
             ))}
           </ul>
         )}
