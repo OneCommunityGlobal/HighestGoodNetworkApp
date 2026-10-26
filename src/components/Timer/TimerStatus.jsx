@@ -3,20 +3,33 @@ import { BsXLg, BsArrowClockwise } from 'react-icons/bs';
 import cs from 'classnames';
 import css from './Countdown.module.css';
 
-export default function TimerStatus({ readyState, toggleTimer, handleRefreshTimer }) {
+export default function TimerStatus({
+  readyState,
+  toggleTimer,
+  handleRefreshTimer,
+  reconnectExhausted,
+}) {
   /*
   This is the status of the connection with the timer service
   We just use the readyState of the websocket connection to show the status
   */
-  const connectionStatus = {
-    [ReadyState.CONNECTING]: 'Connecting to the timer service',
-    [ReadyState.OPEN]: 'Open',
-    [ReadyState.CLOSING]: 'Closing the connection',
-    [ReadyState.CLOSED]: 'The connection with the timer service is closed',
-    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-  }[readyState];
+  // While auto-reconnect is still retrying in the background, show "Reconnecting..."
+  // regardless of the exact underlying readyState - only once attempts are
+  // exhausted (or the stored token is unusable) do we ask the user to act.
+  const isReconnecting = readyState !== ReadyState.OPEN && !reconnectExhausted;
+  const connectionStatus = isReconnecting
+    ? 'Reconnecting...'
+    : reconnectExhausted
+    ? 'Disconnected'
+    : {
+        [ReadyState.CONNECTING]: 'Connecting to the timer service',
+        [ReadyState.OPEN]: 'Open',
+        [ReadyState.CLOSING]: 'Closing the connection',
+        [ReadyState.CLOSED]: 'The connection with the timer service is closed',
+        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+      }[readyState];
 
-  const showRefreshButton = readyState === ReadyState.CLOSED;
+  const showRefreshButton = reconnectExhausted;
 
   /*
   Here is the component to show the timer status
@@ -33,6 +46,9 @@ export default function TimerStatus({ readyState, toggleTimer, handleRefreshTime
         <BsArrowClockwise
           className={cs(css.transitionColor, css.refreshIcon)}
           onClick={handleRefreshTimer}
+          role="button"
+          aria-label="Reload timer"
+          title="Reload timer"
         />
       )}
 
