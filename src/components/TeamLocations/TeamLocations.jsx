@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, forwardRef, Suspense } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from './TestSafeMarkerCluster';
 import { Button, Container, Spinner } from 'reactstrap';
-import './TeamLocations.module.css';
+import styles from './TeamLocations.module.css';
 
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -190,7 +190,7 @@ const TeamLocations = forwardRef(() => {
   return (
     <Container
       fluid
-      className={`${
+      className={`${styles.teamLocations} ${
         darkMode ? 'bg-oxford-blue text-light team-locations-container dark-mode' : ''
       }`}
       style={{ minHeight: '100%', paddingBottom: '73px' }}

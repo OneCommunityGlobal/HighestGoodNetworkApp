@@ -120,6 +120,8 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [viewingUserId, setViewingUserId] = useState(null);
   const [weekEndModal, setWeekEndModal] = useState(false);
   const isWSOpenRef = useRef(0);
+  const pendingStopRef = useRef(null);
+  const stopRequestSequenceRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
   const audioUnlockedRef = useRef(false);
@@ -132,6 +134,50 @@ function Timer({ authUser, darkMode, isPopout }) {
   const isCurrentlyPaused = !started || paused;
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendJsonMessage]);
+
+  const sendStopAndConfirm = useCallback(
+    targetUserId =>
+      new Promise(resolve => {
+        const socket = getWebSocket();
+        if (!socket || socket.readyState !== ReadyState.OPEN) {
+          resolve(false);
+          return;
+        }
+
+        if (pendingStopRef.current) {
+          clearTimeout(pendingStopRef.current.timeoutId);
+          pendingStopRef.current.resolve(false);
+        }
+
+        stopRequestSequenceRef.current += 1;
+        const requestId = `stop-${Date.now()}-${stopRequestSequenceRef.current}`;
+        const timeoutId = setTimeout(() => {
+          if (pendingStopRef.current?.requestId === requestId) {
+            pendingStopRef.current = null;
+            resolve(false);
+          }
+        }, 10000);
+
+        pendingStopRef.current = {
+          requestId,
+          timeoutId,
+          resolve,
+        };
+
+        try {
+          sendJsonMessageNoQueue({
+            action: 'STOP_TIMER',
+            ...(targetUserId == null ? {} : { userId: targetUserId }),
+            requestId,
+          });
+        } catch (_error) {
+          clearTimeout(timeoutId);
+          pendingStopRef.current = null;
+          resolve(false);
+        }
+      }),
+    [getWebSocket, sendJsonMessageNoQueue],
+  );
 
   // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
@@ -335,10 +381,11 @@ function Timer({ authUser, darkMode, isPopout }) {
           sendJsonMessageNoQueue({ action: action.PAUSE_TIMER });
         },
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
-        sendStop: () => {
-          sendJsonMessageNoQueue({ action: action.STOP_TIMER });
+        sendStop: async () => {
+          const stopped = await sendStopAndConfirm(null);
           // Clear the submitted time when stopping
           clearSubmittedTime();
+          return stopped;
         },
         sendAckForced: () => sendJsonMessageNoQueue({ action: action.ACK_FORCED }),
         sendGetTimer: () => sendJsonMessageNoQueue({ action: action.GET_TIMER }),
@@ -362,10 +409,11 @@ function Timer({ authUser, darkMode, isPopout }) {
       },
       sendClear: () =>
         sendJsonMessageNoQueue({ action: action.CLEAR_TIMER, userId: viewingUserId }),
-      sendStop: () => {
-        sendJsonMessageNoQueue({ action: action.STOP_TIMER, userId: viewingUserId });
+      sendStop: async () => {
+        const stopped = await sendStopAndConfirm(viewingUserId);
         // Clear the submitted time when stopping
         clearSubmittedTime();
+        return stopped;
       },
       sendAckForced: () =>
         sendJsonMessageNoQueue({ action: action.ACK_FORCED, userId: viewingUserId }),
@@ -390,7 +438,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       sendHeartbeat: () =>
         sendJsonMessageNoQueue({ action: action.HEARTBEAT, userId: viewingUserId }),
     };
-  }, [sendJsonMessageNoQueue, viewingUserId, clearSubmittedTime]);
+  }, [sendJsonMessageNoQueue, sendStopAndConfirm, viewingUserId, clearSubmittedTime]);
 
   const {
     sendStart,
@@ -576,6 +624,15 @@ function Timer({ authUser, darkMode, isPopout }) {
     // Ignore TIMELOG_EVENT messages - they're for the timestamps tab, not the timer
     if (lastJsonMessage && lastJsonMessage.type === 'TIMELOG_EVENT') {
       return;
+    }
+    if (
+      lastJsonMessage?.requestId &&
+      pendingStopRef.current?.requestId === lastJsonMessage.requestId
+    ) {
+      const { timeoutId, resolve } = pendingStopRef.current;
+      clearTimeout(timeoutId);
+      pendingStopRef.current = null;
+      resolve(lastJsonMessage.started === false);
     }
     // Handle explicit week close pause action messages
     if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
