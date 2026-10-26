@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Prompt } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -75,6 +76,7 @@ function JobFormBuilder() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [pendingDeleteIndex, setPendingDeleteIndex] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const markAsSaved = (fields, savedJobTitle) => {
@@ -187,6 +189,7 @@ function JobFormBuilder() {
   };
 
   const deleteField = async index => {
+    setPendingDeleteIndex(null);
     // Update local state immediately
     const newFields = [...formFields];
     newFields.splice(index, 1);
@@ -471,7 +474,7 @@ function JobFormBuilder() {
                       index={index}
                       totalFields={formFields.length}
                       onMove={moveField}
-                      onDelete={deleteField}
+                      onDelete={setPendingDeleteIndex}
                       onEdit={editField}
                       visible={field.visible}
                       onVisibilityChange={event => changeVisiblity(event, field)}
@@ -675,6 +678,36 @@ function JobFormBuilder() {
             </div>
           </div>
         )}
+        <Modal
+          isOpen={pendingDeleteIndex !== null}
+          toggle={() => setPendingDeleteIndex(null)}
+          labelledBy="delete-question-title"
+          contentClassName={darkMode ? 'bg-dark text-light' : ''}
+          returnFocusAfterClose
+        >
+          <ModalHeader id="delete-question-title" toggle={() => setPendingDeleteIndex(null)}>
+            Delete question?
+          </ModalHeader>
+          <ModalBody>
+            <p>Are you sure you want to delete this question?</p>
+            <p className="font-weight-bold">
+              {pendingDeleteIndex !== null &&
+                stripLeadingQuestionNumber(formFields[pendingDeleteIndex]?.questionText || '')}
+            </p>
+            <p>
+              This will remove it from the active form and delete all of its choices.
+              {currentFormId && ' This change is saved immediately.'}
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={() => setPendingDeleteIndex(null)}>
+              Cancel
+            </Button>
+            <Button color="danger" onClick={() => deleteField(pendingDeleteIndex)}>
+              Delete question
+            </Button>
+          </ModalFooter>
+        </Modal>
         <FormPreviewModal
           isOpen={showPreviewModal}
           onClose={() => setShowPreviewModal(false)}
