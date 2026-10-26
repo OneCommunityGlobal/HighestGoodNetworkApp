@@ -1619,15 +1619,9 @@ function JobApplicationForm() {
       resetFormAfterSubmit();
     } catch (err) {
       const apiMessage = err.response?.data?.message || err.response?.data?.error;
-      if (err.response?.status === 409) {
-        toast.error(apiMessage || 'You already applied for this position.', {
-          autoClose: 7000,
-        });
-      } else {
-        toast.error(apiMessage || err.message || 'Failed to submit application.', {
-          autoClose: 7000,
-        });
-      }
+      toast.error(apiMessage || err.message || 'Failed to submit application.', {
+        autoClose: 7000,
+      });
     } finally {
       setIsSubmitting(false);
     }

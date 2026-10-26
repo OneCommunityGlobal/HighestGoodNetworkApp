@@ -30,9 +30,7 @@ import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
-
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
-
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
@@ -259,29 +257,42 @@ function WeeklyProjectSummary() {
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'half',
+        className: 'full',
         content: (
-          <>
-            {/* <div className="weekly-project-summary-card normal-card tools-tracking-layout"> */}
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gridColumn: '1 / -1',
+              gap: '20px',
+              width: '100%',
+            }}
+          >
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ width: '100%' }}
+            >
               <ToolStatusDonutChart />
             </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ width: '100%' }}
+            >
               <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
             <div
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{ minHeight: '300px', gridColumn: 'span 2' }}
+              style={{ width: '100%' }}
             >
               <SupplierPerformanceGraph />
             </div>
             <div
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{ minHeight: '300px', gridColumn: 'span 2' }}
+              style={{ width: '100%' }}
             >
               <ToolsStoppageHorizontalBarChart />
             </div>
-          </>
+          </div>
         ),
       },
       {

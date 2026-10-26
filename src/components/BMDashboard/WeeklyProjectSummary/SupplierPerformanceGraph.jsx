@@ -133,7 +133,7 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
 
   const projectOptions = [
     { value: 'all', label: 'ALL Projects' },
-    ...projects.map(p => ({ value: p._id, label: p._id })),
+    ...projects.map(p => ({ value: p._id, label: p.projectName })),
   ];
   const selectedProjectOption =
     projectOptions.find(opt => opt.value === selectedProject) || projectOptions[0];
