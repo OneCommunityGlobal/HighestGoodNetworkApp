@@ -66,8 +66,12 @@ describe('ActivityList', () => {
     expect(screen.queryByText('Book Club')).not.toBeInTheDocument();
   });
 
+  // Test case: Verify sorting activities by date (latest to earliest)
   test('sorts activities by date (latest to earliest)', () => {
     renderActivityList();
+
+    // Enable 'Show Past Events' so that mock activities appear in the list before sorting
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
     fireEvent.change(screen.getByLabelText(/Sort By:/i), {
       target: { value: 'latest' },
