@@ -16,11 +16,15 @@ import VillageDropdownFilter from './DropdownFilter/DropdownFilter';
 
 const cx = (base, darkClass, darkMode) => `${base} ${darkMode ? darkClass : ''}`.trim();
 
+const getWelcomeName = authUser =>
+  `${authUser?.firstName || ''} ${authUser?.lastName || ''}`.trim().toUpperCase();
+
 const getUserProfilePath = authUser => (authUser?.userid ? `/userprofile/${authUser.userid}` : '/');
 
 function LBDashboardHeader(props) {
   const { authUser } = props;
   const darkMode = useSelector(state => state.theme.darkMode);
+  const welcomeName = getWelcomeName(authUser);
 
   return (
     <Navbar
@@ -51,7 +55,7 @@ function LBDashboardHeader(props) {
                 darkMode,
               )}
             >
-              <h2>WELCOME {authUser?.name || 'USER_NAME'}</h2>
+              <h2>WELCOME {welcomeName}</h2>
 
               <div className={itemStyles.item__icons}>
                 <Nav className="ml-auto">
@@ -102,7 +106,8 @@ function LBDashboardHeader(props) {
 
 LBDashboardHeader.propTypes = {
   authUser: PropTypes.shape({
-    name: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
     userid: PropTypes.string,
   }),
 };

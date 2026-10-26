@@ -513,6 +513,15 @@
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
+.item__form--dark button {
+  background: #1b5e20;
+  color: #fff;
+}
+
+.item__form--dark button:hover {
+  background: #145214;
+}
+
 .item__form button:hover {
   background: #005528;
   transform: scale(1.01);
