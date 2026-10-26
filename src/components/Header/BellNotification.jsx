@@ -332,7 +332,7 @@ export default function BellNotification({
   const currentWeekKey = weekKey(now);
 
   // The bell user's own committed hours
-  const [weeklycommittedHours, setWeeklyCommittedHours] = useState(0);
+  const [weeklyCommittedHours, setWeeklyCommittedHours] = useState(0);
   const [profileLoaded, setProfileLoaded] = useState(false);
   useEffect(() => {
     if (!userId) return undefined;
@@ -348,7 +348,7 @@ export default function BellNotification({
         console.error('Error fetching bell user profile:', error);
       }
     };
-    fetchProfile();
+    fetchProfile().catch(error => console.error('Error loading bell profile:', error));
     return () => {
       cancelled = true;
     };
@@ -378,7 +378,7 @@ export default function BellNotification({
         console.error('Error fetching bell time entries:', error);
       }
     };
-    fetchEntries();
+    fetchEntries().catch(error => console.error('Error loading bell time entries:', error));
     return () => {
       cancelled = true;
     };
@@ -397,8 +397,10 @@ export default function BellNotification({
         console.error('Error fetching bell tasks:', error);
       }
     };
-    fetchTasks();
-    const interval = setInterval(fetchTasks, 5 * 60 * 1000);
+    fetchTasks().catch(error => console.error('Error loading bell tasks:', error));
+    const interval = setInterval(() => {
+      fetchTasks().catch(error => console.error('Error refreshing bell tasks:', error));
+    }, 5 * 60 * 1000);
     return () => {
       cancelled = true;
       clearInterval(interval);
@@ -418,8 +420,8 @@ export default function BellNotification({
   // Only judge hours once this user's profile and this week's entries are loaded
   const hoursDataReady = profileLoaded && weekEntries.week === currentWeekKey;
   const underGoal =
-    hoursDataReady && weeklycommittedHours > 0 && totalEffort < weeklycommittedHours;
-  const goalMet = hoursDataReady && weeklycommittedHours > 0 && !underGoal;
+    hoursDataReady && weeklyCommittedHours > 0 && totalEffort < weeklyCommittedHours;
+  const goalMet = hoursDataReady && weeklyCommittedHours > 0 && !underGoal;
 
   // Per-week "seen" flags
   const base = `${userId}::${currentWeekKey}`;
@@ -558,7 +560,7 @@ export default function BellNotification({
       setDbNotifications([]);
     }
   };
-  fetchDbNotifications();
+  fetchDbNotifications().catch(error => console.error('Error loading bell notifications:', error));
 }, [userId]);
 
 
@@ -675,7 +677,7 @@ export default function BellNotification({
   };
 
   const getFormattedLeftToWork = () => {
-    const left = Math.max(0, weeklycommittedHours - totalEffort);
+    const left = Math.max(0, weeklyCommittedHours - totalEffort);
     const leftHours = Math.floor(left);
     const leftMinutes = Math.round((left % 1) * 60);
     return formatBellTime(leftHours, leftMinutes);
@@ -699,7 +701,9 @@ export default function BellNotification({
         <button
           ref={bellRef}
           type="button"
-          onClick={handleBellClick}
+          onClick={() => {
+            handleBellClick().catch(error => console.error('Error opening bell notifications:', error));
+          }}
           className={`fa fa-bell i-large ${bellHasDot ? 'has-notification' : ''}`}
           style={{
             position: 'relative',
@@ -750,7 +754,7 @@ export default function BellNotification({
             hasTaskAlerts={hasTaskAlerts}
             hasMessageNotification={hasMessageNotification}
             getFormattedEffort={getFormattedEffort}
-            weeklycommittedHours={weeklycommittedHours}
+            weeklycommittedHours={weeklyCommittedHours}
             getFormattedLeftToWork={getFormattedLeftToWork}
             hoursLeft={hoursLeft}
             handleNotificationClick={handleNotificationClick}
