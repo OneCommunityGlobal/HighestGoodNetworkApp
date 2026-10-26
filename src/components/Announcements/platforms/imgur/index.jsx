@@ -528,6 +528,7 @@ function ImgurAutoPoster({ platform }) {
    * Delete a scheduled post
    */
   const handleDeletePost = async postId => {
+    // eslint-disable-next-line no-alert
     if (!window.confirm('Are you sure you want to delete this scheduled post?')) {
       return;
     }
