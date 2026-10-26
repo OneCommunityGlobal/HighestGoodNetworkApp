@@ -101,7 +101,7 @@ function ProjectDetails() {
           {/*   DAILY LOGGING SECTION     */}
           {/* --------------------------- */}
           <DashboardSection icon="🕒" title="Daily Logging" darkMode={darkMode}>
-            <LoggingButtons darkMode={darkMode} />
+            <LoggingButtons darkMode={darkMode} projectId={projectId} />
           </DashboardSection>
 
           {/* --------------------------- */}
