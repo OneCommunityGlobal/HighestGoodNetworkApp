@@ -204,7 +204,7 @@
 }
 
 .cancelButton {
-  background-color: #6c757d;
+  background-color: #dc3545;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -216,7 +216,7 @@
 }
 
 .cancelButton:hover {
-  background-color: #5a6268;
+  background-color: #c82333;
 }
 
 .loadingSpinner {
