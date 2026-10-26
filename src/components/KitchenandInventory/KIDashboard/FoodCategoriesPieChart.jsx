@@ -74,7 +74,7 @@ const renderSliceLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent,
       fontWeight={700}
       fontSize={16}
     >
-      {`${Math.round(percent * 100)}%`}
+      {`${Math.round(percent)}%`}
     </text>
   );
 };
