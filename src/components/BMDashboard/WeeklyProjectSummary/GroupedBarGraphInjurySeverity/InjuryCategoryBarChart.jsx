@@ -162,13 +162,19 @@ function InjuryCategoryBarChart() {
   }, [data]);
   const allSeriesProjectIds = useMemo(() => {
     const set = new Set(projects.map(p => String(p._id)));
+    // Include projects that have bars but are missing from the project list, so the legend matches the chart
+    for (const pid of seriesProjectIds) set.add(pid);
     return Array.from(set);
-  }, [projects]);
+  }, [projects, seriesProjectIds]);
   const colorProjectIds = useMemo(() => {
     const source = unfilteredProjects.length ? unfilteredProjects : projects;
     const set = new Set(source.map(project => String(project._id)));
+    // Every project shown (current list or bars) needs a palette color; otherwise it renders black,
+    // which is invisible on the dark-mode chart background
+    for (const p of projects) set.add(String(p._id));
+    for (const pid of seriesProjectIds) set.add(pid);
     return Array.from(set);
-  }, [unfilteredProjects, projects]);
+  }, [unfilteredProjects, projects, seriesProjectIds]);
 
   const showLabels = seriesProjectIds.length <= 4;
 
@@ -215,44 +221,70 @@ function InjuryCategoryBarChart() {
     endDate,
   ]);
 
-  const selectStyles = darkMode && {
-    control: base => ({
-      ...base,
-      backgroundColor: '#2b3e59',
-      color: 'white',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: '#2b3e59',
-      color: 'white',
-    }),
-    option: (base, state) => ({
-      ...base,
-      color: 'white',
-      backgroundColor: state.isSelected
-        ? 'rgba(255, 255, 255, 0.15)'
-        : state.isFocused
-        ? 'rgba(255, 255, 255, 0.1)'
-        : 'transparent',
-      '&:active': {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  // Theme-aware react-select styles for both modes. Styling lives here instead of global
+  // CSS overrides so it cannot leak into other dropdowns in the app.
+  const selectStyles = useMemo(() => {
+    const textColor = darkMode ? '#ffffff' : '#111827';
+    const mutedColor = darkMode ? '#cbd5e1' : '#6b7280';
+    const surfaceColor = darkMode ? '#2b3e59' : '#ffffff';
+    const borderColor = darkMode ? '#6b7280' : '#d1d5db';
+
+    return {
+      control: (base, state) => ({
+        ...base,
+        backgroundColor: surfaceColor,
+        borderColor: state.isFocused ? '#3b82f6' : borderColor,
+        boxShadow: state.isFocused ? '0 0 0 1px #3b82f6' : 'none',
+        '&:hover': { borderColor: '#3b82f6' },
+      }),
+      placeholder: base => ({ ...base, color: mutedColor }),
+      // Typed search text stays readable in dark mode (was black on dark before)
+      input: base => ({ ...base, color: textColor }),
+      singleValue: base => ({ ...base, color: textColor }),
+      multiValue: base => ({ ...base, backgroundColor: darkMode ? '#375071' : '#e5e7eb' }),
+      multiValueLabel: base => ({ ...base, color: textColor }),
+      multiValueRemove: base => ({
+        ...base,
+        color: textColor,
+        ':hover': { backgroundColor: '#0d55b3', color: '#ffffff' },
+      }),
+      indicatorSeparator: base => ({ ...base, backgroundColor: borderColor }),
+      dropdownIndicator: base => ({ ...base, color: mutedColor, ':hover': { color: textColor } }),
+      clearIndicator: base => ({ ...base, color: mutedColor, ':hover': { color: textColor } }),
+      menu: base => ({ ...base, backgroundColor: surfaceColor, zIndex: 5 }),
+      option: (base, state) => {
+        let backgroundColor = surfaceColor;
+        if (state.isFocused) backgroundColor = darkMode ? '#334155' : '#e2e8f0';
+        if (state.isSelected) backgroundColor = darkMode ? '#1d4ed8' : '#dbeafe';
+        return {
+          ...base,
+          backgroundColor,
+          color: textColor,
+          ':active': { backgroundColor: darkMode ? '#0d55b3' : '#bfdbfe' },
+        };
       },
-    }),
-    singleValue: base => ({
-      ...base,
-      color: 'white',
-    }),
-  };
-  // : {};
+      noOptionsMessage: base => ({ ...base, color: mutedColor }),
+    };
+  }, [darkMode]);
+
+  const containerClassName = `${styles.injuryChartContainer} ${
+    darkMode ? styles.injuryChartDark : ''
+  }`;
+  // Applied to the calendar popup itself so dark styles don't depend on global classes
+  const calendarClassName = darkMode ? styles.injuryDarkCalendar : undefined;
 
   return (
-    <div className={`injury-chart-container ${darkMode && 'darkMode'}`}>
-      <div className="injury-chart-header">
-        <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
+    <div className={containerClassName}>
+      <div className={styles.injuryChartHeader}>
+        <h3 className={styles.injuryChartTitle}>Injury Severity by Category of Worker Injured</h3>
 
-        <div className="injury-chart-filters">
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="project-names-select">
+        <div className={styles.injuryChartFilters}>
+          <div className={styles.injuryFilter}>
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="project-names-select"
+            >
               Projects
             </label>
             <Select
@@ -267,8 +299,12 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="severities-select">
+          <div className={styles.injuryFilter}>
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="severities-select"
+            >
               Severities
             </label>
             <Select
@@ -283,8 +319,12 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="injury-types-select">
+          <div className={styles.injuryFilter}>
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="injury-types-select"
+            >
               Injury types
             </label>
             <Select
@@ -299,12 +339,17 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="start-date">
+          <div className={styles.injuryFilter}>
+            {/* Unique id: "start-date" is also used by Most Frequent Keywords on the same page */}
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="injury-category-start-date"
+            >
               Start date
             </label>
             <DatePicker
-              id="start-date"
+              id="injury-category-start-date"
               selected={startDate}
               onChange={setStartDate}
               selectsStart
@@ -312,16 +357,22 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               maxDate={endDate || undefined}
               placeholderText="Start date"
-              className="injury-date-input"
+              className={styles.injuryDateInput}
+              wrapperClassName={styles.injuryDateWrapper}
+              calendarClassName={calendarClassName}
             />
           </div>
 
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="end-date">
+          <div className={styles.injuryFilter}>
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="injury-category-end-date"
+            >
               End date
             </label>
             <DatePicker
-              id="end-date"
+              id="injury-category-end-date"
               selected={endDate}
               onChange={setEndDate}
               selectsEnd
@@ -329,14 +380,16 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               minDate={startDate || undefined}
               placeholderText="End date"
-              className="injury-date-input"
+              className={styles.injuryDateInput}
+              wrapperClassName={styles.injuryDateWrapper}
+              calendarClassName={calendarClassName}
             />
           </div>
         </div>
       </div>
 
-      {loading && <p className={darkMode ? styles.darkMode : ''}>Loading…</p>}
-      {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
+      {loading && <p className={styles.injuryStatusText}>Loading…</p>}
+      {!loading && error && <p className={styles.injuryErrorText}>Error: {String(error)}</p>}
 
       {!loading && !error && chartData.length > 0 && (
         <div className={styles.chartArea}>
@@ -429,7 +482,8 @@ function InjuryCategoryBarChart() {
                       dataKey={pid}
                       position="top"
                       formatter={v => (v > 0 ? v : '')}
-                      // fill={darkMode ? '#fff' : '#000'}
+                      // Readable value labels in both themes (were dim gray in dark mode)
+                      fill={darkMode ? '#f3f4f6' : '#374151'}
                     />
                   )}
                 </Bar>
@@ -440,7 +494,7 @@ function InjuryCategoryBarChart() {
       )}
 
       {!loading && !error && chartData.length === 0 && (
-        <div className="empty">No data for selected filters.</div>
+        <div className={styles.injuryEmptyText}>No data for selected filters.</div>
       )}
     </div>
   );

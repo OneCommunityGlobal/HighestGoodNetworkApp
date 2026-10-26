@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
@@ -11,16 +11,12 @@ import { permissions as permissionKeys } from '../../utils/constants';
 import hasPermission from '../../utils/permissions';
 
 function BadgeManagement(props) {
-  const { darkMode, activeTab, setActiveTab, role } = props;
+  const { darkMode, activeTab, setActiveTab, role, allBadgeData, loading } = props;
   const canAssignBadges = props.hasPermission(permissionKeys.assignBadges);
 
   useEffect(() => {
     props.fetchAllBadges();
   }, [props.fetchAllBadges]);
-
-  const handleTabChange = tabId => {
-    setActiveTab(tabId);
-  };
 
   useEffect(() => {
     if (!activeTab) {
@@ -32,13 +28,14 @@ function BadgeManagement(props) {
     }
   }, [activeTab, canAssignBadges, setActiveTab]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div
       className={darkMode ? 'bg-oxford-blue' : ''}
-      style={{
-        padding: '5px 20px',
-        minHeight: '100%',
-      }}
+      style={{ padding: '5px 20px', minHeight: '100%' }}
     >
       <div className="d-flex justify-content-start align-items-center">
         <h2 className={`${darkMode ? 'text-light' : 'text-dark'} mr-2`}>Badge Management</h2>
@@ -55,10 +52,8 @@ function BadgeManagement(props) {
         {canAssignBadges && (
           <NavItem>
             <NavLink
-              className={`mr-2 ${classnames({ active: activeTab === '1' })} ${
-                darkMode && activeTab !== '1' ? 'bg-light' : ''
-              }`}
-              onClick={() => handleTabChange('1')}
+              className={`mr-2 ${classnames({ active: activeTab === '1' })}`}
+              onClick={() => setActiveTab('1')}
               style={
                 darkMode
                   ? { ...boxStyleDark, cursor: 'pointer' }
@@ -71,10 +66,8 @@ function BadgeManagement(props) {
         )}
         <NavItem>
           <NavLink
-            className={`${classnames({ active: activeTab === '2' })} ${
-              darkMode && activeTab !== '2' ? 'bg-light' : ''
-            }`}
-            onClick={() => handleTabChange('2')}
+            className={`${classnames({ active: activeTab === '2' })}`}
+            onClick={() => setActiveTab('2')}
             style={
               darkMode ? { ...boxStyleDark, cursor: 'pointer' } : { ...boxStyle, cursor: 'pointer' }
             }
@@ -83,10 +76,11 @@ function BadgeManagement(props) {
           </NavLink>
         </NavItem>
       </Nav>
+
       <TabContent activeTab={activeTab}>
         {canAssignBadges && (
           <TabPane tabId="1">
-            <AssignBadge allBadgeData={props.allBadgeData} />
+            <AssignBadge allBadgeData={allBadgeData} darkMode={darkMode} />
           </TabPane>
         )}
         <TabPane tabId="2" className="h-100">
@@ -102,6 +96,7 @@ const mapStateToProps = state => ({
   role: state.userProfile.role,
   darkMode: state.theme.darkMode,
   activeTab: state.badge.activeTab,
+  loading: state.badge.loading,
 });
 
 const mapDispatchToProps = dispatch => ({
