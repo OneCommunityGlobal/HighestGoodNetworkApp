@@ -1,13 +1,15 @@
 // src/components/SupportPortal/SupportLogin.jsx
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styles from './SupportLogin.module.css';
-import axios from 'axios';
+import { loginUser } from '../../actions/authActions';
 
 export default function SupportLogin() {
   // Keep the login page in sync with the shared HGN theme preference.
   const darkMode = useSelector(state => state.theme?.darkMode || false);
+  const dispatch = useDispatch();
+  const store = useStore();
   const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,15 +22,25 @@ export default function SupportLogin() {
     setIsSubmitting(true);
 
     try {
-      // TODO: update this endpoint to match the real login API
-      const res = await axios.post('/api/support/login', { email, password });
-
-      // Example: store token / user in localStorage if needed
-      if (res.data?.token) {
-        localStorage.setItem('supportAuthToken', res.data.token);
+      const result = await dispatch(loginUser({ email: email.toLowerCase(), password }));
+      if (result.success === false) {
+        const message = Object.values(result.errors || {})
+          .filter(value => typeof value === 'string' && value.trim())
+          .join(' ');
+        setError(message || 'Login failed. Please check your credentials and try again.');
+      } else if (result.success === true) {
+        if (result.new) {
+          // loginUser stores the new user's ID in Redux, not in its return value.
+          const userId = store.getState().auth?.user?.userId;
+          if (userId) {
+            history.push(`/forcePasswordUpdate/${userId}`);
+          } else {
+            setError('Login failed. Please check your credentials and try again.');
+          }
+        } else {
+          history.push('/support/dashboard');
+        }
       }
-
-      history.push('/support/dashboard');
     } catch (err) {
       console.error(err);
       setError('Login failed. Please check your credentials and try again.');

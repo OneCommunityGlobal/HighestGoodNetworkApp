@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styles from './SupportDashboard.module.css';
-import axios from 'axios';
+import httpService from '../../services/httpService';
+import { ENDPOINTS } from '../../utils/URL';
 
 export default function SupportDashboard() {
   // Keep the dashboard in sync with the shared HGN theme preference.
@@ -20,16 +21,12 @@ export default function SupportDashboard() {
       setError('');
 
       try {
-        const token = localStorage.getItem('supportAuthToken');
-
-        const res = await axios.get('/api/support/students', {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        });
+        const res = await httpService.get(`${ENDPOINTS.APIEndpoint()}/support/students`);
 
         const raw = res.data;
 
         // Make sure we always end up with an array
-        const list = Array.isArray(raw) ? raw : Array.isArray(raw?.students) ? raw.students : [];
+        const list = Array.isArray(raw) ? raw : [];
 
         console.log('Support students:', list);
         setStudents(list);
@@ -72,10 +69,10 @@ export default function SupportDashboard() {
         />
       </header>
 
-      {error && <div className={styles.emptyState}>{error}</div>}
-
       {isLoading ? (
         <div className={styles.emptyState}>Loading students…</div>
+      ) : error ? (
+        <div className={styles.emptyState}>{error}</div>
       ) : filteredStudents.length === 0 ? (
         <div className={styles.emptyState}>No students found for your assignment.</div>
       ) : (
@@ -85,8 +82,6 @@ export default function SupportDashboard() {
               <Link to={`/support/log/${s.id}`} className={styles.studentName}>
                 {s.name}
               </Link>
-              {s.team && <div className={styles.studentInfo}>Team: {s.team}</div>}
-              {s.status && <div className={styles.studentInfo}>Status: {s.status}</div>}
             </li>
           ))}
         </ul>
