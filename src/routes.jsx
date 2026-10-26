@@ -1142,6 +1142,7 @@ export default (
           exact
           component={GardenManagement}
         />
+        <ProtectedRoute path="/kitchenandinventory/reports" exact component={KitchenReports} />
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
@@ -1278,7 +1279,7 @@ export default (
           path="/pr-grading-dashboard"
           exact
           component={PRGradingDashboard}
-          fallback
+          routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
