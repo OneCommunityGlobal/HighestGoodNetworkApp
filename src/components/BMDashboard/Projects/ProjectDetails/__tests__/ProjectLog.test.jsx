@@ -52,6 +52,13 @@ afterEach(() => {
 });
 
 describe('on-site member filtering', () => {
+  it('uses a native output and labelled fieldset for accessible search feedback', () => {
+    render(<ProjectLog members={members} />);
+    expect(screen.getByRole('status').tagName).toBe('OUTPUT');
+    expect(screen.getByRole('status')).toHaveTextContent('Showing 3 of 3 members');
+    expect(screen.getByRole('group', { name: 'Filter members' }).tagName).toBe('FIELDSET');
+  });
+
   it('preserves all existing columns and starts with clear disabled', () => {
     render(<ProjectLog members={members} />);
     expect(within(table()).getAllByRole('columnheader')).toHaveLength(8);
