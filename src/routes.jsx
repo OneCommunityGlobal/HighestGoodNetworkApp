@@ -183,6 +183,7 @@ import GardenManagement from './components/KitchenandInventory/GardenManagement/
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import KitchenReports from './components/KitchenandInventory/KitchenReports/KitchenReports';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 
@@ -1135,6 +1136,7 @@ export default (
           exact
           component={GardenManagement}
         />
+        <ProtectedRoute path="/kitchenandinventory/reports" exact component={KitchenReports} />
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
