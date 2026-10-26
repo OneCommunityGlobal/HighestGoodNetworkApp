@@ -6,7 +6,8 @@ import PRGradingDashboard from './PRGradingDashboard';
 
 vi.mock('axios');
 vi.mock('react-redux', () => ({
-  useSelector: selector => selector({ theme: { darkMode: false } }),
+  useDispatch: () => () => false,
+  useSelector: selector => selector({ theme: { darkMode: false }, auth: { user: null } }),
 }));
 vi.mock('../PRGradingScreen/csvExport', () => ({
   downloadPRGradingCsv: vi.fn(),
@@ -27,7 +28,7 @@ describe('Team Alpha dashboard CSV export', () => {
     axios.get.mockResolvedValue({ data: gradings });
   });
 
-  it('exports the displayed grading data without labeling it as the selected mock week', async () => {
+  it('exports the displayed grading data after selecting a review week', async () => {
     render(<PRGradingDashboard />);
 
     const exportButton = await screen.findByRole('button', {
@@ -39,7 +40,7 @@ describe('Team Alpha dashboard CSV export', () => {
       }),
     ).toBe(exportButton);
     fireEvent.change(screen.getByLabelText('Review Week'), { target: { value: '2 Weeks Ago' } });
-    fireEvent.click(exportButton);
+    fireEvent.click(await screen.findByRole('button', { name: 'Export to CSV' }));
 
     await waitFor(() => {
       expect(downloadPRGradingCsv).toHaveBeenCalledExactlyOnceWith(
