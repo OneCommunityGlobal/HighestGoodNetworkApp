@@ -27,7 +27,6 @@ const getLocalDateString = (date = new Date()) => {
 function ActivityList() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -62,29 +61,14 @@ function ActivityList() {
     };
   }, [darkMode]);
 
-  // Fetch activities (mock fallback)
+  // Load activities (API not implemented yet: use mock data)
   useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        throw new Error('API not implemented yet');
-      } catch (err) {
-        setError(err.message);
-
-        const parsed = mockActivities.map(a => ({
-          ...a,
-          _dateObj: new Date(`${a.date}T00:00:00`),
-        }));
-
-        setActivities(parsed);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchActivities();
+    const parsed = mockActivities.map(a => ({
+      ...a,
+      _dateObj: new Date(`${a.date}T00:00:00`),
+    }));
+    setActivities(parsed);
+    setLoading(false);
   }, []);
 
   // Reset pagination on filter/sort change
@@ -351,43 +335,37 @@ function ActivityList() {
         {!loading && hasActivities && (
           <ul>
             {paginatedActivities.map(activity => (
-              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
               <li
                 key={activity.id}
                 className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleActivityClick(activity)}
-                tabIndex={0}
-                aria-label={`View details for ${activity.name}`}
-                onKeyDown={e => {
-                  // Ignore key presses coming from the nested Reschedule button
-                  if (e.target !== e.currentTarget) return;
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleActivityClick(activity);
-                  }
-                }}
               >
-                <strong>{activity.name}</strong>
+                <button
+                  type="button"
+                  className={styles.activityItemButton}
+                  onClick={() => handleActivityClick(activity)}
+                  aria-label={`View details for ${activity.name}`}
+                >
+                  <strong>{activity.name}</strong>
 
-                {/* Type */}
-                <div className={styles.altypeRow}>
-                  {getTypeIcon(activity.type)}
-                  <span className={styles.altypeText}>{activity.type}</span>
-                </div>
+                  {/* Type */}
+                  <span className={styles.altypeRow}>
+                    {getTypeIcon(activity.type)}
+                    <span className={styles.altypeText}>{activity.type}</span>
+                  </span>
 
-                {/* Location + Date */}
-                <div className={styles.allocationDateRow}>
-                  <div className={styles.allocation}>
-                    <FaMapMarkerAlt className={styles.alactivityIcon} />
-                    <span>{activity.location}</span>
-                  </div>
+                  {/* Location + Date */}
+                  <span className={styles.allocationDateRow}>
+                    <span className={styles.allocation}>
+                      <FaMapMarkerAlt className={styles.alactivityIcon} />
+                      <span>{activity.location}</span>
+                    </span>
 
-                  <div className={styles.aldate}>
-                    <FaCalendarAlt className={styles.alactivityIcon} />
-                    <span>{activity.date}</span>
-                  </div>
-                </div>
+                    <span className={styles.aldate}>
+                      <FaCalendarAlt className={styles.alactivityIcon} />
+                      <span>{activity.date}</span>
+                    </span>
+                  </span>
+                </button>
 
                 <button
                   type="button"
