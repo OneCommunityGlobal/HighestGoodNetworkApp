@@ -48,6 +48,7 @@ import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
 import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
 import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
 import { formatLocalDateForApi, getCurrentWeekDates, getPreviousWeekDates } from './dateRangeUtils';
+import { formatReportRangeLabel, parseReportParams } from './reportParams';
 
 function shiftDate(date, diffDays, type) {
   if (type === 'Week Over Week') return new Date(date.setDate(date.getDate() - diffDays));
@@ -466,6 +467,10 @@ function DateRangeModal({
 
 const { start: fromDate, end: toDate } = getPreviousWeekDates();
 
+// Charts animate in after the data arrives; wait before telling the scheduled email renderer
+// the page is ready (same settle time the Save as PDF button uses).
+const REPORT_READY_DELAY_MS = 5000;
+
 function TotalOrgSummary(props) {
   const { darkMode, error } = props;
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
@@ -474,8 +479,18 @@ function TotalOrgSummary(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
   const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
-  const [selectedDateRange, setSelectedDateRange] = useState('Previous Week');
-  const [selectedComparison, setSelectedComparison] = useState('No Comparison');
+  // Set when the page is opened with ?from=&to= (the scheduled Total Org Summary email).
+  const [reportParams] = useState(() => parseReportParams(window.location.search));
+  const [selectedDateRange, setSelectedDateRange] = useState(
+    reportParams ? formatReportRangeLabel(reportParams.from, reportParams.to) : 'Previous Week',
+  );
+  const [selectedComparison, setSelectedComparison] = useState(
+    reportParams ? reportParams.comparison : 'No Comparison',
+  );
+  const [comparisonRangeOverride, setComparisonRangeOverride] = useState(
+    reportParams ? reportParams.comparisonRange : null,
+  );
+  const [isReportReady, setIsReportReady] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -490,10 +505,10 @@ function TotalOrgSummary(props) {
     render.
   */
   const [currentFromDate, setCurrentFromDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).start,
+    () => reportParams?.from ?? getPreviousWeekDates(fromDate, toDate).start,
   );
   const [currentToDate, setCurrentToDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).end,
+    () => reportParams?.to ?? getPreviousWeekDates(fromDate, toDate).end,
   );
   const rootRef = useRef(null);
   const cacheRef = useRef({});
@@ -505,13 +520,14 @@ function TotalOrgSummary(props) {
       try {
         setIsLoading(true);
 
-        const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
-          selectedComparison,
-          currentFromDate,
-          currentToDate,
-        );
+        const { comparisonStartDate, comparisonEndDate } = comparisonRangeOverride
+          ? {
+              comparisonStartDate: comparisonRangeOverride.start,
+              comparisonEndDate: comparisonRangeOverride.end,
+            }
+          : calculateComparisonDates(selectedComparison, currentFromDate, currentToDate);
 
-        const cacheKey = `${currentFromDate}_${currentToDate}_${selectedComparison}`;
+        const cacheKey = `${currentFromDate}_${currentToDate}_${selectedComparison}_${comparisonStartDate}_${comparisonEndDate}`;
 
         if (cacheRef.current[cacheKey]) {
           if (!cancelled) {
@@ -552,7 +568,16 @@ function TotalOrgSummary(props) {
       clearTimeout(debounceTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFromDate, currentToDate, selectedComparison]);
+  }, [currentFromDate, currentToDate, selectedComparison, comparisonRangeOverride]);
+
+  useEffect(() => {
+    if (isLoading || !volunteerStats) {
+      setIsReportReady(false);
+      return undefined;
+    }
+    const readyTimer = setTimeout(() => setIsReportReady(true), REPORT_READY_DELAY_MS);
+    return () => clearTimeout(readyTimer);
+  }, [isLoading, volunteerStats]);
 
   const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) return;
@@ -577,6 +602,7 @@ function TotalOrgSummary(props) {
     setSelectedDateRange(option);
     setShowDatePicker(false);
     setSelectedComparison('No Comparison');
+    setComparisonRangeOverride(null);
     if (option === 'Current Week') {
       const { start, end } = getCurrentWeekDates();
       setCurrentFromDate(start);
@@ -593,6 +619,7 @@ function TotalOrgSummary(props) {
       setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
       setShowDatePicker(false);
       setSelectedComparison('No Comparison');
+      setComparisonRangeOverride(null);
       setCurrentFromDate(formatLocalDateForApi(startDate));
       setCurrentToDate(formatLocalDateForApi(endDate));
     }
@@ -623,7 +650,7 @@ function TotalOrgSummary(props) {
         darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke',
       )}
     >
-      <div ref={rootRef} data-pdf-root>
+      <div ref={rootRef} data-pdf-root data-org-summary-ready={isReportReady ? 'true' : 'false'}>
         {/*
           NOTE: The header Row and the date-range Modal used to also be written out
           inline here (duplicating ReportHeader / DateRangeModal below), which caused
@@ -641,7 +668,10 @@ function TotalOrgSummary(props) {
           onDateRangeToggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
           onComparisonToggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
           onDateRangeSelect={handleDateRangeSelect}
-          onComparisonSelect={setSelectedComparison}
+          onComparisonSelect={comparison => {
+            setComparisonRangeOverride(null);
+            setSelectedComparison(comparison);
+          }}
           onSavePDF={handleSaveAsPDF}
         />
         <DateRangeModal
