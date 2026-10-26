@@ -1,4 +1,5 @@
 .container {
+  color-scheme: light;
   --fc-bg: #fff;
   --fc-muted-bg: #f5f7fb;
   --fc-text: #1f1f1f;
@@ -31,6 +32,7 @@
 }
 
 .darkMode {
+  color-scheme: dark;
   --fc-bg: #0f1522;
   --fc-muted-bg: #111a2b;
   --fc-text: #f1f3f7;
@@ -53,7 +55,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.85rem 1rem;
-  align-items: end; /* every cell sits on the same bottom line */
+  align-items: end;
   padding: 0.9rem;
   background-color: var(--fc-muted-bg);
   border: 1px solid var(--fc-border);
@@ -65,7 +67,7 @@
   flex-direction: column;
   gap: 0.35rem;
   min-width: 0;
-  margin: 0; /* cancels global label margins */
+  margin: 0;
 }
 
 .fieldLabel {
@@ -76,8 +78,10 @@
   color: var(--fc-text);
 }
 
-/* One shared look + one fixed height for every control */
-.control {
+/* One shared look for all controls (inputs, selects) */
+.control,
+input.control,
+select.control {
   width: 100%;
   height: var(--fc-control-height);
   margin: 0;
@@ -117,9 +121,11 @@ select.control {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23d8dfef' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
 }
 
-/* ---------- Date inputs with a custom calendar icon ---------- */
+/* ---------- Date inputs with custom calendar icon ---------- */
 .dateWrapper {
   position: relative;
+  display: flex;
+  align-items: center;
   width: 100%;
 }
 
@@ -129,35 +135,52 @@ select.control {
   color-scheme: light;
 }
 
-.darkMode .dateInput {
-  color-scheme: dark;
+/* Overrides global input background/colors in dark mode */
+.darkMode .dateInput,
+.darkMode input[type='date'].dateInput {
+  color-scheme: dark !important;
+  background-color: var(--fc-bg) !important;
+  color: var(--fc-text) !important;
+  border-color: var(--fc-border) !important;
 }
 
-/* Hide the native icon but keep it as an invisible click target over the whole field */
+/* Ensure WebKit internal text segments remain visible */
+.darkMode .dateInput::-webkit-datetime-edit,
+.darkMode .dateInput::-webkit-datetime-edit-fields-wrapper,
+.darkMode .dateInput::-webkit-datetime-edit-text,
+.darkMode .dateInput::-webkit-datetime-edit-month-field,
+.darkMode .dateInput::-webkit-datetime-edit-day-field,
+.darkMode .dateInput::-webkit-datetime-edit-year-field {
+  color: var(--fc-text) !important;
+}
+
+/* Confine native picker icon to the right side and make it an invisible hit-box */
 .dateInput::-webkit-calendar-picker-indicator {
   position: absolute;
-  inset: 0;
-  width: 100%;
+  top: 0;
+  right: 0;
+  width: 2.5rem;
   height: 100%;
   margin: 0;
   padding: 0;
   opacity: 0;
   cursor: pointer;
+  z-index: 2;
 }
 
+/* React Calendar Icon */
 .dateIcon {
   position: absolute;
-  top: 50%;
   right: 0.9rem;
-  width: 1rem;
-  height: 1rem;
+  width: 1.1rem;
+  height: 1.1rem;
   color: var(--fc-icon);
   pointer-events: none;
-  transform: translateY(-50%);
+  z-index: 1;
 }
 
-.dateInput:hover + .dateIcon,
-.dateInput:focus + .dateIcon {
+.dateInput:hover ~ .dateIcon,
+.dateInput:focus ~ .dateIcon {
   color: var(--fc-accent);
 }
 
@@ -270,7 +293,7 @@ select.control {
   border-radius: 8px;
 }
 
-@media (width <=400px) {
+@media (width <= 400px) {
   .filters {
     grid-template-columns: 1fr;
   }

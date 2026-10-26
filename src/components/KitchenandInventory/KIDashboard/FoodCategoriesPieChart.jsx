@@ -130,6 +130,14 @@ export default function FoodCategoriesPieChart() {
     setEndDate(DEFAULTS.endDate);
   };
 
+  const handleDateClick = e => {
+    try {
+      e.currentTarget.showPicker?.();
+    } catch {
+      // Fallback for browsers that do not support showPicker
+    }
+  };
+
   return (
     <div className={[styles.container, darkMode ? styles.darkMode : ''].join(' ')}>
       <div className={styles.filters}>
@@ -173,6 +181,7 @@ export default function FoodCategoriesPieChart() {
               value={startDate}
               min={DATE_MIN}
               max={endDate || DATE_MAX}
+              onClick={handleDateClick}
               onChange={e => setStartDate(e.target.value)}
             />
             <FaRegCalendarAlt className={styles.dateIcon} aria-hidden="true" />
@@ -188,6 +197,7 @@ export default function FoodCategoriesPieChart() {
               value={endDate}
               min={startDate || DATE_MIN}
               max={DATE_MAX}
+              onClick={handleDateClick}
               onChange={e => setEndDate(e.target.value)}
             />
             <FaRegCalendarAlt className={styles.dateIcon} aria-hidden="true" />
