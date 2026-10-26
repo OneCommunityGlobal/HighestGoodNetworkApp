@@ -12,7 +12,7 @@ const protectSpreadsheetValue = value => {
   return /^[\t\r ]*[=+\-@]/.test(text) ? `'${text}` : text;
 };
 
-const escapeCsvValue = value => `"${protectSpreadsheetValue(value).replace(/"/g, '""')}"`;
+const escapeCsvValue = value => `"${protectSpreadsheetValue(value).replaceAll('"', '""')}"`;
 
 const getNotes = reviewer => {
   const reviewerNotes = reviewer.notes ?? reviewer.note;

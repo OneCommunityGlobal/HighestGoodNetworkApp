@@ -256,7 +256,8 @@ function PRGradingDashboard() {
               <h1 className={styles.title}>{TEAM_NAME}</h1>
               <p className={styles.date}>{currentDate}</p>
             </div>
-            <div className={styles.headerControls} role="group" aria-label="Review week actions">
+            <fieldset className={styles.headerControls}>
+              <legend className={styles.headerControlsLegend}>Review week actions</legend>
               <button
                 type="button"
                 onClick={() =>
@@ -291,7 +292,7 @@ function PRGradingDashboard() {
                 </select>
                 <p className={styles.mockWeekMeta}>{selectedMockWeekMeta.range}</p>
               </div>
-            </div>
+            </fieldset>
           </div>
         </div>
 

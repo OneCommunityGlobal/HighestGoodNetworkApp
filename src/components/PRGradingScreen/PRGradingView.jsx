@@ -54,11 +54,10 @@ const PRGradingView = ({
                     </p>
                   </div>
                 </div>
-                <div
-                  role="group"
-                  aria-label="Grading actions"
-                  className={styles['pr-grading-screen-header-actions']}
-                >
+                <fieldset className={styles['pr-grading-screen-header-actions']}>
+                  <legend className={styles['pr-grading-screen-action-legend']}>
+                    Grading actions
+                  </legend>
                   <Button variant="outline-primary" onClick={onExport} className={dm}>
                     Export to CSV
                   </Button>
@@ -70,7 +69,7 @@ const PRGradingView = ({
                   >
                     {isFinalized ? 'Finalized' : 'Done'}
                   </Button>
-                </div>
+                </fieldset>
               </div>
             </Card.Header>
 
