@@ -39,6 +39,11 @@
   color: #166534;
 }
 
+.inProgressBadge {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
 .pendingBadge {
   background-color: #e5e7eb;
   color: #374151;
@@ -429,6 +434,11 @@
   color: #bbf7d0;
 }
 
+:global(.dark-mode) .inProgressBadge {
+  background-color: #1e3a8a;
+  color: #bfdbfe;
+}
+
 :global(.dark-mode) .pendingBadge {
   background-color: #404040;
   color: #d1d5db;
@@ -475,7 +485,6 @@
   color: #d1d5db;
 }
 
-/* stylelint-disable-next-line no-descending-specificity */
 :global(.dark-mode) .markDoneButton {
   background-color: #2563eb;
   color: #fff;
@@ -564,7 +573,6 @@
   color: #fbbf24;
 }
 
-/* stylelint-disable-next-line no-descending-specificity */
 :global(.dark-mode) .markIntermediateDoneButton {
   background-color: #2d2d2d;
   border-color: #404040;

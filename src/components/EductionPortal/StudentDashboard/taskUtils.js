@@ -93,6 +93,14 @@ export const getTaskStatusBadge = (task, styles, intermediateTasks = []) => {
     return { text: 'Assigned', className: styles.pendingBadge };
   }
 
+  if (task.status === 'in_progress') {
+    return { text: 'In Progress', className: styles.inProgressBadge };
+  }
+
+  if (task.status === 'submitted' || task.status === 'pending_review') {
+    return { text: 'Pending Review', className: styles.pendingBadge };
+  }
+
   return { text: 'Pending Review', className: styles.pendingBadge };
 };
 

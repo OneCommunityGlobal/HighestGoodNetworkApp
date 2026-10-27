@@ -284,9 +284,44 @@ export const logStudentTaskHours = (taskId, hours) => {
       });
 
       toast.success(`${hours} hour(s) logged successfully!`);
+      return true;
     } catch (error) {
       const msg = error.response?.data?.error || 'Failed to log hours. Please try again.';
       toast.error(msg);
+      return false;
     }
   };
+};
+
+/** Upload a write-task submission, then refresh without falling back to demo tasks. */
+export const uploadStudentTaskFile = (taskId, file) => async dispatch => {
+  let data;
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await httpService.post(`${ENDPOINTS.STUDENT_TASKS()}/${taskId}/upload`, formData, {
+      headers: { 'Content-Type': undefined },
+    });
+    data = response.data;
+  } catch (error) {
+    const message = error.response?.data?.error || error.response?.data?.message || 'Upload failed. Please try again.';
+    toast.error(message);
+    return { success: false, error: message };
+  }
+
+  dispatch(updateStudentTask(taskId, {
+    status: data.status,
+    is_completed: data.status === 'completed' || data.status === 'graded',
+    logged_hours: data.loggedHours,
+    suggested_total_hours: data.suggestedTotalHours,
+    has_upload: true,
+    last_logged_date: data.completedAt,
+  }));
+  toast.success('Submission uploaded successfully!');
+  try {
+    dispatch(setStudentTasks(await fetchTasksFromPrimaryEndpoint()));
+  } catch {
+    toast.warning('Upload succeeded, but task refresh failed. Showing the saved completion.');
+  }
+  return { success: true };
 };
