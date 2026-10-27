@@ -261,7 +261,7 @@ export class EditableInfoModal extends Component {
     const { infoContent, editableModalOpen, fontSize, CanRead, CanEdit } = this.state;
     const { darkMode } = this.props;
 
-    const sanitizedContent = this.sanitizeText(infoContent);
+    const sanitizedContent = infoContent; 
 
     return (
       CanRead && (

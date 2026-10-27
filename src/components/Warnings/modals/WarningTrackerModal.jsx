@@ -59,10 +59,10 @@ function WarningTrackerModal({
   const [dragIndex, setDragIndex] = useState(null);
   const [initialDragIndex, setInitialDragIndex] = useState(null);
   const [warningsEdited, setWarningsEdited] = useState(false);
-  const [infoCollections, setInfoCollections] = useState({});
+  const [infoCollections, setInfoCollections] = useState([]);
   const [infoCollectionToUpdate, setInfoCollectionToUpdate] = useState(null);
   const [infoCollectionToDelete, setInfoCollectionToDelete] = useState(null);
-  const [retrieveInfoCollections, setRetrieveInfoCollections] = useState(false);
+  const [retrieveInfoCollections, setRetrieveInfoCollections] = useState(true); // true on mount to retrieve info collections
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
@@ -109,7 +109,8 @@ function WarningTrackerModal({
     const originalWarning = originalWarningDescriptions.find(
       warning => warning._id === editedWarning._id,
     );
-    if (!infoCollections.find(info => info?.infoName === originalWarning.warningTitle + 'Info'))
+    if (!originalWarning) return;
+    if (!infoCollections.some(info => info?.infoName === originalWarning.warningTitle + 'Info'))
       return;
     setInfoCollectionToUpdate(
       infoCollections.find(info => info?.infoName === originalWarning.warningTitle + 'Info'),
@@ -231,7 +232,9 @@ function WarningTrackerModal({
       if (res.error) {
         setError(res.error);
       }
-      fetchWarningDescriptions();
+      fetchWarningDescriptions().catch(err => {
+        setError(err);
+      });
     });
     setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
   };
@@ -271,7 +274,9 @@ function WarningTrackerModal({
             setError(res.error);
             setWarningEdited(false);
             setEditedWarning(null);
-            fetchWarningDescriptions();
+            fetchWarningDescriptions().catch(err => {
+              setError(err);
+            });
             return;
           }
           setRetrieveInfoCollections(true);

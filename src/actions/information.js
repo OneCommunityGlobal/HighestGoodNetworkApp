@@ -23,6 +23,10 @@ export const fetchInfosBegin = () => ({
   type: actions.FETCH_INFOS_BEGIN,
 });
 
+export const fetchInfosError = () => ({
+  type: actions.FETCH_INFOS_ERROR,
+})
+
 // Get infoCollections
 export const getInfoCollections = (retrieveInfos=false) => {
   return async (dispatch, getState) => {
@@ -36,6 +40,7 @@ export const getInfoCollections = (retrieveInfos=false) => {
       dispatch(fetchInfosSuccess(response.data));
       return response.data;
     } catch (error) {
+      dispatch(fetchInfosError)
       toast.error(error.message || 'Failed to fetch info collections.');
       return null;
     }

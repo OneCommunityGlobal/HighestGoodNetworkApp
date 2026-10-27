@@ -171,6 +171,11 @@ const TeamMemberTask = React.memo(
     const canUnassignTask = dispatch(hasPermission(permissions.removeUserFromTask));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
+    const tableRowDarkMode = () => {
+      if (darkMode) return `${styles['table-row']} ${styles.darkMode} bg-yinmn-blue`;
+      return `${styles['table-row']}`;
+    };
+
     const colorsObjs = {
       'Assistant Manager': '#849ced', // blue
       Manager: '#90e766', // green
@@ -256,11 +261,7 @@ const TeamMemberTask = React.memo(
     };
 
     return (
-      <tr
-        ref={ref}
-        className={`${styles['table-row']} ${darkMode ? `${styles.darkMode} bg-yinmn-blue` : ''}`}
-        key={user.personId}
-      >
+      <tr ref={ref} className={tableRowDarkMode()} key={user.personId}>
         <td className={styles['remove-padding']} colSpan={6}>
           <div className={styles['row-content']}>
             {isTimeOffContentOpen && (

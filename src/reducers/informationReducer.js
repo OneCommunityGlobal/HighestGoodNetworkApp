@@ -30,6 +30,7 @@ export const infoCollectionsReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+        loaded: false,
         fetchError: action.payload.error,
       };
     case actions.ADD_INFO_SUCCESS:
