@@ -38,7 +38,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postLeaderboardData } from '~/actions/leaderBoardData';
 import { toggleUserBio } from '~/actions/weeklySummariesReport';
 import { isFinalWeekOnTab, shouldShowSummaryOnTab } from '~/utils/weeklySummariesFinalWeek';
-import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
+import {
+  calculateDurationBetweenDates,
+  getAnniversaryStartDate,
+  showTrophyIcon,
+} from '~/utils/anniversaryPermissions';
 import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
 
 import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal';
@@ -1021,7 +1025,7 @@ function Index({
 
   const durationSinceStarted = calculateDurationBetweenDates(
     summarySubmissionDate,
-    summary?.startDate?.split('T')[0] || null,
+    getAnniversaryStartDate(summary)?.split('T')[0] || null,
   );
 
   const handleIconContent = duration => {
@@ -1079,7 +1083,10 @@ function Index({
             />
           )}
           {loadTrophies &&
-            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
+            showTrophyIcon(
+              summarySubmissionDate,
+              getAnniversaryStartDate(summary)?.split('T')[0] || null,
+            ) && (
               <i
                 className="fa fa-trophy"
                 style={{

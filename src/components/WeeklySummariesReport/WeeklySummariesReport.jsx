@@ -59,7 +59,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import { getInfoCollections } from '../../actions/information';
 import { setTeamCodes } from '../../actions/teamCodes';
-import { showTrophyIcon } from '../../utils/anniversaryPermissions';
+import { getAnniversaryStartDate, showTrophyIcon } from '../../utils/anniversaryPermissions';
 import hasPermission from '../../utils/permissions';
 import CreateFilterModal from './components/CreateFilterModal';
 import SelectFilterModal from './components/SelectFilterModal';
@@ -777,7 +777,7 @@ const WeeklySummariesReport = props => {
 
           const hasTrophy =
             !selectedTrophies ||
-            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
+            showTrophyIcon(summarySubmissionDate, getAnniversaryStartDate(summary)?.split('T')[0]);
 
           const matchesSpecialColor =
             activeFilterColors.length === 0 ||
