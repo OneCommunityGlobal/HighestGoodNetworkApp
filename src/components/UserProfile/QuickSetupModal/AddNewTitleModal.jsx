@@ -131,15 +131,8 @@ function AddNewTitleModal({
     ? teamsData
     : (teamsData && Array.isArray(teamsData.allTeams) ? teamsData.allTeams : []);
 
-  const existTeamCodes = new Set(
-    (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : [])
-      .map(code => code?.value)
-      .filter(Boolean)
-  );
 
-  const existTeamName = new Set(
-    allTeamsArray.map(t => t?.teamName).filter(Boolean)
-  );
+
 
   // ------------------- local UI state (selectors) --------------------------
 
@@ -204,45 +197,51 @@ function AddNewTitleModal({
 
   // ------------------- validations -----------------------------------------
 
-  const onTeamCodeValidation = teamCode => {
-    const format1 = /^[A-Za-z]-[A-Za-z]{3}$/;
-    const format2 = /^[A-Z]{5}$/;
-    const isValidFormat = format1.test(teamCode) || format2.test(teamCode);
-    if (!isValidFormat) {
-      setWarningMessage({ title: 'Error', content: 'Invalid Team Code Format' });
-      setShowMessage(true);
-      setTitleData(prev => ({ ...prev, teamCode: '' }));
-      return;
-    }
-    if (!existTeamCodes.has(teamCode)) {
-      setWarningMessage({ title: 'Error', content: 'Team Code Not Exists' });
-      setShowMessage(true);
-      setTitleData(prev => ({ ...prev, teamCode: '' }));
-      return;
-    }
-    setShowMessage(false);
-  };
-
   // Treat empty selection as OK (make it required here if your business rule requires it)
-  const onTeamNameValidation = teamObj => {
-    const name = teamObj && typeof teamObj === 'object'
+const onTeamNameValidation = teamObj => {
+  const teamId =
+    teamObj && typeof teamObj === 'object'
+      ? teamObj._id
+      : teamObj;
+
+  const teamName =
+    teamObj && typeof teamObj === 'object'
       ? (teamObj.teamName || '').trim()
       : '';
 
-    if (name === '') {
-      setShowMessage(false);
-      return true; // optional
-    }
-
-    if (!existTeamName.has(name)) {
-      setWarningMessage({ title: 'Error', content: 'Team Name Not Exists' });
-      setShowMessage(true);
-      return false;
-    }
+  // Explicitly cleared assignment is allowed.
+  if (!teamId && !teamName) {
     setShowMessage(false);
     return true;
-  };
+  }
 
+  // User entered a team name but did not select a real team.
+  if (!teamId && teamName) {
+    setWarningMessage({
+      title: 'Error',
+      content: 'Team Name Not Exists',
+    });
+    setShowMessage(true);
+    return false;
+  }
+
+  // Resolve against ALL teams, including inactive teams.
+  const selectedTeam = allTeamsArray.some(
+    team => team?._id === teamId
+  );
+
+  if (!selectedTeam) {
+    setWarningMessage({
+      title: 'Error',
+      content: 'Team Name Not Exists',
+    });
+    setShowMessage(true);
+    return false;
+  }
+
+  setShowMessage(false);
+  return true;
+};
   // ------------------- submit ----------------------------------------------
 
   const confirmOnClick = () => {
@@ -256,26 +255,40 @@ function AddNewTitleModal({
       return;
     }
 
-    const safeTeams = allTeamsArray;
-    const team = normalizeTeam(titleData.teamAssiged, safeTeams);
+    // const safeTeams = allTeamsArray.filter(
+    //   team => team?.isActive === true
+    // );
 
-    const payload = {
-      id: titleData.id,
-      titleName: titleData.titleName?.trim() || '',
-      titleCode: titleData.titleCode?.trim() || '',
-      mediaFolder: titleData.mediaFolder?.trim() || '',
-      teamCode: teamCodeValue,
-      projectAssigned: titleData.projectAssigned || '',
-    };
-  
+const team = normalizeTeam(titleData.teamAssiged, allTeamsArray);
+
+const enteredTeamCode = titleData.teamCode?.trim() || '';
+
+const matchingTeamCode = (
+  Array.isArray(QSTTeamCodes) ? QSTTeamCodes : []
+).find(
+  code =>
+    code?.value?.trim().toLowerCase() ===
+    enteredTeamCode.toLowerCase()
+);
+
+const canonicalTeamCode = matchingTeamCode
+  ? matchingTeamCode.value.trim()
+  : enteredTeamCode;
+
+  const payload = {
+  id: titleData.id,
+  titleName: titleData.titleName?.trim() || '',
+  titleCode: titleData.titleCode?.trim() || '',
+  mediaFolder: titleData.mediaFolder?.trim() || '',
+  teamCode: canonicalTeamCode,
+  projectAssigned: titleData.projectAssigned || '',
+};
     if (team && team._id) {
       payload.teamAssiged = team;
       payload.teamName = team.teamName;
     }
   
     const run = editMode ? editTitle : addTitle;
-  
-    console.log('Title update payload:', payload); // <--- use this once to inspect
   
     run(payload)
       .then(resp => {
@@ -389,6 +402,7 @@ function AddNewTitleModal({
   value={titleData?.teamAssiged || { _id: '', teamName: '' }}
   onChange={(team) => setTitleData((p) => ({ ...p, teamAssiged: team }))}
   placeholder=""
+  darkMode={darkMode}
 />
 
           </FormGroup>
