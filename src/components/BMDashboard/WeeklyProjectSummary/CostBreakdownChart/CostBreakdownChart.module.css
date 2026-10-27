@@ -45,7 +45,8 @@
   font-weight: 500;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  transition: all 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    transform 0.15s ease-in-out;
 }
 
 .cost-breakdown-chart .btn-primary {
