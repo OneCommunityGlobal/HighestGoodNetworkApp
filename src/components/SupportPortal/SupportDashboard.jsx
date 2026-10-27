@@ -56,6 +56,29 @@ export default function SupportDashboard() {
     setFilteredStudents((students || []).filter(s => (s.name || '').toLowerCase().includes(query)));
   }, [search, students]);
 
+  const renderContent = () => {
+    if (isLoading) {
+      return <div className={styles.emptyState}>Loading students…</div>;
+    }
+    if (error) {
+      return <div className={styles.emptyState}>{error}</div>;
+    }
+    if (filteredStudents.length === 0) {
+      return <div className={styles.emptyState}>No students found for your assignment.</div>;
+    }
+    return (
+      <ul className={styles.list}>
+        {filteredStudents.map(s => (
+          <li key={s.id} className={styles.listItem}>
+            <Link to={`/support/log/${s.id}`} className={styles.studentName}>
+              {s.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <header className={styles.header}>
@@ -69,23 +92,7 @@ export default function SupportDashboard() {
         />
       </header>
 
-      {isLoading ? (
-        <div className={styles.emptyState}>Loading students…</div>
-      ) : error ? (
-        <div className={styles.emptyState}>{error}</div>
-      ) : filteredStudents.length === 0 ? (
-        <div className={styles.emptyState}>No students found for your assignment.</div>
-      ) : (
-        <ul className={styles.list}>
-          {filteredStudents.map(s => (
-            <li key={s.id} className={styles.listItem}>
-              <Link to={`/support/log/${s.id}`} className={styles.studentName}>
-                {s.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      {renderContent()}
     </div>
   );
 }

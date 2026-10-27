@@ -68,8 +68,12 @@ export default function SupportLogViewer({ match }) {
     };
 
     if (studentId) {
-      fetchProfile();
-      fetchLog();
+      Promise.all([fetchProfile(), fetchLog()]).catch(() => {
+        if (active) {
+          setError('Unable to load daily log. Please try again later.');
+          setIsLoading(false);
+        }
+      });
     }
     return () => {
       active = false;
@@ -78,6 +82,41 @@ export default function SupportLogViewer({ match }) {
 
   // Hide the previous student's data even before the new effect resets state.
   const isCurrentStudent = dataStudentId === studentId;
+
+  const renderContent = () => {
+    if (isLoading || !isCurrentStudent) {
+      return <div className={styles.emptyState}>Loading daily log…</div>;
+    }
+    if (error) {
+      return <div className={styles.errorBanner}>{error}</div>;
+    }
+    if (entries.length === 0) {
+      return <div className={styles.emptyState}>No log entries found for this student.</div>;
+    }
+    return (
+      <div className={styles.timeline}>
+        {entries.map(entry => (
+          <div key={entry.log_id} className={styles.timelineItem}>
+            <div className={styles.timelineDot} />
+            <div className={styles.timelineContent}>
+              <div className={styles.timelineHeader}>
+                <span className={styles.entryDate}>{formatEntryDate(entry.created_at)}</span>
+              </div>
+              <p className={styles.entryText}>{entry.action_type}</p>
+              {entry.metadata != null && (
+                <p className={styles.supportNotes}>
+                  <strong>Details: </strong>
+                  {typeof entry.metadata === 'string'
+                    ? entry.metadata
+                    : JSON.stringify(entry.metadata)}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
@@ -92,35 +131,7 @@ export default function SupportLogViewer({ match }) {
         </Link>
       </header>
 
-      {isLoading || !isCurrentStudent ? (
-        <div className={styles.emptyState}>Loading daily log…</div>
-      ) : error ? (
-        <div className={styles.errorBanner}>{error}</div>
-      ) : entries.length === 0 ? (
-        <div className={styles.emptyState}>No log entries found for this student.</div>
-      ) : (
-        <div className={styles.timeline}>
-          {entries.map(entry => (
-            <div key={entry.log_id} className={styles.timelineItem}>
-              <div className={styles.timelineDot} />
-              <div className={styles.timelineContent}>
-                <div className={styles.timelineHeader}>
-                  <span className={styles.entryDate}>{formatEntryDate(entry.created_at)}</span>
-                </div>
-                <p className={styles.entryText}>{entry.action_type}</p>
-                {entry.metadata != null && (
-                  <p className={styles.supportNotes}>
-                    <strong>Details: </strong>
-                    {typeof entry.metadata === 'string'
-                      ? entry.metadata
-                      : JSON.stringify(entry.metadata)}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {renderContent()}
     </div>
   );
 }
