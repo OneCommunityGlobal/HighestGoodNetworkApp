@@ -23,11 +23,12 @@ import {
 import styles from './LogAttendance.module.css';
 
 const tabs = ['Description', 'Analysis', 'Participates', 'Comments'];
-const statusFilters = ['all', 'checked_in', 'no_show', 'pending'];
+const statusFilters = ['all', 'checked_in', 'no_show', 'pending', 'cancelled'];
 
 const recordStatusLabel = status => {
   if (status === 'checked_in') return 'Checked In';
   if (status === 'no_show') return 'No Show';
+  if (status === 'cancelled') return 'Cancelled';
   return 'Pending';
 };
 
@@ -35,6 +36,7 @@ const filterStatusLabel = filter => {
   if (filter === 'all') return 'All Statuses';
   if (filter === 'checked_in') return 'Checked In';
   if (filter === 'no_show') return 'No Shows';
+  if (filter === 'cancelled') return 'Cancelled';
   return 'Pending';
 };
 
@@ -156,13 +158,8 @@ function LogAttendance() {
     if (statusFilter === 'all') {
       return attendanceRecords;
     }
-    if (statusFilter === 'checked_in') {
-      return attendanceRecords.filter(record => record.status === 'Checked In');
-    }
-    if (statusFilter === 'no_show') {
-      return attendanceRecords.filter(record => record.status === 'No Show');
-    }
-    return attendanceRecords.filter(record => record.status === 'Pending');
+
+    return attendanceRecords.filter(record => record.rawStatus === statusFilter);
   }, [attendanceRecords, statusFilter]);
 
   const sortedRecords = useMemo(() => {
@@ -220,7 +217,7 @@ function LogAttendance() {
                 checkInTime:
                   nextStatus === 'checked_in'
                     ? moment(response?.data?.checkInTime || new Date()).format('h:mm A')
-                    : item.checkInTime,
+                    : '-',
               }
             : item,
         ),
@@ -555,6 +552,7 @@ function LogAttendance() {
                           <option value="pending">Pending</option>
                           <option value="checked_in">Checked In</option>
                           <option value="no_show">No Show</option>
+                          <option value="cancelled">Cancelled</option>
                         </select>
                       </td>
                     </tr>
