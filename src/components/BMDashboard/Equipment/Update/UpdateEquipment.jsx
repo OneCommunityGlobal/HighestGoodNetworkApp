@@ -151,18 +151,23 @@ export default function UpdateEquipment() {
         return;
       }
 
-      const newPreviews = validFiles.map(file => ({
-        name: file.name || 'Image',
-        preview: URL.createObjectURL(file),
-        size: file.size || 0,
-        type: file.type || 'image/*',
-        file: file,
+      const selectedFile = validFiles[0];
+
+      cleanupFilePreviews(uploadedFilesPreview);
+
+      const newPreview = {
+        name: selectedFile.name || 'Image',
+        preview: URL.createObjectURL(selectedFile),
+        size: selectedFile.size || 0,
+        type: selectedFile.type || 'image/*',
+        file: selectedFile,
         status: 'uploaded',
         uploadedAt: new Date().toISOString(),
-      }));
+      };
 
-      setUploadedFiles(prev => [...prev, ...validFiles]);
-      setUploadedFilesPreview(prev => [...prev, ...newPreviews]);
+      setUploadedFiles([selectedFile]);
+      setUploadedFilesPreview([newPreview]);
+      setSubmitError('');
     },
     [uploadedFilesPreview, cleanupFilePreviews],
   );
@@ -176,7 +181,7 @@ export default function UpdateEquipment() {
       'Failed to update equipment. Please try again.';
 
     return hasUploadedFiles
-      ? `${baseError} Note: Images were selected and previewed but not saved to database.`
+      ? `${baseError} Note: The image was selected and previewed but not saved to database.`
       : baseError;
   };
 
@@ -697,8 +702,7 @@ export default function UpdateEquipment() {
               }}
             >
               <i className="fas fa-info-circle me-2" />
-              {uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} uploaded and ready
-              for preview
+              Image uploaded and ready for preview
             </Alert>
           )}
 
@@ -706,7 +710,7 @@ export default function UpdateEquipment() {
 
           {hasFilePreviews && (
             <div className="mt-3">
-              <Label style={formLabelStyle}>Uploaded Images Preview:</Label>
+              <Label style={formLabelStyle}>Uploaded Image Preview:</Label>
               <div className="d-flex flex-wrap gap-3 mt-2">
                 {uploadedFilesPreview.map((file, index) => (
                   <FilePreview
@@ -739,8 +743,8 @@ export default function UpdateEquipment() {
                   <small>
                     <i className="fas fa-info-circle me-1" />
                     {hasNotSavedFiles
-                      ? 'Images are shown for preview purposes only and are not saved to the database.'
-                      : 'Images will be submitted with the form and saved to the database.'}
+                      ? 'The image is shown for preview purposes only and is not saved to the database.'
+                      : 'The image will be submitted with the form and saved to the database.'}
                   </small>
                 </Alert>
               </div>
