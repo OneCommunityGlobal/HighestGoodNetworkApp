@@ -463,9 +463,6 @@
 /* Grading Table Styles */
 .pr-grading-screen-grading-table {
   width: 100%;
-
-  /* Same four grade columns as the inline summary, so it clips the same way on
-     narrow screens. Keep a usable minimum and let the modal body scroll. */
   min-width: 380px;
   border-collapse: collapse;
   margin-bottom: 20px;
@@ -578,7 +575,6 @@
     font-size: 0.8rem;
   }
 
-  /* Modal responsive styles */
   .pr-grading-screen-modal {
     width: 95%;
     max-height: 90vh;
@@ -620,7 +616,6 @@
 
 /* ===== DARK MODE STYLES ===== */
 
-/* Container and Card */
 .pr-grading-screen-container.dark-mode {
   background-color: #1b2a41;
 }
@@ -678,7 +673,6 @@
   color: #fff;
 }
 
-/* Table */
 .pr-grading-screen-table-container.dark-mode {
   box-shadow: 0 1px 3px rgb(255 255 255 / 10%);
 }
@@ -721,7 +715,6 @@
   border-color: #6a7b98;
 }
 
-/* PR Number Pills */
 .pr-grading-screen-table.dark-mode .pr-grading-screen-pr-number {
   background-color: #2d4059;
   color: #fff;
@@ -740,7 +733,6 @@
   box-shadow: 0 2px 4px rgb(255 255 255 / 10%);
 }
 
-/* Buttons */
 .pr-grading-screen-add-btn.dark-mode {
   background-color: #28a745;
   border-color: #28a745;
@@ -751,7 +743,6 @@
   border-color: #1e7e34;
 }
 
-/* Modal */
 .pr-grading-screen-modal-overlay.dark-mode {
   background-color: rgb(27 42 65 / 80%);
 }
@@ -808,7 +799,6 @@
   background-color: #2d4059;
 }
 
-/* Input and Form Elements */
 .pr-grading-screen-pr-number-input.dark-mode {
   background-color: #2d4059;
   border-color: #5a6b88;
@@ -824,11 +814,6 @@
   border-color: #dc3545;
 }
 
-/* .pr-grading-screen-pair-message {
-  color: #a7f3d0;
-} */
-
-/* Modal Buttons */
 .pr-grading-screen-done-btn.dark-mode {
   background-color: #007bff;
   border-color: #007bff;
@@ -840,12 +825,10 @@
   border-color: #004085;
 }
 
-/* Input Container */
 .pr-grading-screen-input-container.dark-mode {
   background-color: transparent;
 }
 
-/* Button variants for dark mode */
 .btn.dark-mode {
   border: 1px solid #5a6b88;
 }
@@ -871,7 +854,6 @@
   border-color: #4e555b;
 }
 
-/* Grade badges in dark mode */
 .dark-mode .pr-grading-screen-grade-exceptional {
   background-color: #155724;
   color: #d4edda;
@@ -963,7 +945,6 @@
   font-style: italic;
 }
 
-/* Search bar dark mode */
 .pr-grading-screen-search-bar.dark-mode {
   background-color: transparent;
 }
@@ -1007,7 +988,6 @@
 .pr-grading-screen-no-results.dark-mode {
   color: #9ab0cc;
 }
-
 
 /* ===== TEAM SELECTOR ===== */
 .pr-grading-screen-team-selector {
@@ -1115,6 +1095,85 @@
 }
 
 /* ---------------- INLINE PR SUMMARY ---------------- */
+/* Promotion Confirmation Modal Actions (From Your Branch) */
+.pr-promotion-no-history {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px dashed #ced4da;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  text-align: center;
+}
+
+.pr-promotion-no-history.dark-mode {
+  border-color: #4a5a77;
+  background-color: #1b2a41;
+  color: #b0b8c4;
+}
+
+.pr-promotion-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px 24px !important;
+}
+
+.pr-promotion-btn-cancel {
+  padding: 9px 24px;
+  border-radius: 6px;
+  border: 1px solid #6c757d;
+  background-color: #6c757d;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.pr-promotion-btn-cancel:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
+}
+
+.pr-promotion-btn-confirm {
+  padding: 9px 24px;
+  border-radius: 6px;
+  border: none;
+  background-color: #28a745;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.pr-promotion-btn-confirm:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgb(40 167 69 / 40%);
+}
+
+.dark-mode .pr-promotion-btn-cancel {
+  border-color: #5a6b88;
+  background-color: #475569;
+}
+
+.dark-mode .pr-promotion-btn-cancel:hover {
+  background-color: #5a6b88;
+  border-color: #8a9bb8;
+}
+
+.dark-mode .pr-promotion-btn-confirm:hover {
+  background-color: #1e7e34;
+}
+
+/* ---------------- INLINE PR SUMMARY (From Development) ---------------- */
 
 .pr-grading-inline-summary-row {
   background-color: transparent;
@@ -1125,11 +1184,6 @@
   border-top: none !important;
 }
 
-/* ==========================================================
-   Inline PR Summary Styles (PR #5493)
-   Scoped strictly with pr-grading-inline-* to avoid global pollution
-   ========================================================== */
-
 .pr-grading-inline-summary-container {
   padding: 16px 20px;
   background-color: #fff;
@@ -1138,29 +1192,21 @@
   box-shadow: 0 2px 6px rgb(0 0 0 / 4%);
 }
 
-/* Dark mode support for inline summary container */
 .pr-grading-inline-summary-container.dark-mode {
   background-color: #2b2b2b;
   border-color: rgb(255 255 255 / 15%);
   box-shadow: none;
 }
 
-/* Horizontal scroll rail. Without this the four grade columns are squeezed until
-   the rightmost ones ("Unsatisfactory" / "Cannot find image") clip off the edge
-   on narrow screens. The table keeps a usable minimum width and scrolls instead. */
 .pr-grading-inline-table-scroll {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
-
-  /* Firefox. Webkit equivalents below — without this Firefox keeps the default
-     near-invisible overlay bar that prompted this change. */
   scrollbar-width: thin;
   scrollbar-color: #b9b9b9 #ededed;
 }
 
-/* 10px tall so the bar is an easy pointer target on touch and trackpad. */
 .pr-grading-inline-table-scroll::-webkit-scrollbar {
   height: 10px;
 }
@@ -1170,8 +1216,6 @@
   border-radius: 999px;
 }
 
-/* The transparent border + padding-box clip insets the thumb so it reads as a
-   separate object instead of fusing with the track at the ends. */
 .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb {
   background-color: #b9b9b9;
   border: 2px solid transparent;
@@ -1183,15 +1227,10 @@
   background-color: #9a9a9a;
 }
 
-/* Dark mode: the light thumb above all but disappears on the #2b2b2b card, so
-   go high-contrast. Scoped through the container, which already carries the
-   dark-mode class, so the scroll wrapper itself needs no extra class. */
 .pr-grading-inline-summary-container.dark-mode .pr-grading-inline-table-scroll {
   scrollbar-color: #666 #2b2b2b;
 }
 
-/* Darker than the #2b2b2b card, so the track and thumb separate from each other
-   as well as from the card behind them. */
 .pr-grading-inline-summary-container.dark-mode
   .pr-grading-inline-table-scroll::-webkit-scrollbar-track {
   background-color: #1f1f1f;
@@ -1209,9 +1248,6 @@
 
 .pr-grading-inline-summary-table {
   width: 100%;
-
-  /* Floor for the five columns. Below this the table stops shrinking and the
-     scroll rail above takes over rather than crushing the grade columns. */
   min-width: 380px;
   margin-bottom: 0;
   border-collapse: collapse;
@@ -1289,9 +1325,6 @@
   accent-color: #59359a;
 }
 
-/* Narrow phones (~420px and below). Reclaim horizontal space so the four grade
-   columns fit without scrolling where possible; the scroll rail above is the
-   fallback when they still don't. */
 @media (width <= 480px) {
   .pr-grading-inline-summary-cell {
     padding: 6px 8px 12px !important;
@@ -1311,8 +1344,6 @@
     line-height: 1.25;
   }
 
-  /* The PR column is fixed-width on desktop; let the grade columns take the
-     remaining space instead of it hogging a quarter of a 420px viewport. */
   .pr-grading-inline-pr-cell {
     width: auto;
     white-space: nowrap;

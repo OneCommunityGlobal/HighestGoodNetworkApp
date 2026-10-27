@@ -1,18 +1,56 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { fetchPRGradingConfig } from '../../actions/prGradingActions';
 import AddReviewerModal from './AddReviewerModal';
 import ConfirmationModal from './ConfirmationModal';
 import GradingTable from './GradingTable';
+import RemoveReviewerModal from './RemoveReviewerModal';
 import { MOCK_WEEK_METADATA, MOCK_WEEK_OPTIONS } from './mockWeeklyAuditData';
 import styles from './PRGradingDashboard.module.css';
 import { SelectionProvider } from './SelectionContext';
 import SummaryList from './SummaryList';
+import hasPermission from '~/utils/permissions';
 
 const TEAM_NAME = 'Team Alpha';
+
+const formatLocalDate = date => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getWeekStart = () => {
+  const now = new Date();
+  const day = now.getDay();
+  const monday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - day + (day === 0 ? -6 : 1),
+  );
+  return formatLocalDate(monday);
+};
+
+const WEEK_OPTION_OFFSETS = {
+  'Current Week': 0,
+  '1 Week Ago': 1,
+  '2 Weeks Ago': 2,
+  '3 Weeks Ago': 3,
+  '4 Weeks Ago': 4,
+};
+
+const getWeekStartByOffset = weeksAgo => {
+  const now = new Date();
+  const day = now.getDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  const monday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + mondayOffset - weeksAgo * 7,
+  );
+  return formatLocalDate(monday);
+};
 
 // Mock data for fallback
 const mockData = [
@@ -37,46 +75,33 @@ const mockData = [
 ];
 
 function PRGradingDashboard() {
-  const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const authUser = useSelector(state => state.auth.user);
+  const canEdit = dispatch(hasPermission('accessPRTeamDashboard'));
   const [gradings, setGradings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [openAddModal, setOpenAddModal] = useState(null);
-  const [pendingPR, setPendingPR] = useState(null);
+  const [openAddModal, setOpenAddModal] = useState(null); // reviewer name or null
+  const [pendingPR, setPendingPR] = useState(null); // { reviewer, prNumbers, grade } or null
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showAddReviewerModal, setShowAddReviewerModal] = useState(false);
+  const [pendingRemoveReviewer, setPendingRemoveReviewer] = useState(null); // reviewer name or null
   const [selectedMockWeek, setSelectedMockWeek] = useState('Current Week');
-  const [selectedTeamName, setSelectedTeamName] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState('TeamA');
 
-  // Load team list from config, then fetch grading data for the first team
+  // Fetch data on mount and whenever the selected week changes
   useEffect(() => {
-    const initDashboard = async () => {
-      try {
-        const result = await dispatch(fetchPRGradingConfig());
-        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-          const firstTeam = result.data[0].teamName;
-          setSelectedTeamName(firstTeam);
-          await fetchGradings(firstTeam);
-        } else {
-          setGradings(mockData);
-          toast.info('Using mock data - no teams configured');
-          setLoading(false);
-        }
-      } catch {
-        setGradings(mockData);
-        toast.info('Using mock data - API connection failed');
-        setLoading(false);
-      }
-    };
-    void initDashboard();
-  }, [dispatch]);
+    void fetchGradings(selectedMockWeek);
+  }, [selectedMockWeek]);
 
-  const fetchGradings = async teamName => {
+  const fetchGradings = async (weekLabel = 'Current Week') => {
+    const offset = WEEK_OPTION_OFFSETS[weekLabel] ?? 0;
+    const weekDate = getWeekStartByOffset(offset);
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_APIENDPOINT}/weekly-grading?team=${encodeURIComponent(teamName)}`,
+        `${process.env.REACT_APP_APIENDPOINT}/weekly-grading?team=${selectedTeam}&date=${weekDate}`,
       );
       if (response.data && Array.isArray(response.data)) {
         // Mark all existing PRs as not new
@@ -174,6 +199,39 @@ function PRGradingDashboard() {
     toast.success(`Reviewer "${newReviewer.reviewer}" added successfully.`);
   };
 
+  // Request to remove a reviewer (shows confirmation modal)
+  const requestRemoveReviewer = reviewer => {
+    setPendingRemoveReviewer(reviewer);
+  };
+
+  // Actually remove the reviewer after confirmation
+  const confirmRemoveReviewer = async () => {
+    if (!pendingRemoveReviewer) return;
+    const offset = WEEK_OPTION_OFFSETS[selectedMockWeek] ?? 0;
+    const weekDate = getWeekStartByOffset(offset);
+    try {
+      await axios.delete(
+        `${
+          process.env.REACT_APP_APIENDPOINT
+        }/weekly-grading?team=${selectedTeam}&date=${weekDate}&reviewer=${encodeURIComponent(
+          pendingRemoveReviewer,
+        )}`,
+        { data: { requestor: { requestorId: authUser.userid } } },
+      );
+      setGradings(prev => prev.filter(g => g.reviewer !== pendingRemoveReviewer));
+      toast.success(`Reviewer "${pendingRemoveReviewer}" removed successfully.`);
+    } catch (error) {
+      toast.error('Failed to remove reviewer. Please try again.');
+    } finally {
+      setPendingRemoveReviewer(null);
+    }
+  };
+
+  // Cancel reviewer removal
+  const cancelRemoveReviewer = () => {
+    setPendingRemoveReviewer(null);
+  };
+
   // Remove a graded PR (only new ones)
   const removeGradedPR = (reviewer, prIndex) => {
     // Check if PR can be removed before updating state
@@ -212,12 +270,11 @@ function PRGradingDashboard() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-
       // Remove isNew flag before sending to API
+      const offset = WEEK_OPTION_OFFSETS[selectedMockWeek] ?? 0;
       const payload = {
-        teamName: selectedTeamName,
-        date: currentDate,
+        teamCode: selectedTeam,
+        date: getWeekStartByOffset(offset),
         gradings: gradings.map(g => ({
           reviewer: g.reviewer,
           prsReviewed: g.prsReviewed,
@@ -246,6 +303,8 @@ function PRGradingDashboard() {
     }
   };
 
+  const isCurrentWeek = (WEEK_OPTION_OFFSETS[selectedMockWeek] ?? 0) === 0;
+
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -271,7 +330,7 @@ function PRGradingDashboard() {
         <div className={styles.header}>
           <div className={styles.headerContent}>
             <div>
-              <h1 className={styles.title}>{selectedTeamName ?? 'PR Grading Dashboard'}</h1>
+              <h1 className={styles.title}>{TEAM_NAME}</h1>
               <p className={styles.date}>{currentDate}</p>
             </div>
             <div className={styles.headerControls}>
@@ -300,22 +359,27 @@ function PRGradingDashboard() {
         {/* Main Table */}
         <SelectionProvider>
           <div className={styles.section}>
-            <div className={styles.tableHeaderActions}>
-              <button
-                type="button"
-                onClick={() => setShowAddReviewerModal(true)}
-                className={styles.addReviewerButton}
-              >
-                + Add Reviewer
-              </button>
-            </div>
+            {isCurrentWeek && (
+              <div className={styles.tableHeaderActions}>
+                <button
+                  type="button"
+                  onClick={() => setShowAddReviewerModal(true)}
+                  className={styles.addReviewerButton}
+                >
+                  + Add Reviewer
+                </button>
+              </div>
+            )}
             <GradingTable
               gradings={gradings}
               onUpdatePRsReviewed={updatePRsReviewed}
               onAddPRClick={setOpenAddModal}
               openAddModal={openAddModal}
               onAddGradedPR={requestAddGradedPR}
+              onRemoveReviewer={requestRemoveReviewer}
+              isCurrentWeek={isCurrentWeek}
               darkMode={darkMode}
+              canEdit={canEdit}
             />
           </div>
 
@@ -332,16 +396,18 @@ function PRGradingDashboard() {
 
         {/* Footer */}
 
-        <div className={styles.footerContent}>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            type="button"
-            className={styles.saveButton}
-          >
-            {saving ? 'Saving...' : 'Save'}
-          </button>
-        </div>
+        {isCurrentWeek && (
+          <div className={styles.footerContent}>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              type="button"
+              className={styles.saveButton}
+            >
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Confirmation Modal */}
@@ -352,6 +418,15 @@ function PRGradingDashboard() {
           grade={pendingPR.grade}
           onConfirm={confirmAddGradedPR}
           onCancel={cancelAddGradedPR}
+        />
+      )}
+
+      {/* Remove Reviewer Modal */}
+      {pendingRemoveReviewer && (
+        <RemoveReviewerModal
+          reviewer={pendingRemoveReviewer}
+          onConfirm={confirmRemoveReviewer}
+          onCancel={cancelRemoveReviewer}
         />
       )}
 

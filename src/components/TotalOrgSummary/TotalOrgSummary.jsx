@@ -223,7 +223,7 @@ function buildPDFStyles(darkMode) {
     img, svg { max-width: 100% !important; height: auto !important; page-break-inside: avoid !important; }
     .recharts-wrapper { width: 100% !important; height: auto !important; }
     table { page-break-inside: avoid !important; }
-    .Collapsible__trigger {
+    .Collapsible__trigger:not(.org-section-header) {
       background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
       color: ${darkMode ? '#fff' : '#000'} !important;
     }
@@ -315,6 +315,7 @@ async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoadin
   );
   const originalCanvases = replaceCanvasesWithImages(chartCanvases);
   const pdfContainer = buildPDFContainer();
+  pdfContainer.classList.toggle('bg-oxford-blue', darkMode);
   const clonedContent = rootRef.current.cloneNode(true);
   clonedContent
     .querySelectorAll('[data-pdf-hide], .controls, .no-print')
@@ -655,7 +656,7 @@ function TotalOrgSummary(props) {
           onApply={handleDatePickerSubmit}
         />
         <hr />
-        <AccordianWrapper title="Volunteer Status">
+        <AccordianWrapper title="Volunteer Status" section="volunteer-status">
           <Row>
             <Col lg={{ size: 12 }}>
               <VolunteerStatus
@@ -678,7 +679,7 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Activities">
+        <AccordianWrapper title="Volunteer Activities" section="volunteer-activities">
           <Row>
             <Col lg={{ size: 12 }}>
               <VolunteerActivities
@@ -693,7 +694,10 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
+        <AccordianWrapper
+          title="Global Distribution and Volunteer Status Overview"
+          section="global-distribution"
+        >
           <Row>
             <Col lg={{ size: 6 }}>
               <div
@@ -739,12 +743,16 @@ function TotalOrgSummary(props) {
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
                   mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
+        <AccordianWrapper
+          title="Volunteer Workload and Task Completion Analysis"
+          section="volunteer-workload"
+        >
           <Row>
             <Col lg={{ size: 12 }}>
               <div
@@ -774,14 +782,12 @@ function TotalOrgSummary(props) {
                       }
                       totalHoursData={volunteerStats?.totalHoursWorked}
                       title="Actual Hours Worked"
-                      legendTitle="Actual Hours Worked"
                     />
                     <VolunteerHoursDistribution
                       isLoading={isLoading}
                       darkMode={darkMode}
                       hoursData={volunteerStats?.volunteerCommittedHoursStats}
                       title="Weekly Committed Hours"
-                      legendTitle="Weekly Committed Hours"
                       centerLabelLines={['TOTAL', 'VOLUNTEERS']}
                       useBucketCounts
                     />
@@ -943,7 +949,7 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Teams and Blue Squares">
+        <AccordianWrapper title="Teams and Blue Squares" section="teams-blue-squares">
           <Row>
             <Col lg={{ size: 6 }}>
               <div
