@@ -7,6 +7,13 @@ function WeeklySummaryModal() {
 
   const toggle = () => setModal(!modal);
 
+  const handleToggleKeyDown = event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggle();
+    }
+  };
+
   return (
     <div>
       <div className="row justify-content-center">
@@ -14,7 +21,7 @@ function WeeklySummaryModal() {
           role="button"
           className="mt-3 mb-5 text-center"
           onClick={toggle}
-          onKeyDown={toggle}
+          onKeyDown={handleToggleKeyDown}
           tabIndex="0"
           aria-label="Toggle Weekly Summary"
         >
