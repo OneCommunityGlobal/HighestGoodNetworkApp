@@ -1,5 +1,5 @@
 import { Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styles from './ProjectDetails.module.css';
 
@@ -21,9 +21,13 @@ const Btn = ({ to, color, children }) => (
     1️⃣  DAILY LOGGING BUTTONS
 --------------------------------------------- */
 export const LoggingButtons = ({ darkMode }) => {
+  const { projectId } = useParams();
   return (
     <>
-      <Btn to="/bmdashboard/timelog" color="green">
+      <Btn
+        to={projectId ? `/bmdashboard/timelog/${projectId}` : '/bmdashboard/timelog'}
+        color="green"
+      >
         Time
       </Btn>
       <Btn to="/bmdashboard/materials/add" color="green">

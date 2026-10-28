@@ -3,7 +3,14 @@ import BMTimeLogStopWatch from './BMTimeLogStopWatch';
 import styles from './BMTimeLogCard.module.css';
 
 // function BMTimeLogCard({ selectedProject }) {
-function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId }) {
+function BMTimeLogDisplayMember({
+  firstName,
+  lastName,
+  role,
+  memberId,
+  projectId,
+  isVisible = true,
+}) {
   const roleColors = {
     volunteer: '#78bdda', // light blue
     core: '#ecb16c', // light orange
@@ -17,18 +24,20 @@ function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId
   const borderProperty = `2px solid ${cardColor}`;
 
   return (
-    <div>
+    <div className={styles.memberCardContainer}>
       <Card
-        className={`${styles.memberCard} rounded-8 mr-3 my-3`}
+        role="group"
+        aria-label={`${firstName} ${lastName} time log`}
+        className={styles.memberCard}
         style={{ border: borderProperty }}
       >
         <CardHeader className={`${styles.memberCardHeader}`} style={{ backgroundColor: cardColor }}>
-          <h5 className={`${styles.memberCardName}`}>
+          <h5 className={styles.memberCardName} title={`${firstName} ${lastName}`}>
             {firstName} {lastName}
           </h5>
         </CardHeader>
 
-        <BMTimeLogStopWatch memberId={memberId} projectId={projectId} />
+        <BMTimeLogStopWatch memberId={memberId} projectId={projectId} isVisible={isVisible} />
       </Card>
     </div>
   );
