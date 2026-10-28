@@ -53,12 +53,18 @@ export default function CreateNewTeam() {
   const [tasksTooltipOpen, setTasksTooltipOpen] = useState(false);
 
   const [touchedFields, setTouchedFields] = useState(initialTouchedState);
-
-  // Members list is still loading until the store has an array
-  const membersLoading = !Array.isArray(userProfilesBasicInfo);
+  // True until the members request finishes (the store can hold an empty array before that)
+  const [membersLoading, setMembersLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
+    let isActive = true;
+    setMembersLoading(true);
+    Promise.resolve(dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }))).finally(() => {
+      if (isActive) setMembersLoading(false);
+    });
+    return () => {
+      isActive = false;
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -341,12 +347,9 @@ export default function CreateNewTeam() {
     );
   };
 
-  // Lets keyboard users open the "?" tooltips with Enter or Space
-  const handleTooltipKeyDown = (event, toggle) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      toggle();
-    }
+  // Tooltips open on keyboard focus; Escape closes them
+  const handleTooltipKeyDown = (event, close) => {
+    if (event.key === 'Escape') close();
   };
 
   const getMemberName = memberId => {
@@ -384,9 +387,7 @@ export default function CreateNewTeam() {
                 role="button"
                 tabIndex={0}
                 aria-label="Team name help"
-                onKeyDown={e =>
-                  handleTooltipKeyDown(e, () => setTeamNameTooltipOpen(!teamNameTooltipOpen))
-                }
+                onKeyDown={e => handleTooltipKeyDown(e, () => setTeamNameTooltipOpen(false))}
               >
                 ?
               </span>
@@ -439,9 +440,7 @@ export default function CreateNewTeam() {
                 role="button"
                 tabIndex={0}
                 aria-label="Members help"
-                onKeyDown={e =>
-                  handleTooltipKeyDown(e, () => setMembersTooltipOpen(!membersTooltipOpen))
-                }
+                onKeyDown={e => handleTooltipKeyDown(e, () => setMembersTooltipOpen(false))}
               >
                 ?
               </span>
@@ -601,9 +600,7 @@ export default function CreateNewTeam() {
                 role="button"
                 tabIndex={0}
                 aria-label="Tasks help"
-                onKeyDown={e =>
-                  handleTooltipKeyDown(e, () => setTasksTooltipOpen(!tasksTooltipOpen))
-                }
+                onKeyDown={e => handleTooltipKeyDown(e, () => setTasksTooltipOpen(false))}
               >
                 ?
               </span>
