@@ -17,6 +17,16 @@
   transform: translateY(-1px);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .taskListItem {
+    transition: none;
+  }
+
+  .taskListItem:hover {
+    transform: none;
+  }
+}
+
 .taskInfo {
   flex: 1;
   display: flex;

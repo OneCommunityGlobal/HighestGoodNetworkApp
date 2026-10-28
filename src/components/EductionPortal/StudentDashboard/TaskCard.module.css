@@ -17,6 +17,16 @@
   transform: translateY(-1px);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .taskCard {
+    transition: none;
+  }
+
+  .taskCard:hover {
+    transform: none;
+  }
+}
+
 .statusBadge {
   position: absolute;
   top: 1rem;
