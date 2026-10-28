@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
@@ -6,6 +6,7 @@ import { getAllUserProfile } from '~/actions/userManagement';
 import styles from './PermissionsManagement.module.css';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
+import { ModalContext } from '~/context/ModalContext';
 // eslint-disable-next-line no-unused-vars
 import { boxStyle, boxStyleDark } from '~/styles';
 import {
@@ -19,11 +20,11 @@ import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import CircularProgress from '@mui/material/CircularProgress';
 import ReminderModal from './ReminderModal';
+import { hasUserPermissionChanges } from './permissionChanges';
 
 function UserPermissionsPopUp({
   allUserProfiles,
-  // eslint-disable-next-line no-unused-vars
-  toggle,
+  closePopUp,
   getAllUsers,
   roles,
   authUser,
@@ -44,6 +45,27 @@ function UserPermissionsPopUp({
   const [toastShown, setToastShown] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { updateModalStatus } = useContext(ModalContext);
+
+  // Unsaved changes = the lists on screen differ from the saved user's lists.
+  const isDirty = hasUserPermissionChanges({
+    savedFront: actualUserProfile?.permissions?.frontPermissions,
+    draftFront: userPermissions,
+    savedRemoved: actualUserProfile?.permissions?.removedDefaultPermissions,
+    draftRemoved: userRemovedDefaultPermissions,
+  });
+
+  // Keep the shared flag in step with that comparison, so the parent keeps the pop-up open
+  // only while there really is something to save.
+  useEffect(() => {
+    updateModalStatus(isDirty);
+  }, [isDirty]);
+
+  // An Add/Delete that changed nothing (e.g. Delete on a category the user's role already
+  // covers) still turns the flag on; turn it off again so X/Esc can close the pop-up.
+  useEffect(() => {
+    if (modalStatus && !isDirty) updateModalStatus(false);
+  }, [modalStatus, isDirty]);
 
   const setToDefault = () => {
     setUserPermissions([]);
@@ -76,7 +98,6 @@ function UserPermissionsPopUp({
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
-    setisLoading(true);
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
       setIsSubmitting(false);
@@ -104,6 +125,7 @@ function UserPermissionsPopUp({
       requestor: authUser, // Fixed: use authUser instead of req.body.requestor
     };
 
+    setisLoading(true);
     axios
       .patch(url, permissionData)
       .then(() => {
@@ -116,10 +138,10 @@ function UserPermissionsPopUp({
           });
           setToastShown(true);
         }
-        toggle();
+        updateModalStatus(false);
+        closePopUp();
         getAllUsers();
         getChangeLogs();
-        setisLoading(false);
       })
       .catch(err => {
         const ERROR_MESSAGE = `
@@ -131,6 +153,7 @@ function UserPermissionsPopUp({
       })
       .finally(() => {
         setIsSubmitting(false);
+        setisLoading(false);
       });
   };
   useEffect(() => {
@@ -164,7 +187,7 @@ function UserPermissionsPopUp({
 
   return (
     <>
-      {modalStatus && (
+      {isDirty && modalStatus && (
         <ReminderModal
           setReminderModal={setReminderModal}
           reminderModal={reminderModal}
