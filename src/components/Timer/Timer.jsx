@@ -467,6 +467,14 @@ function Timer({ authUser, darkMode, isPopout }) {
     [timerState],
   );
 
+  // Deliberately does NOT reset message/goal/remaining to defaultMessage - the
+  // automatic backoff-retry path never does either, and doing it here optimistically
+  // wiped the real accumulated session (e.g. a goal built up over hours) back to the
+  // 15-minute default before a fresh GET_TIMER confirmed anything. If the token is
+  // still bad, the retry just fails again and reconnectExhausted flips back on - the
+  // user is left looking at a wiped-out default on top of "Disconnected" instead of
+  // their last known real state. The real GET_TIMER response (sent once OPEN) is
+  // what should ever overwrite message - same as every other reconnect path.
   const handleRefreshTimer = useCallback(() => {
     clearScheduledReconnect();
     reconnectAttemptRef.current = 0;
@@ -475,7 +483,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     setReconnectExhausted(false);
     getWebSocket()?.close();
     setCustomReadyState(ReadyState.CONNECTING);
-    setMessage(defaultMessage);
     setWsKey(k => k + 1);
   }, [getWebSocket, clearScheduledReconnect]);
 
