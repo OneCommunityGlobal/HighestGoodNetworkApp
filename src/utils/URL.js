@@ -138,6 +138,8 @@ export const ENDPOINTS = {
   WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceIndividualTeamcodes`,
   SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
+  KITCHEN_REPORTS_EXPORT_PDF: () => `${APIEndpoint}/kitchenandinventory/reports/export/pdf`,
+  KITCHEN_REPORTS_EXPORT_CSV: () => `${APIEndpoint}/kitchenandinventory/reports/export/csv`,
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
   POST_NEW_WARNING: () => `${APIEndpoint}/currentWarnings`,
   UPDATE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
@@ -776,6 +778,7 @@ export const ENDPOINTS = {
 
   // Help Request & Feedback Modal endpoints
   HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
+  HGN_COMMUNITY_MEMBERS: `${APIEndpoint}/hgnHelp/community`,
   HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
   FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
   FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
