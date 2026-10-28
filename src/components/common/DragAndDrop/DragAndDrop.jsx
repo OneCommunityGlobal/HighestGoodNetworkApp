@@ -5,7 +5,7 @@ import styles from './DragAndDrop.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faUpload } from '@fortawesome/free-solid-svg-icons';
 
-const DragAndDrop = ({ updateUploadedFiles }) => {
+const DragAndDrop = ({ updateUploadedFiles, multiple = true }) => {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
   const dragCounterRef = useRef(0);
@@ -36,10 +36,10 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
       const droppedFiles = e.dataTransfer.files;
       if (droppedFiles && droppedFiles.length > 0) {
         const newFiles = Array.from(droppedFiles);
-        updateUploadedFiles(newFiles);
+        updateUploadedFiles(multiple ? newFiles : newFiles.slice(0, 1));
       }
     },
-    [updateUploadedFiles],
+    [multiple, updateUploadedFiles],
   );
 
   const handleChange = useCallback(
@@ -48,11 +48,11 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
       const selectedFiles = e.target.files;
       if (selectedFiles && selectedFiles.length > 0) {
         const newFiles = Array.from(selectedFiles);
-        updateUploadedFiles(newFiles);
+        updateUploadedFiles(multiple ? newFiles : newFiles.slice(0, 1));
         e.target.value = '';
       }
     },
-    [updateUploadedFiles],
+    [multiple, updateUploadedFiles],
   );
 
   const handleButtonClick = useCallback(() => {
@@ -85,7 +85,7 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
         className={styles.fileUploadInput}
         type="file"
         name="file-upload-input"
-        multiple={true}
+        multiple={multiple}
         accept="image/jpeg, image/jpg, image/png, image/gif, image/webp"
         onChange={handleChange}
         aria-label="Upload image files"
