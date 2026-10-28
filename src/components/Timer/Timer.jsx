@@ -841,7 +841,11 @@ function Timer({ authUser, darkMode, isPopout }) {
       const { timeoutId, resolve } = pendingStopRef.current;
       clearTimeout(timeoutId);
       pendingStopRef.current = null;
-      resolve(lastJsonMessage.started === false);
+      // Resolves the full stopped message (truthy) on success, false on failure - existing
+      // callers that only check truthiness (`if (!stopped)`) are unaffected, while callers
+      // that need the server's own confirmed state (e.g. to avoid saving a time entry built
+      // from a stale local countdown) can read it off the resolved value.
+      resolve(lastJsonMessage.started === false ? lastJsonMessage : false);
     }
     if (
       lastJsonMessage?.requestId &&
