@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -20,53 +20,103 @@ import logger from '../../../../services/logService';
 import config from '../../../../config.json';
 import { ENDPOINTS } from '../../../../utils/URL';
 import { MOCK_DB } from './mockLaborCostData';
-import { buildLaborCostTooltip } from './laborCostTooltip';
 import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const updateTaskLabelRotation = (chart, width) => {
+  const spacePerTask = (width - 70) / Math.max(chart.data.labels.length, 1);
+  const longestLabel = Math.max(0, ...chart.data.labels.map(label => String(label).length * 7));
+  let rotation = 0;
+  if (spacePerTask < 65) {
+    rotation = 90;
+  } else if (spacePerTask < longestLabel + 12) {
+    rotation = 45;
+  }
+  chart.options.scales.x.ticks.minRotation = rotation;
+  chart.options.scales.x.ticks.maxRotation = rotation;
+};
+
 const barValueLabelPlugin = {
   id: 'barValueLabelPlugin',
+  beforeUpdate(chart) {
+    updateTaskLabelRotation(chart, chart.width);
+  },
   afterDatasetsDraw(chart, _args, pluginOptions) {
     const { ctx, chartArea } = chart;
     if (!chartArea) return;
-
-    const { darkMode } = pluginOptions;
-
     ctx.save();
     ctx.font = '600 11px Arial';
-    ctx.textAlign = 'center';
-
-    chart.data.datasets.forEach((dataset, datasetIndex) => {
-      const meta = chart.getDatasetMeta(datasetIndex);
-      if (meta.hidden) return;
-
-      meta.data.forEach((bar, index) => {
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const entries = chart.data.labels.flatMap((_task, index) =>
+      chart.data.datasets.flatMap((dataset, datasetIndex) => {
+        const meta = chart.getDatasetMeta(datasetIndex);
+        if (meta.hidden || !meta.data[index]) return [];
         const value = dataset.data[index];
-        if (!value) return;
-
-        const label = `$${value.toLocaleString()}`;
-        const { x, y, base } = bar.getProps(['x', 'y', 'base'], true);
-
-        const barHeight = Math.abs(base - y);
-        const isSmallBar = barHeight < 28;
-
-        const insideColor = darkMode ? '#ffffff' : '#111111';
-        const outsideColor = darkMode ? '#f5f5f5' : '#666666';
-
-        ctx.fillStyle = isSmallBar ? outsideColor : insideColor;
-
-        const textY = isSmallBar ? y - 8 : y + 8;
-        ctx.textBaseline = isSmallBar ? 'bottom' : 'top';
-
-        ctx.fillText(label, x, textY);
-      });
+        const label =
+          value >= 1000 ? `$${Number((value / 1000).toFixed(1))}k` : `$${value.toLocaleString()}`;
+        const { x, y } = meta.data[index].getProps(['x', 'y'], true);
+        return [
+          {
+            label,
+            x,
+            y: y - 10,
+            length: ctx.measureText(label).width + 12,
+            color: Array.isArray(dataset.backgroundColor)
+              ? dataset.backgroundColor[index]
+              : dataset.backgroundColor,
+            outline: Array.isArray(dataset.borderColor)
+              ? dataset.borderColor[index]
+              : dataset.borderColor,
+          },
+        ];
+      }),
+    );
+    const slant = -Math.PI / 3;
+    const bounds = entries.map(entry => ({
+      left: entry.x - 6,
+      right: entry.x + entry.length * Math.cos(slant) + 6,
+      top: entry.y + entry.length * Math.sin(slant) - 6,
+      bottom: entry.y + 6,
+    }));
+    const crowded = bounds.some(
+      (box, index) =>
+        box.left < chartArea.left ||
+        box.right > chartArea.right ||
+        box.top < chartArea.top ||
+        bounds
+          .slice(0, index)
+          .some(
+            other =>
+              box.left < other.right &&
+              box.right > other.left &&
+              box.top < other.bottom &&
+              box.bottom > other.top,
+          ),
+    );
+    // Rotate every value together rather than dropping individual values or pairs.
+    const angle = crowded ? -Math.PI / 2 : slant;
+    entries.forEach(entry => {
+      const x = Math.min(chartArea.right - 6, Math.max(chartArea.left + 6, entry.x));
+      const y = Math.min(chartArea.bottom - 6, Math.max(chartArea.top + entry.length + 6, entry.y));
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.fillStyle = entry.color;
+      ctx.beginPath();
+      ctx.arc(0, 0, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = entry.outline || entry.color;
+      ctx.lineWidth = 1;
+      if (pluginOptions.darkMode) ctx.stroke();
+      ctx.fillStyle = pluginOptions.darkMode ? '#f8fafc' : '#334155';
+      ctx.fillText(entry.label, 7, 0);
+      ctx.restore();
     });
-
     ctx.restore();
   },
 };
-
 const isValidISODate = dateString => {
   if (!dateString) return false;
   return moment(dateString).isValid();
@@ -322,56 +372,57 @@ Option.propTypes = {
   label: PropTypes.string.isRequired,
 };
 
-const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
-  return tasksToInclude.flatMap((task, idx) => {
-    const hue = Math.round((idx * 360) / Math.max(1, tasksToInclude.length));
-    const saturation = 65;
-    const lightness = darkMode ? 65 : 50;
-
-    const actualColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    const budgetColor = darkMode
-      ? `hsla(${hue}, ${saturation}%, ${lightness + 20}%, 0.8)`
-      : `hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`;
-
-    return [
-      {
-        label: `${task} (Actual)`,
-        costType: 'actual',
-        backgroundColor: actualColor,
-        borderRadius: 4,
-        data: labels.map(label => aggregation[label][task]?.cost || 0),
-        maxBarThickness: 40,
-        categoryPercentage: 0.8,
-        barPercentage: 0.9,
-      },
-      {
-        label: `${task} (Budget)`,
-        costType: 'budget',
-        backgroundColor: budgetColor,
-        borderColor: actualColor,
-        borderWidth: { top: 2, right: 2, bottom: 0, left: 2 },
-        borderDash: [4, 4],
-        borderRadius: 4,
-        data: labels.map(label => aggregation[label][task]?.budget || 0),
-        maxBarThickness: 40,
-        categoryPercentage: 0.8,
-        barPercentage: 0.9,
-      },
-    ];
+const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode, allTasks) => {
+  const totals = aggregation[labels[0]];
+  // Use the full task list so filtering and selection order never reassign colors.
+  const colorOrder = [...allTasks].sort((first, second) => {
+    if (first < second) return -1;
+    if (first > second) return 1;
+    return 0;
   });
+  const hues = tasksToInclude.map(task => Math.round((colorOrder.indexOf(task) * 137.508) % 360));
+  const actualColors = hues.map(hue => `hsl(${hue}, 65%, ${darkMode ? 60 : 40}%)`);
+  const budgetColors = hues.map(hue => `hsl(${hue}, 65%, ${darkMode ? 82 : 78}%)`);
+  const outlines = hues.map(hue => `hsl(${hue}, 65%, ${darkMode ? 85 : 28}%)`);
+  return [
+    {
+      label: 'Actual',
+      backgroundColor: actualColors,
+      borderColor: outlines,
+      borderWidth: darkMode ? 1 : 0,
+      borderRadius: 4,
+      data: tasksToInclude.map(task => totals?.[task]?.cost || 0),
+      maxBarThickness: 40,
+      categoryPercentage: 0.8,
+      barPercentage: 0.9,
+    },
+    {
+      label: 'Budget',
+      backgroundColor: budgetColors,
+      borderColor: outlines,
+      borderWidth: darkMode ? 1 : 0,
+      borderRadius: 4,
+      data: tasksToInclude.map(task => totals?.[task]?.budget || 0),
+      maxBarThickness: 40,
+      categoryPercentage: 0.8,
+      barPercentage: 0.9,
+    },
+  ];
 };
 
-const buildChartOptions = (textColor, darkMode, totalCost, totalBudget) => ({
+const buildChartOptions = (textColor, darkMode) => ({
   responsive: true,
   maintainAspectRatio: false,
-  layout: { padding: { top: 35, left: 15, right: 15, bottom: 10 } },
+  onResize(chart, size) {
+    updateTaskLabelRotation(chart, size.width);
+  },
+  layout: { padding: { top: 16, left: 8, right: 8, bottom: 8 } },
+  interaction: { mode: 'index', intersect: false },
   plugins: {
     barValueLabelPlugin: { darkMode },
-    legend: {
-      position: 'top',
-      labels: { font: { size: 12 }, color: textColor, padding: 20, usePointStyle: true },
-    },
+    legend: { display: false },
     datalabels: {
+      display: false,
       anchor: 'end',
       align: 'top',
       offset: 2,
@@ -392,7 +443,9 @@ const buildChartOptions = (textColor, darkMode, totalCost, totalBudget) => ({
       borderWidth: 1,
       callbacks: {
         label(context) {
-          return buildLaborCostTooltip(context, totalCost, totalBudget);
+          const project = context.chart.data.labels[context.dataIndex];
+          const costDollars = context.parsed.y || 0;
+          return `${project}, ${context.dataset.label}: $${costDollars.toLocaleString()}`;
         },
       },
     },
@@ -400,15 +453,16 @@ const buildChartOptions = (textColor, darkMode, totalCost, totalBudget) => ({
   scales: {
     x: {
       grid: { display: false },
-      ticks: { font: { size: 12 }, color: textColor },
+      ticks: { font: { size: 12 }, color: textColor, autoSkip: false, maxRotation: 45 },
       offset: true,
     },
     y: {
-      grace: '15%',
+      grace: '35%',
       grid: { color: darkMode ? '#334155' : '#e2e8f0' },
       beginAtZero: true,
       title: { display: true, text: 'Cost ($)', font: { size: 12 }, color: textColor },
       ticks: {
+        maxTicksLimit: 6,
         font: { size: 12 },
         color: textColor,
         callback: value => (value >= 1000 ? `$${value / 1000}k` : `$${value}`),
@@ -490,15 +544,28 @@ export default function PaidLaborCost() {
   const selectStyles = useMemo(() => generateSelectStyles(darkMode), [darkMode]);
 
   const taskDatasets = useMemo(
-    () => buildChartDatasets(tasksToInclude, labels, aggregation, darkMode),
-    [tasksToInclude, labels, aggregation, darkMode],
+    () => buildChartDatasets(tasksToInclude, labels, aggregation, darkMode, allAvailableTasks),
+    [tasksToInclude, labels, aggregation, darkMode, allAvailableTasks],
   );
 
-  const chartData = { labels, datasets: taskDatasets };
-  const options = useMemo(
-    () => buildChartOptions(textColor, darkMode, displayTotalCost, displayTotalBudget),
-    [textColor, darkMode, displayTotalCost, displayTotalBudget],
+  const legendRef = useRef(null);
+  const chartPlugins = useMemo(
+    () => [
+      {
+        ...barValueLabelPlugin,
+        afterLayout(chart) {
+          const legend = legendRef.current;
+          if (!legend || !chart.chartArea) return;
+          const { left, right } = chart.chartArea;
+          legend.style.setProperty('--plot-left', `${left}px`);
+          legend.style.setProperty('--plot-right', `${chart.width - right}px`);
+        },
+      },
+    ],
+    [],
   );
+  const chartData = { labels: tasksToInclude, datasets: taskDatasets };
+  const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
 
   if (initialLoading) {
     return (
@@ -512,7 +579,6 @@ export default function PaidLaborCost() {
   return (
     <div className={`${styles.paidLaborCostContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
-
       <div className={styles.filtersGrid}>
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel} htmlFor="task-filter">
@@ -550,7 +616,7 @@ export default function PaidLaborCost() {
             styles={selectStyles}
           />
         </div>
-        <div className={styles.filterGroup}>
+        <div className={`${styles.filterGroup} ${styles.dateFilterGroup}`}>
           <label className={styles.filterLabel} htmlFor="start-date">
             Date Range
           </label>
@@ -582,6 +648,7 @@ export default function PaidLaborCost() {
             <div className={styles.datePickerWrapper}>
               <DatePicker
                 id="end-date"
+                aria-label="End Date"
                 selected={dateRange.endDate}
                 onChange={handleEndDateChange}
                 selectsEnd
@@ -601,17 +668,67 @@ export default function PaidLaborCost() {
           </div>
         </div>
       </div>
-
-      <div className={styles.paidLaborCostChartWrapper}>
-        <div className={styles.paidLaborCostChartContainer}>
-          {labels.length === 0 ? (
-            <div className={styles.emptyState}>No data available for the selected filters.</div>
-          ) : (
-            <Bar data={chartData} options={options} plugins={[barValueLabelPlugin]} />
+      <div className={styles.chartAndLegendScroll}>
+        <div
+          className={styles.chartAndLegendContent}
+          style={{ '--task-count': tasksToInclude.length }}
+        >
+          <div className={styles.paidLaborCostChartWrapper}>
+            <div className={styles.paidLaborCostChartContainer}>
+              {labels.length === 0 ? (
+                <div className={styles.emptyState}>No data available for the selected filters.</div>
+              ) : (
+                <Bar
+                  key="theme-consistent-labor-chart"
+                  data={chartData}
+                  options={options}
+                  plugins={chartPlugins}
+                  role="img"
+                  aria-label={`Paid labor cost by task for ${projectFilter}: Actual and Budget`}
+                />
+              )}
+            </div>
+          </div>
+          {labels.length > 0 && (
+            <fieldset
+              ref={legendRef}
+              className={styles.chartLegend}
+              aria-label="Paid labor cost legend"
+            >
+              {taskDatasets.map(dataset => (
+                <div key={dataset.label} className={styles.chartLegendRow}>
+                  <span className={styles.chartLegendLabel}>{dataset.label}</span>
+                  <ul
+                    className={styles.chartLegendValues}
+                    aria-label={`${dataset.label} colors`}
+                    style={{
+                      gridTemplateColumns: `repeat(${tasksToInclude.length}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {tasksToInclude.map((task, index) => (
+                      <li
+                        key={task}
+                        className={styles.chartLegendValue}
+                        aria-label={`${task} ${dataset.label}`}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={styles.taskLegendSwatch}
+                          style={{
+                            backgroundColor: dataset.backgroundColor[index],
+                            borderColor: dataset.borderColor[index],
+                            borderWidth: darkMode ? 1 : 0,
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </fieldset>
           )}
         </div>
       </div>
-
       <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
         <div className={styles.summaryItem}>
           <span className={styles.summaryLabel}>Total Budget</span>
