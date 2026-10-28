@@ -247,3 +247,23 @@ it('validates files before simulation', () => {
   expect(store.getState().studentTasks.taskItems[0].status).toBe('in_progress');
   expect(httpService.post).not.toHaveBeenCalled();
 });
+
+it('removes the attachment, clears the native input, and allows selecting it again', async () => {
+  mount(<TaskCard task={task} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Upload' }));
+  const input = screen.getByLabelText('Submission file');
+  fireEvent.change(input, { target: { files: [file] } });
+  const clearNativeValue = vi.spyOn(input, 'value', 'set');
+  expect(screen.getByRole('button', { name: 'Submit file' })).toBeEnabled();
+  fireEvent.click(screen.getByRole('button', { name: 'Remove attached file answer.txt' }));
+  expect(input.value).toBe('');
+  expect(clearNativeValue).toHaveBeenCalledWith('');
+  clearNativeValue.mockRestore();
+  expect(screen.getByRole('button', { name: 'Submit file' })).toBeDisabled();
+  expect(screen.queryByRole('button', { name: /Remove attached file/ })).not.toBeInTheDocument();
+  fireEvent.change(input, { target: { files: [file] } });
+  expect(screen.getByRole('button', { name: 'Submit file' })).toBeEnabled();
+  fireEvent.click(screen.getByRole('button', { name: 'Submit file' }));
+  await waitFor(() => expect(httpService.post).toHaveBeenCalledTimes(1));
+  expect(httpService.post.mock.calls[0][1].get('file')).toBe(file);
+});

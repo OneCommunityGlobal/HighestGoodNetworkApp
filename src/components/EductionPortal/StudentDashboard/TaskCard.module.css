@@ -6,7 +6,7 @@
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   border: 1px solid #e5e7eb;
   position: relative;
-  transition: all 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
   min-height: 280px;
   display: flex;
   flex-direction: column;
@@ -133,7 +133,7 @@
   background-color: #fff;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   color: #6b7280;
 }
 
@@ -151,22 +151,22 @@
   gap: 0.5rem;
   height: 40px;
   border: none;
-  background-color: #3b82f6;
+  background-color: #2563eb;
   color: #fff;
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .markDoneButton:hover:not(.disabled) {
-  background-color: #2563eb;
+  background-color: #1d4ed8;
 }
 
 .markDoneButton.disabled {
   background-color: #d1d5db;
-  color: #9ca3af;
+  color: #4b5563;
   cursor: not-allowed;
 }
 
@@ -178,7 +178,7 @@
   gap: 0.5rem;
   height: 40px;
   border: none;
-  background-color: #10b981;
+  background-color: #047857;
   color: #fff;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -200,11 +200,11 @@
   padding: 0.5rem;
   background: transparent;
   border: none;
-  color: #3b82f6;
+  color: #2563eb;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease, border-radius 0.2s ease;
   width: 100%;
   justify-content: center;
 }
@@ -228,7 +228,7 @@
 
 .noIntermediateTasks {
   text-align: center;
-  color: #9ca3af;
+  color: #6b7280;
   font-size: 0.875rem;
   padding: 1rem;
   margin: 0;
@@ -243,7 +243,7 @@
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   gap: 0.75rem;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .intermediateTaskItem:hover {
@@ -263,7 +263,7 @@
 
 .intermediateTaskDescription {
   font-size: 0.8rem;
-  color: #6b7280;
+  color: #626975;
   margin: 0 0 0.5rem;
   line-height: 1.4;
 }
@@ -293,7 +293,7 @@
 .subTaskProgressText {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: #626975;
   min-width: 35px;
   text-align: right;
 }
@@ -303,7 +303,7 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: #626975;
 }
 
 .intermediateTaskHours {
@@ -339,13 +339,13 @@
   background-color: #fff;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: #10b981;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  color: #047857;
   flex-shrink: 0;
 }
 
 .markIntermediateDoneButton:hover:not(.disabled) {
-  background-color: #10b981;
+  background-color: #047857;
   border-color: #10b981;
   color: #fff;
 }
@@ -353,7 +353,7 @@
 .markIntermediateDoneButton.disabled {
   background-color: #f3f4f6;
   border-color: #e5e7eb;
-  color: #d1d5db;
+  color: #030712;
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -361,7 +361,7 @@
 .markIntermediateDoneButton.disabled:hover {
   background-color: #f3f4f6;
   border-color: #e5e7eb;
-  color: #d1d5db;
+  color: #030712;
 }
 
 /* Responsive Design */
@@ -496,11 +496,11 @@
 
 :global(.dark-mode) .markDoneButton.disabled {
   background-color: #404040;
-  color: #6b7280;
+  color: #d1d5db;
 }
 
 :global(.dark-mode) .completedButton {
-  background-color: #10b981;
+  background-color: #047857;
   color: #fff;
 }
 
@@ -580,7 +580,7 @@
 }
 
 :global(.dark-mode) .markIntermediateDoneButton:hover:not(.disabled) {
-  background-color: #10b981;
+  background-color: #047857;
   border-color: #10b981;
   color: #fff;
 }
@@ -588,5 +588,5 @@
 :global(.dark-mode) .markIntermediateDoneButton.disabled {
   background-color: #252525;
   border-color: #363636;
-  color: #525252;
+  color: #e5e7eb;
 }

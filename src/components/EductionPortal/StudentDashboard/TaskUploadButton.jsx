@@ -24,6 +24,7 @@ export default function TaskUploadButton({ task, darkMode = false, onComplete })
   const simulationAvailable =
     import.meta.env.DEV && ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
   const pendingRef = useRef(false);
+  const fileInputRef = useRef(null);
   const eligible =
     task.task_type === 'write' &&
     !task.is_completed &&
@@ -93,7 +94,7 @@ export default function TaskUploadButton({ task, darkMode = false, onComplete })
 
   return (
     <>
-      {task.simulated_upload && <span role="status">Simulated completion — not saved</span>}
+      {task.simulated_upload && <output>Simulated completion — not saved</output>}
       {eligible && (
         <button type="button" className={styles.uploadButton} onClick={() => setOpen(true)}>
           Upload
@@ -113,17 +114,37 @@ export default function TaskUploadButton({ task, darkMode = false, onComplete })
         <ModalBody>
           <form onSubmit={submit} className={styles.form} aria-busy={pending}>
             <label htmlFor="task-upload-file">Submission file</label>
-            <input
-              id="task-upload-file"
-              type="file"
-              accept={acceptedTypes.join(',')}
-              disabled={pending}
-              aria-describedby="task-upload-help"
-              onChange={event => {
-                setFile(event.target.files[0] || null);
-                setError('');
-              }}
-            />
+            <div className={styles.fileRow}>
+              <input
+                ref={fileInputRef}
+                className={styles.fileInput}
+                id="task-upload-file"
+                type="file"
+                accept={acceptedTypes.join(',')}
+                disabled={pending}
+                aria-describedby="task-upload-help"
+                onChange={event => {
+                  setFile(event.target.files[0] || null);
+                  setError('');
+                }}
+              />
+              {file && (
+                <button
+                  type="button"
+                  className={styles.removeFile}
+                  aria-label={`Remove attached file ${file.name}`}
+                  disabled={pending}
+                  onClick={() => {
+                    if (pendingRef.current) return;
+                    setFile(null);
+                    setError('');
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                  }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
             <p id="task-upload-help">PDF, DOCX, TXT, JPEG, PNG, or GIF; up to 10 MB.</p>
             {simulationAvailable && (
               <label>
@@ -132,7 +153,7 @@ export default function TaskUploadButton({ task, darkMode = false, onComplete })
                   checked={simulate}
                   disabled={pending}
                   onChange={event => setSimulate(event.target.checked)}
-                />
+                />{' '}
                 Simulate upload locally (not saved; resets on refresh)
               </label>
             )}
