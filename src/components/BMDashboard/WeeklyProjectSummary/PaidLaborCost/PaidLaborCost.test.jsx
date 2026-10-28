@@ -202,7 +202,7 @@ describe('Paid Labor Cost', () => {
         parsed: { y: 50000 },
         dataset: { label: 'Actual' },
       }),
-    ).toBe('Deployment, Actual: $50,000');
+    ).toContain('Actual: $50,000.00');
   });
 
   it('draws readable pairs above bars with matching angles, formatting and series markers', async () => {
@@ -329,7 +329,7 @@ describe('Paid Labor Cost', () => {
     expect(readChart().datasets[0].data).toEqual([26000]);
     await user.click(screen.getByLabelText('Tasks'));
     await user.click(within(screen.getByRole('listbox')).getByText('Deployment'));
-    expect(readChart().labels).toEqual(['Review', 'Deployment']);
+    expect(readChart().labels).toEqual(['Deployment', 'Review']);
     await user.click(screen.getByLabelText('Tasks'));
     await user.click(within(screen.getByRole('listbox')).getByText('Review'));
     await user.click(screen.getByLabelText('Tasks'));
@@ -357,5 +357,98 @@ describe('Paid Labor Cost', () => {
     expect(
       await screen.findByText('No data available for the selected filters.'),
     ).toBeInTheDocument();
+  });
+
+  it('sorts tasks by actual cost while preserving task colors and percentages', async () => {
+    render(<PaidLaborCost />);
+    await screen.findByLabelText('Chart results');
+    const original = readChart();
+    const contributions = screen.getByRole('list', { name: 'Task cost contributions' });
+    expect(within(contributions).getAllByRole('listitem')[0]).toHaveTextContent('Deployment');
+    expect(within(contributions).getAllByRole('listitem')[0]).toHaveTextContent('69.8%');
+    expect(within(contributions).getAllByRole('listitem')[1]).toHaveTextContent('30.2%');
+    fireEvent.change(screen.getByLabelText('Sort tasks by cost'), { target: { value: 'lowest' } });
+    expect(readChart().labels).toEqual(['Review', 'Deployment']);
+    expect(readChart().datasets[0].data).toEqual([26000, 60000]);
+    expect(readChart().datasets[0].backgroundColor).toEqual(
+      [...original.datasets[0].backgroundColor].reverse(),
+    );
+    expect(within(contributions).getAllByRole('listitem')[0]).toHaveTextContent('Review');
+  });
+
+  it('switches to aggregate totals and drills down from Total Actual without losing filters', async () => {
+    render(<PaidLaborCost />);
+    await screen.findByLabelText('Chart results');
+    await userEvent.click(screen.getByLabelText('Project'));
+    await userEvent.click(screen.getByText('Project A'));
+    await userEvent.click(screen.getByRole('button', { name: 'Aggregate', exact: true }));
+    expect(readChart().labels).toEqual(['Project A']);
+    expect(readChart().datasets.map(dataset => dataset.data)).toEqual([[76000], [69000]]);
+    expect(screen.queryByLabelText('Sort tasks by cost')).not.toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole('button', { name: 'View task breakdown of Total Actual' }),
+    );
+    expect(readChart().datasets[0].data).toEqual([50000, 26000]);
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: 'Task contributions' })).toHaveFocus(),
+    );
+    expect(screen.getByRole('button', { name: 'Tasks', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
+  it('drills down from an aggregate chart bar', async () => {
+    render(<PaidLaborCost />);
+    await screen.findByLabelText('Chart results');
+    await userEvent.click(screen.getByRole('button', { name: 'Aggregate', exact: true }));
+    fireEvent.click(screen.getByLabelText('Chart results'));
+    chartCapture.props.options.onClick({}, [{ index: 0 }]);
+    await waitFor(() => expect(readChart().labels).toEqual(['Deployment', 'Review']));
+  });
+
+  it('uses updated filtered totals in tooltips and explicitly marks missing hours and rates', async () => {
+    render(<PaidLaborCost />);
+    await screen.findByLabelText('Chart results');
+    await userEvent.click(screen.getByLabelText('Tasks'));
+    await userEvent.click(within(screen.getByRole('listbox')).getByText('Review'));
+    const { data, options } = chartCapture.props;
+    const actual = options.plugins.tooltip.callbacks.label({
+      chart: { data },
+      dataIndex: 0,
+      parsed: { y: 26000 },
+      dataset: data.datasets[0],
+    });
+    expect(actual).toContain('100.0% of filtered actual labor cost');
+    expect(actual).toContain('Hours worked: Unavailable');
+    expect(actual).toContain('Hourly rate: Unavailable');
+    const budget = options.plugins.tooltip.callbacks.label({
+      chart: { data },
+      dataIndex: 0,
+      parsed: { y: 24000 },
+      dataset: data.datasets[1],
+    });
+    expect(budget).toContain('100.0% of filtered budget');
+  });
+
+  it('handles zero costs and empty results without offering an empty drill-down', async () => {
+    fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: [{ ...records[0], cost: 0, budget: 0 }] }),
+    });
+    const { unmount } = render(<PaidLaborCost />);
+    await screen.findByLabelText('Chart results');
+    expect(
+      within(screen.getByRole('list', { name: 'Task cost contributions' })).getAllByText(
+        'Unavailable',
+      )[0],
+    ).toBeInTheDocument();
+    unmount();
+    fetch.mockResolvedValue({ ok: true, json: async () => ({ data: [] }) });
+    render(<PaidLaborCost />);
+    await screen.findByText('No data available for the selected filters.');
+    expect(
+      screen.getByRole('button', { name: 'View task breakdown of Total Actual' }),
+    ).toBeDisabled();
   });
 });

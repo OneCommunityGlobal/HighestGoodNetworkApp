@@ -10,13 +10,17 @@ export const getCostPercentage = (cost, total) => {
 };
 
 export const buildLaborCostTooltip = (context, totalCost, totalBudget) => {
-  const project = context.chart.data.labels[context.dataIndex];
   const rawCost = context.parsed.y;
   const cost = Number.isFinite(rawCost) ? rawCost : 0;
   const isBudget = context.dataset.costType === 'budget';
   const total = isBudget ? totalBudget : totalCost;
   const totalLabel = isBudget ? 'budget' : 'actual labor cost';
-  const lines = [`${project}, ${context.dataset.label}: ${formatCost(cost)}`];
+  const lines = [`${isBudget ? 'Budget' : 'Actual'}: ${formatCost(cost)}`];
+
+  if (!isBudget) {
+    lines.push('Hours worked: Unavailable');
+    lines.push('Hourly rate: Unavailable');
+  }
 
   if (!Number.isFinite(total) || total <= 0) {
     lines.push(`Share unavailable: filtered ${totalLabel} total is zero or unavailable.`);

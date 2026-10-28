@@ -35,6 +35,7 @@ describe('labor cost contribution tooltips', () => {
   });
 
   it('formats dollars without multiplying them by 1000', () => {
-    expect(buildLaborCostTooltip(context(250), 1000, 0)[0]).toContain('$250.00');
+    expect(buildLaborCostTooltip(context(250), 1000, 0)[0]).toBe('Actual: $250.00');
+    expect(buildLaborCostTooltip(context(250, 'budget'), 1000, 500)[0]).toBe('Budget: $250.00');
   });
 });

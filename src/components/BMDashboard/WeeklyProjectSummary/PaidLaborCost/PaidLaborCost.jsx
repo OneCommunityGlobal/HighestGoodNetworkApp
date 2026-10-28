@@ -20,6 +20,7 @@ import logger from '../../../../services/logService';
 import config from '../../../../config.json';
 import { ENDPOINTS } from '../../../../utils/URL';
 import { MOCK_DB } from './mockLaborCostData';
+import { buildLaborCostTooltip, getCostPercentage } from './laborCostTooltip';
 import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -54,6 +55,7 @@ const barValueLabelPlugin = {
         const meta = chart.getDatasetMeta(datasetIndex);
         if (meta.hidden || !meta.data[index]) return [];
         const value = dataset.data[index];
+        if (!Number.isFinite(value)) return [];
         const label =
           value >= 1000 ? `$${Number((value / 1000).toFixed(1))}k` : `$${value.toLocaleString()}`;
         const { x, y } = meta.data[index].getProps(['x', 'y'], true);
@@ -197,21 +199,21 @@ function aggregateData(data, taskFilter, projectFilter, dateRange) {
   }
 
   const label = projectFilter === 'All Projects' ? 'All Projects' : projectFilter;
-  const aggregation = { [label]: { totalCost: 0, totalBudget: 0 } };
+  const aggregation = { [label]: { totalCost: 0, totalBudget: 0, tasks: Object.create(null) } };
   const distinctTasks = [...new Set(validData.map(d => d.task))];
 
-  const tasksToInclude = taskFilter.length > 0 ? taskFilter : distinctTasks;
+  const tasksToInclude = distinctTasks;
 
   tasksToInclude.forEach(t => {
-    aggregation[label][t] = { cost: 0, budget: 0 };
+    aggregation[label].tasks[t] = { cost: 0, budget: 0 };
   });
 
   validData.forEach(item => {
     aggregation[label].totalCost += item.cost;
     aggregation[label].totalBudget += item.budget;
     if (tasksToInclude.includes(item.task)) {
-      aggregation[label][item.task].cost += item.cost;
-      aggregation[label][item.task].budget += item.budget;
+      aggregation[label].tasks[item.task].cost += item.cost;
+      aggregation[label].tasks[item.task].budget += item.budget;
     }
   });
 
@@ -387,22 +389,24 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode, allTa
   return [
     {
       label: 'Actual',
+      costType: 'actual',
       backgroundColor: actualColors,
       borderColor: outlines,
       borderWidth: darkMode ? 1 : 0,
       borderRadius: 4,
-      data: tasksToInclude.map(task => totals?.[task]?.cost || 0),
+      data: tasksToInclude.map(task => totals?.tasks[task]?.cost || 0),
       maxBarThickness: 40,
       categoryPercentage: 0.8,
       barPercentage: 0.9,
     },
     {
       label: 'Budget',
+      costType: 'budget',
       backgroundColor: budgetColors,
       borderColor: outlines,
       borderWidth: darkMode ? 1 : 0,
       borderRadius: 4,
-      data: tasksToInclude.map(task => totals?.[task]?.budget || 0),
+      data: tasksToInclude.map(task => totals?.tasks[task]?.budget || 0),
       maxBarThickness: 40,
       categoryPercentage: 0.8,
       barPercentage: 0.9,
@@ -410,7 +414,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode, allTa
   ];
 };
 
-const buildChartOptions = (textColor, darkMode) => ({
+const buildChartOptions = (textColor, darkMode, totalCost, totalBudget, onDrillDown) => ({
   responsive: true,
   maintainAspectRatio: false,
   onResize(chart, size) {
@@ -418,6 +422,9 @@ const buildChartOptions = (textColor, darkMode) => ({
   },
   layout: { padding: { top: 16, left: 8, right: 8, bottom: 8 } },
   interaction: { mode: 'index', intersect: false },
+  onClick: (_event, elements) => {
+    if (elements.length > 0) onDrillDown();
+  },
   plugins: {
     barValueLabelPlugin: { darkMode },
     legend: { display: false },
@@ -443,9 +450,7 @@ const buildChartOptions = (textColor, darkMode) => ({
       borderWidth: 1,
       callbacks: {
         label(context) {
-          const project = context.chart.data.labels[context.dataIndex];
-          const costDollars = context.parsed.y || 0;
-          return `${project}, ${context.dataset.label}: $${costDollars.toLocaleString()}`;
+          return buildLaborCostTooltip(context, totalCost, totalBudget);
         },
       },
     },
@@ -481,6 +486,24 @@ export default function PaidLaborCost() {
   const [taskFilter, setTaskFilter] = useState([]); // Array of selected task names, empty = all tasks
   const [projectFilter, setProjectFilter] = useState('All Projects');
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
+  const [viewMode, setViewMode] = useState('tasks');
+  const [sortOrder, setSortOrder] = useState('highest');
+  const breakdownRef = useRef(null);
+  const [drillDownRequest, setDrillDownRequest] = useState(0);
+
+  const drillDown = () => {
+    setViewMode('tasks');
+    setDrillDownRequest(request => request + 1);
+  };
+
+  useEffect(() => {
+    if (!drillDownRequest) return undefined;
+    const timer = setTimeout(() => {
+      breakdownRef.current?.focus();
+      breakdownRef.current?.scrollIntoView?.({ block: 'nearest' });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [drillDownRequest]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -520,6 +543,16 @@ export default function PaidLaborCost() {
 
   const displayTotalCost = labels.length > 0 ? aggregation[labels[0]]?.totalCost || 0 : 0;
   const displayTotalBudget = labels.length > 0 ? aggregation[labels[0]]?.totalBudget || 0 : 0;
+  const sortedTasks = useMemo(
+    () =>
+      [...tasksToInclude].sort((first, second) => {
+        const totals = aggregation[labels[0]]?.tasks;
+        const difference = (totals?.[first]?.cost || 0) - (totals?.[second]?.cost || 0);
+        return (sortOrder === 'highest' ? -difference : difference) || first.localeCompare(second);
+      }),
+    [tasksToInclude, aggregation, labels, sortOrder],
+  );
+  const displayedLabels = viewMode === 'tasks' ? sortedTasks : labels;
 
   const { absoluteVariance, variancePercentage, varianceClass } = useMemo(
     () => calculateVarianceMetrics(displayTotalCost, displayTotalBudget, styles),
@@ -543,10 +576,31 @@ export default function PaidLaborCost() {
 
   const selectStyles = useMemo(() => generateSelectStyles(darkMode), [darkMode]);
 
-  const taskDatasets = useMemo(
-    () => buildChartDatasets(tasksToInclude, labels, aggregation, darkMode, allAvailableTasks),
-    [tasksToInclude, labels, aggregation, darkMode, allAvailableTasks],
-  );
+  const taskDatasets = useMemo(() => {
+    const datasets = buildChartDatasets(
+      sortedTasks,
+      labels,
+      aggregation,
+      darkMode,
+      allAvailableTasks,
+    );
+    if (viewMode === 'tasks') return datasets;
+    return datasets.map(dataset => ({
+      ...dataset,
+      data: [dataset.costType === 'actual' ? displayTotalCost : displayTotalBudget],
+      backgroundColor: [dataset.costType === 'actual' ? '#2878b5' : '#9bc5e5'],
+      borderColor: [darkMode ? '#e2e8f0' : '#2878b5'],
+    }));
+  }, [
+    sortedTasks,
+    labels,
+    aggregation,
+    darkMode,
+    allAvailableTasks,
+    viewMode,
+    displayTotalCost,
+    displayTotalBudget,
+  ]);
 
   const legendRef = useRef(null);
   const chartPlugins = useMemo(
@@ -564,8 +618,14 @@ export default function PaidLaborCost() {
     ],
     [],
   );
-  const chartData = { labels: tasksToInclude, datasets: taskDatasets };
-  const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
+  const chartData = { labels: displayedLabels, datasets: taskDatasets };
+  const options = buildChartOptions(
+    textColor,
+    darkMode,
+    displayTotalCost,
+    displayTotalBudget,
+    drillDown,
+  );
 
   if (initialLoading) {
     return (
@@ -668,10 +728,38 @@ export default function PaidLaborCost() {
           </div>
         </div>
       </div>
+      <div className={styles.viewControls}>
+        <fieldset className={styles.viewToggle}>
+          <legend>Cost view</legend>
+          <button
+            type="button"
+            aria-pressed={viewMode === 'aggregate'}
+            onClick={() => setViewMode('aggregate')}
+          >
+            Aggregate
+          </button>
+          <button
+            type="button"
+            aria-pressed={viewMode === 'tasks'}
+            onClick={() => setViewMode('tasks')}
+          >
+            Tasks
+          </button>
+        </fieldset>
+        {viewMode === 'tasks' && (
+          <label className={styles.sortControl}>
+            Sort tasks by cost
+            <select value={sortOrder} onChange={event => setSortOrder(event.target.value)}>
+              <option value="highest">Highest to lowest</option>
+              <option value="lowest">Lowest to highest</option>
+            </select>
+          </label>
+        )}
+      </div>
       <div className={styles.chartAndLegendScroll}>
         <div
           className={styles.chartAndLegendContent}
-          style={{ '--task-count': tasksToInclude.length }}
+          style={{ '--task-count': displayedLabels.length }}
         >
           <div className={styles.paidLaborCostChartWrapper}>
             <div className={styles.paidLaborCostChartContainer}>
@@ -684,7 +772,7 @@ export default function PaidLaborCost() {
                   options={options}
                   plugins={chartPlugins}
                   role="img"
-                  aria-label={`Paid labor cost by task for ${projectFilter}: Actual and Budget`}
+                  aria-label={`Paid labor cost ${viewMode} for ${projectFilter}: Actual and Budget`}
                 />
               )}
             </div>
@@ -702,10 +790,10 @@ export default function PaidLaborCost() {
                     className={styles.chartLegendValues}
                     aria-label={`${dataset.label} colors`}
                     style={{
-                      gridTemplateColumns: `repeat(${tasksToInclude.length}, minmax(0, 1fr))`,
+                      gridTemplateColumns: `repeat(${displayedLabels.length}, minmax(0, 1fr))`,
                     }}
                   >
-                    {tasksToInclude.map((task, index) => (
+                    {displayedLabels.map((task, index) => (
                       <li
                         key={task}
                         className={styles.chartLegendValue}
@@ -729,6 +817,37 @@ export default function PaidLaborCost() {
           )}
         </div>
       </div>
+      {viewMode === 'tasks' && labels.length > 0 && (
+        <section className={styles.taskBreakdown} aria-labelledby="labor-task-breakdown-title">
+          <h5 id="labor-task-breakdown-title" ref={breakdownRef} tabIndex={-1}>
+            Task contributions
+          </h5>
+          <p>Share of actual labor cost for the selected filters.</p>
+          <ol aria-label="Task cost contributions">
+            {sortedTasks.map(task => {
+              const cost = aggregation[labels[0]].tasks[task].cost;
+              const percentage = getCostPercentage(cost, displayTotalCost);
+              let share = 'Unavailable';
+              if (displayTotalCost > 0) {
+                share = `${percentage > 0 && percentage < 0.1 ? '<0.1' : percentage.toFixed(1)}%`;
+              }
+              return (
+                <li key={task}>
+                  <span>{task}</span>
+                  <span>
+                    $
+                    {cost.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                  <span>{share}</span>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      )}
       <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
         <div className={styles.summaryItem}>
           <span className={styles.summaryLabel}>Total Budget</span>
@@ -742,13 +861,20 @@ export default function PaidLaborCost() {
         </div>
         <div className={styles.summaryItem}>
           <span className={styles.summaryLabel}>Total Actual</span>
-          <span className={styles.summaryValue} style={{ color: textColor }}>
+          <button
+            type="button"
+            className={`${styles.summaryValue} ${styles.totalCostButton}`}
+            style={{ color: textColor }}
+            onClick={drillDown}
+            disabled={labels.length === 0}
+            aria-label="View task breakdown of Total Actual"
+          >
             $
             {displayTotalCost.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
-          </span>
+          </button>
         </div>
         <div className={styles.summaryItem}>
           <span className={styles.summaryLabel}>Variance</span>

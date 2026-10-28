@@ -1,4 +1,155 @@
 /* Container for the Paid Labor Cost card */
+.viewControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.viewToggle {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.viewToggle legend {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.viewToggle button,
+.sortControl select {
+  background: #fff;
+  color: #243746;
+  border: 1px solid #94a3b8;
+  border-radius: 4px;
+  padding: 6px 10px;
+  min-height: 36px;
+}
+
+.viewToggle button + button {
+  margin-left: 4px;
+}
+
+.viewToggle button[aria-pressed='true'] {
+  background: #0d55b3;
+  color: #fff;
+}
+
+.sortControl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+}
+
+.totalCostButton {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.totalCostButton:disabled {
+  cursor: default;
+  text-decoration: none;
+}
+
+.taskBreakdown {
+  min-width: 0;
+  max-width: 100%;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.taskBreakdown h5 {
+  font-size: 15px;
+}
+
+.taskBreakdown p {
+  margin-bottom: 8px;
+}
+
+.taskBreakdown ol {
+  list-style: none;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  max-height: 220px;
+  max-width: 100%;
+  overflow: scroll auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: #64748b #e2e8f0;
+}
+
+.taskBreakdown ol::-webkit-scrollbar {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+.taskBreakdown ol::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+.taskBreakdown ol::-webkit-scrollbar-thumb {
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  background: #64748b;
+}
+
+.taskBreakdown li {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto minmax(80px, auto);
+  min-width: 320px;
+  box-sizing: border-box;
+  gap: 12px;
+  padding: 6px 12px 6px 0;
+  border-bottom: 1px solid #94a3b8;
+}
+
+.taskBreakdown li span:first-child {
+  overflow-wrap: anywhere;
+}
+
+.taskBreakdown li span:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.darkMode .taskBreakdown ol {
+  scrollbar-color: #94a3b8 #253342;
+}
+
+.darkMode .taskBreakdown ol::-webkit-scrollbar-track {
+  background: #253342;
+}
+
+.darkMode .taskBreakdown ol::-webkit-scrollbar-thumb {
+  border-color: #253342;
+  background: #94a3b8;
+}
+
+.darkMode .viewToggle button,
+.darkMode .sortControl select {
+  color: #fff;
+  background: #253342;
+}
+
+.darkMode .viewToggle button[aria-pressed='true'] {
+  background: #e8a71c;
+  color: #111;
+}
+
 .paidLaborCostContainer {
   box-sizing: border-box;
   display: flex;
