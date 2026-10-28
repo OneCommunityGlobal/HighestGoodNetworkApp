@@ -22,6 +22,7 @@
 
 .team-table {
   width: 100%;
+  min-width: 36rem;
   table-layout: fixed;
 }
 
@@ -48,10 +49,4 @@
 .team-code-column {
   width: 30%;
   min-width: 8em;
-}
-
-@media screen and (width <= 700px) {
-  .team-table {
-    min-width: 36rem;
-  }
 }

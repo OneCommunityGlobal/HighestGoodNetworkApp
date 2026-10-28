@@ -12,10 +12,12 @@ import {
 } from '~/actions/weeklySummariesFilterAction';
 import { boxStyle, boxStyleDark } from '~/styles';
 
+import { permissions } from '../../utils/constants';
+
 export function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   // Display project lists
   let TeamsList = [];
-  const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role === 'Owner';
+  const canEditTeamCode = hasPermission(permissions.editTeamCode) || auth.user.role === 'Owner';
 
   // Refresh team data when component mounts
   useEffect(() => {

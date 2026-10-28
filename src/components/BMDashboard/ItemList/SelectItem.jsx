@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Form, FormGroup, Label } from 'reactstrap';
+
 import Select from 'react-select';
 import PropTypes from 'prop-types';
+import { Form, FormGroup, Label } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
 import { getReactSelectStyles } from './selectStyles.js';
@@ -70,7 +71,7 @@ export default function SelectItem({
 
   return (
     <Form className={styles.filterItem} onSubmit={e => e.preventDefault()}>
-      <FormGroup className={styles.selectInput}>
+      <FormGroup className={styles.filterGroup}>
         <Label htmlFor="select-item">{label ? `${label}:` : 'Item:'}</Label>
         <Select
           inputId="select-item"

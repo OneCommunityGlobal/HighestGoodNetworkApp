@@ -464,11 +464,9 @@
 
 .totalOrgChartTitle p {
   font-size: 1.8rem !important;
-  font-weight: bold;
-  text-align: center;
-  margin: 10px;
-  color: #333;
-  line-height: 1.3 !important;
+
+  /* long titles (e.g. Global Volunteer Network) wrap on narrow cards */
+  line-height: 1.3;
 }
 
 /* Report Header Styles */
