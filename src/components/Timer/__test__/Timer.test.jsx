@@ -424,4 +424,60 @@ describe('Timer connection loss and recovery', () => {
     expect(screen.queryByText('Time Complete!')).not.toBeInTheDocument();
     expect(screen.getByText('Reconnecting...')).toBeInTheDocument();
   });
+
+  it('preserves the real accumulated goal through a manual reload instead of wiping it to the 15-minute default - covers "after 5 hours it says Disconnected, refresh resets ... and the time is lost"', () => {
+    localStorage.removeItem(config.tokenKey); // simulate an expired token
+    renderTimer();
+
+    const longGoal = 4.5 * 60 * 60 * 1000; // a long accumulated session/goal
+    pushRunningMessage(longGoal);
+    expect(screen.getByText('Goal: 04:30:00')).toBeInTheDocument();
+
+    // Connection drops with a bad token - exhausted immediately, shows Disconnected.
+    act(() => {
+      mocks.latestOptions.onClose({ code: 1006, reason: 'mock drop' });
+    });
+    expect(screen.getByText('Disconnected')).toBeInTheDocument();
+
+    // The user actually logs back in (token becomes usable again) before clicking
+    // the manual "Reload timer" button.
+    localStorage.setItem(
+      config.tokenKey,
+      makeFakeToken(new Date(Date.now() + 86400000).toISOString()),
+    );
+
+    fireEvent.click(screen.getByLabelText('Reload timer'));
+
+    // The mock socket auto-opens (failNextAttempts is 0), but no fresh GET_TIMER
+    // response has arrived yet - this is exactly the moment the old code wiped
+    // message to the 15-minute default (would show "Goal: 00:15:00" here). The
+    // real goal must still be showing; only a genuine GET_TIMER reply should ever
+    // change it.
+    expect(screen.queryByText('Disconnected')).not.toBeInTheDocument();
+    expect(screen.getByText('Goal: 04:30:00')).toBeInTheDocument();
+
+    // The real GET_TIMER resync now arrives (the server's own state was never at
+    // risk - only the client's display was) and the Log Time form reflects the
+    // true accumulated time, same as the already-fixed "0:0 after a reload" bug.
+    act(() => {
+      mocks.setLastJsonMessage({
+        started: true,
+        paused: true,
+        chiming: false,
+        forcedPause: true,
+        weekEndPause: false,
+        time: 30 * 60 * 1000, // 30 minutes left of the 4.5h goal
+        goal: longGoal,
+        initialGoal: longGoal,
+        startAt: null,
+      });
+    });
+
+    fireEvent.click(screen.getByLabelText('Stop timer and log timer'));
+    // 4 hours logged (>= 2) shows a "long session" confirmation modal first.
+    fireEvent.click(screen.getByRole('button', { name: /yes, submit/i }));
+
+    const formData = screen.getByTestId('time-entry-form-data');
+    expect(formData).toHaveTextContent('4:0'); // 4.5h goal - 30min left = 4h worked
+  });
 });
