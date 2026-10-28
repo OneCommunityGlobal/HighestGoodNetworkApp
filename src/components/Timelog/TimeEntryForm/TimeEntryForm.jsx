@@ -526,6 +526,23 @@ export function TimeEntryForm(props) {
         return;
       }
 
+      // The form's own hours/minutes are the CLIENT's own locally-ticked countdown, which can
+      // lag behind the server's truth (e.g. a backgrounded/throttled tab) - use the resync's
+      // authoritative goal/time/startAt instead, the same way updateRemaining() derives the
+      // live countdown, so a stale local clock can no longer log less than was actually
+      // worked. stopTimer() itself can't be used for this - once stopped, goal/time become
+      // the *leftover*, not the elapsed amount.
+      const resyncedGoalMs = Number(resynced.goal);
+      const resyncedTimeMs = Number(resynced.time);
+      const trueRemainingMs = resynced.paused
+        ? resyncedTimeMs
+        : Math.max(0, resyncedTimeMs - (Date.now() - new Date(resynced.startAt).getTime()));
+      const elapsedMs = Math.max(0, resyncedGoalMs - trueRemainingMs);
+      const authoritativeHours = Math.floor(elapsedMs / 3600000);
+      const authoritativeMinutes = Math.floor((elapsedMs % 3600000) / 60000);
+      timeEntry.hours = authoritativeHours;
+      timeEntry.minutes = authoritativeMinutes;
+
       const timerStopped = await sendStop();
       if (!timerStopped) {
         toast.error('Could not confirm the timer stopped - your time was NOT logged. Please try again.');
@@ -546,8 +563,8 @@ export function TimeEntryForm(props) {
       clearForm();
       if (onTimeSubmitted) {
         onTimeSubmitted({
-          hours: formHours,
-          minutes: formMinutes,
+          hours: authoritativeHours,
+          minutes: authoritativeMinutes,
           sessionId,
           timestamp: new Date().toISOString(),
           userProfile: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim(),
@@ -555,7 +572,7 @@ export function TimeEntryForm(props) {
       }
       dispatch(
         updateIndividualTaskTime({
-          newTime: { hours: formHours, minutes: formMinutes },
+          newTime: { hours: authoritativeHours, minutes: authoritativeMinutes },
           taskId,
           personId,
         }),
