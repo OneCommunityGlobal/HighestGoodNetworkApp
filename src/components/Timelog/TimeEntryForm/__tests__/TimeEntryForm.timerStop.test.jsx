@@ -65,9 +65,12 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     callOrder = [];
     toggle = vi.fn();
     onTimeSubmitted = vi.fn();
+    // paused + time:0 + goal:6180000ms (1h43m) matches baseData's hours/minutes, so
+    // the authoritative-elapsed computation agrees with the stale form value by
+    // default - tests that care about a MISMATCH override this explicitly.
     sendGetTimerAndConfirm = vi.fn(async () => {
       callOrder.push('resync');
-      return { started: true };
+      return { started: true, paused: true, time: 0, goal: 6180000, startAt: null };
     });
     sendStop = vi.fn(async () => {
       callOrder.push('stop');
@@ -122,6 +125,55 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     expect(sendStop).toHaveBeenCalled();
     expect(callOrder).toEqual(['resync', 'stop', 'save']);
     expect(onTimeSubmitted).toHaveBeenCalled();
+  });
+
+  it('saves the server-authoritative elapsed time, not the possibly-stale local form value', async () => {
+    // Form/local countdown stale at 1h43m (baseData), but the server's resync says
+    // 2h30m was really worked (e.g. the tab was backgrounded/throttled and its own
+    // countdown lagged behind) - the save must use the authoritative 2h30m.
+    sendGetTimerAndConfirm.mockImplementation(async () => {
+      callOrder.push('resync');
+      return { started: true, paused: true, time: 0, goal: 2.5 * 60 * 60 * 1000, startAt: null };
+    });
+    let savedPayload = null;
+    postTimeEntry.mockImplementation((payload) => () => {
+      callOrder.push('save');
+      savedPayload = payload;
+      return Promise.resolve();
+    });
+
+    renderForm();
+    await clickSubmit();
+
+    await waitFor(() => expect(postTimeEntry).toHaveBeenCalled());
+    expect(savedPayload.hours).toBe(2);
+    expect(savedPayload.minutes).toBe(30);
+    expect(onTimeSubmitted).toHaveBeenCalledWith(
+      expect.objectContaining({ hours: 2, minutes: 30 }),
+    );
+  });
+
+  it('computes elapsed from a still-actively-running resync (not paused) using startAt, not just the stale time field', async () => {
+    const startAt = Date.now() - 45 * 60 * 1000; // 45 minutes ago
+    sendGetTimerAndConfirm.mockImplementation(async () => {
+      callOrder.push('resync');
+      // goal 1h, time is the full goal (never recomputed while running - matches the
+      // real server's addGoal/startTimer behavior), still actively running.
+      return { started: true, paused: false, time: 60 * 60 * 1000, goal: 60 * 60 * 1000, startAt };
+    });
+    let savedPayload = null;
+    postTimeEntry.mockImplementation((payload) => () => {
+      callOrder.push('save');
+      savedPayload = payload;
+      return Promise.resolve();
+    });
+
+    renderForm();
+    await clickSubmit();
+
+    await waitFor(() => expect(postTimeEntry).toHaveBeenCalled());
+    expect(savedPayload.hours).toBe(0);
+    expect(savedPayload.minutes).toBe(45);
   });
 
   it('a stale tab whose resync shows the session already stopped does NOT save', async () => {
