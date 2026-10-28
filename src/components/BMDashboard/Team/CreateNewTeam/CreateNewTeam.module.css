@@ -264,7 +264,8 @@
 }
 
 .addTeamButtons button#submit-button:hover:not(:disabled) {
-  background-color: #2e7d32;
+  background-color: #1b5e20;
+  border-color: #1b5e20;
 }
 
 .addTeamButtons button#cancel-button {
@@ -470,15 +471,30 @@
   caret-color: #fff;
 }
 
-/* ========== Character counter ========== */
+/* ========== Character counter (over the limit) ========== */
+
+/* Separate class (not combined with .helperText) so no !important is needed in dark mode */
 .helperTextOver {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
   color: #e74c3c;
   font-weight: 600;
 }
 
 :global(body.dark-mode) .helperTextOver,
 :global(body.bm-dashboard-dark) .helperTextOver {
-  color: #ff6b6b !important;
+  color: #ff6b6b;
+}
+
+/* ========== Help icon buttons ========== */
+
+/* Higher specificity than ".addTeamContainer button" so the icon stays round */
+.addTeamContainer .tooltipIcon {
+  border: none;
+  padding: 0;
+  border-radius: 50%;
+  line-height: 1;
 }
 
 /* ========== Standardized button states ========== */
@@ -491,11 +507,6 @@
 .addBtn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
-}
-
-.addTeamButtons button#submit-button:hover:not(:disabled) {
-  background-color: #1b5e20;
-  border-color: #1b5e20;
 }
 
 .addTeamButtons button:disabled,
@@ -518,10 +529,10 @@
   opacity: 0.5;
 }
 
+/* Dark mode hover uses a filter so it works over the existing dark background rule */
 :global(body.dark-mode) .addTeamButtons button#submit-button:hover:not(:disabled),
 :global(body.bm-dashboard-dark) .addTeamButtons button#submit-button:hover:not(:disabled) {
-  background-color: #1b5e20 !important;
-  border-color: #1b5e20 !important;
+  filter: brightness(0.85);
 }
 
 :global(body.dark-mode) .addBtn:focus-visible,

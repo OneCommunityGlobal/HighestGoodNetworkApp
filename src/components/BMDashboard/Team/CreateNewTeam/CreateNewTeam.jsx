@@ -59,9 +59,13 @@ export default function CreateNewTeam() {
   useEffect(() => {
     let isActive = true;
     setMembersLoading(true);
-    Promise.resolve(dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }))).finally(() => {
+    const finishLoading = () => {
       if (isActive) setMembersLoading(false);
-    });
+    };
+    // Errors are handled by the action; either way the loading state must end
+    Promise.resolve(dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' })))
+      .then(finishLoading)
+      .catch(finishLoading);
     return () => {
       isActive = false;
     };
@@ -381,16 +385,15 @@ export default function CreateNewTeam() {
           <FormGroup>
             <Label for="team-name">
               Team Name<span className={styles.fieldRequired}>*</span>
-              <span
+              <button
+                type="button"
                 id="teamNameTooltip"
                 className={styles.tooltipIcon}
-                role="button"
-                tabIndex={0}
                 aria-label="Team name help"
                 onKeyDown={e => handleTooltipKeyDown(e, () => setTeamNameTooltipOpen(false))}
               >
                 ?
-              </span>
+              </button>
             </Label>
             <Tooltip
               isOpen={teamNameTooltipOpen}
@@ -414,9 +417,7 @@ export default function CreateNewTeam() {
             />
             <small
               id="team-name-help"
-              className={`${styles.helperText} ${
-                teamNameLength > TEAM_NAME_MAX ? styles.helperTextOver : ''
-              }`}
+              className={teamNameLength > TEAM_NAME_MAX ? styles.helperTextOver : styles.helperText}
             >
               {teamNameLength}/{TEAM_NAME_MAX} characters
             </small>
@@ -434,16 +435,15 @@ export default function CreateNewTeam() {
           <FormGroup>
             <Label for="members-select">
               Add Members<span className={styles.fieldRequired}>*</span>
-              <span
+              <button
+                type="button"
                 id="membersTooltip"
                 className={styles.tooltipIcon}
-                role="button"
-                tabIndex={0}
                 aria-label="Members help"
                 onKeyDown={e => handleTooltipKeyDown(e, () => setMembersTooltipOpen(false))}
               >
                 ?
-              </span>
+              </button>
             </Label>
             <Tooltip
               isOpen={membersTooltipOpen}
@@ -594,16 +594,15 @@ export default function CreateNewTeam() {
           <FormGroup>
             <Label for="tasks-select">
               Add Main Tasks<span className={styles.fieldRequired}>*</span>{' '}
-              <span
+              <button
+                type="button"
                 id="tasksTooltip"
                 className={styles.tooltipIcon}
-                role="button"
-                tabIndex={0}
                 aria-label="Tasks help"
                 onKeyDown={e => handleTooltipKeyDown(e, () => setTasksTooltipOpen(false))}
               >
                 ?
-              </span>
+              </button>
             </Label>
             <Tooltip
               isOpen={tasksTooltipOpen}
