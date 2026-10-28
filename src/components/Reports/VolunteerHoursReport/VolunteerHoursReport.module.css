@@ -56,9 +56,9 @@
 
 /* Dark mode styles */
 
-:global(.bg-dark) .form-control[type='date'] {
-  background-color: black !important;
-  color: black !important;
+:global(.bg-dark).form-control[type='date'] {
+  background-color: #212529 !important;
+  color: #fff !important;
   border-color: #6c757d !important;
   color-scheme: dark;
 }
@@ -104,10 +104,6 @@
   color: #6b7280 !important;
   background-color: transparent !important;
 }
-
-/* :global(.react-datepicker-popper) {
-  z-index: 9999 !important;
-} */
 
 :global(.dark-mode) .datePickerInput {
   background-color: #000 !important;

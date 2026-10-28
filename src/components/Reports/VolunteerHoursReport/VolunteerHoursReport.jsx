@@ -40,16 +40,18 @@ const VolunteerHoursReport = ({
     currentPage * itemsPerPage
   );
   // Load initial data
-  useEffect(() => {
-    const loadData = async () => {
-      await Promise.all([
-        getAllUserTeams(),
-        fetchAllProjects(),
-        getUserProfileBasicInfo({ source: 'VolunteerHoursReport' })
-      ]);
-    };
-    loadData();
-  }, []); // Remove function dependencies to prevent infinite re-renders
+useEffect(() => {
+  const loadData = async () => {
+    await Promise.all([
+      getAllUserTeams(),
+      fetchAllProjects(),
+      getUserProfileBasicInfo({ source: 'VolunteerHoursReport' }),
+    ]);
+  };
+    loadData().catch(error => {
+    console.error('Error loading Volunteer Hours Report data:', error);
+  });
+}, []); // Load initial data only once // Remove function dependencies to prevent infinite re-renders
   // ...existing code...
 
   // Auto-generate report when report type or date range changes
