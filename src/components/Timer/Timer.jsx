@@ -258,6 +258,8 @@ function Timer({ authUser, darkMode, isPopout }) {
   const isWSOpenRef = useRef(0);
   const pendingStopRef = useRef(null);
   const stopRequestSequenceRef = useRef(0);
+  const pendingGetTimerRef = useRef(null);
+  const getTimerRequestSequenceRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
   const audioUnlockedRef = useRef(false);
@@ -313,6 +315,57 @@ function Timer({ authUser, darkMode, isPopout }) {
         }
       }),
     [getWebSocket, sendJsonMessageNoQueue],
+  );
+
+  // A stale tab's own `started` flag can lag behind the server (e.g. another tab already
+  // stopped/logged this same session, or a reconnect hasn't resynced yet) - this fetches the
+  // server's CURRENT state and waits for the matching response, so the Log Time form can tell
+  // a genuinely-still-running session from one that was already closed out elsewhere, right
+  // before it would otherwise save a duplicate entry. Resolves null on timeout/no connection,
+  // or the fresh timer message on success - mirrors sendStopAndConfirm's request/response
+  // pattern but kept as a separate ref/promise since the two can be in flight independently.
+  const sendGetTimerAndConfirm = useCallback(
+    () =>
+      new Promise(resolve => {
+        const socket = getWebSocket();
+        if (!socket || socket.readyState !== ReadyState.OPEN) {
+          resolve(null);
+          return;
+        }
+
+        if (pendingGetTimerRef.current) {
+          clearTimeout(pendingGetTimerRef.current.timeoutId);
+          pendingGetTimerRef.current.resolve(null);
+        }
+
+        getTimerRequestSequenceRef.current += 1;
+        const requestId = `resync-${Date.now()}-${getTimerRequestSequenceRef.current}`;
+        const timeoutId = setTimeout(() => {
+          if (pendingGetTimerRef.current?.requestId === requestId) {
+            pendingGetTimerRef.current = null;
+            resolve(null);
+          }
+        }, 10000);
+
+        pendingGetTimerRef.current = {
+          requestId,
+          timeoutId,
+          resolve,
+        };
+
+        try {
+          sendJsonMessageNoQueue({
+            action: 'GET_TIMER',
+            ...(viewingUserId == null ? {} : { userId: viewingUserId }),
+            requestId,
+          });
+        } catch (_error) {
+          clearTimeout(timeoutId);
+          pendingGetTimerRef.current = null;
+          resolve(null);
+        }
+      }),
+    [getWebSocket, sendJsonMessageNoQueue, viewingUserId],
   );
 
   // Enhanced function to clear submitted time with better logging
@@ -783,6 +836,15 @@ function Timer({ authUser, darkMode, isPopout }) {
       pendingStopRef.current = null;
       resolve(lastJsonMessage.started === false);
     }
+    if (
+      lastJsonMessage?.requestId &&
+      pendingGetTimerRef.current?.requestId === lastJsonMessage.requestId
+    ) {
+      const { timeoutId, resolve } = pendingGetTimerRef.current;
+      clearTimeout(timeoutId);
+      pendingGetTimerRef.current = null;
+      resolve(lastJsonMessage);
+    }
     // Handle explicit week close pause action messages
     if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
       handleWeekEndPause();
@@ -1024,6 +1086,7 @@ function Timer({ authUser, darkMode, isPopout }) {
         isOpen={logTimeEntryModal}
         data={logTimer}
         sendStop={sendStop}
+        sendGetTimerAndConfirm={sendGetTimerAndConfirm}
         timerConnected={customReadyState === ReadyState.OPEN}
         onTimeSubmitted={handleTimeSubmitted}
         sessionId={sessionId}

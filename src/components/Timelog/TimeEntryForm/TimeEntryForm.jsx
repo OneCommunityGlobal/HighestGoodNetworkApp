@@ -73,6 +73,7 @@ function TimeEntryForm(props) {
   const {
     from,
     sendStop,
+    sendGetTimerAndConfirm,
     edit,
     data,
     toggle,
@@ -383,35 +384,59 @@ function TimeEntryForm(props) {
       setSubmitting(false);
     };
 
+    // Timer-sourced entries: stop the timer (server-confirmed) BEFORE saving, not after -
+    // the old order saved first and stopped second, so a failed/late stop (or a stale second
+    // tab) could leave the exact same worked time logged twice. A fresh GET_TIMER resync goes
+    // first so a stale tab - whose own local "started" flag may not have caught up with
+    // another tab already stopping/logging this same session - doesn't save a duplicate.
+    if (from === 'Timer') {
+      const resynced = sendGetTimerAndConfirm ? await sendGetTimerAndConfirm() : null;
+      if (!resynced || resynced.started === false) {
+        toast.info('This timer session was already stopped or logged elsewhere - please refresh.');
+        handleFormReset();
+        return;
+      }
+
+      const timerStopped = await sendStop();
+      if (!timerStopped) {
+        toast.error('Could not confirm the timer stopped - your time was NOT logged. Please try again.');
+        setSubmitting(false);
+        return; // form stays open with hours/minutes intact for retry
+      }
+
+      try {
+        await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
+      } catch (error) {
+        // The timer is already safely stopped server-side, so retrying here only re-attempts
+        // the save - it cannot log the same worked time twice.
+        toast.error(`The timer was stopped, but logging the time failed. Please try again. Error: ${error}`);
+        setSubmitting(false);
+        return; // form stays open with hours/minutes intact for retry
+      }
+
+      clearForm();
+      if (onTimeSubmitted) {
+        onTimeSubmitted({
+          hours: formHours,
+          minutes: formMinutes,
+          sessionId,
+          timestamp: new Date().toISOString(),
+          userProfile: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim(),
+        });
+      }
+      dispatch(
+        updateIndividualTaskTime({
+          newTime: { hours: formHours, minutes: formMinutes },
+          taskId,
+          personId,
+        }),
+      );
+      setSubmitting(false);
+      return;
+    }
+
     const handlePostSubmitActions = async () => {
       switch (from) {
-        case 'Timer': {
-          const timerStopped = await sendStop();
-          if (!timerStopped) {
-            toast.warning(
-              'Time was logged, but the timer stop could not be confirmed. Refresh the timer before continuing.',
-            );
-          }
-          clearForm();
-          // Enhanced callback with additional data
-          if (onTimeSubmitted) {
-            onTimeSubmitted({
-              hours: formHours,
-              minutes: formMinutes,
-              sessionId,
-              timestamp: new Date().toISOString(),
-              userProfile: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim(),
-            });
-          }
-          dispatch(
-            updateIndividualTaskTime({
-              newTime: { hours: formHours, minutes: formMinutes },
-              taskId,
-              personId,
-            }),
-          );
-          break;
-        }
         case 'WeekEnd':
           // Handle week-end time log completion
           if (props.onComplete) {
@@ -447,7 +472,7 @@ function TimeEntryForm(props) {
           break;
       }
 
-      if (from !== 'Timer' && from !== 'WeekEnd' && !reminder.editLimitNotification) {
+      if (from !== 'WeekEnd' && !reminder.editLimitNotification) {
         setReminder(r => ({
           ...r,
           editLimitNotification: !r.editLimitNotification,
@@ -934,6 +959,7 @@ function TimeEntryForm(props) {
 TimeEntryForm.propTypes = {
   from: PropTypes.string,
   sendStop: PropTypes.func,
+  sendGetTimerAndConfirm: PropTypes.func,
   edit: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
