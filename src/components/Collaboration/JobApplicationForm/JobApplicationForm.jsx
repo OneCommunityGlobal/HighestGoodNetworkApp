@@ -992,6 +992,9 @@ function JobApplicationForm() {
   const [resumeFileError, setResumeFileError] = useState('');
   const [questionFileErrors, setQuestionFileErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+  const [termsError, setTermsError] = useState('');
+  const termsInputRef = useRef(null);
   const resumeInputRef = useRef(null);
   const emailInputRef = useRef(null);
   const questionFileInputRefs = useRef({});
@@ -1484,6 +1487,8 @@ function JobApplicationForm() {
   };
 
   const resetFormAfterSubmit = () => {
+    setHasAcceptedTerms(false);
+    setTermsError('');
     setFirstName('');
     setLastName('');
     setApplicantEmail('');
@@ -1535,6 +1540,12 @@ function JobApplicationForm() {
 
   const handleSubmit = async e => {
     e.preventDefault();
+
+    if (!hasAcceptedTerms) {
+      setTermsError('Please agree to the terms and conditions before submitting.');
+      termsInputRef.current?.focus();
+      return;
+    }
 
     if (!filteredForm?._id) {
       toast.error('No application form selected. Choose a role from the dropdown.');
@@ -1749,7 +1760,7 @@ function JobApplicationForm() {
               </div>
             </div>
           )}
-          <form className={styles.form} onSubmit={handleSubmit}>
+          <form className={styles.form} onSubmit={handleSubmit} aria-label="Job application">
             {isAdmin && (
               <>
                 <p className={styles.adminRequirementsNote}>
@@ -2325,7 +2336,52 @@ function JobApplicationForm() {
                   {submitError}
                 </p>
               )}
-              <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+              <div className={styles.termsAgreement}>
+                <label htmlFor="jaf-accept-terms" className={styles.termsLabel}>
+                  <input
+                    id="jaf-accept-terms"
+                    ref={termsInputRef}
+                    type="checkbox"
+                    name="acceptedTerms"
+                    checked={hasAcceptedTerms}
+                    onChange={e => {
+                      setHasAcceptedTerms(e.target.checked);
+                      setTermsError('');
+                    }}
+                    required
+                    aria-invalid={Boolean(termsError)}
+                    aria-describedby={termsError ? 'jaf-terms-error' : 'jaf-terms-hint'}
+                  />
+                  <span>
+                    I agree to{' '}
+                    <a
+                      href="https://onecommunityglobal.org/terms-and-conditions/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      terms and conditions
+                    </a>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      {' '}
+                      *
+                    </span>
+                  </span>
+                </label>
+                {termsError ? (
+                  <p id="jaf-terms-error" className={styles.fieldError} role="alert">
+                    {termsError}
+                  </p>
+                ) : (
+                  <p id="jaf-terms-hint" className={styles.termsHint}>
+                    Required before submitting your application.
+                  </p>
+                )}
+              </div>
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={isSubmitting || !hasAcceptedTerms}
+              >
                 {isSubmitting ? 'Submitting…' : 'Submit your application'}
               </button>
             </div>
