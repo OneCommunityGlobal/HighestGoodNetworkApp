@@ -1,11 +1,21 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import {
+  Button,
+  FormFeedback,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from 'reactstrap';
 
 function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, onConfirm }) {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [reason, setReason] = useState('');
+  const [reasonError, setReasonError] = useState('');
   const hasReason =
     !isRehireable &&
     typeof notRehireableReason === 'string' &&
@@ -15,12 +25,18 @@ function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, 
     const nextStatus = !isRehireable;
     setPendingRehireableStatus(nextStatus);
     setReason('');
+    setReasonError('');
     setShowConfirmDialog(true);
   };
 
   const handleConfirm = () => {
+    const trimmedReason = reason.trim();
+    if (!pendingRehireableStatus && !trimmedReason) {
+      setReasonError('A reason is required to mark this user as not rehireable.');
+      return;
+    }
     setShowConfirmDialog(false);
-    onConfirm(pendingRehireableStatus, reason.trim());
+    onConfirm(pendingRehireableStatus, pendingRehireableStatus ? '' : trimmedReason);
   };
 
   const handleKeyDown = event => {
@@ -78,14 +94,19 @@ function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, 
                 You are about to change this user&apos;s status to &apos;not rehireable&apos;. Please
                 enter the reason below.
               </p>
-              <Label htmlFor="not-rehireable-reason">Reason (optional)</Label>
+              <Label htmlFor="not-rehireable-reason">Reason</Label>
               <Input
                 id="not-rehireable-reason"
                 type="textarea"
                 aria-label="Reason for not rehireable status"
                 value={reason}
-                onChange={event => setReason(event.target.value)}
+                invalid={Boolean(reasonError)}
+                onChange={event => {
+                  setReason(event.target.value);
+                  if (reasonError) setReasonError('');
+                }}
               />
+              <FormFeedback>{reasonError}</FormFeedback>
             </>
           )}
         </ModalBody>

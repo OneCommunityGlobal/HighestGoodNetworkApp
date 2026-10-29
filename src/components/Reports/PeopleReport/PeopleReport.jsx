@@ -18,7 +18,7 @@ import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
-import { Checkbox } from '../../common/Checkbox';
+import RehireableStatusControl from '../../UserProfile/RehireableStatusControl';
 import { updateRehireableStatus } from '../../../actions/userManagement';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
@@ -48,6 +48,7 @@ function PeopleReport(props) {
   } = props;
 
   const [isRehireable, setIsRehireableState] = useState(true);
+  const [notRehireableReason, setNotRehireableReason] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [fromDate, setFromDate] = useState('2016-01-01')
   const [toDate, setToDate] = useState('3000-12-31')
@@ -82,22 +83,28 @@ function PeopleReport(props) {
   useEffect(() => {
     if (userProfile) {
       setIsRehireableState(userProfile.isRehireable ?? false);
+      setNotRehireableReason(userProfile.notRehireableReason || '');
     }
-  }, [userProfile?._id, userProfile?.isRehireable]);
+  }, [userProfile?._id, userProfile?.isRehireable, userProfile?.notRehireableReason]);
 
   const setRehireable = useCallback(
-    async rehireValue => {
+    async (rehireValue, reason = '') => {
       const previousValue = isRehireable;
+      const previousReason = notRehireableReason;
+      const savedReason = rehireValue ? '' : reason.trim();
+      if (!rehireValue && !savedReason) return;
       setIsRehireableState(rehireValue);
+      setNotRehireableReason(savedReason);
       try {
-        await updateRehireableStatus(userProfile, rehireValue);
+        await updateRehireableStatus(userProfile, rehireValue, savedReason);
         toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
       } catch (err) {
         setIsRehireableState(previousValue);
+        setNotRehireableReason(previousReason);
         alert('An error occurred while attempting to save the rehireable status of this user.');
       }
     },
-    [isRehireable, updateRehireableStatus, userProfile],
+    [isRehireable, notRehireableReason, updateRehireableStatus, userProfile],
   );
 
   const totalTangibleHrs = timeEntries.period?.reduce((total, entry) => {
@@ -256,15 +263,13 @@ function PeopleReport(props) {
               </div>
 
               <div className={styles.rehireable}>
-                <Checkbox
-                  value={isRehireable}
-                  onChange={event => setRehireable(event.target.checked)}
-                  label="Rehireable"
+                <RehireableStatusControl
+                  isRehireable={isRehireable}
+                  notRehireableReason={notRehireableReason}
                   darkMode={darkMode}
-                  className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
-                  backgroundColorCN={darkMode ? styles.bgYinmnBlue : ''}
-                  textColorCN={darkMode ? styles.textLight : ''}
+                  onConfirm={setRehireable}
                 />
+                <span>Rehireable</span>
               </div>
               <div className={styles.dateInfo}>
                 <div>
