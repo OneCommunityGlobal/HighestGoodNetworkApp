@@ -8,6 +8,7 @@ import AutoUpdate from './components/AutoUpdate';
 import AnimalManagement from './components/KitchenandInventory/AnimalManagement';
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from './utils/routePermissions';
+import { permissions } from './utils/constants';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import Logout from './components/Logout/Logout';
@@ -47,7 +48,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import Issue from './components/BMDashboard/Issue/Issue';
 import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
-import IssueChart from './components/BMDashboard/Issues/issueCharts';
+import MaterialConsumption from './components/BMDashboard/WeeklyProjectSummary/MaterialConsumption/MaterialConsumption';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
@@ -62,6 +63,7 @@ import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
 import DatabaseDesign from './components/CommunityPortal/DatabaseDesign/DatabaseDesign';
 import Page1 from './components/HGNForm/pages/Page1';
+import HGNFormListPage from './components/HGNForm/pages/HGNFormListPage';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
 import Page4 from './components/HGNForm/pages/Page4';
@@ -84,8 +86,10 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
+import ResolvedTasks from './components/ResolvedTasks/ResolvedTasks';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
@@ -177,6 +181,7 @@ import GardenManagement from './components/KitchenandInventory/GardenManagement/
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import KitchenReports from './components/KitchenandInventory/KitchenReports/KitchenReports';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 
@@ -239,6 +244,7 @@ import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGa
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
+const PMResourceDashboard = lazy(() => import('./components/PMDashboard/PMResourceDashboard'));
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
@@ -319,9 +325,6 @@ import ProjectsGlobalDistribution from './components/ProjectsGlobalDistribution/
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
 );
-const ResourceManagementDashboard = lazy(() =>
-  import('./components/ResourceRequest/ResourceManagementDashboard/ResourceManagementDashboard'),
-);
 const ResourceRequestList = lazy(() =>
   import('./components/ResourceRequest/ResourceRequestList/ResourceRequestList'),
 );
@@ -399,6 +402,7 @@ export default (
       <ToastContainer />
       <Switch>
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
+        <ProtectedRoute path="/resolvedtasks" exact component={ResolvedTasks} />
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute
@@ -560,7 +564,7 @@ export default (
           exact
           component={BlueSquareEmailManagement}
           fallback
-          routePermissions={['resendBlueSquareAndSummaryEmails']}
+          routePermissions={[permissions.resendBlueSquareAndSummaryEmails]}
         />
         <ProtectedRoute
           path="/teams"
@@ -600,9 +604,11 @@ export default (
           component={CountryOfApplicationMapChart}
           fallback
         />
+        {/* Not exact: Announcements drives its own tabs off the URL and pushes
+            sub-paths such as /announcements/email/templates. With exact, those
+            fall through to the catch-all NotFoundPage at the end of this Switch. */}
         <ProtectedRoute
           path="/announcements"
-          exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
@@ -670,7 +676,6 @@ export default (
           allowedRoles={[UserRole.Owner]}
         />
         <ProtectedRoute path="/materials/utilization" component={MaterialUtilizationChart} />
-        <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
         <ProtectedRoute
           path="/popularity-enhanced"
@@ -848,7 +853,8 @@ export default (
           component={InjurySeverityDashboard}
         />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
-        <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+        {/* PR #4812 expects this URL to show the full three-card Material Consumption group. */}
+        <BMProtectedRoute path="/bmdashboard/issuechart" component={MaterialConsumption} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
         <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
@@ -902,6 +908,11 @@ export default (
           path="/communityportal/profile/:userId"
           fallback
           component={UserProfile}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/faq"
+          exact
+          render={() => <Activity initialTab="FAQs" />}
         />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
@@ -984,12 +995,6 @@ export default (
           component={ResourcesUsage}
         />
         <ProtectedRoute path="/educator/requests" exact component={ResourceRequestList} fallback />
-        <ProtectedRoute
-          path="/pm/dashboard/resources"
-          exact
-          component={ResourceManagementDashboard}
-          fallback
-        />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/ResourceManagement"
           exact
@@ -1060,6 +1065,18 @@ export default (
           exact
           component={IntermediateTaskList}
         />
+        {/* PM Resource Dashboard Route */}
+        <ProtectedRoute
+          path="/pm/dashboard/resources"
+          exact
+          component={PMResourceDashboard}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.accessPMResourceDashboard}
+          permissionDeniedRedirectState={{
+            permissionDeniedMessage: 'You do not have access to the Resource Dashboard.',
+          }}
+        />
         <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
         <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />
         <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
@@ -1113,6 +1130,7 @@ export default (
           exact
           component={GardenManagement}
         />
+        <ProtectedRoute path="/kitchenandinventory/reports" exact component={KitchenReports} />
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
@@ -1121,6 +1139,11 @@ export default (
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/subscribe" component={SubscribePage} />
         <Route path="/unsubscribe" component={UnsubscribePage} />
+        {/* Public apply portal — must stay ahead of /collaboration (non-exact). */}
+        <Route path="/collaboration/apply/:positionSlug" exact component={JobApplicationForm} />
+        <Route path="/apply/:positionSlug" exact component={JobApplicationForm} />
+        <Route path="/job-application/:positionSlug" exact component={JobApplicationForm} />
+        <Route path="/job-application" exact component={JobApplicationForm} />
         <Route path="/collaboration" component={Collaboration} />
         <ProtectedRoute path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
@@ -1148,7 +1171,8 @@ export default (
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
         <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
-        <ProtectedRoute path="/hgnform" exact component={Page1} />
+        <ProtectedRoute path="/hgnform" exact component={HGNFormListPage} />
+        <ProtectedRoute path="/hgnform/page1" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
         <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
         <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
@@ -1243,15 +1267,15 @@ export default (
           path="/pr-grading-dashboard"
           exact
           component={PRGradingDashboard}
-          fallback
+          routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
-        <ProtectedRoute
+        {/* <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
           exact
           component={PRDashboardPromotionEligibility}
-        />
+        /> */}
         <ProtectedRoute
           path="/pr-dashboard/top-reviewed-prs"
           exact
