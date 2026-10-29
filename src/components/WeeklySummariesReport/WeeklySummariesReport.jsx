@@ -2325,10 +2325,10 @@ const WeeklySummariesReport = props => {
                     {showOnlyMismatched && (
                       <Row className={styles['mx-max-sm-0']}>
                         <Col>
-                          <div className={styles.mismatchFilterStatus} role="status">
+                          <output className={styles.mismatchFilterStatus}>
                             Showing {displayedSummaries.length} users with mismatched team codes.{' '}
                             Click the red i again to show all users.
-                          </div>
+                          </output>
                         </Col>
                       </Row>
                     )}
