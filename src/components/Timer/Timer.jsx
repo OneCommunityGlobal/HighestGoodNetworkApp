@@ -101,7 +101,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
 
   const [message, setMessage] = useState(defaultMessage);
-  const { time, paused, started, goal, startAt } = message;
+  const { time, paused, started, goal, startAt, sessionRuns } = message;
 
   const [running, setRunning] = useState(false);
   const [confirmationResetModal, setConfirmationResetModal] = useState(false);
@@ -804,6 +804,8 @@ function Timer({ authUser, darkMode, isPopout }) {
         onTimeSubmitted={handleTimeSubmitted}
         sessionId={sessionId}
         timerStats={getTimerStats()}
+        sessionRuns={sessionRuns}
+        sessionRunLimitMs={time}
       />
     );
 
