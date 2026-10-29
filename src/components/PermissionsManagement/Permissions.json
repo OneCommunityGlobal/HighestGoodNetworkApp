@@ -30,9 +30,9 @@
         "description": "Lets the user open the Weekly Summaries Report, view and email the Total Org Summary, and see Google Doc icons in Dashboard Tasks."
       },
       {
-        "label": "See PR Team Dashboard",
+        "label": "See PR Dashboard and Edit PR Grading Dashboard",
         "key": "accessPRTeamDashboard",
-        "description": "Lets the user see the PR Dashboard menu and open its 'PR Team Analysis Dashboard' and 'PR Analytics' pages."
+        "description": "Lets the user see the PR Dashboard menu, open 'PR Team Analysis Dashboard' and 'PR Analytics', and edit the PR Grading Dashboard."
       },
       {
         "label": "Edit Total Valid Weekly Summaries",
@@ -153,7 +153,7 @@
       {
         "label": "HGN People +/- Setup",
         "key": "manageHGNAccessSetup",
-        "description": "Lets the user invite a person to, or remove them from, GitHub, Dropbox, Sentry and Slack from their profile."
+        "description": "Lets the user invite people to GitHub, Dropbox, Sentry and Slack, remove them from GitHub and Sentry, and delete their Dropbox folder."
       }
     ]
   },
