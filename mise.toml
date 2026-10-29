@@ -1,2 +1,5 @@
 [settings]
 python.github_attestations = false
+
+[tools]
+node = "22"

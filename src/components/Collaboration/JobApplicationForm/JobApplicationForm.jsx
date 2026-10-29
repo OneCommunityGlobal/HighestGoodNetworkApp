@@ -1,16 +1,29 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
-import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
+import TurnstileWidget from './TurnstileWidget';
+import { getTurnstileSiteKey } from './turnstile';
+import {
+  getUploadSizeError,
+  isJobApplicationFileUploadQuestion,
+} from './jobApplicationQuestionUtils';
+import { checkEmail } from '../../../utils/emailValidation';
+import {
+  ensurePositionOption,
+  findFormByPositionSlug,
+  findPositionBySlug,
+  publicApplyRequestConfig,
+  titleHintFromSlug,
+} from './jobApplicationPublicApi';
 
 function normalizeTitleKey(s) {
   return String(s || '')
@@ -102,28 +115,39 @@ function findFormByDeveloperFamily(formsArr, jobTitle) {
   return candidates[0];
 }
 
-/** Match a job listing title to a saved application form (titles may differ slightly). */
-function findFormForJobTitle(formsArr, jobTitle) {
+/**
+ * Match a job listing title to a saved applicant-facing form (titles may differ slightly).
+ * Retired / internal forms are never matched. A fuzzy step that matches more than one form is
+ * treated as no match, so an ambiguous title (e.g. "T.A.S.T") falls back with a warning
+ * instead of a silent guess.
+ */
+export function findFormForJobTitle(formsArr, jobTitle) {
   if (!jobTitle || !formsArr?.length) return null;
+  const candidates = formsArr.filter(isApplicantFacingForm);
+  if (!candidates.length) return null;
   const t = String(jobTitle)
     .trim()
     .toLowerCase();
-  let m = formsArr.find(f => (f.title || '').trim().toLowerCase() === t);
-  if (m) return m;
-  m = formsArr.find(f => {
+  const exact = candidates.find(f => (f.title || '').trim().toLowerCase() === t);
+  if (exact) return exact;
+  const key = normalizeTitleKey(jobTitle);
+  const normalized = key && candidates.find(f => normalizeTitleKey(f.title) === key);
+  if (normalized) return normalized;
+  const bySubstring = candidates.filter(f => {
     const ft = (f.title || '').trim().toLowerCase();
     return ft && (t.includes(ft) || ft.includes(t));
   });
-  if (m) return m;
-  m = formsArr.find(f => titlesLikelyMatch(jobTitle, f.title));
-  if (m) return m;
-  m = findFormByTokenOverlap(formsArr, jobTitle);
-  if (m) return m;
-  m = findFormByDeveloperFamily(formsArr, jobTitle);
-  return m || null;
+  if (bySubstring.length) return bySubstring.length === 1 ? bySubstring[0] : null;
+  const byLikely = candidates.filter(f => titlesLikelyMatch(jobTitle, f.title));
+  if (byLikely.length) return byLikely.length === 1 ? byLikely[0] : null;
+  return (
+    findFormByTokenOverlap(candidates, jobTitle) ||
+    findFormByDeveloperFamily(candidates, jobTitle) ||
+    null
+  );
 }
 
-/** Role clicked on the job board: React Router state and/or ?jobTitle= query (reliable across redirects). */
+/** Role clicked on the job board: React Router state or ?jobTitle= (a bare slug is resolved later). */
 function getJobTitleFromNavigation(location) {
   const fromState = location.state?.jobTitle;
   if (fromState != null && String(fromState).trim()) return String(fromState).trim();
@@ -133,13 +157,81 @@ function getJobTitleFromNavigation(location) {
   return '';
 }
 
-function pickInitialForm(formsArr, navState) {
+function getFormIdFromNavigation(location) {
+  const fromState = location.state?.formId;
+  if (fromState != null && String(fromState).trim()) return String(fromState).trim();
+  const q = new URLSearchParams(location.search || '');
+  const fromQuery = q.get('formId');
+  if (fromQuery != null && String(fromQuery).trim()) return String(fromQuery).trim();
+  return '';
+}
+
+/** Skip retired / internal ATS templates when picking applicant forms. */
+export function isApplicantFacingForm(form) {
+  const title = String(form?.title || '')
+    .trim()
+    .toUpperCase();
+  if (!title) return false;
+  if (title.startsWith('[RETIRED]')) return false;
+  if (title.includes('APPLIED THROUGH SITE')) return false;
+  if (title.includes('TEST CREATE FORM')) return false;
+  return true;
+}
+
+/** Default questionnaire when a job listing has no dedicated form. */
+export function findDefaultSoftwareForm(formsArr) {
   if (!formsArr?.length) return null;
+  const activeForms = formsArr.filter(isApplicantFacingForm);
+  const preferredTitles = ['SEEKING SOFTWARE POSITION', 'Software Developer', 'Software Engineer'];
+  for (const title of preferredTitles) {
+    const exact = activeForms.find(
+      f =>
+        String(f.title || '')
+          .trim()
+          .toLowerCase() === title.toLowerCase(),
+    );
+    if (exact) return exact;
+  }
+  return (
+    findFormForJobTitle(activeForms, 'SEEKING SOFTWARE POSITION') ||
+    findFormForJobTitle(activeForms, 'Software Developer') ||
+    findFormForJobTitle(activeForms, 'Software Engineer') ||
+    activeForms.find(f => f.questions?.length) ||
+    activeForms[0] ||
+    null
+  );
+}
+
+/** Slug lookup restricted to applicant-facing forms. */
+export function findApplicantFormBySlug(formsArr, positionSlug) {
+  return findFormByPositionSlug((formsArr || []).filter(isApplicantFacingForm), positionSlug);
+}
+
+export function pickInitialForm(formsArr, navState, positionSlug) {
+  if (!formsArr?.length) return null;
+
+  if (navState?.formId) {
+    const byId = formsArr.find(f => String(f._id || f.id) === String(navState.formId));
+    if (byId) return byId;
+  }
+
+  if (positionSlug) {
+    const bySlug = findApplicantFormBySlug(formsArr, positionSlug);
+    if (bySlug) return bySlug;
+  }
+
   if (navState?.jobTitle) {
     const matched = findFormForJobTitle(formsArr, navState.jobTitle);
     if (matched) return matched;
+    // No dedicated form for this job listing — use the default software questionnaire.
+    return findDefaultSoftwareForm(formsArr);
   }
-  return formsArr.find(f => f.questions?.length) || formsArr[0];
+
+  if (positionSlug) {
+    return findDefaultSoftwareForm(formsArr);
+  }
+
+  return null;
 }
 
 function parseFormsResponse(res) {
@@ -153,35 +245,165 @@ function resolveNavigationJobTitle(jobDataFromRedirect, location) {
   );
 }
 
+function warnDefaultFormFallback(title, form) {
+  toast.warn(
+    `No form is linked to "${title}". Showing the default software engineer application ("${form.title}") — pick another role from the dropdown if this is not the right questionnaire.`,
+    { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
+  );
+}
+
 function notifyInitialFormSelection(navTitle, formMatch, chosen) {
   if (!navTitle || formMatch) return;
   if (chosen) {
-    toast.info(
-      `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
-      { autoClose: 7000 },
-    );
+    warnDefaultFormFallback(navTitle, chosen);
     return;
   }
-  toast.warn('No application form is available. Please contact support or try again later.');
+  toast.warn('No application form is available. Please contact support or try again later.', {
+    toastId: 'job-title-mismatch-no-form',
+  });
+}
+
+/** Case-insensitive match against position dropdown options. */
+function matchPositionOption(options, title) {
+  const t = String(title || '').trim();
+  if (!t || !options?.length) return '';
+  const found = options.find(
+    o =>
+      String(o)
+        .trim()
+        .toLowerCase() === t.toLowerCase(),
+  );
+  return found || '';
+}
+
+/**
+ * Nearest dropdown position for a typed query (e.g. "CAD" → "CAD Designer").
+ * Prefers exact, then prefix, then substring; ties break to the shortest title.
+ */
+function findNearestPositionOption(options, query) {
+  const q = String(query || '')
+    .trim()
+    .toLowerCase();
+  if (!q || !options?.length) return '';
+
+  const exact = matchPositionOption(options, query);
+  if (exact) return exact;
+
+  const ranked = options
+    .map(option => {
+      const title = String(option || '').trim();
+      const lower = title.toLowerCase();
+      if (!lower) return null;
+      let score = 0;
+      if (lower.startsWith(q)) score = 3;
+      else if (lower.split(/[^a-z0-9]+/).some(part => part.startsWith(q))) score = 2;
+      else if (lower.includes(q)) score = 1;
+      else return null;
+      return { title, score, length: title.length };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score || a.length - b.length);
+
+  return ranked[0]?.title || '';
 }
 
 function getInitialFormState(chosen, navTitle) {
+  const displayTitle = (navTitle && String(navTitle).trim()) || chosen?.title || '';
   if (!chosen) {
+    // Still surface the navigated/typed job in the dropdown even when no form matched yet.
     return {
-      selectedJob: '',
+      selectedJob: displayTitle,
       filteredForm: null,
       answers: [],
-      bannerJobTitle: '',
-      jobTitleInput: null,
+      bannerJobTitle: displayTitle,
+      jobTitleInput: displayTitle || null,
     };
   }
+  // Prefer the job the applicant clicked so the position dropdown matches the deep link.
   return {
-    selectedJob: chosen.title,
+    selectedJob: displayTitle,
     filteredForm: chosen,
     answers: initialAnswersForQuestions(getVisibleQuestionsForForm(chosen)),
-    bannerJobTitle: navTitle || chosen.title,
+    bannerJobTitle: displayTitle,
     jobTitleInput: navTitle || null,
   };
+}
+
+async function loadActivePositions() {
+  try {
+    const positionsRes = await axios.get(ENDPOINTS.GET_JOB_POSITIONS, publicApplyRequestConfig());
+    return Array.isArray(positionsRes.data?.positions)
+      ? positionsRes.data.positions.filter(Boolean)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+async function loadJobForms(formId) {
+  if (formId && isMongoObjectId(formId)) {
+    try {
+      const single = await axios.get(ENDPOINTS.GET_JOB_FORM(formId), publicApplyRequestConfig());
+      const form = single.data?.form || single.data;
+      if (form) return [form];
+    } catch {
+      /* Fall through to /all */
+    }
+  }
+  const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS, publicApplyRequestConfig());
+  return parseFormsResponse(res);
+}
+
+export function buildInitialSelection({
+  formsArr,
+  positions,
+  navTitle: explicitTitle,
+  positionSlug,
+  routerLocation,
+  formId,
+}) {
+  const baseOptions = positions.length
+    ? positions
+    : formsArr
+        .filter(isApplicantFacingForm)
+        .map(f => f.title)
+        .filter(Boolean);
+  const slugMatch = positionSlug ? findApplicantFormBySlug(formsArr, positionSlug) : null;
+  // A bare /apply/<slug> link carries no title — map the slug back to the real position title.
+  const navTitle =
+    explicitTitle ||
+    (positionSlug
+      ? findPositionBySlug(baseOptions, positionSlug) ||
+        slugMatch?.title ||
+        titleHintFromSlug(positionSlug)
+      : '');
+  const navState = {
+    ...routerLocation.state,
+    jobTitle: navTitle || routerLocation.state?.jobTitle,
+    formId: formId || routerLocation.state?.formId,
+  };
+  const formMatch = slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
+  const chosen = pickInitialForm(formsArr, navState, positionSlug);
+  notifyInitialFormSelection(navTitle, formMatch, chosen);
+
+  // Show a real position or form title, never the raw query / slug: near-miss titles select the
+  // matched position, and unmatched ones (e.g. "Applied through site", /apply/<unknown>) select
+  // the default form they fell back to instead of adding a fake dropdown option.
+  const matchedTitle = formMatch ? formMatch.title : chosen?.title;
+  const bannerTitle =
+    matchPositionOption(baseOptions, navTitle) ||
+    matchPositionOption(baseOptions, matchedTitle) ||
+    matchedTitle ||
+    '';
+  const options = ensurePositionOption(baseOptions, bannerTitle);
+  const initial = getInitialFormState(chosen, bannerTitle);
+  const selected =
+    matchPositionOption(options, initial.selectedJob || bannerTitle) ||
+    initial.selectedJob ||
+    bannerTitle ||
+    '';
+
+  return { options, initial, selected, bannerTitle };
 }
 
 function getQuestionType(q) {
@@ -400,30 +622,22 @@ function validateHoursPerWeekAnswer(label, answer) {
   return null;
 }
 
-function validateName(name) {
+function validateName(name, label = 'Name') {
   const trimmed = String(name || '').trim();
 
-  if (!trimmed) return 'Name is required.';
-  if (trimmed.length < 2) return 'Name must be at least 2 characters.';
-  if (trimmed.length > 100) return 'Name must not exceed 100 characters.';
+  if (!trimmed) return `${label} is required.`;
+  if (trimmed.length < 2) return `${label} must be at least 2 characters.`;
+  if (trimmed.length > 100) return `${label} must not exceed 100 characters.`;
 
   if (!/^[\p{L}\s'-]+$/u.test(trimmed)) {
-    return 'Name may contain only letters, spaces, hyphens, and apostrophes.';
+    return `${label} may contain only letters, spaces, hyphens, and apostrophes.`;
   }
 
   return '';
 }
 
 function validateEmail(email) {
-  const trimmed = String(email || '').trim();
-
-  if (!trimmed) return 'Email is required.';
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-    return 'Please enter a valid email address.';
-  }
-
-  return '';
+  return checkEmail(email).error;
 }
 
 function validatePhone(phone) {
@@ -468,16 +682,25 @@ function validateTimeZone(timeZone) {
   return '';
 }
 
-function getProfileValidationErrors({ applicantName, applicantEmail, phone, location, timeZone }) {
+function getProfileValidationErrors({
+  firstName,
+  lastName,
+  applicantEmail,
+  phone,
+  location,
+  timeZone,
+}) {
   const errors = {};
 
-  const nameError = validateName(applicantName);
+  const firstNameError = validateName(firstName, 'First name');
+  const lastNameError = validateName(lastName, 'Last name');
   const emailError = validateEmail(applicantEmail);
   const phoneError = validatePhone(phone);
   const locationError = validateLocation(location);
   const timeZoneError = validateTimeZone(timeZone);
 
-  if (nameError) errors.applicantName = nameError;
+  if (firstNameError) errors.firstName = firstNameError;
+  if (lastNameError) errors.lastName = lastNameError;
   if (emailError) errors.applicantEmail = emailError;
   if (phoneError) errors.phone = phoneError;
   if (locationError) errors.location = locationError;
@@ -551,6 +774,11 @@ function isValidId(id) {
   return /^[a-zA-Z0-9_-]+$/.test(id) && id.length <= 100;
 }
 
+/** Mongo ObjectId — used so position slugs are never treated as job/form ids. */
+function isMongoObjectId(id) {
+  return typeof id === 'string' && /^[a-fA-F0-9]{24}$/.test(id);
+}
+
 const REQUIREMENT_ITEMS = [
   { id: 'reactExperience', label: '1+ years of Full-Time ReactJS Experience' },
   { id: 'twoMonthsCommitment', label: 'Minimum of 2 Months Commitment' },
@@ -569,7 +797,9 @@ function FileUploadField({
   inputRef,
   optional = false,
   required = false,
+  error = '',
 }) {
+  const errorId = `${id}-error`;
   const statusText = file ? `${file.name} (${formatFileSize(file.size)})` : 'No file selected';
   const statusClass = file ? styles.fileStatusSelected : styles.fileStatusEmpty;
 
@@ -600,6 +830,8 @@ function FileUploadField({
             onChange={onChange}
             className={styles.hiddenFileInput}
             required={required && !file}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : undefined}
           />
         </label>
         <span className={`${styles.fileStatus} ${statusClass}`} aria-live="polite">
@@ -611,6 +843,11 @@ function FileUploadField({
           </button>
         )}
       </div>
+      {error && (
+        <p id={errorId} className={styles.fieldError} role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -628,6 +865,7 @@ FileUploadField.propTypes = {
   inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
   optional: PropTypes.bool,
   required: PropTypes.bool,
+  error: PropTypes.string,
 };
 
 FileUploadField.defaultProps = {
@@ -638,18 +876,111 @@ FileUploadField.defaultProps = {
   inputRef: undefined,
   optional: false,
   required: false,
+  error: '',
+};
+
+function JobPositionSelect({ value, options, onChange }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+  const titles = Array.isArray(options) ? options.filter(Boolean) : [];
+  const matched = matchPositionOption(titles, value);
+  const label = matched || value || 'Select a position';
+  const valueKey = String(value || '')
+    .trim()
+    .toLowerCase();
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDoc = event => {
+      if (!wrapRef.current?.contains(event.target)) setOpen(false);
+    };
+    const onKey = event => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const choose = next => {
+    onChange(next);
+    setOpen(false);
+  };
+
+  return (
+    <div className={styles.jobSelectWrap} ref={wrapRef}>
+      <button
+        type="button"
+        className={styles.jobSelect}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label="Select a position"
+        onClick={() => setOpen(isOpen => !isOpen)}
+      >
+        <span className={styles.jobSelectLabel}>{label}</span>
+      </button>
+      {open && (
+        <ul className={styles.jobSelectMenu} role="listbox" aria-label="Positions">
+          <li
+            role="option"
+            aria-selected={!valueKey}
+            className={!valueKey ? styles.jobSelectOptionActive : undefined}
+          >
+            <button type="button" onClick={() => choose('')}>
+              Select a position
+            </button>
+          </li>
+          {titles.map(title => {
+            const selected =
+              String(title)
+                .trim()
+                .toLowerCase() === valueKey;
+            return (
+              <li
+                key={title}
+                role="option"
+                aria-selected={selected}
+                className={selected ? styles.jobSelectOptionActive : undefined}
+              >
+                <button type="button" onClick={() => choose(title)}>
+                  {title}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+JobPositionSelect.propTypes = {
+  value: PropTypes.string,
+  options: PropTypes.arrayOf(PropTypes.string),
+  onChange: PropTypes.func.isRequired,
+};
+
+JobPositionSelect.defaultProps = {
+  value: '',
+  options: [],
 };
 
 function JobApplicationForm() {
   const routerLocation = useLocation();
+  const { positionSlug } = useParams();
 
   const [forms, setForms] = useState([]);
+  const [positionOptions, setPositionOptions] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
   const [answers, setAnswers] = useState([]);
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
-  const [applicantName, setApplicantName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [applicantEmail, setApplicantEmail] = useState('');
   const [applicantLocation, setApplicantLocation] = useState('');
   const [timeZone, setTimeZone] = useState('');
@@ -658,8 +989,11 @@ function JobApplicationForm() {
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const [questionFiles, setQuestionFiles] = useState({});
+  const [resumeFileError, setResumeFileError] = useState('');
+  const [questionFileErrors, setQuestionFileErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const resumeInputRef = useRef(null);
+  const emailInputRef = useRef(null);
   const questionFileInputRefs = useRef({});
   /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
   const [bannerJobTitle, setBannerJobTitle] = useState('');
@@ -671,6 +1005,13 @@ function JobApplicationForm() {
   /** Owner/Admin: optional manual toggles on top of auto-calculated requirement flags. */
   const [requirementPreviewOverrides, setRequirementPreviewOverrides] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
+  const [emailSuggestion, setEmailSuggestion] = useState(null);
+  // Bot protection: time the form opened, optional Turnstile token, and a server-side submit error
+  const mountedAtRef = useRef(Date.now());
+  const turnstileRef = useRef(null);
+  const turnstileSiteKey = getTurnstileSiteKey();
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const locationTimezone = [applicantLocation.trim(), timeZone.trim()].filter(Boolean).join(' | ');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
@@ -685,17 +1026,6 @@ function JobApplicationForm() {
       return false;
     }
   });
-
-  /* Global back-to-top lives outside #root in index.html; hide it on this long form page. */
-  useEffect(() => {
-    const btn = document.querySelector('.back-to-top');
-    if (!btn) return undefined;
-    const prev = btn.style.display;
-    btn.style.display = 'none';
-    return () => {
-      btn.style.display = prev;
-    };
-  }, []);
 
   /*
    * Match html/body/#root to the page strip. Global #root is white; dark mode uses !important —
@@ -719,7 +1049,13 @@ function JobApplicationForm() {
 
   const applyQuestionnairePreFill = data => {
     if (!data) return;
-    if (data.name) setApplicantName(data.name);
+    if (data.name) {
+      const [firstPart, ...restParts] = String(data.name)
+        .trim()
+        .split(/\s+/);
+      setFirstName(firstPart || '');
+      setLastName(restParts.join(' '));
+    }
     if (data.email) setApplicantEmail(data.email);
     if (data.location) {
       setApplicantLocation(data.location);
@@ -738,7 +1074,10 @@ function JobApplicationForm() {
 
   const fetchUserQuestionnaireData = async referralId => {
     try {
-      const response = await axios.get(`${ENDPOINTS.GET_USER_QUESTIONNAIRE}/${referralId}`);
+      const response = await axios.get(
+        `${ENDPOINTS.GET_USER_QUESTIONNAIRE}/${referralId}`,
+        publicApplyRequestConfig(),
+      );
       if (response.data) {
         applyQuestionnairePreFill(response.data);
       }
@@ -749,17 +1088,22 @@ function JobApplicationForm() {
 
   const fetchJobData = async jobId => {
     try {
-      const response = await axios.get(`${ENDPOINTS.GET_JOB}/${jobId}`);
-      if (response.data) {
+      const response = await axios.get(
+        `${ENDPOINTS.APIEndpoint()}/jobs/${jobId}`,
+        publicApplyRequestConfig(),
+      );
+      const job = response.data?.job || response.data;
+      if (job) {
         setJobDataFromRedirect({
-          jobId: response.data._id,
-          jobTitle: response.data.title,
-          jobDescription: response.data.description || '',
-          requirements: response.data.requirements || [],
-          category: response.data.category || 'General',
+          jobId: job._id,
+          jobTitle: job.title,
+          jobDescription: job.description || '',
+          requirements: job.requirements || [],
+          category: job.category || 'General',
+          jobDetailsLink: job.jobDetailsLink || '',
         });
-        if (response.data.title) {
-          setJobTitleInput(response.data.title);
+        if (job.title) {
+          setJobTitleInput(job.title);
         }
       }
     } catch (error) {
@@ -772,11 +1116,10 @@ function JobApplicationForm() {
     const searchParams = new URLSearchParams(routerLocation.search);
     const referralId = searchParams.get('ref') || searchParams.get('referral');
     const jobIdParam = searchParams.get('jobId');
-    const pathJobId = routerLocation.pathname.split('/').pop();
-    const jobId = jobIdParam || (pathJobId && pathJobId !== 'job-application' ? pathJobId : null);
+    const jobId = jobIdParam && isMongoObjectId(jobIdParam) ? jobIdParam : null;
 
     if (referralId && isValidId(referralId)) {
-      fetchUserQuestionnaireData(referralId);
+      void fetchUserQuestionnaireData(referralId);
     }
 
     if (routerLocation.state) {
@@ -784,39 +1127,48 @@ function JobApplicationForm() {
       if (routerLocation.state.jobTitle) {
         setJobTitleInput(routerLocation.state.jobTitle);
       }
-    } else if (jobId && isValidId(jobId)) {
-      fetchJobData(jobId);
+    } else if (jobId) {
+      void fetchJobData(jobId);
+    } else if (positionSlug) {
+      const hint = titleHintFromSlug(positionSlug);
+      if (hint) setJobTitleInput(hint);
     }
-  }, [routerLocation.state, routerLocation.search, routerLocation.pathname]);
+  }, [routerLocation.state, routerLocation.search, routerLocation.pathname, positionSlug]);
 
   useEffect(() => {
     let cancelled = false;
 
     async function fetchForms() {
       try {
-        const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+        const formId = getFormIdFromNavigation(routerLocation);
+        const [positions, formsArr] = await Promise.all([
+          loadActivePositions(),
+          loadJobForms(formId),
+        ]);
         if (cancelled) return;
-        const formsArr = parseFormsResponse(res);
+
         setForms(formsArr);
-
         const navTitle = resolveNavigationJobTitle(jobDataFromRedirect, routerLocation);
-        const navState = {
-          ...routerLocation.state,
-          jobTitle: navTitle || routerLocation.state?.jobTitle,
-        };
-        const formMatch = navTitle ? findFormForJobTitle(formsArr, navTitle) : null;
-        const chosen = pickInitialForm(formsArr, navState);
-        notifyInitialFormSelection(navTitle, formMatch, chosen);
+        const { options, initial, selected, bannerTitle } = buildInitialSelection({
+          formsArr,
+          positions,
+          navTitle,
+          positionSlug,
+          routerLocation,
+          formId,
+        });
 
-        const initial = getInitialFormState(chosen, navTitle);
-        setSelectedJob(initial.selectedJob);
+        setPositionOptions(options);
+        setSelectedJob(selected);
         setFilteredForm(initial.filteredForm);
         setAnswers(initial.answers);
-        setBannerJobTitle(initial.bannerJobTitle);
+        setBannerJobTitle(initial.bannerJobTitle || selected || bannerTitle);
         if (initial.jobTitleInput) setJobTitleInput(initial.jobTitleInput);
-      } catch (err) {
+        else if (selected || bannerTitle) setJobTitleInput(selected || bannerTitle);
+      } catch {
         if (!cancelled) {
           setForms([]);
+          setPositionOptions([]);
           setSelectedJob('');
           setFilteredForm(null);
           setAnswers([]);
@@ -825,27 +1177,53 @@ function JobApplicationForm() {
       }
     }
 
-    fetchForms();
+    void fetchForms();
     return () => {
       cancelled = true;
     };
-  }, [routerLocation.key, jobDataFromRedirect]);
+  }, [routerLocation.key, jobDataFromRedirect, positionSlug]);
 
   useEffect(() => {
     if (!selectedJob) return;
-    const form = forms.find(f => f.title === selectedJob);
+    let form = findFormForJobTitle(forms, selectedJob);
+    if (!form) {
+      form = findDefaultSoftwareForm(forms);
+      if (form) warnDefaultFormFallback(selectedJob, form);
+    }
+    if (!form) return;
     setFilteredForm(form);
     const qs = getVisibleQuestionsForForm(form);
     setAnswers(initialAnswersForQuestions(qs));
     setQuestionFiles({});
+    setQuestionFileErrors({});
     questionFileInputRefs.current = {};
     setFieldErrors({});
   }, [selectedJob, forms]);
 
-  const handleJobChange = e => {
-    const next = e.target.value;
+  // If the title input was filled from navigation but selectedJob stayed empty (e.g. no form
+  // title match), sync the dropdown to the matching /jobs/positions option.
+  useEffect(() => {
+    if (selectedJob || !jobTitleInput.trim() || !positionOptions.length) return;
+    const match = matchPositionOption(positionOptions, jobTitleInput);
+    if (!match) return;
+    setSelectedJob(match);
+    setBannerJobTitle(match);
+  }, [jobTitleInput, positionOptions, selectedJob]);
+
+  const handleJobChange = next => {
     setSelectedJob(next);
+    if (!next) {
+      setBannerJobTitle('');
+      setFilteredForm(null);
+      setAnswers([]);
+      setQuestionFiles({});
+      setQuestionFileErrors({});
+      questionFileInputRefs.current = {};
+      setFieldErrors({});
+      return;
+    }
     setBannerJobTitle(next);
+    setJobTitleInput(next);
   };
 
   const handleJobTitleInputChange = e => {
@@ -858,13 +1236,22 @@ function JobApplicationForm() {
       toast.info('Enter a job title.');
       return;
     }
-    let form = forms.find(f => f.title?.toLowerCase() === raw.toLowerCase());
-    if (!form) form = findFormForJobTitle(forms, raw);
-    if (form) {
-      setSelectedJob(form.title);
-      setBannerJobTitle(form.title);
+    // Partial search (e.g. "CAD") should pick the nearest dropdown position.
+    const positionMatch = findNearestPositionOption(positionOptions, raw);
+    const lookupTitle = positionMatch || raw;
+    let form = findFormForJobTitle(forms, lookupTitle);
+    if (!form && lookupTitle !== raw) form = findFormForJobTitle(forms, raw);
+    const usedDefaultSoftware = !form;
+    if (!form) form = findDefaultSoftwareForm(forms);
+
+    if (positionMatch || form) {
+      const selected = positionMatch || form.title;
+      setSelectedJob(selected);
+      setBannerJobTitle(selected);
+      setJobTitleInput(selected);
+      if (usedDefaultSoftware && form) warnDefaultFormFallback(selected, form);
     } else {
-      toast.info('No form matches that job title.');
+      toast.info('No position matches that search. Pick one from the dropdown.');
     }
   };
 
@@ -919,8 +1306,7 @@ function JobApplicationForm() {
     });
   }, [answers, visibleQuestions]);
 
-  const handleShowDescription = e => {
-    e.preventDefault();
+  const handleKnowMoreClick = () => {
     setShowDescription(true);
   };
 
@@ -954,8 +1340,17 @@ function JobApplicationForm() {
 
     if (!allowedTypes.includes(f.type)) {
       setResumeFile(null);
+      setResumeFileError('');
       if (resumeInputRef.current) resumeInputRef.current.value = '';
       toast.error('Invalid file type. Please upload PDF or DOC/DOCX.');
+      return;
+    }
+
+    const sizeError = getUploadSizeError(f);
+    setResumeFileError(sizeError);
+    if (sizeError) {
+      setResumeFile(null);
+      if (resumeInputRef.current) resumeInputRef.current.value = '';
       return;
     }
 
@@ -965,11 +1360,29 @@ function JobApplicationForm() {
 
   const clearResumeFile = () => {
     setResumeFile(null);
+    setResumeFileError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
+  };
+
+  const setQuestionFileError = (idx, message) => {
+    setQuestionFileErrors(prev => {
+      const next = { ...prev };
+      if (message) next[idx] = message;
+      else delete next[idx];
+      return next;
+    });
   };
 
   const handleQuestionFileChange = (idx, e) => {
     const f = e.target.files?.[0] || null;
+    const sizeError = getUploadSizeError(f);
+    setQuestionFileError(idx, sizeError);
+    if (sizeError) {
+      const ref = questionFileInputRefs.current[idx];
+      if (ref) ref.value = '';
+      setQuestionFiles(prev => ({ ...prev, [idx]: null }));
+      return;
+    }
     setQuestionFiles(prev => ({ ...prev, [idx]: f }));
   };
 
@@ -979,6 +1392,7 @@ function JobApplicationForm() {
       delete next[idx];
       return next;
     });
+    setQuestionFileError(idx, '');
     const ref = questionFileInputRefs.current[idx];
     if (ref) ref.value = '';
   };
@@ -1049,7 +1463,8 @@ function JobApplicationForm() {
 
   const validateBeforeSubmit = () => {
     const profileErrors = getProfileValidationErrors({
-      applicantName,
+      firstName,
+      lastName,
       applicantEmail,
       phone,
       location: applicantLocation,
@@ -1069,7 +1484,8 @@ function JobApplicationForm() {
   };
 
   const resetFormAfterSubmit = () => {
-    setApplicantName('');
+    setFirstName('');
+    setLastName('');
     setApplicantEmail('');
     setApplicantLocation('');
     setTimeZone('');
@@ -1077,8 +1493,10 @@ function JobApplicationForm() {
     setCompanyPosition('');
     setWebsiteSocial('');
     setResumeFile(null);
+    setResumeFileError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
     setQuestionFiles({});
+    setQuestionFileErrors({});
     questionFileInputRefs.current = {};
     setFullTimeYears('');
     setMonthsVolunteer('');
@@ -1087,6 +1505,32 @@ function JobApplicationForm() {
     setAnswers(initialAnswersForQuestions(visibleQuestions));
     setRequirementPreviewOverrides({});
     setFieldErrors({});
+    setEmailSuggestion(null);
+  };
+
+  // Check the email when the applicant leaves the field (other fields still validate on submit)
+  const handleEmailBlur = () => {
+    if (!applicantEmail.trim()) return;
+    const { error, suggestion } = checkEmail(applicantEmail);
+    setEmailSuggestion(suggestion);
+    setFieldErrors(prev => {
+      const next = { ...prev };
+      if (error) next.applicantEmail = error;
+      else delete next.applicantEmail;
+      return next;
+    });
+  };
+
+  const applyEmailSuggestion = () => {
+    setApplicantEmail(emailSuggestion);
+    setEmailSuggestion(null);
+    // The suggestion button unmounts, so return focus to the field rather than the page.
+    emailInputRef.current?.focus();
+    setFieldErrors(prev => {
+      const next = { ...prev };
+      delete next.applicantEmail;
+      return next;
+    });
   };
 
   const handleSubmit = async e => {
@@ -1098,11 +1542,13 @@ function JobApplicationForm() {
     }
 
     const { missing, profileErrors } = validateBeforeSubmit();
+    setEmailSuggestion(checkEmail(applicantEmail).suggestion);
 
     setFieldErrors(prev => {
       const next = { ...prev };
 
-      delete next.applicantName;
+      delete next.firstName;
+      delete next.lastName;
       delete next.applicantEmail;
       delete next.location;
       delete next.timeZone;
@@ -1127,13 +1573,23 @@ function JobApplicationForm() {
       return;
     }
 
+    setSubmitError('');
     setIsSubmitting(true);
     try {
+      const answersPayload = visibleQuestions.map((q, idx) => ({
+        questionId: q._id,
+        answer: serializeAnswerForSubmit(q, idx, answers, questionFiles),
+      }));
+
+      const fullApplicantName = `${firstName.trim()} ${lastName.trim()}`.trim();
       const formData = new FormData();
+      formData.append('respondent', fullApplicantName);
+      formData.append('email', applicantEmail.trim());
+      formData.append('answers', JSON.stringify(answersPayload));
       formData.append(
         'payload',
         JSON.stringify({
-          applicantName: applicantName.trim(),
+          applicantName: fullApplicantName,
           applicantEmail: applicantEmail.trim(),
           profile: {
             locationTimezone,
@@ -1146,12 +1602,16 @@ function JobApplicationForm() {
             hoursPerWeek,
             roleSkills,
           },
-          answers: visibleQuestions.map((q, idx) => ({
-            questionId: q._id,
-            answer: serializeAnswerForSubmit(q, idx, answers, questionFiles),
-          })),
+          answers: answersPayload,
         }),
       );
+
+      // Bot protection: honeypot stays empty for people, fillMs is how long the form was open
+      formData.append('website_url', '');
+      formData.append('fillMs', String(Math.max(0, Date.now() - mountedAtRef.current)));
+      if (turnstileSiteKey) {
+        formData.append('cf-turnstile-response', turnstileToken);
+      }
 
       if (resumeFile) {
         formData.append('resume', resumeFile);
@@ -1163,15 +1623,39 @@ function JobApplicationForm() {
         }
       });
 
-      await axios.post(ENDPOINTS.SUBMIT_JOB_APPLICATION(filteredForm._id), formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await axios.post(
+        ENDPOINTS.SUBMIT_JOB_APPLICATION(filteredForm._id),
+        formData,
+        publicApplyRequestConfig({
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }),
+      );
 
-      toast.success('Application submitted successfully.');
+      toast.success('Application submitted successfully. A confirmation email will be sent.');
       resetFormAfterSubmit();
     } catch (err) {
-      const message = err.response?.data?.message || err.message || 'Failed to submit application.';
-      toast.error(message, { autoClose: 7000 });
+      const apiMessage = err.response?.data?.message || err.response?.data?.error;
+      const status = err.response?.status;
+      if (turnstileSiteKey) {
+        // A Turnstile token is single use, so every failed submit needs a fresh one
+        turnstileRef.current?.reset();
+      }
+      if (status === 429) {
+        setSubmitError(
+          err.response?.data?.error ||
+            'Too many applications from this connection. Please try again later.',
+        );
+      } else if (status === 400 && err.response?.data?.error === VERIFICATION_FAILED_MESSAGE) {
+        setSubmitError(err.response.data.error);
+      } else if (status === 409) {
+        toast.error(apiMessage || 'You already applied for this position.', {
+          autoClose: 7000,
+        });
+      } else {
+        toast.error(apiMessage || err.message || 'Failed to submit application.', {
+          autoClose: 7000,
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -1179,7 +1663,6 @@ function JobApplicationForm() {
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <header className={styles.logo}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
@@ -1204,13 +1687,11 @@ function JobApplicationForm() {
             </button>
           </div>
           <div className={styles.headerRight}>
-            <select className={styles.jobSelect} value={selectedJob} onChange={handleJobChange}>
-              {forms.map(form => (
-                <option key={form._id || form.id} value={form.title}>
-                  {form.title}
-                </option>
-              ))}
-            </select>
+            <JobPositionSelect
+              value={selectedJob}
+              options={positionOptions}
+              onChange={handleJobChange}
+            />
           </div>
         </section>
         <section className={styles.formContainer}>
@@ -1218,9 +1699,16 @@ function JobApplicationForm() {
             Job Application – {(bannerJobTitle || selectedJob || 'this role').trim()}
           </h1>
           <p className={styles.formSubtitle}>
-            <a href="#learnMore" onClick={handleShowDescription}>
+            {/* Match development: always open the in-page "About the role" modal.
+                Do not navigate to jobDetailsLink (often bad seed data → 404). */}
+            <button
+              type="button"
+              className={styles.linkButton}
+              onClick={handleKnowMoreClick}
+              aria-haspopup="dialog"
+            >
               Click to know more about this position
-            </a>
+            </button>
           </p>
           {showDescription && filteredForm && (
             <div className={styles.popupOverlay}>
@@ -1289,28 +1777,28 @@ function JobApplicationForm() {
             <div className={styles.formContentGroup}>
               <div className={styles.formProfileDetailGroup}>
                 <div className={styles.profileField}>
-                  <label htmlFor="jaf-applicant-name" className={styles.fieldLabel}>
-                    <span>Name</span>
+                  <label htmlFor="jaf-applicant-first-name" className={styles.fieldLabel}>
+                    <span>First Name</span>
                     <span className={styles.requiredMark} aria-hidden="true">
                       *
                     </span>
                   </label>
 
                   <input
-                    id="jaf-applicant-name"
+                    id="jaf-applicant-first-name"
                     type="text"
-                    placeholder="Name"
+                    placeholder="First Name"
                     className={`${styles.inputField} ${
-                      fieldErrors.applicantName ? styles.inputFieldError : ''
+                      fieldErrors.firstName ? styles.inputFieldError : ''
                     }`}
-                    value={applicantName}
+                    value={firstName}
                     onChange={e => {
-                      setApplicantName(e.target.value);
+                      setFirstName(e.target.value);
 
-                      if (fieldErrors.applicantName) {
+                      if (fieldErrors.firstName) {
                         setFieldErrors(prev => {
                           const next = { ...prev };
-                          delete next.applicantName;
+                          delete next.firstName;
                           return next;
                         });
                       }
@@ -1319,13 +1807,55 @@ function JobApplicationForm() {
                     maxLength={100}
                     required
                     aria-required="true"
-                    aria-invalid={Boolean(fieldErrors.applicantName)}
-                    autoComplete="name"
+                    aria-invalid={Boolean(fieldErrors.firstName)}
+                    autoComplete="given-name"
                   />
 
-                  {fieldErrors.applicantName && (
+                  {fieldErrors.firstName && (
                     <p className={styles.fieldError} role="alert">
-                      {fieldErrors.applicantName}
+                      {fieldErrors.firstName}
+                    </p>
+                  )}
+                </div>
+
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-applicant-last-name" className={styles.fieldLabel}>
+                    <span>Last Name</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+
+                  <input
+                    id="jaf-applicant-last-name"
+                    type="text"
+                    placeholder="Last Name"
+                    className={`${styles.inputField} ${
+                      fieldErrors.lastName ? styles.inputFieldError : ''
+                    }`}
+                    value={lastName}
+                    onChange={e => {
+                      setLastName(e.target.value);
+
+                      if (fieldErrors.lastName) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.lastName;
+                          return next;
+                        });
+                      }
+                    }}
+                    minLength={2}
+                    maxLength={100}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.lastName)}
+                    autoComplete="family-name"
+                  />
+
+                  {fieldErrors.lastName && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.lastName}
                     </p>
                   )}
                 </div>
@@ -1340,6 +1870,8 @@ function JobApplicationForm() {
 
                   <input
                     id="jaf-applicant-email"
+                    ref={emailInputRef}
+                    maxLength={254}
                     type="email"
                     placeholder="Email"
                     className={`${styles.inputField} ${
@@ -1348,6 +1880,7 @@ function JobApplicationForm() {
                     value={applicantEmail}
                     onChange={e => {
                       setApplicantEmail(e.target.value);
+                      setEmailSuggestion(null);
 
                       if (fieldErrors.applicantEmail) {
                         setFieldErrors(prev => {
@@ -1357,15 +1890,45 @@ function JobApplicationForm() {
                         });
                       }
                     }}
+                    onBlur={handleEmailBlur}
                     required
                     aria-required="true"
                     aria-invalid={Boolean(fieldErrors.applicantEmail)}
+                    aria-describedby={
+                      [
+                        fieldErrors.applicantEmail && 'jaf-applicant-email-error',
+                        emailSuggestion && 'jaf-applicant-email-suggestion',
+                      ]
+                        .filter(Boolean)
+                        .join(' ') || undefined
+                    }
                     autoComplete="email"
                   />
 
                   {fieldErrors.applicantEmail && (
-                    <p className={styles.fieldError} role="alert">
+                    <p id="jaf-applicant-email-error" className={styles.fieldError} role="alert">
                       {fieldErrors.applicantEmail}
+                    </p>
+                  )}
+
+                  {emailSuggestion && (
+                    <p
+                      id="jaf-applicant-email-suggestion"
+                      className={styles.fieldHint}
+                      aria-live="polite"
+                    >
+                      <span>
+                        Did you mean <strong>{emailSuggestion}</strong>?
+                      </span>
+                      {/* Same small action button as the resume "Remove" */}
+                      <button
+                        type="button"
+                        className={styles.clearFileBtn}
+                        onClick={applyEmailSuggestion}
+                        aria-label={`Use this email: ${emailSuggestion}`}
+                      >
+                        Use this
+                      </button>
                     </p>
                   )}
                 </div>
@@ -1533,6 +2096,7 @@ function JobApplicationForm() {
                   inputRef={resumeInputRef}
                   optional={!resumeRequired}
                   required={resumeRequired}
+                  error={resumeFileError}
                 />
               </div>
               {visibleQuestions.map((q, idx) => {
@@ -1635,38 +2199,49 @@ function JobApplicationForm() {
                         ))}
                       </fieldset>
                     )}
-                    {qt === 'radio' && q.options && q.options.length > 0 && (
-                      <fieldset
-                        className={styles.optionFieldset}
-                        aria-labelledby={`${formKey}-heading`}
-                      >
-                        {q.options.map(opt => (
-                          <label key={String(opt)}>
-                            <input
-                              type="radio"
-                              name={`question-${formKey}`}
-                              value={opt}
-                              checked={answers[idx] === opt}
-                              onChange={() => handleAnswerChange(idx, opt)}
-                            />{' '}
-                            {opt}
-                          </label>
-                        ))}
-                      </fieldset>
-                    )}
+                    {qt === 'radio' &&
+                      q.options &&
+                      q.options.length > 0 &&
+                      !isIndividualOrgQuestion && (
+                        <fieldset
+                          className={styles.optionFieldset}
+                          aria-labelledby={`${formKey}-heading`}
+                        >
+                          {q.options.map(opt => (
+                            <label key={String(opt)}>
+                              <input
+                                type="radio"
+                                name={`question-${formKey}`}
+                                value={opt}
+                                checked={answers[idx] === opt}
+                                onChange={() => handleAnswerChange(idx, opt)}
+                              />{' '}
+                              {opt}
+                            </label>
+                          ))}
+                        </fieldset>
+                      )}
                     {isIndividualOrgQuestion ? (
-                      <select
-                        className={styles.selectField}
-                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                        required={req}
-                        aria-required={req}
+                      <fieldset
+                        className={`${styles.optionFieldset} ${styles.optionFieldsetInline}`}
                         aria-labelledby={`${formKey}-heading`}
                       >
-                        <option value="">Select an option</option>
-                        <option value="Individual">Individual</option>
-                        <option value="Organization">Organization</option>
-                      </select>
+                        {(q.options?.length ? q.options : ['Individual', 'Organization']).map(
+                          opt => (
+                            <label key={String(opt)}>
+                              <input
+                                type="radio"
+                                name={`question-${formKey}`}
+                                value={opt}
+                                checked={answers[idx] === opt}
+                                onChange={() => handleAnswerChange(idx, opt, label)}
+                                required={req}
+                              />{' '}
+                              {opt}
+                            </label>
+                          ),
+                        )}
+                      </fieldset>
                     ) : (
                       qt === 'dropdown' && (
                         <select
@@ -1697,6 +2272,7 @@ function JobApplicationForm() {
                           questionFileInputRefs.current[idx] = el;
                         }}
                         required={req}
+                        error={questionFileErrors[idx]}
                       />
                     )}
                     {![
@@ -1708,7 +2284,8 @@ function JobApplicationForm() {
                       'radio',
                       'dropdown',
                     ].includes(qt) &&
-                      !isJobApplicationFileUploadQuestion(q) && (
+                      !isJobApplicationFileUploadQuestion(q) &&
+                      !isIndividualOrgQuestion && (
                         <input
                           type="text"
                           placeholder="Type your response here"
@@ -1723,6 +2300,31 @@ function JobApplicationForm() {
                   </div>
                 );
               })}
+              {/* Honeypot: off-screen, unreachable by keyboard and hidden from screen readers.
+                  Real people never fill it; bots that fill every input give themselves away. */}
+              <div className={styles.honeypot} aria-hidden="true">
+                <input
+                  type="text"
+                  name="website_url"
+                  data-testid="jaf-honeypot"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  defaultValue=""
+                />
+              </div>
+              {turnstileSiteKey && (
+                <TurnstileWidget
+                  ref={turnstileRef}
+                  siteKey={turnstileSiteKey}
+                  darkMode={Boolean(darkMode)}
+                  onToken={setTurnstileToken}
+                />
+              )}
+              {submitError && (
+                <p className={styles.fieldError} role="alert">
+                  {submitError}
+                </p>
+              )}
               <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
                 {isSubmitting ? 'Submitting…' : 'Submit your application'}
               </button>
@@ -1733,6 +2335,8 @@ function JobApplicationForm() {
     </div>
   );
 }
+
+const VERIFICATION_FAILED_MESSAGE = 'Verification failed. Please try again.';
 
 const requirementsPropType = PropTypes.shape({
   reactExperience: PropTypes.bool,

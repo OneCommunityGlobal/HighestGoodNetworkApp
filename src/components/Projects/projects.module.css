@@ -14,31 +14,31 @@
    whatever is left (~25%). Keeping them as percentages lets the table shrink to
    its wrapper instead of overflowing it. */
 :global(#projects__order) {
-  width: 5%;
+  width: 4%;
 }
 
 :global(#projects__active) {
-  width: 8%;
+  width: 12%;
 }
 
 :global(#projects__category) {
-  width: 15%;
+  width: 14%;
 }
 
 :global(#projects__members) {
-  width: 12%;
+  width: 13%;
 }
 
 :global(#projects__inv) {
-  width: 12%;
+  width: 16%;
 }
 
 :global(#projects__wbs) {
-  width: 12%;
+  width: 10%;
 }
 
 :global(#projects__delete) {
-  width: 11%;
+  width: 10%;
 }
 
 /* Fixed layout ties column widths to the header row, so long values in a cell
@@ -149,10 +149,6 @@
   background-color: #f0f0f0;
 }
 
-:global(tr:hover) {
-  background: #e9f6ff;
-}
-
 @media (width <= 375px) {
   :global(#new_project .form-control) {
     flex: 1 1 auto;
@@ -204,12 +200,15 @@
 .project-member-badge {
   position: absolute;
   top: -10px;
-  right: -32px;
-  min-width: 22px;
-  height: 22px;
+  right: -48px;
+  /* Replaced fixed dimensions with padding so the badge expands gracefully for multi-digit numbers */
+  padding: 2px 5px;
+  /* min-width: 22px; */
+  min-height: 22px;
   background: lawngreen;
-  color: #111;
-  border-radius: 50%;
+  color: #111 !important;
+  border-radius: 50px; /* Adapts from a circle to a clean pill shape as text length increases */
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,6 +217,12 @@
   box-shadow: 0 0 2px #888;
   z-index: 2;
 }
+
+/* Increased specificity to ensure badge text remains strictly black in both light and dark modes */
+ .project-member-badge.badgeTextBlack {
+  color: #111 !important;
+}
+
 
 .project-member-btn .fa-users {
   font-size: 1.5rem;
@@ -236,26 +241,26 @@
 
 .suggestion-button {
   display: block;
-  width: 100%; 
-  padding: 10px; 
-  text-align: left; 
-  background: none; 
-  border: none; 
-  cursor: pointer; 
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .suggestion-button:hover {
   background-color: #f0f0f0;
 }
 
-tr:hover {
+.projects__tr:hover {
   background: #e9f6ff;
 }
 
 /* In dark mode the page wrapper carries .bg-oxford-blue. Keep the row-hover
    highlight on-theme (yinmn-blue) instead of the light default, so the dark
    inputs/buttons in the hovered row stay legible instead of washing out. */
-:global(.bg-oxford-blue) tr:hover {
+:global(.bg-oxford-blue) .projects__tr:hover {
   background: #3a506b;
 }
 
@@ -273,6 +278,24 @@ tr:hover {
 
 .archived-button:hover {
   background-color: #0056b3;
+}
+
+
+/* Header filter toggles only (Category / Active): fixed 30x30 box, no Bootstrap caret.
+   Scoped to .projectFilterDropdown so other dropdowns (account, nav menus) keep their size and arrow. */
+.projectFilterDropdown :global(.dropdown-toggle) {
+  width: 30px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.projectFilterDropdown :global(.dropdown-toggle)::after {
+  display: none !important;
+  content: none !important;
+  border: none !important;
 }
 
 @media (width <= 375px) {
