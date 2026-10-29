@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { downloadPRGradingCsv } from '../PRGradingScreen/csvExport';
 import AddReviewerModal from './AddReviewerModal';
 import ConfirmationModal from './ConfirmationModal';
 import GradingTable from './GradingTable';
@@ -311,6 +312,8 @@ function PRGradingDashboard() {
     day: 'numeric',
   });
   const selectedMockWeekMeta = MOCK_WEEK_METADATA[selectedMockWeek];
+  // Keep the table, summary, and CSV on the same selected week's rows.
+  const displayedGradings = gradings;
 
   if (loading) {
     return (
@@ -333,7 +336,24 @@ function PRGradingDashboard() {
               <h1 className={styles.title}>{TEAM_NAME}</h1>
               <p className={styles.date}>{currentDate}</p>
             </div>
-            <div className={styles.headerControls}>
+            <fieldset className={styles.headerControls}>
+              <legend className={styles.headerControlsLegend}>Review week actions</legend>
+              <button
+                type="button"
+                onClick={() =>
+                  downloadPRGradingCsv(
+                    displayedGradings,
+                    'team-alpha-pr-grading-displayed-data.csv',
+                    {
+                      useStoredCount: true,
+                    },
+                  )
+                }
+                className={styles.exportButton}
+                title="Exports the rows displayed for the selected review week."
+              >
+                Export to CSV
+              </button>
               <div className={styles.mockWeekControl}>
                 <label htmlFor="mock-week-selector" className={styles.mockWeekLabel}>
                   Review Week
@@ -352,7 +372,7 @@ function PRGradingDashboard() {
                 </select>
                 <p className={styles.mockWeekMeta}>{selectedMockWeekMeta.range}</p>
               </div>
-            </div>
+            </fieldset>
           </div>
         </div>
 
@@ -371,7 +391,7 @@ function PRGradingDashboard() {
               </div>
             )}
             <GradingTable
-              gradings={gradings}
+              gradings={displayedGradings}
               onUpdatePRsReviewed={updatePRsReviewed}
               onAddPRClick={setOpenAddModal}
               openAddModal={openAddModal}
@@ -387,7 +407,7 @@ function PRGradingDashboard() {
           <div className={styles.summarySection}>
             <h2 className={styles.summaryTitle}>Summary</h2>
             <SummaryList
-              gradings={gradings}
+              gradings={displayedGradings}
               onUpdateGrade={updateGrade}
               onRemovePR={removeGradedPR}
             />

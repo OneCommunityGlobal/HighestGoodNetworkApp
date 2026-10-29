@@ -10,6 +10,7 @@ const PRGradingView = ({
   teamData,
   isFinalized,
   onFinalize,
+  onExport,
   searchTerm,
   onSearchTermChange,
   roleFilter,
@@ -34,7 +35,7 @@ const PRGradingView = ({
   gradingReviewer,
   onGradeChange,
 }) => {
-  const dm = darkMode ? 'dark-mode' : '';
+  const dm = darkMode ? styles['dark-mode'] : '';
 
   return (
     <Container fluid className={`${styles['pr-grading-screen-container']} ${dm}`}>
@@ -53,14 +54,22 @@ const PRGradingView = ({
                     </p>
                   </div>
                 </div>
-                <Button
-                  variant={isFinalized ? 'secondary' : 'outline-dark'}
-                  disabled={isFinalized}
-                  onClick={onFinalize}
-                  className={`${styles['pr-grading-screen-done-button']} ${dm}`}
-                >
-                  {isFinalized ? 'Finalized' : 'Done'}
-                </Button>
+                <fieldset className={styles['pr-grading-screen-header-actions']}>
+                  <legend className={styles['pr-grading-screen-action-legend']}>
+                    Grading actions
+                  </legend>
+                  <Button variant="outline-primary" onClick={onExport} className={dm}>
+                    Export to CSV
+                  </Button>
+                  <Button
+                    variant={isFinalized ? 'secondary' : 'outline-dark'}
+                    disabled={isFinalized}
+                    onClick={onFinalize}
+                    className={`${styles['pr-grading-screen-done-button']} ${dm}`}
+                  >
+                    {isFinalized ? 'Finalized' : 'Done'}
+                  </Button>
+                </fieldset>
               </div>
             </Card.Header>
 
@@ -391,6 +400,7 @@ PRGradingView.propTypes = {
   }).isRequired,
   isFinalized: PropTypes.bool.isRequired,
   onFinalize: PropTypes.func.isRequired,
+  onExport: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
   onSearchTermChange: PropTypes.func.isRequired,
   roleFilter: PropTypes.string.isRequired,

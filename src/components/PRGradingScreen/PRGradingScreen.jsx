@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import PRGradingView from './PRGradingView';
 import { usePRPromotion } from './usePRPromotion';
+import { downloadWeeklyPRGradingCsv } from './csvExport';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -109,6 +110,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
   const handleCloseGradingModal = () => setShowGradingModal(null);
   const handleFinalize = () => setIsFinalized(true);
+  const handleExport = () => {
+    downloadWeeklyPRGradingCsv(filteredReviewers, teamData.dateRange);
+  };
 
   if (!teamData || !reviewers) {
     return <div>Error: Missing required props</div>;
@@ -120,6 +124,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       teamData={teamData}
       isFinalized={isFinalized}
       onFinalize={handleFinalize}
+      onExport={handleExport}
       searchTerm={searchTerm}
       onSearchTermChange={setSearchTerm}
       roleFilter={roleFilter}

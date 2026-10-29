@@ -48,6 +48,23 @@
   padding: 8px 20px;
 }
 
+.pr-grading-screen-header-actions {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.pr-grading-screen-action-legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .pr-grading-screen-title {
   font-size: 2rem;
   font-weight: bold;
@@ -536,6 +553,12 @@
     gap: 15px;
   }
 
+  .pr-grading-screen-header-actions {
+    align-self: flex-end;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
   .pr-grading-screen-header-right {
     margin-left: 0;
     align-self: flex-end;
@@ -697,6 +720,10 @@
 }
 
 .pr-grading-screen-table-row.dark-mode td {
+  color: #fff;
+}
+
+.pr-grading-screen-table.dark-mode .pr-grading-screen-td-needed {
   color: #fff;
 }
 
@@ -1157,7 +1184,8 @@
 }
 
 .pr-grading-inline-header-cell.dark-mode {
-  color: #bbb;
+  background-color: #2d4059;
+  color: #fff;
   border-bottom-color: rgb(255 255 255 / 10%);
 }
 
