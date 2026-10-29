@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button, Col, Input } from 'reactstrap';
 import hasPermission from '../../../utils/permissions';
 import './TeamsAndProjects.module.css';
-// import styles from './UserTeamsTable.css';
+import styles from './UserTeamsTable.css';
 import { connect } from 'react-redux';
 import { boxStyle } from '~/styles';
 
@@ -278,20 +278,38 @@ const UserTeamsTable = props => {
         <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
           <thead className="user-team-head">
             {props.role && (
-              <tr>
-                <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`} style={{ textAlign: 'center' }}>#</th>
-                <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`} style={{ textAlign: 'center' }}>Team Name</th>
-                {canAssignTeamToUsers ? (
-                  <>
-                    <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`} style={{ textAlign: 'center' }}>Members</th>
-                    <th
-                      style={{ flex: 2 , textAlign: 'center'}}
-                      className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`} 
-                    >
-                      {}
-                    </th>
-                  </>
-                ) : null}
+              <tr>                 
+              <th
+                className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                style={{ textAlign: 'center' }}
+              >
+                #
+              </th>
+              <th
+                className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                style={{ textAlign: 'center' }}
+              >
+                Team Name
+              </th>
+
+              {canAssignTeamToUsers ? (
+                <>
+                  <th
+                    className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                    style={{ textAlign: 'center' }}
+                  >
+                    Members
+                  </th>
+
+                  <th
+                    style={{ flex: 2, textAlign: 'center' }}
+                    className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                  >
+                    {/* Keep the existing header content here */}
+                  </th>
+                </>
+              ) : null}
+
               </tr>
             )}
           </thead>
