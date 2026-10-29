@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import RehireableStatusControl from '../RehireableStatusControl';
 
 describe('RehireableStatusControl', () => {
-  it('confirms a non-empty optional reason', () => {
+  it('confirms a valid trimmed reason', () => {
     const onConfirm = vi.fn();
     render(<RehireableStatusControl onConfirm={onConfirm} />);
 
@@ -16,15 +16,52 @@ describe('RehireableStatusControl', () => {
     expect(onConfirm).toHaveBeenCalledWith(false, 'Not a good fit');
   });
 
-  it('allows confirmation with an empty reason', () => {
+  it.each([
+    ['empty', ''],
+    ['whitespace-only', '   '],
+  ])('rejects an %s reason without calling onConfirm', (_label, value) => {
     const onConfirm = vi.fn();
     render(<RehireableStatusControl onConfirm={onConfirm} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Rehireable' }));
-    expect(screen.getByRole('button', { name: 'Confirm' })).toBeEnabled();
+    fireEvent.change(screen.getByRole('textbox', { name: /reason for not rehireable status/i }), {
+      target: { value },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
 
-    expect(onConfirm).toHaveBeenCalledWith(false, '');
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(screen.getByText(/a reason is required/i)).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /reason for not rehireable status/i })).toHaveClass(
+      'is-invalid',
+    );
+  });
+
+  it('accepts a single non-whitespace character and clears the error on typing', () => {
+    const onConfirm = vi.fn();
+    render(<RehireableStatusControl onConfirm={onConfirm} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Rehireable' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+    expect(screen.getByText(/a reason is required/i)).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('textbox', { name: /reason for not rehireable status/i }), {
+      target: { value: ' x ' },
+    });
+    expect(screen.queryByText(/a reason is required/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+
+    expect(onConfirm).toHaveBeenCalledWith(false, 'x');
+  });
+
+  it('clears a previous validation error when the modal is reopened', () => {
+    render(<RehireableStatusControl onConfirm={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Rehireable' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Rehireable' }));
+
+    expect(screen.queryByText(/a reason is required/i)).not.toBeInTheDocument();
   });
 
   it('does not change status or save reason when cancelled', () => {

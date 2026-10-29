@@ -1134,6 +1134,10 @@ setUpdatedTasks(prev => {
   };
 
   const handleConfirmRehireableChange = async (newRehireableStatus, notRehireableReason) => {
+    if (!newRehireableStatus && !notRehireableReason?.trim()) {
+      toast.error('A reason is required to mark this user as not rehireable.');
+      return;
+    }
     const updatedUserProfile = {
       ...userProfile,
       isRehireable: newRehireableStatus,
