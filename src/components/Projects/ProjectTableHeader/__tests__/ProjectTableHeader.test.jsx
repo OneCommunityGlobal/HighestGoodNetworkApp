@@ -88,7 +88,7 @@ describe('ProjectTableHeader Component', () => {
     const hasPermission = vi.fn((a) => true)
     stateWithDeletePermission.hasPermission = hasPermission;
     renderProjectTableHeader(stateWithDeletePermission);
-    
+
     expect(screen.getByText('Archive')).toBeInTheDocument();
   });
 
@@ -104,7 +104,7 @@ describe('ProjectTableHeader Component', () => {
     const hasPermission = vi.fn((a) => false)
     stateWithoutDeletePermission.hasPermission = hasPermission;
     renderProjectTableHeader(stateWithoutDeletePermission);
-    
+
     expect(screen.queryByText('Delete')).not.toBeInTheDocument();
   });
 
