@@ -1335,11 +1335,21 @@ function JobApplicationForm() {
     if (!form) form = findDefaultSoftwareForm(forms);
 
     if (positionMatch || form) {
-      const selected = positionMatch || form.title;
-      setSelectedJob(selected);
-      setBannerJobTitle(selected);
-      setJobTitleInput(selected);
-      if (usedDefaultSoftware && form) warnDefaultFormFallback(selected, form);
+      if (usedDefaultSoftware && form) {
+        // Load the default software form, but keep the typed query in the UI and toast.
+        setSelectedJob(form.title);
+        setBannerJobTitle(raw);
+        setJobTitleInput(raw);
+        warnDefaultFormFallback(raw, form);
+      } else {
+        const dropdownJob = positionMatch || form.title;
+        setSelectedJob(dropdownJob);
+        setBannerJobTitle(dropdownJob);
+        setJobTitleInput(dropdownJob);
+        if (form && isManagementFamilySoftMatch(forms, lookupTitle, form)) {
+          warnManagementFamilyMatch(raw, form);
+        }
+      }
     } else {
       toast.info('No position matches that search. Pick one from the dropdown.');
     }
