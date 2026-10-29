@@ -1199,9 +1199,9 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
               height: isCardVariant ? 'clamp(560px, 58vh, 720px)' : '520px',
               maxHeight: isCardVariant ? 'none' : '520px',
               display: 'flex',
-              flex: isCardVariant ? '1 1 auto' : undefined,
+              flex: isCardVariant ? '1 0 auto' : undefined, // don't shrink when the summary is shown,
               flexDirection: 'column',
-              minHeight: isCardVariant ? 0 : undefined,
+              minHeight: isCardVariant ? 480 : undefined, // keep the chart readable below the summary,
               position: 'relative',
               overflow: 'hidden',
               paddingTop: 12,
@@ -1314,7 +1314,9 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
                             <tr key={issue._id}>
                               <td>{formatIssueDate(issue.issueDate)}</td>
                               <td title={joinText(issue.issueText)}>
-                                {joinText(issue.issueTitle) || '—'}
+                                {joinText(issue.issueTitle) ||
+                                  joinText(issue.issueText).slice(0, 60) ||
+                                  '—'}
                               </td>
                               <td>{getProjectName(issue.projectId)}</td>
                               <td>{issue.issueType}</td>
