@@ -175,6 +175,11 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
       plugins: {
         title: { display: false },
         legend: { labels: { color: tickColor } },
+        // Value labels inside the bars: high contrast on the green bars in both themes.
+        datalabels: {
+          color: darkMode ? '#0f172a' : '#1f2937',
+          font: { weight: '600' },
+        },
         tooltip: {
           backgroundColor: darkMode ? '#1e293b' : '#ffffff',
           titleColor: darkMode ? '#f8fafc' : '#111827',
