@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -68,6 +68,7 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
   const [error, setError] = useState(null);
   const [selectedDateRange, setSelectedDateRange] = useState('all');
   const [selectedProject, setSelectedProject] = useState('all');
+  const [selectedSupplier, setSelectedSupplier] = useState('all');
 
   const chartTheme = {
     textColor: darkMode ? '#e0e0e0' : '#333',
@@ -124,6 +125,28 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
     fetchData();
   }, [dispatch, selectedDateRange, selectedProject, onDataLoaded]);
 
+  const supplierOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(supplierData.map(item => item.supplierName).filter(Boolean)),
+      ).sort((a, b) => a.localeCompare(b)),
+    [supplierData],
+  );
+
+  useEffect(() => {
+    if (selectedSupplier !== 'all' && !supplierOptions.includes(selectedSupplier)) {
+      setSelectedSupplier('all');
+    }
+  }, [supplierOptions, selectedSupplier]);
+
+  const filteredSupplierData = useMemo(
+    () =>
+      selectedSupplier === 'all'
+        ? supplierData
+        : supplierData.filter(item => item.supplierName === selectedSupplier),
+    [supplierData, selectedSupplier],
+  );
+
   return (
     <div
       className={`${styles['supplier-performance-card']} ${
@@ -165,7 +188,25 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
             <option value="all">ALL Projects</option>
             {projects.map(project => (
               <option key={project._id} value={project._id}>
-                {project._id}
+                {project.projectName || project._id}
+              </option>
+            ))}
+          </Input>
+        </div>
+
+        <div className={styles['supplier-performance-filter-group']}>
+          <label htmlFor="supplier-select">Supplier</label>
+          <Input
+            id="supplier-select"
+            type="select"
+            value={selectedSupplier}
+            onChange={e => setSelectedSupplier(e.target.value)}
+            className={styles['supplier-performance-select']}
+          >
+            <option value="all">All Suppliers</option>
+            {supplierOptions.map(name => (
+              <option key={name} value={name}>
+                {name}
               </option>
             ))}
           </Input>
@@ -178,15 +219,18 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
 
         {error && <div className={styles['supplier-performance-error']}>{error}</div>}
 
-        {!loading && !error && supplierData.length === 0 && (
+        {!loading && !error && filteredSupplierData.length === 0 && (
           <div className={styles['supplier-performance-empty']}>
             No supplier performance data available.
           </div>
         )}
 
-        {!loading && !error && supplierData.length > 0 && (
+        {!loading && !error && filteredSupplierData.length > 0 && (
           <ResponsiveContainer width="100%" height={height}>
-            <BarChart data={supplierData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+            <BarChart
+              data={filteredSupplierData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+            >
               {/* Added grid lines: Dotted (3 3) and custom theme color */}
               <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} opacity={0.5} />
 
