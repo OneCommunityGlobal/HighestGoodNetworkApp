@@ -1,10 +1,12 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { MemoryRouter } from 'react-router-dom';
 import moment from 'moment';
+import axios from 'axios';
+import momentTz from 'moment-timezone';
 import FormattedReport from '../FormattedReport';
 import '@testing-library/jest-dom/extend-expect';
 
@@ -71,7 +73,6 @@ const dummySummary = {
     .add(1, 'days')
     .format(),
   totalTangibleHrs: 100,
-  daysInTeam: 70,
   bioPosted: 'default',
   weeklySummaryOption: 'Default',
 };
@@ -146,7 +147,181 @@ describe('FormattedReport minimal test', () => {
     );
     expect(screen.queryByText('Emails')).toBeNull();
   });
+  it('only suggests team codes currently in use on the visible weekly summaries page', () => {
+    const activeSummaryOne = {
+      ...dummySummary,
+      _id: 'active-1',
+      email: 'active1@example.com',
+      teamCode: 'ACT01',
+      endDate: null,
+    };
 
+    const activeSummaryTwo = {
+      ...dummySummary,
+      _id: 'active-2',
+      email: 'active2@example.com',
+      teamCode: 'ACT02',
+      endDate: null,
+    };
+
+    const expiredSummary = {
+      ...dummySummary,
+      _id: 'expired-1',
+      email: 'expired@example.com',
+      teamCode: 'OLD01',
+      isActive: false,
+      endDate: moment()
+        .subtract(6, 'weeks')
+        .toISOString(),
+      finalWeekIndex: 6,
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[activeSummaryOne, activeSummaryTwo, expiredSummary]}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const inputs = screen.getAllByPlaceholderText('X-XXX');
+    fireEvent.focus(inputs[0]);
+    fireEvent.change(inputs[0], {
+      target: { value: '' },
+    });
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
+    expect(screen.getByText('ACT02')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('includes an active user with a scheduled end date in team code suggestions', () => {
+    const activeScheduledEndSummary = {
+      ...dummySummary,
+      _id: 'future-end-user',
+      email: 'future@example.com',
+      teamCode: 'FUT01',
+      isActive: true,
+      endDate: moment()
+        .add(2, 'weeks')
+        .toISOString(),
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} summaries={[activeScheduledEndSummary]} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('FUT01')).toBeInTheDocument();
+  });
+
+  it('does not suggest the team code of an inactive user hidden from the current tab', () => {
+    const visibleSummary = {
+      ...dummySummary,
+      _id: 'visible-user',
+      email: 'visible@example.com',
+      teamCode: 'ACT01',
+      isActive: true,
+      endDate: null,
+    };
+
+    const hiddenInactiveSummary = {
+      ...dummySummary,
+      _id: 'inactive-user',
+      email: 'inactive@example.com',
+      teamCode: 'OLD01',
+      isActive: false,
+      endDate: null,
+      finalWeekIndex: 1,
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[visibleSummary, hiddenInactiveSummary]}
+            weekIndex={0}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('updates active team code suggestions after a successful save', async () => {
+    function StatefulReport() {
+      const [summaries, setSummaries] = React.useState([dummySummary]);
+
+      const handleTeamCodeChange = (userId, newTeamCode) => {
+        setSummaries(prevSummaries =>
+          prevSummaries.map(summary =>
+            summary._id === userId ? { ...summary, teamCode: newTeamCode } : summary,
+          ),
+        );
+      };
+
+      return (
+        <FormattedReport
+          {...defaultProps}
+          summaries={summaries}
+          handleTeamCodeChange={handleTeamCodeChange}
+        />
+      );
+    }
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <StatefulReport />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+
+    fireEvent.focus(input);
+
+    expect(screen.getByText('ABC123')).toBeInTheDocument();
+
+    fireEvent.change(input, {
+      target: { value: 'NEW01' },
+    });
+
+    fireEvent.blur(input);
+
+    await waitFor(() => {
+      expect(axios.patch).toHaveBeenCalledWith(expect.any(String), {
+        userIds: ['1'],
+        replaceCode: 'NEW01',
+      });
+    });
+
+    fireEvent.focus(input);
+
+    fireEvent.change(input, {
+      target: { value: '' },
+    });
+
+    expect(screen.getByText('NEW01')).toBeInTheDocument();
+    expect(screen.queryByText('ABC123')).not.toBeInTheDocument();
+  });
   it('renders fallback text when weekly summary text is missing', () => {
     const summaryNoText = {
       ...dummySummary,
@@ -228,7 +403,7 @@ describe('FormattedReport minimal test', () => {
       </Provider>,
     );
     expect(screen.queryByPlaceholderText('X-XXX')).toBeNull();
-    expect(screen.getByText('ABC123')).toBeInTheDocument();
+    expect(screen.getByText('ABC123', { selector: 'div' })).toBeInTheDocument();
   });
 });
 
@@ -282,5 +457,81 @@ describe('FormattedReport final week banner', () => {
     );
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
     expect(screen.queryByText(FINAL_WEEK_TEXT)).toBeNull();
+  });
+});
+
+describe('FormattedReport requested week off notice', () => {
+  // A request covering the current week, keyed by user id like the reducer state.
+  // Dates are built in Pacific time, like the report, so the test does not depend
+  // on the machine's timezone (CI runs in UTC).
+  const timeOffRequests = {
+    [dummySummary._id]: [
+      {
+        _id: 'req1',
+        reason: 'Family trip',
+        startingDate: momentTz
+          .tz('America/Los_Angeles')
+          .startOf('week')
+          .toISOString(),
+        endingDate: momentTz
+          .tz('America/Los_Angeles')
+          .endOf('week')
+          .toISOString(),
+      },
+    ],
+  };
+
+  const renderReport = (weekIndex = 0) =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            summaries={defaultProps.summaries}
+            weekIndex={weekIndex}
+            bioCanEdit={defaultProps.bioCanEdit}
+            allRoleInfo={defaultProps.allRoleInfo}
+            badges={defaultProps.badges}
+            loadBadges={defaultProps.loadBadges}
+            canEditTeamCode={defaultProps.canEditTeamCode}
+            auth={defaultProps.auth}
+            canSeeBioHighlight={defaultProps.canSeeBioHighlight}
+            handleTeamCodeChange={defaultProps.handleTeamCodeChange}
+            handleSpecialColorDotClick={defaultProps.handleSpecialColorDotClick}
+            timeOffRequests={timeOffRequests}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+  it('shows the notice on the week the request covers, with the reason hidden', () => {
+    renderReport(0);
+    expect(screen.getByText('Requested Week Off')).toBeInTheDocument();
+    expect(screen.queryByText('Family trip')).toBeNull();
+  });
+
+  it('does not show the notice on a week the request does not cover', () => {
+    renderReport(1);
+    expect(screen.queryByText('Requested Week Off')).toBeNull();
+  });
+
+  it('toggles the reason when the info button is clicked', () => {
+    renderReport(0);
+    const button = screen.getByRole('button', { name: 'Show time off reason' });
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(button);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Family trip');
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(button);
+    expect(screen.queryByText('Family trip')).toBeNull();
+  });
+
+  it('closes the reason on Escape', () => {
+    renderReport(0);
+    const button = screen.getByRole('button', { name: 'Show time off reason' });
+    fireEvent.click(button);
+    fireEvent.keyDown(button, { key: 'Escape' });
+    expect(screen.queryByText('Family trip')).toBeNull();
   });
 });

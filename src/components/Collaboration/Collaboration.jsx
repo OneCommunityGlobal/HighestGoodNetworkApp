@@ -169,11 +169,26 @@ function Collaboration() {
         url:
           'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=640&h=480&fit=crop&q=80',
       },
+      {
+        keywords: ['architecture', 'landscape', 'environment'],
+        url:
+          'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['creative', 'media', 'graphic'],
+        url: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['skilled', 'trades', 'craft', 'carpenter'],
+        url:
+          'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=640&h=480&fit=crop&q=80',
+      },
     ];
 
-    // Find matching category
+    // Whole-word matching avoids false substring hits (e.g. 'it' inside 'Nutrition' or 'Writing')
+    const categoryWords = new Set(categoryLower.split(/\W+/).filter(Boolean));
     for (const { keywords, url } of categoryImageMap) {
-      if (keywords.some(keyword => categoryLower.includes(keyword))) {
+      if (keywords.some(keyword => categoryWords.has(keyword))) {
         return url;
       }
     }
@@ -265,16 +280,41 @@ function Collaboration() {
     );
   };
 
-  const handleCategoryChange = e => {
-    const selectedValue = e.target.value;
-    setSelectedCategory(selectedValue || '');
+  const selectCategory = (selectedValue = '') => {
+    setSelectedCategory(selectedValue);
     setCurrentPage(1);
     setSummaries(null);
     setActiveTab('jobPostings');
-    // The job refresh runs independently of the category state updates above.
-    fetchJobAds({ category: selectedValue || '', page: 1 }).catch(() =>
+    if (!selectedValue && !submittedSearchTerm) {
+      setJobAds([]);
+      setTotalPages(0);
+      setLoadingJobs(false);
+      return;
+    }
+    fetchJobAds({ category: selectedValue, page: 1 }).catch(() =>
       toast.error('Error fetching jobs'),
     );
+  };
+
+  const handleCategoryChange = e => {
+    selectCategory(e.target.value);
+  };
+
+  const handleCategoryCardClick = event => {
+    const { category } = event.currentTarget.dataset;
+    if (category) selectCategory(category);
+  };
+
+  const handleBackToCategories = () => {
+    setSelectedCategory('');
+    setSubmittedSearchTerm('');
+    setSearchTerm('');
+    setCurrentPage(1);
+    setJobAds([]);
+    setTotalPages(0);
+    setSummaries(null);
+    setActiveTab('jobPostings');
+    globalThis.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const showBothFiltersTooltip =
@@ -298,19 +338,21 @@ function Collaboration() {
 
       if (!response.ok) throw new Error(`Failed to reset filters: ${response.statusText}`);
 
-      const data = await response.json();
       if (requestId !== requestIdRef.current) return;
       setSearchTerm('');
       setSubmittedSearchTerm('');
       setSelectedCategory('');
       setCurrentPage(1);
-      setJobAds(dedupeJobsByTitle(Array.isArray(data?.jobs) ? data.jobs : []));
-      setTotalPages(data?.pagination?.totalPages || 0);
+      // Return to category cards; jobs load after the next category/search choice.
+      setJobAds([]);
+      setTotalPages(0);
+      setJobsFetchError(null);
       setSummaries(null);
       setSummariesAll([]);
       setSummariesPage(1);
       setSummariesTotalPages(0);
       setActiveTab('jobPostings');
+      await fetchCategories();
       globalThis.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
       if (requestId !== requestIdRef.current) return;
@@ -398,10 +440,31 @@ function Collaboration() {
     setPage(Number(event.currentTarget.dataset.page));
   };
 
+  const showCategoryBrowse = !selectedCategory && !submittedSearchTerm;
+
   const renderCategoryOption = category => (
     <option key={category} value={category}>
       {category}
     </option>
+  );
+
+  const renderCategoryCard = category => (
+    <button
+      type="button"
+      key={category}
+      className={styles.jobAd}
+      data-category={category}
+      aria-label={`Browse ${category} jobs`}
+      onClick={handleCategoryCardClick}
+    >
+      <img
+        src={getCategoryImage(category)}
+        alt={category}
+        loading="lazy"
+        onError={handleImageError}
+      />
+      <h3 className={styles.categoryTitle}>{category}</h3>
+    </button>
   );
 
   const renderJobAd = ad => {
@@ -433,6 +496,13 @@ function Collaboration() {
   };
 
   const renderJobContent = () => {
+    if (showCategoryBrowse) {
+      if (!categories.length) {
+        return <p className={styles.noJobads}>No job categories available.</p>;
+      }
+      return <>{categories.map(renderCategoryCard)}</>;
+    }
+
     if (loadingJobs) {
       return <p className={styles.noJobads}>Loading jobs...</p>;
     }
@@ -459,10 +529,9 @@ function Collaboration() {
     </button>
   );
 
-  // Initial fetch and setup
+  // Initial fetch and setup — categories first; jobs load after category/search.
   useEffect(() => {
-    // Initial API requests intentionally run in the background during mount.
-    fetchJobAds().catch(() => toast.error('Error fetching jobs'));
+    setLoadingJobs(false);
     fetchCategories().catch(() => toast.error('Error fetching categories'));
     const handleResize = () => {
       if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
@@ -472,8 +541,9 @@ function Collaboration() {
         columnsRef.current = newCols;
         setColumns(newCols);
         setCurrentPage(1);
-        // Resize-triggered refresh intentionally runs in the background to keep resizing responsive.
-        fetchJobAds({ page: 1 }).catch(() => toast.error('Error fetching jobs'));
+        if (selectedCategory || submittedSearchTerm) {
+          fetchJobAds({ page: 1 }).catch(() => toast.error('Error fetching jobs'));
+        }
       }, 200);
     };
     globalThis.addEventListener('resize', handleResize);
@@ -546,7 +616,7 @@ function Collaboration() {
                 value={selectedCategory}
                 onChange={handleCategoryChange}
               >
-                <option value="">Select from Categories</option>
+                <option value="">Select From Categories</option>
                 {categories.map(c => (
                   <option key={c} value={c}>
                     {c}
@@ -660,7 +730,7 @@ function Collaboration() {
               value={selectedCategory}
               onChange={handleCategoryChange}
             >
-              <option value="">Select From Positions</option>
+              <option value="">Select From Categories</option>
               {categories.map(renderCategoryOption)}
             </select>
           </div>
@@ -683,12 +753,25 @@ function Collaboration() {
           <>
             <div className={styles.headings}>
               <h1 className={styles.mainHeading}>LIKE TO WORK WITH US? APPLY NOW!</h1>
+              {showCategoryBrowse && <p>Choose a category to see open positions.</p>}
+              {!showCategoryBrowse && selectedCategory && (
+                <div className={styles.categoryBrowseHeader}>
+                  <button
+                    type="button"
+                    className={styles.backToCategories}
+                    onClick={handleBackToCategories}
+                  >
+                    ← All categories
+                  </button>
+                  <p>{`Positions in '${selectedCategory}'`}</p>
+                </div>
+              )}
               {submittedSearchTerm && <p>{`Showing results for '${submittedSearchTerm}'`}</p>}
             </div>
 
             <div className={styles.jobList}>{renderJobContent()}</div>
 
-            {totalPages > 1 && (
+            {!showCategoryBrowse && totalPages > 1 && (
               <div className={styles.pagination}>
                 {Array.from({ length: totalPages }, renderPaginationButton)}
               </div>

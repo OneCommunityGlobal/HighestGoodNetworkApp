@@ -86,6 +86,15 @@ export function findFormByPositionSlug(formsArr, slug) {
   return formsArr.find(f => slugifyPositionTitle(f.title) === target) || null;
 }
 
+/** Canonical dropdown title for a URL slug (e.g. "t-a-s-t-hgn" → "T.A.S.T. - HGN"). */
+export function findPositionBySlug(options, slug) {
+  const target = String(slug || '')
+    .trim()
+    .toLowerCase();
+  if (!target || !options?.length) return '';
+  return options.find(o => slugifyPositionTitle(o) === target) || '';
+}
+
 /** Decode slug into a rough job title hint for matching / banner display. */
 export function titleHintFromSlug(slug) {
   return String(slug || '')

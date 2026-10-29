@@ -12,17 +12,16 @@ function CommunityMembersPage() {
   const [selectedSkills, setSelectedSkills] = useState(location.state?.initialSkills || []);
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
+  const softwareDevTeamOnly = Boolean(location.state?.softwareDevTeamOnly);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const handleSortByChange = event => setSortBy(event.target.value);
   const handleSortOrderChange = event => setSortOrder(event.target.value);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedSkills, selectedPreferences, searchQuery, sortBy, sortOrder]);
+  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder, softwareDevTeamOnly]);
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
@@ -31,21 +30,8 @@ function CommunityMembersPage() {
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} darkMode={darkMode} />
 
       <div className={styles.toolbar}>
-        <label htmlFor="communitySortBy" className={styles.sortLabel}>
-          Sort by:
-        </label>
-        <select
-          id="communitySortBy"
-          className={styles.sortSelect}
-          value={sortBy}
-          onChange={handleSortByChange}
-        >
-          <option value="name">Name</option>
-          <option value="score">Score</option>
-        </select>
-
         <label htmlFor="communitySortOrder" className={styles.sortLabel}>
-          Order:
+          Sort by name:
         </label>
         <select
           id="communitySortOrder"
@@ -53,8 +39,8 @@ function CommunityMembersPage() {
           value={sortOrder}
           onChange={handleSortOrderChange}
         >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
+          <option value="asc">A to Z</option>
+          <option value="desc">Z to A</option>
         </select>
       </div>
 
@@ -79,10 +65,10 @@ function CommunityMembersPage() {
           selectedSkills={selectedSkills}
           selectedPreferences={selectedPreferences}
           searchQuery={searchQuery.trim()}
-          sortBy={sortBy}
           sortOrder={sortOrder}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
+          softwareDevTeamOnly={softwareDevTeamOnly}
         />
       </div>
     </div>
