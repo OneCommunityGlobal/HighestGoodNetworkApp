@@ -153,6 +153,20 @@
   }
 }
 
+@media (width < 480px) {
+  .userManagementFilters span {
+    padding-inline: 0.375rem;
+  }
+
+  .userManagementFilters input {
+    padding-inline: 0.5rem;
+  }
+
+  .userManagementFilters select {
+    width: 6rem;
+  }
+}
+
 .userManagementTable {
   width: calc(100vw - 45px);
 }
