@@ -163,7 +163,8 @@ function YoutubeAutoPoster({ platform }) {
   const [result, setResult] = useState(null);
   const [tags, setTags] = useState([]);
   const [tagDraft, setTagDraft] = useState('');
-  const [privacyStatus, setPrivacyStatus] = useState('public');
+  // 社区审阅意见 1: 默认隐私改为 private
+  const [privacyStatus, setPrivacyStatus] = useState('private');
   const [audienceSettings, setAudienceSettings] = useState(initialAudienceSettings);
   const [videoTitleLength, setVideoTitleLength] = useState(0);
   const [videoDescriptionLength, setVideoDescriptionLength] = useState(0);
@@ -291,7 +292,6 @@ function YoutubeAutoPoster({ platform }) {
           );
         }
       } catch {
-        // Connection checks are best effort during initialization; failures leave the UI disconnected.
         setConnected(false);
         setAccount(null);
         setCategoriesLoading(false);
@@ -335,7 +335,8 @@ function YoutubeAutoPoster({ platform }) {
       setVideoDescriptionLength(0);
       setTags([]);
       setTagDraft('');
-      setPrivacyStatus('public');
+      // 重置后也恢复为 private
+      setPrivacyStatus('private');
       setAudienceSettings(initialAudienceSettings);
       setMadeForKids('false');
       setSelectedCategoryId('');
@@ -648,7 +649,8 @@ function YoutubeAutoPoster({ platform }) {
                   </div>
                 </div>
                 <p className={styles.tagHint}>
-                  Use commas or Enter to separate. Tags help YouTube recommend your video.
+                  Use commas or Enter to separate. Tags help YouTube recommend your video (Max 500
+                  chars total).
                 </p>
               </section>
 
