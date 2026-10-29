@@ -56,7 +56,15 @@ const PROJECTS = [
 ];
 
 const DEFAULT_WINDOW_MONTHS = 6;
-const TODAY_STR = new Date().toISOString().slice(0, 10);
+// Local calendar date as YYYY-MM-DD. toISOString() returns the UTC date, which is
+// already "tomorrow" in the evening for timezones behind UTC (e.g. 6 p.m. Pacific),
+// so it must not be used for the date-input limit or clamping.
+export function getLocalDateString(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 const MONTH_NAMES = [
   'january',
@@ -325,6 +333,8 @@ function CostPredictionChart({ projectId }) {
   // filter state
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [dateRange, setDateRange] = useState({ start: '', end: '' }); // 'YYYY-MM-DD'
+  // Computed each render so it stays correct if the page is left open past midnight.
+  const todayStr = getLocalDateString();
 
   const legendItems = [
     { label: 'Planned Cost', color: SERIES_COLORS.planned, type: 'circle' },
@@ -490,7 +500,7 @@ function CostPredictionChart({ projectId }) {
             style={filterStyles.control}
             value={dateRange.start}
             min="2011-01-01"
-            max={dateRange.end || TODAY_STR}
+            max={dateRange.end || todayStr}
             onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}
           />
         </div>
@@ -508,9 +518,9 @@ function CostPredictionChart({ projectId }) {
             style={filterStyles.control}
             value={dateRange.end}
             min={dateRange.start || undefined}
-            max={TODAY_STR}
+            max={todayStr}
             onChange={e => {
-              const clamped = e.target.value > TODAY_STR ? TODAY_STR : e.target.value;
+              const clamped = e.target.value > todayStr ? todayStr : e.target.value;
               setDateRange(prev => ({ ...prev, end: clamped }));
             }}
           />
