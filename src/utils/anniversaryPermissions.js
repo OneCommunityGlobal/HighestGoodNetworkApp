@@ -1,3 +1,5 @@
+export const getAnniversaryStartDate = user => user?.startDate || user?.createdDate || null;
+
 export const calculateAnniversaryDate = (createdDate) => {
     let dt = new Date(createdDate)
     const sixMonthAnniversary = dt.setMonth(dt.getMonth() + 6)
