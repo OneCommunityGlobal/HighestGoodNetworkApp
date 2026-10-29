@@ -327,7 +327,12 @@ function warnManagementFamilyMatch(title, form) {
   );
 }
 
-function notifyInitialFormSelection(navTitle, formMatch, chosen, managementFamilySoftMatch = false) {
+function notifyInitialFormSelection(
+  navTitle,
+  formMatch,
+  chosen,
+  managementFamilySoftMatch = false,
+) {
   if (!navTitle) return;
   if (managementFamilySoftMatch && formMatch) {
     warnManagementFamilyMatch(navTitle, formMatch);
