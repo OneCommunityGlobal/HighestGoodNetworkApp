@@ -1008,7 +1008,36 @@ setUpdatedTasks(prev => {
   }
 
   try {
-    await props.updateUserProfile(userProfileToUpdate);
+    await props.updateUserProfile(userProfileToUpdate)
+    if(originalUserProfile.role !== userProfileToUpdate.role) {
+      const userId = userProfileToUpdate?._id;
+      const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
+      const frontPermissions = userProfileToUpdate?.permissions?.frontPermissions;
+      const removedDefaultPermissions = userProfileToUpdate?.permissions?.removedDefaultPermissions;
+      const permissions = {
+          frontPermissions: frontPermissions,
+          removedDefaultPermissions: removedDefaultPermissions,
+      };
+      const requestor = props.auth.user;
+      const permissionData = {
+        previousRole: originalUserProfile?.role,
+        newRole: userProfileToUpdate?.role,
+        permissions: permissions,
+        requestor: requestor,
+      };
+      // Creates a change log if user's role is changed
+      await axios.patch(permissionURL, permissionData)
+        .catch(async err => {
+          try {
+            // Attempts to undo changes to user's data if
+            // change log creation fails
+            await props.updateUserProfile(originalUserProfile);
+          } catch (err) {
+            console.log('Error occurring during rollback attempt, so user state may be inconsistent')
+          }
+          throw err;
+        });
+    }
     clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
@@ -1685,10 +1714,9 @@ setUpdatedTasks(prev => {
                 <NavLink
                     className={classnames(
                       'nav-link',
-                      { active: activeTab === '1' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1702,10 +1730,9 @@ setUpdatedTasks(prev => {
                 <NavLink
                     className={classnames(
                       'nav-link',
-                      { active: activeTab === '2' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1719,10 +1746,9 @@ setUpdatedTasks(prev => {
                 <NavLink
                     className={classnames(
                       'nav-link',
-                      { active: activeTab === '3' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1736,10 +1762,9 @@ setUpdatedTasks(prev => {
                 <NavLink
                     className={classnames(
                       'nav-link',
-                      { active: activeTab === '4' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1754,10 +1779,9 @@ setUpdatedTasks(prev => {
                     data-test-id="edit-history-tab"
                     className={classnames(
                       'nav-link',
-                      { active: activeTab === '5' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1770,7 +1794,7 @@ setUpdatedTasks(prev => {
             </div>
             <TabContent
               activeTab={activeTab}
-              className={`tab-content profile-tab ${darkMode ? 'bg-yinmn-blue' : ''}`}
+              className={`tab-content profile-tab ${darkMode ? 'darkMode bg-yinmn-blue' : ''}`}
               id="myTabContent"
               style={{ border: 0 }}
             >
