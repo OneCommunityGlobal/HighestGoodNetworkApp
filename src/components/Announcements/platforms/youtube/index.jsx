@@ -8,6 +8,7 @@ import { clsx } from 'clsx';
 const MAX_TAGS = 500;
 const MAX_VIDEO_TITLE_LENGTH = 100;
 const MAX_VIDEO_DESCRIPTION_LENGTH = 5000;
+const MAX_UPLOAD_BYTES = 2 * 1024 * 1024 * 1024; // 2 GiB limit matching backend
 const YOUTUBE_CONNECTION_ATTEMPT_KEY = 'youtubeConnectionAttempt';
 const PRIVACY_OPTIONS = [
   { value: 'public', label: 'Public' },
@@ -163,7 +164,7 @@ function YoutubeAutoPoster({ platform }) {
   const [result, setResult] = useState(null);
   const [tags, setTags] = useState([]);
   const [tagDraft, setTagDraft] = useState('');
-  // 社区审阅意见 1: 默认隐私改为 private
+  // Review fix: Default privacy status to 'private' to prevent accidental public publishing
   const [privacyStatus, setPrivacyStatus] = useState('private');
   const [audienceSettings, setAudienceSettings] = useState(initialAudienceSettings);
   const [videoTitleLength, setVideoTitleLength] = useState(0);
@@ -317,6 +318,17 @@ function YoutubeAutoPoster({ platform }) {
         throw new Error('Select a video file to upload');
       }
 
+      // Pre-check file size against maximum upload limit (2 GiB)
+      if (videoFile.size > MAX_UPLOAD_BYTES) {
+        throw new Error('Video file size exceeds the 2 GB limit.');
+      }
+
+      // Validate total character length of tags (cannot exceed 500 characters per YouTube schema)
+      const totalTagsString = tags.join(',');
+      if (totalTagsString.length > 500) {
+        throw new Error('Total length of tags cannot exceed 500 characters.');
+      }
+
       const values = {
         title: formData.get('title'),
         description: formData.get('description'),
@@ -335,7 +347,7 @@ function YoutubeAutoPoster({ platform }) {
       setVideoDescriptionLength(0);
       setTags([]);
       setTagDraft('');
-      // 重置后也恢复为 private
+      // Reset privacy back to private
       setPrivacyStatus('private');
       setAudienceSettings(initialAudienceSettings);
       setMadeForKids('false');
