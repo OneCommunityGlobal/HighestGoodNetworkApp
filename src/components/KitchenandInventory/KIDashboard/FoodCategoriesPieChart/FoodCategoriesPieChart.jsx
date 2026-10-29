@@ -32,7 +32,7 @@ const DEFAULTS = { metric: 'inventory', kitchen: 'All', startDate: '', endDate: 
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => `2024-${String(i + 1).padStart(2, '0')}`);
 const DATE_MIN = `${MONTHS[0]}-01`;
-const DATE_MAX = `${MONTHS[MONTHS.length - 1]}-31`;
+const DATE_MAX = `${MONTHS.at(-1)}-31`;
 
 // Mock data: base kg per kitchen/category, price per kg per category
 const BASE_KG = {

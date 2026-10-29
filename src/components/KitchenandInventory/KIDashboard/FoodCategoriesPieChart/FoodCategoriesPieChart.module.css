@@ -135,23 +135,22 @@ select.control {
   color-scheme: light;
 }
 
-/* Overrides global input background/colors in dark mode */
-.darkMode .dateInput,
-.darkMode input[type='date'].dateInput {
-  color-scheme: dark !important;
-  background-color: var(--fc-bg) !important;
-  color: var(--fc-text) !important;
-  border-color: var(--fc-border) !important;
+/* Overrides global input background/colors in dark mode (higher specificity, no !important) */
+.container.darkMode .dateInput[type='date'] {
+  color-scheme: dark;
+  background-color: var(--fc-bg);
+  color: var(--fc-text);
+  border-color: var(--fc-border);
 }
 
 /* Ensure WebKit internal text segments remain visible */
-.darkMode .dateInput::-webkit-datetime-edit,
-.darkMode .dateInput::-webkit-datetime-edit-fields-wrapper,
-.darkMode .dateInput::-webkit-datetime-edit-text,
-.darkMode .dateInput::-webkit-datetime-edit-month-field,
-.darkMode .dateInput::-webkit-datetime-edit-day-field,
-.darkMode .dateInput::-webkit-datetime-edit-year-field {
-  color: var(--fc-text) !important;
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-fields-wrapper,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-text,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-month-field,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-day-field,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-year-field {
+  color: var(--fc-text);
 }
 
 /* Confine native picker icon to the right side and make it an invisible hit-box */

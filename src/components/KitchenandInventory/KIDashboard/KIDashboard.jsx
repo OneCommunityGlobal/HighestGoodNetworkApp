@@ -1,4 +1,4 @@
-import FoodCategoriesPieChart from './FoodCategoriesPieChart';
+import FoodCategoriesPieChart from './FoodCategoriesPieChart/FoodCategoriesPieChart';
 
 export function KIDashboard() {
   return (
