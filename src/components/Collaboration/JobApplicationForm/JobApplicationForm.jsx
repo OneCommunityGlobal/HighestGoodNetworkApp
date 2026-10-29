@@ -10,6 +10,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
+import TurnstileWidget from './TurnstileWidget';
+import { getTurnstileSiteKey } from './turnstile';
 import {
   getUploadSizeError,
   isJobApplicationFileUploadQuestion,
@@ -1004,6 +1006,12 @@ function JobApplicationForm() {
   const [requirementPreviewOverrides, setRequirementPreviewOverrides] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [emailSuggestion, setEmailSuggestion] = useState(null);
+  // Bot protection: time the form opened, optional Turnstile token, and a server-side submit error
+  const mountedAtRef = useRef(Date.now());
+  const turnstileRef = useRef(null);
+  const turnstileSiteKey = getTurnstileSiteKey();
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const locationTimezone = [applicantLocation.trim(), timeZone.trim()].filter(Boolean).join(' | ');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
@@ -1565,6 +1573,7 @@ function JobApplicationForm() {
       return;
     }
 
+    setSubmitError('');
     setIsSubmitting(true);
     try {
       const answersPayload = visibleQuestions.map((q, idx) => ({
@@ -1597,6 +1606,13 @@ function JobApplicationForm() {
         }),
       );
 
+      // Bot protection: honeypot stays empty for people, fillMs is how long the form was open
+      formData.append('website_url', '');
+      formData.append('fillMs', String(Math.max(0, Date.now() - mountedAtRef.current)));
+      if (turnstileSiteKey) {
+        formData.append('cf-turnstile-response', turnstileToken);
+      }
+
       if (resumeFile) {
         formData.append('resume', resumeFile);
       }
@@ -1619,9 +1635,27 @@ function JobApplicationForm() {
       resetFormAfterSubmit();
     } catch (err) {
       const apiMessage = err.response?.data?.message || err.response?.data?.error;
-      toast.error(apiMessage || err.message || 'Failed to submit application.', {
-        autoClose: 7000,
-      });
+      const status = err.response?.status;
+      if (turnstileSiteKey) {
+        // A Turnstile token is single use, so every failed submit needs a fresh one
+        turnstileRef.current?.reset();
+      }
+      if (status === 429) {
+        setSubmitError(
+          err.response?.data?.error ||
+            'Too many applications from this connection. Please try again later.',
+        );
+      } else if (status === 400 && err.response?.data?.error === VERIFICATION_FAILED_MESSAGE) {
+        setSubmitError(err.response.data.error);
+      } else if (status === 409) {
+        toast.error(apiMessage || 'You already applied for this position.', {
+          autoClose: 7000,
+        });
+      } else {
+        toast.error(apiMessage || err.message || 'Failed to submit application.', {
+          autoClose: 7000,
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -2266,6 +2300,31 @@ function JobApplicationForm() {
                   </div>
                 );
               })}
+              {/* Honeypot: off-screen, unreachable by keyboard and hidden from screen readers.
+                  Real people never fill it; bots that fill every input give themselves away. */}
+              <div className={styles.honeypot} aria-hidden="true">
+                <input
+                  type="text"
+                  name="website_url"
+                  data-testid="jaf-honeypot"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  defaultValue=""
+                />
+              </div>
+              {turnstileSiteKey && (
+                <TurnstileWidget
+                  ref={turnstileRef}
+                  siteKey={turnstileSiteKey}
+                  darkMode={Boolean(darkMode)}
+                  onToken={setTurnstileToken}
+                />
+              )}
+              {submitError && (
+                <p className={styles.fieldError} role="alert">
+                  {submitError}
+                </p>
+              )}
               <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
                 {isSubmitting ? 'Submitting…' : 'Submit your application'}
               </button>
@@ -2276,6 +2335,8 @@ function JobApplicationForm() {
     </div>
   );
 }
+
+const VERIFICATION_FAILED_MESSAGE = 'Verification failed. Please try again.';
 
 const requirementsPropType = PropTypes.shape({
   reactExperience: PropTypes.bool,
