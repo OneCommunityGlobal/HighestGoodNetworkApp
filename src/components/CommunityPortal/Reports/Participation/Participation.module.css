@@ -1,4 +1,17 @@
-/* General Styling */
+/* ---------- CSS Variables for Dark Mode ---------- */
+:root {
+  --color-text-dark: #ffffff;
+  --color-border-dark: #4a5a77;
+}
+
+/* ---------- General Styling ---------- */
+.body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
 .participationLandingPage {
   max-width: 90%;
   margin: 0 auto;
@@ -27,6 +40,10 @@
   margin-bottom: 30px;
   padding: 12px 0;
   border-bottom: 2px solid #e0e0e0;
+}
+
+.participationLandingPageDark .landingPageHeaderContainer {
+  border-bottom: 2px solid var(--color-border-dark);
 }
 
 .landingPageHeader {
@@ -115,8 +132,8 @@
   background-color: #1c2541;
   color: #fff;
   border-radius: 10px;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  border: 1px solid var(--color-border-dark);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -168,6 +185,19 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: #ffffff;
+  color: #333;
+}
+
+.trackingHeaderDark .trackingFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
+.trackingHeaderDark .trackingFilters select option {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
 }
 
 .trackingSummary {
@@ -214,6 +244,10 @@
   display: inline-block;
 }
 
+.trackingRateDark .trackingRateValue span {
+  color: #cbd5e1;
+}
+
 .trackingListContainer {
   max-height: 600px;
   overflow-y: auto;
@@ -226,11 +260,31 @@
 .trackingListContainerDark {
   max-height: 600px;
   overflow-y: auto;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-dark);
   border-radius: 10px;
   padding: 10px;
-  background: #3a506b;
-  color: #fff;
+  background: #3A506B;
+  color: var(--color-text-dark);
+  scrollbar-color: #6b7fa0 #2c3e50;
+}
+
+.trackingListContainerDark::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.trackingListContainerDark::-webkit-scrollbar-track {
+  background: #2c3e50;
+  border-radius: 10px;
+}
+
+.trackingListContainerDark::-webkit-scrollbar-thumb {
+  background: #6b7fa0;
+  border-radius: 10px;
+}
+
+.trackingListContainerDark::-webkit-scrollbar-thumb:hover {
+  background: #8a9bc0;
 }
 
 .trackingTable {
@@ -279,9 +333,18 @@
   background: #f5f7fa;
 }
 
+.trackingTableDark thead th {
+  background: #1C2541;
+  color: var(--color-text-dark);
+}
+
+.trackingTableDark tbody td {
+  color: var(--color-text-dark);
+  border-bottom: 1px solid var(--color-border-dark);
+}
+
 .trackingTableDark tbody tr:hover {
-  background: #304663;
-  color: #fff;
+  background: #2c3e50;
 }
 
 .trackingTableDark tbody tr:hover td {
@@ -326,10 +389,25 @@
   margin: 0;
 }
 
-.insightsTitleWrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.insightsFilters select {
+  margin-left: 10px;
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: #333;
+}
+
+.insightsHeaderDark .insightsFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
+.insightsHeaderDark .insightsFilters select option {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
 }
 
 .infoIcon {
@@ -377,6 +455,21 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+}
+
+.insightsDark .insightsTab {
+  color: var(--color-text-dark);
+  background-color: #3A506B;
+  border: 1px solid var(--color-border-dark);
+}
+
+.insightsDark .insightsTab:not(:last-child) {
+  border-right: 1px solid var(--color-border-dark);
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #007bff;
+  color: var(--color-text-dark);
 }
 
 .insightsTab:not(:last-child) {
@@ -521,9 +614,17 @@
   text-align: left;
 }
 
-.subtitleDark {
-  color: #fff;
+.insightsPercentageDark {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--color-text-dark);
 }
+
+/* ---------- PDF/Print helpers ---------- */
+.pageBreakBefore { break-before: always; }
+.pageBreakAfter  { break-after: always; }
+.avoidBreak       { break-inside: avoid; }
+
 
 .navLinks {
   display: flex;

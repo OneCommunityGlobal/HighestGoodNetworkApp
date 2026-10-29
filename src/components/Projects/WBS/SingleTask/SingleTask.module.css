@@ -13,3 +13,9 @@
   align-items: center;
   justify-content: center;
 }
+.singleTaskTableDark tbody tr:hover,
+.singleTaskTableDark tbody tr:hover > th,
+.singleTaskTableDark tbody tr:hover > td {
+  background-color: #111831 !important;
+  color: #fff !important;
+}

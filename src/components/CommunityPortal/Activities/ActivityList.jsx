@@ -1,6 +1,7 @@
 // Activity List Component
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
 import {
@@ -23,6 +24,7 @@ function ActivityList() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
 
   const [filter, setFilter] = useState({
     type: '',
@@ -134,6 +136,20 @@ function ActivityList() {
     setModalOpen(false);
   };
 
+  const goToReschedule = useCallback(
+    (event, activity) => {
+      event.stopPropagation();
+
+      const activityId = activity._id || activity.id;
+
+      history.push({
+        pathname: `/communityportal/activities/${activityId}/manage`,
+        state: { activity },
+      });
+    },
+    [history],
+  );
+
   const getTypeIcon = type => {
     switch (type) {
       case 'Fitness':
@@ -154,18 +170,6 @@ function ActivityList() {
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-
-  const activityTypes = useMemo(() => {
-    const typeOrder = new Map();
-
-    activities.forEach(activity => {
-      if (activity.type && !typeOrder.has(activity.type)) {
-        typeOrder.set(activity.type, typeOrder.size);
-      }
-    });
-
-    return [...typeOrder.keys()].sort((a, b) => typeOrder.get(a) - typeOrder.get(b));
-  }, [activities]);
 
   const filteredActivities = activities
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
@@ -350,6 +354,15 @@ function ActivityList() {
                       <span>{activity.date}</span>
                     </div>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={event => goToReschedule(event, activity)}
+                    className="btn btn-primary btn-sm mt-2"
+                    aria-label={`Reschedule ${activity.name}`}
+                  >
+                    Reschedule
+                  </button>
                 </li>
               </div>
             ))}

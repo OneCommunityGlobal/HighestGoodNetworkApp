@@ -68,6 +68,8 @@ function renderHeader(stateOverrides = {}, propsOverrides = {}) {
     taskEditSuggestions: { count: 0 },
     role: { roles: [] },
     notification: { unreadNotifications: [] },
+    meetingNotification: { unreadMeetingNotifications: [], loading: false, error: null },
+    allUserProfiles: { userProfiles: [] },
     theme: { darkMode: false },
     ownerMessage: { message: '', standardMessage: '' },
     ...stateOverrides,

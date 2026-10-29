@@ -42,6 +42,7 @@ const mockFoundProjectMembers = searchQuery => {
 const renderTagsSearchComponent = props => {
   const store = mockStore({
     projectMembers: { foundProjectMembers: mockFoundProjectMembers('') }, // Initial empty search
+    theme: { darkMode: false },
   });
 
   return render(

@@ -96,7 +96,7 @@ const PRGradingTest = () => {
   const existingTeamNames = allTeams.map(t => t.name);
 
   return (
-    <Container style={{ padding: '40px 20px' }} className={darkMode ? 'dark-mode' : ''}>
+    <Container className={`${styles.container} ${darkMode ? 'dark-mode' : ''}`}>
       <Row className="justify-content-center">
         <Col md={8}>
           <Card className={darkMode ? 'bg-dark text-light border-secondary' : ''}>
@@ -104,7 +104,7 @@ const PRGradingTest = () => {
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   <h2 className={darkMode ? 'text-light' : ''}>PR Grading Screen Test</h2>
-                  <p className="mb-0" style={{ color: darkMode ? '#9ca3af' : undefined }}>
+                  <p className={`mb-0 ${darkMode ? styles.subtitleDark : styles.subtitle}`}>
                     Select a team configuration to test the component
                   </p>
                 </div>
@@ -139,19 +139,9 @@ const PRGradingTest = () => {
                         <button
                           type="button"
                           onClick={e => handleDeleteConfig(e, team.id)}
-                          style={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            background: 'transparent',
-                            border: 'none',
-                            color: darkMode ? '#f87171' : '#dc3545',
-                            fontWeight: 'bold',
-                            fontSize: '1rem',
-                            cursor: 'pointer',
-                            lineHeight: 1,
-                            padding: '0 4px',
-                          }}
+                          className={`${styles.deleteButton} ${
+                            darkMode ? styles.deleteButtonDark : ''
+                          }`}
                           title="Delete configuration"
                         >
                           ✕

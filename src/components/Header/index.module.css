@@ -303,6 +303,7 @@
 }
 
 /* Fix bottom white strip */
+html,
 body.dark-mode,
 body.dark-mode html {
   background-color: #1a1d23 !important;
