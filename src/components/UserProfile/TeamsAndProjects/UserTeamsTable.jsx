@@ -2,11 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Button, Col, Input } from 'reactstrap';
 import hasPermission from '../../../utils/permissions';
 import './TeamsAndProjects.module.css';
-import styles from './UserTeamsTable.css';
+import styles from './UserTeamsTable.module.css';
 import { connect } from 'react-redux';
 import { boxStyle } from '~/styles';
-
-import './UserTeamsTable.module.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
