@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import WeeklyProjectSummary from './WeeklyProjectSummary';
@@ -161,6 +161,75 @@ describe('WeeklyProjectSummary Project Status request state', () => {
     expect(screen.getByText('+16% month over month')).toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it.each([false, true])('renders Active Projects only once (dark mode: %s)', darkMode => {
+    const state = createState();
+    state.theme.darkMode = darkMode;
+    state.weeklyProjectSummary.projectStatusData = {
+      current: { metrics: { activeProjects: { value: 265, comparisonType: 'CURRENT_ONLY' } } },
+    };
+    renderWithState(state);
+
+    expect(screen.getAllByText('Active Projects')).toHaveLength(1);
+    expect(screen.getAllByText('265')).toHaveLength(1);
+  });
+
+  it.each([0, 17, 1008])(
+    'defines the duration metric and preserves the API hour value %s',
+    value => {
+      const state = createState();
+      state.weeklyProjectSummary.projectStatusData = {
+        current: {
+          metrics: {
+            avgProjectDuration: {
+              value,
+              unit: 'hrs',
+              comparisonType: 'PERIOD_COMPARABLE',
+              percentageChange: 0.13,
+            },
+          },
+        },
+      };
+      renderWithState(state);
+
+      const durationCard = screen.getByRole('group', {
+        name: 'Avg Completed Project Duration (hours)',
+      });
+      expect(within(durationCard).getByText(`${value} hrs`)).toBeInTheDocument();
+      expect(
+        within(durationCard).getByText(
+          'Start to completion for projects completed in the selected period.',
+        ),
+      ).toBeInTheDocument();
+      expect(within(durationCard).getByText('+13% month over month')).toBeInTheDocument();
+    },
+  );
+
+  it('keeps missing duration unavailable instead of inventing 17 hours', () => {
+    const state = createState();
+    state.weeklyProjectSummary.projectStatusData = {
+      current: {
+        metrics: {
+          avgProjectDuration: {
+            value: null,
+            unit: 'hrs',
+            comparisonType: 'UNAVAILABLE',
+            unavailableReason: 'No completed projects in this period.',
+          },
+        },
+      },
+    };
+    renderWithState(state);
+
+    const durationCard = screen.getByRole('group', {
+      name: 'Avg Completed Project Duration (hours)',
+    });
+    expect(within(durationCard).getByText('N/A')).toBeInTheDocument();
+    expect(
+      within(durationCard).getByRole('button', { name: 'No completed projects in this period.' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('17 hrs')).not.toBeInTheDocument();
   });
 
   it('shows loading and suppresses stale comparison text when filters change before useEffect dispatches', () => {

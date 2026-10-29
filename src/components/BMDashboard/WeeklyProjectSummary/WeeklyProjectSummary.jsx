@@ -47,7 +47,7 @@ const projectStatusButtonData = [
   ['Completed Projects', 'completedProjects', '#F3FCFF', '#C1EFFB', '#328D1B'],
   ['Delayed Projects', 'delayedProjects', '#FFE9FA', '#FECFF3', '#C82F2F'],
   ['Active Projects', 'activeProjects', '#E8E8FF', '#CBCBFE', '#328D1B'],
-  ['Avg Project Duration', 'avgProjectDuration', '#FFF6EE', '#FFD8A5', '#FFD8A5'],
+  ['Avg Completed Project Duration (hours)', 'avgProjectDuration', '#FFF6EE', '#FFD8A5', '#FFD8A5'],
   ['Total Material Cost', 'totalMaterialCost', '#FFF3F3', '#FBC1C2', '#328D1B'],
   ['Total Material Used', 'totalMaterialUsed', '#DAC8FF', '#B28ECC', '#328D1B'],
   ['Total Labor Hours Invested', 'totalLaborHoursInvested', '#E5C1FC', '#F6E1FB', '#328D1B'],
@@ -327,10 +327,17 @@ function WeeklyProjectSummary() {
                 return (
                   <div
                     key={button.metricKey}
+                    role="group"
+                    aria-label={button.title}
                     className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
                     style={{ backgroundColor: button.bgColor }}
                   >
                     <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
+                    {button.metricKey === 'avgProjectDuration' && (
+                      <div className={styles.projectDurationDescription}>
+                        Start to completion for projects completed in the selected period.
+                      </div>
+                    )}
                     <div
                       className={`${styles.weeklyStatusButton}`}
                       style={{ backgroundColor: button.buttonColor }}
