@@ -17,25 +17,52 @@
   }
 }
 
-.memberCardContainer {
-  width: 100%;
+.memberCardColumn {
+  padding-bottom: 1.5rem;
+  min-width: 0;
+}
+
+.memberCardColumn:not([hidden]) {
   display: flex;
 }
 
+.memberCardContainer {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+}
 
 .memberCard {
   width: 100%;
-  align-items: center;
+  min-width: 0;
+  background-color: var(--member-search-surface, #fff);
 }
 
 .memberCardHeader {
-  width: 100%;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  height: 5rem;
+  padding: 0.75rem 1rem;
+  flex-shrink: 0;
 }
 
 .memberCardName {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
   text-align: center;
   color: white;
+  margin: 0;
+}
+
+.memberTimerBody {
+  display: flex;
+  width: 100%;
+  padding: 1.25rem 1rem 1.5rem;
 }
 
 .stopwatchContainer {
@@ -44,19 +71,56 @@
   align-items: center;
   gap: 1rem;
   width: 100%;
+  min-width: 0;
+  padding: 0;
+}
+
+.memberTimerDisplayRow,
+.memberTimerControls,
+.memberStartTime,
+.memberTimerClearRow {
+  width: 100%;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.memberTimerControls {
+  gap: 0.75rem;
+}
+
+.memberTimerControls button,
+.memberTimerClearRow button {
+  min-height: 2.5rem;
+  flex: 0 0 5rem;
+}
+
+.memberStartTime {
+  gap: 0.25rem 0.5rem;
+  min-height: 3rem;
+  color: var(--member-search-text, #343a40);
+}
+
+.memberStartTimestamp {
+  min-width: 11ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .memberStopwatch {
   background-color: #4b5055 !important;
   border-radius: 15px !important;
   height: 3rem;
+  width: 11ch;
+  max-width: 100%;
+  padding: 0.25rem 0.5rem;
+  font-family: monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 1.5rem !important;
   text-align: center;
   color: white;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
 }
 
 .fontColorGray {  
@@ -212,4 +276,105 @@
 .formFooter {
 font-size: 0.875em;
 margin-top:3px;
+}
+
+/* Member Group Check In search */
+.memberSearchScope {
+  --member-search-text: #343a40;
+  --member-search-surface: #fff;
+  --member-search-border: #6c757d;
+  --member-search-filter: #e8f4f9;
+}
+
+.memberSearchDark {
+  --member-search-text: #f1f5f9;
+  --member-search-surface: #1b2a41;
+  --member-search-border: #a9b7be;
+  --member-search-filter: #2e5061;
+}
+
+.memberSearchScope label,
+.memberSearchFeedback,
+.memberSearchEmpty {
+  color: var(--member-search-text);
+}
+
+.memberSearchControls {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.memberSearchControls .memberSearchInput {
+  min-width: 0;
+  color: var(--member-search-text);
+  background-color: var(--member-search-surface);
+  border-color: var(--member-search-border);
+}
+
+.memberSearchInput::placeholder {
+  color: var(--member-search-text);
+  opacity: 0.8;
+}
+
+.memberSearchClear {
+  flex-shrink: 0;
+}
+
+.memberSearchFeedback {
+  margin-top: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.memberSearchFeedback p {
+  margin-bottom: 0.5rem;
+}
+
+.memberSearchAppliedFilter {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--member-search-border);
+  border-radius: 1rem;
+  background-color: var(--member-search-filter);
+}
+
+.memberSearchEmpty {
+  padding: 2rem 1rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+@media screen and (width <= 480px) {
+  .memberSearchControls {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .memberSearchControls .memberSearchInput {
+    flex-basis: 100%;
+    border-radius: 0.25rem;
+  }
+
+  .memberSearchControls .memberSearchClear {
+    margin-left: 0;
+    border-radius: 0.25rem;
+  }
+}
+
+.memberRecoveryNotice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  color: var(--member-search-text);
+  background-color: var(--member-search-filter);
+  border: 1px solid var(--member-search-border);
+  border-radius: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.memberRecoveryNotice p {
+  flex: 1 1 15rem;
+  margin: 0;
 }

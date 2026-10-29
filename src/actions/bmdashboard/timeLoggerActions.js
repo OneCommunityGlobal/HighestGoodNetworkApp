@@ -1,5 +1,4 @@
 import axios from 'axios';
-import moment from 'moment';
 import { ENDPOINTS } from '~/utils/URL';
 import { GET_ERRORS } from '../../constants/errors';
 import {
@@ -81,18 +80,17 @@ export const stopTimeLog = (projectId, timeLogId, memberId) => {
 
 // Get Current Time Log Action
 export const getCurrentTimeLog = (projectId, memberId) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const key = `${memberId}_${projectId}`;
+    const previousLog = getState().bmTimeLogger?.bmTimeLogs?.[key];
     try {
       const response = await axios.get(ENDPOINTS.TIME_LOGGER_LOGS(projectId, memberId));
-
-      // Find the ongoing or paused time log, but only if it's from today
-      const today = moment().startOf('day');
+      // A timer operation or newer read may have completed while this GET was
+      // pending. Never replace newer Redux state with an older snapshot.
+      if (getState().bmTimeLogger?.bmTimeLogs?.[key] !== previousLog) return;
       const currentTimeLog = response.data.find(
-        log =>
-          (log.status === 'ongoing' || log.status === 'paused') &&
-          moment(log.createdAt).isSameOrAfter(today),
+        log => log.status === 'ongoing' || log.status === 'paused',
       );
-
       dispatch({
         type: GET_CURRENT_TIME_LOG,
         payload: { currentTimeLog: currentTimeLog || null, memberId, projectId },

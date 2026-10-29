@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom';
 // import Select from 'react-select';
 import moment from 'moment';
 import { Row, Container, Col, Input } from 'reactstrap';
@@ -10,7 +11,9 @@ import styles from './BMTimeLogger.module.css';
 
 function BMTimeLogger() {
   const [isError, setIsError] = useState(false);
-  const [selectedProject, setselectedProject] = useState(null);
+  const { projectId } = useParams();
+  const history = useHistory();
+  const selectedProject = projectId || '';
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
@@ -49,7 +52,7 @@ function BMTimeLogger() {
             value={selectedProject || ''}
             onChange={e => {
               const { value } = e.target;
-              setselectedProject(value);
+              history.push(value ? `/bmdashboard/timelog/${value}` : '/bmdashboard/timelog');
             }}
           >
             <option value="">Select a project</option>
