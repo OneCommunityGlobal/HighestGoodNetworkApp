@@ -610,7 +610,9 @@
   /* Fill the responsive grid track instead of capping cards at a fixed desktop width. */
   max-width: none;
   min-width: 0;
-  height: 190px;
+  min-height: 190px;
+  height: auto;
+  align-self: stretch;
   text-align: center;
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
@@ -625,6 +627,13 @@
   font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
   transition: color 0.3s ease;
+}
+
+.projectDurationDescription {
+  margin-top: 4px;
+  color: #333;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .weeklyStatusValue {
@@ -689,6 +698,10 @@
 .darkMode .statusCard .weeklyCardTitle,
 .darkMode .statusCard .weeklyStatusValue {
   color: #000 !important;
+}
+
+.darkMode .statusCard .projectDurationDescription {
+  color: #333 !important;
 }
 
 .darkMode .statusCard .projectStatusUnavailableInfo {
