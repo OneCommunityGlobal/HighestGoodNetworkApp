@@ -81,7 +81,6 @@
 }
 
 .saveTemplate input {
-  flex: 1 1 220px;
   max-width: 320px;
   min-width: 180px;
 }

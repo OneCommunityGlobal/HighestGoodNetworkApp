@@ -25,6 +25,8 @@
   position: absolute;
   top: calc(0.1 * var(--switch-height));
   transition: all 0.3s ease-in-out;
+  pointer-events: none;
+  z-index: 5;
 }
 
 .posted {
@@ -62,6 +64,29 @@
   height: var(--switch-height);
   border-radius: calc(var(--switch-height) / 2);
   overflow: hidden;
+  z-index: 10;
+}
+
+.knob-area button {
+  width: 33.33%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.knob-area button:hover {
+  background: rgb(255 255 255 / 10%);
+}
+
+.knob-area button:active {
+  background: rgb(255 255 255 / 20%);
 }
 
 .knob-area div {
