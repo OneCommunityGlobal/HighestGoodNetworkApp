@@ -68,7 +68,12 @@ function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
 
-function QuantityOfMaterialsUsed({ data }) {
+function QuantityOfMaterialsUsed({
+  data,
+  comparisonMode = 'No Comparison',
+  currentDateRange = {},
+  comparisonDateRange = {},
+}) {
   const dispatch = useDispatch();
   const [chartData, setChartData] = useState(null);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
@@ -85,6 +90,7 @@ function QuantityOfMaterialsUsed({ data }) {
   const [showModal, setShowModal] = useState(false);
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const comparisonEnabled = comparisonMode !== 'No Comparison';
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -215,6 +221,28 @@ function QuantityOfMaterialsUsed({ data }) {
     ],
     [],
   );
+
+  useEffect(() => {
+    if (comparisonMode !== 'No Comparison') {
+      const parseDate = date => (date ? new Date(date) : null);
+      setSelectedDate('Custom');
+      setDateRangeOne([parseDate(currentDateRange.startDate), parseDate(currentDateRange.endDate)]);
+      setDateRangeTwo([
+        parseDate(comparisonDateRange.comparisonStartDate),
+        parseDate(comparisonDateRange.comparisonEndDate),
+      ]);
+    } else {
+      setSelectedDate('Last Week');
+      setDateRangeOne([null, null]);
+      setDateRangeTwo([null, null]);
+    }
+  }, [
+    comparisonMode,
+    currentDateRange.startDate,
+    currentDateRange.endDate,
+    comparisonDateRange.comparisonStartDate,
+    comparisonDateRange.comparisonEndDate,
+  ]);
 
   const getPeriodLabel = date => {
     if (date === 'ALL') return 'Total Materials Used';
@@ -379,7 +407,7 @@ function QuantityOfMaterialsUsed({ data }) {
         if (isPeriodOne) {
           periodOneUsage += record?.quantityUsed || 0;
         }
-        if (isPeriodTwo) {
+        if (comparisonEnabled && isPeriodTwo) {
           periodTwoUsage += record?.quantityUsed || 0;
         }
       });
@@ -420,7 +448,7 @@ function QuantityOfMaterialsUsed({ data }) {
       return 'gray';
     });
 
-    if (periodOneUsageMap.size === 0 && periodTwoUsageMap.size > 0) {
+    if (comparisonEnabled && periodOneUsageMap.size === 0 && periodTwoUsageMap.size > 0) {
       let sortedPreviousData = Array.from(periodTwoUsageMap);
 
       if (selectedMaterials.length > 0) {
@@ -481,7 +509,7 @@ function QuantityOfMaterialsUsed({ data }) {
           type: 'bar',
           order: 2,
         },
-        ...(selectedDate !== 'ALL'
+        ...(comparisonEnabled && selectedDate !== 'ALL'
           ? [
               {
                 label: `${getPeriodLabel(selectedDate).split(' vs ')[1]} Usage`,
@@ -503,7 +531,15 @@ function QuantityOfMaterialsUsed({ data }) {
           : []),
       ],
     });
-  }, [data, selectedMaterials, selectedProjects, selectedDate, dateRangeOne, dateRangeTwo]);
+  }, [
+    data,
+    selectedMaterials,
+    selectedProjects,
+    selectedDate,
+    dateRangeOne,
+    dateRangeTwo,
+    comparisonEnabled,
+  ]);
 
   const barWidth = 12;
   // Subtract the 40-px y-axis offset
@@ -667,12 +703,24 @@ function QuantityOfMaterialsUsed({ data }) {
 
       <ReactTooltip
         id="materials-info"
-        place="left"
+        // Place below the info icon so the long overview panel does not open behind the navbar.
+        place="bottom"
         effect="solid"
         className={`${styles.quantityOfMaterialsUsedChartTooltip}`}
         clickable
         event="click"
         globalEventOff="click"
+        overridePosition={({ left, top }, _event, _trigger, tooltip) => {
+          if (typeof window === 'undefined' || window.innerWidth > 640) return { left, top };
+
+          // Clamp the mobile tooltip inside the viewport because ReactTooltip anchors it near the right-side icon.
+          const margin = 24;
+          const tooltipWidth = tooltip?.offsetWidth || 0;
+          return {
+            left: Math.max(margin, Math.min(left, window.innerWidth - tooltipWidth - margin)),
+            top,
+          };
+        }}
       >
         <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Chart Overview</div>
         <div>This chart compares material quantities across two time periods.</div>

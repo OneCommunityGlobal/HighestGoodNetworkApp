@@ -162,4 +162,92 @@ describe('ProtectedRoute Component', () => {
 
     expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
   });
+
+  describe('PM Resource Dashboard permission denial UX', () => {
+    const pmAllowedRoles = ['Administrator', 'Owner', 'Manager'];
+    const pmRoutePermissions = ['accessPMResourceDashboard'];
+    const pmDeniedState = {
+      permissionDeniedMessage: 'You do not have access to the Resource Dashboard.',
+    };
+
+    const createAuthenticatedStore = (role, frontPermissions = []) =>
+      mockStore({
+        auth: {
+          isAuthenticated: true,
+          user: { role, permissions: { frontPermissions } },
+        },
+        role: { roles: [] },
+      });
+
+    const renderPMResourceDashboardRoute = testStore =>
+      render(
+        <Provider store={testStore}>
+          <MemoryRouter initialEntries={['/pm/dashboard/resources']}>
+            <ProtectedRoute
+              path="/pm/dashboard/resources"
+              component={TargetComponent}
+              allowedRoles={pmAllowedRoles}
+              routePermissions={pmRoutePermissions}
+              permissionDeniedRedirectState={pmDeniedState}
+            />
+          </MemoryRouter>
+        </Provider>,
+      );
+
+    const pmResourceDashboardRoute = (
+      <ProtectedRoute
+        path="/pm/dashboard/resources"
+        component={TargetComponent}
+        allowedRoles={pmAllowedRoles}
+        routePermissions={pmRoutePermissions}
+        permissionDeniedRedirectState={pmDeniedState}
+      />
+    );
+
+    test.each(pmAllowedRoles)('%s can access without the dedicated PM permission', role => {
+      store = createAuthenticatedStore(role);
+
+      renderPMResourceDashboardRoute(store);
+
+      expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
+    });
+
+    test('non-PM authenticated user with accessPMResourceDashboard can access', () => {
+      store = createAuthenticatedStore('Volunteer', pmRoutePermissions);
+
+      renderPMResourceDashboardRoute(store);
+
+      expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
+    });
+
+    test('non-PM authenticated user without accessPMResourceDashboard redirects with PM denial state', () => {
+      store = createAuthenticatedStore('Volunteer');
+
+      const { history } = renderWithRouter(pmResourceDashboardRoute, {
+        route: '/pm/dashboard/resources',
+        store,
+      });
+
+      expect(history.location.pathname).toBe('/dashboard');
+      expect(history.location.state.permissionDeniedMessage).toBe(
+        'You do not have access to the Resource Dashboard.',
+      );
+    });
+
+    test('other protected route denials do not receive the PM denial state by default', () => {
+      store = createAuthenticatedStore('Volunteer');
+
+      const { history } = renderWithRouter(
+        <ProtectedRoute
+          path="/protected"
+          component={TargetComponent}
+          routePermissions={['SPECIAL_ACCESS']}
+        />,
+        { route: '/protected', store },
+      );
+
+      expect(history.location.pathname).toBe('/dashboard');
+      expect(history.location.state.permissionDeniedMessage).toBeUndefined();
+    });
+  });
 });

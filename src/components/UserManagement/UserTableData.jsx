@@ -31,6 +31,7 @@ import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permission
 import SetUpFinalDayButton from './SetUpFinalDayButton';
 import styles from './usermanagement.module.css';
 
+import { permissions } from '../../utils/constants';
 /**
  * The body row of the user table
  */
@@ -45,7 +46,7 @@ const UserTableDataComponent = props => {
 
   const [isChanging, onReset] = useState(false);
 
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission(permissions.addDeleteEditOwners);
   const dispatch = useDispatch();
   const history = useHistory();
   const { roles } = useSelector(state => state.role);
@@ -80,12 +81,12 @@ const UserTableDataComponent = props => {
     );
   };
 
-  const canDeleteUsers = props.hasPermission('deleteUserProfile');
-  const resetPasswordStatus = props.hasPermission('updatePassword');
-  const canChangeUserStatus = props.hasPermission('changeUserStatus');
-  const canInteractWithPauseUserButton = props.hasPermission('interactWithPauseUserButton');
-  const canSetFinalDay = props.hasPermission('setFinalDay');
-  const canSeeReports = props.hasPermission('getReports');
+  const canDeleteUsers = props.hasPermission(permissions.deleteUserProfile);
+  const resetPasswordStatus = props.hasPermission(permissions.updatePassword);
+  const canChangeUserStatus = props.hasPermission(permissions.changeUserStatus);
+  const canInteractWithPauseUserButton = props.hasPermission(permissions.interactWithPauseUserButton);
+  const canSetFinalDay = props.hasPermission(permissions.setFinalDay);
+  const canSeeReports = props.hasPermission(permissions.getReports);
 
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
