@@ -1,8 +1,10 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import Select, { components } from 'react-select';
+import axios from 'axios';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
+import { ENDPOINTS } from '../../../utils/URL';
 import 'chart.js/auto';
 import styles from './issueChart.module.css';
 
@@ -22,6 +24,74 @@ const YEAR_COLORS = [
 ];
 
 const getYearColor = idx => YEAR_COLORS[idx % YEAR_COLORS.length];
+
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+const BREAKDOWN_OPTIONS = [
+  { value: 'month', label: 'Month' },
+  { value: 'project', label: 'Project' },
+  { value: 'subCategory', label: 'Sub-category' },
+];
+
+// Issue title/text are stored as arrays in the BuildingIssue model
+const joinText = value => (Array.isArray(value) ? value.filter(Boolean).join(' ') : value || '');
+
+// The chart groups years with UTC ($year in the aggregation), so drill-down does the same
+const getIssueYear = issue => new Date(issue.issueDate).getUTCFullYear();
+
+const formatIssueDate = value => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toISOString().slice(0, 10);
+};
+
+const escapeCsvValue = value => {
+  const text = String(value ?? '');
+  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+};
+
+// Builds a CSV (opens directly in Excel) and triggers a download
+const downloadCsv = (fileName, header, rows) => {
+  const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(','));
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};
+
+const toFileSlug = value =>
+  String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+const formatTrend = (current, previous) => {
+  const diff = current - previous;
+  if (diff === 0) return { arrow: '▬', text: 'no change', direction: 'Flat' };
+  const pct = previous > 0 ? ` (${Math.round((Math.abs(diff) / previous) * 100)}%)` : '';
+  // More issues is worse, so an increase is shown as a warning colour
+  return diff > 0
+    ? { arrow: '▲', text: `+${diff}${pct}`, direction: 'Up' }
+    : { arrow: '▼', text: `${diff}${pct}`, direction: 'Down' };
+};
 
 const stripNumericSuffix = value => {
   const str = String(value);
@@ -193,6 +263,16 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   // 'multi' compares several years side by side; 'single' focuses on one year
   const [viewMode, setViewMode] = useState('multi');
   const [singleYear, setSingleYear] = useState(null);
+  // Drill-down: the bar the user clicked ({ base: issue type, year })
+  const [drill, setDrill] = useState(null);
+  const [breakdownBy, setBreakdownBy] = useState('month');
+  // Individual issue records are only loaded the first time a bar is clicked
+  const [issueRecords, setIssueRecords] = useState(null);
+  const [projectNames, setProjectNames] = useState({});
+  const [recordsLoading, setRecordsLoading] = useState(false);
+  const [recordsError, setRecordsError] = useState('');
+  // Ref (not state) so the chart's click handler always sees whether records were requested
+  const recordsRequestedRef = useRef(false);
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.innerWidth <= 640 : false,
   );
@@ -317,6 +397,39 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       years: [],
     });
     setSingleYear(null);
+    setDrill(null);
+  };
+
+  const loadIssueRecords = async () => {
+    if (recordsRequestedRef.current) return;
+    recordsRequestedRef.current = true;
+    setRecordsLoading(true);
+    setRecordsError('');
+    try {
+      const [issuesRes, projectsRes] = await Promise.all([
+        axios.get(ENDPOINTS.BM_INJURY_ISSUE),
+        axios.get(`${ENDPOINTS.BM_INJURY_ISSUE}/projects`).catch(() => ({ data: [] })),
+      ]);
+      const names = {};
+      (Array.isArray(projectsRes.data) ? projectsRes.data : []).forEach(project => {
+        const id = project?.projectId || project?._id || project?.id;
+        const name = project?.projectName || project?.name;
+        if (id && name) names[String(id)] = name;
+      });
+      setProjectNames(names);
+      setIssueRecords(Array.isArray(issuesRes.data) ? issuesRes.data : []);
+    } catch {
+      // Allow a retry on the next bar click
+      recordsRequestedRef.current = false;
+      setRecordsError('Could not load issue details. Click the bar again to retry.');
+    } finally {
+      setRecordsLoading(false);
+    }
+  };
+
+  const openDrillDown = (base, year) => {
+    setDrill({ base, year: String(year) });
+    loadIssueRecords();
   };
 
   const chartData = useMemo(() => {
@@ -423,6 +536,128 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     return { totalByYear, topIssueTypeIndex, insightText };
   }, [chartData]);
 
+  // Summary and year-over-year trend for the current filters
+  const summary = useMemo(() => {
+    const labels = chartData?.labels ?? [];
+    const datasets = chartData?.datasets ?? [];
+    if (!labels.length || !datasets.length) return null;
+
+    const totalIssues = datasets.reduce(
+      (sum, ds) => sum + (ds.data || []).reduce((s, v) => s + (Number(v) || 0), 0),
+      0,
+    );
+    const typeTotals = labels.map((label, idx) => ({
+      label,
+      total: datasets.reduce((sum, ds) => sum + (Number(ds.data?.[idx]) || 0), 0),
+    }));
+    const topType = typeTotals.reduce((best, item) => (item.total > best.total ? item : best));
+
+    // Year totals across all data for the selected issue types (previous year may be filtered out)
+    const selectedTypes = filters.issueTypes.length
+      ? filters.issueTypes
+      : getValidIssueTypes(issues);
+    const totalForYear = (year, base) =>
+      selectedTypes
+        .filter(type => base === undefined || stripNumericSuffix(type) === base)
+        .reduce((sum, type) => sum + (Number(issues?.[type]?.[year]) || 0), 0);
+
+    const latestShownYear = Math.max(...datasets.map(ds => Number(ds.label)));
+    const previousYear = latestShownYear - 1;
+    const hasPreviousYear = uniqueYears.includes(previousYear);
+
+    let yearTrend = null;
+    let biggestIncrease = null;
+    if (hasPreviousYear) {
+      yearTrend = formatTrend(totalForYear(latestShownYear), totalForYear(previousYear));
+      labels.forEach(base => {
+        const diff = totalForYear(latestShownYear, base) - totalForYear(previousYear, base);
+        if (diff > 0 && (!biggestIncrease || diff > biggestIncrease.diff)) {
+          biggestIncrease = { base, diff };
+        }
+      });
+    }
+
+    return {
+      totalIssues,
+      topType,
+      topShare: totalIssues > 0 ? Math.round((topType.total / totalIssues) * 100) : 0,
+      latestShownYear,
+      previousYear,
+      yearTrend,
+      biggestIncrease,
+    };
+  }, [chartData, filters.issueTypes, issues, uniqueYears]);
+
+  // Drill-down stays open only while its bar is still in the chart
+  const drillActive =
+    Boolean(drill) &&
+    (chartData?.labels ?? []).includes(drill.base) &&
+    (chartData?.datasets ?? []).some(ds => ds.label === drill.year);
+
+  const drilledIssues = useMemo(() => {
+    if (!drillActive || !issueRecords) return [];
+    const selectedTypes = new Set(
+      (filters.issueTypes.length ? filters.issueTypes : getValidIssueTypes(issues)).map(type =>
+        String(type).toLowerCase(),
+      ),
+    );
+    return issueRecords
+      .filter(issue => {
+        const type = String(issue?.issueType ?? '');
+        return (
+          stripNumericSuffix(type) === drill.base &&
+          selectedTypes.has(type.toLowerCase()) &&
+          String(getIssueYear(issue)) === drill.year
+        );
+      })
+      .sort((a, b) => new Date(a.issueDate) - new Date(b.issueDate));
+  }, [drillActive, issueRecords, drill, filters.issueTypes, issues]);
+
+  const getProjectName = projectId =>
+    projectNames[String(projectId)] || (projectId ? `Project ${String(projectId).slice(-6)}` : '—');
+
+  const breakdownRows = useMemo(() => {
+    const counts = new Map();
+    drilledIssues.forEach(issue => {
+      let key;
+      if (breakdownBy === 'month') {
+        key = MONTH_NAMES[new Date(issue.issueDate).getUTCMonth()];
+      } else if (breakdownBy === 'project') {
+        key = getProjectName(issue.projectId);
+      } else {
+        key = issue.issueType || 'Unknown';
+      }
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+    const rows = Array.from(counts, ([label, count]) => ({ label, count }));
+    if (breakdownBy === 'month') {
+      return rows.sort((a, b) => MONTH_NAMES.indexOf(a.label) - MONTH_NAMES.indexOf(b.label));
+    }
+    return rows.sort((a, b) => b.count - a.count);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drilledIssues, breakdownBy, projectNames]);
+
+  const handleExportChart = () => {
+    const labels = chartData?.labels ?? [];
+    const datasets = chartData?.datasets ?? [];
+    const header = ['Issue Type', ...datasets.map(ds => ds.label)];
+    const rows = labels.map((label, idx) => [label, ...datasets.map(ds => ds.data?.[idx] ?? 0)]);
+    downloadCsv('issue-chart-summary.csv', header, rows);
+  };
+
+  const handleExportDrillDown = () => {
+    const header = ['Date', 'Title', 'Description', 'Project', 'Sub-category', 'Status'];
+    const rows = drilledIssues.map(issue => [
+      formatIssueDate(issue.issueDate),
+      joinText(issue.issueTitle),
+      joinText(issue.issueText),
+      getProjectName(issue.projectId),
+      issue.issueType,
+      issue.status,
+    ]);
+    downloadCsv(`issues-${toFileSlug(drill.base)}-${drill.year}.csv`, header, rows);
+  };
+
   const xAxisBackgroundPlugin = dm => ({
     id: 'xAxisBackground',
     beforeDraw: chart => {
@@ -453,6 +688,18 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     () => ({
       responsive: true,
       maintainAspectRatio: false,
+      // Clicking a bar opens the drill-down for that issue type and year
+      onClick: (_event, elements, chart) => {
+        if (!elements?.length) return;
+        const { datasetIndex, index } = elements[0];
+        const base = chart.data.labels?.[index];
+        const year = chart.data.datasets?.[datasetIndex]?.label;
+        if (base !== undefined && year !== undefined) openDrillDown(base, year);
+      },
+      onHover: (event, elements) => {
+        const target = event?.native?.target;
+        if (target) target.style.cursor = elements?.length ? 'pointer' : 'default';
+      },
       layout: {
         padding: {
           // Room above the tallest bar for its value label
@@ -891,6 +1138,60 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         >
           <div className={styles.activeFilterSummary}>{activeFilterSummary}</div>
 
+          {summary && (
+            <section
+              className={`${styles.issueInsights} ${darkMode ? styles.issueInsightsDark : ''}`}
+              aria-label="Issue summary"
+            >
+              <div className={styles.issueInsightsStats}>
+                <div className={styles.issueInsightsStat}>
+                  <span className={styles.issueInsightsValue}>{summary.totalIssues}</span>
+                  <span className={styles.issueInsightsLabel}>Total issues</span>
+                </div>
+                <div className={styles.issueInsightsStat}>
+                  <span className={styles.issueInsightsValue}>{summary.topType.label}</span>
+                  <span className={styles.issueInsightsLabel}>
+                    Highest-impact type ({summary.topType.total}, {summary.topShare}%)
+                  </span>
+                </div>
+                <div className={styles.issueInsightsStat}>
+                  {summary.yearTrend ? (
+                    <span
+                      className={`${styles.issueInsightsValue} ${
+                        styles[`issueTrend${summary.yearTrend.direction}`]
+                      }`}
+                    >
+                      {summary.yearTrend.arrow} {summary.yearTrend.text}
+                    </span>
+                  ) : (
+                    <span className={styles.issueInsightsValue}>—</span>
+                  )}
+                  <span className={styles.issueInsightsLabel}>
+                    {summary.latestShownYear} vs {summary.previousYear}
+                  </span>
+                </div>
+              </div>
+              {summary.biggestIncrease && (
+                <p className={styles.issueInsightsNote}>
+                  Largest increase: <strong>{summary.biggestIncrease.base}</strong> (+
+                  {summary.biggestIncrease.diff} vs {summary.previousYear})
+                </p>
+              )}
+              <div className={styles.issueInsightsActions}>
+                <span className={styles.issueInsightsHint}>
+                  Click a bar to see the issues behind it.
+                </span>
+                <button
+                  type="button"
+                  className={styles.issueExportButton}
+                  onClick={handleExportChart}
+                >
+                  Export chart data (CSV)
+                </button>
+              </div>
+            </section>
+          )}
+
           <div
             className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
             style={{
@@ -927,6 +1228,107 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
               {chartAnalysis.insightText}
             </p>
           </div>
+
+          {drillActive && (
+            <section
+              className={`${styles.issueDrillDown} ${darkMode ? styles.issueDrillDownDark : ''}`}
+              aria-label={`${drill.base} issues in ${drill.year}`}
+            >
+              <div className={styles.issueDrillHeader}>
+                <h3 className={styles.issueDrillTitle}>
+                  {drill.base} · {drill.year}
+                  {!recordsLoading && issueRecords && ` — ${drilledIssues.length} issues`}
+                </h3>
+                <div className={styles.issueDrillActions}>
+                  <button
+                    type="button"
+                    className={styles.issueExportButton}
+                    onClick={handleExportDrillDown}
+                    disabled={recordsLoading || drilledIssues.length === 0}
+                  >
+                    Export CSV
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.issueDrillClose}
+                    onClick={() => setDrill(null)}
+                    aria-label="Close issue details"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              {recordsLoading && <p className={styles.issueDrillMessage}>Loading issues…</p>}
+              {!recordsLoading && recordsError && (
+                <p className={styles.issueDrillError} role="alert">
+                  {recordsError}
+                </p>
+              )}
+
+              {!recordsLoading && !recordsError && issueRecords && (
+                <>
+                  <fieldset className={styles.issueBreakdownToggle} aria-label="Break down by">
+                    {BREAKDOWN_OPTIONS.map(option => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`${styles.issueBreakdownButton} ${
+                          breakdownBy === option.value ? styles.issueBreakdownButtonActive : ''
+                        }`}
+                        aria-pressed={breakdownBy === option.value}
+                        onClick={() => setBreakdownBy(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </fieldset>
+
+                  {breakdownRows.length > 0 ? (
+                    <ul className={styles.issueBreakdownList}>
+                      {breakdownRows.map(row => (
+                        <li key={row.label}>
+                          <span>{row.label}</span>
+                          <strong>{row.count}</strong>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className={styles.issueDrillMessage}>No issue records found for this bar.</p>
+                  )}
+
+                  {drilledIssues.length > 0 && (
+                    <div className={styles.issueDrillTableWrapper}>
+                      <table className={styles.issueDrillTable}>
+                        <thead>
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Project</th>
+                            <th scope="col">Sub-category</th>
+                            <th scope="col">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {drilledIssues.map(issue => (
+                            <tr key={issue._id}>
+                              <td>{formatIssueDate(issue.issueDate)}</td>
+                              <td title={joinText(issue.issueText)}>
+                                {joinText(issue.issueTitle) || '—'}
+                              </td>
+                              <td>{getProjectName(issue.projectId)}</td>
+                              <td>{issue.issueType}</td>
+                              <td>{issue.status}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
+              )}
+            </section>
+          )}
         </div>
       )}
     </div>

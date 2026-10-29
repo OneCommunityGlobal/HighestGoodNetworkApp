@@ -335,3 +335,283 @@
   background: #007fff;
   color: #ffffff;
 }
+
+/* ================================
+   SUMMARY / TREND INSIGHTS
+   ================================ */
+
+.issueInsights {
+  margin: 8px 0 12px;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f2937;
+}
+
+.issueInsightsDark {
+  border-color: #3d444d;
+  background: #22272e;
+  color: #e5e7eb;
+}
+
+.issueInsightsStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  text-align: center;
+}
+
+.issueInsightsStat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.issueInsightsValue {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.issueInsightsLabel {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.issueTrendUp {
+  color: #dc2626;
+}
+
+.issueTrendDown {
+  color: #16a34a;
+}
+
+.issueTrendFlat {
+  color: inherit;
+}
+
+.issueInsightsDark .issueTrendUp {
+  color: #f87171;
+}
+
+.issueInsightsDark .issueTrendDown {
+  color: #4ade80;
+}
+
+.issueInsightsNote {
+  margin: 10px 0 0;
+  font-size: 13px;
+  text-align: center;
+}
+
+.issueInsightsActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.issueInsightsHint {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.issueExportButton {
+  padding: 5px 12px;
+  border: 1px solid #007fff;
+  border-radius: 6px;
+  background: transparent;
+  color: #007fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.issueExportButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.issueInsightsDark .issueExportButton,
+.issueDrillDownDark .issueExportButton {
+  border-color: #60a5fa;
+  color: #93c5fd;
+}
+
+.issueExportButton:hover:not(:disabled) {
+  background: #007fff;
+  color: #fff;
+}
+
+.issueInsightsDark .issueExportButton:hover:not(:disabled),
+.issueDrillDownDark .issueExportButton:hover:not(:disabled) {
+  background: #2563eb;
+  color: #fff;
+}
+
+/* ================================
+   DRILL-DOWN PANEL
+   ================================ */
+
+.issueDrillDown {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f2937;
+}
+
+.issueDrillDownDark {
+  border-color: #3d444d;
+  background: #22272e;
+  color: #e5e7eb;
+}
+
+.issueDrillHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.issueDrillTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.issueDrillActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.issueDrillClose {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.issueDrillMessage {
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.issueDrillError {
+  margin: 8px 0;
+  font-size: 13px;
+  color: #dc2626;
+}
+
+.issueDrillDownDark .issueDrillError {
+  color: #f87171;
+}
+
+.issueBreakdownToggle {
+  display: flex;
+  width: fit-content;
+  margin: 0 0 10px;
+  padding: 0;
+  min-width: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.issueBreakdownButton {
+  padding: 4px 12px;
+  border: none;
+  background: #fff;
+  color: #333;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.issueBreakdownButton + .issueBreakdownButton {
+  border-left: 1px solid #cbd5e1;
+}
+
+.issueBreakdownButtonActive {
+  background: #007fff;
+  color: #fff;
+}
+
+.issueDrillDownDark .issueBreakdownToggle {
+  border-color: #3d444d;
+}
+
+.issueDrillDownDark .issueBreakdownButton {
+  background: #1c2128;
+  color: #cfd7e3;
+}
+
+.issueDrillDownDark .issueBreakdownButton + .issueBreakdownButton {
+  border-left-color: #3d444d;
+}
+
+.issueDrillDownDark .issueBreakdownButtonActive {
+  background: #007fff;
+  color: #fff;
+}
+
+.issueBreakdownList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.issueBreakdownList li {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  font-size: 13px;
+}
+
+.issueDrillDownDark .issueBreakdownList li {
+  background: #2d333b;
+}
+
+.issueDrillTableWrapper {
+  max-height: 280px;
+  overflow: auto;
+}
+
+.issueDrillTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.issueDrillTable th,
+.issueDrillTable td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.issueDrillTable th {
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.issueDrillDownDark .issueDrillTable th,
+.issueDrillDownDark .issueDrillTable td {
+  border-bottom-color: #3d444d;
+}
+
+.issueDrillDownDark .issueDrillTable th {
+  background: #2d333b;
+}
