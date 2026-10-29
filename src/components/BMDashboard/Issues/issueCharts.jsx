@@ -60,7 +60,7 @@ const formatIssueDate = value => {
 
 const escapeCsvValue = value => {
   const text = String(value ?? '');
-  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 };
 
 // Builds a CSV (opens directly in Excel) and triggers a download
@@ -429,7 +429,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
   const openDrillDown = (base, year) => {
     setDrill({ base, year: String(year) });
-    loadIssueRecords();
+    // Errors are handled inside loadIssueRecords (shown in the panel)
+    loadIssueRecords().catch(() => {});
   };
 
   const chartData = useMemo(() => {
