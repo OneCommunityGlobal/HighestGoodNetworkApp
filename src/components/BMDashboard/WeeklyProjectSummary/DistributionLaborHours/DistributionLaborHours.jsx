@@ -50,6 +50,7 @@ export default function DistributionLaborHours() {
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [projectFilter, setProjectFilter] = useState('');
   const [memberFilter, setMemberFilter] = useState('');
+  const [categoryOptions, setCategoryOptions] = useState([]);
 
   const latestRequestId = useRef(0);
 
@@ -90,6 +91,9 @@ export default function DistributionLaborHours() {
       }));
 
       if (latestRequestId.current !== requestId) return;
+      if (!category) {
+        setCategoryOptions(distribution.map(item => ({ value: item.name, label: item.name })));
+      }
       setFetchError(null);
       setFilteredData(topFiveWithOthers(distribution));
     } catch (error) {
@@ -122,17 +126,30 @@ export default function DistributionLaborHours() {
 
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
-  const projectOptions = [
-    { value: '', label: 'ALL' },
-    { value: 'Project A', label: 'Project A' },
-    { value: 'Project B', label: 'Project B' },
-  ];
+  const projectOptions = [{ value: '', label: 'ALL' }, ...categoryOptions];
 
   const memberOptions = [
     { value: '', label: 'ALL' },
     { value: 'Member 1', label: 'Member 1' },
     { value: 'Member 2', label: 'Member 2' },
   ];
+
+  const selectStyles = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
+    control: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#253342' : '#fff',
+      borderColor: darkMode ? '#3a506b' : '#ccc',
+    }),
+    singleValue: base => ({ ...base, color: darkMode ? '#fff' : '#000' }),
+    input: base => ({ ...base, color: darkMode ? '#fff' : '#000' }),
+    menu: base => ({ ...base, backgroundColor: darkMode ? '#253342' : '#fff' }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? (darkMode ? '#3a506b' : '#f0f0f0') : 'transparent',
+      color: darkMode ? '#fff' : '#000',
+    }),
+  };
 
   return (
     <div className={styles.container}>
@@ -164,6 +181,9 @@ export default function DistributionLaborHours() {
             onChange={opt => setProjectFilter(opt.value)}
             className="react-select-container"
             classNamePrefix="react-select"
+            styles={selectStyles}
+            menuPortalTarget={document.body}
+            menuPosition="fixed"
           />
         </label>
         <label htmlFor="member-filter" title="Member filtering is not yet supported by the backend">
@@ -174,7 +194,9 @@ export default function DistributionLaborHours() {
             onChange={opt => setMemberFilter(opt.value)}
             className="react-select-container"
             classNamePrefix="react-select"
-            isDisabled
+            styles={selectStyles}
+            menuPortalTarget={document.body}
+            menuPosition="fixed"
           />
         </label>
 
