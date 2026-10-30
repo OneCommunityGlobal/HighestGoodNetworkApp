@@ -1,8 +1,9 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { MemoryRouter, Route, Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import UpdateEquipment from '../UpdateEquipment';
 
 const mocks = vi.hoisted(() => ({
@@ -182,5 +183,103 @@ describe('UpdateEquipment history and status form', () => {
     renderForm();
 
     expect(await screen.findByText(/Equipment history could not be loaded/i)).toBeInTheDocument();
+  });
+
+  it('tolerates malformed and incomplete history records', async () => {
+    mocks.fetchEquipmentById.mockImplementation(() => async () => ({
+      _id: equipmentId,
+      updateRecord: [null, { date: 'not-a-date', condition: 'Good' }, { condition: 'Good' }],
+      logRecord: [
+        {
+          date: '2025-03-06T12:00:00.000Z',
+          type: 'Check Out',
+          responsibleUser: '507f191e810c19729de860ea',
+        },
+        { type: 'Check Out' },
+      ],
+    }));
+
+    renderForm();
+
+    await waitFor(() => expect(screen.queryByText(/Loading equipment history/i)).toBeNull());
+    expect(screen.getByLabelText(/Who used the tool\/equipment last time/i)).toHaveValue('');
+    expect(screen.getAllByText('Unknown').length).toBeGreaterThan(0);
+  });
+
+  it('shows a failed update as an error without a success confirmation', async () => {
+    mocks.updateEquipment.mockImplementation(() => async () => {
+      throw new Error('Server down');
+    });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    renderForm();
+    await fillRequiredFields();
+    fireEvent.click(screen.getByRole('button', { name: /Update Status/i }));
+
+    expect(await screen.findByText(/Failed to update equipment/i)).toBeInTheDocument();
+    expect(screen.queryByText(/status saved as/i)).toBeNull();
+  });
+
+  it('ignores a second submit while the first is in flight', async () => {
+    let resolveUpdate;
+    mocks.updateEquipment.mockImplementation(() => () =>
+      new Promise(resolve => {
+        resolveUpdate = resolve;
+      }),
+    );
+
+    renderForm();
+    await fillRequiredFields();
+    const submitButton = screen.getByRole('button', { name: /Update Status/i });
+    fireEvent.submit(submitButton);
+    fireEvent.submit(submitButton);
+
+    expect(mocks.updateEquipment).toHaveBeenCalledTimes(1);
+    resolveUpdate({ ...equipmentHistory });
+    await screen.findByText(/status saved as/i);
+  });
+
+  it('does not let a stale history response populate a different equipment', async () => {
+    const resolvers = {};
+    mocks.fetchEquipmentById.mockImplementation(id => () =>
+      new Promise(resolve => {
+        resolvers[id] = resolve;
+      }),
+    );
+    const routerHistory = createMemoryHistory({ initialEntries: ['/t/equipment-1'] });
+    render(
+      <Provider store={makeStore()}>
+        <Router history={routerHistory}>
+          <Route path="/t/:equipmentId" component={UpdateEquipment} />
+        </Router>
+      </Provider>,
+    );
+    await waitFor(() => expect(resolvers['equipment-1']).toBeDefined());
+
+    act(() => routerHistory.push('/t/equipment-2'));
+    await waitFor(() => expect(resolvers['equipment-2']).toBeDefined());
+
+    await act(async () => {
+      resolvers['equipment-2']({ ...equipmentHistory, _id: 'equipment-2', logRecord: [] });
+      resolvers['equipment-1'](equipmentHistory);
+    });
+    expect(screen.getByLabelText(/Who used the tool\/equipment last time/i)).toHaveValue('');
+  });
+
+  it('keeps image selection preview-only and never claims it was saved', async () => {
+    global.URL.createObjectURL = vi.fn(() => 'blob:preview');
+    global.URL.revokeObjectURL = vi.fn();
+    renderForm();
+    await fillRequiredFields();
+
+    const input = screen.getByLabelText('Upload image files');
+    const file = new File(['x'], 'tool.png', { type: 'image/png' });
+    fireEvent.change(input, { target: { files: [file] } });
+
+    expect(await screen.findByText(/preview only; it will not be saved/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Update Status/i }));
+    await screen.findByText(/status saved as/i);
+    expect(screen.queryByText(/image.*(saved|uploaded) successfully/i)).toBeNull();
+    expect(mocks.updateEquipment.mock.calls[0][1]).not.toHaveProperty('images');
   });
 });

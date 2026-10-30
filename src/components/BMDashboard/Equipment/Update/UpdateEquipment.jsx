@@ -62,6 +62,7 @@ export default function UpdateEquipment() {
   });
   const previewFilesRef = useRef([]);
   const historyRequestIdRef = useRef(0);
+  const isSubmittingRef = useRef(false);
   const editedHistoryFieldsRef = useRef({
     equipmentId: null,
     lastUsedBy: false,
@@ -255,6 +256,7 @@ export default function UpdateEquipment() {
   const handleSubmit = useCallback(
     async e => {
       e.preventDefault();
+      if (isSubmittingRef.current) return;
 
       const validationError = validateForm();
       if (validationError) {
@@ -262,6 +264,7 @@ export default function UpdateEquipment() {
         return;
       }
 
+      isSubmittingRef.current = true;
       setIsSubmitting(true);
       setSubmitError('');
       setSubmitSuccess('');
@@ -317,6 +320,7 @@ export default function UpdateEquipment() {
 
         setSubmitError(errorMessage);
       } finally {
+        isSubmittingRef.current = false;
         setIsSubmitting(false);
       }
     },
