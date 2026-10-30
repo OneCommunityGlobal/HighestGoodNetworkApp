@@ -49,6 +49,15 @@ describe('QuestionnaireAccessGate', () => {
     expect(screen.queryByText('Questionnaire content')).not.toBeInTheDocument();
   });
 
+  it('blocks people invited to a Dropbox team folder other than Highest Good Network', async () => {
+    axios.get.mockResolvedValue({ data: { eligible: false, reason: 'NOT_HGN_TEAM_FOLDER' } });
+
+    renderGate();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/different team folder/);
+    expect(screen.queryByText('Questionnaire content')).not.toBeInTheDocument();
+  });
+
   it('explains when Dropbox access was revoked', async () => {
     axios.get.mockResolvedValue({ data: { eligible: false, reason: 'ACCESS_REVOKED' } });
 

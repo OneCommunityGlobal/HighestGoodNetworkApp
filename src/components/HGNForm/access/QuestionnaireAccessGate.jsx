@@ -9,6 +9,8 @@ const DENIED_MESSAGES = {
   INACTIVE: 'Your account is not active, so the questionnaire is not available to you.',
   ACCESS_REVOKED:
     'Your Highest Good Network Dropbox access has been revoked, so the questionnaire is no longer available to you.',
+  NOT_HGN_TEAM_FOLDER:
+    'This questionnaire is only available to people invited through the Highest Good Network Dropbox. Your Dropbox invite is for a different team folder.',
 };
 const DEFAULT_DENIED_MESSAGE =
   'This questionnaire becomes available after you have been set up and invited through the Highest Good Network Dropbox process.';

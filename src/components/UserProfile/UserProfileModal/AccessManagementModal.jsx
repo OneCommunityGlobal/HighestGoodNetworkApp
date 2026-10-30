@@ -17,6 +17,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../../utils/URL';
 import CopyQuestionnaireLinkButton from '../../HGNForm/access/CopyQuestionnaireLinkButton';
+import { QUESTIONNAIRE_DROPBOX_TEAM_FOLDER_KEY } from '../../HGNForm/access/questionnaireLink';
 import styles from './AccessManagementModal.module.css';
 
 const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false }) => {
@@ -427,6 +428,9 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       }
       await axios.post(endpoint, payload);
       toast.success(`${appConfigs[appName].name} invitation sent successfully`);
+      if (appName === 'dropbox' && selectedTeamFolder === QUESTIONNAIRE_DROPBOX_TEAM_FOLDER_KEY) {
+        toast.info('The HGN Questionnaire link is now active for this person.');
+      }
       await fetchAccessData(); // Refresh data
     } catch (error) {
       //console.error(`Error inviting to ${appName}:`, error.response);
@@ -490,6 +494,12 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     const touched = inputTouched[appName];
     const isGithub = appName === 'github';
     const isDropbox = appName === 'dropbox';
+    // Only the Highest Good Network Dropbox team folder unlocks the HGN Questionnaire.
+    // Older invites have no teamFolderKey; the backend resolves those on the user's first visit.
+    const hasQuestionnaireAccess =
+      isDropbox &&
+      status === 'invited' &&
+      (!app?.teamFolderKey || app.teamFolderKey === QUESTIONNAIRE_DROPBOX_TEAM_FOLDER_KEY);
     const isCredentialValid = credentialValue.trim().length > 0;
     const isInviteLoading = inviteLoading[appName] || false;
     const isRevokeLoading = revokeLoading[appName] || false;
@@ -509,7 +519,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     };
 
     return (
-      <div key={appName} className={styles.appCard}>
+      <div key={appName} className={styles.appCard} data-testid={`access-card-${appName}`}>
         <div className={styles.appCardContent}>
           <div className={styles.appHeader}>
             <div className={styles.appInfo}>
@@ -539,8 +549,8 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                 </div>
               )}
 
-              {/* Dropbox invite unlocks the permanent HGN questionnaire link for this user */}
-              {status === 'invited' && isDropbox && (
+              {/* Highest Good Network Dropbox invite unlocks the permanent HGN questionnaire link */}
+              {hasQuestionnaireAccess && (
                 <CopyQuestionnaireLinkButton className={styles.btnAction} />
               )}
 
@@ -594,6 +604,14 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                   <FontAwesomeIcon icon={faFolder} className={styles.folderIcon} />
                   <strong>User Folder Name:</strong> {userProfile?.firstName}{' '}
                   {userProfile?.lastName}
+                </div>
+              )}
+
+              {isDropbox && !teamFoldersLoading && selectedTeamFolder && (
+                <div className={`${styles.textMuted} ${styles.small} ${styles.mb2}`}>
+                  {selectedTeamFolder === QUESTIONNAIRE_DROPBOX_TEAM_FOLDER_KEY
+                    ? 'Inviting to this folder also activates the HGN Questionnaire link for this person.'
+                    : 'Invites to this folder do not activate the HGN Questionnaire. Use the Highest Good Network Team folder for questionnaire access.'}
                 </div>
               )}
 
