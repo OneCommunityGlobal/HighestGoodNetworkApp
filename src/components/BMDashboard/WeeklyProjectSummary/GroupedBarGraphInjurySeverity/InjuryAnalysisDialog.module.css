@@ -120,6 +120,36 @@
   color-scheme: dark;
 }
 
+/* Keep native date fields readable when other dashboard styles target inputs. */
+.dialog .dateInput {
+  min-height: 40px;
+  color-scheme: light;
+}
+
+.dialog.dark .dateInput {
+  background-color: #293d58 !important;
+  color: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  -webkit-text-fill-color: #f8fafc !important;
+  color-scheme: dark !important;
+}
+
+.dialog.dark .dateInput::-webkit-datetime-edit {
+  color: #f8fafc;
+  -webkit-text-fill-color: #f8fafc;
+}
+
+.dialog .dateInput::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.dialog.dark .dateInput:focus-visible {
+  border-color: #93c5fd !important;
+  outline: 3px solid #60a5fa;
+  outline-offset: 2px;
+}
+
 .ranges {
   display: flex;
   gap: 1rem;

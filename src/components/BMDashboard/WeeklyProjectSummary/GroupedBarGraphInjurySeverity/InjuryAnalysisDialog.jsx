@@ -36,6 +36,7 @@ function DateRange({ label, value, onChange }) {
         Start date
         <input
           type="date"
+          className={styles.dateInput}
           value={value.start}
           onChange={event => onChange({ ...value, start: event.target.value })}
         />
@@ -44,6 +45,7 @@ function DateRange({ label, value, onChange }) {
         End date
         <input
           type="date"
+          className={styles.dateInput}
           value={value.end}
           onChange={event => onChange({ ...value, end: event.target.value })}
         />
