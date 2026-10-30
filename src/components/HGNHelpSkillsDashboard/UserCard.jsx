@@ -34,32 +34,32 @@ function UserCard({ user }) {
     <div className={`${styles.userCard} ${darkMode ? styles.darkMode : ''}`}>
       <img src={avatar} alt="Avatar" className={`${styles.avatar}`} />
       <div className={`${styles.info}`}>
-{userId ? (
-  <Link
-    to={`/hgnhelp/profile/${userId}`}
-    className={`${styles.userName} ${styles.profileLink}`}
-  >
-    {name}
-  </Link>
-) : (
-  <div className={`${styles.userName}`}>{name}</div>
-)}
+        {userId ? (
+          <Link
+            to={`/hgnhelp/profile/${userId}`}
+            className={`${styles.userName} ${styles.profileLink}`}
+          >
+            {name}
+          </Link>
+        ) : (
+          <div className={`${styles.userName}`}>{name}</div>
+        )}
 
-<div className={`${styles.contactLine}`}>
-  <MdEmail className={`${styles.contactIcon}`} aria-label="Email" />
+        <div className={`${styles.contactLine}`}>
+          <MdEmail className={`${styles.contactIcon}`} aria-label="Email" />
 
-  {hasValidEmail ? (
-    <a
-      href={`mailto:${normalizedEmail}`}
-      aria-label={`Email ${name}`}
-      className={`${styles.contactLink}`}
-    >
-      {displayEmail}
-    </a>
-  ) : (
-    <span>{displayEmail}</span>
-  )}
-</div>
+          {hasValidEmail ? (
+            <a
+              href={`mailto:${normalizedEmail}`}
+              aria-label={`Email ${name}`}
+              className={`${styles.contactLink}`}
+            >
+              {displayEmail}
+            </a>
+          ) : (
+            <span>{displayEmail}</span>
+          )}
+        </div>
         {slack && (
           <div className={`${styles.contactLine}`}>
             <img src={slackIcon} alt="Slack" className={`${styles.contactIcon}`} />
