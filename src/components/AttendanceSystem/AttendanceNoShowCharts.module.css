@@ -1,4 +1,6 @@
+/* Version 1.0.0 */
 .pageContainer {
+  max-width: 100vw;
   min-height: 100vh;
   background: #f6f7fb;
   padding: 24px;
