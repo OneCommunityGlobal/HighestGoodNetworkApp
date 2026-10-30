@@ -15,6 +15,7 @@ import {
 import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
 import AssignBadgePopup from './AssignBadgePopup';
+import BadgeStatistics from './BadgeStatistics';
 import {
   getFirstName,
   getLastName,
@@ -156,11 +157,17 @@ function AssignBadge(props) {
   };
 
   const submit = async () => {
-    if (selectedUserIds?.length > 0 && props.selectedBadges?.length > 0) {
-      await props.assignBadgesToMultipleUserID(selectedUserIds, props.selectedBadges);
-      setOpen(false);
-      setSelectedUserIds([]);
-      props.clearNameAndSelected();
+    const badgesToAssign = props.selectedBadges?.length
+      ? [...props.selectedBadges]
+      : [...selectedBadges];
+
+    if (selectedUserIds?.length > 0 && badgesToAssign.length > 0) {
+      const success = await props.assignBadgesToMultipleUserID(selectedUserIds, badgesToAssign);
+      if (success) {
+        setOpen(false);
+        setSelectedUserIds([]);
+        props.clearNameAndSelected();
+      }
     }
   };
 
@@ -172,6 +179,7 @@ function AssignBadge(props) {
       className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
       style={{ padding: 20 }}
     >
+      <BadgeStatistics allBadgeData={props.allBadgeData} darkMode={darkMode} />
       <div className="row align-items-center mb-3">
         <Label
           className={`col-12 col-md-2 ${darkMode ? 'text-light' : ''}`}

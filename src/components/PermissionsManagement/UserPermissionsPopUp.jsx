@@ -12,12 +12,14 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+  permissions,
 } from '../../utils/constants';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import CircularProgress from '@mui/material/CircularProgress';
 import ReminderModal from './ReminderModal';
+import appStyles from '~/App.module.css';
 
 function UserPermissionsPopUp({
   allUserProfiles,
@@ -220,7 +222,7 @@ function UserPermissionsPopUp({
               setIsOpen(true);
             }}
             placeholder="Shows only ACTIVE users"
-            className={darkMode ? styles['bg-darkmode-liblack text-light border-0'] : ''}
+            className={darkMode ? `${appStyles['bg-darkmode-liblack']} text-light border-0` : ''}
             autoComplete="off"
             name="user-search"
           />
@@ -230,7 +232,7 @@ function UserPermissionsPopUp({
               role="menu"
               aria-hidden="false"
               className={`dropdown-menu${isOpen ? ` show ${styles['dropdown__user-perms']}` : ''} ${
-                darkMode ? styles['bg-darkmode-liblack text-light'] : ''
+                darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''
               }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
@@ -281,6 +283,7 @@ function UserPermissionsPopUp({
               rolePermissions={userPermissions}
               immutablePermissions={actualUserRolePermission}
               editable={!!actualUserProfile}
+              editPermission={permissions.putUserProfilePermissions}
               setPermissions={setUserPermissions}
               removedDefaultPermissions={userRemovedDefaultPermissions}
               setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}

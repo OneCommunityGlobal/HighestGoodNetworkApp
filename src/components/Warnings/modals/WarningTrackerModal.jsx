@@ -24,6 +24,7 @@ import {
 
 import styles from '../Warnings.module.css';
 import reorder from '../reorder.svg';
+import { permissions } from '../../../utils/constants';
 /**
  *
  *
@@ -56,15 +57,17 @@ function WarningTrackerModal({
   const dispatch = useDispatch();
   const rolesAllowedToTracking = ['Administrator', 'Owner'];
   const canAddWarningTracker =
-    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('addWarningTracker'));
+    rolesAllowedToTracking.includes(userRole) ||
+    dispatch(hasPermission(permissions.addWarningTracker));
   const canDeactivateWarningTracker =
     rolesAllowedToTracking.includes(userRole) ||
-    dispatch(hasPermission('deactivateWarningTracker'));
+    dispatch(hasPermission(permissions.deactivateWarningTracker));
   const canReactivateWarningTracker =
     rolesAllowedToTracking.includes(userRole) ||
-    dispatch(hasPermission('reactivateWarningTracker'));
+    dispatch(hasPermission(permissions.reactivateWarningTracker));
   const canDeleteWarningTracker =
-    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('deleteWarningTracker'));
+    rolesAllowedToTracking.includes(userRole) ||
+    dispatch(hasPermission(permissions.deleteWarningTracker));
 
   const fetchWarningDescriptions = async () => {
     dispatch(getWarningDescriptions()).then(res => {
