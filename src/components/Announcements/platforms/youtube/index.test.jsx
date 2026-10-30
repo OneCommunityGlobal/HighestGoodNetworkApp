@@ -28,10 +28,10 @@ describe('YoutubeAutoPoster settings controls', () => {
     });
     render(<YoutubeAutoPoster platform="youtube" />);
 
-    const publicOption = await screen.findByRole('radio', { name: 'Public' });
+    const privateOption = await screen.findByRole('radio', { name: 'Private' });
     const unlistedOption = screen.getByRole('radio', { name: 'Unlisted' });
 
-    expect(publicOption).toBeChecked();
+    expect(privateOption).toBeChecked();
 
     fireEvent.click(unlistedOption);
 
@@ -133,6 +133,28 @@ describe('YoutubeAutoPoster settings controls', () => {
     );
     expect(sessionStorage.getItem('youtubeConnectionAttempt')).toBeNull();
     expect(screen.queryByRole('form', { name: 'YouTube video upload' })).not.toBeInTheDocument();
+  });
+
+  test('shows a toast and stays connected when loading categories fails', async () => {
+    global.fetch = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ connected: true, account: connectedAccount }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ success: false, message: 'Categories unavailable' }),
+      });
+
+    render(<YoutubeAutoPoster platform="youtube" />);
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith('Categories unavailable', {
+        toastId: 'youtube-categories-error',
+      }),
+    );
+    expect(screen.queryByText('Connect your YouTube channel')).not.toBeInTheDocument();
   });
 
   test('uploads the selected video with metadata from the composer', async () => {

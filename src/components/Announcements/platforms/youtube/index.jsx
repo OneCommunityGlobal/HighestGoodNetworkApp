@@ -264,26 +264,38 @@ function YoutubeAutoPoster({ platform }) {
 
         if (connectionResult.connected) {
           setCategoriesLoading(true);
-          const categoriesResponse = await fetch(
-            ENDPOINTS.YOUTUBE_AUTOPOSTER_CATEGORIES_URL('US', 'en'),
-            {
-              headers: { Authorization: localStorage.getItem('token') },
-              credentials: 'include',
-            },
-          );
-          const categoriesResult = await categoriesResponse.json();
-          if (categoriesResponse.ok) {
+          // A categories failure must not mark the account as disconnected.
+          try {
+            const categoriesResponse = await fetch(
+              ENDPOINTS.YOUTUBE_AUTOPOSTER_CATEGORIES_URL('US', 'en'),
+              {
+                headers: { Authorization: localStorage.getItem('token') },
+                credentials: 'include',
+              },
+            );
+            const categoriesResult = await categoriesResponse.json().catch(() => null);
+            if (!categoriesResponse.ok) {
+              throw new Error(categoriesResult?.message || 'Unable to load YouTube categories');
+            }
             const categoryItems = Array.isArray(categoriesResult)
               ? categoriesResult
-              : categoriesResult.items ?? categoriesResult.categories ?? [];
+              : categoriesResult?.items ?? categoriesResult?.categories ?? [];
 
             setCategories(
               categoryItems.filter(
                 category => category.assignable === true || category.snippet?.assignable === true,
               ),
             );
+          } catch (categoriesError) {
+            toast.error(
+              categoriesError instanceof Error
+                ? categoriesError.message
+                : 'Unable to load YouTube categories',
+              { toastId: 'youtube-categories-error' },
+            );
+          } finally {
+            setCategoriesLoading(false);
           }
-          setCategoriesLoading(false);
         }
 
         if (connectionWasJustRequested && connectionResult.connected && !connectionResult.account) {
