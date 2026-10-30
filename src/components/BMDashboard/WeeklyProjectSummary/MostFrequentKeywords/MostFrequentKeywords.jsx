@@ -533,7 +533,12 @@ function MFKChartArea({ isLoading, error, tags, selectedOption, svgRef, containe
         <div className={mfkStyles.mfkEmpty}>{selectedOption ? 'No data' : 'Select source'}</div>
       )}
       {!isLoading && !error && tags.length > 0 && (
-        <svg ref={svgRef} aria-hidden="true" style={{ width: '100%', height: '100%' }} />
+        <svg
+          ref={svgRef}
+          role="group"
+          aria-label="Keyword mind map. Use the navigation controls to zoom and pan."
+          style={{ width: '100%', height: '100%' }}
+        />
       )}
     </div>
   );
@@ -561,6 +566,9 @@ const DropdownIndicator = props => (
 function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const svgRef = useRef();
   const containerRef = useRef();
+  const zoomRef = useRef();
+  const transformRef = useRef(d3.zoomIdentity);
+  const requestRef = useRef(0);
   const [projects, setProjects] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [startDate, setStartDate] = useState(null);
@@ -571,7 +579,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const [error, setError] = useState('');
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMobile, setIsMobile] = useState(false);
-  const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
   const darkMode = propDarkMode ?? reduxDarkMode;
@@ -597,6 +604,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   };
 
   const fetchProjectData = async projectId => {
+    const requestId = ++requestRef.current;
     try {
       setIsLoading(true);
       setError('');
@@ -604,6 +612,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       const params = new URLSearchParams();
       params.append('projectId', projectId);
       params.append('limit', 8);
+      if (startDate) params.append('startDate', startDate.toISOString());
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        params.append('endDate', end.toISOString());
+      }
 
       const token = localStorage.getItem('token');
 
@@ -612,11 +626,14 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
           headers: { Authorization: token },
         });
 
+        if (requestId !== requestRef.current) return;
         const responseData = response?.data?.data;
         if (responseData && responseData.length > 0) {
           const normalizedData = responseData.slice(0, 8).map(item => ({
             tag: item.tag,
-            count: item.count || 1,
+            count: Number(item.frequency ?? item.count ?? 0),
+            category: item.category || 'Unspecified',
+            source: item.source || 'Project tags',
             date: item.date || null,
           }));
           setAllTags(normalizedData);
@@ -626,11 +643,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
         // API returned empty — no keywords for this project
         setAllTags([]);
       } catch {
+        if (requestId !== requestRef.current) return;
         setError('Failed to load keywords. Please try again.');
         setAllTags([]);
       }
     } finally {
-      setIsLoading(false);
+      if (requestId === requestRef.current) setIsLoading(false);
     }
   };
 
@@ -642,16 +660,24 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       setTags([]);
       return;
     }
-
-    if (selected.type === 'test') {
-      setAllTags(TEST_DATASETS[selected.value].data);
-    } else if (selected.type === 'project') {
-      const project = projects.find(p => p._id === selected.value);
-      if (project) {
-        fetchProjectData(project._id);
-      }
-    }
   };
+
+  useEffect(() => {
+    requestRef.current += 1;
+    setError('');
+    setTags([]);
+    setIsLoading(false);
+    transformRef.current = d3.zoomIdentity;
+    if (selectedOption?.type === 'test') {
+      setAllTags(TEST_DATASETS[selectedOption.value].data);
+    } else if (selectedOption?.type === 'project') {
+      fetchProjectData(selectedOption.value);
+    } else {
+      setAllTags([]);
+    }
+    // Project frequencies must be filtered by the API before ranking.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOption, startDate, endDate]);
 
   // Check if mobile
   useEffect(() => {
@@ -773,10 +799,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
 
   useEffect(() => {
     if (allTags.length > 0) {
-      const filtered = filterTagsByDate(allTags);
+      const filtered =
+        selectedOption?.type === 'project' ? getLatestData(allTags) : filterTagsByDate(allTags);
       setTags(filtered);
+    } else {
+      setTags([]);
     }
-  }, [allTags, startDate, endDate, filterTagsByDate]);
+  }, [allTags, startDate, endDate, filterTagsByDate, selectedOption, getLatestData]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -892,100 +921,29 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     [getBubbleSize, getResponsiveSizes, getLabelLayout, isMobile],
   );
 
-  const getNodeColor = index => {
-    const hue = (index * 45) % 360;
-    if (darkMode) {
+  const categories = [...new Set(tags.map(tag => tag.category || 'Unspecified'))].sort();
+  const getNodeColor = useCallback(
+    index => {
+      const category = tags[index]?.category || 'Unspecified';
+      const hue = [...category].reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 360, 0);
+      if (darkMode) {
+        return {
+          fill: `hsl(${hue}, 70%, 30%)`,
+          stroke: `hsl(${hue}, 85%, 65%)`,
+          text: '#FFFFFF',
+        };
+      }
       return {
-        fill: `hsl(${hue}, 70%, 30%)`,
-        stroke: `hsl(${hue}, 85%, 65%)`,
-        text: '#FFFFFF',
+        fill: `hsl(${hue}, 70%, 90%)`,
+        stroke: `hsl(${hue}, 80%, 45%)`,
+        text: `hsl(${hue}, 80%, 20%)`,
       };
-    }
-    return {
-      fill: `hsl(${hue}, 70%, 90%)`,
-      stroke: `hsl(${hue}, 80%, 45%)`,
-      text: `hsl(${hue}, 80%, 20%)`,
-    };
-  };
-
-  // Tooltip handlers
-  const handleMouseEnter = (event, fullTag, count) => {
-    const svgRect = svgRef.current.getBoundingClientRect();
-    const mouseX = event.clientX - svgRect.left;
-    const mouseY = event.clientY - svgRect.top;
-
-    setTooltip({
-      visible: true,
-      text: `${fullTag} (${count})`,
-      x: mouseX,
-      y: mouseY - (isMobile ? 50 : 40),
-    });
-  };
-
-  const handleMouseMove = event => {
-    if (!tooltip.visible) return;
-
-    const svgRect = svgRef.current.getBoundingClientRect();
-    const mouseX = event.clientX - svgRect.left;
-    const mouseY = event.clientY - svgRect.top;
-
-    setTooltip(prev => ({
-      ...prev,
-      x: mouseX,
-      y: mouseY - (isMobile ? 50 : 40),
-    }));
-  };
-
-  const handleMouseLeave = () => {
-    setTooltip({ visible: false, text: '', x: 0, y: 0 });
-  };
-
-  // Touch handlers - improved for mobile
-  const handleTouchStart = (event, fullTag, count) => {
-    event.preventDefault();
-    const svgRect = svgRef.current.getBoundingClientRect();
-    const touch = event.touches[0];
-    const mouseX = touch.clientX - svgRect.left;
-    const mouseY = touch.clientY - svgRect.top;
-
-    setTooltip({
-      visible: true,
-      text: `${fullTag} (${count})`,
-      x: mouseX,
-      y: mouseY - 60,
-    });
-
-    // Clear after 3 seconds
-    if (globalThis.tooltipTimeout) {
-      clearTimeout(globalThis.tooltipTimeout);
-    }
-    globalThis.tooltipTimeout = setTimeout(() => {
-      setTooltip({ visible: false, text: '', x: 0, y: 0 });
-    }, 3000);
-  };
-
-  const handleTouchEnd = event => {
-    event.preventDefault();
-  };
-
-  const handleTouchMove = event => {
-    event.preventDefault();
-    if (!tooltip.visible) return;
-
-    const svgRect = svgRef.current.getBoundingClientRect();
-    const touch = event.touches[0];
-    const mouseX = touch.clientX - svgRect.left;
-    const mouseY = touch.clientY - svgRect.top;
-
-    setTooltip(prev => ({
-      ...prev,
-      x: mouseX,
-      y: mouseY - 60,
-    }));
-  };
+    },
+    [tags, darkMode],
+  );
 
   // Function to create hit area for bubble
-  const createHitArea = (nodeGroup, fullTag, count, r) => {
+  const createHitArea = useCallback((nodeGroup, r) => {
     return nodeGroup
       .append('ellipse')
       .attr('rx', r + 5)
@@ -994,29 +952,32 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       .attr('stroke', 'none')
       .style('cursor', 'pointer')
       .style('pointer-events', 'all');
-  };
+  }, []);
 
   // Function to create visible bubble
-  const createVisibleBubble = (nodeGroup, colors, r) => {
-    return nodeGroup
-      .append('ellipse')
-      .attr('class', 'bubble-fill')
-      .attr('rx', r)
-      .attr('ry', r * 0.6)
-      .attr('fill', colors.fill)
-      .attr('stroke', colors.stroke)
-      .attr('stroke-width', 1.5)
-      .style(
-        'filter',
-        darkMode
-          ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
-          : 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))',
-      )
-      .style('pointer-events', 'none');
-  };
+  const createVisibleBubble = useCallback(
+    (nodeGroup, colors, r) => {
+      return nodeGroup
+        .append('ellipse')
+        .attr('class', 'bubble-fill')
+        .attr('rx', r)
+        .attr('ry', r * 0.6)
+        .attr('fill', colors.fill)
+        .attr('stroke', colors.stroke)
+        .attr('stroke-width', 1.5)
+        .style(
+          'filter',
+          darkMode
+            ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
+            : 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))',
+        )
+        .style('pointer-events', 'none');
+    },
+    [darkMode],
+  );
 
   // Function to create text elements: full label wrapped to at most two lines, never truncated
-  const createTextElements = (svg, pos, sizes, colors) => {
+  const createTextElements = useCallback((svg, pos, sizes, colors) => {
     const { x, y, lines, fontSize, count } = pos;
     const textGroup = svg
       .append('g')
@@ -1052,235 +1013,238 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       .attr('fill', colors.text)
       .style('opacity', 0.9)
       .text(count);
-  };
-
-  // Add event handlers to bubble
-  const addBubbleEventHandlers = (hitArea, fullTag, count) => {
-    hitArea
-      .on('mouseenter', event => {
-        handleMouseEnter(event, fullTag, count);
-        d3.select(event.currentTarget.parentNode)
-          .select('ellipse.bubble-fill')
-          .attr('stroke-width', 2.5)
-          .attr('stroke', darkMode ? '#ffffff' : '#000000');
-      })
-      .on('mousemove', handleMouseMove)
-      .on('mouseleave', () => {
-        handleMouseLeave();
-        d3.selectAll('.bubble-fill')
-          .attr('stroke-width', 1.5)
-          .attr('stroke', (d, j) => getNodeColor(j).stroke);
-      })
-      .on('touchstart', event => {
-        handleTouchStart(event, fullTag, count);
-        d3.select(event.currentTarget.parentNode)
-          .select('ellipse.bubble-fill')
-          .attr('stroke-width', 2.5)
-          .attr('stroke', darkMode ? '#ffffff' : '#000000');
-      })
-      .on('touchmove', handleTouchMove)
-      .on('touchend', handleTouchEnd)
-      .on('touchcancel', handleTouchEnd);
-  };
-
-  // Function to render a single bubble
-  const renderSingleBubble = (svg, pos, i, sizes) => {
-    const { x, y, r, count, fullTag } = pos;
-    const colors = getNodeColor(i);
-
-    const nodeGroup = svg
-      .append('g')
-      .attr('transform', `translate(${x}, ${y})`)
-      .attr('class', 'bubble-group');
-
-    // Create hit area
-    const hitArea = createHitArea(nodeGroup, fullTag, count, r);
-    addBubbleEventHandlers(hitArea, fullTag, count);
-
-    // Create visible bubble
-    createVisibleBubble(nodeGroup, colors, r);
-
-    // Create text elements
-    createTextElements(svg, pos, sizes, colors);
-  };
-
-  // Function to render all bubbles
-  const renderBubbles = useCallback((svg, positions, sizes) => {
-    positions.forEach((pos, i) => {
-      renderSingleBubble(svg, pos, i, sizes);
-    });
   }, []);
 
-  // Function to render tooltip
-  const renderTooltip = useCallback(
-    (svg, tooltip, sizes, width, height) => {
-      if (!tooltip.visible) return;
+  // Add event handlers to bubble
+  const addBubbleEventHandlers = useCallback(
+    hitArea => {
+      hitArea
+        .on('mouseenter', event => {
+          d3.select(event.currentTarget.parentNode)
+            .select('ellipse.bubble-fill')
+            .attr('stroke-width', 2.5)
+            .attr('stroke', darkMode ? '#ffffff' : '#000000');
+        })
 
-      const tooltipGroup = svg
+        .on('mouseleave', () => {
+          d3.select(svgRef.current)
+            .selectAll('.bubble-fill')
+            .attr('stroke-width', 1.5)
+            .attr('stroke', (d, j) => getNodeColor(j).stroke);
+        })
+        .on('touchstart', event => {
+          d3.select(event.currentTarget.parentNode)
+            .select('ellipse.bubble-fill')
+            .attr('stroke-width', 2.5)
+            .attr('stroke', darkMode ? '#ffffff' : '#000000');
+        });
+    },
+    [darkMode, getNodeColor],
+  );
+
+  // Function to render a single bubble
+  const renderSingleBubble = useCallback(
+    (svg, pos, i, sizes) => {
+      const { x, y, r, count, fullTag } = pos;
+      const colors = getNodeColor(i);
+
+      const nodeGroup = svg
         .append('g')
-        .attr('class', 'tooltip-group')
-        .attr('transform', `translate(${tooltip.x}, ${tooltip.y})`);
+        .attr('transform', `translate(${x}, ${y})`)
+        .attr('class', 'bubble-group');
 
-      // Make sure tooltip stays within viewport bounds
-      const tooltipX = Math.max(20, Math.min(width - 20, tooltip.x));
-      const tooltipY = Math.max(40, Math.min(height - 40, tooltip.y));
-
-      tooltipGroup.attr('transform', `translate(${tooltipX}, ${tooltipY})`);
-
-      const bubbleWidth = tooltip.text.length * (sizes.isMobile ? 5 : 6) + 20;
-      const bubbleHeight = sizes.isMobile ? 32 : 34;
-      const bubbleX = -bubbleWidth / 2;
-      const bubbleY = -bubbleHeight - 10;
-
-      // Add white background
-      tooltipGroup
-        .append('rect')
-        .attr('x', bubbleX)
-        .attr('y', bubbleY)
-        .attr('width', bubbleWidth)
-        .attr('height', bubbleHeight)
-        .attr('rx', 16)
-        .attr('ry', 16)
-        .attr('fill', darkMode ? '#1e293b' : '#ffffff')
-        .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
-        .attr('stroke-width', '1.5')
-        .style('filter', 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))')
-        .style('pointer-events', 'none');
-
-      // Triangle pointer
-      tooltipGroup
-        .append('path')
+      const item = tags[i];
+      nodeGroup
+        .attr('tabindex', 0)
+        .attr('role', 'img')
         .attr(
-          'd',
-          `M ${-8} ${bubbleY + bubbleHeight} L 0 ${bubbleY + bubbleHeight + 10} L 8 ${bubbleY +
-            bubbleHeight} Z`,
-        )
-        .attr('fill', darkMode ? '#1e293b' : '#ffffff')
-        .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
-        .attr('stroke-width', '1')
+          'aria-label',
+          `${fullTag}: ${count} occurrences. Category: ${item.category ||
+            'Unspecified'}. Source: ${item.source || selectedOption?.label || 'Unknown'}.`,
+        );
+      nodeGroup
+        .append('title')
+        .text(
+          `${fullTag}: ${count} occurrences\nCategory: ${item.category ||
+            'Unspecified'}\nSource: ${item.source || selectedOption?.label || 'Unknown'}`,
+        );
+
+      // Create hit area
+      const hitArea = createHitArea(nodeGroup, r);
+      addBubbleEventHandlers(hitArea);
+
+      // Create visible bubble
+      createVisibleBubble(nodeGroup, colors, r);
+
+      // Create text elements
+      createTextElements(svg, pos, sizes, colors);
+    },
+    [
+      tags,
+      selectedOption,
+      getNodeColor,
+      createHitArea,
+      addBubbleEventHandlers,
+      createVisibleBubble,
+      createTextElements,
+    ],
+  );
+
+  // Function to render all bubbles
+  const renderBubbles = useCallback(
+    (svg, positions, sizes) => {
+      positions.forEach((pos, i) => {
+        renderSingleBubble(svg, pos, i, sizes);
+      });
+    },
+    [renderSingleBubble],
+  );
+
+  const drawCenterCircle = useCallback(
+    (svg, centerX, centerY, sizes) => {
+      const centerGroup = svg
+        .append('g')
+        .attr('transform', `translate(${centerX}, ${centerY})`)
         .style('pointer-events', 'none');
 
-      // Tooltip text
-      tooltipGroup
+      centerGroup
+        .append('circle')
+        .attr('r', sizes.centerSize)
+        .attr('fill', darkMode ? '#1e293b' : '#ffffff')
+        .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
+        .attr('stroke-width', 2)
+        .style(
+          'filter',
+          darkMode
+            ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+            : 'drop-shadow(0 2px 3px rgba(0,0,0,0.1))',
+        );
+
+      // Size "Top Words" (9 chars) from the circle so it never touches the edge
+      const centerFontSize = Math.min(sizes.centerFontSize, (sizes.centerSize * 1.7) / (9 * 0.6));
+
+      centerGroup
         .append('text')
         .attr('x', 0)
-        .attr('y', bubbleY + bubbleHeight / 2 + (sizes.isMobile ? 3 : 4))
+        .attr('y', 0)
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'middle')
         .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
-        .attr('font-size', sizes.isMobile ? '11px' : '12px')
-        .attr('font-weight', '500')
-        .style('pointer-events', 'none')
-        .text(tooltip.text);
+        .attr('font-weight', '700')
+        .attr('font-size', centerFontSize)
+        .text('Top Words');
     },
     [darkMode],
   );
 
-  // Function to draw center circle
-  const drawCenterCircle = (svg, centerX, centerY, sizes) => {
-    const centerGroup = svg
-      .append('g')
-      .attr('transform', `translate(${centerX}, ${centerY})`)
-      .style('pointer-events', 'none');
-
-    centerGroup
-      .append('circle')
-      .attr('r', sizes.centerSize)
-      .attr('fill', darkMode ? '#1e293b' : '#ffffff')
-      .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
-      .attr('stroke-width', 2)
-      .style(
-        'filter',
-        darkMode
-          ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-          : 'drop-shadow(0 2px 3px rgba(0,0,0,0.1))',
-      );
-
-    // Size "Top Words" (9 chars) from the circle so it never touches the edge
-    const centerFontSize = Math.min(sizes.centerFontSize, (sizes.centerSize * 1.7) / (9 * 0.6));
-
-    centerGroup
-      .append('text')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('text-anchor', 'middle')
-      .attr('dominant-baseline', 'middle')
-      .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
-      .attr('font-weight', '700')
-      .attr('font-size', centerFontSize)
-      .text('Top Words');
-  };
-
   // Function to draw connection lines
-  const drawConnectionLines = (svg, positions, centerX, centerY, centerSize, sizes) => {
-    positions.forEach((pos, i) => {
-      const angle = pos.angle;
-      const startX = centerX + centerSize * Math.cos(angle);
-      const startY = centerY + centerSize * Math.sin(angle);
-      const endX = pos.x - pos.r * 0.2 * Math.cos(angle);
-      const endY = pos.y - pos.r * 0.2 * Math.sin(angle);
+  const drawConnectionLines = useCallback(
+    (svg, positions, centerX, centerY, centerSize, sizes) => {
+      positions.forEach((pos, i) => {
+        const angle = pos.angle;
+        const startX = centerX + centerSize * Math.cos(angle);
+        const startY = centerY + centerSize * Math.sin(angle);
+        const endX = pos.x - pos.r * 0.2 * Math.cos(angle);
+        const endY = pos.y - pos.r * 0.2 * Math.sin(angle);
 
-      const hue = (i * 45) % 360;
-      const lineColor = darkMode ? `hsl(${hue}, 80%, 60%)` : `hsl(${hue}, 70%, 45%)`;
+        const lineColor = getNodeColor(i).stroke;
 
-      svg
-        .append('line')
-        .attr('x1', startX)
-        .attr('y1', startY)
-        .attr('x2', endX)
-        .attr('y2', endY)
-        .attr('stroke', lineColor)
-        .attr('stroke-width', sizes.isMobile ? 1.5 : 2)
-        .attr('stroke-opacity', 0.6)
-        .attr('stroke-linecap', 'round');
-    });
-  };
+        svg
+          .append('line')
+          .attr('x1', startX)
+          .attr('y1', startY)
+          .attr('x2', endX)
+          .attr('y2', endY)
+          .attr('stroke', lineColor)
+          .attr('stroke-width', sizes.isMobile ? 1.5 : 2)
+          .attr('stroke-opacity', 0.6)
+          .attr('stroke-linecap', 'round');
+      });
+    },
+    [getNodeColor],
+  );
 
   // Main draw function
   const drawChart = useCallback(() => {
     const svgEl = svgRef.current;
-    if (!tags?.length || !svgEl || dimensions.width === 0) return;
+    if (
+      isLoading ||
+      error ||
+      !tags?.length ||
+      !svgEl ||
+      dimensions.width === 0 ||
+      dimensions.height === 0
+    )
+      return;
 
     const svg = d3.select(svgEl);
     svg.selectAll('*').remove();
+    const viewport = svg
+      .append('g')
+      .attr('class', 'map-viewport')
+      .attr('transform', transformRef.current.toString());
+    const content = viewport.append('g');
+    const zoom = d3
+      .zoom()
+      .scaleExtent([0.5, 4])
+      .extent([
+        [0, 0],
+        [dimensions.width, dimensions.height],
+      ])
+      .on('zoom', event => {
+        transformRef.current = event.transform;
+        viewport.attr('transform', event.transform);
+      });
+    svg.call(zoom).call(zoom.transform, transformRef.current);
+    zoomRef.current = zoom;
 
     const width = dimensions.width;
     const height = dimensions.height;
     const centerX = width / 2;
     const sizes = getResponsiveSizes();
-    const centerY = Math.max(
-      sizes.centerSize + 56,
-      Math.min(height * (isMobile ? 0.37 : 0.35), height - (sizes.centerSize + 96)),
-    );
+    const centerY = height / 2;
 
     // Get positions
     const positions = getPositions(tags, width, height, centerX, centerY);
 
     // Draw connection lines
-    drawConnectionLines(svg, positions, centerX, centerY, sizes.centerSize, sizes);
+    drawConnectionLines(content, positions, centerX, centerY, sizes.centerSize, sizes);
 
     // Draw bubbles
-    renderBubbles(svg, positions, sizes);
+    renderBubbles(content, positions, sizes);
 
     // Draw center circle last so nothing can ever cover it
-    drawCenterCircle(svg, centerX, centerY, sizes);
+    drawCenterCircle(content, centerX, centerY, sizes);
 
-    // Draw tooltip
-    renderTooltip(svg, tooltip, sizes, width, height);
+    // Fit the complete layout, including long labels, inside the chart at reset zoom.
+    const bounds = content.node().getBBox();
+    const padding = 20;
+    const scale = Math.min(
+      1,
+      (width - padding * 2) / Math.max(bounds.width, 1),
+      (height - padding * 2) / Math.max(bounds.height, 1),
+    );
+    const x = (width - bounds.width * scale) / 2 - bounds.x * scale;
+    const y = (height - bounds.height * scale) / 2 - bounds.y * scale;
+    content.attr('transform', `translate(${x}, ${y}) scale(${scale})`);
   }, [
     tags,
     dimensions,
     getPositions,
     getResponsiveSizes,
-    tooltip,
     renderBubbles,
-    renderTooltip,
-    darkMode,
+    drawConnectionLines,
+    drawCenterCircle,
+    isLoading,
+    error,
   ]);
 
   useEffect(() => {
     const drawTimeout = setTimeout(drawChart, 100);
-    return () => clearTimeout(drawTimeout);
+    return () => {
+      clearTimeout(drawTimeout);
+      if (svgRef.current) d3.select(svgRef.current).on('.zoom', null);
+    };
   }, [drawChart]);
 
   const getDropdownOptions = useCallback(() => {
@@ -1365,6 +1329,48 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     [],
   );
 
+  const navigate = (action, amount) => {
+    if (!svgRef.current || !zoomRef.current) return;
+    const svg = d3.select(svgRef.current);
+    if (action === 'reset') svg.call(zoomRef.current.transform, d3.zoomIdentity);
+    if (action === 'zoom') svg.call(zoomRef.current.scaleBy, amount);
+    if (action === 'pan') {
+      const scale = transformRef.current.k;
+      svg.call(zoomRef.current.translateBy, -amount[0] / scale, -amount[1] / scale);
+    }
+  };
+
+  const exportSummary = () => {
+    const cell = value =>
+      `"${String(value ?? '')
+        .replace(/^[=+@-]/, "'$&")
+        .replace(/"/g, '""')}"`;
+    const rows = [
+      ['Keyword', 'Frequency', 'Category', 'Source', 'Project / dataset', 'Start date', 'End date'],
+      ...tags.map(tag => [
+        tag.tag,
+        tag.count,
+        tag.category || 'Unspecified',
+        tag.source || (selectedOption?.type === 'test' ? 'Example dataset' : 'Project tags'),
+        selectedOption?.label,
+        startDate?.toLocaleDateString('en-CA') || 'All dates',
+        endDate?.toLocaleDateString('en-CA') || 'All dates',
+      ]),
+    ];
+    const url = URL.createObjectURL(
+      new Blob(['\uFEFF', rows.map(row => row.map(cell).join(',')).join('\r\n')], {
+        type: 'text/csv;charset=utf-8;',
+      }),
+    );
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'keyword-summary.csv';
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const hasData = !isLoading && !error && tags.length > 0;
+
   return (
     <div
       className={`${styles.mfkContainer} ${darkMode ? styles.darkMode : ''} ${
@@ -1409,6 +1415,100 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
         />
       </div>
 
+      <div className={styles.mapToolbar} role="group" aria-label="Mind map controls">
+        <button
+          type="button"
+          aria-label="Zoom in"
+          title="Zoom in"
+          disabled={!hasData}
+          onClick={() => navigate('zoom', 1.25)}
+        >
+          +
+        </button>
+        <button
+          type="button"
+          aria-label="Zoom out"
+          title="Zoom out"
+          disabled={!hasData}
+          onClick={() => navigate('zoom', 0.8)}
+        >
+          &minus;
+        </button>
+        <button
+          type="button"
+          aria-label="Pan left"
+          title="Pan left"
+          disabled={!hasData}
+          onClick={() => navigate('pan', [50, 0])}
+        >
+          &larr;
+        </button>
+        <button
+          type="button"
+          aria-label="Pan right"
+          title="Pan right"
+          disabled={!hasData}
+          onClick={() => navigate('pan', [-50, 0])}
+        >
+          &rarr;
+        </button>
+        <button
+          type="button"
+          aria-label="Pan up"
+          title="Pan up"
+          disabled={!hasData}
+          onClick={() => navigate('pan', [0, 50])}
+        >
+          &uarr;
+        </button>
+        <button
+          type="button"
+          aria-label="Pan down"
+          title="Pan down"
+          disabled={!hasData}
+          onClick={() => navigate('pan', [0, -50])}
+        >
+          &darr;
+        </button>
+        <button type="button" disabled={!hasData} onClick={() => navigate('reset')}>
+          Reset
+        </button>
+        <button type="button" disabled={!hasData} onClick={exportSummary}>
+          Export summary (CSV)
+        </button>
+      </div>
+      <details className={styles.mapHelp}>
+        <summary>How to read this mind map</summary>
+        <p>
+          Numbers show keyword frequency for the selected source and dates. Bubble size reflects
+          relative frequency; labels can enlarge bubbles to fit. Lines connect keywords to the
+          selected source and do not indicate relationships between keywords. Colors identify
+          categories, not impact or severity. Unspecified means no category was supplied.
+        </p>
+        <p>
+          Drag the background to pan, scroll or pinch to zoom, or use the controls. Hover over a
+          node for details. The keyword summary below provides the same details for keyboard and
+          touch users. Only the top {isMobile ? 6 : 8} keywords are displayed; exports contain these
+          displayed keywords. Test datasets are examples.
+        </p>
+      </details>
+      {hasData && (
+        <div className={styles.mapLegend} aria-label="Keyword categories">
+          {categories.map(category => (
+            <span key={category}>
+              <span
+                aria-hidden="true"
+                style={{
+                  backgroundColor: getNodeColor(
+                    tags.findIndex(tag => (tag.category || 'Unspecified') === category),
+                  ).stroke,
+                }}
+              />
+              {category}
+            </span>
+          ))}
+        </div>
+      )}
       <MFKChartArea
         isLoading={isLoading}
         error={error}
@@ -1418,6 +1518,37 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
         containerRef={containerRef}
         mfkStyles={styles}
       />
+      {hasData && (
+        <details className={styles.mapHelp}>
+          <summary>Keyword summary ({tags.length})</summary>
+          <div className={styles.summaryScroll}>
+            <table className={styles.keywordSummary}>
+              <caption>{selectedOption?.label} ? displayed keywords</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Keyword</th>
+                  <th scope="col">Frequency</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tags.map(tag => (
+                  <tr key={tag.tag}>
+                    <th scope="row">{tag.tag}</th>
+                    <td>{tag.count}</td>
+                    <td>{tag.category || 'Unspecified'}</td>
+                    <td>
+                      {tag.source ||
+                        (selectedOption?.type === 'test' ? 'Example dataset' : 'Project tags')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      )}
     </div>
   );
 }
