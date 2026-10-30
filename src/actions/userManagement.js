@@ -14,6 +14,7 @@ import {
   DISABLE_USER_PROFILE_EDIT,
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
+  FINISH_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';

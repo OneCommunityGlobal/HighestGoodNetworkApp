@@ -23,6 +23,7 @@ import {
   USER_END_DATE,
 } from '../../languages/en/ui';
 import styles from './usermanagement.module.css';
+import { color } from 'd3';
 
 /**
  * The header row of the user table.
@@ -44,7 +45,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
     const saveUserInformation = async updatedData => {
       try {
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
-        if (response.status === 200) {
+        if (response.status >= 200 && response.status < 300) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
           // Clear the pending edit queue now that it has been saved successfully.
           // Without this, these edits would remain queued and get resubmitted
@@ -58,9 +59,9 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
             isLoading: false,
             autoClose: 3000,
           });
-          setTimeout(() => {
-          globalThis.location.reload();
-          }, 1000);
+          // setTimeout(() => {
+          // globalThis.location.reload();
+          // }, 1000);
         } else {
           toast.error('Error Updating Data!');
         }
@@ -69,16 +70,21 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
         toast.error('Error Updating Data ! ');
       }
     };
-    const darkModeStyle = darkMode ? { text: 'white', backgroundColor: '#364456' } : { backgroundColor: "#f0f8ff",color:"black"};
+    const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#364456' } : { backgroundColor: "#f0f8ff",color:"black"};
     const enableEdit = value => {
       setEditFlag(value);
       enableEditUserInfo(value);
     };
+    
     const disableEdit = value => {
       setEditFlag(value);
       disableEditUserInfo(value);
-      saveUserInformation(updatedUserData);
+
+      if (updatedUserData.length > 0) {
+        saveUserInformation(updatedUserData);
+      }
     };
+
 
     return (
       <tr className={darkMode ? 'bg-space-cadet' : ''}

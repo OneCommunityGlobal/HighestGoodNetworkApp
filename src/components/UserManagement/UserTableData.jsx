@@ -268,7 +268,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-black border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.firstName}
             onChange={e => {
@@ -299,7 +299,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} text-center ${
-              darkMode ? 'bg-darkmode-liblack text-black border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.lastName}
             onChange={e => {
@@ -327,7 +327,7 @@ const UserTableDataComponent = props => {
               updateFormData({ ...formData, role: e.target.value });
               addUserInformation('role', e.target.value, props.user._id);
             }}
-            className={darkMode ? 'bg-darkmode-liblack text-black border-0' : ''}
+            className={darkMode ? 'bg-darkmode-liblack text-white border-0' : ''}
           >
             {roles?.map((e, index) => (
               // eslint-disable-next-line react/no-array-index-key
@@ -359,7 +359,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} text-center ${
-              darkMode ? 'bg-darkmode-liblack text-black border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             style={{ maxWidth: '100%' }}
             value={formData.jobTitle}
@@ -391,7 +391,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-black border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.email}
             onChange={e => {
@@ -411,7 +411,7 @@ const UserTableDataComponent = props => {
             type="number"
             step={0.5}
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-black border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.weeklycommittedHours}
             onChange={e => {
@@ -564,7 +564,7 @@ const UserTableDataComponent = props => {
           <input
             type="date"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-black border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.startDate}
             onChange={e => {
@@ -592,7 +592,7 @@ const UserTableDataComponent = props => {
           <input
             type="date"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-black border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.endDate}
             onChange={e => {
