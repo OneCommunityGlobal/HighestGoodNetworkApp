@@ -23,7 +23,6 @@ import {
   USER_END_DATE,
 } from '../../languages/en/ui';
 import styles from './usermanagement.module.css';
-import { color } from 'd3';
 
 /**
  * The header row of the user table.
