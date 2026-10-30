@@ -1,5 +1,13 @@
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import ResourceManagement from '../ResourceManagement';
+import * as XLSX from 'xlsx';
+import { toast } from 'react-toastify';
+
+vi.mock('xlsx', () => ({
+  utils: { json_to_sheet: vi.fn(), book_new: vi.fn(), book_append_sheet: vi.fn() },
+  writeFile: vi.fn(),
+}));
+vi.mock('react-toastify', () => ({ toast: { info: vi.fn() } }));
 
 const fixture = vi.hoisted(() => ({ resources: [], darkMode: false }));
 vi.mock('../MockData', () => ({
@@ -37,6 +45,7 @@ const expectRange = (start, end, total = 243) => {
 };
 
 beforeEach(() => {
+  vi.clearAllMocks();
   fixture.resources = makeResources(243);
   fixture.darkMode = false;
 });
@@ -181,4 +190,170 @@ describe('Resource Management pagination', () => {
       expect(screen.getByRole('status')).toBe(status);
     },
   );
+});
+
+const selectAll = () => screen.getByRole('checkbox', { name: 'Select all matching resources' });
+const search = value =>
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search resources' }), {
+    target: { value },
+  });
+const selectUser = number =>
+  fireEvent.click(
+    screen.getByRole('checkbox', {
+      name: `Select User ${String(number).padStart(3, '0')}`,
+    }),
+  );
+const exportUsers = () => {
+  fireEvent.click(screen.getByRole('button', { name: 'Export XLSX' }));
+  return XLSX.utils.json_to_sheet.mock.calls.at(-1)[0].map(row => row.User);
+};
+
+describe('Selection across filtered pages', () => {
+  it('does not mistake a hidden selection for a different matching record', () => {
+    render(<ResourceManagement />);
+    selectUser(1);
+    expect(selectAll()).toBePartiallyChecked();
+    search('User 002');
+    expect(selectAll()).not.toBeChecked();
+    expect(selectAll()).not.toBePartiallyChecked();
+    expect(screen.getByRole('checkbox', { name: 'Select User 002' })).not.toBeChecked();
+  });
+
+  it('recognizes complete matching selection even with hidden selected records', () => {
+    render(<ResourceManagement />);
+    selectUser(1);
+    selectUser(2);
+    search('User 002');
+    expect(selectAll()).toBeChecked();
+    expect(selectAll()).not.toBePartiallyChecked();
+    search('');
+    expect(selectAll()).not.toBeChecked();
+    expect(selectAll()).toBePartiallyChecked();
+  });
+
+  it('bulk selects all matching pages, replaces hidden selection, and clears everything', () => {
+    render(<ResourceManagement />);
+    clickPage(25);
+    selectUser(243);
+    search('Workshop');
+    fireEvent.click(selectAll());
+    expect(selectAll()).toBeChecked();
+    clickPage(2);
+    screen
+      .getAllByRole('checkbox', { name: /^Select User/ })
+      .forEach(checkbox => expect(checkbox).toBeChecked());
+    search('User 243');
+    expect(screen.getByRole('checkbox', { name: 'Select User 243' })).not.toBeChecked();
+    search('Workshop');
+    fireEvent.click(selectAll());
+    expect(selectAll()).not.toBeChecked();
+    search('');
+    expect(screen.getAllByRole('checkbox').every(checkbox => !checkbox.checked)).toBe(true);
+    clickPage(2);
+    expect(screen.getAllByRole('checkbox').every(checkbox => !checkbox.checked)).toBe(true);
+  });
+
+  it('preserves selection across navigation, page sizes, and sorting', () => {
+    render(<ResourceManagement />);
+    selectUser(1);
+    clickPage(2);
+    selectUser(11);
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: '25' } });
+    expect(screen.getByRole('checkbox', { name: 'Select User 001' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Select User 011' })).toBeChecked();
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle Global Sort Direction' }));
+    clickPage(10);
+    expect(screen.getByRole('checkbox', { name: 'Select User 001' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Select User 011' })).toBeChecked();
+  });
+
+  it('disables bulk selection on empty search results and empty datasets', () => {
+    const { unmount } = render(<ResourceManagement />);
+    selectUser(1);
+    search('unmatched');
+    expect(selectAll()).toBeDisabled();
+    expect(selectAll()).not.toBeChecked();
+    expect(selectAll()).not.toBePartiallyChecked();
+    unmount();
+    fixture.resources = [];
+    render(<ResourceManagement />);
+    expect(selectAll()).toBeDisabled();
+  });
+
+  it('exports all matching pages without selection, then only selected matching records', () => {
+    render(<ResourceManagement />);
+    search('Workshop');
+    expect(exportUsers()).toEqual(makeResources(13).map(row => row.user));
+    selectUser(1);
+    clickPage(2);
+    selectUser(11);
+    expect(exportUsers()).toEqual(['User 001', 'User 011']);
+    search('User 001');
+    expect(exportUsers()).toEqual(['User 001']);
+    expect(XLSX.writeFile).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not export unrelated results when all selections are hidden', () => {
+    render(<ResourceManagement />);
+    selectUser(1);
+    search('User 002');
+    fireEvent.click(screen.getByRole('button', { name: 'Export XLSX' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
+    expect(XLSX.writeFile).not.toHaveBeenCalled();
+    expect(XLSX.utils.json_to_sheet).not.toHaveBeenCalled();
+    expect(toast.info).toHaveBeenCalledTimes(2);
+    expect(toast.info).toHaveBeenCalledWith('No resources available to export.');
+  });
+});
+
+describe('Sorting and page size with active search', () => {
+  it.each(['Date', 'Time/Duration'])(
+    'sorts %s in both directions across page boundaries',
+    column => {
+      // Reverse input with unique shuffled sort values, independent of user-name order.
+      fixture.resources = makeResources(23)
+        .map((row, index) => ({
+          ...row,
+          timestamp: 1704067200000 + ((index * 7) % 23) * 1000,
+          timeDuration: `${String((index * 5) % 23).padStart(2, '0')}:00:00`,
+        }))
+        .reverse();
+      render(<ResourceManagement />);
+      const key = column === 'Date' ? 'timestamp' : 'timeDuration';
+      const ascending = [...fixture.resources]
+        .sort((a, b) => (a[key] < b[key] ? -1 : 1))
+        .map(row => row.user);
+      for (const expected of [ascending, [...ascending].reverse()]) {
+        clickPage(3);
+        fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${column}`) }));
+        expect(screen.getByRole('status')).toHaveTextContent('Showing 1-10 of 23');
+        expect(visibleUsers()).toEqual(expected.slice(0, 10));
+        clickPage(2);
+        expect(visibleUsers()).toEqual(expected.slice(10, 20));
+        clickPage(3);
+        expect(visibleUsers()).toEqual(expected.slice(20));
+        expect(screen.getByRole('status')).toHaveTextContent('Showing 21-23 of 23');
+        clickPage(1);
+      }
+    },
+  );
+
+  it.each([10, 25, 50, 100])('retains active search when changing page size to %i', size => {
+    fixture.resources = makeResources(263).map((row, index) => ({
+      ...row,
+      facilities: index < 243 ? 'Workshop' : 'Office',
+    }));
+    render(<ResourceManagement />);
+    search('Workshop');
+    const selector = screen.getByRole('combobox');
+    fireEvent.change(selector, { target: { value: size === 10 ? '25' : '10' } });
+    clickPage(size === 10 ? 10 : 25);
+    fireEvent.change(selector, { target: { value: String(size) } });
+    expect(screen.getByRole('textbox', { name: 'Search resources' })).toHaveValue('Workshop');
+    expectRange(1, size);
+    clickPage(2);
+    expectRange(size + 1, size * 2);
+    clickPage(Math.ceil(243 / size));
+    expectRange(Math.floor(242 / size) * size + 1, 243);
+  });
 });

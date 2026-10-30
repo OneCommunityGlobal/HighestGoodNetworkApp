@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { ChevronLeft, ChevronRight, Calendar, X } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -252,6 +252,7 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
 function ResourceManagement() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const searchInputRef = useRef(null);
+  const selectAllRef = useRef(null);
   const [resources, setResources] = useState(MOCK_RESOURCES);
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
   const [searchTerm, setSearchTerm] = useState('');
@@ -315,6 +316,14 @@ function ResourceManagement() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentResources = sortedResources.slice(startIndex, endIndex);
+  const selectedMatchingCount = sortedResources.filter(resource => selectedIds.has(resource.id))
+    .length;
+  const allMatchingSelected = totalItems > 0 && selectedMatchingCount === totalItems;
+  const someMatchingSelected = selectedMatchingCount > 0 && !allMatchingSelected;
+
+  useEffect(() => {
+    selectAllRef.current.indeterminate = someMatchingSelected;
+  }, [someMatchingSelected]);
 
   const toggleSelect = id => {
     setSelectedIds(prev => {
@@ -482,8 +491,10 @@ function ResourceManagement() {
             <div className={styles.colCheck}>
               <input
                 type="checkbox"
-                aria-label="Select all"
-                checked={selectedIds.size === sortedResources.length && sortedResources.length > 0}
+                aria-label="Select all matching resources"
+                ref={selectAllRef}
+                checked={allMatchingSelected}
+                disabled={totalItems === 0}
                 onChange={toggleSelectAll}
               />
               <span className={styles.checkboxLabel}>Select</span>
