@@ -1,0 +1,11 @@
+/* Version 1.0.0 */
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.address {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

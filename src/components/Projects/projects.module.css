@@ -218,11 +218,11 @@
   z-index: 2;
 }
 
-/* Increased specificity to ensure badge text remains strictly black in both light and dark modes */
- .project-member-badge.badgeTextBlack {
+/* Override the global dark-mode text color so counts stay readable on green. */
+:global(.dark-mode) .project-member-badge,
+.project-member-badge.badgeTextBlack {
   color: #111 !important;
 }
-
 
 .project-member-btn .fa-users {
   font-size: 1.5rem;

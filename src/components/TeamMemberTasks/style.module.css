@@ -176,6 +176,19 @@
   color: black;
 }
 
+.dark-teammember-row tr:hover,
+.dark-teammember-row tr:active,
+.dark-teammember-row tr:focus-within,
+.dark-teammember-row tr:hover > td,
+.dark-teammember-row tr:active > td,
+.dark-teammember-row tr:focus-within > td,
+.dark-teammember-row tr:hover > th,
+.dark-teammember-row tr:active > th,
+.dark-teammember-row tr:focus-within > th {
+  background-color: #111831 !important;
+  color: white;
+}
+
 .task-align {
   width: auto;
   flex: 1 1 auto;
@@ -304,7 +317,6 @@
   flex-shrink: 0;
 }
 
-
 .team-member-tasks-number {
   display: inline-block;
   text-align: center;
@@ -354,6 +366,17 @@
 }
 
 .team-clocks-header .trackerToggleBtnActive {
+  background-color: #17a2b8;
+  color: #fff !important;
+}
+
+/* Dark mode: the inactive toggle was a white box on the dark header */
+.team-clocks-header .trackerToggleBtnDark {
+  background-color: #1b263b;
+  color: #67e8f9 !important;
+}
+
+.team-clocks-header .trackerToggleBtnDark.trackerToggleBtnActive {
   background-color: #17a2b8;
   color: #fff !important;
 }
@@ -412,6 +435,22 @@
   position: relative;
   height: 100%;
   vertical-align: stretch !important;
+}
+
+.dark-task-row,
+.dark-task-row > td {
+  background-color: #3a506b;
+  color: white;
+}
+
+.dark-task-row:hover,
+.dark-task-row:active,
+.dark-task-row:focus-within,
+.dark-task-row:hover > td,
+.dark-task-row:active > td,
+.dark-task-row:focus-within > td {
+  background-color: #111831 !important;
+  color: white;
 }
 
 .hidden {

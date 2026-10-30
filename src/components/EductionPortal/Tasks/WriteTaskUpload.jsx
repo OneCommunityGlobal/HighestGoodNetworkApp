@@ -42,7 +42,7 @@ const Icon = ({ name, className, darkMode = false }) => {
         <svg {...common} className={className}>
           <path
             d="M3 6h6l2 2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"
-            fill="#000"
+            fill={darkMode ? '#e0e0e0' : '#000'}
           />
         </svg>
       );
@@ -77,7 +77,7 @@ const Icon = ({ name, className, darkMode = false }) => {
         <svg {...common} className={className}>
           <path
             d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm8.5 4a6.5 6.5 0 0 0-.08-1l2.1-1.63-2-3.46-2.53 1a6.7 6.7 0 0 0-1.73-1l-.38-2.7H10.1l-.38 2.7a6.7 6.7 0 0 0-1.73 1l-2.53-1-2 3.46L3.56 11a6.5 6.5 0 0 0 0 2l-2.1 1.63 2 3.46 2.53-1c.52.42 1.1.77 1.73 1l.38 2.7h4.78l.38-2.7c.63-.23 1.21-.58 1.73-1l2.53 1 2-3.46L20.42 13c.05-.33.08-.66.08-1z"
-            fill="#000"
+            fill={darkMode ? '#e0e0e0' : '#000'}
           />
         </svg>
       );

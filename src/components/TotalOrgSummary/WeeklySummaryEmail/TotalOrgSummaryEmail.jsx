@@ -1,3 +1,4 @@
+/* Version 1.0.1 */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -5,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import { ToastContainer, toast } from 'react-toastify';
 import { ENDPOINTS } from '../../../utils/URL';
+import styles from './TotalOrgSummaryEmail.module.css';
 
 function TotalOrgSummaryEmail() {
   // State for managing email recipients
@@ -86,79 +88,74 @@ function TotalOrgSummaryEmail() {
 
   // Darkmode
   const darkMode = useSelector(state => state.theme.darkMode);
-  useEffect(() => {
-    const rootDiv = document.getElementById('root');
-    if (darkMode) {
-      rootDiv.classList.add('bg-dark', 'text-light');
-    } else {
-      rootDiv.classList.remove('bg-dark', 'text-light');
-    }
-  }, [darkMode]);
-
   return (
-    <div>
+    <div className={`${styles.page} ${darkMode ? 'bg-dark text-light' : ''}`}>
       <h1 className={`h1 ${darkMode ? 'text-light' : ''}`}>Total Org Summary Email</h1>
       {/* Recipient Management */}
-      <div className={`container ${darkMode ? 'bg-dark text-light' : ''}`}>
+      <div>
         <h2 className={`h2 ${darkMode ? 'text-light' : ''}`}>Recipients</h2>
-        <div className={`container-fluid ${darkMode ? 'bg-dark text-light' : ''}`}>
+        <ul className="list-unstyled mb-3">
           {recipientList.map((email, index) => (
-            <div
+            <li
               key={uuid() + String(index)}
-              className={`row ${darkMode ? 'bg-dark text-light' : ''}`}
+              className="d-flex align-items-center justify-content-between mb-2"
             >
-              <span className="col">{email}</span>
-              <span className="col">
-                <button
-                  type="button"
-                  onClick={() => handleRemoveRecipient(email)}
-                  className="btn btn-danger"
-                >
-                  Remove
-                </button>
-              </span>
-            </div>
+              <span className={styles.address}>{email}</span>
+              <button
+                type="button"
+                onClick={() => handleRemoveRecipient(email)}
+                className="btn btn-danger ml-3 flex-shrink-0"
+              >
+                Remove
+              </button>
+            </li>
           ))}
-        </div>
-        <div className={`row ${darkMode ? 'bg-dark text-light' : ''}`}>
-          <span className="col">
-            <input
-              type="email"
-              placeholder="Enter email address"
-              value={recipients}
-              className={`form-control ${darkMode ? 'bg-dark text-light' : ''}`}
-              onChange={e => setRecipients(e.target.value)}
-            />
-          </span>
-          <span className="col">
-            <button type="button" onClick={handleAddRecipient} className="btn btn-primary">
+        </ul>
+        <div className="mb-3">
+          <input
+            type="email"
+            placeholder="Enter email address"
+            value={recipients}
+            className={`form-control mb-2 ${darkMode ? 'bg-dark text-light' : ''}`}
+            onChange={e => setRecipients(e.target.value)}
+          />
+          <div className="d-flex flex-wrap">
+            <button
+              type="button"
+              onClick={handleAddRecipient}
+              className="btn btn-primary mr-2 mb-2"
+            >
               Add Recipient
             </button>
-            <button type="button" onClick={handlRemoveAllRecipients} className="btn btn-danger">
+            <button
+              type="button"
+              onClick={handlRemoveAllRecipients}
+              className="btn btn-danger mb-2"
+            >
               Remove all
             </button>
-          </span>
+          </div>
         </div>
 
-        <div className="row m-3">
+        <div className="mb-3">
           <input
-            type="subject"
+            type="text"
             placeholder="Enter Subject"
             value={emailSubject}
             className={`form-control ${darkMode ? 'bg-dark text-light' : ''}`}
             onChange={e => setSubject(e.target.value)}
           />
         </div>
-        <div className="row m-3">
+        <div className="mb-3">
           <textarea
-            type="body"
+            rows={5}
             placeholder="Enter Body"
             value={body}
             className={`form-control ${darkMode ? 'bg-dark text-light' : ''}`}
             onChange={e => setBody(e.target.value)}
           />
         </div>
-        <div className="row ml-3">
+        <div>
           <button type="button" onClick={handleSendEmail} className="btn btn-success">
             Send Email
           </button>
