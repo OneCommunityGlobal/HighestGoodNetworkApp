@@ -177,10 +177,12 @@ function WeeklyProjectSummary() {
   const selectedDateRangeLabel = dateRangeFilter || 'Latest completed week';
   const selectedComparisonRangeLabel = comparisonPeriodFilter || 'Previous week';
 
-  // Drives the real project-status data fetch below. Reuses the "Compare with Previous
-  // Week" checkbox (rather than a comparisonPeriodFilter sentinel value) since this PR's
-  // header always has a real comparison period selected — there's no "No Comparison" option.
-  const comparisonEnabled = compareWithPreviousWeek;
+  // Comparison data is always fetched alongside current data whenever a real comparison
+  // period is selected (this PR's header never produces a "No Comparison" sentinel), so
+  // it's ready instantly if the user later checks "Compare with Previous Week" — that
+  // checkbox only gates whether the comparison is *displayed* (see showProjectStatusComparison
+  // below), not whether it's fetched.
+  const comparisonEnabled = Boolean(comparisonPeriodFilter);
 
   const currentDateRange = useMemo(() => parseWeeklySummaryDateRange(dateRangeFilter), [
     dateRangeFilter,
