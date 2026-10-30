@@ -1,5 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import ActivityList from '../ActivityList';
 
@@ -9,12 +11,24 @@ const renderActivityList = (initialState = { theme: { darkMode: false } }) => {
   const store = mockStore(initialState);
   return render(
     <Provider store={store}>
-      <ActivityList />
+      <MemoryRouter>
+        <ActivityList />
+      </MemoryRouter>
     </Provider>,
   );
 };
 
 describe('ActivityList', () => {
+  // Mock events are dated; freeze today so past/upcoming filtering is stable over time.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-01T12:00:00'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test('renders Activity List heading', () => {
     renderActivityList();
     expect(screen.getByText('Activity List')).toBeInTheDocument();

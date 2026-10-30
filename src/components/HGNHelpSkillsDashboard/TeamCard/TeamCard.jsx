@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 import styles from './TeamCard.module.css';
 import { TeamMemberRow } from './TeamMemberRow';
 
@@ -55,6 +56,7 @@ export default function TeamCard() {
 
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [confirmAction, setConfirmAction] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const toggleSelect = id => {
     setSelectedMembers(prev => (prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]));
@@ -88,7 +90,7 @@ export default function TeamCard() {
   const noneSelected = selectedMembers.length === 0;
 
   return (
-    <div className={styles.pageWrapper}>
+    <div className={`${styles.pageWrapper} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.teamCardContainer}>
         <div className={styles.teamCardHeader}>
           <h2 className={styles.teamCardTitle}>

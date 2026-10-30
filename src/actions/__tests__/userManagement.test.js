@@ -68,6 +68,53 @@ describe('User Management Actions', () => {
         store.dispatch(actions.updateRehireableStatus(mockUser, isRehireable))
       ).rejects.toThrow('Update failed');
     });
+
+    it('persists a trimmed reason when changing to not rehireable', async () => {
+      const mockUser = { _id: '123', notRehireableReason: 'Previous reason' };
+      axios.patch.mockResolvedValueOnce({ data: {} });
+
+      await store.dispatch(actions.updateRehireableStatus(mockUser, false, '  New reason  '));
+
+      expect(axios.patch).toHaveBeenCalledWith(ENDPOINTS.UPDATE_REHIREABLE_STATUS(mockUser._id), {
+        isRehireable: false,
+        notRehireableReason: 'New reason',
+      });
+      expect(store.getActions()).toEqual([
+        {
+          type: 'USER_PROFILE_UPDATE',
+          user: { _id: '123', isRehireable: false, notRehireableReason: 'New reason' },
+        },
+      ]);
+    });
+
+    it('allows an empty reason and removes a previously saved reason', async () => {
+      const mockUser = { _id: '123', notRehireableReason: 'Previous reason' };
+      axios.patch.mockResolvedValueOnce({ data: {} });
+
+      await store.dispatch(actions.updateRehireableStatus(mockUser, false, ''));
+
+      expect(axios.patch).toHaveBeenCalledWith(ENDPOINTS.UPDATE_REHIREABLE_STATUS(mockUser._id), {
+        isRehireable: false,
+        notRehireableReason: '',
+      });
+      expect(store.getActions()).toEqual([
+        { type: 'USER_PROFILE_UPDATE', user: { _id: '123', isRehireable: false } },
+      ]);
+    });
+
+    it('clears a saved reason when changing back to rehireable', async () => {
+      const mockUser = { _id: '123', notRehireableReason: 'Previous reason' };
+      axios.patch.mockResolvedValueOnce({ data: {} });
+
+      await store.dispatch(actions.updateRehireableStatus(mockUser, true, 'Ignored reason'));
+
+      expect(axios.patch).toHaveBeenCalledWith(ENDPOINTS.UPDATE_REHIREABLE_STATUS(mockUser._id), {
+        isRehireable: true,
+      });
+      expect(store.getActions()).toEqual([
+        { type: 'USER_PROFILE_UPDATE', user: { _id: '123', isRehireable: true } },
+      ]);
+    });
   });
 
   describe('toggleVisibility', () => {
@@ -201,6 +248,37 @@ describe('User Management Actions', () => {
       ];
 
       await store.dispatch(actions.getUserProfileBasicInfo({ source: mockSource }));
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+
+    it('fetches a single user basic info by userId using the query-param contract', async () => {
+      const mockUserId = 'user-123';
+      const mockBasicInfo = { _id: mockUserId, firstName: 'John', lastName: 'Doe' };
+
+      axios.get.mockResolvedValueOnce({ data: mockBasicInfo });
+
+      const expectedActions = [
+        { type: 'FETCH_USER_PROFILE_BASIC_INFO' },
+        { type: 'RECEIVE_USER_PROFILE_BASIC_INFO', payload: mockBasicInfo }
+      ];
+
+      await store.dispatch(actions.getUserProfileBasicInfo({ userId: mockUserId }));
+      expect(store.getActions()).toEqual(expectedActions);
+      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE_BASIC_INFO_BY_ID(mockUserId));
+    });
+
+    it('does not leave the fetch pending when the userId lookup is rejected (400)', async () => {
+      const mockUserId = 'user-123';
+      const badRequestError = { response: { status: 400, data: { error: 'Source parameter is required' } } };
+
+      axios.get.mockRejectedValueOnce(badRequestError);
+
+      const expectedActions = [
+        { type: 'FETCH_USER_PROFILE_BASIC_INFO' },
+        { type: 'FETCH_USER_PROFILE_BASIC_INFO_ERROR' }
+      ];
+
+      await store.dispatch(actions.getUserProfileBasicInfo({ userId: mockUserId }));
       expect(store.getActions()).toEqual(expectedActions);
     });
   });

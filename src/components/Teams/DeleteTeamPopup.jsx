@@ -5,14 +5,15 @@ import '../Header/index.module.css';
 import { connect, useSelector } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 
+import { permissions } from '../../utils/constants';
 export const DeleteTeamPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const closePopup = () => {
     props.onClose();
   };
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission(permissions.deleteTeam);
+  const canPutTeam = props.hasPermission(permissions.putTeam);
 
   const wrapLongTeamName = teamName =>
     teamName && teamName.length >= 60 ? teamName.slice(0, 50) + '...' : teamName;
