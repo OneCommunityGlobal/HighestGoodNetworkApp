@@ -133,6 +133,12 @@
   min-width: 0;
 }
 
+@media (768px <= width < 992px) {
+  .userManagementFilters select {
+    width: 7rem;
+  }
+}
+
 @media (width < 768px) {
   .new_user_management {
     flex-direction: column;
