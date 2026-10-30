@@ -114,6 +114,12 @@ const formatPercent = (value, digits = 2) => {
   return `${Number.isInteger(num) ? num : num.toFixed(digits)}%`;
 };
 
+// Time Delay is always shown with two decimal places (e.g. 100.00%, 103.39%).
+export const formatTimeDelay = value => {
+  const num = Number(value);
+  return `${(Number.isFinite(num) ? num : 0).toFixed(2)}%`;
+};
+
 const RiskTooltip = ({ active, payload, label, darkMode }) => {
   if (!active || !payload?.length) return null;
   const row = payload[0]?.payload;
@@ -137,13 +143,13 @@ const RiskTooltip = ({ active, payload, label, darkMode }) => {
     <div className={`${styles.tooltip} ${darkMode ? styles.tooltipDark : ''}`}>
       <div className={styles.tooltipTitle}>{label}</div>
       <div>Cost overrun: {formatPercent(row.predictedCostOverrun)}</div>
-      <div>Time delay: {formatPercent(row.predictedTimeDelay)}</div>
+      <div>Time delay: {formatTimeDelay(row.predictedTimeDelay)}</div>
       <div>Issues: {row.totalOpenIssues}</div>
       <hr className={styles.tooltipDivider} />
       <div className={styles.tooltipSubtitle}>Summary (selected period)</div>
       <div>
         Key drivers of change: Cost {getArrow(deltas.cost)} {formatPercent(deltas.cost)}, Delay{' '}
-        {getArrow(deltas.delay)} {formatPercent(deltas.delay)}, Issues {getArrow(deltas.issues)}{' '}
+        {getArrow(deltas.delay)} {formatTimeDelay(deltas.delay)}, Issues {getArrow(deltas.issues)}{' '}
         {deltas.issues.toFixed(0)}
       </div>
       <div>Largest risk contributor: {contributor || 'N/A'}</div>
@@ -484,6 +490,14 @@ export default function ProjectRiskProfileOverview() {
                     tickLine={{ stroke: chartColors.axisLine }}
                   />
                   <YAxis
+                    width={70}
+                    label={{
+                      value: 'Percentage (%) / Issues',
+                      angle: -90,
+                      position: 'insideLeft',
+                      offset: 0,
+                      style: { textAnchor: 'middle', fill: chartColors.text, fontSize: 12 },
+                    }}
                     tickFormatter={val => (Number.isInteger(val) ? val : val.toFixed(0))}
                     tick={{ fontSize: 12, fill: chartColors.text, fontWeight: 500 }}
                     axisLine={{ stroke: chartColors.axisLine, strokeWidth: 1.5 }}
@@ -534,7 +548,7 @@ export default function ProjectRiskProfileOverview() {
                     <LabelList
                       dataKey="predictedTimeDelay"
                       position="top"
-                      formatter={value => formatPercent(value, 0)}
+                      formatter={formatTimeDelay}
                       fill={chartColors.text}
                       fontSize={11}
                     />
@@ -607,7 +621,7 @@ export default function ProjectRiskProfileOverview() {
                             {timeTrend.symbol}
                           </span>
                         )}
-                        <span>{currentData.predictedTimeDelay || 0}%</span>
+                        <span>{formatTimeDelay(currentData.predictedTimeDelay)}</span>
                       </div>
 
                       {project.status && (
