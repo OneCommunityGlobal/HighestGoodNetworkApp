@@ -9,7 +9,7 @@
   background-color: #2e5061;
 }
 
-@media (width >= 650px) {
+@media (width >=650px) {
   .bmDashboard_button.btn.btnSecondary {
     padding-left: 0;
     padding-right: 0;
@@ -47,10 +47,9 @@
 }
 
 .memberStopwatch {
-  background-color: #4b5055 !important;
+  background-color: #3f444a !important;
   border-radius: 15px !important;
-  height: 3rem;
-  font-size: 1.5rem !important;
+  font-size: 1.7rem !important;
   text-align: center;
   color: white;
   white-space: nowrap;
@@ -59,33 +58,25 @@
   display: inline-block;
 }
 
-.fontColorGray {  
+.fontColorGray {
   color: #4b5055;
 }
 
 .memberStart {
-  background-color: #01987a !important;  
-  border-radius: 10px !important;    
-  width: 5rem;
+  background-color: #01987a !important;
 }
 
 .memberPause {
-  background-color: #168dc0 !important;  
-  border-radius: 10px !important;    
-  width: 5rem;
+  background-color: #168dc0 !important;
 }
 
 
 .memberStop {
-  background-color: #980101 !important;  
-  border-radius: 10px !important;    
-  width: 5rem;  
+  background-color: #980101 !important;
 }
 
 .memberClear {
-  background-color: #a9b7be !important;    
-  border-radius: 10px !important;  
-  width: 5rem;  
+  background-color: #a9b7be !important;
 }
 
 /* project summaries */
@@ -94,7 +85,7 @@
   list-style-type: none;
   max-height: 80vh;
   overflow: hidden auto;
-  padding:0;
+  padding: 0;
 }
 
 .projectSummary {
@@ -197,19 +188,63 @@
   color: red;
 }
 
-@media screen and (width <= 800px) {
+@media screen and (width <=800px) {
   .invFormPageContainer {
     width: 95%;
   }
 }
 
-@media screen and (width <= 480px) {
+@media screen and (width <=480px) {
   .invFormPageContainer h2 {
     font-size: 1.7rem;
   }
 }
 
 .formFooter {
-font-size: 0.875em;
-margin-top:3px;
+  font-size: 0.875em;
+  margin-top: 3px;
+}
+
+.memberStart,
+.memberStop,
+.memberClear,
+.memberPause {
+  min-width: 110px;
+  font-weight: 500 !important;
+  border-radius: 10px !important;
+}
+
+:global(body.dark-mode:not(.no-global-theme)) .stopwatchContainer,
+:global(body.bm-dashboard-dark:not(.no-global-theme)) .stopwatchContainer {
+  background: none;
+}
+
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStart {
+  background-color: #01987a !important;
+  border-color: #01987a !important;
+}
+
+
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStop,
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStop:hover {
+  background-color: #980101 !important;
+  border-color: #980101 !important;
+}
+
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStopwatch,
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStopwatch:hover {
+  background: none !important
+}
+
+:global(.dark-mode) .fontColorGray {
+  color: #fff;
+}
+
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberClear,
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberClear:hover {
+  background-color: #a9b7be !important;
+}
+
+:global(.btn:disabled) {
+  cursor: not-allowed;
 }
