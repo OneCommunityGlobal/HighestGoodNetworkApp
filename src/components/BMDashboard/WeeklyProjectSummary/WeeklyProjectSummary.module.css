@@ -22,7 +22,7 @@
 }
 
 .weeklyProjectSummaryHeaderWrapper {
-  background-color: var(--bg-color) !important;
+  background-color: var(--bg-color);
 }
 
 /* ---------------- HEADER ---------------- */
@@ -69,11 +69,11 @@
 
 .weeklySummaryHeaderControls :global(.form-control) {
   box-sizing: border-box;
-  height: 38px !important;
+  height: 38px;
   min-height: 38px;
-  padding: 0 12px !important;
-  margin: 0 !important;
-  line-height: 1.25 !important;
+  padding: 0 12px;
+  margin: 0;
+  line-height: 1.25;
   font-size: 14px;
   flex: 1 1 auto;
   min-width: 0;
@@ -102,9 +102,9 @@
 
 .darkMode .weeklySummaryHeaderControls select {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-color: var(--card-bg) !important;
-  color: var(--text-color) !important;
-  border-color: var(--card-shadow) !important;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border-color: var(--card-shadow);
 }
 
 .weeklySummaryHeaderControls select:focus {
@@ -113,23 +113,98 @@
 }
 
 .weeklySummaryHeaderControls select:hover {
-  background-color: var(--section-title-hover) !important;
+  background-color: var(--section-title-hover);
+}
+
+/* Match the Total Org Summary comparison dropdown interaction inside this header only. */
+.weeklySummaryComparisonDropdown {
+  flex: 0 0 auto;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle) {
+  box-sizing: border-box;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.25;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  background-color: #6f42c1;
+  color: white;
+  box-shadow: 0 2px 6px rgb(111 66 193 / 30%);
+  transition: all 0.3s ease;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle):hover {
+  background-color: #5a359a;
+  box-shadow: 0 4px 12px rgb(111 66 193 / 40%);
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle):focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(111 66 193 / 30%);
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-menu) {
+  min-width: 180px;
+  padding: 8px 0;
+  margin-top: 8px;
+  border: none;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 15%);
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-item) {
+  padding: 12px 20px;
+  border: none;
+  background-color: transparent;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-item):hover {
+  background-color: #f8f9fa;
+  color: #6f42c1;
+  transform: translateX(4px);
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-menu) {
+  background-color: #34495e;
+  border: 1px solid #6f42c1;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 30%);
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-item) {
+  color: #fff;
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-item):hover {
+  background-color: #6f42c1;
+  color: #fff;
 }
 
 /* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
 
 /* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
    the label overflows outside the painted background (overlapping the last dropdown). */
-.weeklySummaryShareBtn {
-  height: 38px !important;
+.weeklySummaryHeaderControls .weeklySummaryShareBtn {
+  height: 38px;
   min-height: 38px;
   min-width: 7.25rem;
-  padding: 0 14px !important;
-  margin: 0 !important;
-  display: inline-flex !important;
+  padding: 0 14px;
+  margin: 0;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  line-height: 1.25 !important;
+  line-height: 1.25;
   box-sizing: border-box;
   border-width: 1px;
   vertical-align: middle;
@@ -140,7 +215,7 @@
   color: white;
   font-family: inherit;
   white-space: nowrap;
-  border-radius: 6px !important;
+  border-radius: 6px;
   transition: background 0.2s ease-in-out;
 }
 
@@ -148,6 +223,13 @@
    this file): all three target the same .darkMode .weeklySummaryShareBtn / plain
    .weeklySummaryShareBtn selectors at matching specificity, so later-in-file simply wins
    the cascade without needing to force it. */
+
+/* Bootstrap .btn can add vertical offset; align with selects */
+.weeklySummaryHeaderControls :global(button.btn) {
+  margin: 0;
+  vertical-align: middle;
+}
+
 .darkMode .weeklySummaryShareBtn {
   background-color: var(--button-bg);
 }
@@ -162,13 +244,8 @@
   cursor: not-allowed;
 }
 
-.weeklySummaryHeaderControls :global(button.btn) {
-  margin: 0 !important;
-  vertical-align: middle;
-}
-
 .weeklySummaryShareBtn:hover:not(:disabled) {
-  background-color: var(--button-hover) !important;
+  background-color: var(--button-hover);
 }
 
 .spinner {
@@ -534,7 +611,7 @@
 }
 
 .darkMode .weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
+  background-color: var(--button-hover);
 }
 
 /* ---------------- STATUS CARD ---------------- */
@@ -545,14 +622,17 @@
   justify-content: center;
   border-radius: 25px;
   width: 100%;
-  min-height: 190px;
-  max-width: 284px;
+
+  /* Fill the responsive grid track instead of capping cards at a fixed desktop width. */
+  max-width: none;
+  min-width: 0;
   height: 190px;
   text-align: center;
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
   border: 1px solid rgb(0 0 0 / 10%);
   position: relative;
+  overflow: visible;
   transition: box-shadow 0.3s ease;
   box-sizing: border-box;
 }
@@ -575,30 +655,77 @@
   white-space: nowrap;
 }
 
+.projectStatusUnavailableInfo {
+  align-items: center;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  color: inherit;
+  cursor: help;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 700;
+  height: 16px;
+  justify-content: center;
+  line-height: 1;
+  margin-left: 6px;
+  vertical-align: middle;
+  width: 16px;
+}
+
+.projectStatusUnavailableButton {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: help;
+  display: inline-flex;
+  font: inherit;
+  height: 100%;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 100%;
+}
+
+.projectStatusUnavailableTooltip {
+  z-index: 1060;
+}
+
 .weekly-status-change {
   transition: color 0.3s ease;
   font-size: 14px;
   font-weight: 500;
+  line-height: 1.3;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .darkMode .statusCard {
-  background: var(--card-bg) !important;
   color: var(--text-color) !important;
   border-color: rgb(255 255 255 / 10%) !important;
 }
 
-.darkMode .weeklyCardTitle,
-.darkMode .weekly-status-change {
-  color: var(--text-color) !important;
+/* Keep all Project Status text readable on the preserved pastel status cards in dark mode.
+   weeklyStatusValue sits inside the oval status button, which always keeps its light pastel
+   background (set inline per-card) regardless of theme, so its text must stay dark rather
+   than following --text-color, which is light in dark mode. */
+.darkMode .statusCard .weeklyCardTitle,
+.darkMode .statusCard .weeklyStatusValue {
+  color: #000 !important;
 }
 
-/* weeklyStatusValue sits inside the oval status button, which always keeps its light
-   pastel background (set inline per-card) regardless of theme, so its text must stay
-   dark rather than following --text-color, which is light in dark mode. Forcing it
-   light made the number unreadable against the still-light oval (e.g. Total Labor
-   Cost). */
-.darkMode .weeklyStatusValue {
+.darkMode .statusCard .projectStatusUnavailableInfo {
   color: #000 !important;
+}
+
+.darkMode .statusCard .projectStatusUnavailableButton {
+  color: #000 !important;
+}
+
+/* Preserve semantic comparison colors against broad dark-mode inherited text rules. */
+.darkMode .statusCard :global(.weekly-status-change) {
+  color: var(--project-status-change-color) !important;
 }
 
 /* Tooltip styles */
@@ -672,7 +799,9 @@
      just the first ~220-300px column and squeeze its 12 cards into a narrow strip. */
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+  /* Let status cards choose the largest safe column count at every viewport width. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 20px;
   justify-content: center;
   align-items: center;
@@ -690,6 +819,11 @@
   width: 100%;
 }
 
+/* Keep Project Status from being squeezed into one parent category column on tablets. */
+.weeklyProjectSummaryDashboardCategoryContent .projectStatusGrid {
+  grid-column: 1 / -1;
+}
+
 /* .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -699,8 +833,10 @@
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-  min-height: 65px;
-  width: 130px;
+  /* Keep the original pill size for short values while letting longer values fit. */
+  width: auto;
+  min-width: 130px;
+  max-width: 100%;
   height: 65px;
   border-radius: 50px / 32px;
   display: flex;
@@ -708,8 +844,7 @@
   justify-content: center;
   box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
   margin: 12px 0;
-  padding: 8px 16px;
-  box-sizing: border-box;
+  padding: 0 18px;
 }
 
 /* ---------------- RESPONSIVE DESIGN ---------------- */
@@ -836,7 +971,6 @@
   }
 
   .weeklySummaryShareBtn {
-    width: 100%;
     margin-top: 5px;
   }
 
@@ -945,34 +1079,24 @@
   }
 }
 
-/* Status Grid Responsive */
-@media (width >=1600px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(6, 1fr);
+/* Extra Small Screens */
+@media (width <= 480px) {
+  .lessonsCard {
+    min-height: 450px;
   }
-}
 
-@media (width <=1400px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(4, 1fr);
+  .weeklyProjectSummaryCard :global(.chartContainer) {
+    min-height: 220px;
   }
-}
 
-@media (width <=1024px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(3, 1fr);
+  .normalCard {
+    min-height: 260px;
   }
-}
 
-@media (width <=768px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (width <=576px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(1, 1fr);
+  .weeklySummaryHeaderTitle {
+    font-size: large;
+    flex-direction: column;
+    gap: 5px;
   }
 }
 

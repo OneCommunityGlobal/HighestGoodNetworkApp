@@ -138,6 +138,8 @@ export const ENDPOINTS = {
   WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceIndividualTeamcodes`,
   SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
+  KITCHEN_REPORTS_EXPORT_PDF: () => `${APIEndpoint}/kitchenandinventory/reports/export/pdf`,
+  KITCHEN_REPORTS_EXPORT_CSV: () => `${APIEndpoint}/kitchenandinventory/reports/export/csv`,
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
   POST_NEW_WARNING: () => `${APIEndpoint}/currentWarnings`,
   UPDATE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
@@ -169,7 +171,8 @@ export const ENDPOINTS = {
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
   APPLICANT_VOLUNTEER_RATIO: `${APIEndpoint}/applicant-volunteer-ratio`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
-  BADGE: () => `${APIEndpoint}/badge`,
+  // BADGE: () => `${APIEndpoint}/badge`,
+  BADGE: () => `${APIEndpoint}/badge/getAllBadges`,
   BADGE_ASSIGN_MULTIPLE: `${APIEndpoint}/badge/assign`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
@@ -384,9 +387,9 @@ export const ENDPOINTS = {
   BM_PROJECTS_WITH_LOCATION: `${APIEndpoint}/bm/projects/location`,
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS: `${APIEndpoint}/bm/weekly-project-summary/project-status`,
   BM_DELETE_INVENTORTY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
-
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
@@ -653,15 +656,15 @@ export const ENDPOINTS = {
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
-  let url = `${APIEndpoint}/analytics/opt-status`;
-  const params = [];
+    let url = `${APIEndpoint}/analytics/opt-status`;
+    const params = [];
 
-  if (startDate) params.push(`startDate=${startDate}`);
-  if (endDate) params.push(`endDate=${endDate}`);
-  if (role) params.push(`role=${role}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (role) params.push(`role=${role}`);
 
-  return params.length > 0 ? `${url}?${params.join("&")}` : url;
-},
+    return params.length > 0 ? `${url}?${params.join("&")}` : url;
+  },
 
 
 
@@ -775,6 +778,7 @@ export const ENDPOINTS = {
 
   // Help Request & Feedback Modal endpoints
   HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
+  HGN_COMMUNITY_MEMBERS: `${APIEndpoint}/hgnHelp/community`,
   HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
   FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
   FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,

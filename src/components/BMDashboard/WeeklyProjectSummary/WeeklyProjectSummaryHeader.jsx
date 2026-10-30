@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Input, Button } from 'reactstrap';
+import { Input, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment-timezone';
 import {
@@ -31,6 +31,7 @@ export default function WeeklyProjectSummaryHeader({
   bmProjects = [],
 }) {
   const dispatch = useDispatch();
+  const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter);
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter);
   const comparisonPeriodFilter = useSelector(
@@ -110,18 +111,23 @@ export default function WeeklyProjectSummaryHeader({
             ))}
           </Input>
 
-          <Input
-            type="select"
-            value={comparisonPeriodFilter}
-            onChange={e => dispatch(setComparisonPeriodFilter(e.target.value))}
-            aria-label="Comparison Period"
+          <Dropdown
+            className={styles.weeklySummaryComparisonDropdown}
+            isOpen={comparisonDropdownOpen}
+            toggle={() => setComparisonDropdownOpen(prev => !prev)}
           >
-            {comparisonOptions.map(option => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </Input>
+            <DropdownToggle caret>{comparisonPeriodFilter || 'No Comparison'}</DropdownToggle>
+            <DropdownMenu>
+              {comparisonOptions.map(option => (
+                <DropdownItem
+                  key={option}
+                  onClick={() => dispatch(setComparisonPeriodFilter(option))}
+                >
+                  {option}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
 
           <Button
             className={`${styles.weeklySummaryShareBtn}`}
