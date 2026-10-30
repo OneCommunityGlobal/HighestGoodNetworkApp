@@ -134,6 +134,8 @@ export default function DistributionLaborHours() {
     { value: 'Member 2', label: 'Member 2' },
   ];
 
+  const focusedOptionColor = darkMode ? '#3a506b' : '#f0f0f0';
+
   const selectStyles = {
     menuPortal: base => ({ ...base, zIndex: 9999 }),
     control: base => ({
@@ -146,7 +148,7 @@ export default function DistributionLaborHours() {
     menu: base => ({ ...base, backgroundColor: darkMode ? '#253342' : '#fff' }),
     option: (base, state) => ({
       ...base,
-      backgroundColor: state.isFocused ? (darkMode ? '#3a506b' : '#f0f0f0') : 'transparent',
+      backgroundColor: state.isFocused ? focusedOptionColor : 'transparent',
       color: darkMode ? '#fff' : '#000',
     }),
   };
