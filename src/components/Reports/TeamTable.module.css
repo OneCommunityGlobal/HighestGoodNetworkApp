@@ -34,34 +34,3 @@
   word-break: normal;
 }
 
-/* Example fixes for TotalReport styles */
-
-.container {
-  padding: 15px;
-}
-
-.card {
-  background-color: #fff;
-}
-
-.card-dark {
-  background-color: #fff;
-}
-
-@media (width <= 1024px) {
-  .container {
-    padding: 12px;
-  }
-}
-
-@media (width <= 768px) {
-  .container {
-    padding: 10px;
-  }
-}
-
-@media (width <= 480px) {
-  .container {
-    padding: 8px;
-  }
-}

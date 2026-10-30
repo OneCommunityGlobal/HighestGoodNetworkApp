@@ -11,6 +11,7 @@ import {
   useUpdateFiltersWithIndividualCodesChangeMutation
 } from '~/actions/weeklySummariesFilterAction';
 import { boxStyle, boxStyleDark } from '~/styles';
+import styles from './TeamTable.module.css';
 
 import { permissions } from '../../utils/constants';
 function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
@@ -22,6 +23,11 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   const itemsPerPage = 10;
 
 const totalPages = Math.ceil(allTeams?.length / itemsPerPage);
+useEffect(() => {
+  const maxPage = Math.max(1, Math.ceil((allTeams?.length || 0) / itemsPerPage));
+
+  setCurrentPage(prev => Math.min(prev, maxPage));
+}, [allTeams, itemsPerPage]);
 
 const paginatedTeams = allTeams?.slice(
   (currentPage - 1) * itemsPerPage,
@@ -127,10 +133,13 @@ const paginatedTeams = allTeams?.slice(
         <th scope="row">
           <div className={darkMode ? 'text-light' : ''}>{(currentPage - 1) * itemsPerPage + index + 1}</div>
         </th>
-        <td className="team-name-cell">
-          <Link to={`/teamreport/${team._id}`} className={darkMode ? 'text-light team-name-link' : ''}>
-            {team.teamName}
-          </Link>
+        <td className={styles['team-name-cell']}>
+        <Link
+          to={`/teamreport/${team._id}`}
+          className={`${styles['team-name-link']} ${darkMode ? 'text-light' : ''}`}
+        >
+          {team.teamName}
+        </Link>
         </td>
         <td className="projects__active--input">
           {team.isActive ? (

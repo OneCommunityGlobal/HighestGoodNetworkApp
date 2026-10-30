@@ -30,6 +30,12 @@ const VolunteerHoursReport = ({
     startDate: moment().subtract(30, 'days').toDate(),
     endDate: new Date()
   });
+  const [appliedDateRange, setAppliedDateRange] = useState({
+  startDate: moment().subtract(30, 'days').toDate(),
+  endDate: new Date(),
+});
+
+  const [validationError, setValidationError] = useState('');
   const [loading, setLoading] = useState(false);
   const [reportData, setReportData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,26 +57,41 @@ useEffect(() => {
     loadData().catch(error => {
     console.error('Error loading Volunteer Hours Report data:', error);
   });
-}, []); // Load initial data only once // Remove function dependencies to prevent infinite re-renders
-  // ...existing code...
+}, []); 
+  
+    
+// Generate report data based on selected type
+const generateReport = useCallback(async () => {
+console.log('Generating Volunteer Hours Report:', {
+    reportType,
+    appliedDateRange,
+    userProfilesCount: userProfiles?.length,
+  });
 
-  // Auto-generate report when report type or date range changes
-  useEffect(() => {
-    // Only generate report if we have the required data loaded
-    if (userProfiles && userProfiles.length > 0) {
-      generateReport();
-    }
-  }, [reportType, dateRange]); // Re-run when report type, date range, or generateReport changes
+const start = moment(appliedDateRange.startDate);
+const end = moment(appliedDateRange.endDate);
 
-  // Generate report data based on selected type
-  const generateReport = useCallback(async () => {
-    setLoading(true);
-    try {
-      const fromDate = moment(dateRange.startDate).format('YYYY-MM-DD');
-      const toDate = moment(dateRange.endDate).format('YYYY-MM-DD');
+if (
+  !start.isValid() ||
+  !end.isValid() ||
+  end.isBefore(start, 'day')
+) {
+  setValidationError(
+    'Please select valid From Date and To Date values. To Date must not be earlier than From Date.'
+  );
+  return;
+}
 
-      let data = [];
+setValidationError('');
+setLoading(true);
 
+try {
+  const fromDate = start.format('YYYY-MM-DD');
+  const toDate = end.format('YYYY-MM-DD');
+
+  let data = [];
+
+    // Keep your existing person/team/project branches here.
       if (reportType === 'person') {
         // Get hours for all active users
         const activeUsers = userProfiles?.filter(user => user.isActive) || [];
@@ -93,7 +114,7 @@ useEffect(() => {
                id: team.teamId,
                name: team.teamName,
                totalHours: Number(team.committedHours.toFixed(1)),
-      }))
+      })).filter(team => team.totalHours > 0);
 
       } else if (reportType === 'project') {
         const res = await axios.post(ENDPOINTS.PROJECTS_COMMITTED_HOURS, {fromDate, toDate});
@@ -113,11 +134,20 @@ useEffect(() => {
     } finally {
       setLoading(false);
     }
-  }, [reportType, dateRange, userProfiles, allTeams, projects, getUsersTotalHoursForSpecifiedPeriod]);
+  }, [reportType, appliedDateRange,userProfiles,getUsersTotalHoursForSpecifiedPeriod]);
+
+  // Auto-generate report when report type or date range changes
+  useEffect(() => {
+  // By Person requires user profiles; Team and Project do not.
+  if (reportType === 'person' && (!userProfiles || userProfiles.length === 0)) {
+    return;
+  }
+  generateReport();
+}, [reportType, userProfiles, generateReport]);
 
   const formatDateRange = () => {
-    return `${moment(dateRange.startDate).format('MMM DD, YYYY')} - ${moment(dateRange.endDate).format('MMM DD, YYYY')}`;
-  };
+  return `${moment(appliedDateRange.startDate).format('MMM DD, YYYY')} - ${moment(appliedDateRange.endDate).format('MMM DD, YYYY')}`;
+};
 
   const getReportTitle = () => {
     const typeLabels = {
@@ -225,7 +255,9 @@ useEffect(() => {
               <Button
                   color="success"
                   className={styles.refreshButton}
-                  onClick={generateReport}
+                  onClick={() => {
+                      setAppliedDateRange({ ...dateRange });
+                  }}
                   disabled={loading}
                 >
                   {loading ? 'Refreshing...' : 'Refresh Report'}
@@ -234,7 +266,11 @@ useEffect(() => {
               </FormGroup>
             </Col>
           </Row>
-
+          {validationError && (
+            <div className="text-danger mb-3" role="alert">
+              {validationError}
+            </div>
+          )}
           {/* Report Results */}
           {loading && <Loading />}
 

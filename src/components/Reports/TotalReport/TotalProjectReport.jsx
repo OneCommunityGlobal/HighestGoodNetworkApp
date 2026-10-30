@@ -247,9 +247,23 @@ const itemsPerPage = 10;
     allTimeEntries,
     checkPeriodForSummary,
   ]);
+  
+  // Keep pagination within the available page range when projects change.
+  useEffect(() => {
+    const filteredProjectCount = allProject.filter(
+      project => project.tangibleTime > 0,
+    ).length;
+
+    const maxPage = Math.max(
+      1,
+      Math.ceil(filteredProjectCount / itemsPerPage),
+    );
+
+    setCurrentPage(prevPage => Math.min(prevPage, maxPage));
+  }, [allProject, itemsPerPage]);
+
 
   const onClickTotalProjectDetail = () => {
-    console.log(allProject)
     setShowTotalProjectTable(prevState => !prevState)};
 
   const totalProjectTable = totalProject => {
