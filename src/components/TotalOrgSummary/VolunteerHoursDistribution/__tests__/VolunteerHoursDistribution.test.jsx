@@ -1,14 +1,14 @@
-// Note: render real chart in a sized container so Recharts can mount in tests.
-
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 import VolunteerHoursDistribution, { computeDistribution } from '../VolunteerHoursDistribution';
 
+// Chart.js draws to a <canvas> jsdom doesn't implement; the legend and center label are plain DOM.
+vi.mock('react-chartjs-2', () => ({ Doughnut: () => null }));
+
 let container = null;
 beforeEach(() => {
   container = document.createElement('div');
-  // give the container explicit size so ResponsiveContainer can compute dimensions
   container.style.width = '800px';
   container.style.height = '600px';
   document.body.appendChild(container);
@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 describe('VolunteerHoursDistribution wrapper', () => {
-  it('passes totalHoursData.current to child and computes userData percentages', () => {
+  it('shows volunteer counts per bucket and total hours in the centre', () => {
     const hoursData = [
       { _id: '10', count: 2 },
       { _id: '20', count: 3 },
@@ -37,21 +37,92 @@ describe('VolunteerHoursDistribution wrapper', () => {
       { container },
     );
 
-    // FIXED: Assert using formatted range strings instead of raw bucket IDs
-    expect(screen.getByText('10-19 hrs')).toBeInTheDocument();
-    expect(screen.getByText('20-29 hrs')).toBeInTheDocument();
+    // slices are volunteers (2 and 3), not hours split across buckets
+    expect(screen.getByText('0-10 hrs: 2 volunteers (40.0%)')).toBeInTheDocument();
+    expect(screen.getByText('Over 10 to 20 hrs: 3 volunteers (60.0%)')).toBeInTheDocument();
+    // centre still shows the headline total hours
+    expect(screen.getByText('1234')).toBeInTheDocument();
 
-    // Verify computeDistribution now allocates hours to buckets so slices add up to total hours
     const computed = computeDistribution(hoursData, totalHoursData);
-
-    // FIXED: Assert that names in userData match the updated formatRangeLabel output
     expect(computed).toEqual({
       userData: [
-        { name: '10-19 hrs', value: 494, percentage: 40 },
-        { name: '20-29 hrs', value: 740, percentage: 60 },
+        { name: '0-10 hrs', value: 2, percentage: 40, valueType: 'volunteers' },
+        { name: 'Over 10 to 20 hrs', value: 3, percentage: 60, valueType: 'volunteers' },
       ],
       totalVolunteers: 5,
       totalHoursWorked: 1234,
     });
+  });
+
+  it('renders committed-hours buckets as volunteer counts with a volunteer center total', () => {
+    const committedHoursData = [
+      { _id: 10, count: 2 },
+      { _id: 20, count: 3 },
+      { _id: 30, count: 1 },
+      { _id: 40, count: 1 },
+      { _id: '40+', count: 1 },
+    ];
+
+    render(
+      <VolunteerHoursDistribution
+        isLoading={false}
+        darkMode={false}
+        hoursData={committedHoursData}
+        title="Weekly Committed Hours"
+        centerLabelLines={['TOTAL', 'VOLUNTEERS']}
+        useBucketCounts
+      />,
+      { container },
+    );
+
+    expect(screen.getByText('Weekly Committed Hours')).toBeInTheDocument();
+    expect(screen.getByText('Over 30 to 40 hrs: 1 volunteer (12.5%)')).toBeInTheDocument();
+    expect(screen.getByText('Over 40 hrs: 1 volunteer (12.5%)')).toBeInTheDocument();
+    expect(screen.getByText('TOTAL')).toBeInTheDocument();
+    expect(screen.getByText('VOLUNTEERS')).toBeInTheDocument();
+    expect(screen.getByText('8')).toBeInTheDocument();
+
+    expect(computeDistribution(committedHoursData, undefined, true)).toEqual({
+      userData: [
+        { name: '0-10 hrs', value: 2, percentage: 25, valueType: 'volunteers' },
+        { name: 'Over 10 to 20 hrs', value: 3, percentage: 38, valueType: 'volunteers' },
+        { name: 'Over 20 to 30 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
+        { name: 'Over 30 to 40 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
+        { name: 'Over 40 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
+      ],
+      totalVolunteers: 8,
+      totalHoursWorked: 8,
+    });
+  });
+});
+
+describe('empty committed hours', () => {
+  it('explains that committed hours are not available yet instead of a blank chart', () => {
+    render(
+      <VolunteerHoursDistribution
+        isLoading={false}
+        darkMode={false}
+        hoursData={undefined}
+        title="Weekly Committed Hours"
+        centerLabelLines={['TOTAL', 'VOLUNTEERS']}
+        useBucketCounts
+      />,
+      { container },
+    );
+    expect(screen.getByText('Weekly committed hours are not available yet')).toBeInTheDocument();
+  });
+});
+
+describe('bucket ordering', () => {
+  it('keeps 50-59 before 50+ when both start at 50', () => {
+    const { userData } = computeDistribution(
+      [
+        { _id: '50+', count: 45 },
+        { _id: '50', count: 22 },
+        { _id: '10', count: 932 },
+      ],
+      { current: 999 },
+    );
+    expect(userData.map(d => d.name)).toEqual(['0-10 hrs', 'Over 40 to 50 hrs', 'Over 50 hrs']);
   });
 });

@@ -47,34 +47,7 @@ import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistribut
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
 import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
 import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
-
-/*
-  BUG FIX: these two functions previously subtracted an EXTRA 7 days
-  (`daysToSubtract - 7` / `daysToAdd` computed the same way), which meant the
-  module-level `fromDate`/`toDate` constants actually described LAST week's
-  Sunday-Saturday range, not the current week. Since those same constants
-  were wired up to the "Current Week" dropdown option, clicking "Current
-  Week" never actually fetched the current week - it fetched last week. And
-  "Previous Week" (which shifts fromDate/toDate back another 7 days via
-  getPreviousWeekDates) was actually fetching the week before last.
-
-  These now correctly compute the CURRENT week's Sunday-Saturday range.
-*/
-function calculateStartDate() {
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  const dayOfWeek = currentDate.getDay();
-  currentDate.setDate(currentDate.getDate() - dayOfWeek);
-  return currentDate.toISOString().split('T')[0];
-}
-
-function calculateEndDate() {
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  const dayOfWeek = currentDate.getDay();
-  currentDate.setDate(currentDate.getDate() + (6 - dayOfWeek));
-  return currentDate.toISOString().split('T')[0];
-}
+import { formatLocalDateForApi, getCurrentWeekDates, getPreviousWeekDates } from './dateRangeUtils';
 
 function shiftDate(date, diffDays, type) {
   if (type === 'Week Over Week') return new Date(date.setDate(date.getDate() - diffDays));
@@ -250,7 +223,7 @@ function buildPDFStyles(darkMode) {
     img, svg { max-width: 100% !important; height: auto !important; page-break-inside: avoid !important; }
     .recharts-wrapper { width: 100% !important; height: auto !important; }
     table { page-break-inside: avoid !important; }
-    .Collapsible__trigger {
+    .Collapsible__trigger:not(.org-section-header) {
       background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
       color: ${darkMode ? '#fff' : '#000'} !important;
     }
@@ -264,7 +237,14 @@ function buildPDFStyles(darkMode) {
     }
     [data-pdf-title] p {
       font-size: 1.5em !important; font-weight: bold !important; text-align: center !important;
-      margin: 10px !important; color: #333 !important;
+      margin: 10px !important; color: ${darkMode ? '#fff' : '#333'} !important;
+      text-shadow: ${darkMode ? '0 1px 4px #000, 0 0 2px #000' : 'none'} !important;
+    }
+    [data-pdf-label] {
+      color: ${darkMode ? '#fff' : '#000'} !important;
+      background-color: transparent !important;
+      border-color: ${darkMode ? '#64748b' : '#e0e0e0'} !important;
+      opacity: 1 !important;
     }
     ${
       darkMode
@@ -305,15 +285,26 @@ async function fetchOrgStats(props, selectedComparison, currentFromDate, current
   return { ...volunteerStatsResponse.data, taskAndProjectStats: taskAndProjectStatsResponse };
 }
 
-function getPreviousWeekDates(fromDate, toDate) {
-  const prevWeekStart = new Date(fromDate);
-  const prevWeekEnd = new Date(toDate);
-  prevWeekStart.setDate(prevWeekStart.getDate() - 7);
-  prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
-  return {
-    start: prevWeekStart.toISOString().split('T')[0],
-    end: prevWeekEnd.toISOString().split('T')[0],
-  };
+// Mentors card must match the TOTAL MENTORS donut: same source
+// (top-level mentorNumberStats) and same total (sum of the donut segments).
+function getMentorDonutTotal(mentorNumberStats) {
+  if (!mentorNumberStats) return null;
+  const { donutChartData, activeMentors, newMentors, deactivatedMentors } = mentorNumberStats;
+  if (donutChartData?.existingActive !== undefined) {
+    return (
+      (donutChartData.existingActive?.count || 0) +
+      (donutChartData.newActive?.count || 0) +
+      (donutChartData.deactivated?.count || 0)
+    );
+  }
+  return (activeMentors?.count || 0) + (newMentors?.count || 0) + (deactivatedMentors?.count || 0);
+}
+
+function buildMentorsCardValue(mentorNumberStats, fallbackMentors) {
+  const total = getMentorDonutTotal(mentorNumberStats);
+  if (total === null) return fallbackMentors;
+  const base = mentorNumberStats.totalMentors || fallbackMentors;
+  return base && typeof base === 'object' ? { ...base, count: total } : total;
 }
 
 async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoading }) {
@@ -324,6 +315,7 @@ async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoadin
   );
   const originalCanvases = replaceCanvasesWithImages(chartCanvases);
   const pdfContainer = buildPDFContainer();
+  pdfContainer.classList.toggle('bg-oxford-blue', darkMode);
   const clonedContent = rootRef.current.cloneNode(true);
   clonedContent
     .querySelectorAll('[data-pdf-hide], .controls, .no-print')
@@ -407,6 +399,7 @@ function ReportHeader({
 
 function DateRangeModal({
   showDatePicker,
+  darkMode,
   startDate,
   endDate,
   onToggle,
@@ -416,7 +409,11 @@ function DateRangeModal({
   onApply,
 }) {
   return (
-    <Modal isOpen={showDatePicker} toggle={onToggle}>
+    <Modal
+      isOpen={showDatePicker}
+      toggle={onToggle}
+      className={darkMode ? styles.dateRangeModalDark : undefined}
+    >
       <ModalHeader toggle={onToggle}>Select Date Range</ModalHeader>
       <ModalBody>
         <div className="d-flex flex-column gap-4">
@@ -429,7 +426,8 @@ function DateRangeModal({
                 id="start-date"
                 selected={startDate}
                 onChange={onStartChange}
-                className="form-control"
+                className={clsx('form-control', darkMode && styles.datePickerInputDark)}
+                calendarClassName={darkMode ? 'total-org-datepicker-dark' : undefined}
                 dateFormat="MM/dd/yyyy"
                 placeholderText="Select start date"
               />
@@ -444,7 +442,8 @@ function DateRangeModal({
                 id="end-date"
                 selected={endDate}
                 onChange={onEndChange}
-                className="form-control"
+                className={clsx('form-control', darkMode && styles.datePickerInputDark)}
+                calendarClassName={darkMode ? 'total-org-datepicker-dark' : undefined}
                 dateFormat="MM/dd/yyyy"
                 placeholderText="Select end date"
                 minDate={startDate}
@@ -465,8 +464,7 @@ function DateRangeModal({
   );
 }
 
-const fromDate = calculateStartDate();
-const toDate = calculateEndDate();
+const { start: fromDate, end: toDate } = getPreviousWeekDates();
 
 function TotalOrgSummary(props) {
   const { darkMode, error } = props;
@@ -481,22 +479,15 @@ function TotalOrgSummary(props) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  /*
-    BUG FIX: fromDate/toDate now correctly represent the CURRENT week (see
-    calculateStartDate/calculateEndDate above). Since the default label here
-    is 'Previous Week', the initial currentFromDate/currentToDate must be
-    computed via getPreviousWeekDates(fromDate, toDate) - matching what the
-    "Previous Week" dropdown option itself computes - rather than reusing
-    fromDate/toDate directly, which would (after the fix above) describe the
-    CURRENT week instead and mismatch the 'Previous Week' label on first
-    render.
+
+  /* BUG FIX:
+  fromDate/toDate are already the previous week (computed above via getPreviousWeekDates() above).
+  Use them directly as the initial date range to match the 'Previous Week' default label.
   */
-  const [currentFromDate, setCurrentFromDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).start,
-  );
-  const [currentToDate, setCurrentToDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).end,
-  );
+
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
+
   const rootRef = useRef(null);
   const cacheRef = useRef({});
 
@@ -580,10 +571,11 @@ function TotalOrgSummary(props) {
     setShowDatePicker(false);
     setSelectedComparison('No Comparison');
     if (option === 'Current Week') {
-      setCurrentFromDate(fromDate);
-      setCurrentToDate(toDate);
+      const { start, end } = getCurrentWeekDates();
+      setCurrentFromDate(start);
+      setCurrentToDate(end);
     } else if (option === 'Previous Week') {
-      const { start, end } = getPreviousWeekDates(fromDate, toDate);
+      const { start, end } = getPreviousWeekDates();
       setCurrentFromDate(start);
       setCurrentToDate(end);
     }
@@ -594,8 +586,8 @@ function TotalOrgSummary(props) {
       setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
       setShowDatePicker(false);
       setSelectedComparison('No Comparison');
-      setCurrentFromDate(startDate.toISOString().split('T')[0]);
-      setCurrentToDate(endDate.toISOString().split('T')[0]);
+      setCurrentFromDate(formatLocalDateForApi(startDate));
+      setCurrentToDate(formatLocalDateForApi(endDate));
     }
   };
 
@@ -647,6 +639,7 @@ function TotalOrgSummary(props) {
         />
         <DateRangeModal
           showDatePicker={showDatePicker}
+          darkMode={darkMode}
           startDate={startDate}
           endDate={endDate}
           onToggle={() => setShowDatePicker(!showDatePicker)}
@@ -656,19 +649,30 @@ function TotalOrgSummary(props) {
           onApply={handleDatePickerSubmit}
         />
         <hr />
-        <AccordianWrapper title="Volunteer Status">
+        <AccordianWrapper title="Volunteer Status" section="volunteer-status">
           <Row>
             <Col lg={{ size: 12 }}>
               <VolunteerStatus
                 isLoading={isLoading}
-                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                volunteerNumberStats={
+                  volunteerStats?.volunteerNumberStats
+                    ? {
+                        ...volunteerStats.volunteerNumberStats,
+                        mentors: buildMentorsCardValue(
+                          volunteerStats.mentorNumberStats,
+                          volunteerStats.volunteerNumberStats?.mentors,
+                        ),
+                      }
+                    : null
+                }
                 totalHoursWorked={volunteerStats?.totalHoursWorked}
+                mentorNumberStats={volunteerStats?.mentorNumberStats}
                 comparisonType={selectedComparison}
               />
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Activities">
+        <AccordianWrapper title="Volunteer Activities" section="volunteer-activities">
           <Row>
             <Col lg={{ size: 12 }}>
               <VolunteerActivities
@@ -683,7 +687,10 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
+        <AccordianWrapper
+          title="Global Distribution and Volunteer Status Overview"
+          section="global-distribution"
+        >
           <Row>
             <Col lg={{ size: 6 }}>
               <div
@@ -729,14 +736,18 @@ function TotalOrgSummary(props) {
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
                   mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
+        <AccordianWrapper
+          title="Volunteer Workload and Task Completion Analysis"
+          section="volunteer-workload"
+        >
           <Row>
-            <Col lg={{ size: 6 }}>
+            <Col lg={{ size: 12 }}>
               <div
                 className={clsx(styles.componentContainer, styles.componentBorder)}
                 data-pdf-block
@@ -754,12 +765,26 @@ function TotalOrgSummary(props) {
                   className="d-flex flex-column justify-content-center mt-4 gap-3"
                   style={{ gap: '20px' }}
                 >
-                  <VolunteerHoursDistribution
-                    isLoading={isLoading}
-                    darkMode={darkMode}
-                    hoursData={volunteerStats?.volunteerHoursStats}
-                    totalHoursData={volunteerStats?.totalHoursWorked}
-                  />
+                  <div className="d-flex flex-row flex-wrap justify-content-center gap-4">
+                    <VolunteerHoursDistribution
+                      isLoading={isLoading}
+                      darkMode={darkMode}
+                      hoursData={
+                        volunteerStats?.volunteerWorkedHoursStats ??
+                        volunteerStats?.volunteerHoursStats
+                      }
+                      totalHoursData={volunteerStats?.totalHoursWorked}
+                      title="Actual Hours Worked"
+                    />
+                    <VolunteerHoursDistribution
+                      isLoading={isLoading}
+                      darkMode={darkMode}
+                      hoursData={volunteerStats?.volunteerCommittedHoursStats}
+                      title="Weekly Committed Hours"
+                      centerLabelLines={['TOTAL', 'VOLUNTEERS']}
+                      useBucketCounts
+                    />
+                  </div>
                   <div className="d-flex flex-column align-items-center justify-content-center">
                     <NumbersVolunteerWorked
                       isLoading={isLoading}
@@ -777,7 +802,7 @@ function TotalOrgSummary(props) {
                 </div>
               </div>
             </Col>
-            <Col lg={{ size: 3 }}>
+            <Col lg={{ size: 6 }}>
               <div
                 className={clsx(styles.componentContainer, styles.componentBorder)}
                 data-pdf-block
@@ -800,7 +825,7 @@ function TotalOrgSummary(props) {
                 </div>
               </div>
             </Col>
-            <Col lg={{ size: 3 }}>
+            <Col lg={{ size: 6 }}>
               <div
                 className={clsx(styles.componentContainer, styles.componentBorder)}
                 data-pdf-block
@@ -917,7 +942,7 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Teams and Blue Squares">
+        <AccordianWrapper title="Teams and Blue Squares" section="teams-blue-squares">
           <Row>
             <Col lg={{ size: 6 }}>
               <div

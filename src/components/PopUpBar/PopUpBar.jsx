@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import styles from './PopUpBar.module.css';
+import { Button } from 'reactstrap';
 
 function PopUpBar({
   firstName = window.viewingUser?.firstName,
@@ -13,6 +14,7 @@ function PopUpBar({
   isLoading = false,
   button = true,
   isMeetingNotification = false,
+  permissionsChanged = false,
 }) {
   const defaultTemplate =
     `You are currently functioning as ${firstName} ${lastName}, ` +
@@ -24,6 +26,7 @@ function PopUpBar({
     styles.popupContainer,
     textColor === 'black_text' ? styles.blackText : '',
     isMeetingNotification ? styles.meetingNotification : '',
+    permissionsChanged ? styles.permissionsChanged : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -41,11 +44,7 @@ function PopUpBar({
           {isMeetingNotification ? parse(DOMPurify.sanitize(displayText)) : displayText}
         </p>
       )}
-      {button && (
-        <button type="button" className={styles.closeButton} onClick={onClickClose}>
-          X
-        </button>
-      )}
+      {button && <Button close onClick={onClickClose} style={{ paddingRight: '5px' }} />}
     </div>
   );
 }

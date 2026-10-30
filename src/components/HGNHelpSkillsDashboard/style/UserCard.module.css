@@ -49,6 +49,16 @@
   word-break: break-word;
 }
 
+.profileLink {
+  text-decoration: none;
+}
+
+.profileLink:hover,
+.profileLink:focus {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .contactLine {
   display: flex;
   align-items: center;
@@ -63,6 +73,8 @@
 .contactIcon {
   width: 18px;
   height: 18px;
+  color: #616161;
+  flex-shrink: 0;
 }
 
 .contactLink {
@@ -125,9 +137,6 @@
   color: #616161;
   line-height: 22px;
   overflow-wrap: break-word;
-  max-height: 60px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* --- DARK MODE --- */
@@ -150,6 +159,10 @@
 }
 
 .darkMode .contactLine {
+  color: #ccc;
+}
+
+.darkMode .contactIcon {
   color: #ccc;
 }
 
