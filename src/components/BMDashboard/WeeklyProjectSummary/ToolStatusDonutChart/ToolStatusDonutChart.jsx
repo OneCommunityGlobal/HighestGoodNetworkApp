@@ -167,7 +167,7 @@ export default function ToolStatusDonutChart() {
   const total = availabilityData?.total || 0;
 
   // Check if we have no data for the selected combination
-  const hasNoData = (toolId || projectId) && chartData.length === 0 && total === 0;
+  const hasNoData = Boolean(toolId || projectId) && chartData.length === 0 && total === 0;
   const hasNoToolsMatch = total === 0;
 
   // Use the stored initial data for dropdowns, or fall back to current data
