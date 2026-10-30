@@ -50,7 +50,18 @@ const PRGradingTest = () => {
 
   const handleTeamSelect = teamId => {
     const team = allTeams.find(t => t.id === teamId);
-    history.push('/pr-grading-screen', { teamId, config: team });
+    const params = new URLSearchParams({ teamId });
+    if (team?.fromDB) {
+      const start = new Date();
+      start.setDate(start.getDate() - start.getDay());
+      const date = [
+        start.getFullYear(),
+        String(start.getMonth() + 1).padStart(2, '0'),
+        String(start.getDate()).padStart(2, '0'),
+      ].join('-');
+      params.set('weekStart', date);
+    }
+    history.push(`/pr-grading-screen?${params.toString()}`, { teamId, config: team });
   };
 
   const handleDeleteConfig = async (e, teamId) => {
