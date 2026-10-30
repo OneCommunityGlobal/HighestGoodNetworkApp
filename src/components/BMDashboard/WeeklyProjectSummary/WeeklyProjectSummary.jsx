@@ -545,6 +545,7 @@ function WeeklyProjectSummary() {
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
+              gridColumn: '1 / -1',
               gap: '15px',
               width: '100%',
             }}
@@ -795,6 +796,28 @@ function WeeklyProjectSummary() {
         svg.dataset.pdfSvgId = String(index);
       });
 
+      // Tag every live .sectionContentWrapper (and read its parent's resolved grid) before
+      // cloning, so the clone can be rebuilt as a matching real grid below instead of losing
+      // its column layout (see the display:contents -> display:grid fix further down).
+      const liveWrappersBeforeClone = Array.from(
+        contentElement.querySelectorAll(`.${styles.sectionContentWrapper}`),
+      );
+      const wrapperGridStyleById = new Map();
+      liveWrappersBeforeClone.forEach((wrapper, index) => {
+        wrapper.dataset.pdfWrapperId = String(index);
+        const parentStyle = getComputedStyle(wrapper.parentElement);
+        // getComputedStyle resolves grid-template-columns to one fixed px width per column,
+        // sized for the live page's current (narrower) viewport. The export container is a
+        // different, fixed 420mm width, so reusing those literal px values would leave the
+        // columns too narrow and empty space on the right. Only the column COUNT is reused;
+        // rebuilding it as repeat(count, 1fr) lets each column fill the export width instead.
+        const columnCount = parentStyle.gridTemplateColumns.split(' ').filter(Boolean).length || 1;
+        wrapperGridStyleById.set(String(index), {
+          gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
+          gap: parentStyle.gap,
+        });
+      });
+
       const clonedContent = contentElement.cloneNode(true);
 
       // Section headings are interactive <button> elements (for expand/collapse), but the
@@ -821,10 +844,17 @@ function WeeklyProjectSummary() {
       // .sectionContentWrapper uses display:contents so its children stay direct CSS Grid
       // items on screen (see WeeklyProjectSummary.module.css), but html2canvas cannot
       // compute a layout box for display:contents elements and silently fails to render
-      // anything inside them. The clone is a one-off flattened snapshot, not a live grid,
-      // so switching it to display:block here is safe and makes the chart content visible.
+      // anything inside them. Switching to display:block made content visible but dropped
+      // the grid entirely, collapsing multi-card sections into one narrow column with a
+      // large empty gap (reviewer-reported PDF layout regression) — exactly what
+      // .sectionContentWrapper's display:contents exists to prevent on screen. Instead,
+      // rebuild each wrapper as its own real grid using the same column/gap values its
+      // live parent resolved to, so the clone's layout matches the live page.
       clonedContent.querySelectorAll(`.${styles.sectionContentWrapper}`).forEach(wrapper => {
-        wrapper.style.display = 'block';
+        const gridStyle = wrapperGridStyleById.get(wrapper.dataset.pdfWrapperId);
+        wrapper.style.display = 'grid';
+        wrapper.style.gridTemplateColumns = gridStyle?.gridTemplateColumns || '1fr';
+        wrapper.style.gap = gridStyle?.gap || '15px';
       });
 
       // html2canvas cannot reliably rasterize live <svg> trees — recharts/d3 charts rely on
