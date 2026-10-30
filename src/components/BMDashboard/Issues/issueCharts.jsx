@@ -204,7 +204,8 @@ const barValueLabelsPlugin = {
     ctx.fillStyle = pluginOptions.color || '#232323';
 
     chart.data.datasets.forEach((dataset, datasetIndex) => {
-      if (!chart.isDatasetVisible(datasetIndex)) return;
+      // Value labels are for bars only (the trend line has its own tooltip)
+      if (!chart.isDatasetVisible(datasetIndex) || dataset.type === 'line') return;
       const meta = chart.getDatasetMeta(datasetIndex);
 
       meta.data.forEach((bar, index) => {
@@ -233,6 +234,7 @@ const handleLegendClick = (e, legendItem, legend) => {
 const getTooltipLabel = (ctx, chartAnalysis) => {
   const year = ctx.dataset.label;
   const value = Number(ctx.raw) || 0;
+  if (ctx.dataset.type === 'line') return `${year}: ${value}`;
   const total = chartAnalysis.totalByYear?.[year] ?? 0;
   const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
   return `${year}: ${value} (${pct}%)`;
@@ -747,6 +749,132 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drilledIssues, breakdownBy, projectNames]);
 
+  // Year-over-year change and resolved/unresolved split for one bar, used by the tooltip
+  const statusByBaseYear = useMemo(() => {
+    const map = {};
+    (issueRecords || []).forEach(issue => {
+      if (!isValidIssueType(issue?.issueType) || !matchesRecordFilters(issue)) return;
+      const key = `${stripNumericSuffix(issue.issueType)}|${getIssueYear(issue)}`;
+      if (!map[key]) map[key] = { open: 0, resolved: 0 };
+      // Anything not "open" (closed / close) counts as resolved
+      if (issue.status === 'open') map[key].open += 1;
+      else map[key].resolved += 1;
+    });
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [issueRecords, projectFilter, reporterFilter]);
+
+  const countForBaseYear = (base, year) => {
+    const selectedTypes = filters.issueTypes.length
+      ? filters.issueTypes
+      : getValidIssueTypes(issues);
+    return selectedTypes
+      .filter(type => stripNumericSuffix(type) === base)
+      .reduce((sum, type) => sum + (Number(issueCounts?.[type]?.[year]) || 0), 0);
+  };
+
+  const getTooltipDetails = ctx => {
+    if (ctx.dataset.type === 'line') return [];
+    const base = ctx.label;
+    const year = Number(ctx.dataset.label);
+    const value = Number(ctx.raw) || 0;
+    const lines = [];
+    if (uniqueYears.includes(year - 1)) {
+      const previous = countForBaseYear(base, year - 1);
+      const trend = formatTrend(value, previous);
+      lines.push(`Change vs ${year - 1}: ${trend.arrow} ${trend.text}`);
+    } else {
+      lines.push(`No data for ${year - 1} to compare`);
+    }
+    const status = statusByBaseYear[`${base}|${year}`];
+    if (status) lines.push(`Unresolved: ${status.open} · Resolved: ${status.resolved}`);
+    return lines;
+  };
+
+  // Combo chart: bars per year plus a trend line (average across the shown years)
+  const displayChartData = useMemo(() => {
+    const labels = chartData?.labels ?? [];
+    const datasets = chartData?.datasets ?? [];
+    if (datasets.length < 2) return chartData;
+    const average = labels.map((_, idx) => {
+      const sum = datasets.reduce((total, ds) => total + (Number(ds.data?.[idx]) || 0), 0);
+      return Math.round((sum / datasets.length) * 10) / 10;
+    });
+    return {
+      labels,
+      datasets: [
+        {
+          type: 'line',
+          label: 'Average per year',
+          data: average,
+          borderColor: darkMode ? '#facc15' : '#ca8a04',
+          backgroundColor: darkMode ? '#facc15' : '#ca8a04',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 3,
+          tension: 0.3,
+          // Smooth curve that never overshoots below the data (no dips under 0)
+          cubicInterpolationMode: 'monotone',
+          order: 0,
+        },
+        ...datasets.map(ds => ({ ...ds, type: 'bar', order: 1 })),
+      ],
+    };
+  }, [chartData, darkMode]);
+
+  const chartRef = useRef(null);
+
+  // Copies the chart onto a solid background so the image is readable outside the app
+  const getChartImage = () => {
+    const chart = chartRef.current;
+    if (!chart?.canvas) return null;
+    const source = chart.canvas;
+    const canvas = document.createElement('canvas');
+    canvas.width = source.width;
+    canvas.height = source.height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = darkMode ? '#1c2541' : '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(source, 0, 0);
+    return canvas.toDataURL('image/png');
+  };
+
+  const handleExportPng = () => {
+    const image = getChartImage();
+    if (!image) return;
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = 'issue-chart.png';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  // Opens the browser print dialog with just the chart, where "Save as PDF" can be chosen
+  const handleExportPdf = () => {
+    const image = getChartImage();
+    if (!image) return;
+    const frame = document.createElement('iframe');
+    frame.style.position = 'fixed';
+    frame.style.width = '0';
+    frame.style.height = '0';
+    frame.style.border = '0';
+    document.body.appendChild(frame);
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(
+      `<html><head><title>Issue Chart</title></head><body style="margin:24px;font-family:sans-serif">` +
+        `<h2>Issue Chart</h2>` +
+        `<img src="${image}" style="max-width:100%" /></body></html>`,
+    );
+    doc.close();
+    frame.onload = () => {
+      frame.contentWindow.focus();
+      frame.contentWindow.print();
+      setTimeout(() => frame.remove(), 1000);
+    };
+  };
+
   const handleExportChart = () => {
     const labels = chartData?.labels ?? [];
     const datasets = chartData?.datasets ?? [];
@@ -802,8 +930,11 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       onClick: (_event, elements, chart) => {
         if (!elements?.length) return;
         const { datasetIndex, index } = elements[0];
+        const dataset = chart.data.datasets?.[datasetIndex];
+        // The trend line is not a single year, so it has no drill-down
+        if (dataset?.type === 'line') return;
         const base = chart.data.labels?.[index];
-        const year = chart.data.datasets?.[datasetIndex]?.label;
+        const year = dataset?.label;
         if (base !== undefined && year !== undefined) openDrillDown(base, year);
       },
       onHover: (event, elements) => {
@@ -844,6 +975,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           callbacks: {
             title: items => items?.[0]?.label ?? '',
             label: ctx => getTooltipLabel(ctx, chartAnalysis),
+            afterLabel: ctx => getTooltipDetails(ctx),
           },
         },
         datalabels: {
@@ -912,7 +1044,18 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         },
       },
     }),
-    [darkMode, isMobile, chartAnalysis, chartData, isCardVariant],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      darkMode,
+      isMobile,
+      chartAnalysis,
+      chartData,
+      isCardVariant,
+      statusByBaseYear,
+      issueCounts,
+      filters.issueTypes,
+      uniqueYears,
+    ],
   );
 
   const chartPlugins = useMemo(
@@ -1347,13 +1490,29 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
                 <span className={styles.issueInsightsHint}>
                   Click a bar to see the issues behind it.
                 </span>
-                <button
-                  type="button"
-                  className={styles.issueExportButton}
-                  onClick={handleExportChart}
-                >
-                  Export chart data (CSV)
-                </button>
+                <div className={styles.issueExportGroup}>
+                  <button
+                    type="button"
+                    className={styles.issueExportButton}
+                    onClick={handleExportChart}
+                  >
+                    Export chart data (CSV)
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.issueExportButton}
+                    onClick={handleExportPng}
+                  >
+                    Export PNG
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.issueExportButton}
+                    onClick={handleExportPdf}
+                  >
+                    Export PDF
+                  </button>
+                </div>
               </div>
             </section>
           )}
@@ -1376,7 +1535,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           >
             <div style={{ flex: '1 1 auto', minHeight: 0, position: 'relative' }}>
               <Bar
-                data={chartData}
+                ref={chartRef}
+                data={displayChartData}
                 options={chartOptions}
                 plugins={chartPlugins}
                 aria-labelledby="chart-title"
