@@ -19,7 +19,10 @@ import {
 import { checkEmail } from '../../../utils/emailValidation';
 import {
   ensurePositionOption,
+  filterApplicantVisibleForms,
+  filterApplicantVisiblePositions,
   findFormByPositionSlug,
+  isApplicantVisibleForm,
   findPositionBySlug,
   publicApplyRequestConfig,
   titleHintFromSlug,
@@ -418,7 +421,7 @@ async function loadActivePositions() {
   try {
     const positionsRes = await axios.get(ENDPOINTS.GET_JOB_POSITIONS, publicApplyRequestConfig());
     return Array.isArray(positionsRes.data?.positions)
-      ? positionsRes.data.positions.filter(Boolean)
+      ? filterApplicantVisiblePositions(positionsRes.data.positions.filter(Boolean))
       : [];
   } catch {
     return [];
@@ -430,13 +433,13 @@ async function loadJobForms(formId) {
     try {
       const single = await axios.get(ENDPOINTS.GET_JOB_FORM(formId), publicApplyRequestConfig());
       const form = single.data?.form || single.data;
-      if (form) return [form];
+      if (isApplicantVisibleForm(form)) return [form];
     } catch {
       /* Fall through to /all */
     }
   }
   const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS, publicApplyRequestConfig());
-  return parseFormsResponse(res);
+  return filterApplicantVisibleForms(parseFormsResponse(res));
 }
 
 export function buildInitialSelection({
