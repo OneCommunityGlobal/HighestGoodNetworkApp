@@ -191,12 +191,28 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
 const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
   const getPaginationGroup = () => {
     if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
-    if (currentPage <= 3) return [1, 2, 3, 4, 5, '...', totalPages];
+    if (currentPage <= 3) return [1, 2, 3, 4, 5, 'end-ellipsis', totalPages];
     if (currentPage > totalPages - 3) {
-      return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+      return [
+        1,
+        'start-ellipsis',
+        totalPages - 4,
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
     }
 
-    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+    return [
+      1,
+      'start-ellipsis',
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      'end-ellipsis',
+      totalPages,
+    ];
   };
 
   return (
@@ -216,10 +232,10 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
         <ChevronLeft size={20} />
       </button>
 
-      {getPaginationGroup().map((value, index) =>
+      {getPaginationGroup().map(value =>
         typeof value === 'number' ? (
           <button
-            key={`page-${value}-${index}`}
+            key={`page-${value}`}
             type="button"
             className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
             onClick={() => setCurrentPage(value)}
@@ -230,8 +246,8 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
             {value}
           </button>
         ) : (
-          <span key={`ellipsis-${index}`} className={styles.paginationEllipsis} aria-hidden="true">
-            {value}
+          <span key={value} className={styles.paginationEllipsis} aria-hidden="true">
+            ...
           </span>
         ),
       )}
