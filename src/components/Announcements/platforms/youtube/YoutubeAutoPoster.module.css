@@ -62,7 +62,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.2rem 0.5rem;
-  color: #047857 !important;
+  color: #047857;
   background-color: #d1fae5;
   border-radius: 9999px;
   font-size: 0.625rem;
@@ -83,7 +83,7 @@
   max-width: 100%;
   margin: 0.2rem 0 0;
   overflow: hidden;
-  color: #202124 !important;
+  color: #202124;
   font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.3;
@@ -94,7 +94,7 @@
 .youtubeAutoPoster .channelUrl {
   max-width: 100%;
   overflow: hidden;
-  color: #5f6368 !important;
+  color: #5f6368;
   font-size: 0.8125rem;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -102,7 +102,7 @@
 }
 
 .youtubeAutoPoster .channelUrl:hover {
-  color: #f03 !important;
+  color: #f03;
   text-decoration: underline;
 }
 
@@ -135,7 +135,7 @@
 }
 
 :global(.dark-mode) .youtubeAutoPoster .disconnectButton {
-  color: #fff !important;
+  color: #fff;
   background-color: #3a222b;
   border-color: #b85c6b;
 }
@@ -194,7 +194,7 @@
 
 .youtubeAutoPoster .emptyStateEyebrow {
   margin-bottom: 0.625rem;
-  color: #b00020 !important;
+  color: #b00020;
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.12rem;
@@ -203,7 +203,7 @@
 
 .youtubeAutoPoster .connectionTitle {
   margin: 0;
-  color: #202124 !important;
+  color: #202124;
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 700;
   line-height: 1.15;
@@ -212,7 +212,7 @@
 .youtubeAutoPoster .connectionDescription {
   max-width: 29rem;
   margin: 0.875rem 0 0;
-  color: #5f6368 !important;
+  color: #5f6368;
   font-size: 0.9375rem;
   line-height: 1.6;
 }
@@ -221,7 +221,7 @@
   min-width: 12rem;
   margin-top: 1.75rem;
   padding: 0.8rem 1.25rem;
-  color: #fff !important;
+  color: #fff;
   background-color: #d9002b;
   border: 1px solid #d9002b;
   border-radius: 8px;
@@ -242,7 +242,7 @@
 
 .youtubeAutoPoster .connectionHint {
   margin: 0.75rem 0 0;
-  color: #878787 !important;
+  color: #878787;
   font-size: 0.75rem;
 }
 
@@ -307,14 +307,14 @@
 
 .youtubeAutoPoster .uploadResultTitle {
   margin: 0;
-  color: #065f46 !important;
+  color: #065f46;
   font-size: 1rem;
   font-weight: 700;
 }
 
 .youtubeAutoPoster .uploadResultMessage {
   margin: 0.25rem 0 0.625rem;
-  color: #166534 !important;
+  color: #166534;
   font-size: 0.8125rem;
   line-height: 1.45;
 }
@@ -323,14 +323,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: #047857 !important;
+  color: #047857;
   font-size: 0.8125rem;
   font-weight: 700;
   text-decoration: none;
 }
 
 .youtubeAutoPoster .uploadResultLink:hover {
-  color: #065f46 !important;
+  color: #065f46;
   text-decoration: underline;
 }
 
@@ -371,18 +371,18 @@
 }
 
 .youtubeAutoPoster .inputRequired {
-  color: #f03 !important;
+  color: #f03;
 }
 
 .youtubeAutoPoster .inputOptional {
-  color: #878787 !important;
+  color: #878787;
   font-weight: 400;
   font-size: 0.65rem;
 }
 
 .youtubeAutoPoster .characterCount {
   margin-left: auto;
-  color: #878787 !important;
+  color: #878787;
   font-size: 0.75rem;
   font-weight: 400;
 }
@@ -532,7 +532,7 @@
   width: 160px;
   max-height: 210px;
   overflow: hidden;
-  color: #fff !important;
+  color: #fff;
   background: #202124;
   border-radius: 10px;
   font-size: 1.75rem;
@@ -553,7 +553,7 @@
 }
 
 .youtubeAutoPoster .videoCaption {
-  color: #878787 !important;
+  color: #878787;
   font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.075rem;
@@ -561,7 +561,7 @@
 
 .youtubeAutoPoster .videoFilename {
   overflow: hidden;
-  color: #202124 !important;
+  color: #202124;
   font-size: 0.875rem;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -570,19 +570,19 @@
 }
 
 .youtubeAutoPoster .emptyVideoPrompt {
-  color: #5f6368 !important;
+  color: #5f6368;
   font-weight: 500;
 }
 
 .youtubeAutoPoster .videoSpecs {
   display: flex;
   gap: 0.875rem;
-  color: #878787 !important;
+  color: #878787;
   font-size: 0.75rem;
 }
 
 .youtubeAutoPoster .videoSpecs strong {
-  color: #5f6368 !important;
+  color: #5f6368;
 }
 
 .youtubeAutoPoster .form .replaceButton {
@@ -592,7 +592,7 @@
   justify-content: center;
   margin: 0;
   padding: 0.625rem 0.875rem;
-  color: #202124 !important;
+  color: #202124;
   background-color: #fff;
   border: 1px solid #e4e6eb;
   border-radius: 8px;
@@ -603,7 +603,7 @@
 
 .youtubeAutoPoster .form .replaceButton:hover {
   border-color: #f03;
-  color: #f03 !important;
+  color: #f03;
 }
 
 .youtubeAutoPoster .form .replaceButton:focus-within {
@@ -636,7 +636,7 @@
 
 .youtubeAutoPoster .tagCount {
   font-size: 0.75rem;
-  color: #878787 !important;
+  color: #878787;
 }
 
 .youtubeAutoPoster .tagsWrap {
@@ -653,7 +653,7 @@
   padding: 0.375rem 0.625rem;
   border-radius: 9999px;
   background-color: #ffe5eb;
-  color: #b00020 !important;
+  color: #b00020;
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1;
@@ -675,14 +675,14 @@
   border: none;
   padding: 0;
   margin: 0;
-  color: inherit !important;
+  color: inherit;
   font-size: 0.625rem;
   cursor: pointer;
   line-height: 1;
 }
 
 .youtubeAutoPoster .tagRemove:hover {
-  color: #c90028 !important;
+  color: #c90028;
 }
 
 .youtubeAutoPoster .addTagChip {
@@ -692,7 +692,7 @@
   padding: 0.375rem 0.625rem;
   border-radius: 9999px;
   border: 1px solid #e4e6eb;
-  color: #5f6368 !important;
+  color: #5f6368;
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1;
@@ -705,7 +705,7 @@
   background: transparent;
   font-size: inherit;
   font-weight: inherit;
-  color: #202124 !important;
+  color: #202124;
   width: 6rem;
   padding: 0;
 }
@@ -715,7 +715,7 @@
 }
 
 .youtubeAutoPoster .addTagInput::placeholder {
-  color: #878787 !important;
+  color: #878787;
   font-weight: 400;
 }
 
@@ -726,7 +726,7 @@
 .youtubeAutoPoster .tagHint {
   margin: 0.75rem 0 0;
   font-size: 0.75rem;
-  color: #878787 !important;
+  color: #878787;
   line-height: 1.3;
 }
 
@@ -739,7 +739,7 @@
 
 .youtubeAutoPoster .visibilityTitle {
   margin: 0;
-  color: #1a1a1a !important;
+  color: #1a1a1a;
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.25;
@@ -760,17 +760,17 @@
 }
 
 .youtubeAutoPoster .publicStatus {
-  color: #047857 !important;
+  color: #047857;
   background-color: #d1fae5;
 }
 
 .youtubeAutoPoster .unlistedStatus {
-  color: #fff !important;
+  color: #fff;
   background-color: #0a0a0a;
 }
 
 .youtubeAutoPoster .privateStatus {
-  color: #5f6368 !important;
+  color: #5f6368;
   background-color: #e5e7eb;
 }
 
@@ -784,7 +784,7 @@
   flex: 1;
   display: inline-flex;
   margin: 0;
-  color: #1a1a1a !important;
+  color: #1a1a1a;
   cursor: pointer;
 }
 
@@ -816,9 +816,9 @@
 }
 
 .youtubeAutoPoster .visibilityInput:checked + .visibilityOption {
-  color: #fff !important;
-  background-color: #d9002b !important;
-  border-color: #d9002b !important;
+  color: #fff;
+  background-color: #d9002b;
+  border-color: #d9002b;
 }
 
 .youtubeAutoPoster .visibilityInput:focus-visible + .visibilityOption {
@@ -837,7 +837,7 @@
 
 .youtubeAutoPoster .togglesTitle {
   margin: 0;
-  color: #1a1a1a !important;
+  color: #1a1a1a;
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25;
@@ -855,7 +855,7 @@
   gap: 0.875rem;
   padding: 0.875rem 0;
   margin: 0;
-  color: #1a1a1a !important;
+  color: #1a1a1a;
   font-weight: 400;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -880,7 +880,7 @@
 }
 
 .youtubeAutoPoster .toggleDescription {
-  color: #888 !important;
+  color: #888;
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 1.35;
@@ -923,7 +923,7 @@
 }
 
 .youtubeAutoPoster .toggleInput:checked + .toggleTrack {
-  background-color: #f03 !important;
+  background-color: #f03;
 }
 
 .youtubeAutoPoster .toggleInput:checked + .toggleTrack .toggleKnob {
@@ -947,7 +947,7 @@
   min-width: 10rem;
   min-height: 2.75rem;
   padding: 0.75rem 1.5rem;
-  color: #fff !important;
+  color: #fff;
   background-color: #d9002b;
   border: 1px solid #d9002b;
   border-radius: 8px;
@@ -960,7 +960,7 @@
 }
 
 .youtubeAutoPoster .uploadButton:disabled {
-  color: #4b5563 !important;
+  color: #4b5563;
   background-color: #e5e7eb;
   border-color: #e5e7eb;
   box-shadow: none;
@@ -1036,7 +1036,7 @@
 
 /* Dark mode overrides are kept together so the YouTube composer remains easy to theme. */
 :global(.dark-mode) .youtubeAutoPoster {
-  color: #e5e7eb !important;
+  color: #e5e7eb;
   background-color: #1a1d23;
 }
 
@@ -1047,7 +1047,7 @@
 :global(.dark-mode) .youtubeAutoPoster .visibilityTitle,
 :global(.dark-mode) .youtubeAutoPoster .togglesTitle,
 :global(.dark-mode) .youtubeAutoPoster .toggleLabel {
-  color: #f3f4f6 !important;
+  color: #f3f4f6;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .accountCard,
@@ -1064,7 +1064,7 @@
 }
 
 :global(.dark-mode) .youtubeAutoPoster .disconnectButton:hover:not(:disabled) {
-  color: #fff !important;
+  color: #fff;
   background-color: #d9002b;
   border-color: #d9002b;
 }
@@ -1076,19 +1076,19 @@
 }
 
 :global(.dark-mode) .youtubeAutoPoster .uploadResultTitle {
-  color: #a7f3d0 !important;
+  color: #a7f3d0;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .uploadResultMessage {
-  color: #bbf7d0 !important;
+  color: #bbf7d0;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .uploadResultLink {
-  color: #6ee7b7 !important;
+  color: #6ee7b7;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .uploadResultLink:hover {
-  color: #a7f3d0 !important;
+  color: #a7f3d0;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .channelUrl,
@@ -1098,7 +1098,7 @@
 :global(.dark-mode) .youtubeAutoPoster .tagCount,
 :global(.dark-mode) .youtubeAutoPoster .videoSpecs,
 :global(.dark-mode) .youtubeAutoPoster .toggleDescription {
-  color: #aeb7c4 !important;
+  color: #aeb7c4;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .connectionPrompt {
@@ -1111,14 +1111,14 @@
 :global(.dark-mode) .youtubeAutoPoster .form .visibilityOption,
 :global(.dark-mode) .youtubeAutoPoster .form .replaceButton,
 :global(.dark-mode) .youtubeAutoPoster .addTagChip {
-  color: #f3f4f6 !important;
+  color: #f3f4f6;
   background-color: #1f252e;
   border-color: #4b5563;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .inputField::placeholder,
 :global(.dark-mode) .youtubeAutoPoster .addTagInput::placeholder {
-  color: #9ca3af !important;
+  color: #9ca3af;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .categorySelect :global(.youtubeCategory__control),
@@ -1157,18 +1157,18 @@
 }
 
 :global(.dark-mode) .youtubeAutoPoster .form .replaceButton:hover {
-  color: #ff6680 !important;
+  color: #ff6680;
   border-color: #ff6680;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .tagChip {
-  color: #ff6680 !important;
+  color: #ff6680;
   background-color: #4a2630;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .visibilityTitle,
 :global(.dark-mode) .youtubeAutoPoster .toggleRow {
-  color: #e5e7eb !important;
+  color: #e5e7eb;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .toggleRow {
@@ -1182,7 +1182,7 @@
 }
 
 :global(.dark-mode) .youtubeAutoPoster .uploadButton:disabled {
-  color: #d1d5db !important;
+  color: #d1d5db;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .form .visibilityOption {
@@ -1194,12 +1194,12 @@
 }
 
 :global(.dark-mode) .youtubeAutoPoster .privateStatus {
-  color: #d1d5db !important;
+  color: #d1d5db;
   background-color: #374151;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .unlistedStatus {
-  color: #f3f4f6 !important;
+  color: #f3f4f6;
   background-color: #111827;
 }
 
@@ -1208,18 +1208,30 @@
 }
 
 :global(.dark-mode) .youtubeAutoPoster .videoFilename {
-  color: #f3f4f6 !important;
+  color: #f3f4f6;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .emptyVideoPrompt,
 :global(.dark-mode) .youtubeAutoPoster .videoSpecs strong {
-  color: #cbd5e1 !important;
+  color: #cbd5e1;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .addTagInput {
-  color: #f3f4f6 !important;
+  color: #f3f4f6;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .tagText {
-  color: #ff6680 !important;
+  color: #ff6680;
+}
+
+/* Selected/hover states: raise specificity above the generic dark-mode rules above. */
+:global(.dark-mode) .youtubeAutoPoster .visibilityInput:checked + .visibilityOption {
+  color: #fff;
+  background-color: #d9002b;
+  border-color: #d9002b;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .toggleInput:checked + .toggleTrack {
+  background-color: #f03;
+  border-color: #f03;
 }

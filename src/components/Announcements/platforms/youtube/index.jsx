@@ -313,7 +313,7 @@ function YoutubeAutoPoster({ platform }) {
       }
     }
 
-    checkConnection();
+    void checkConnection();
   }, []);
 
   const submitVideo = async event => {
