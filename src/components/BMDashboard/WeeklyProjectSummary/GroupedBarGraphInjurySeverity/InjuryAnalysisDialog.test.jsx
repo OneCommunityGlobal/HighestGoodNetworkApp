@@ -165,4 +165,31 @@ describe('injury analysis dialog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Trend' }));
     expect(await screen.findByText('Select at least one worker category.')).toBeTruthy();
   });
+
+  it('shows significant severity changes only in comparison mode and refreshes them with filters', async () => {
+    const initial = props();
+    const { rerender } = render(<InjuryAnalysisDialog {...initial} />);
+    await screen.findByText('Timeline chart');
+    expect(screen.queryByRole('heading', { name: 'Statistical callouts' })).toBeNull();
+    const makeData = count => ({
+      days: 31,
+      buckets: [{ records: [{ workerCategory: 'Carpenter', severity: 'Serious', count }] }],
+    });
+    axios.get
+      .mockResolvedValueOnce({ data: makeData(1) })
+      .mockResolvedValueOnce({ data: makeData(30) });
+    fireEvent.click(screen.getByRole('button', { name: 'Compare periods' }));
+    await screen.findAllByText('↑ Statistically significant increase');
+    expect(screen.getByText('Carpenter · Serious')).toBeTruthy();
+    rerender(
+      <InjuryAnalysisDialog
+        {...initial}
+        filters={makeFilters([{ value: 'project', label: 'Different project' }])}
+      />,
+    );
+    await screen.findByText(
+      'No statistically significant difference detected for the assessed category/severity combinations.',
+    );
+    expect(screen.queryAllByText('↑ Statistically significant increase')).toHaveLength(0);
+  });
 });

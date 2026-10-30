@@ -69,6 +69,57 @@
   font-size: 0.875rem;
 }
 
+.statisticalCallouts {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #94a3b8;
+  border-radius: 0.5rem;
+}
+
+.statisticalCallouts h4 {
+  font-size: 1.05rem;
+}
+
+.calloutList {
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 0.75rem;
+}
+
+.calloutList li {
+  padding: 0.75rem;
+  border-left: 4px solid #b45309;
+  background: #fff7ed;
+  color: #431407;
+  overflow-wrap: anywhere;
+}
+
+.calloutList li[data-change='decrease'] {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #172554;
+}
+
+.calloutList strong,
+.calloutList span,
+.calloutList small {
+  display: block;
+}
+
+.dark .calloutList li {
+  border-color: #fbbf24;
+  background: #3b2f20;
+  color: #fef3c7;
+}
+
+.dark .calloutList li[data-change='decrease'] {
+  border-color: #93c5fd;
+  background: #213a58;
+  color: #dbeafe;
+}
+
 .dialog label {
   display: block;
   font-weight: 600;

@@ -24,6 +24,8 @@ import {
   categoryColorIndex,
 } from './injuryAnalysis';
 import styles from './InjuryAnalysisDialog.module.css';
+import { severitySignificance } from './injurySignificance';
+import InjuryStatisticalCallouts from './InjuryStatisticalCallouts';
 
 const COLORS = ['#2563eb', '#b45309', '#059669', '#9333ea', '#db2777', '#0891b2'];
 const DARK_COLORS = ['#93c5fd', '#fcd34d', '#6ee7b7', '#c4b5fd', '#f9a8d4', '#67e8f9'];
@@ -181,6 +183,10 @@ function InjuryAnalysisDialog({
     () => (view === 'compare' && result ? comparePeriods(result[0], result[1]) : []),
     [result, view],
   );
+  const statisticalAnalysis = useMemo(
+    () => (view === 'compare' && result ? severitySignificance(result[0], result[1]) : null),
+    [result, view],
+  );
   const options = trend.series.map(series => ({ value: series.name, label: series.name }));
   const chosen =
     selectedCategories === null
@@ -206,6 +212,29 @@ function InjuryAnalysisDialog({
         Injury trends & comparisons
       </ModalHeader>
       <ModalBody>
+        <div className={styles.toolbar}>
+          <div className={styles.switch} role="group" aria-label="Analysis view">
+            <button type="button" aria-pressed={view === 'trend'} onClick={() => setView('trend')}>
+              Trend
+            </button>
+            <button
+              type="button"
+              aria-pressed={view === 'compare'}
+              onClick={() => setView('compare')}
+            >
+              Compare periods
+            </button>
+          </div>
+          {view === 'trend' && (
+            <label>
+              Group by
+              <select value={interval} onChange={event => setInterval(event.target.value)}>
+                <option value="monthly">Month</option>
+                <option value="quarterly">Quarter</option>
+              </select>
+            </label>
+          )}
+        </div>
         <p>
           Explore recorded injury counts by worker category. Filters are shared with the snapshot.
         </p>
@@ -253,29 +282,6 @@ function InjuryAnalysisDialog({
             ))}
           </div>
         </section>
-        <div className={styles.toolbar}>
-          <div className={styles.switch} role="group" aria-label="Analysis view">
-            <button type="button" aria-pressed={view === 'trend'} onClick={() => setView('trend')}>
-              Trend
-            </button>
-            <button
-              type="button"
-              aria-pressed={view === 'compare'}
-              onClick={() => setView('compare')}
-            >
-              Compare periods
-            </button>
-          </div>
-          {view === 'trend' && (
-            <label>
-              Group by
-              <select value={interval} onChange={event => setInterval(event.target.value)}>
-                <option value="monthly">Month</option>
-                <option value="quarterly">Quarter</option>
-              </select>
-            </label>
-          )}
-        </div>
         <div className={styles.dateOptions}>
           <label>
             Date preset
@@ -433,6 +439,7 @@ function InjuryAnalysisDialog({
                     comparing their frequency.
                   </p>
                 )}
+                <InjuryStatisticalCallouts analysis={statisticalAnalysis} />
                 <div
                   className={styles.comparisonChart}
                   style={{ height: Math.max(280, comparison.length * 70) }}

@@ -280,9 +280,18 @@ function InjuryCategoryBarChart() {
     <div className={containerClassName}>
       <div className={styles.injuryChartHeader}>
         <h3 className={styles.injuryChartTitle}>Injury Severity by Category of Worker Injured</h3>
-        <div className={styles.analysisAction}>
-          <button type="button" onClick={() => setAnalysisOpen(true)}>
-            Explore trends
+        <div className={styles.analysisAction} role="group" aria-label="Injury analysis view">
+          <button type="button" aria-pressed={!analysisOpen} onClick={() => setAnalysisOpen(false)}>
+            Snapshot
+          </button>
+          <button
+            type="button"
+            aria-pressed={analysisOpen}
+            aria-haspopup="dialog"
+            aria-expanded={analysisOpen}
+            onClick={() => setAnalysisOpen(true)}
+          >
+            Time series <span aria-hidden="true">↗</span>
           </button>
         </div>
 

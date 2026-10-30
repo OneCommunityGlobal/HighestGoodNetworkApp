@@ -4,17 +4,29 @@
 /* ===== Card layout ===== */
 .analysisAction {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  gap: 0.25rem;
+  flex-wrap: wrap;
   margin-bottom: 0.75rem;
 }
 
 .analysisAction button {
-  background: #1d4ed8;
-  color: #fff;
-  border: 1px solid #1d4ed8;
+  background: transparent;
+  color: #1d4ed8;
+  border: 1px solid #94a3b8;
   border-radius: 0.4rem;
   padding: 0.4rem 0.8rem;
   font-weight: 600;
+}
+
+.injuryChartDark .analysisAction button {
+  color: #f1f5f9;
+}
+
+.analysisAction button[aria-pressed='true'] {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
 }
 
 .analysisAction button:focus-visible {
