@@ -7,13 +7,12 @@ import {
   ResponsiveContainer,
   Tooltip,
   Cell,
+  CartesianGrid,
 } from 'recharts';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
-
 const rawData = [
   {
     projectId: 'Project A',
@@ -156,17 +155,14 @@ const rawData = [
     date: '2026-05-26',
   },
 ];
-
 const isDateMatch = (entryDate, startDate, endDate) => {
   if (startDate && entryDate < startDate) return false;
   if (endDate && entryDate > endDate) return false;
   return true;
 };
-
 const isProjectMatch = (entryProject, projectId) => projectId === '' || entryProject === projectId;
 const isCategoryMatch = (entryCategory, categoryFilter) =>
   categoryFilter === 'ALL' || entryCategory === categoryFilter;
-
 const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFilter) => {
   const filtered = rawData.filter(
     entry =>
@@ -174,7 +170,6 @@ const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFil
       isProjectMatch(entry.projectId, projectId) &&
       isCategoryMatch(entry.category, categoryFilter),
   );
-
   const aggregated = {};
   filtered.forEach(entry => {
     const key = entry.projectId;
@@ -184,7 +179,6 @@ const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFil
     aggregated[key].planned += entry.plannedCost;
     aggregated[key].actual += entry.actualCost;
   });
-
   return Object.values(aggregated).map(item => {
     item.variance = item.actual - item.planned;
     const percent = item.planned === 0 ? 0 : ((item.variance / item.planned) * 100).toFixed(1);
@@ -193,19 +187,19 @@ const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFil
     return item;
   });
 };
-
 const getTheme = darkMode => {
   const mode = darkMode ? 'dark' : 'light';
   return {
     inputBg: { dark: '#2d3748', light: '#fff' }[mode],
     inputText: { dark: '#f8fafc', light: '#0f172a' }[mode],
-    inputBorder: { dark: '1px solid #475569', light: '1px solid #cbd5e1' }[mode],
-    labelColor: { dark: '#e2e8f0', light: '#334155' }[mode],
+    inputBorder: { dark: '1px solid #94a3b8', light: '1px solid #cbd5e1' }[mode],
+    labelColor: { dark: '#f8fafc', light: '#334155' }[mode],
     titleColor: { dark: '#f8fafc', light: '#1e293b' }[mode],
-    legendColor: { dark: '#cbd5e1', light: '#334155' }[mode],
-    emptyTextColor: { dark: '#94a3b8', light: '#64748b' }[mode],
-    axisStroke: { dark: '#64748b', light: '#94a3b8' }[mode],
-    axisTick: { dark: '#cbd5e1', light: '#475569' }[mode],
+    legendColor: { dark: '#f8fafc', light: '#334155' }[mode],
+    emptyTextColor: { dark: '#cbd5e1', light: '#64748b' }[mode],
+    axisStroke: { dark: '#94a3b8', light: '#94a3b8' }[mode],
+    axisTick: { dark: '#e2e8f0', light: '#475569' }[mode],
+    gridStroke: { dark: '#64748b', light: '#e2e8f0' }[mode],
     cursorFill: { dark: 'rgba(255, 255, 255, 0.05)', light: 'rgba(0, 0, 0, 0.05)' }[mode],
     tooltipBg: { dark: '#1e293b', light: '#ffffff' }[mode],
     tooltipBorder: { dark: '1px solid #334155', light: '1px solid #e2e8f0' }[mode],
@@ -220,43 +214,80 @@ const getTheme = darkMode => {
     buttonHoverBg: { dark: '#4b5563', light: '#d1d5db' }[mode],
   };
 };
+const formatCompactCost = value => {
+  const amount = Number(value);
+  if (Math.abs(amount) >= 1000) {
+    return `$${(amount / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+  }
+  return `$${amount.toLocaleString()}`;
+};
+
+const PlannedCostLabel = ({ x, y, width, value, darkMode, compact }) => (
+  <text
+    x={x + width / 2}
+    y={y - (compact ? 17 : 8)}
+    style={{ fill: darkMode ? '#bfdbfe' : '#1d4ed8' }}
+    fontSize={compact ? 9 : 11}
+    fontWeight="bold"
+    textAnchor="middle"
+  >
+    {compact ? formatCompactCost(value) : `$${Number(value).toLocaleString()}`}
+  </text>
+);
+
+PlannedCostLabel.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  width: PropTypes.number,
+  value: PropTypes.number,
+  darkMode: PropTypes.bool,
+  compact: PropTypes.bool,
+};
 
 const VarianceLabel = props => {
-  const { x, y, width, value, darkMode } = props;
+  const { x, y, width, value, darkMode, compact } = props;
   const isOver = value?.toString().startsWith('+');
   const theme = getTheme(darkMode);
+  const valueString = value?.toString() ?? '';
 
+  let sign = '';
+
+  if (isOver) {
+    sign = '+';
+  } else if (valueString.startsWith('-')) {
+    sign = '-';
+  }
+
+  const numericValue = Number(valueString.replace(/[^\d.-]/g, '') || 0);
+
+  const label = compact ? `${sign}${formatCompactCost(numericValue).replace('$-', '$')}` : value;
   return (
     <text
       x={x + width / 2}
       y={y - 8}
-      fill={isOver ? theme.overBudget : theme.underBudget}
-      fontSize="11"
+      style={{ fill: isOver ? theme.overBudget : theme.underBudget }}
+      fontSize={compact ? 9 : 11}
       fontWeight="bold"
       textAnchor="middle"
     >
-      {value}
+      {label}
     </text>
   );
 };
-
 VarianceLabel.propTypes = {
   x: PropTypes.number,
   y: PropTypes.number,
   width: PropTypes.number,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   darkMode: PropTypes.bool,
+  compact: PropTypes.bool,
 };
-
 const CustomTooltip = ({ active, payload, label, darkMode }) => {
   if (!active || !payload?.length) return null;
-
   const chartData = payload[0].payload;
   const isOverBudget = chartData.variance > 0;
   const theme = getTheme(darkMode);
-
   const varianceColor = isOverBudget ? theme.overBudget : theme.underBudget;
-
   return (
     <div
       style={{
@@ -300,7 +331,6 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
     </div>
   );
 };
-
 CustomTooltip.propTypes = {
   active: PropTypes.bool,
   payload: PropTypes.arrayOf(
@@ -316,6 +346,122 @@ CustomTooltip.propTypes = {
   label: PropTypes.string,
   darkMode: PropTypes.bool,
 };
+const ExpenseChartDisplay = ({ data, errorMessage, theme, darkMode }) => {
+  const [chartWidth, setChartWidth] = useState(0);
+  const isNarrowChart = chartWidth > 0 && chartWidth < 500;
+
+  return (
+    <div style={{ width: '100%', height: '300px' }}>
+      {data.length === 0 && !errorMessage ? (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            color: theme.emptyTextColor,
+            fontStyle: 'italic',
+          }}
+        >
+          No data available for the selected filters.
+        </div>
+      ) : (
+        <div
+          className="expense-cost-chart"
+          style={{ width: '100%', height: '100%', '--expense-axis-fill': theme.axisTick }}
+        >
+          <style>{`
+              .expense-cost-chart .recharts-cartesian-axis-tick-value {
+                fill: var(--expense-axis-fill) !important;
+              }
+            `}</style>
+          <ResponsiveContainer width="100%" height="100%" onResize={width => setChartWidth(width)}>
+            <BarChart
+              data={data}
+              margin={{
+                top: isNarrowChart ? 38 : 25,
+                right: isNarrowChart ? 2 : 10,
+                left: isNarrowChart ? 0 : 52,
+                bottom: 0,
+              }}
+              barGap={isNarrowChart ? 3 : 18}
+              barCategoryGap={isNarrowChart ? '8%' : '28%'}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} vertical={false} />
+              <XAxis
+                dataKey="project"
+                stroke={theme.axisStroke}
+                tick={{
+                  fontSize: isNarrowChart ? 10 : 12,
+                  fill: theme.axisTick,
+                  fontWeight: 500,
+                }}
+                tickFormatter={value => (isNarrowChart ? value.replace(/^Project\s+/, '') : value)}
+                interval={0}
+                tickMargin={8}
+              />
+              <YAxis
+                stroke={theme.axisStroke}
+                tick={{ fontSize: isNarrowChart ? 10 : 12, fill: theme.axisTick }}
+                axisLine
+                tickLine
+                width={isNarrowChart ? 52 : 78}
+                tickFormatter={value => `$${value.toLocaleString()}`}
+                label={{
+                  value: 'Cost ($)',
+                  angle: -90,
+                  position: 'insideLeft',
+                  offset: isNarrowChart ? -12 : -34,
+                  fill: theme.axisTick,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  style: { textAnchor: 'middle' },
+                }}
+              />
+              <Tooltip
+                content={<CustomTooltip darkMode={darkMode} />}
+                cursor={{ fill: theme.cursorFill }}
+                wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
+                contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
+              />
+              <Bar
+                dataKey="planned"
+                fill="#4285F4"
+                name="Planned"
+                radius={[3, 3, 0, 0]}
+                maxBarSize={48}
+              >
+                <LabelList
+                  dataKey="planned"
+                  content={<PlannedCostLabel darkMode={darkMode} compact={isNarrowChart} />}
+                />
+              </Bar>
+              <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]} maxBarSize={48}>
+                <LabelList
+                  dataKey="varianceLabel"
+                  content={<VarianceLabel darkMode={darkMode} compact={isNarrowChart} />}
+                />
+                {data.map(entry => (
+                  <Cell
+                    key={`cell-${entry.project}`}
+                    fill={entry.variance > 0 ? theme.overBudget : theme.underBudget}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </div>
+  );
+};
+
+ExpenseChartDisplay.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  errorMessage: PropTypes.string.isRequired,
+  theme: PropTypes.objectOf(PropTypes.string).isRequired,
+  darkMode: PropTypes.bool,
+};
 
 export default function ExpenseBarChart({ darkMode }) {
   const [projectId, setProjectId] = useState('');
@@ -324,15 +470,12 @@ export default function ExpenseBarChart({ darkMode }) {
   const [endDate, setEndDate] = useState('');
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
-
   const theme = getTheme(darkMode);
-
   const today = new Date();
   const localTodayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
     2,
     '0',
   )}-${String(today.getDate()).padStart(2, '0')}`;
-
   const labelGroupStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -343,7 +486,6 @@ export default function ExpenseBarChart({ darkMode }) {
     fontSize: '0.85rem',
     width: '100%',
   };
-
   const inputStyle = {
     width: '100%',
     padding: '8px 10px',
@@ -363,7 +505,6 @@ export default function ExpenseBarChart({ darkMode }) {
     setEndDate('');
     setErrorMessage('');
   };
-
   useEffect(() => {
     try {
       const processedData = getFilteredAndAggregatedData(
@@ -377,7 +518,6 @@ export default function ExpenseBarChart({ darkMode }) {
       setErrorMessage('Something went wrong while loading chart data.');
     }
   }, [projectId, categoryFilter, startDate, endDate]);
-
   return (
     <div style={{ width: '100%', padding: '0.5rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
@@ -390,11 +530,10 @@ export default function ExpenseBarChart({ darkMode }) {
           </div>
         )}
       </div>
-
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
           columnGap: '1.5rem',
           rowGap: '1rem',
           marginBottom: '1.5rem',
@@ -483,7 +622,6 @@ export default function ExpenseBarChart({ darkMode }) {
           </button>
         </div>
       </div>
-
       <div
         style={{
           display: 'flex',
@@ -533,72 +671,15 @@ export default function ExpenseBarChart({ darkMode }) {
           Actual (Under Budget)
         </span>
       </div>
-
-      <div style={{ width: '100%', height: '300px' }}>
-        {data.length === 0 && !errorMessage ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-              color: theme.emptyTextColor,
-              fontStyle: 'italic',
-            }}
-          >
-            No data available for the selected filters.
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 25, right: 10, left: 20, bottom: 0 }}>
-              <XAxis
-                dataKey="project"
-                stroke={theme.axisStroke}
-                tick={{ fontSize: 12, fill: theme.axisTick, fontWeight: 500 }}
-                interval={0}
-                tickMargin={8}
-              />
-              <YAxis
-                stroke={theme.axisStroke}
-                tick={{ fontSize: 12, fill: theme.axisTick }}
-                axisLine
-                tickLine
-                tickFormatter={value => `$${value.toLocaleString()}`}
-              />
-              <Tooltip
-                content={<CustomTooltip darkMode={darkMode} />}
-                cursor={{ fill: theme.cursorFill }}
-                wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
-                contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
-              />
-              <Bar dataKey="planned" fill="#4285F4" name="Planned" radius={[3, 3, 0, 0]}>
-                <LabelList
-                  dataKey="planned"
-                  position="top"
-                  style={{ fontSize: 11, fill: '#8ab4f8', fontWeight: 'bold' }}
-                  formatter={val => `$${val.toLocaleString()}`}
-                />
-              </Bar>
-              <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]}>
-                <LabelList
-                  dataKey="varianceLabel"
-                  content={<VarianceLabel darkMode={darkMode} />}
-                />
-                {data.map(entry => (
-                  <Cell
-                    key={`cell-${entry.project}`}
-                    fill={entry.variance > 0 ? theme.overBudget : theme.underBudget}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+      <ExpenseChartDisplay
+        data={data}
+        errorMessage={errorMessage}
+        theme={theme}
+        darkMode={darkMode}
+      />
     </div>
   );
 }
-
 ExpenseBarChart.propTypes = {
   darkMode: PropTypes.bool,
 };

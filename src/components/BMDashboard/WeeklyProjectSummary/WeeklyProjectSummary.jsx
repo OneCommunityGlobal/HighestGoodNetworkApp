@@ -32,7 +32,6 @@ import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
@@ -499,14 +498,7 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '15px',
-              width: '100%',
-            }}
-          >
+          <div className={styles.financialsChartsLayout}>
             {/* Top Left: Planned vs Actual Cost */}
             <div
               className="weekly-project-summary-card financial-small financial-chart"
@@ -536,7 +528,7 @@ function WeeklyProjectSummary() {
             {/* Bottom: Cost Breakdown Pie Chart (Spans across both columns) */}
             <div
               className="weekly-project-summary-card financial-big"
-              style={{ gridColumn: 'span 2', width: '100%', minHeight: '400px' }}
+              style={{ gridColumn: '1 / -1', width: '100%', minHeight: '400px' }}
             >
               <CostBreakDown />
             </div>
@@ -622,21 +614,6 @@ function WeeklyProjectSummary() {
         content: (
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection />
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '15px',
-                marginTop: '15px',
-              }}
-            >
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <CostPredictionChart projectId={1} />
-              </div>
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <ActualVsPlannedCost />
-              </div>
-            </div>
           </div>
         ),
       },
@@ -853,7 +830,11 @@ function WeeklyProjectSummary() {
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                <div
+                  className={`${styles.weeklyProjectSummaryDashboardCategoryContent} ${
+                    key === 'Financials' ? styles.financialsSectionContent : ''
+                  }`}
+                >
                   {content}
                 </div>
               )}
