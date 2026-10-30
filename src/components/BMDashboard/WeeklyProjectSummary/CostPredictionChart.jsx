@@ -292,7 +292,9 @@ function CostPredictionChart({ projectId }) {
   const theme = getTheme(darkMode);
 
   // filter state
-  const [selectedProjectId, setSelectedProjectId] = useState('');
+  // Defaults to the projectId prop so the dropdown's initial selection matches
+  // the project whose data the chart actually loads on first render.
+  const [selectedProjectId, setSelectedProjectId] = useState(projectId);
   const [dateRange, setDateRange] = useState({ start: '', end: '' }); // 'YYYY-MM-DD'
 
   const legendItems = [
@@ -364,12 +366,12 @@ function CostPredictionChart({ projectId }) {
 
   // Reset handler
   const handleReset = () => {
-    setSelectedProjectId('');
+    setSelectedProjectId(projectId);
     setDateRange({ start: '', end: '' });
   };
 
   const hasActiveFilters =
-    selectedProjectId !== '' || dateRange.start !== '' || dateRange.end !== '';
+    selectedProjectId !== projectId || dateRange.start !== '' || dateRange.end !== '';
 
   const filterStyles = {
     bar: {
