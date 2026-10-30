@@ -1,4 +1,4 @@
-/* Version 1.0.0 */
+/* Version 1.0.1 */
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -197,11 +197,18 @@ export default function BookingPage() {
               <Row>
                 <Col md={12} className="text-center mb-3">
                   <div>
-                    <img
-                      className={styles.listingPhoto}
-                      src={`${LISTING_PHOTO}?w=900&auto=format&fit=crop`}
-                      alt="Unit 405"
-                    />
+                    <a
+                      href={`${LISTING_PHOTO}?w=1800&auto=format&fit=crop`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="View full-size photo of Unit 405"
+                    >
+                      <img
+                        className={styles.listingPhoto}
+                        src={`${LISTING_PHOTO}?w=900&auto=format&fit=crop`}
+                        alt="Unit 405"
+                      />
+                    </a>
                     <div className={styles.photoCaption}>
                       Unit 405, Earthbag Village –{' '}
                       <a
