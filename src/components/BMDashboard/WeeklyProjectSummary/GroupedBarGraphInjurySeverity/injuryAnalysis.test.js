@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { analysisSeries, comparePeriods, previousRange } from './injuryAnalysis';
+import {
+  analysisSeries,
+  comparePeriods,
+  previousRange,
+  defaultRange,
+  bucketDateRange,
+  categoryColorIndex,
+} from './injuryAnalysis';
 
 const period = (records, days = 10) => ({ days, buckets: [{ label: 'Jan 2025', records }] });
 const record = (workerCategory, count) => ({ workerCategory, count, severity: 'Low' });
@@ -34,5 +41,34 @@ describe('injury analysis calculations', () => {
       start: '2024-01-30',
       end: '2024-02-29',
     });
+  });
+  it('clips monthly and quarterly tooltip ranges to the exact selected dates', () => {
+    expect(
+      bucketDateRange({ key: '2024-02', label: 'Feb 2024' }, '2024-02-10', '2024-03-15', 'monthly'),
+    ).toBe('2024-02-10 – 2024-02-29');
+    expect(
+      bucketDateRange(
+        { key: '2024-01', label: 'Q1 2024' },
+        '2024-02-10',
+        '2024-03-15',
+        'quarterly',
+      ),
+    ).toBe('2024-02-10 – 2024-03-15');
+  });
+  it('uses calendar-month presets through today and stable name-based colors', () => {
+    expect(defaultRange(6, new Date(2026, 9, 30))).toEqual({
+      start: '2026-05-01',
+      end: '2026-10-30',
+    });
+    expect(defaultRange(12, new Date(2026, 0, 31))).toEqual({
+      start: '2025-02-01',
+      end: '2026-01-31',
+    });
+    const index = categoryColorIndex('Volunteer');
+    expect(index).toBeGreaterThanOrEqual(0);
+    expect(index).toBeLessThan(6);
+    expect(categoryColorIndex(['Staff', 'Volunteer'].filter(name => name === 'Volunteer')[0])).toBe(
+      index,
+    );
   });
 });

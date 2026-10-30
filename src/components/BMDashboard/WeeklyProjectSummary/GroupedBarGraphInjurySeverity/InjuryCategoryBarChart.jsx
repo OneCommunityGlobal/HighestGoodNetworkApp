@@ -49,6 +49,7 @@ function InjuryCategoryBarChart() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [analysisOpen, setAnalysisOpen] = useState(false);
+  const [analysisSettings, setAnalysisSettings] = useState(null);
   const [unfilteredProjects, setUnfilteredProjects] = useState([]);
 
   // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
@@ -397,6 +398,8 @@ function InjuryCategoryBarChart() {
 
       {analysisOpen && (
         <InjuryAnalysisDialog
+          initialSettings={analysisSettings}
+          onSettingsChange={setAnalysisSettings}
           onClose={() => setAnalysisOpen(false)}
           darkMode={darkMode}
           initialRange={{

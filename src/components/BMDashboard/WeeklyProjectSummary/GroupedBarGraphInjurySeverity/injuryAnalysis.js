@@ -1,10 +1,29 @@
-export const analysisSeries = buckets => {
+export const categoryColorIndex = name =>
+  Array.from(name).reduce((hash, character) => (hash * 31 + character.charCodeAt(0)) >>> 0, 0) % 6;
+
+export const bucketDateRange = (bucket, start, end, interval) => {
+  if (!bucket.key || !start || !end) return bucket.label;
+  const first = `${bucket.key}-01`;
+  const date = new Date(`${first}T00:00:00Z`);
+  const last = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + (interval === 'quarterly' ? 3 : 1), 0),
+  )
+    .toISOString()
+    .slice(0, 10);
+  return `${first < start ? start : first} – ${last > end ? end : last}`;
+};
+
+export const analysisSeries = (buckets, start, end, interval) => {
   const categories = [
     ...new Set(buckets.flatMap(bucket => bucket.records.map(record => record.workerCategory))),
   ].sort();
   const series = categories.map((name, index) => ({ name, key: `category${index}` }));
   const rows = buckets.map(bucket => {
-    const row = { label: bucket.label, records: bucket.records };
+    const row = {
+      label: bucket.label,
+      records: bucket.records,
+      dateRange: bucketDateRange(bucket, start, end, interval),
+    };
     series.forEach(({ name, key }) => {
       row[key] = bucket.records
         .filter(record => record.workerCategory === name)
@@ -46,15 +65,15 @@ export const comparePeriods = (a, b) => {
       countB,
       change,
       description,
+      direction: change === 0 ? '→ Unchanged' : change > 0 ? '↑ Increased' : '↓ Decreased',
       rateA: countA / a.days,
       rateB: countB / b.days,
     };
   });
 };
 
-export const defaultRange = () => {
-  const end = new Date();
-  const start = new Date(end.getFullYear(), end.getMonth() - 11, 1);
+export const defaultRange = (months = 12, end = new Date()) => {
+  const start = new Date(end.getFullYear(), end.getMonth() - months + 1, 1);
   const ymd = date =>
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
       date.getDate(),

@@ -13,9 +13,16 @@ import {
   CartesianGrid,
   BarChart,
   Bar,
+  Text,
 } from 'recharts';
 import { ENDPOINTS } from '../../../../utils/URL';
-import { analysisSeries, comparePeriods, defaultRange, previousRange } from './injuryAnalysis';
+import {
+  analysisSeries,
+  comparePeriods,
+  defaultRange,
+  previousRange,
+  categoryColorIndex,
+} from './injuryAnalysis';
 import styles from './InjuryAnalysisDialog.module.css';
 
 const COLORS = ['#2563eb', '#b45309', '#059669', '#9333ea', '#db2777', '#0891b2'];
@@ -45,12 +52,65 @@ function DateRange({ label, value, onChange }) {
   );
 }
 
-function InjuryAnalysisDialog({ onClose, darkMode, initialRange, filters, selectStyles }) {
-  const [view, setView] = useState('trend');
-  const [interval, setInterval] = useState('monthly');
-  const [rangeB, setRangeB] = useState(() => ({ ...defaultRange(), ...initialRange }));
-  const [rangeA, setRangeA] = useState(() => previousRange(rangeB.start, rangeB.end));
-  const [selectedCategories, setSelectedCategories] = useState(null);
+function InjuryAnalysisDialog({
+  onClose,
+  darkMode,
+  initialRange,
+  filters,
+  selectStyles,
+  initialSettings,
+  onSettingsChange,
+}) {
+  const [view, setView] = useState(initialSettings?.view || 'trend');
+  const [interval, setInterval] = useState(initialSettings?.interval || 'monthly');
+  const [preset, setPreset] = useState(
+    initialSettings?.preset || (initialRange?.start || initialRange?.end ? 'custom' : '12'),
+  );
+  const [rangeB, setRangeB] = useState(
+    () => initialSettings?.rangeB || { ...defaultRange(), ...initialRange },
+  );
+  const [customRangeA, setCustomRangeA] = useState(
+    () => initialSettings?.customRangeA || previousRange(rangeB.start, rangeB.end),
+  );
+  const [baselineMode, setBaselineMode] = useState(initialSettings?.baselineMode || 'previous');
+  const rangeA = useMemo(
+    () => (baselineMode === 'previous' ? previousRange(rangeB.start, rangeB.end) : customRangeA),
+    [baselineMode, rangeB, customRangeA],
+  );
+  const [selectedCategories, setSelectedCategories] = useState(
+    initialSettings?.selectedCategories ?? null,
+  );
+  const [filtersOpen, setFiltersOpen] = useState(initialSettings?.filtersOpen || false);
+  useEffect(() => {
+    onSettingsChange?.({
+      view,
+      interval,
+      preset,
+      rangeB,
+      customRangeA,
+      baselineMode,
+      selectedCategories,
+      filtersOpen,
+    });
+  }, [
+    view,
+    interval,
+    preset,
+    rangeB,
+    customRangeA,
+    baselineMode,
+    selectedCategories,
+    filtersOpen,
+    onSettingsChange,
+  ]);
+  const changeRangeB = range => {
+    setPreset('custom');
+    setRangeB(range);
+  };
+  const changeRangeA = range => {
+    setBaselineMode('custom');
+    setCustomRangeA(range);
+  };
   const [response, setResponse] = useState(null);
   const result = response?.view === view ? response.data : null;
   const [loading, setLoading] = useState(true);
@@ -105,10 +165,16 @@ function InjuryAnalysisDialog({ onClose, darkMode, initialRange, filters, select
     };
   }, [params, rangeA, rangeB, interval, view]);
 
-  const trend = useMemo(() => analysisSeries(view === 'trend' && result ? result[0].buckets : []), [
-    result,
-    view,
-  ]);
+  const trend = useMemo(
+    () =>
+      analysisSeries(
+        view === 'trend' && result ? result[0].buckets : [],
+        rangeB.start,
+        rangeB.end,
+        interval,
+      ),
+    [result, view, rangeB, interval],
+  );
   const comparison = useMemo(
     () => (view === 'compare' && result ? comparePeriods(result[0], result[1]) : []),
     [result, view],
@@ -141,22 +207,50 @@ function InjuryAnalysisDialog({ onClose, darkMode, initialRange, filters, select
         <p>
           Explore recorded injury counts by worker category. Filters are shared with the snapshot.
         </p>
-        <div className={styles.filters}>
-          {filters.map(filter => (
-            <div key={filter.id}>
-              <label htmlFor={`analysis-${filter.id}`}>{filter.label}</label>
-              <Select
-                inputId={`analysis-${filter.id}`}
-                isMulti
-                options={filter.options}
-                value={filter.value}
-                onChange={filter.onChange}
-                styles={selectStyles}
-                placeholder={`All ${filter.label.toLowerCase()}`}
-              />
-            </div>
-          ))}
-        </div>
+        <section className={styles.filterSection} aria-label="Analysis filters">
+          <button
+            type="button"
+            className={styles.filterToggle}
+            aria-expanded={filtersOpen}
+            aria-controls="injury-analysis-filters"
+            onClick={() => setFiltersOpen(open => !open)}
+          >
+            Filters <span aria-hidden="true">{filtersOpen ? '▴' : '▾'}</span>
+          </button>
+          <p className={styles.filterSummary}>
+            {filters
+              .map(
+                filter =>
+                  `${filter.label}: ${
+                    filter.value.length
+                      ? `${filter.value
+                          .slice(0, 2)
+                          .map(option => option.label)
+                          .join(', ')}${
+                          filter.value.length > 2 ? ` +${filter.value.length - 2} more` : ''
+                        }`
+                      : 'All'
+                  }`,
+              )
+              .join(' · ')}
+          </p>
+          <div id="injury-analysis-filters" className={styles.filters} hidden={!filtersOpen}>
+            {filters.map(filter => (
+              <div key={filter.id}>
+                <label htmlFor={`analysis-${filter.id}`}>{filter.label}</label>
+                <Select
+                  inputId={`analysis-${filter.id}`}
+                  isMulti
+                  options={filter.options}
+                  value={filter.value}
+                  onChange={filter.onChange}
+                  styles={selectStyles}
+                  placeholder={`All ${filter.label.toLowerCase()}`}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
         <div className={styles.toolbar}>
           <div className={styles.switch} role="group" aria-label="Analysis view">
             <button type="button" aria-pressed={view === 'trend'} onClick={() => setView('trend')}>
@@ -180,14 +274,49 @@ function InjuryAnalysisDialog({ onClose, darkMode, initialRange, filters, select
             </label>
           )}
         </div>
+        <div className={styles.dateOptions}>
+          <label>
+            Date preset
+            <select
+              value={preset}
+              onChange={event => {
+                const value = event.target.value;
+                setPreset(value);
+                if (value !== 'custom') setRangeB(defaultRange(Number(value)));
+              }}
+            >
+              <option value="6">Last 6 months</option>
+              <option value="12">Last 12 months</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+          {view === 'compare' && (
+            <label>
+              Baseline period
+              <select
+                value={baselineMode}
+                onChange={event => {
+                  setCustomRangeA(rangeA);
+                  setBaselineMode(event.target.value);
+                }}
+              >
+                <option value="previous">Previous equal-length period</option>
+                <option value="custom">Custom period</option>
+              </select>
+            </label>
+          )}
+        </div>
+        <p className={styles.note}>
+          Presets include the current month through today. Editing a date switches to Custom.
+        </p>
         <div className={styles.ranges}>
           {view === 'compare' && (
-            <DateRange label="Period A · baseline" value={rangeA} onChange={setRangeA} />
+            <DateRange label="Period A · baseline" value={rangeA} onChange={changeRangeA} />
           )}
           <DateRange
             label={view === 'trend' ? 'Time range' : 'Period B · comparison'}
             value={rangeB}
-            onChange={setRangeB}
+            onChange={changeRangeB}
           />
         </div>
         {loading && <p role="status">Loading analysis…</p>}
@@ -231,6 +360,9 @@ function InjuryAnalysisDialog({ onClose, darkMode, initialRange, filters, select
                         <XAxis dataKey="label" tick={tick} minTickGap={25} />
                         <YAxis allowDecimals={false} tick={tick} />
                         <Tooltip
+                          labelFormatter={(label, payload) =>
+                            payload?.[0]?.payload?.dateRange || label
+                          }
                           contentStyle={{
                             background: darkMode ? '#1e293b' : '#fff',
                             color: darkMode ? '#fff' : '#111',
@@ -244,9 +376,7 @@ function InjuryAnalysisDialog({ onClose, darkMode, initialRange, filters, select
                             dataKey={series.key}
                             name={series.name}
                             stroke={
-                              (darkMode ? DARK_COLORS : COLORS)[
-                                trend.series.indexOf(series) % COLORS.length
-                              ]
+                              (darkMode ? DARK_COLORS : COLORS)[categoryColorIndex(series.name)]
                             }
                             strokeWidth={2}
                             dot={false}
@@ -314,8 +444,32 @@ function InjuryAnalysisDialog({ onClose, darkMode, initialRange, filters, select
                       margin={{ top: 12, right: 24, bottom: 12, left: 12 }}
                     >
                       <XAxis type="number" allowDecimals={false} tick={tick} />
-                      <YAxis type="category" dataKey="category" width={145} tick={tick} />
+                      <YAxis
+                        type="category"
+                        dataKey="category"
+                        width={145}
+                        tick={({ x, y, payload }) => (
+                          <Text
+                            x={x - 8}
+                            y={y}
+                            width={130}
+                            textAnchor="end"
+                            verticalAnchor="middle"
+                            {...tick}
+                          >
+                            {payload.value}
+                          </Text>
+                        )}
+                      />
                       <Tooltip
+                        formatter={(value, name) => [
+                          value,
+                          `${name}: ${
+                            name === 'Period A'
+                              ? `${rangeA.start} – ${rangeA.end}`
+                              : `${rangeB.start} – ${rangeB.end}`
+                          }`,
+                        ]}
                         contentStyle={{
                           background: darkMode ? '#1e293b' : '#fff',
                           color: darkMode ? '#fff' : '#111',
@@ -356,7 +510,10 @@ function InjuryAnalysisDialog({ onClose, darkMode, initialRange, filters, select
                           <th scope="row">{row.category}</th>
                           <td>{row.countA}</td>
                           <td>{row.countB}</td>
-                          <td>{row.description}</td>
+                          <td>
+                            <strong className={styles.changeLabel}>{row.direction}</strong>
+                            {row.change !== 0 && <span>{row.description.slice(2)}</span>}
+                          </td>
                           <td>{row.rateA.toFixed(2)}</td>
                           <td>{row.rateB.toFixed(2)}</td>
                         </tr>
