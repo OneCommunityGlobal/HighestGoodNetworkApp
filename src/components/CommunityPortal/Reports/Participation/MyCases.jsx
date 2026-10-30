@@ -7,15 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { filterEventsByDate } from './FilterByDate';
 
-function MyCases() {
+function MyCases({ isExporting = false }) {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [events, setEvents] = useState(mockEvents);
-
-  const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
 
   const now = new Date();
 
