@@ -1,10 +1,22 @@
-/* Container for the Paid Labor Cost card */
-.paid-labor-cost-container {
+/* Container for the Paid Labor Cost card.
+   This was previously named .paid-labor-cost-container (kebab-case), but the JSX applies
+   it via styles.paidLaborCostContainer — a different, unmatched key in a CSS Module's
+   exports — so none of these rules, including the flex layout the chart below depends on
+   to size itself, were ever actually applying. Renamed to match.
+   display:flex + flex-direction:column is what lets .paidLaborCostChartWrapper's
+   flex-grow:1 below actually expand to fill the parent card's height (set in
+   WeeklyProjectSummary.jsx's Labor and Time Tracking section) instead of the chart being
+   sized only by its own min-height, with the filters/title taking a disproportionate
+   share of the card and Recharts' ResponsiveContainer getting unstable dimensions to
+   measure against — which is what caused the reported overlap/compression. */
+.paidLaborCostContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   font-family: inherit;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
-
 }
 
 /* Title */
@@ -15,30 +27,8 @@
   color: #1e293b;
 }
 
-/* Each filter group (Tasks, Project, Date Range) */
-.paidLaborCostFilterGroup {
-  display: flex;
-  flex-direction: row;
-
-  /* side by side */
-  align-items: center;
-
-  /* align vertically */
-  gap: 8px;
-
-  /* space between label and select */
-  width: fit-content;
-
-  /* shrink-wrap to contents instead of 100% */
-  padding: 4px 8px;
-
-  /* optional padding */
-}
-
-.paidLaborCostFilterLabel {
-  margin: 0;
-
-  /* reset margin so it doesn't push things apart */
+.filterLabel {
+  margin: 0 0 4px;
   font-size: 15px;
   color: var(--text-color);
   white-space: nowrap;
@@ -63,32 +53,39 @@
 }
 
 
-/* Chart container */
-.paid-labor-cost-chart-container {
-  width: 100%;
-  align-items: flex-start;
+/* .filtersGrid previously had no base rule at all — only this narrow-screen override — so
+   on normal widths the three .filterGroup wrappers below (Tasks, Project, Date Range) just
+   stacked in document order with no grid, each one forced to the bogus height:200px
+   .filterGroup used to carry. Together that's what pushed the filters section to roughly
+   600px tall and compressed the chart below it into whatever was left of the card. */
+.filtersGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 @media (width <= 900px) {
   .filtersGrid {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
 }
 
 .filterGroup {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  color: #666;
-  font-size: 12px;
+  flex-direction: column;
+  gap: 4px;
 }
 
-/* Date picker container styles */
-.paidLaborCostDaterangeRow {
+/* Lays the start/end date pickers and the "to" separator between them out in a row.
+   Was previously referenced in JSX as styles.dateRangeFlex but never defined under that
+   name (only the unused .paidLaborCostDaterangeRow above existed), so the date range
+   fell back to default block stacking. */
+.dateRangeFlex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
 /* Date Picker */
@@ -98,7 +95,7 @@
   width: 100%;
   overflow: visible;
   max-width: 300px;
-  transition: all 0.3s ease-in-out;
+  transition: max-width 0.3s ease-in-out;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -332,8 +329,11 @@
   }
 }
 
-/* Dark Mode Support for Paid Labor Cost Component */
-.dark-mode .paid-labor-cost-container {
+/* Dark Mode Support for Paid Labor Cost Component.
+   darkMode and paidLaborCostContainer are applied as compound classes on the same root
+   element (see the component's `${styles.paidLaborCostContainer} ${darkMode ? ...}`), not
+   as nested ancestor/descendant — this selector needs to match that. */
+.paidLaborCostContainer.darkMode {
   background-color: var(--card-bg);
   box-shadow: 0 1px 3px var(--card-shadow);
 }

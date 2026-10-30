@@ -67,7 +67,6 @@
   /* allow selects to shrink instead of crushing the button */
 }
 
-/* Reactstrap Input adds .form-control — match box model to the Share PDF button */
 .weeklySummaryHeaderControls :global(.form-control) {
   box-sizing: border-box;
   height: 38px;
@@ -91,7 +90,9 @@
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
-  transition: all 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
   appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
@@ -218,6 +219,11 @@
   transition: background 0.2s ease-in-out;
 }
 
+/* No !important here or on the two overrides below (tablet-width dark mode, further down
+   this file): all three target the same .darkMode .weeklySummaryShareBtn / plain
+   .weeklySummaryShareBtn selectors at matching specificity, so later-in-file simply wins
+   the cascade without needing to force it. */
+
 /* Bootstrap .btn can add vertical offset; align with selects */
 .weeklySummaryHeaderControls :global(button.btn) {
   margin: 0;
@@ -238,15 +244,10 @@
   cursor: not-allowed;
 }
 
-.darkMode .weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover);
-}
-
 .weeklySummaryShareBtn:hover:not(:disabled) {
   background-color: var(--button-hover);
 }
 
-/* Spinner for PDF generation */
 .spinner {
   display: inline-block;
   width: 14px;
@@ -435,6 +436,8 @@
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle {
+  width: 100%;
+  border: none;
   background: var(--section-title-bg);
   padding: 12px 16px;
   font-size: medium;
@@ -444,6 +447,7 @@
   justify-content: space-between;
   align-items: center;
   color: var(--text-color);
+  text-align: left;
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle:hover {
@@ -461,6 +465,14 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  min-width: 0;
+}
+
+/* display: contents removes this wrapper from the box model so its children
+   (the section's cards) stay direct items of .weeklyProjectSummaryDashboardCategoryContent's
+   grid, instead of being collapsed into one full-width block and stacking. */
+.sectionContentWrapper {
+  display: contents;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryContent {
@@ -498,7 +510,7 @@
   flex-direction: column;
   border-radius: 12px;
   box-shadow: 0 4px 6px var(--card-shadow);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 /* ---------------- TOOLS TRACKING LAYOUT ---------------- */
@@ -598,7 +610,11 @@
   color: var(--text-color);
 }
 
-/* ---------------- STATUS CARD (base) ---------------- */
+.darkMode .weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover);
+}
+
+/* ---------------- STATUS CARD ---------------- */
 .statusCard {
   display: flex;
   flex-direction: column;
@@ -617,7 +633,8 @@
   border: 1px solid rgb(0 0 0 / 10%);
   position: relative;
   overflow: visible;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
 
 .weeklyCardTitle {
@@ -625,13 +642,17 @@
   font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
   transition: color 0.3s ease;
+  line-height: 1.25;
+  word-break: normal;
 }
 
 .weeklyStatusValue {
   color: #000;
-  font-size: 40px;
+  font-size: clamp(28px, 3vw, 40px);
   font-weight: 600;
   transition: color 0.3s ease;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .projectStatusUnavailableInfo {
@@ -685,7 +706,10 @@
   border-color: rgb(255 255 255 / 10%) !important;
 }
 
-/* Keep all Project Status text readable on the preserved pastel status cards in dark mode. */
+/* Keep all Project Status text readable on the preserved pastel status cards in dark mode.
+   weeklyStatusValue sits inside the oval status button, which always keeps its light pastel
+   background (set inline per-card) regardless of theme, so its text must stay dark rather
+   than following --text-color, which is light in dark mode. */
 .darkMode .statusCard .weeklyCardTitle,
 .darkMode .statusCard .weeklyStatusValue {
   color: #000 !important;
@@ -721,7 +745,6 @@
   scrollbar-color: rgb(0 0 0 / 30%) rgb(0 0 0 / 10%);
 }
 
-/* Chrome/Safari scrollbar */
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
   width: 8px;
 }
@@ -757,23 +780,24 @@
   }
 }
 
-/* Animation */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (prefers-reduced-motion: reduce) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    animation: none;
   }
 }
+
+/* ---------------- PROJECT STATUS GRID ---------------- */
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
 
 /* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
+  /* Must span every column of the parent .weeklyProjectSummaryDashboardCategoryContent
+     grid, not just auto-place into one. That parent's auto-fit column count is driven by
+     container width alone, not item count, so once a sibling (the comparison banner)
+     forces those columns to exist, this unspanned single item would otherwise land in
+     just the first ~220-300px column and squeeze its 12 cards into a narrow strip. */
+  grid-column: 1 / -1;
   display: grid;
 
   /* Let status cards choose the largest safe column count at every viewport width. */
@@ -784,6 +808,15 @@
   width: 100%;
   max-width: 1600px;
   margin: auto;
+}
+
+/* Generic full-span wrapper for sections whose content is a single block (not a set of
+   independent cards), so it isn't auto-placed into one narrow grid column when the
+   comparison banner's full-width sibling forces the parent's auto-fit columns to persist.
+   See .projectStatusGrid above for the full explanation. */
+.fullWidthContent {
+  grid-column: 1 / -1;
+  width: 100%;
 }
 
 /* Keep Project Status from being squeezed into one parent category column on tablets. */
@@ -815,6 +848,9 @@
 }
 
 /* ---------------- RESPONSIVE DESIGN ---------------- */
+
+
+/* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
 
 /* Large Screens */
 @media (width >=1400px) {
@@ -876,6 +912,10 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .projectStatusGrid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
   .darkMode .weeklySummaryHeaderTitle {
     color: #fff !important;
 
@@ -894,12 +934,11 @@
   }
 
   .darkMode .weeklySummaryShareBtn {
-    background: #e8a71c !important;
-    color: #000 !important; /* readable in dark mode */
-
-    /* Tools and Equipment Tracking - 2 column layout on tablet */
+    background: #e8a71c;
+    color: #000; /* readable in dark mode */
   }
 
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
   .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
@@ -944,6 +983,10 @@
   .weeklyProjectSummaryDashboardSection.half,
   .weeklyProjectSummaryDashboardSection.small {
     grid-column: span 1;
+  }
+
+  .projectStatusGrid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 
   .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
@@ -993,6 +1036,49 @@
   }
 }
 
+/* Extra small screens. .projectStatusGrid's 1-column rule at this breakpoint lives in the
+   "Status Grid Responsive" cascade below, so it isn't duplicated here. */
+@media (width <= 576px) {
+  /* Ensure charts are fully visible on mobile - prevent clipping.
+     tools-horizontal-chart-container is applied as a plain string className
+     (not CSS-module-scoped), so it must stay :global to actually match. */
+  .weeklyProjectSummaryDashboardCategoryContent :global(.tools-horizontal-chart-container) {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 6px;
+  }
+}
+
+/* Extra Small Screens */
+@media (width <= 480px) {
+  .lessonsCard {
+    min-height: 450px;
+  }
+
+  .weeklyProjectSummaryCard :global(.chartContainer) {
+    min-height: 220px;
+  }
+
+  .normalCard {
+    min-height: 260px;
+  }
+
+  .weeklySummaryHeaderTitle {
+    font-size: large;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
 /* Extra Small Screens */
 @media (width <= 480px) {
   .lessonsCard {
@@ -1036,7 +1122,224 @@
   box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
-/* Print styles */
+/* ---------------- WEEKLY SUMMARY FILTER / ACTION CONTROLS ---------------- */
+.weeklySummaryControls {
+  width: 95%;
+  max-width: 1280px;
+  margin: 16px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activeSummaryBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--section-title-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  box-shadow: 0 2px 4px var(--card-shadow);
+}
+
+.activeSummaryLabel {
+  font-weight: 700;
+}
+
+.activeSummaryValue {
+  font-weight: 600;
+}
+
+.weeklySummaryActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.compareToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-color);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.compareToggle input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.expandCollapseControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expandCollapseControls button {
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--section-bg);
+  color: var(--text-color);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease-in-out,
+    opacity 0.2s ease-in-out;
+}
+
+.darkMode .expandCollapseControls button {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.expandCollapseControls button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.expandCollapseControls button:hover:not(:disabled) {
+  background: var(--section-title-hover);
+}
+
+.darkMode .expandCollapseControls button:hover:not(:disabled) {
+  background: var(--section-title-hover);
+}
+
+.loadingBanner {
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #fff8e1;
+  border: 1px solid #f0d98c;
+  color: #5f4700;
+  font-weight: 600;
+}
+
+/* ---------------- SECTION HEADER BADGES / COMPARISON / EMPTY STATES ---------------- */
+.sectionTitleText {
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.sectionHeaderMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+}
+
+.sectionBadge {
+  min-width: 28px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e9eef8;
+  color: #24324b;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.comparisonBanner {
+  grid-column: 1 / -1;
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  background: #eef6ff;
+  border: 1px solid #b9d8f5;
+  color: #21496f;
+  font-weight: 600;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.emptySectionMessage {
+  grid-column: 1 / -1;
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  background: var(--section-title-bg);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* ---------------- DARK MODE FOR NEW CONTROLS ---------------- */
+.darkMode .activeSummaryBanner {
+  background: var(--section-title-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.darkMode .loadingBanner {
+  background: #3a3217;
+  border-color: #7c6417;
+  color: #f9fafb;
+}
+
+.darkMode .sectionBadge {
+  background: #374151;
+  color: #f9fafb;
+}
+
+.darkMode .comparisonBanner {
+  background: #172437;
+  border-color: #2f5f91;
+  color: #f9fafb;
+}
+
+.darkMode .emptySectionMessage {
+  background: #111827;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+/* ---------------- RESPONSIVE NEW CONTROLS ---------------- */
+@media (width <= 768px) {
+  .weeklySummaryControls {
+    width: 95%;
+  }
+
+  .weeklySummaryActionRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .expandCollapseControls {
+    width: 100%;
+  }
+
+  .expandCollapseControls button {
+    width: 100%;
+  }
+
+  .activeSummaryBanner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryTitle {
+    gap: 10px;
+  }
+
+  .sectionHeaderMeta {
+    margin-left: 0;
+  }
+}
+
+/* ---------------- PRINT STYLES ---------------- */
 @media print {
   .weeklyProjectSummaryCard {
     break-inside: avoid;
@@ -1055,6 +1358,7 @@
     break-inside: avoid;
   }
 
+  .weeklySummaryControls,
   .weeklySummaryShareBtn,
   .weeklySummaryHeaderControls select {
     display: none;
