@@ -20,6 +20,8 @@ const FilterSection = ({
   setComparisonType,
   listingType,
   setListingType,
+  disabledListing,
+  disabledBidding,
 }) => (
   <div
     className={`${styles.filtersContainer} ${darkMode ? styles.darkFilters : ''}`}
@@ -145,8 +147,20 @@ const FilterSection = ({
           aria-label="Select listing type filter"
         >
           <option value={LISTING_OPTIONS.ALL}>All</option>
-          <option value={LISTING_OPTIONS.LISTING}>Listing</option>
-          <option value={LISTING_OPTIONS.BIDDING}>Bidding</option>
+          <option
+            value={LISTING_OPTIONS.LISTING}
+            disabled={disabledListing}
+            title={disabledListing ? 'Not available for bidding-only metrics' : undefined}
+          >
+            Listing
+          </option>
+          <option
+            value={LISTING_OPTIONS.BIDDING}
+            disabled={disabledBidding}
+            title={disabledBidding ? 'Not available for listing-only metrics' : undefined}
+          >
+            Bidding
+          </option>
         </Input>
       </FormGroup>
     </div>
@@ -162,6 +176,8 @@ FilterSection.propTypes = {
   setComparisonType: PropTypes.func.isRequired,
   listingType: PropTypes.string.isRequired,
   setListingType: PropTypes.func.isRequired,
+  disabledListing: PropTypes.bool,
+  disabledBidding: PropTypes.bool,
 };
 
 // Constants for filters
@@ -357,6 +373,7 @@ export function ComparePieChart({
   onMetricChange,
   availableMetrics = [],
   showFilters = true,
+  listingType: parentListingType = LISTING_OPTIONS.ALL,
 }) {
   // State for filters
   const [fromDate, setFromDate] = useState(() => {
@@ -367,7 +384,25 @@ export function ComparePieChart({
 
   const [toDate, setToDate] = useState(new Date());
   const [comparisonType, setComparisonType] = useState(COMPARISON_OPTIONS.VILLAGES);
-  const [listingType, setListingType] = useState(LISTING_OPTIONS.ALL);
+  // Pie's own Type: starts from the top filter, can be overridden locally
+  const [listingType, setListingType] = useState(parentListingType);
+
+  // Top filter changed -> it takes over again
+  useEffect(() => {
+    setListingType(parentListingType);
+  }, [parentListingType]);
+
+  // Auction-only metrics can't be shown for Listing
+  const isBiddingMetric = BIDDING_ONLY_METRICS.includes(selectedMetricKey);
+  // Top filter is Listing -> auctioned properties are out of scope
+  const isTopListing = parentListingType === LISTING_OPTIONS.LISTING;
+
+  // If a bidding-only metric is picked while the pie is on Listing, fall back to the top's value
+  useEffect(() => {
+    if (isBiddingMetric && listingType === LISTING_OPTIONS.LISTING) {
+      setListingType(parentListingType);
+    }
+  }, [isBiddingMetric, listingType, parentListingType]);
 
   // State for data loading and errors
   const [isLoading, setIsLoading] = useState(false);
@@ -634,6 +669,8 @@ export function ComparePieChart({
           setComparisonType={setComparisonType}
           listingType={listingType}
           setListingType={setListingType}
+          disabledListing={isBiddingMetric}
+          disabledBidding={isTopListing}
         />
       )}
 
@@ -688,4 +725,6 @@ ComparePieChart.propTypes = {
     }),
   ),
   showFilters: PropTypes.bool,
+  listingType: PropTypes.oneOf(['all', 'listing', 'bidding']),
+  disabledBidding: PropTypes.bool,
 };
