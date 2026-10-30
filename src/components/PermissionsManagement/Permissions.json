@@ -1,345 +1,345 @@
 [
   {
-    "label": "General",
+    "label": "GENERAL",
     "description": "Category for all generalized permissions",
     "subperms": [
       {
-        "label": "See All Users in Dashboard and Leaderboard",
+        "label": "See All Users on Dashboard (Leaderboard and Tasks)",
         "key": "seeUsersInDashboard",
-        "description": "Lets the user see all users in the dashboard as if they were on the same team. Requires \"See All Users\" to function"
+        "description": "Lets the user see all active users, not just teammates, on their Dashboard Leaderboard and Tasks."
       },
       {
         "label": "Edit Header Message",
         "key": "editHeaderMessage",
-        "description": "Gives the user permission to edit the message displayed in the header"
+        "description": "Lets the user edit or reset the header message at the top of the app, and see its edit history."
       }
     ]
   },
   {
-    "label": "Reports",
+    "label": "REPORTS",
     "description": "Category for all permissions related to reports",
     "subperms": [
       {
         "label": "See Analytics Reports",
         "key": "getReports",
-        "description": "Make ONLY \"Reports -> “Reports” option appear/accessible."
+        "description": "Lets the user open Reports > Reports and People Reports."
       },
       {
         "label": "See Weekly Summaries",
         "key": "getWeeklySummaries",
-        "description": "Makes ONLY the \"Reports\" -> \"Weekly Summaries Reports\" option appear/accessible."
+        "description": "Lets the user open the Weekly Summaries Report, view and email the Total Org Summary, and see Google Doc icons in Dashboard Tasks."
       },
       {
-        "label": "See/Edit PR Team Dashboard",
+        "label": "See PR Dashboard and Edit PR Grading Dashboard",
         "key": "accessPRTeamDashboard",
-        "description": "Gives access to the PR Team dashboard, including view and edit rights."
+        "description": "Lets the user see the PR Dashboard menu, open 'PR Team Analysis Dashboard' and 'PR Analytics', and edit the PR Grading Dashboard."
       },
       {
         "label": "Edit Total Valid Weekly Summaries",
         "key": "totalValidWeeklySummaries",
-        "description": "Gives permission to edit total valid weekly summaries count under reports"
+        "description": "Lets the user change each person's 'Total Valid Weekly Summaries' count on the Weekly Summaries Report."
       },
       {
         "label": "See Highlight for Bios Eligible to be Posted",
         "key": "highlightEligibleBios",
-        "description": "Under \"Reports\" -> \"Weekly Summaries Reports\", make the \"Bio announcement\" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don't have their bio posted)"
+        "description": "Shows the 'Bio Status' filter and highlights in yellow who is eligible for a bio on the Weekly Summaries Report."
       },
       {
         "label": "Toggle Request Bio",
         "key": "requestBio",
-        "description": "Gives the user permission to toggle the \"Bio announcement\" switch under \"Reports\" -> \"Weekly Summaries Reports\""
+        "description": "Lets the user change a person's 'Bio announcement' switch on the Weekly Summaries Report."
       },
       {
         "label": "See Volunteer Weekly Summaries",
         "key": "getVolunteerWeeklySummary",
-        "description": "Makes ONLY the \"Reports\" -> \"Volunteer Summary Reports\" option appear/accessible."
+        "description": "Lets the user open Reports > Volunteer Summary Reports."
       },
       {
-        "label": "Edit Team 4-Digit Codes",
+        "label": "Edit Team Codes",
         "key": "editTeamCode",
-        "description": "Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page."
+        "description": "Lets the user change team codes on the profile Teams tab, or on the Weekly Summaries Report one by one or in bulk."
       },
       {
         "label": "Create, Edit and Delete Weekly Summaries Filter",
         "key": "manageSummariesFilters",
-        "description": "Gives the user permission to create, edit and delete the filter in weekly summaries report page."
+        "description": "Lets the user create, edit and delete saved filters on the Weekly Summaries Report."
       },
       {
         "label": "See Job Analytics Reports",
         "key": "getJobReports",
-        "description": "Job Analytics Reports."
+        "description": "Lets the user open Reports > Job Analytics Report."
       }
     ]
   },
   {
-    "label": "User Management",
+    "label": "USER MANAGEMENT",
     "description": "Category for all permissions related to user management",
     "subperms": [
       {
-        "label": "See All Users",
+        "label": "See All Users (User List and User Management)",
         "key": "getUserProfiles",
-        "description": "Make the \"Other Links\" -> \"User Management\" button appear/accessible."
+        "description": "Lets the user see the full list of users in User Management and on pages that list all users."
       },
       {
         "label": "Create New Users",
         "key": "postUserProfile",
-        "description": "Make the \"Other Links\" -> \"User Management\" button appear/accessible and be able to ONLY create users. No editing or deleting access."
+        "description": "Lets the user create new users with the 'Create New User' and 'Send Setup Link' buttons on User Management."
       },
       {
         "label": "Edit User Profile",
         "key": "putUserProfile",
-        "description": "Gives the user permission to edit all the information of any user on the user profile page."
+        "description": "Lets the user edit other users' basic profile, like name, bio and photo."
       },
       {
         "label": "Change User Status",
         "key": "changeUserStatus",
-        "description": "Gives the user permission to change the status of any user on the user profile page or User Management Page. \"User Profile\" -> \"Green round button\""
+        "description": "Lets the user activate or deactivate users with the green/red status dot."
       },
       {
         "label": "Toggle Invisibility Permission Self and Others",
         "key": "toggleInvisibility",
-        "description": "Gives the user permission to change the invisibility toggle for themselves and others"
+        "description": "Lets the user hide or show any user, including themselves, to teammates with the profile's Visibility switch."
       },
       {
         "label": "Interact with Pause User button",
         "key": "interactWithPauseUserButton",
-        "description": "Allows the user to view and interact with the Pause/Resume button on a user profile. \"User Profile\" -> \"Basic Information\" -> \"Status\" -> \"Pause/Resume\""
-      },  
+        "description": "Lets the user pause a user until a chosen date, or resume them, from User Management or their profile."
+      },
       {
         "label": "Assign Blue Squares",
         "key": "addInfringements",
-        "description": "Gives the user permission to add blue squares to any user."
+        "description": "Lets the user give any user a blue square with the '+' in the Blue Squares section of their profile."
       },
       {
         "label": "Edit Blue Squares",
         "key": "editInfringements",
-        "description": "Gives the user permission to edit any blue square."
+        "description": "Lets the user change the date and summary of any user's blue square from their profile."
       },
       {
         "label": "Delete Blue Squares",
         "key": "deleteInfringements",
-        "description": "Gives the user permission to delete any blue square."
+        "description": "Lets the user delete any user's blue square from their profile."
       },
       {
         "label": "Modify Important User Info",
         "key": "putUserProfileImportantInfo",
-        "description": "Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links, weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status."
+        "description": "Lets the user change protected profile fields like role, hours, dates, teams and status. Also needs 'Edit User Profile'."
       },
       {
         "label": "Edit Summary Submit Requirement (Others)",
         "key": "updateSummaryRequirements",
-        "description": "Gives the user permission to change the requirement to the user to submit a summary."
+        "description": "Lets the user choose if another user must submit weekly summaries, on their profile. Also needs 'Edit User Profile'."
       },
       {
         "label": "Update Password (Others)",
         "key": "updatePassword",
-        "description": "Gives the user permission to update the password of any user but Owner/Admin classes."
+        "description": "Lets the user reset another user's password with 'Reset Password' in User Management or on their profile."
       },
       {
         "label": "Manage Time Off Requests",
         "key": "manageTimeOffRequests",
-        "description": "Gives the user permission to Add/Delete/Edit Time off requests."
+        "description": "Lets the user add, edit and delete any user's time off in User Management, and go past the 4-week limit."
       },
       {
         "label": "Change Rehireable Status",
         "key": "changeUserRehireableStatus",
-        "description": "Gives the user permission to change the user status of rehireable or not."
+        "description": "Lets the user mark any user as rehireable or not rehireable on their profile."
       },
       {
         "label": "Set Final Day",
         "key": "setFinalDay",
-        "description": "Gives the user permission to use the set the final working day."
+        "description": "Lets the user set or remove a user's final day, which schedules their deactivation."
       },
       {
         "label": "HGN People +/- Setup",
         "key": "manageHGNAccessSetup",
-        "description": "Gives the user permission to access the HGN Add Access button on user profile pages to add/remove user access to GitHub, Dropbox, Slack, and Sentry."
+        "description": "Lets the user invite people to GitHub, Dropbox, Sentry and Slack, remove them from GitHub and Sentry, and delete their Dropbox folder."
       }
     ]
   },
   {
-    "label": "Tracking Management",
+    "label": "TRACKING MANAGEMENT",
     "description": "Permissions for managing tracking-related activities.",
     "subperms": [
       {
         "label": "View Tracking Overview",
         "key": "viewTrackingOverview",
-        "description": "Allows user to view an overview of tracking activities for all users."
+        "description": "Shows a 'Tracking' button for each team member on Dashboard > Tasks, to see their warning dots (view only)."
       },
       {
         "label": "Issue Tracking Warnings",
         "key": "issueTrackingWarnings",
-        "description": "Allows the user to issue warnings for violations of tracking activities."
+        "description": "Lets the user click the tracking dots on Dashboard > Tasks to log warnings and send warning emails."
       },
       {
         "label": "Issue a Blue Square",
         "key": "issueBlueSquare",
-        "description": "Allows the user to issue a blue square for viloations of tracking activity."
+        "description": "Lets the user issue a blue square from a tracking warning."
       },
       {
-        "label": "Delete a Warning",
+        "label": "Delete a Single Warning",
         "key": "deleteWarning",
-        "description": "Gives the user permission to delete existing tracking warnings."
+        "description": "Lets the user delete one warning (a colored dot) from a person on Dashboard > Tasks. Also needs 'Issue Tracking Warnings'."
       },
       {
         "label": "Add a New Warning Tracker",
         "key": "addWarningTracker",
-        "description": "Allows user to add a new warning tracker to the system."
+        "description": "Lets the user add warning trackers (rows of tracking dots for everyone) with '+/-' on Dashboard > Tasks."
       },
       {
         "label": "Deactivate a Warning Tracker",
         "key": "deactivateWarningTracker",
-        "description": "Allows user to deactivate an existing warning tracker."
+        "description": "Lets the user turn off a warning tracker with '-' in the '+/-' window on Dashboard > Tasks, hiding it for everyone."
       },
       {
         "label": "Reactivate a Warning Tracker",
         "key": "reactivateWarningTracker",
-        "description": "Allows user to reactivate an existing warning tracker."
+        "description": "Lets the user turn a switched-off warning tracker back on with '+' in the '+/-' window on Dashboard > Tasks."
       },
       {
-        "label": "Delete a Warning Tracker",
+        "label": "Delete a Warning Tracker (and All Its Warnings)",
         "key": "deleteWarningTracker",
-        "description": "Gives user permission to delete a warning tracker from the system."
+        "description": "Lets the user permanently delete a warning tracker ('x' in the '+/-' window on Dashboard > Tasks) and its warnings for everyone."
       }
     ]
   },
   {
-    "label": "Badge Management",
+    "label": "BADGE MANAGEMENT",
     "description": "Category for all permissions related to badge management",
     "subperms": [
       {
         "label": "See Badges",
         "key": "seeBadges",
-        "description": "Gives the user permission to view (but not change) all badges information data on the Other Links -> Badges Management page"
+        "description": "Shows Other Links > Badge Management (view only) and 'Load Badges'/'Load Trophies' on the Weekly Summaries Report."
       },
       {
         "label": "Create Badges",
         "key": "createBadges",
-        "description": "Make the \"Other Links\" -> \"Badge Management\" button appear and then have the ability to create (but not edit or delete) badges."
+        "description": "Lets the user create badges with 'Create New Badge' on Other Links > Badge Management (not edit or delete them)."
       },
       {
         "label": "Edit Badge",
         "key": "updateBadges",
-        "description": "Gives the user permission to edit information like the name, image, etc. of an existing badge"
+        "description": "Lets the user edit existing badges (name, image, description, ranking) on Other Links > Badge Management."
       },
       {
         "label": "Delete Badge",
         "key": "deleteBadges",
-        "description": "Gives the user permission to delete a badge on \"Other Links\" -> \"Badge Management\""
+        "description": "Lets the user delete a badge on Other Links > Badge Management. This also removes it from everyone who earned it."
       },
       {
         "label": "Modify Badge Amount",
         "key": "modifyBadgeAmount",
-        "description": "Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component"
+        "description": "Lets the user change badge counts in a person's badge history (profile > 'Select Featured')."
       },
       {
         "label": "Assign Badges",
         "key": "assignBadges",
-        "description": "Gives the user permission to assign badges to others users \"User Profile\" -> \"Assign Badges\" or to increase or decrease the count of a badge on the Badge Reports Component"
+        "description": "Lets the user give badges to people (Other Links > Badge Management > Badge Assignment, or 'Assign Badges' on a profile)."
       }
     ]
   },
   {
-    "label": "Project Management",
+    "label": "PROJECT MANAGEMENT",
     "description": "Category for all permissions related to projects",
     "subperms": [
       {
         "label": "Add Project",
         "key": "postProject",
-        "description": "Gives the user permission to create any Project. \"Other Links\" -> \"Projects\" -> \"Add new Project Input\""
+        "description": "Lets the user create new projects with 'Add New Project' on Other Links > Projects."
       },
       {
         "label": "Delete Project",
         "key": "deleteProject",
-        "description": "Gives the user permission to delete any Project. \"Other Links\" -> \"Projects\" -> \"Delete button\""
+        "description": "Lets the user archive or unarchive projects on Other Links > Projects."
       },
       {
         "label": "Edit Project Category or Status",
         "key": "putProject",
-        "description": "Gives the user permission to edit the category or the status of any Project. \"Other Links\" -> \"Projects\""
+        "description": "Lets the user rename projects, change their category and set them Active/Inactive on Other Links > Projects."
       },
       {
         "label": "See User in Project",
         "key": "getProjectMembers",
-        "description": "Gives the user permission to access the profile of any user directly from the projects members page. \"Other Links\" -> \"Projects\" -> \"Members\""
+        "description": "Lets the user see who is on each project (Other Links > Projects > Members) and use 'Generate Summary Intro' on profiles."
       },
       {
         "label": "Assign Project to Users",
         "key": "assignProjectToUsers",
-        "description": "Gives the user permission to add/remove any user on the project members page. \"Other Links\" -> \"Projects\" -> \"Members\" -> \"Find user input\""
+        "description": "Lets the user add or remove people on any project from its Members page on Other Links > Projects."
       },
       {
-        "label": "Work Breakdown Structures",
+        "label": "WORK BREAKDOWN STRUCTURES",
         "description": "Category for all permissions related to work breakdown structures",
         "subperms": [
           {
             "label": "Add WBS",
             "key": "postWbs",
-            "description": "Gives the user permission to create a new WBS. \"Other Links\" -> \"Projects\" -> \"WBS Button\" -> \"Add new WBS Input\""
+            "description": "Lets the user add a new WBS (work breakdown structure) to any project on Other Links > Projects > WBS."
           },
           {
             "label": "Delete WBS",
             "key": "deleteWbs",
-            "description": "Gives the user permission to delete any WBS. \"Other Links\" -> \"Projects\" -> \"WBS Button\" -> \"Minus Red Icon\""
+            "description": "Lets the user delete any WBS with the red minus button on a project's WBS page."
           },
           {
-            "label": "Tasks",
+            "label": "TASKS",
             "description": "Category for all permissions related to tasks",
             "subperms": [
               {
                 "label": "Add Task",
                 "key": "postTask",
-                "description": "Gives the user permission to add a task on any WBS. \"Other Links\" -> \"Projects\" -> \"WBS Button\" -> \"Choose any WBS\" -> \"Add task button\""
+                "description": "Lets the user add tasks and subtasks to any WBS with 'Add Task' (Other Links > Projects > WBS > choose a WBS)."
               },
               {
                 "label": "Edit Task",
                 "key": "updateTask",
-                "description": "Gives the user permission to edit a task on any WBS. \"Other Links\" -> \"Projects\" -> \"WBS Button\" -> \"Choose any WBS\" -> \"Edit\" -> \"Edit\""
+                "description": "Lets the user edit any task directly (WBS > EDIT > Edit) and approve suggested task changes from the header."
               },
               {
                 "label": "Delete Task",
                 "key": "deleteTask",
-                "description": "Gives the user permission to delete a task on any WBS. \"Other Links\" -> \"Projects\" -> \"WBS Button\" -> \"Choose any WBS\" -> \"Edit\" -> \"Remove\""
+                "description": "Lets the user delete any task and its subtasks (WBS > EDIT > Remove, or Delete on the task's page)."
               },
               {
                 "label": "Resolve Tasks",
                 "key": "resolveTask",
-                "description": "Gives the user permission to RESOLVE tasks from the Management Dashboard showing all their team members."
+                "description": "Lets the user mark a person's task as done with the green check on Dashboard > Tasks."
               },
               {
                 "label": "Suggest Changes on a task",
                 "key": "suggestTask",
-                "description": "Gives the user permission to suggest changes on a task. \"Dashboard\" -> \"Tasks tab\" -> \"Click on any task\" -> \"Suggest button\""
+                "description": "Lets the user open a task from Dashboard > Tasks and send changes with 'Suggest' instead of editing it directly."
               },
               {
                 "label": "Unassign Team Members from Tasks",
                 "key": "removeUserFromTask",
-                "description": "Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X."
+                "description": "Lets the user take a person off a task with the red X on Dashboard > Tasks."
               },
               {
                 "label": "Interact with Task \"Ready for Review\"",
                 "key": "putReviewStatus",
-                "description": "Give the user permission to interact with any \"Ready for Review\" task button to either mark it as complete or reset it with \"More work needed, reset this button\""
+                "description": "Lets the user act on a 'Ready for Review' task on Dashboard > Tasks: mark it complete or send it back."
               },
               {
                 "label": "View and Interact with Task \"X\" on Dashboards",
                 "key": "canDeleteTask",
-                "description": "Gives the user permission to DELETE tasks from the Management Dashboard showing all their team members."
+                "description": "Lets the user see and use the task 'X' on Dashboard > Tasks."
               },
               {
                 "label": "Unassign Team Members from Tasks",
                 "key": "deleteDashboardTask",
-                "description": "Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X."
+                "description": "Lets the user unassign their team members from tasks on the Dashboard."
               },
               {
-                "label": "See # of Times Time Added to Task",
+                "label": "See How Many Times a Task's Estimated Hours Changed",
                 "key": "seeNumberOfTimesTimeAdded",
-                "description": "Gives the user permission to see how many times a time entry has been added to a task. \"Admin/Owner Login\" -> \"Dashboard\" -> \"Tasks tab\" -> \"Task Details\" -> \"# of Times Time Added\""
+                "description": "Shows, next to each task's hours on Dashboard > Tasks, how many times its estimated hours changed; click for the history."
               },
               {
                 "label": "View and Interact with Task Deadlines Boxes",
                 "key": "viewAndInteractWithTaskDeadlinesBoxes",
-                "description": "Gives the user permission to view and interact with task deadline tracking boxes on the Dashboard Tasks tab."
+                "description": "Lets the user see and tick the follow-up (deadline) boxes next to task progress on Dashboard > Tasks."
               }
             ]
           }
@@ -348,94 +348,94 @@
     ]
   },
   {
-    "label": "Teams Management",
+    "label": "TEAMS MANAGEMENT",
     "description": "Category for all permissions related to team management",
     "subperms": [
       {
         "label": "Edit Team",
         "key": "putTeam",
-        "description": "Gives the user permission to Edit a team."
+        "description": "Lets the user rename teams and set them Active or Inactive on Other Links > Teams."
       },
       {
         "label": "Delete Team",
         "key": "deleteTeam",
-        "description": "Gives the user permission to delete a team."
+        "description": "Lets the user delete a team on Other Links > Teams. It is permanent and removes the team from every member's profile."
       },
       {
-        "label": "Create/assign teams",
+        "label": "CREATE/ASSIGN TEAMS",
         "description": "Quality of life bundling of two permissions commonly used together",
         "subperms": [
           {
             "label": "Create Team",
             "key": "postTeam",
-            "description": "Gives the user permission to create a team."
+            "description": "Lets the user open Other Links > Teams and create new teams with the 'Create New Team' button."
           },
           {
             "label": "Assign Users to Team",
             "key": "assignTeamToUsers",
-            "description": "Gives the user permission to add users to teams. \"Other Links\" -> \"Teams\" -> \"Members\" -> \"Add Input\""
+            "description": "Lets the user open Other Links > Teams and add or remove team members, there or on a user's profile."
           }
         ]
       }
     ]
   },
   {
-    "label": "Timelog Management",
+    "label": "TIMELOG MANAGEMENT",
     "description": "Category for all permissions related to timelog management",
     "subperms": [
       {
         "label": "Toggle Tangible Time Self",
         "key": "toggleTangibleTime",
-        "description": "Gives the user permission to toggle the Tangible check when editing their own time entry."
+        "description": "Lets the user switch their own time entries between Tangible and Intangible with the Tangible checkbox."
       },
       {
-        "label": "Timelog Management (Own)",
+        "label": "TIMELOG MANAGEMENT (OWN)",
         "description": "Category for all permissions related to timelog management",
         "subperms": [
           {
             "label": "Delete Time Entry (Own)",
             "key": "deleteTimeEntryOwn",
-            "description": "Gives the user permission to Delete time entry from others users \"Dashboard\" -> \"Leaderboard\" -> \"Dot By the side of user's name\" -> \"Current Time Log\" -> \"Trash button on bottom right\""
+            "description": "Lets the user delete their own time entries with the trash icon on their Time Log."
           }
         ]
       },
       {
-        "label": "Timelog Management (Others)",
+        "label": "TIMELOG MANAGEMENT (OTHERS)",
         "description": "Category for all permissions related to timelog management",
         "subperms": [
           {
             "label": "Add Time Entry (Others)",
             "key": "postTimeEntry",
-            "description": "Gives the user permission to add Intangible time entry to others users \"Dashboard\" -> \"Leaderboard\" -> \"Dot By the side of user's name\" -> \"Add Time entry to (Name of the user) yellow button\". Currently not implemented."
+            "description": "Lets the user add time entries to other people's Time Logs."
           },
           {
             "label": "Delete Time Entry (Others)",
             "key": "deleteTimeEntryOthers",
-            "description": "Gives the user permission to Delete time entry from others users \"Dashboard\" -> \"Leaderboard\" -> \"Dot By the side of user's name\" -> \"Current Time Log\" -> \"Trash button on bottom right\""
+            "description": "Lets the user delete other people's time entries."
           },
           {
-            "label": "Editing Time Entries",
+            "label": "EDITING TIME ENTRIES",
             "description": "Category for all permissions related to editing timelogs",
             "subperms": [
               {
                 "label": "Edit Timelog Time (Self and Others)",
                 "key": "editTimeEntryTime",
-                "description": "Gives the user permission to edit the time of any time log entry."
+                "description": "Lets the user change the hours and minutes of any time entry, their own or others', with the edit pencil."
               },
               {
                 "label": "Edit Timelog Description (Self and Others)",
                 "key": "editTimeEntryDescription",
-                "description": "Gives the user permission to edit the description of any time log entry."
+                "description": "Lets the user change the notes of any time entry, their own or others', with the edit pencil."
               },
               {
                 "label": "Toggle Tangible Time Others",
                 "key": "editTimeEntryToggleTangible",
-                "description": "Gives the user permission to toggle the tangible check when editing a time entry of another user."
+                "description": "Lets the user switch other people's time entries between Tangible and Intangible with the Tangible checkbox."
               },
               {
                 "label": "Change Time Entry Date (Self and Others)",
                 "key": "editTimeEntryDate",
-                "description": "Gives the user permission to edit the date when adding an intangible time entry."
+                "description": "Lets the user pick or change the date of a time entry, their own or others', when adding or editing it."
               }
             ]
           }
@@ -444,160 +444,150 @@
     ]
   },
   {
-    "label": "Announcements",
+    "label": "ANNOUNCEMENTS",
     "description": "Category to communicate",
     "subperms": [
       {
         "label": "Send Emails",
         "key": "sendEmails",
-        "description": "Gives the user permission to send email communications to other users."
+        "description": "Lets the user email chosen people or all subscribers, and post to Mastodon, from Other Links > Send Emails."
       }
     ]
   },
   {
-    "label": "Permissions Management",
+    "label": "PERMISSIONS MANAGEMENT",
     "description": "Category for all permissions related to permissions management",
     "subperms": [
       {
         "label": "Add Roles",
         "key": "postRole",
-        "description": "Gives the user permission to add new user roles with custom permissions."
+        "description": "Lets the user create a new role with chosen permissions, using 'Add New Role' in Permissions Management."
       },
       {
         "label": "Delete Roles",
         "key": "deleteRole",
-        "description": "Gives the user permission to delete user roles with custom permissions."
+        "description": "Lets the user delete a role, if they also have 'Edit Roles'. Everyone in that role becomes a Volunteer; this cannot be undone."
       },
       {
         "label": "Edit Roles",
         "key": "putRole",
-        "description": "Gives the user permission to change the permissions and names of roles."
+        "description": "Lets the user see all roles, rename them and change their permissions in Permissions Management."
       },
       {
         "label": "Edit Individual User Permissions",
         "key": "putUserProfilePermissions",
-        "description": "Give user permission to access Permissions Management and ONLY manage individual User Permissions."
+        "description": "Lets the user edit one person's permissions in Permissions Management. Also needs 'See All Users (User List and User Management)'."
       }
     ]
   },
   {
-    "label": "Popup Management",
+    "label": "POPUP MANAGEMENT",
     "description": "Category for all permissions related to popup management",
     "subperms": [
       {
         "label": "Edit Popups",
         "key": "updatePopup",
-        "description": "WIP"
+        "description": "Lets the user change the text of confirmation pop-ups, like delete task."
       }
     ]
   },
   {
-    "label": "Quick Setup Functions",
+    "label": "QUICK SETUP FUNCTIONS",
     "description": "Category for permissions related to Quick Setup functions.",
     "subperms": [
       {
         "label": "Add New Title",
         "key": "addNewTitle",
-        "description": "Gives user permission to add new title in quick setup functions."
+        "description": "Lets the user create new Quick Setup Titles and change their order on a user's profile page."
       },
       {
         "label": "Assign Title",
         "key": "assignTitle",
-        "description": "Gives user permission to edit existing title in quick setup functions."
+        "description": "Lets the user apply a Quick Setup Title on a profile, setting the person's teams, project and links."
       },
       {
         "label": "Edit Titles",
         "key": "editTitle",
-        "description": "Gives user permission to view existing title in quick setup functions."
+        "description": "Lets the user change existing Quick Setup Titles with the Edit button on a user's profile."
       }
     ]
   },
   {
-    "label": "Misc/Unsorted",
+    "label": "MISC/UNSORTED",
     "description": "Category for all permissions not related to other categories",
     "subperms": [
       {
-        "label": "Edit Team 4-Digit Codes",
-        "key": "editTeamCode",
-        "description": "Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page."
-      },
-      {
-        "label": "See All Users in Dashboard and Leaderboard",
-        "key": "seeUsersInDashboard",
-        "description": "Lets the user see all users in the dashboard as if they were on the same team. Requires \"See All Users\" to function"
-      },
-      {
         "label": "Access HGN Skills Dashboard",
         "key": "accessHgnSkillsDashboard",
-        "description": "Lets the user access the HGN skills dashboard, which provides insights into user skills and competencies."
+        "description": "Lets the user open another member's HGN Skills profile page."
       },
       {
         "label": "Access PM Resource Dashboard",
         "key": "accessPMResourceDashboard",
-        "description": "Lets the user access the PM Resource Dashboard for resource requests and educator certifications."
+        "description": "Lets the user open the PM Resource Dashboard for resource requests and educator certifications."
       },
       {
         "label": "Blue Square Email Management",
         "key": "resendBlueSquareAndSummaryEmails",
-        "description": "Gives the user permission to access Blue Square Email Management and resend infringement emails and weekly summary emails."
+        "description": "Lets the user open Blue Square Email Management to resend last week's blue square emails and the weekly summary report email."
       },
       {
-      "label": "Manage user state indicator",
-      "key": "manage_user_state_indicator",
-      "description": "Gives the user permission to edit the state indicator for team members on the Dashboard Tasks and Weekly Summaries Reports pages."
+        "label": "Manage User State Indicator",
+        "key": "manage_user_state_indicator",
+        "description": "Lets the user set a person's state indicator on the Weekly Summaries Report."
       }
     ]
   },
   {
-    "label": "FAQs",
+    "label": "FAQS",
     "description": "Category for all permissions related to FAQs",
     "subperms": [
       {
         "label": "Manage FAQs",
         "key": "manageFAQs",
-        "description": "Gives the user permission to add, edit, and delete FAQs."
+        "description": "Lets the user add, edit and delete FAQs and see unanswered questions on the FAQ Management page."
       }
     ]
   },
   {
-    "label": "Job Form Management",
+    "label": "JOB FORM MANAGEMENT",
     "description": "Category for all permissions related to job application form management",
     "subperms": [
       {
         "label": "Create Form Questions",
         "key": "createFormQuestions",
-        "description": "Gives the user permission to create new question sets for job application forms."
+        "description": "Lets the user add questions to job forms and save new templates in the Job Question Set Builder. Also needs 'Manage Job Forms'."
       },
       {
         "label": "Edit Form Questions",
         "key": "editFormQuestions",
-        "description": "Gives the user permission to edit existing question sets and form structure."
+        "description": "Lets the user edit and reorder questions and update templates in the Job Question Set Builder. Also needs 'Manage Job Forms'."
       },
       {
         "label": "Delete Form Questions",
         "key": "deleteFormQuestions",
-        "description": "Gives the user permission to delete questions and question sets from forms."
+        "description": "Lets the user delete job form questions and templates in the Job Question Set Builder. Also needs 'Manage Job Forms'."
       },
       {
         "label": "Manage Job Forms",
         "key": "manageJobForms",
-        "description": "Gives the user permission to create, edit, and manage job application forms and templates."
+        "description": "Lets the user create or delete job forms and see applicants' answers in the Job Question Set Builder."
       }
     ]
   },
   {
-    "label":"Activity Log Management",
-    "description":"Category for all permissions related to activity logs",
-    "subperms":[
+    "label": "ACTIVITY LOG MANAGEMENT",
+    "description": "Category for all permissions related to activity logs",
+    "subperms": [
       {
-        "label":"Read Activity Logs",
-        "key":"readActivityLogs",
-        "description":"Gives the user permission to view activity logs."
+        "label": "Education Portal: View Student Daily Logs",
+        "key": "readActivityLogs",
+        "description": "Lets the user view an Education Portal student's daily log."
       },
       {
-        "label":"Update Activity Logs",
-        "key":"updateActivityLogs",
-        "description":"Gives the user permission to update activity logs."
+        "label": "Education Portal: Mark Student Logs as Assisted",
+        "key": "updateActivityLogs",
+        "description": "Lets the user mark an Education Portal student's daily log as 'assisted'."
       }
     ]
   }
