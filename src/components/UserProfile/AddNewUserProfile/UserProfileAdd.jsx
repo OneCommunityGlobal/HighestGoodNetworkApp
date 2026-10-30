@@ -142,6 +142,7 @@ class UserProfileAdd extends Component {
       this.setState((prevState) => ({
         productionIdentityVerified: true,
         productionVerificationToken: verificationToken,
+        productionPassword: '',
         verifyingProductionIdentity: false,
         userProfile: {
           ...prevState.userProfile,
