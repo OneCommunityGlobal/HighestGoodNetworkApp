@@ -268,13 +268,27 @@
   font-weight: 500;
 }
 
-@media only screen and (max-width: 1408px) {
+.ContainerReminderDark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.ContainerReminderDark .ReminderTitle h2 {
+  color: #fff;
+}
+
+.ContainerReminderDark .ReminderBody {
+  border-color: #3a506b;
+}
+
+@media only screen and (width <= 1408px) {
   .permissions-management__header {
     flex-direction: column;
   }
 }
 
-@media only screen and (max-width: 1024px) {
+@media only screen and (width <= 1024px) {
   .navbar {
     flex-wrap: wrap;
   }
