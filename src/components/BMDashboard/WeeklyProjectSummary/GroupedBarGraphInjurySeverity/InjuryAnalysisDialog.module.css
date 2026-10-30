@@ -1,0 +1,176 @@
+.dialog {
+  max-width: 1180px;
+  width: calc(100% - 2rem);
+}
+
+.dialog :global(.modal-content) {
+  max-height: calc(100vh - 3.5rem);
+}
+
+.dialog :global(.modal-body) {
+  overflow-y: auto;
+}
+
+.dark :global(.modal-content) {
+  background: #1b2a40;
+  color: #f1f5f9;
+}
+
+.dark :global(.close) {
+  color: #fff;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.dialog label {
+  display: block;
+  font-weight: 600;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.switch {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.switch button {
+  background: transparent;
+  color: inherit;
+  border: 1px solid #94a3b8;
+  border-radius: 0.4rem;
+  padding: 0.5rem 1rem;
+}
+
+.switch button[aria-pressed='true'] {
+  background: #1d4ed8;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+
+.dialog input,
+.dialog select {
+  display: block;
+  width: 100%;
+  border: 1px solid #94a3b8;
+  border-radius: 0.35rem;
+  padding: 0.4rem;
+  background: #fff;
+  color: #172033;
+}
+
+.dark input,
+.dark select {
+  background: #293d58;
+  color: #fff;
+  color-scheme: dark;
+}
+
+.ranges {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.range {
+  border: 1px solid #94a3b8;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  flex: 1;
+  min-width: 260px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.range legend {
+  font-size: 0.95rem;
+  width: auto;
+  padding: 0 0.35rem;
+}
+
+.chart {
+  height: 350px;
+  margin: 1rem 0;
+}
+
+.comparisonChart {
+  margin: 1rem 0;
+}
+
+.note {
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+  line-height: 1.5;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableWrap th,
+.tableWrap td {
+  padding: 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid #94a3b8;
+}
+
+.tableWrap caption {
+  color: inherit;
+  caption-side: top;
+}
+
+.dialog button:focus-visible,
+.dialog input:focus-visible,
+.dialog select:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+@media (width <= 600px) {
+  .dialog {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+
+  .dialog :global(.modal-content) {
+    min-height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .range {
+    min-width: 0;
+    width: 100%;
+    flex-basis: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .chart {
+    height: 300px;
+  }
+}

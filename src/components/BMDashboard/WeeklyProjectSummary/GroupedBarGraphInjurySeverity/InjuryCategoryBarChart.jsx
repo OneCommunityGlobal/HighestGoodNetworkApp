@@ -13,6 +13,7 @@ import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 
 import styles from './InjuryCategoryBarChart.module.css';
+import InjuryAnalysisDialog from './InjuryAnalysisDialog';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchInjuryData,
@@ -47,6 +48,7 @@ function InjuryCategoryBarChart() {
   const [injuryTypeFilter, setInjuryTypeFilter] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [analysisOpen, setAnalysisOpen] = useState(false);
   const [unfilteredProjects, setUnfilteredProjects] = useState([]);
 
   // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
@@ -277,6 +279,11 @@ function InjuryCategoryBarChart() {
     <div className={containerClassName}>
       <div className={styles.injuryChartHeader}>
         <h3 className={styles.injuryChartTitle}>Injury Severity by Category of Worker Injured</h3>
+        <div className={styles.analysisAction}>
+          <button type="button" onClick={() => setAnalysisOpen(true)}>
+            Explore trends
+          </button>
+        </div>
 
         <div className={styles.injuryChartFilters}>
           <div className={styles.injuryFilter}>
@@ -388,6 +395,40 @@ function InjuryCategoryBarChart() {
         </div>
       </div>
 
+      {analysisOpen && (
+        <InjuryAnalysisDialog
+          onClose={() => setAnalysisOpen(false)}
+          darkMode={darkMode}
+          initialRange={{
+            ...(startDate ? { start: toYMD(startDate) } : {}),
+            ...(endDate ? { end: toYMD(endDate) } : {}),
+          }}
+          selectStyles={selectStyles}
+          filters={[
+            {
+              id: 'projects',
+              label: 'Projects',
+              options: projectNameOptions,
+              value: projectNameFilter,
+              onChange: setProjectNameFilter,
+            },
+            {
+              id: 'severities',
+              label: 'Severities',
+              options: severityOptions,
+              value: severityFilter,
+              onChange: setSeverityFilter,
+            },
+            {
+              id: 'types',
+              label: 'Injury types',
+              options: typeOptions,
+              value: injuryTypeFilter,
+              onChange: setInjuryTypeFilter,
+            },
+          ]}
+        />
+      )}
       {loading && <p className={styles.injuryStatusText}>Loading…</p>}
       {!loading && error && <p className={styles.injuryErrorText}>Error: {String(error)}</p>}
 
