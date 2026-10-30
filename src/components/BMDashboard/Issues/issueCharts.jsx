@@ -4,6 +4,7 @@ import { Bar } from 'react-chartjs-2';
 import Select, { components } from 'react-select';
 import axios from 'axios';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
+import { getUserProfileBasicInfo } from '../../../actions/userManagement';
 import { ENDPOINTS } from '../../../utils/URL';
 import 'chart.js/auto';
 import styles from './issueChart.module.css';
@@ -48,6 +49,9 @@ const BREAKDOWN_OPTIONS = [
 
 // Issue title/text are stored as arrays in the BuildingIssue model
 const joinText = value => (Array.isArray(value) ? value.filter(Boolean).join(' ') : value || '');
+
+// projectId / createdBy may come back as an id string or a populated object
+const toId = value => String(value?._id ?? value ?? '');
 
 // The chart groups years with UTC ($year in the aggregation), so drill-down does the same
 const getIssueYear = issue => new Date(issue.issueDate).getUTCFullYear();
@@ -258,11 +262,15 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
+  const userProfiles = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
   // 'multi' compares several years side by side; 'single' focuses on one year
   const [viewMode, setViewMode] = useState('multi');
   const [singleYear, setSingleYear] = useState(null);
+  // Project and Reported By filters (ids); applied to the individual issue records
+  const [projectFilter, setProjectFilter] = useState([]);
+  const [reporterFilter, setReporterFilter] = useState([]);
   // Drill-down: the bar the user clicked ({ base: issue type, year })
   const [drill, setDrill] = useState(null);
   const [breakdownBy, setBreakdownBy] = useState('month');
@@ -282,6 +290,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
   useEffect(() => {
     dispatch(fetchIssues());
+    // Names for the Reported By filter
+    dispatch(getUserProfileBasicInfo({ source: 'IssueChart' }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -397,6 +407,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       years: [],
     });
     setSingleYear(null);
+    setProjectFilter([]);
+    setReporterFilter([]);
     setDrill(null);
   };
 
@@ -426,6 +438,55 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       setRecordsLoading(false);
     }
   };
+
+  // Records are needed for the Project / Reported By filters, so load them up front
+  useEffect(() => {
+    loadIssueRecords().catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const matchesRecordFilters = issue =>
+    (!projectFilter.length || projectFilter.includes(toId(issue.projectId))) &&
+    (!reporterFilter.length || reporterFilter.includes(toId(issue.createdBy)));
+
+  const hasRecordFilters = projectFilter.length > 0 || reporterFilter.length > 0;
+
+  // Issue counts in the same { type: { year: count } } shape as the chart API, built from
+  // records so the extra filters apply. Falls back to the API counts until records load.
+  const issueCounts = useMemo(() => {
+    if (!issueRecords) return issues || {};
+    const counts = {};
+    issueRecords.forEach(issue => {
+      if (!isValidIssueType(issue?.issueType) || !matchesRecordFilters(issue)) return;
+      const year = getIssueYear(issue);
+      if (Number.isNaN(year)) return;
+      if (!counts[issue.issueType]) counts[issue.issueType] = {};
+      counts[issue.issueType][year] = (counts[issue.issueType][year] || 0) + 1;
+    });
+    return counts;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [issueRecords, issues, projectFilter, reporterFilter]);
+
+  const projectOptions = useMemo(() => {
+    const ids = new Set((issueRecords || []).map(issue => toId(issue.projectId)).filter(Boolean));
+    return Array.from(ids)
+      .map(id => ({ value: id, label: projectNames[id] || `Project ${id.slice(-6)}` }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [issueRecords, projectNames]);
+
+  const reporterOptions = useMemo(() => {
+    const profiles = Array.isArray(userProfiles) ? userProfiles : [];
+    const nameById = new Map(
+      profiles.map(user => [
+        String(user._id),
+        `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+      ]),
+    );
+    const ids = new Set((issueRecords || []).map(issue => toId(issue.createdBy)).filter(Boolean));
+    return Array.from(ids)
+      .map(id => ({ value: id, label: nameById.get(id) || `User ${id.slice(-6)}` }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [issueRecords, userProfiles]);
 
   const openDrillDown = (base, year) => {
     setDrill({ base, year: String(year) });
@@ -483,7 +544,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       data: labels.map(base =>
         (groupMap[base] || [])
           .filter(type => selectedTypeSet.has(String(type).toLowerCase()))
-          .reduce((sum, type) => sum + (issues[type]?.[year] || 0), 0),
+          .reduce((sum, type) => sum + (issueCounts[type]?.[year] || 0), 0),
       ),
       backgroundColor: yearColorMap[year],
       borderColor: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
@@ -492,7 +553,16 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     }));
 
     return { labels, datasets };
-  }, [issues, filters, uniqueYears, yearColorMap, darkMode, isSingleYearView, selectedSingleYear]);
+  }, [
+    issues,
+    issueCounts,
+    filters,
+    uniqueYears,
+    yearColorMap,
+    darkMode,
+    isSingleYearView,
+    selectedSingleYear,
+  ]);
 
   const chartAnalysis = useMemo(() => {
     const labels = chartData?.labels ?? [];
@@ -560,7 +630,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     const totalForYear = (year, base) =>
       selectedTypes
         .filter(type => base === undefined || stripNumericSuffix(type) === base)
-        .reduce((sum, type) => sum + (Number(issues?.[type]?.[year]) || 0), 0);
+        .reduce((sum, type) => sum + (Number(issueCounts?.[type]?.[year]) || 0), 0);
 
     const latestShownYear = Math.max(...datasets.map(ds => Number(ds.label)));
     const previousYear = latestShownYear - 1;
@@ -578,7 +648,34 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       });
     }
 
+    // Share of currently open issues by type, for the shown types and years
+    let openShare = null;
+    if (issueRecords) {
+      const shownYears = new Set(datasets.map(ds => String(ds.label)));
+      const shownTypes = new Set(selectedTypes.map(type => String(type).toLowerCase()));
+      const openByBase = {};
+      let openTotal = 0;
+      issueRecords.forEach(issue => {
+        if (
+          issue?.status !== 'open' ||
+          !matchesRecordFilters(issue) ||
+          !shownTypes.has(String(issue.issueType).toLowerCase()) ||
+          !shownYears.has(String(getIssueYear(issue)))
+        ) {
+          return;
+        }
+        const base = stripNumericSuffix(issue.issueType);
+        openByBase[base] = (openByBase[base] || 0) + 1;
+        openTotal += 1;
+      });
+      const topOpen = Object.entries(openByBase).sort((a, b) => b[1] - a[1])[0];
+      openShare = topOpen
+        ? { base: topOpen[0], percent: Math.round((topOpen[1] / openTotal) * 100), openTotal }
+        : { base: null, percent: 0, openTotal: 0 };
+    }
+
     return {
+      openShare,
       totalIssues,
       topType,
       topShare: totalIssues > 0 ? Math.round((topType.total / totalIssues) * 100) : 0,
@@ -587,7 +684,17 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       yearTrend,
       biggestIncrease,
     };
-  }, [chartData, filters.issueTypes, issues, uniqueYears]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    chartData,
+    filters.issueTypes,
+    issues,
+    issueCounts,
+    uniqueYears,
+    issueRecords,
+    projectFilter,
+    reporterFilter,
+  ]);
 
   // Drill-down stays open only while its bar is still in the chart
   const drillActive =
@@ -606,13 +713,15 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       .filter(issue => {
         const type = String(issue?.issueType ?? '');
         return (
+          matchesRecordFilters(issue) &&
           stripNumericSuffix(type) === drill.base &&
           selectedTypes.has(type.toLowerCase()) &&
           String(getIssueYear(issue)) === drill.year
         );
       })
       .sort((a, b) => new Date(a.issueDate) - new Date(b.issueDate));
-  }, [drillActive, issueRecords, drill, filters.issueTypes, issues]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drillActive, issueRecords, drill, filters.issueTypes, issues, projectFilter, reporterFilter]);
 
   const getProjectName = projectId =>
     projectNames[String(projectId)] || (projectId ? `Project ${String(projectId).slice(-6)}` : '—');
@@ -968,8 +1077,10 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     const range =
       yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
 
-    return `${issueTypeCount} Issue Types | ${range}`;
+    const extra = hasRecordFilters ? ' | Project/Reporter filtered' : '';
+    return `${issueTypeCount} Issue Types | ${range}${extra}`;
   }, [
+    hasRecordFilters,
     filters.issueTypes,
     filters.years,
     issues,
@@ -1096,6 +1207,48 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           )}
         </div>
 
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`project-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+          >
+            Project:
+          </label>
+          <Select
+            inputId={`project-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={projectOptions}
+            value={projectOptions.filter(option => projectFilter.includes(option.value))}
+            onChange={selected => setProjectFilter((selected || []).map(option => option.value))}
+            styles={selectStyles}
+            isLoading={recordsLoading}
+            aria-label="Filter issues by project"
+            placeholder="All projects"
+          />
+        </div>
+
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`reporter-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+          >
+            Reported By:
+          </label>
+          <Select
+            inputId={`reporter-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={reporterOptions}
+            value={reporterOptions.filter(option => reporterFilter.includes(option.value))}
+            onChange={selected => setReporterFilter((selected || []).map(option => option.value))}
+            styles={selectStyles}
+            isLoading={recordsLoading}
+            aria-label="Filter issues by reporter"
+            placeholder="Anyone"
+          />
+        </div>
+
         <div style={{ display: 'flex', alignItems: 'flex-end' }}>
           <button
             type="button"
@@ -1171,6 +1324,18 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
                     {summary.latestShownYear} vs {summary.previousYear}
                   </span>
                 </div>
+                {summary.openShare && (
+                  <div className={styles.issueInsightsStat}>
+                    <span className={styles.issueInsightsValue}>
+                      {summary.openShare.base ? `${summary.openShare.percent}%` : '0'}
+                    </span>
+                    <span className={styles.issueInsightsLabel}>
+                      {summary.openShare.base
+                        ? `of ${summary.openShare.openTotal} open issues are ${summary.openShare.base}`
+                        : 'No open issues'}
+                    </span>
+                  </div>
+                )}
               </div>
               {summary.biggestIncrease && (
                 <p className={styles.issueInsightsNote}>
@@ -1200,9 +1365,9 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
               height: isCardVariant ? 'clamp(560px, 58vh, 720px)' : '520px',
               maxHeight: isCardVariant ? 'none' : '520px',
               display: 'flex',
-              flex: isCardVariant ? '1 0 auto' : undefined, // don't shrink when the summary is shown,
+              flex: isCardVariant ? '1 0 auto' : undefined, // don't shrink when the summary is shown
               flexDirection: 'column',
-              minHeight: isCardVariant ? 480 : undefined, // keep the chart readable below the summary,
+              minHeight: isCardVariant ? 480 : undefined, // keep the chart readable below the summary
               position: 'relative',
               overflow: 'hidden',
               paddingTop: 12,
