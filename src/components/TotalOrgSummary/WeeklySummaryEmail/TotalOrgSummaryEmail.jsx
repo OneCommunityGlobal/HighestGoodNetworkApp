@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import { ToastContainer, toast } from 'react-toastify';
 import { ENDPOINTS } from '../../../utils/URL';
+import WeeklyAutomationPanel from './WeeklyAutomationPanel';
 
 function TotalOrgSummaryEmail() {
   // State for managing email recipients
@@ -98,6 +99,9 @@ function TotalOrgSummaryEmail() {
   return (
     <div>
       <h1 className={`h1 ${darkMode ? 'text-light' : ''}`}>Total Org Summary Email</h1>
+      <div className="container">
+        <WeeklyAutomationPanel />
+      </div>
       {/* Recipient Management */}
       <div className={`container ${darkMode ? 'bg-dark text-light' : ''}`}>
         <h2 className={`h2 ${darkMode ? 'text-light' : ''}`}>Recipients</h2>
