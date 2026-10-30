@@ -65,10 +65,12 @@ const AssignTeamCodeField = React.memo(props => {
           style={{ marginTop: '0px', width: '100%' }}
         >
           {teamCodeData
-            .filter(teamCode => {
-            const code = teamCode?.value || '';
-            return code.toLowerCase().includes(searchText.toLowerCase());
-            })
+          .filter(teamCode => {
+          return teamCode.value
+          .trim()
+          .toLowerCase()
+          .includes(searchText.trim().toLowerCase());
+          })
             .slice(0, 10)
             .map((teamCode, index) => (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
