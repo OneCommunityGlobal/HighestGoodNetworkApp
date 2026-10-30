@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -86,17 +87,8 @@ function TotalOrgSummaryEmail() {
 
   // Darkmode
   const darkMode = useSelector(state => state.theme.darkMode);
-  useEffect(() => {
-    const rootDiv = document.getElementById('root');
-    if (darkMode) {
-      rootDiv.classList.add('bg-dark', 'text-light');
-    } else {
-      rootDiv.classList.remove('bg-dark', 'text-light');
-    }
-  }, [darkMode]);
-
   return (
-    <div>
+    <div className={darkMode ? 'bg-dark text-light' : ''}>
       <h1 className={`h1 ${darkMode ? 'text-light' : ''}`}>Total Org Summary Email</h1>
       {/* Recipient Management */}
       <div className={`container ${darkMode ? 'bg-dark text-light' : ''}`}>

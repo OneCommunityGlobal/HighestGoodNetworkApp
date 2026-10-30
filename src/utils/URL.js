@@ -138,6 +138,8 @@ export const ENDPOINTS = {
   WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceIndividualTeamcodes`,
   SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
+  KITCHEN_REPORTS_EXPORT_PDF: () => `${APIEndpoint}/kitchenandinventory/reports/export/pdf`,
+  KITCHEN_REPORTS_EXPORT_CSV: () => `${APIEndpoint}/kitchenandinventory/reports/export/csv`,
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
   POST_NEW_WARNING: () => `${APIEndpoint}/currentWarnings`,
   UPDATE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
@@ -385,9 +387,9 @@ export const ENDPOINTS = {
   BM_PROJECTS_WITH_LOCATION: `${APIEndpoint}/bm/projects/location`,
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS: `${APIEndpoint}/bm/weekly-project-summary/project-status`,
   BM_DELETE_INVENTORTY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
-
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
@@ -776,6 +778,7 @@ export const ENDPOINTS = {
 
   // Help Request & Feedback Modal endpoints
   HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
+  HGN_COMMUNITY_MEMBERS: `${APIEndpoint}/hgnHelp/community`,
   HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
   FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
   FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,

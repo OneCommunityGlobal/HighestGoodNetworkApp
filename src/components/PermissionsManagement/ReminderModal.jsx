@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 /* eslint-disable react/button-has-type */
 import styles from './PermissionsManagement.module.css';
 import { ModalContext } from '~/context/ModalContext';
@@ -14,16 +15,14 @@ function ReminderModal({
 
   return (
     <div
-      className={styles['ContainerReminder']}
-      style={darkMode ? { backgroundColor: '#1b2a41', borderColor: '#3a506b' } : {}}
+      className={`${styles['ContainerReminder']} ${
+        darkMode ? styles['ContainerReminderDark'] : ''
+      }`}
     >
       <div className={styles['ReminderTitle']}>
         <h2 style={darkMode ? { color: '#ffffff' } : {}}>Remember to Save Your Changes!</h2>
       </div>
-      <div
-        className={`${styles['ReminderBody']} ${darkMode ? styles['text-space-cadet'] : ''}`}
-        style={darkMode ? { color: '#e2e8f0', borderColor: '#3a506b' } : {}}
-      >
+      <div className={`${styles['ReminderBody']} ${darkMode ? 'text-light' : ''}`}>
         <span>
           Please log out and log back in to your account, {changedAccount} to apply the changes.
         </span>

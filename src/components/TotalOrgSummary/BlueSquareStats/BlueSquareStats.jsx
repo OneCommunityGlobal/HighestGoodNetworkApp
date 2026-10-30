@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 import { BLUE_SQUARE_STATS_COLORS } from '~/constants/totalOrgSummary';
 import styles from './BlueSquareStats.module.css';
 import donutStyles from '../DonutChart/DonutChart.module.css';
@@ -22,18 +23,19 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode 
     missingHoursAndSummary,
     vacationTime,
     other,
-  } = blueSquareStats;
+  } = blueSquareStats ?? {};
 
   const data = [
-    { label: 'Missing Hours', value: missingHours.count },
-    { label: 'Missing Summary', value: missingSummary.count },
-    { label: 'Missing Both Hours & Summary', value: missingHoursAndSummary.count },
-    { label: 'Vacation Time', value: vacationTime.count },
-    { label: 'Other', value: other.count },
+    { label: 'Missing Hours', value: missingHours?.count ?? 0 },
+    { label: 'Missing Summary', value: missingSummary?.count ?? 0 },
+    { label: 'Missing Both Hours & Summary', value: missingHoursAndSummary?.count ?? 0 },
+    { label: 'Vacation Time', value: vacationTime?.count ?? 0 },
+    { label: 'Other', value: other?.count ?? 0 },
   ];
 
   const hasData = data.some(item => item.value !== 0);
-  const pctChange = totalBlueSquares.comparisonPercentage ?? totalBlueSquares.percentageChange ?? 0;
+  const pctChange =
+    totalBlueSquares?.comparisonPercentage ?? totalBlueSquares?.percentageChange ?? 0;
 
   if (!hasData) {
     return (
@@ -50,7 +52,9 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode 
       <div className={styles.blueSquareStatsPieChart}>
         <DonutChart
           title="TOTAL BLUE SQUARES"
-          totalCount={totalBlueSquares.count}
+          totalCount={
+            totalBlueSquares?.count ?? data.reduce((total, item) => total + item.value, 0)
+          }
           percentageChange={Number(pctChange)}
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}

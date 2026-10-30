@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 import { useState } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip as ReactstrapTooltip } from 'reactstrap';
@@ -7,6 +8,7 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { boxStyle, boxStyleDark } from '../../styles';
 import hasPermission from '../../utils/permissions';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
+import appStyles from '~/App.module.css';
 import styles from './usermanagement.module.css';
 
 import { permissions } from '../../utils/constants';
@@ -31,6 +33,7 @@ function UserSearchPanel({
   const canCreateUsers = hasPermission(permissions.postUserProfile);
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
   const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
+  const inputDarkClass = darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : '';
   return (
     <div className={`input-group mt-3 ${styles.new_user_management}`}>
       <button
@@ -93,7 +96,7 @@ function UserSearchPanel({
       <input
         // autoFocus
         type="text"
-        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+        className={`form-control ${inputDarkClass}`}
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
@@ -119,7 +122,7 @@ function UserSearchPanel({
             onActiveFilter(e.target.value);
           }}
           value={selectText}
-          className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
+          className={inputDarkClass}
         >
           <option value="all">All</option>
           <option value="active">Active</option>
