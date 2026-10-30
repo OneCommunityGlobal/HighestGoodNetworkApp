@@ -1,3 +1,4 @@
+// Version 1.0.0
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { Provider } from 'react-redux';
@@ -68,6 +69,7 @@ describe('ActivityList', () => {
 
   test('sorts activities by date (latest to earliest)', () => {
     renderActivityList();
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
     fireEvent.change(screen.getByLabelText(/Sort By:/i), {
       target: { value: 'latest' },
