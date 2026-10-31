@@ -33,7 +33,11 @@ const FIXED_ISSUE_TYPES = ['Equipment Issues', 'Labor Issues', 'Materials Issues
 const MAX_AXIS_LABEL_LENGTH = 16;
 
 // The API appends the raw project id to unnamed projects; keep it out of the UI
-const cleanProjectName = name => (name || '').replace(/\s*\([0-9a-f]{24}\)\s*$/i, '').trim();
+const cleanProjectName = name =>
+  (name || '')
+    .trim()
+    .replace(/\([0-9a-f]{24}\)$/i, '')
+    .trim();
 
 const formatAxisLabel = name =>
   name.length > MAX_AXIS_LABEL_LENGTH ? `${name.slice(0, MAX_AXIS_LABEL_LENGTH - 1)}…` : name;
