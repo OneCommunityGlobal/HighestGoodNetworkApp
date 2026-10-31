@@ -392,7 +392,7 @@ describe('PermissionsManagement', () => {
       renderWithUser(user, [{ roleName: 'Administrator', permissions: [permissions.updatePopup] }]);
       await pickUser(user);
 
-      const popupCategory = screen.getByText('Popup Management').closest('li');
+      const popupCategory = screen.getByText(/^popup management$/i).closest('li');
       await userEvent.click(await within(popupCategory).findByRole('button', { name: 'Delete' }));
       await settle();
       expect(screen.queryByText(REMINDER)).not.toBeInTheDocument();
