@@ -30,6 +30,14 @@ const COLORS = {
 // These match the API response property names exactly
 const FIXED_ISSUE_TYPES = ['Equipment Issues', 'Labor Issues', 'Materials Issues'];
 
+const MAX_AXIS_LABEL_LENGTH = 16;
+
+// The API appends the raw project id to unnamed projects; keep it out of the UI
+const cleanProjectName = name => (name || '').replace(/\s*\([0-9a-f]{24}\)\s*$/i, '').trim();
+
+const formatAxisLabel = name =>
+  name.length > MAX_AXIS_LABEL_LENGTH ? `${name.slice(0, MAX_AXIS_LABEL_LENGTH - 1)}…` : name;
+
 /**
  * Generate react-select custom styles based on dark mode
  * @param {boolean} darkMode - Whether dark mode is enabled
@@ -137,6 +145,8 @@ export default function IssuesBreakdownChart() {
 
   // Available options states
   const [availableProjects, setAvailableProjects] = useState([]);
+  // Projects seen in chart data, so charted projects missing from the project list stay filterable
+  const [chartProjects, setChartProjects] = useState([]);
 
   // Today's date in YYYY-MM-DD format (local time) — used as max for date pickers
   const today = useMemo(() => {
@@ -172,7 +182,7 @@ export default function IssuesBreakdownChart() {
     return apiData.map(project => {
       return {
         projectId: project.projectId || project._id || '',
-        projectName: project.projectName || project.name || '',
+        projectName: cleanProjectName(project.projectName || project.name) || 'Unknown Project',
         equipmentIssues: Number(project['Equipment Issues']) || 0,
         laborIssues: Number(project['Labor Issues']) || 0,
         materialIssues: Number(project['Materials Issues']) || 0,
@@ -281,6 +291,11 @@ export default function IssuesBreakdownChart() {
         // Process API response to map to three fixed issue types
         const processedData = processChartData(response.data);
         setData(processedData);
+        setChartProjects(prev => {
+          const known = new Set(prev.map(p => p.projectId));
+          const added = processedData.filter(p => p.projectId && !known.has(p.projectId));
+          return added.length > 0 ? [...prev, ...added] : prev;
+        });
         setError(null);
       } catch (err) {
         // Don't set error if request was aborted
@@ -383,25 +398,30 @@ export default function IssuesBreakdownChart() {
     fetchProjects();
   }, [reduxProjects]);
 
+  const filterProjects = useMemo(() => {
+    const listedIds = new Set(availableProjects.map(p => p._id || p.projectId));
+    return [...availableProjects, ...chartProjects.filter(p => !listedIds.has(p.projectId))];
+  }, [availableProjects, chartProjects]);
+
   // Memoize react-select options to prevent unnecessary re-renders
   const projectOptions = useMemo(
     () =>
-      availableProjects.map(project => ({
+      filterProjects.map(project => ({
         value: project._id || project.projectId,
         label: project.name || project.projectName || project._id || project.projectId,
       })),
-    [availableProjects],
+    [filterProjects],
   );
 
   const selectedProjectValues = useMemo(
     () =>
-      availableProjects
+      filterProjects
         .filter(project => selectedProjects.includes(project._id || project.projectId))
         .map(project => ({
           value: project._id || project.projectId,
           label: project.name || project.projectName || project._id || project.projectId,
         })),
-    [availableProjects, selectedProjects],
+    [filterProjects, selectedProjects],
   );
 
   const issueTypeOptions = useMemo(
@@ -471,7 +491,7 @@ export default function IssuesBreakdownChart() {
               onChange={handleProjectChange}
               placeholder="Select Projects"
               isClearable
-              isDisabled={availableProjects.length === 0}
+              isDisabled={filterProjects.length === 0}
               styles={getSelectStyles(darkMode)}
             />
           </div>
@@ -567,9 +587,17 @@ export default function IssuesBreakdownChart() {
           </div>
         ) : (
           <ResponsiveContainer>
-            <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
+            <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 60 }} barGap={8}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-              <XAxis dataKey="projectName" tick={{ fill: textColor }} />
+              <XAxis
+                dataKey="projectName"
+                interval={0}
+                angle={-30}
+                textAnchor="end"
+                height={70}
+                tickFormatter={formatAxisLabel}
+                tick={{ fill: textColor }}
+              />
               <YAxis allowDecimals={false} tick={{ fill: textColor }} />
               <Tooltip
                 contentStyle={{
