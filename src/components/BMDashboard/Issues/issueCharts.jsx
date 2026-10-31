@@ -50,6 +50,16 @@ const BREAKDOWN_OPTIONS = [
 // Issue title/text are stored as arrays in the BuildingIssue model
 const joinText = value => (Array.isArray(value) ? value.filter(Boolean).join(' ') : value || '');
 
+// Severity levels stored on building issues; older issues without one are "Unspecified"
+const SEVERITY_LEVELS = ['Low', 'Medium', 'High', 'Critical'];
+const UNSPECIFIED_SEVERITY = 'Unspecified';
+const SEVERITY_OPTIONS = [...SEVERITY_LEVELS, UNSPECIFIED_SEVERITY].map(level => ({
+  value: level,
+  label: level,
+}));
+const getSeverity = issue =>
+  SEVERITY_LEVELS.includes(issue?.severity) ? issue.severity : UNSPECIFIED_SEVERITY;
+
 // projectId / createdBy may come back as an id string or a populated object
 const toId = value => String(value?._id ?? value ?? '');
 
@@ -273,6 +283,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   // Project and Reported By filters (ids); applied to the individual issue records
   const [projectFilter, setProjectFilter] = useState([]);
   const [reporterFilter, setReporterFilter] = useState([]);
+  const [severityFilter, setSeverityFilter] = useState([]);
   // Drill-down: the bar the user clicked ({ base: issue type, year })
   const [drill, setDrill] = useState(null);
   const [breakdownBy, setBreakdownBy] = useState('month');
@@ -411,6 +422,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     setSingleYear(null);
     setProjectFilter([]);
     setReporterFilter([]);
+    setSeverityFilter([]);
     setDrill(null);
   };
 
@@ -449,9 +461,11 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
   const matchesRecordFilters = issue =>
     (!projectFilter.length || projectFilter.includes(toId(issue.projectId))) &&
-    (!reporterFilter.length || reporterFilter.includes(toId(issue.createdBy)));
+    (!reporterFilter.length || reporterFilter.includes(toId(issue.createdBy))) &&
+    (!severityFilter.length || severityFilter.includes(getSeverity(issue)));
 
-  const hasRecordFilters = projectFilter.length > 0 || reporterFilter.length > 0;
+  const hasRecordFilters =
+    projectFilter.length > 0 || reporterFilter.length > 0 || severityFilter.length > 0;
 
   // Issue counts in the same { type: { year: count } } shape as the chart API, built from
   // records so the extra filters apply. Falls back to the API counts until records load.
@@ -467,7 +481,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     });
     return counts;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [issueRecords, issues, projectFilter, reporterFilter]);
+  }, [issueRecords, issues, projectFilter, reporterFilter, severityFilter]);
 
   const projectOptions = useMemo(() => {
     const ids = new Set((issueRecords || []).map(issue => toId(issue.projectId)).filter(Boolean));
@@ -696,6 +710,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     issueRecords,
     projectFilter,
     reporterFilter,
+    severityFilter,
   ]);
 
   // Drill-down stays open only while its bar is still in the chart
@@ -723,7 +738,16 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       })
       .sort((a, b) => new Date(a.issueDate) - new Date(b.issueDate));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drillActive, issueRecords, drill, filters.issueTypes, issues, projectFilter, reporterFilter]);
+  }, [
+    drillActive,
+    issueRecords,
+    drill,
+    filters.issueTypes,
+    issues,
+    projectFilter,
+    reporterFilter,
+    severityFilter,
+  ]);
 
   const getProjectName = projectId =>
     projectNames[String(projectId)] || (projectId ? `Project ${String(projectId).slice(-6)}` : '—');
@@ -762,7 +786,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     });
     return map;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [issueRecords, projectFilter, reporterFilter]);
+  }, [issueRecords, projectFilter, reporterFilter, severityFilter]);
 
   const countForBaseYear = (base, year) => {
     const selectedTypes = filters.issueTypes.length
@@ -884,13 +908,22 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   };
 
   const handleExportDrillDown = () => {
-    const header = ['Date', 'Title', 'Description', 'Project', 'Sub-category', 'Status'];
+    const header = [
+      'Date',
+      'Title',
+      'Description',
+      'Project',
+      'Sub-category',
+      'Severity',
+      'Status',
+    ];
     const rows = drilledIssues.map(issue => [
       formatIssueDate(issue.issueDate),
       joinText(issue.issueTitle),
       joinText(issue.issueText),
       getProjectName(issue.projectId),
       issue.issueType,
+      getSeverity(issue),
       issue.status,
     ]);
     downloadCsv(`issues-${toFileSlug(drill.base)}-${drill.year}.csv`, header, rows);
@@ -1220,7 +1253,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     const range =
       yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
 
-    const extra = hasRecordFilters ? ' | Project/Reporter filtered' : '';
+    const extra = hasRecordFilters ? ' | Project/Reporter/Severity filtered' : '';
     return `${issueTypeCount} Issue Types | ${range}${extra}`;
   }, [
     hasRecordFilters,
@@ -1389,6 +1422,26 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
             isLoading={recordsLoading}
             aria-label="Filter issues by reporter"
             placeholder="Anyone"
+          />
+        </div>
+
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`severity-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+          >
+            Severity Level:
+          </label>
+          <Select
+            inputId={`severity-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={SEVERITY_OPTIONS}
+            value={SEVERITY_OPTIONS.filter(option => severityFilter.includes(option.value))}
+            onChange={selected => setSeverityFilter((selected || []).map(option => option.value))}
+            styles={selectStyles}
+            aria-label="Filter issues by severity level"
+            placeholder="All severities"
           />
         </div>
 
@@ -1632,6 +1685,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
                             <th scope="col">Title</th>
                             <th scope="col">Project</th>
                             <th scope="col">Sub-category</th>
+                            <th scope="col">Severity</th>
                             <th scope="col">Status</th>
                           </tr>
                         </thead>
@@ -1646,6 +1700,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
                               </td>
                               <td>{getProjectName(issue.projectId)}</td>
                               <td>{issue.issueType}</td>
+                              <td>{getSeverity(issue)}</td>
                               <td>{issue.status}</td>
                             </tr>
                           ))}
