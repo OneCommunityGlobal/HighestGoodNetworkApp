@@ -22,6 +22,8 @@ import {
   isFieldRequired,
   normalizeQuestionForApi,
   normalizeLoadedQuestions,
+  findDuplicateQuestions,
+  applyDuplicateDecision,
   isDuplicateQuestion,
   numberedQuestionLabel,
   stripLeadingQuestionNumber,
@@ -124,9 +126,24 @@ function JobFormBuilder() {
           setCurrentFormId(formId);
           const loadedQuestions = normalizeLoadedQuestions(firstForm.questions || []);
           const loadedTitle = firstForm.title || 'Please Choose an option';
+          const duplicateQuestions = findDuplicateQuestions(loadedQuestions);
 
-          setFormFields(loadedQuestions);
+          const shouldRemoveDuplicates =
+            duplicateQuestions.length > 0 &&
+            window.confirm(
+              `This form has ${duplicateQuestions.length} repeated question(s). Click OK to remove the extra copies, or Cancel to keep them if they were added intentionally.`,
+            );
+
+          const questionsToDisplay = applyDuplicateDecision(
+            loadedQuestions,
+            shouldRemoveDuplicates,
+          );
+
+          setFormFields(questionsToDisplay);
           setJobTitle(loadedTitle);
+
+          // Keep the API version as the saved baseline. Removing duplicates should count
+          // as an unsaved change, so the manager can review and save the cleaned form.
           markAsSaved(loadedQuestions, loadedTitle);
           setNewField(initialNewField);
 
