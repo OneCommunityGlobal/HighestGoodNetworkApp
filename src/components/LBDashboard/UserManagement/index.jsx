@@ -1,4 +1,1 @@
-import { LBUserManagement } from './LBUserManagement';
-
-export { LBUserManagement };
-export default LBUserManagement;
+export { LBUserManagement, default } from './LBUserManagement';

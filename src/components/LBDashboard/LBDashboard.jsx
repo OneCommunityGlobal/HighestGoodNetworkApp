@@ -291,7 +291,7 @@ export function LBDashboard() {
   useEffect(() => {
     let mounted = true;
 
-    (async () => {
+    const loadVillages = async () => {
       try {
         setLoadingVillages(true);
         setVillagesError(null);
@@ -301,13 +301,18 @@ export function LBDashboard() {
 
         setVillagesRaw(Array.isArray(res?.data) ? res.data : []);
       } catch (e) {
+        // Error is surfaced to the user via villagesError state
         if (!mounted) return;
-        setVillagesError('Failed to load villages');
+        setVillagesError(e?.response?.data?.message || 'Failed to load villages');
         setVillagesRaw([]);
       } finally {
         if (mounted) setLoadingVillages(false);
       }
-    })();
+    };
+
+    loadVillages().catch(err => {
+      if (mounted) setVillagesError(err?.message || 'Failed to load villages');
+    });
 
     return () => {
       mounted = false;
@@ -356,7 +361,6 @@ export function LBDashboard() {
   // Derive villagesData from backend
   const villagesData = useMemo(() => {
     if (!villagesRaw.length) return [];
-
     return villagesRaw
       .map(v => {
         const props = Array.isArray(v.properties) ? v.properties : [];
@@ -412,7 +416,6 @@ export function LBDashboard() {
       className={getClassNames(styles.dashboardContainer, styles.darkContainer, darkMode)}
     >
       <DashboardHeader darkMode={darkMode} onBack={goBack} />
-
       <FilterSection
         darkMode={darkMode}
         activeCategory={activeCategory}
@@ -435,7 +438,6 @@ export function LBDashboard() {
               dateRange={dateRange}
             />
           </Col>
-
           <Col>
             {loadingVillages && (
               <div className={getClassNames('', styles.darkText, darkMode)}>Loading villages…</div>
@@ -469,7 +471,6 @@ export function LBDashboard() {
               />
             )}
           </Col>
-
           <Col>
             <GraphCard title="Comparing Villages" metricLabel={metricLabel} darkMode={darkMode} />
           </Col>
@@ -487,7 +488,6 @@ export function LBDashboard() {
               dateRange={dateRange}
             />
           </Col>
-
           <Col>
             <CompareBarGraph
               title="Comparing Ratings of Properties"

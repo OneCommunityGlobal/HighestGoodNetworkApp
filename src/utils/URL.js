@@ -425,11 +425,14 @@ export const ENDPOINTS = {
   LB_ADMIN_USERS_BASE: `${APIEndpoint}/lbdashboard/admin/users`,
   LB_ADMIN_USERS: (page = 1, limit = 10, search = '') => {
     const params = new URLSearchParams();
-    if (page !== undefined && page !== null && page !== '') params.append('page', page);
-    if (limit !== undefined && limit !== null && limit !== '') params.append('limit', limit);
-    if (search && String(search).trim()) params.append('search', String(search).trim());
+    if (page) params.append('page', page);
+    if (limit) params.append('limit', limit);
+    const trimmedSearch = search ? String(search).trim() : '';
+    if (trimmedSearch) params.append('search', trimmedSearch);
     const qs = params.toString();
-    return `${APIEndpoint}/lbdashboard/admin/users${qs ? `?${qs}` : ''}`;
+    return qs
+      ? `${APIEndpoint}/lbdashboard/admin/users?${qs}`
+      : `${APIEndpoint}/lbdashboard/admin/users`;
   },
   LB_ADMIN_USER_BY_ID: userId => `${APIEndpoint}/lbdashboard/admin/users/${userId}`,
 
