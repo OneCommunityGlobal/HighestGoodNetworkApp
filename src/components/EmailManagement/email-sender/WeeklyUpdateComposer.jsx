@@ -518,61 +518,41 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     composerThemeClass = 'weekly-update-composer dark-mode';
   }
 
-  let imageDropZoneBackgroundColor;
-  let imageDropZoneBorder;
-  let imageUploadIconColor;
-  let imageUploadTextColor;
+  let imageDropZoneBackgroundColor = '#f9fafb';
+  let imageDropZoneBorder = '2px dashed #d1d5db';
+  let imageUploadIconColor = '#9ca3af';
+  let imageUploadTextColor = '#6b7280';
+
+  if (darkMode) {
+    imageDropZoneBackgroundColor = '#2d2d2d';
+    imageDropZoneBorder = '2px dashed #666';
+    imageUploadIconColor = '#d1d5db';
+    imageUploadTextColor = '#e5e7eb';
+  }
 
   if (imageDragging) {
-    imageDropZoneBackgroundColor = '#eff6ff';
+    imageDropZoneBackgroundColor = darkMode ? '#26374a' : '#eff6ff';
     imageDropZoneBorder = '3px dashed #3b82f6';
     imageUploadIconColor = '#60a5fa';
     imageUploadTextColor = '#60a5fa';
+  }
+  let videoDropZoneBackgroundColor = '#f9fafb';
+  let videoDropZoneBorder = '2px dashed #d1d5db';
+  let videoUploadIconColor = '#9ca3af';
+  let videoUploadTextColor = '#6b7280';
 
-    if (darkMode) {
-      imageDropZoneBackgroundColor = '#26374a';
-    }
-  } else {
-    imageDropZoneBorder = '2px dashed #d1d5db';
-    imageUploadIconColor = '#9ca3af';
-    imageUploadTextColor = '#6b7280';
-
-    if (darkMode) {
-      imageDropZoneBackgroundColor = '#2d2d2d';
-      imageDropZoneBorder = '2px dashed #666';
-      imageUploadIconColor = '#d1d5db';
-      imageUploadTextColor = '#e5e7eb';
-    } else {
-      imageDropZoneBackgroundColor = '#f9fafb';
-    }
+  if (darkMode) {
+    videoDropZoneBackgroundColor = '#2d2d2d';
+    videoDropZoneBorder = '2px dashed #666';
+    videoUploadIconColor = '#d1d5db';
+    videoUploadTextColor = '#e5e7eb';
   }
 
-  let videoDropZoneBackgroundColor;
-  let videoDropZoneBorder;
-  let videoUploadIconColor;
-  let videoUploadTextColor;
-
   if (videoDragging) {
-    videoDropZoneBackgroundColor = '#fef2f2';
+    videoDropZoneBackgroundColor = darkMode ? '#452626' : '#fef2f2';
     videoDropZoneBorder = '3px dashed #ef4444';
     videoUploadIconColor = '#f87171';
     videoUploadTextColor = '#f87171';
-
-    if (darkMode) {
-      videoDropZoneBackgroundColor = '#452626';
-    }
-  } else {
-    videoDropZoneBackgroundColor = '#f9fafb';
-    videoDropZoneBorder = '2px dashed #d1d5db';
-    videoUploadIconColor = '#9ca3af';
-    videoUploadTextColor = '#6b7280';
-
-    if (darkMode) {
-      videoDropZoneBackgroundColor = '#2d2d2d';
-      videoDropZoneBorder = '2px dashed #666';
-      videoUploadIconColor = '#d1d5db';
-      videoUploadTextColor = '#e5e7eb';
-    }
   }
 
   return (
