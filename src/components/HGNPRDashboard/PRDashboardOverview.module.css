@@ -1,0 +1,45 @@
+/* stylelint-disable */
+.wrapper {
+  width: 100%;
+  min-height: 100vh;
+  padding: 1rem 2rem 2rem;
+  overflow-x: hidden;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.metric {
+  font-weight: 600;
+}
+
+.label {
+  color: #555;
+}
+
+/* ===== DARK MODE ===== */
+
+.wrapper.dark {
+  background-color: #1b2a41;
+}
+
+.wrapper.dark .title,
+.wrapper.dark .subtitle {
+  color: #fff;
+}
+
+.card.dark {
+  background-color: #1b2a41;
+  box-shadow: 0 2px 8px rgb(255 255 255 / 10%);
+}
+
+.card.dark .metric {
+  color: #fff;
+}
+
+.card.dark .label {
+  color: #9ab0cc;
+}
