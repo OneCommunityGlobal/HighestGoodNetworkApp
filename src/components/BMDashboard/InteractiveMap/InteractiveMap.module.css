@@ -59,13 +59,13 @@
 ---------------------------------- */
 
 /* Before: pointer-events:none blocked legend + hid it entirely */
-:global(.leaflet-control-container) {
+.mapContainer :global(.leaflet-control-container) {
   pointer-events: auto !important;
   z-index: 450 !important; /* prevent covering header */
 }
 
 /* Leaflet bottom-right container */
-:global(.leaflet-bottom.leaflet-right) {
+.mapContainer :global(.leaflet-bottom.leaflet-right) {
   bottom: 20px !important;
   right: 20px !important;
   z-index: 600 !important;
@@ -376,12 +376,12 @@
 /* ----------------------------------
    POPUPS
 ---------------------------------- */
-:global(.leaflet-popup-content-wrapper) {
+.mapContainer :global(.leaflet-popup-content-wrapper) {
   border-radius: 10px !important;
   padding: 10px 12px !important;
 }
 
-:global(.leaflet-popup-content) {
+.mapContainer :global(.leaflet-popup-content) {
   margin: 0 !important;
   font-size: 14px !important;
 }
@@ -436,23 +436,23 @@
 }
 
 /* Hide zoom buttons */
-:global(.leaflet-control-zoom) {
+.mapContainer :global(.leaflet-control-zoom) {
   display: none !important;
 }
 
-:global(.leaflet-control) {
+.mapContainer :global(.leaflet-control) {
   z-index: 2000 !important;
 }
 
 /* ----------------------------------
    CLUSTERS
 ---------------------------------- */
-:global(.marker-cluster) {
+.mapContainer :global(.marker-cluster) {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 
-:global(.marker-cluster:hover) {
+.mapContainer :global(.marker-cluster:hover) {
   transform: scale(1.12);
 }
 

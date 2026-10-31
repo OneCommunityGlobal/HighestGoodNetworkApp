@@ -61,7 +61,7 @@ export default function FilterEditForm({
             <b>Select Team Code</b>
           </div>
           <MultiSelect
-            className={`report-multi-select-filter ${darkMode ? 'ms-dark' : 'ms-light'}`}
+            className={mainStyles['report-multi-select-filter']}
             options={teamCodes.map(item => {
               const [code, count] = item.label.split(' (');
               return {
@@ -119,7 +119,7 @@ export default function FilterEditForm({
             <b>Select Color</b>
           </div>
           <MultiSelect
-            className={`report-multi-select-filter ${darkMode ? 'ms-dark' : 'ms-light'}`}
+            className={mainStyles['report-multi-select-filter']}
             options={colorOptions}
             value={state.selectedColors}
             onChange={e => setField(setState, 'selectedColors', e)}
@@ -170,7 +170,7 @@ export default function FilterEditForm({
             <b>Select Extra Members</b>
           </div>
           <MultiSelect
-            className={`report-multi-select-filter ${darkMode ? 'ms-dark' : 'ms-light'}`}
+            className={mainStyles['report-multi-select-filter']}
             options={state.membersFromUnselectedTeam}
             value={state.selectedExtraMembers}
             onChange={e => setField(setState, 'selectedExtraMembers', e)}

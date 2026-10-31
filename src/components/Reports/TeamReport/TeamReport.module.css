@@ -1,5 +1,5 @@
 /* stylelint-disable  */
-:global(*) {
+.team-report-blocks :global(*) {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -110,9 +110,3 @@
   margin-left: -80px;
 }
 
-/* global selector — must be wrapped for CSS Modules */
-:global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr td),
-:global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr th),
-:global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr strong) {
-  color: #fff !important;
-}

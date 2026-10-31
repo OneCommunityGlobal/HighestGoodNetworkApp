@@ -91,9 +91,9 @@ export function PieChart({
       .append('xhtml:div')
       .html(
         `
-        <label class="switch">
+        <label class="${styles.switch}">
           <input type="checkbox" ${togglePercentage ? 'checked' : ''} />
-          <span class="slider"></span>
+          <span class="${styles.slider}"></span>
         </label>
       `,
       )

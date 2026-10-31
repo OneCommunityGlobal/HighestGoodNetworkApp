@@ -171,6 +171,6 @@
 }
 
 /* For form labels in dark mode */
-:global(.dark-mode) :global(.form-label) {
+:global(.dark-mode) .fileUploadForm :global(.form-label) {
   color: #fff !important;
 }

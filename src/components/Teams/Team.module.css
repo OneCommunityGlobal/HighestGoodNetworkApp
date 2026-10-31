@@ -1,4 +1,5 @@
 /* stylelint-disable  */
+:global(.teams-table) thead,
 .teamsTableHead {
   background: aliceblue;
 }
