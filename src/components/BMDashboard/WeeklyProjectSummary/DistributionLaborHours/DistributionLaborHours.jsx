@@ -1,132 +1,168 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import moment from 'moment';
 import styles from './DistributionLaborHours.module.css';
-import config from '../../../../config.json';
-import { ENDPOINTS } from '../../../../utils/URL';
-import logger from '../../../../services/logService';
 
-const COLORS = ['#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbb', '#f9f3e3'];
-
-const topFiveWithOthers = data => {
-  const sorted = [...data].sort((a, b) => b.value - a.value);
-  const top5 = sorted.slice(0, 5);
-  const othersTotal = sorted.slice(5).reduce((sum, item) => sum + item.value, 0);
-  if (othersTotal > 0) {
-    top5.push({ name: 'Others', value: othersTotal });
-  }
-  return top5;
-};
+const COLORS = ['#4f8fa8', '#3fa4b8', '#ffab91', '#ffccbb', '#c7c7c7', '#f9f3e3'];
 
 const CustomTooltip = ({ active, payload, total, darkMode }) => {
   if (active && payload && payload.length) {
     const { name, value } = payload[0];
-    const percent = ((value / total) * 100).toFixed(1);
+    const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+
     return (
-      <div
-        className={styles.tooltip}
-        style={{
-          backgroundColor: darkMode ? '#2E3E5A' : '#fff',
-          color: darkMode ? '#fff' : '#000',
-          border: darkMode ? '1px solid #555' : '1px solid #ccc',
-        }}
-      >
+      <div className={`${styles.tooltip} ${darkMode ? styles.tooltipDark : styles.tooltipLight}`}>
         <p>{name}</p>
         <p>{`Hours: ${value} hrs`}</p>
         <p>{`Percentage: ${percent}%`}</p>
       </div>
     );
   }
+
   return null;
 };
 
 export default function DistributionLaborHours() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [fetchError, setFetchError] = useState(null);
-  const [dateRange, setDateRange] = useState({ from: '', to: '' });
+
+  const [dateRange, setDateRange] = useState({
+    from: '',
+    to: '',
+  });
+
   const [projectFilter, setProjectFilter] = useState('');
   const [memberFilter, setMemberFilter] = useState('');
-  const [categoryOptions, setCategoryOptions] = useState([]);
-
-  const latestRequestId = useRef(0);
-
-  const fetchDistribution = useCallback(async ({ from, to, category, member }) => {
-    const requestId = latestRequestId.current + 1;
-    latestRequestId.current = requestId;
-
-    try {
-      const token = localStorage.getItem(config.tokenKey);
-      const headers = {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: token }),
-      };
-
-      const startDate =
-        from ||
-        moment()
-          .subtract(30, 'days')
-          .format('YYYY-MM-DD');
-      const endDate = to || moment().format('YYYY-MM-DD');
-      const params = new URLSearchParams({
-        start_date: startDate,
-        end_date: endDate,
-      });
-      if (category) params.set('category', category);
-      if (member) params.set('member', member);
-
-      const response = await fetch(
-        `${ENDPOINTS.APIEndpoint()}/labor-hours/distribution?${params.toString()}`,
-        { method: 'GET', headers, cache: 'no-store' },
-      );
-
-      if (!response.ok) throw new Error(`Status ${response.status}`);
-      const body = await response.json();
-      const distribution = (body.distribution || []).map(item => ({
-        name: item.category,
-        value: item.hours,
-      }));
-
-      if (latestRequestId.current !== requestId) return;
-      if (!category) {
-        setCategoryOptions(distribution.map(item => ({ value: item.name, label: item.name })));
-      }
-      setFetchError(null);
-      setFilteredData(topFiveWithOthers(distribution));
-    } catch (error) {
-      logger.logError(error);
-      if (latestRequestId.current !== requestId) return;
-      setFetchError(error);
-      setFilteredData([]);
-    }
-  }, []);
+  const [filtersApplied, setFiltersApplied] = useState(false);
 
   useEffect(() => {
-    fetchDistribution({
-      from: dateRange.from,
-      to: dateRange.to,
-      category: projectFilter,
-      member: memberFilter,
-    });
-    // Initial load only; subsequent updates happen on Submit.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const fetchData = async () => {
+      const mockData = [
+        {
+          name: 'Stud Wall Construction',
+          value: 25.9,
+          project: 'Project A',
+          member: 'Member 1',
+          date: '2026-08-05',
+        },
+        {
+          name: 'Foundation Concreting',
+          value: 18.5,
+          project: 'Project A',
+          member: 'Member 2',
+          date: '2026-08-09',
+        },
+        {
+          name: 'Task A',
+          value: 22.2,
+          project: 'Project B',
+          member: 'Member 1',
+          date: '2026-08-12',
+        },
+        {
+          name: 'Task B',
+          value: 18.5,
+          project: 'Project B',
+          member: 'Member 2',
+          date: '2026-08-16',
+        },
+        {
+          name: 'Task C',
+          value: 14.8,
+          project: 'Project A',
+          member: 'Member 1',
+          date: '2026-08-20',
+        },
+        {
+          name: 'Electrical',
+          value: 12,
+          project: 'Project A',
+          member: 'Member 2',
+          date: '2026-08-22',
+        },
+        {
+          name: 'Plumbing',
+          value: 8,
+          project: 'Project B',
+          member: 'Member 1',
+          date: '2026-08-24',
+        },
+        {
+          name: 'Welding',
+          value: 6,
+          project: 'Project B',
+          member: 'Member 2',
+          date: '2026-08-27',
+        },
+      ];
+
+      setOriginalData(mockData);
+    };
+
+    fetchData();
   }, []);
 
-  const handleSubmit = () => {
-    fetchDistribution({
-      from: dateRange.from,
-      to: dateRange.to,
-      category: projectFilter,
-      member: memberFilter,
-    });
+  const formatChartData = data => {
+    const sortedData = [...data].sort((a, b) => b.value - a.value);
+
+    const top5 = sortedData.slice(0, 5).map(({ name, value }) => ({
+      name,
+      value,
+    }));
+
+    const othersTotal = sortedData.slice(5).reduce((sum, item) => sum + item.value, 0);
+
+    if (othersTotal > 0) {
+      top5.push({
+        name: 'Others',
+        value: Number(othersTotal.toFixed(1)),
+      });
+    }
+
+    return top5;
   };
 
-  const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
+  useEffect(() => {
+    if (originalData.length > 0) {
+      setFilteredData(formatChartData(originalData));
+    }
+  }, [originalData]);
 
-  const projectOptions = [{ value: '', label: 'ALL' }, ...categoryOptions];
+  const handleSubmit = () => {
+    let result = [...originalData];
+
+    if (dateRange.from) {
+      result = result.filter(item => item.date >= dateRange.from);
+    }
+
+    if (dateRange.to) {
+      result = result.filter(item => item.date <= dateRange.to);
+    }
+
+    if (projectFilter) {
+      result = result.filter(item => item.project === projectFilter);
+    }
+
+    if (memberFilter) {
+      result = result.filter(item => item.member === memberFilter);
+    }
+
+    setFilteredData(formatChartData(result));
+    setFiltersApplied(true);
+  };
+
+  const totalHours = useMemo(() => filteredData.reduce((sum, item) => sum + item.value, 0), [
+    filteredData,
+  ]);
+
+  const projectOptions = [
+    { value: '', label: 'ALL' },
+    { value: 'Project A', label: 'Project A' },
+    { value: 'Project B', label: 'Project B' },
+  ];
 
   const memberOptions = [
     { value: '', label: 'ALL' },
@@ -134,136 +170,184 @@ export default function DistributionLaborHours() {
     { value: 'Member 2', label: 'Member 2' },
   ];
 
-  const focusedOptionColor = darkMode ? '#3a506b' : '#f0f0f0';
+  const selectedProject =
+    projectOptions.find(option => option.value === projectFilter) || projectOptions[0];
+
+  const selectedMember =
+    memberOptions.find(option => option.value === memberFilter) || memberOptions[0];
+
+  const menuPortalTarget = typeof document !== 'undefined' ? document.body : null;
 
   const selectStyles = {
-    menuPortal: base => ({ ...base, zIndex: 9999 }),
-    control: base => ({
+    menuPortal: base => ({
       ...base,
-      backgroundColor: darkMode ? '#253342' : '#fff',
-      borderColor: darkMode ? '#3a506b' : '#ccc',
+      zIndex: 9999,
     }),
-    singleValue: base => ({ ...base, color: darkMode ? '#fff' : '#000' }),
-    input: base => ({ ...base, color: darkMode ? '#fff' : '#000' }),
-    menu: base => ({ ...base, backgroundColor: darkMode ? '#253342' : '#fff' }),
-    option: (base, state) => ({
+    menu: base => ({
       ...base,
-      backgroundColor: state.isFocused ? focusedOptionColor : 'transparent',
-      color: darkMode ? '#fff' : '#000',
+      zIndex: 9999,
     }),
   };
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.title}>Distribution of Labor Hours</h3>
+      <div className={styles.content}>
+        <h3 className={styles.title}>Distribution of Labor Hours</h3>
 
-      {/* Filters */}
-      <div className={styles.filters}>
-        <label>
-          From:
-          <input
-            type="date"
-            value={dateRange.from}
-            onChange={e => setDateRange({ ...dateRange, from: e.target.value })}
-          />
-        </label>
-        <label>
-          To:
-          <input
-            type="date"
-            value={dateRange.to}
-            onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
-          />
-        </label>
-        <label htmlFor="project-filter">
-          Project:
-          <Select
-            options={projectOptions}
-            value={projectOptions.find(opt => opt.value === projectFilter)}
-            onChange={opt => setProjectFilter(opt.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
-            styles={selectStyles}
-            menuPortalTarget={document.body}
-            menuPosition="fixed"
-          />
-        </label>
-        <label htmlFor="member-filter" title="Member filtering is not yet supported by the backend">
-          Member:
-          <Select
-            options={memberOptions}
-            value={memberOptions.find(opt => opt.value === memberFilter)}
-            onChange={opt => setMemberFilter(opt.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
-            styles={selectStyles}
-            menuPortalTarget={document.body}
-            menuPosition="fixed"
-          />
-        </label>
+        <div className={styles.filtersSection}>
+          <div className={styles.filterRow}>
+            <div className={styles.filterGroup}>
+              <label htmlFor="labor-from-date">From</label>
+              <input
+                id="labor-from-date"
+                type="date"
+                value={dateRange.from}
+                max={dateRange.to || undefined}
+                onChange={e => {
+                  const newFrom = e.target.value;
 
-        <div className={styles.buttonContainer}>
-          <button className={styles.button} type="button" onClick={handleSubmit}>
-            Submit
-          </button>
-        </div>
-      </div>
+                  setDateRange(previous => ({
+                    from: newFrom,
+                    to: previous.to && newFrom && newFrom > previous.to ? '' : previous.to,
+                  }));
 
-      {/* Chart + Legend */}
-      <div className={styles.chartWrapper}>
-        <div className={styles.legend}>
-          {filteredData.map(entry => (
-            <div key={entry.name} className={styles.legendItem}>
-              <span
-                className={styles.colorBox}
-                style={{ backgroundColor: COLORS[filteredData.indexOf(entry) % COLORS.length] }}
+                  setFiltersApplied(false);
+                }}
               />
-              <span style={{ color: darkMode ? '#f5f5f5' : '#000' }}>
-                {entry.name}: {entry.value} hrs
-              </span>
             </div>
-          ))}
+
+            <div className={styles.filterGroup}>
+              <label htmlFor="labor-to-date">To</label>
+              <input
+                id="labor-to-date"
+                type="date"
+                value={dateRange.to}
+                min={dateRange.from || undefined}
+                onChange={e => {
+                  const newTo = e.target.value;
+
+                  setDateRange(previous => ({
+                    from: previous.from && newTo && newTo < previous.from ? '' : previous.from,
+                    to: newTo,
+                  }));
+
+                  setFiltersApplied(false);
+                }}
+              />
+            </div>
+
+            <div className={styles.filterGroup}>
+              <label htmlFor="project-filter">Project</label>
+              <Select
+                inputId="project-filter"
+                options={projectOptions}
+                value={selectedProject}
+                onChange={option => {
+                  setProjectFilter(option?.value || '');
+                  setFiltersApplied(false);
+                }}
+                className={styles.selectContainer}
+                classNamePrefix="labor-hours-select"
+                menuPortalTarget={menuPortalTarget}
+                menuPosition="fixed"
+                styles={selectStyles}
+                isSearchable={false}
+              />
+            </div>
+
+            <div className={styles.filterGroup}>
+              <label htmlFor="member-filter">Member</label>
+              <Select
+                inputId="member-filter"
+                options={memberOptions}
+                value={selectedMember}
+                onChange={option => {
+                  setMemberFilter(option?.value || '');
+                  setFiltersApplied(false);
+                }}
+                className={styles.selectContainer}
+                classNamePrefix="labor-hours-select"
+                menuPortalTarget={menuPortalTarget}
+                menuPosition="fixed"
+                styles={selectStyles}
+                isSearchable={false}
+              />
+            </div>
+          </div>
+
+          <div className={styles.submitSection}>
+            <button className={styles.button} type="button" onClick={handleSubmit}>
+              Submit
+            </button>
+
+            {filtersApplied && <span className={styles.appliedMessage}>Filters applied</span>}
+          </div>
         </div>
 
-        <div className={styles.pieChartContainer}>
-          {filteredData.length === 0 ? (
-            <div className={styles.emptyMessage}>
-              {fetchError
-                ? 'Unable to load labor hours distribution.'
-                : 'No data available for the selected filters.'}
+        <div className={styles.visualizationSection}>
+          {filteredData.length > 0 ? (
+            <div className={styles.visualizationContent}>
+              <div className={styles.legend}>
+                {filteredData.map((entry, index) => (
+                  <div key={entry.name} className={styles.legendItem}>
+                    <span
+                      className={`${styles.colorBox} ${styles[`swatch${index % COLORS.length}`]}`}
+                    />
+
+                    <span
+                      className={`${styles.legendText} ${darkMode ? styles.legendTextDark : ''}`}
+                    >
+                      {entry.name}: {entry.value} hrs
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.pieChartContainer}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={filteredData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={92}
+                      labelLine={false}
+                      label={({ x, y, value }) => (
+                        <text
+                          x={x}
+                          y={y}
+                          fill={darkMode ? '#fff' : '#111827'}
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                          fontSize={13}
+                          fontWeight="700"
+                          stroke={darkMode ? '#1f2937' : '#fff'}
+                          strokeWidth={0.5}
+                          paintOrder="stroke"
+                        >
+                          {totalHours > 0 ? `${((value / totalHours) * 100).toFixed(1)}%` : '0.0%'}
+                        </text>
+                      )}
+                    >
+                      {filteredData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${entry.name}`}
+                          fill={COLORS[index % COLORS.length]}
+                          stroke={darkMode ? '#334155' : '#fff'}
+                          strokeWidth={1}
+                        />
+                      ))}
+                    </Pie>
+
+                    <Tooltip content={<CustomTooltip total={totalHours} darkMode={darkMode} />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           ) : (
-            <ResponsiveContainer width={300} height={300}>
-              <PieChart>
-                <Pie
-                  data={filteredData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  labelLine={false}
-                  label={({ x, y, value }) => (
-                    <text
-                      x={x}
-                      y={y}
-                      fill={darkMode ? '#ffffff' : '#1f2937'}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fontSize={12}
-                      fontWeight="600"
-                    >
-                      {`${((value / totalHours) * 100).toFixed(1)}%`}
-                    </text>
-                  )}
-                >
-                  {filteredData.map((entry, index) => (
-                    <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip total={totalHours} darkMode={darkMode} />} />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className={styles.noData}>No labor-hour data found for the selected filters.</div>
           )}
         </div>
       </div>
