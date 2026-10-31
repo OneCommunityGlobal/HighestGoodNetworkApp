@@ -8,6 +8,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import CardSelector from './CardSelector';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 
@@ -171,6 +172,20 @@ function WeeklyProjectSummary() {
     state => state.weeklyProjectSummary?.projectStatusErrorRequestKey,
   );
   const containerRef = useRef(null);
+  const userId = useSelector(state => state.auth?.user?.userid);
+  const cardPrefsKey = `weeklyProjectSummaryCards:${userId || 'guest'}`;
+  // Saved card selection per user: { visibleKeys, cardLimit }. null = show all.
+  const [cardPrefs, setCardPrefs] = useState(null);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(cardPrefsKey) || 'null');
+      setCardPrefs(saved && Array.isArray(saved.visibleKeys) ? saved : null);
+    } catch {
+      setCardPrefs(null);
+    }
+  }, [cardPrefsKey]);
+
   const comparisonEnabled = comparisonPeriodFilter !== 'No Comparison';
 
   const currentDateRange = useMemo(() => parseWeeklySummaryDateRange(dateRangeFilter), [
@@ -654,6 +669,22 @@ function WeeklyProjectSummary() {
     ],
   );
 
+  const visibleKeys = cardPrefs?.visibleKeys ?? sections.map(section => section.key);
+  const cardLimit = cardPrefs?.cardLimit ?? 'all';
+  const selectedSections = sections.filter(section => visibleKeys.includes(section.key));
+  const visibleSections =
+    cardLimit === 'all' ? selectedSections : selectedSections.slice(0, Number(cardLimit));
+
+  const handleCardsChange = (keys, limit) => {
+    const next = { visibleKeys: keys, cardLimit: limit };
+    setCardPrefs(next);
+    try {
+      localStorage.setItem(cardPrefsKey, JSON.stringify(next));
+    } catch {
+      // Storage unavailable (e.g. private browsing); keep the in-memory choice.
+    }
+  };
+
   const handleSaveAsPDF = async () => {
     // Prevent multiple simultaneous PDF generations
     if (isGeneratingPDF) {
@@ -839,8 +870,25 @@ function WeeklyProjectSummary() {
         isGeneratingPDF={isGeneratingPDF}
       />
       <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
+        {isGeneratingPDF === false && (
+          <div className={styles.cardSelectorBar}>
+            <CardSelector
+              cards={sections.map(({ key, title }) => ({ key, title }))}
+              visibleKeys={visibleKeys}
+              cardLimit={cardLimit}
+              shownCount={visibleSections.length}
+              onChange={handleCardsChange}
+              darkMode={darkMode}
+            />
+          </div>
+        )}
+        {visibleSections.length === 0 && (
+          <p className={styles.noCardsMessage}>
+            No cards selected. Use Customize Cards to choose which cards to show.
+          </p>
+        )}
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
-          {sections.map(({ title, key, className, content }) => (
+          {visibleSections.map(({ title, key, className, content }) => (
             <div
               key={key}
               className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
