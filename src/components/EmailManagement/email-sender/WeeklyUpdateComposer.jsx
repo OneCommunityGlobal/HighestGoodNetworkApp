@@ -596,21 +596,16 @@ const WeeklyUpdateComposer = ({ onClose }) => {
           <Label>1. Header Image *</Label>
 
           {/* Drag & Drop Zone */}
-          <div
-            role="button"
-            tabIndex={0}
+          <button
+            type="button"
             aria-label="Upload header image"
             onClick={() => imageInputRef.current?.click()}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                imageInputRef.current?.click();
-              }
-            }}
             onDrop={handleImageDrop}
             onDragOver={handleImageDragOver}
             onDragLeave={handleImageDragLeave}
             style={{
+              display: 'block',
+              width: '100%',
               border: imageDropZoneBorder,
               borderRadius: '8px',
               padding: '30px',
@@ -618,6 +613,8 @@ const WeeklyUpdateComposer = ({ onClose }) => {
               backgroundColor: imageDropZoneBackgroundColor,
               cursor: 'pointer',
               transition: 'all 0.2s',
+              font: 'inherit',
+              color: 'inherit',
             }}
           >
             <input
@@ -650,8 +647,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             </p>
 
             <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>JPG, PNG, GIF, etc.</small>
-          </div>
-
+          </button>
           <Input
             type="url"
             value={headerImage}
