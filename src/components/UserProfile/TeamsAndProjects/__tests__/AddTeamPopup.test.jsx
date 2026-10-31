@@ -102,6 +102,32 @@ describe('AddTeamPopup component', () => {
     });
   });
 
+  it('opens and reopens the selected team editor without refetching the supplied teams list', () => {
+    const renderEditor = open => (
+      <Provider store={store}>
+        <AddTeamPopup
+          open={open}
+          isEdit
+          isTeamManagement
+          teamName="Ayush Phase2 Test Team 1026"
+          teamId="aaa123"
+          teamsData={defaultTeamsData}
+          onClose={onAddTeamPopupClose}
+        />
+      </Provider>
+    );
+    const { rerender } = render(renderEditor(true));
+
+    expect(screen.getByDisplayValue('Ayush Phase2 Test Team 1026')).toBeInTheDocument();
+    expect(axios.get).not.toHaveBeenCalled();
+
+    rerender(renderEditor(false));
+    rerender(renderEditor(true));
+
+    expect(screen.getByDisplayValue('Ayush Phase2 Test Team 1026')).toBeInTheDocument();
+    expect(axios.get).not.toHaveBeenCalled();
+  });
+
   it('renders modal elements when addTeamPopupOpen is true', () => {
     renderOpenPopup(emptyTeamsData);
     expect(screen.getByText('Add Team')).toBeInTheDocument();

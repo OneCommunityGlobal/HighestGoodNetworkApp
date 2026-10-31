@@ -294,10 +294,13 @@ const handleCreateTeamError = (response) => {
   };
 
   useEffect(() => {
-    if (props.open) {
+    // The Teams page supplies its loaded list. Refetching it here sets the
+    // page's global loading flag, unmounting this popup and restarting the
+    // fetch each time it mounts again.
+    if (props.open && !Array.isArray(props.teamsData?.allTeams)) {
       refreshTeams();
     }
-  }, [props.open]);
+  }, [props.open, props.teamsData?.allTeams]);
 
   useEffect(() => {
     if (isEdit && teamName) {
