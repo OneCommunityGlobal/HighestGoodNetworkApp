@@ -322,6 +322,15 @@
   border-bottom: 1px solid #eee;
 }
 
+/* Team.module.css defines a bare, unscoped "tr:hover { background: ... }" rule — CSS
+   Modules only hashes class selectors, so a tag-only selector like that leaks globally
+   and paints every <tr> on the page (including this table's dark-mode white text on a
+   light background, unreadable). Override it locally since this table was never meant
+   to have a row-hover highlight. */
+.table tbody tr:hover {
+  background: transparent;
+}
+
 .darkMode .td {
   border-bottom: 1px solid #404040;
 }

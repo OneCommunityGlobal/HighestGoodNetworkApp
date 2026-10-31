@@ -128,7 +128,7 @@ const createState = weeklyProjectSummaryOverrides => ({
   weeklyProjectSummary: {
     projectFilter: 'One Community',
     dateRangeFilter: 'Sep 13, 26 - Sep 19, 26',
-    comparisonPeriodFilter: 'Month Over Month',
+    comparisonPeriodFilter: 'Aug 13, 26 - Aug 19, 26',
     projectStatusData,
     projectStatusLoading: false,
     projectStatusError: null,
@@ -147,6 +147,9 @@ const renderWithState = state => {
   );
 
   fireEvent.click(screen.getAllByRole('button', { name: /Project Status/ })[0]);
+  // Comparison is now opt-in via this checkbox (separate from which period is selected in
+  // the header dropdown) — all the scenarios below exercise comparison-enabled behavior.
+  fireEvent.click(screen.getByRole('checkbox', { name: /Compare with Previous Week/ }));
   return { ...view, store };
 };
 
@@ -158,7 +161,7 @@ describe('WeeklyProjectSummary Project Status request state', () => {
   it('renders API-backed comparison text only when the data matches the current filters', () => {
     renderWithState(createState());
 
-    expect(screen.getByText('+16% month over month')).toBeInTheDocument();
+    expect(screen.getByText('+16% vs Aug 13, 26 - Aug 19, 26')).toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
@@ -170,8 +173,8 @@ describe('WeeklyProjectSummary Project Status request state', () => {
       }),
     );
 
-    expect(screen.getByRole('status')).toHaveTextContent('Loading Project Status data...');
-    expect(screen.queryByText('+16% month over month')).not.toBeInTheDocument();
+    expect(screen.getByText('Loading Project Status data...')).toBeInTheDocument();
+    expect(screen.queryByText('+16% vs Aug 13, 26 - Aug 19, 26')).not.toBeInTheDocument();
   });
 
   it('shows the latest request error and suppresses stale comparison text', () => {
@@ -185,11 +188,13 @@ describe('WeeklyProjectSummary Project Status request state', () => {
     );
 
     expect(screen.getByRole('alert')).toHaveTextContent('Latest request failed');
-    expect(screen.queryByText('+16% month over month')).not.toBeInTheDocument();
+    expect(screen.queryByText('+16% vs Aug 13, 26 - Aug 19, 26')).not.toBeInTheDocument();
   });
 
   it('dispatches a new Project Status request when comparison filters change rapidly', async () => {
-    const { rerender } = renderWithState(createState({ comparisonPeriodFilter: 'Week Over Week' }));
+    const { rerender } = renderWithState(
+      createState({ comparisonPeriodFilter: 'Sep 06, 26 - Sep 12, 26' }),
+    );
 
     await waitFor(() =>
       expect(fetchWeeklyProjectSummaryProjectStatus).toHaveBeenCalledWith({
@@ -201,9 +206,9 @@ describe('WeeklyProjectSummary Project Status request state', () => {
       }),
     );
 
-    const monthState = createState({ comparisonPeriodFilter: 'Month Over Month' });
+    const nextComparisonState = createState({ comparisonPeriodFilter: 'Aug 13, 26 - Aug 19, 26' });
     rerender(
-      <Provider store={mockStore(monthState)}>
+      <Provider store={mockStore(nextComparisonState)}>
         <WeeklyProjectSummary />
       </Provider>,
     );
