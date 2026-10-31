@@ -1,0 +1,92 @@
+import { render as renderUI, screen, fireEvent, act } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import { themeReducer } from '../../../../reducers/themeReducer';
+import PreservationEfficiency from '../PreservationEfficiency';
+import report from '../preservationReport.mock.json';
+import KitchenHeader from '../../../KitchenInterfaces/KitchenHeader';
+
+const render = (ui, darkMode = false) => {
+  const store = createStore((state, action) => ({ theme: themeReducer(state?.theme, action) }), {
+    theme: { darkMode },
+  });
+  return { ...renderUI(<Provider store={store}>{ui}</Provider>), store };
+};
+
+describe('Preservation efficiency report', () => {
+  it('renders mock metrics and sustainability details', () => {
+    render(<PreservationEfficiency />);
+    expect(screen.getByRole('heading', { name: 'Total Preserved' })).toBeInTheDocument();
+    expect(screen.getByText('180 lbs')).toBeInTheDocument();
+    expect(screen.getByText('Tomato Sauce')).toBeInTheDocument();
+    expect(screen.getByText('6-12 months')).toBeInTheDocument();
+    expect(screen.getByText('-22%')).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'week' } });
+    expect(screen.getByRole('combobox').value).toBe('week');
+  });
+
+  it('derives cards and achievement text from the supplied report', () => {
+    render(
+      <PreservationEfficiency
+        report={{ ...report, totalPreserved: 321, wasteSavedLbs: 90, efficiencyRate: 0.85 }}
+      />,
+    );
+    expect(screen.getByText('321')).toBeInTheDocument();
+    expect(
+      screen.getByText('Preserved 321 items, preventing 90 lbs of food waste.'),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText('85%')).toHaveLength(2);
+  });
+
+  it('marks Reports active and supports the mobile menu', () => {
+    render(
+      <MemoryRouter initialEntries={['/kitchenandinventory/reports/preservation-efficiency']}>
+        <KitchenHeader />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('link', { name: 'Reports' })).toHaveAttribute('aria-current', 'page');
+    const toggle = screen.getByRole('button', { name: 'Toggle navigation' });
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'Close menu' }));
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  });
+  it('updates the report and header immediately when the app theme changes', () => {
+    const { store } = render(
+      <MemoryRouter initialEntries={['/kitchenandinventory/reports/preservation-efficiency']}>
+        <KitchenHeader />
+        <PreservationEfficiency />
+      </MemoryRouter>,
+    );
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'quarter' } });
+    expect(screen.getByRole('main')).toHaveAttribute('data-theme', 'light');
+    expect(screen.getByRole('banner')).toHaveAttribute('data-theme', 'light');
+    act(() => store.dispatch({ type: 'TOGGLE_THEME' }));
+    expect(screen.getByRole('main')).toHaveAttribute('data-theme', 'dark');
+    expect(screen.getByRole('banner')).toHaveAttribute('data-theme', 'dark');
+    expect(screen.getByRole('combobox')).toHaveValue('quarter');
+    expect(screen.getByText('180 lbs')).toBeInTheDocument();
+    act(() => store.dispatch({ type: 'TOGGLE_THEME' }));
+    expect(screen.getByRole('main')).toHaveAttribute('data-theme', 'light');
+    expect(screen.getByRole('banner')).toHaveAttribute('data-theme', 'light');
+  });
+
+  it('loads in dark mode and keeps all report tabs available', () => {
+    render(<PreservationEfficiency />, true);
+    expect(screen.getByRole('main')).toHaveAttribute('data-theme', 'dark');
+    const tabs = [
+      'Overview',
+      'Sustainability Dashboard',
+      'Preservation Efficiency',
+      'Forecast Accuracy',
+    ];
+    tabs.forEach(tab => expect(screen.getByRole('button', { name: tab })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: 'Forecast Accuracy' }));
+    expect(screen.getByRole('button', { name: 'Forecast Accuracy' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('heading', { name: 'Preservation Impact' })).toBeInTheDocument();
+  });
+});
