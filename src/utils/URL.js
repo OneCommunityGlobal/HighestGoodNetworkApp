@@ -12,10 +12,20 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
-  TOP_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
-  LEAST_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+  TOP_CONVERTED: (limit, startDate, endDate) => {
+    const dateParams =
+      startDate && endDate
+        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : '';
+    return `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${dateParams}`;
+  },
+  LEAST_CONVERTED: (limit, startDate, endDate) => {
+    const dateParams =
+      startDate && endDate
+        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : '';
+    return `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${dateParams}`;
+  },
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
@@ -132,9 +142,11 @@ export const ENDPOINTS = {
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
     ''}&comparisonEndDate=${comparisonEndDate || ''}`,
-  VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
-    }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
+  VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) => {
+    const startParam = customStartDate ? `&customStartDate=${customStartDate}` : '';
+    const endParam = customEndDate ? `&customEndDate=${customEndDate}` : '';
+    return `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${startParam}${endParam}`;
+  },
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
   VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
@@ -162,7 +174,7 @@ export const ENDPOINTS = {
   POPULARITY: (range, roles, start, end) => {
     let url = `${APIEndpoint}/popularity?`;
     if (range) url += `range=${range}&`;
-    if (roles && roles.length > 0) {
+    if (roles?.length > 0) {
       url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
     }
     if (start) url += `start=${encodeURIComponent(start)}&`;
@@ -174,7 +186,7 @@ export const ENDPOINTS = {
   ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
     let url = `${APIEndpoint}/popularity-enhanced/timeline?`;
     if (range) url += `range=${range}&`;
-    if (roles && roles.length > 0) {
+    if (roles?.length > 0) {
       url += `roles=${encodeURIComponent(roles.join(','))}&`;
     }
     if (start) url += `start=${encodeURIComponent(start)}&`;
@@ -220,7 +232,7 @@ export const ENDPOINTS = {
     let url = `${APIEndpoint}/analytics/months-pledged?`;
     if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
     if (endDate) url += `endDate=${encodeURIComponent(endDate)}&`;
-    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    if (roles?.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
     return url;
   },
 
