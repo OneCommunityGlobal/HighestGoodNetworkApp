@@ -11,8 +11,12 @@ import {
 } from 'recharts';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../../utils/URL';
 
 import styles from './InjuryCategoryBarChart.module.css';
+import InjuryAnalysisDialog from './InjuryAnalysisDialog';
+import { injuryProjectParams } from './injuryAnalysis';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchInjuryData,
@@ -47,10 +51,56 @@ function InjuryCategoryBarChart() {
   const [injuryTypeFilter, setInjuryTypeFilter] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [analysisOpen, setAnalysisOpen] = useState(false);
+  const [compactChart, setCompactChart] = useState(() => window.innerWidth <= 576);
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 576px)');
+    const update = () => setCompactChart(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+  const [analysisSettings, setAnalysisSettings] = useState(null);
+  const [analysisProjects, setAnalysisProjects] = useState([]);
+  const [analysisProjectsLoading, setAnalysisProjectsLoading] = useState(false);
+  const [analysisProjectsError, setAnalysisProjectsError] = useState('');
   const [unfilteredProjects, setUnfilteredProjects] = useState([]);
 
-  // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
+  // Force Recharts to measure again when the surrounding chart changes.
   const [chartKey, setChartKey] = useState(0);
+
+  useEffect(() => {
+    if (!analysisOpen) return undefined;
+    const controller = new AbortController();
+    setAnalysisProjectsLoading(true);
+    setAnalysisProjectsError('');
+    // Independent lookup: snapshot dates must not constrain exploration choices.
+    axios
+      .get(ENDPOINTS.BM_INJURY_PROJECTS, { signal: controller.signal })
+      .then(response => {
+        if (!controller.signal.aborted)
+          setAnalysisProjects(
+            (Array.isArray(response.data) ? response.data : [])
+              .filter(project => project?._id && project?.name)
+              .map(project => ({
+                value: String(project._id),
+                label: project.name,
+                projectName: project.name,
+              }))
+              .sort((a, b) => a.label.localeCompare(b.label)),
+          );
+      })
+      .catch(() => {
+        if (!controller.signal.aborted)
+          setAnalysisProjectsError(
+            'Unable to load project choices. Close and reopen the analysis to retry.',
+          );
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setAnalysisProjectsLoading(false);
+      });
+    return () => controller.abort();
+  }, [analysisOpen]);
 
   useEffect(() => {
     dispatch(fetchSeverities());
@@ -108,7 +158,7 @@ function InjuryCategoryBarChart() {
       // Reuse the stable label when filtered options are rebuilt from project IDs.
       const label = projectLabelById.get(id);
       if (!id || !label) continue;
-      opts.push({ value: id, label });
+      opts.push({ value: id, label, projectName: p.name });
     }
     return opts.sort((a, b) => a.label.localeCompare(b.label));
   }, [projects, projectLabelById]);
@@ -125,7 +175,7 @@ function InjuryCategoryBarChart() {
 
   useEffect(() => {
     const params = {
-      projectIds: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
+      ...injuryProjectParams(projectNameFilter),
       startDate: toYMD(startDate),
       endDate: toYMD(endDate),
       severities: severityFilter.map(s => s.value).join(','),
@@ -277,6 +327,31 @@ function InjuryCategoryBarChart() {
     <div className={containerClassName}>
       <div className={styles.injuryChartHeader}>
         <h3 className={styles.injuryChartTitle}>Injury Severity by Category of Worker Injured</h3>
+        <div className={styles.analysisAction} role="group" aria-label="Injury analysis view">
+          <button type="button" aria-pressed={!analysisOpen} onClick={() => setAnalysisOpen(false)}>
+            Snapshot
+          </button>
+          <button
+            type="button"
+            aria-pressed={analysisOpen}
+            aria-haspopup="dialog"
+            aria-expanded={analysisOpen}
+            onClick={() => setAnalysisOpen(true)}
+          >
+            <svg
+              aria-hidden="true"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M3 3v18h18M7 14l4-5 4 3 5-6" />
+            </svg>{' '}
+            Time series
+          </button>
+        </div>
 
         <div className={styles.injuryChartFilters}>
           <div className={styles.injuryFilter}>
@@ -388,108 +463,155 @@ function InjuryCategoryBarChart() {
         </div>
       </div>
 
-      {loading && <p className={styles.injuryStatusText}>Loading…</p>}
+      {analysisOpen && (
+        <InjuryAnalysisDialog
+          initialSettings={analysisSettings}
+          onSettingsChange={setAnalysisSettings}
+          onClose={() => setAnalysisOpen(false)}
+          darkMode={darkMode}
+          initialRange={{
+            ...(startDate ? { start: toYMD(startDate) } : {}),
+            ...(endDate ? { end: toYMD(endDate) } : {}),
+          }}
+          selectStyles={selectStyles}
+          projectsLoading={analysisProjectsLoading}
+          projectsError={analysisProjectsError}
+          filters={[
+            {
+              id: 'projects',
+              label: 'Projects',
+              options: analysisProjects,
+              value: projectNameFilter,
+            },
+            {
+              id: 'severities',
+              label: 'Severities',
+              options: severityOptions,
+              value: severityFilter,
+            },
+            {
+              id: 'types',
+              label: 'Injury types',
+              options: typeOptions,
+              value: injuryTypeFilter,
+            },
+          ]}
+        />
+      )}
+      {loading && <p className={styles.injuryStatusText}>Loading...</p>}
       {!loading && error && <p className={styles.injuryErrorText}>Error: {String(error)}</p>}
 
       {!loading && !error && chartData.length > 0 && (
         <div className={styles.chartArea}>
-          <ResponsiveContainer key={chartKey} width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
-              style={{
-                backgroundColor: darkMode ? '#1e2a3a' : '#fff',
-                borderRadius: '8px',
-                padding: '8px',
-              }}
-            >
-              <XAxis
-                dataKey="workerCategory"
-                interval={0}
-                angle={-45}
-                textAnchor="end"
-                height={80}
-                tick={{ fill: darkMode ? '#fff' : '#000' }}
-                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-              />
-              <YAxis
-                allowDecimals={false}
-                tick={{ fill: darkMode ? '#fff' : '#000' }}
-                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-              />
-              <Tooltip
-                //tooltip only; no shaded hover overlay across the chart
-                cursor={false}
-                content={({ active, payload, label }) => {
-                  if (!active || !payload?.length) return null;
-
-                  return (
-                    <div
-                      style={{
-                        backgroundColor: darkMode ? '#2b3e59' : '#fff',
-                        border: darkMode ? '1px solid #555' : '1px solid #ccc',
-                        padding: 10,
-                      }}
-                    >
-                      <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
-                      {payload.map(entry => {
-                        const projectId = String(entry.dataKey);
-                        const projectColor =
-                          projectColorById.get(projectId) || entry.color || '#000';
-                        const projectLabel =
-                          projectLabelById.get(projectId) ||
-                          projectNameById.get(projectId) ||
-                          'Unknown Project';
-
-                        return (
-                          <div
-                            key={projectId}
-                            className={styles.tooltipSeriesRow}
-                            style={{ '--tooltip-series-color': projectColor }}
-                          >
-                            {projectLabel} : {entry.value}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
+          <div
+            style={{
+              height: '100%',
+              width: compactChart
+                ? Math.max(560, seriesProjectIds.length * chartData.length * 14)
+                : '100%',
+            }}
+          >
+            <ResponsiveContainer key={chartKey} width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
+                style={{
+                  backgroundColor: darkMode ? '#1e2a3a' : '#fff',
+                  borderRadius: '8px',
+                  padding: '8px',
                 }}
-              />
-              <Legend
-                wrapperStyle={{
-                  color: darkMode ? '#fff' : '#000',
-                  paddingBottom: 10,
-                }}
-                payload={allSeriesProjectIds.map(pid => ({
-                  id: pid,
-                  type: 'square',
-                  color: projectColorById.get(pid),
-                  value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
-                }))}
-              />
-              {seriesProjectIds.map(pid => (
-                <Bar
-                  key={pid}
-                  dataKey={pid}
-                  fill={projectColorById.get(pid)}
-                  stroke={darkMode ? '#E5E7EB' : '#ffffff'}
-                  strokeWidth={1}
-                >
-                  {showLabels && (
-                    <LabelList
-                      dataKey={pid}
-                      position="top"
-                      formatter={v => (v > 0 ? v : '')}
-                      // Readable value labels in both themes (were dim gray in dark mode)
-                      fill={darkMode ? '#f3f4f6' : '#374151'}
-                    />
-                  )}
-                </Bar>
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
+              >
+                <XAxis
+                  dataKey="workerCategory"
+                  interval={0}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  tick={{ fill: darkMode ? '#fff' : '#000' }}
+                  axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                  tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+                />
+                <YAxis
+                  allowDecimals={false}
+                  tick={{ fill: darkMode ? '#fff' : '#000' }}
+                  axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                  tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+                />
+                <Tooltip
+                  //tooltip only; no shaded hover overlay across the chart
+                  cursor={false}
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload?.length) return null;
+
+                    return (
+                      <div
+                        style={{
+                          backgroundColor: darkMode ? '#2b3e59' : '#fff',
+                          border: darkMode ? '1px solid #555' : '1px solid #ccc',
+                          padding: 10,
+                        }}
+                      >
+                        <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
+                        {payload.map(entry => {
+                          const projectId = String(entry.dataKey);
+                          const projectColor =
+                            projectColorById.get(projectId) || entry.color || '#000';
+                          const projectLabel =
+                            projectLabelById.get(projectId) ||
+                            projectNameById.get(projectId) ||
+                            'Unknown Project';
+
+                          return (
+                            <div
+                              key={projectId}
+                              className={styles.tooltipSeriesRow}
+                              style={{ '--tooltip-series-color': projectColor }}
+                            >
+                              {projectLabel} : {entry.value}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  }}
+                />
+                <Legend
+                  height={compactChart ? 110 : undefined}
+                  wrapperStyle={{
+                    color: darkMode ? '#fff' : '#000',
+                    paddingBottom: 10,
+                    ...(compactChart ? { maxHeight: 100, overflowY: 'auto', fontSize: 12 } : {}),
+                  }}
+                  payload={allSeriesProjectIds.map(pid => ({
+                    id: pid,
+                    type: 'square',
+                    color: projectColorById.get(pid),
+                    value:
+                      projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
+                  }))}
+                />
+                {seriesProjectIds.map(pid => (
+                  <Bar
+                    key={pid}
+                    dataKey={pid}
+                    fill={projectColorById.get(pid)}
+                    stroke={darkMode ? '#E5E7EB' : '#ffffff'}
+                    strokeWidth={1}
+                  >
+                    {showLabels && (
+                      <LabelList
+                        dataKey={pid}
+                        position="top"
+                        formatter={v => (v > 0 ? v : '')}
+                        // Readable value labels in both themes (were dim gray in dark mode)
+                        fill={darkMode ? '#f3f4f6' : '#374151'}
+                      />
+                    )}
+                  </Bar>
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
 
