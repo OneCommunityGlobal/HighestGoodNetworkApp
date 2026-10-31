@@ -109,7 +109,7 @@
   display: none;
 }
 
-:global(.teams-table) tr:hover {
+.teams__tr:hover {
   background: #e9f6ff;
 }
 

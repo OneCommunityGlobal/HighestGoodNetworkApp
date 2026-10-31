@@ -1,17 +1,8 @@
-:global(.react-datepicker__navigation .react-datepicker__navigation-icon) {
-  width: 9px !important;
-}
+/* Injury Severity by Category of Worker Injured.
+   All classes are module-scoped so nothing here can leak into other components. */
 
-:global(.react-datepicker__navigation .react-datepicker__navigation-icon::before) {
-  border-color: #555 !important;
-  border-width: 2px 2px 0 0 !important;
-  width: 9px !important;
-  height: 9px !important;
-}
-
-
-/* ===== LAYOUT FIX ===== */
-:global(.injury-chart-container) {
+/* ===== Card layout ===== */
+.injuryChartContainer {
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -24,41 +15,148 @@
   box-sizing: border-box;
 }
 
-:global(.darkMode.injury-chart-container) {
+.injuryChartDark {
   border-color: #4a5a77;
 }
 
-:global(.injury-chart-header) {
+.injuryChartHeader {
   width: 100%;
 }
 
-:global(.injury-chart-title) {
+.injuryChartTitle {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
   color: #333;
+  text-align: center;
 }
 
-:global(.darkMode .injury-chart-title) {
+.injuryChartDark .injuryChartTitle {
   color: #fff;
 }
 
-:global(.injury-chart-filters) {
-  display: flex;
-  flex-wrap: wrap;
+/* ===== Filters: equal-width grid so every label and field lines up ===== */
+.injuryChartFilters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
   width: 100%;
-  align-items: flex-start;
+  align-items: start;
 }
 
-:global(.filter.injury-filter) {
+.injuryFilter {
   display: flex;
   flex-direction: column;
-  min-width: 160px;
-  flex: 1 1 160px;
-  max-width: 220px;
+  gap: 0.375rem;
+  min-width: 0;
 }
 
+.injuryFilterLabel {
+  margin: 0;
+  font-weight: 600;
+  text-align: center;
+  color: #333;
+}
+
+.injuryChartDark .injuryFilterLabel {
+  color: #f3f4f6;
+}
+
+/* ===== Date inputs: full column width, same height as the dropdowns ===== */
+.injuryDateWrapper {
+  width: 100%;
+}
+
+.injuryDateWrapper :global(.react-datepicker__input-container) {
+  display: block;
+  width: 100%;
+}
+
+.injuryDateInput {
+  width: 100%;
+  min-height: 38px;
+  box-sizing: border-box;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #111827;
+  cursor: pointer;
+}
+
+.injuryDateInput::placeholder {
+  color: #6b7280;
+}
+
+.injuryDateInput:hover,
+.injuryDateInput:focus {
+  border-color: #3b82f6;
+}
+
+.injuryDateInput:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+/* !important: a global input style elsewhere in the app forces a white background */
+.injuryChartDark .injuryDateInput {
+  background-color: #2b3e59 !important;
+  border-color: #6b7280 !important;
+  color: #fff !important;
+}
+
+.injuryChartDark .injuryDateInput::placeholder {
+  color: #cbd5e1;
+}
+
+/* ===== Dark calendar popup (class is set on the calendar via calendarClassName) ===== */
+.injuryDarkCalendar {
+  background-color: #3a506b;
+  border-color: #555;
+  color: #fff;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__header) {
+  background-color: #1c2541;
+  border-bottom-color: #555;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__current-month),
+.injuryDarkCalendar :global(.react-datepicker__day-name),
+.injuryDarkCalendar :global(.react-datepicker__day) {
+  color: #fff;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__day:hover),
+.injuryDarkCalendar :global(.react-datepicker__day--keyboard-selected),
+.injuryDarkCalendar :global(.react-datepicker__day--selected),
+.injuryDarkCalendar :global(.react-datepicker__day--in-range),
+.injuryDarkCalendar :global(.react-datepicker__day--in-selecting-range) {
+  background-color: #0d55b3;
+  color: #fff;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__day--outside-month) {
+  color: #cbd5e1;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__day--disabled),
+.injuryDarkCalendar :global(.react-datepicker__day--disabled:hover) {
+  background-color: transparent;
+  color: #64748b;
+}
+
+/* Month arrows: light enough to see on the dark header */
+.injuryDarkCalendar :global(.react-datepicker__navigation-icon::before) {
+  border-color: #e5e7eb;
+}
+
+.injuryDarkCalendar
+  :global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
+  border-color: #fff;
+}
+
+/* ===== Chart area ===== */
 .chartArea {
   /* Fills the card space left after filters while keeping Recharts responsive. */
   flex: 1 1 auto;
@@ -66,277 +164,47 @@
   min-height: clamp(560px, 62vh, 760px);
 }
 
-
-
-/* stylelint-disable  */
-/* ---------- FINAL FIX: SELECTED VALUE BACKGROUND IN DARK MODE ---------- */
-.darkModeWrapper :global(.injurySelect__value-container) {
-  background-color: #2b3e59 !important;
+/* ===== Loading / error / empty states ===== */
+.injuryStatusText {
+  color: #374151;
+  text-align: center;
 }
 
-.darkModeWrapper :global(.injurySelect__value-container--has-value) {
-  background-color: #2b3e59 !important;
+.injuryChartDark .injuryStatusText {
+  color: #f3f4f6;
 }
 
-.darkModeWrapper :global(.injurySelect__single-value) {
-  color: #fff !important;
-  opacity: 1 !important;
+.injuryErrorText {
+  color: #dc2626;
+  text-align: center;
 }
 
-/* FORCE FILTER LABEL VISIBILITY IN DARK MODE (PROJECTS, SEVERITIES, START/END DATE) */
-.darkModeWrapper :global(.filter label) {
-  color: #fff !important;
+.injuryChartDark .injuryErrorText {
+  color: #ff6b6b;
 }
 
-/* Explicit fix for Start Date / End Date labels rendered by DatePicker */
-.darkModeWrapper :global(label[for="start-date"]),
-.darkModeWrapper :global(label[for="end-date"]) {
-  color: #fff !important;
+.injuryEmptyText {
+  color: #6b7280;
+  text-align: center;
+  padding: 1rem 0;
 }
 
-.darkModeWrapper :global(.react-datepicker__input-container input) {
-  background-color: #2b3e59 !important;
-  border: 1px solid grey;
-  border-radius: 2px;
-  color: #fff !important;
+.injuryChartDark .injuryEmptyText {
+  color: #cbd5e1;
 }
 
-/* ================= LABEL VISIBILITY FIX ================= */
-.darkModeWrapper :global(.injury-filter label) {
-  color: #f3f4f6; /* greyish white, NOT pure white */
-  margin-top: 4px;
-  display: block;
-}
-
-/* Ensure filter blocks always stack label + input vertically */
-.injuryChartContainer :global(.filter) {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.injury-chart-label {
-  color: #444;
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-  font-weight: 500;
-}
-/* Consistent spacing between label and input */
-.injuryChartContainer :global(.filter label) {
-  margin-bottom: 6px;
-}
-
-/* Ensure date inputs behave same as dropdowns */
-.injuryChartContainer :global(.filter .react-datepicker-wrapper) {
-  width: 100%;
-}
-
-.injuryChartContainer :global(.filter .react-datepicker__input-container input) {
-  width: 180px;
-  max-width: 180px;
-  cursor: pointer;
-}
-
-.injuryChartContainer :global(.filter .injurySelect__control) {
-  width: 100%;
-}
-
-/* Ensure input text while typing is also black */
-.darkModeWrapper :global(.injurySelect__input-container),
-.darkModeWrapper :global(.injurySelect__input) {
-  color: #000 !important;
-}
-
-.darkMode .injury-chart-title {
-  color: #ffffff;
-}
-
-.darkMode .injury-chart-label {
-  color: #e0e0e0 !important;
-}
-
-.darkMode .injury-chart-filters {
-  background-color: #142237;
-  color: black;
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-/* React-Select dark mode styles */
-.darkMode :global(.injury-select__control) {
-  background-color: #2b3e59 !important;
-  border-color: #555 !important;
-  color: #ffffff !important;
-}
-
-.darkMode :global(.injury-select__control:hover) {
-  border-color: #777 !important;
-}
-
-.darkMode :global(.injury-select__control--is-focused) {
-  border-color: #0d55b3 !important;
-  box-shadow: 0 0 0 1px #0d55b3 !important;
-}
-
-.darkMode :global(.injury-select__single-value),
-.darkMode :global(.injury-select__multi-value__label),
-.darkMode :global(.injury-select__input-container) {
-  color: #ffffff !important;
-}
-
-.darkMode :global(.injury-select__input-container input) {
-  color: #ffffff !important;
-}
-
-.darkMode :global(.injury-select__placeholder) {
-  color: #a0a0a0 !important;
-}
-
-.darkMode :global(.injury-select__menu) {
-  background-color: #2b3e59 !important;
-  border-color: #555 !important;
-}
-
-.darkMode :global(.injury-select__option) {
-  background-color: #2b3e59 !important;
-  color: #ffffff !important;
-}
-
-.darkMode :global(.injury-select__option:hover),
-.darkMode :global(.injury-select__option--is-focused) {
-  background-color: #0d55b3 !important;
-  color: #ffffff !important;
-}
-
-.darkMode :global(.injury-select__option--is-selected) {
-  background-color: #375071 !important;
-  color: #ffffff !important;
-}
-
-.darkMode :global(.injury-select__multi-value) {
-  background-color: #375071 !important;
-}
-
-.darkMode :global(.injury-select__multi-value__remove) {
-  color: #ffffff !important;
-}
-
-.darkMode :global(.injury-select__multi-value__remove:hover) {
-  background-color: #0d55b3 !important;
-  color: #ffffff !important;
-}
-
-.darkMode :global(.injury-select__indicator-separator) {
-  background-color: #555 !important;
-}
-
-.darkMode :global(.injury-select__dropdown-indicator),
-.darkMode :global(.injury-select__clear-indicator) {
-  color: #ffffff !important;
-}
-
-.darkMode :global(.injury-select__dropdown-indicator:hover),
-.darkMode :global(.injury-select__clear-indicator:hover) {
-  color: #0d55b3 !important;
-}
-
-/* React-DatePicker dark mode styles */
-.darkMode :global(.react-datepicker__input-container input) {
-  background-color: #2b3e59 !important;
-  color: #ffffff !important;
-  border: 1px solid #555 !important;
-  padding: 0.5rem !important;
-  border-radius: 4px !important;
-}
-
-.darkMode :global(.react-datepicker__input-container input::placeholder) {
-  color: #a0a0a0 !important;
-}
-
-.darkMode :global(.react-datepicker__input-container input:focus) {
-  border-color: #0d55b3 !important;
-  outline: none !important;
-  box-shadow: 0 0 0 1px #0d55b3 !important;
-}
-
-:global(.darkMode .react-datepicker) {
-  background-color: #3A506B !important;
-  border-color: #555 !important;
-  color: #ffffff !important;
-}
-
-:global(.darkMode .react-datepicker__header) {
-  background-color: #1C2541 !important;
-  border-bottom-color: #555 !important;
-}
-
-:global(.darkMode .react-datepicker__current-month),
-:global(.darkMode .react-datepicker__day-name),
-:global(.darkMode .react-datepicker__day),
-:global(.darkMode .react-datepicker__time-name) {
-  color: #ffffff !important;
-}
-
-:global(.darkMode .react-datepicker__day:hover),
-:global(.darkMode .react-datepicker__day--keyboard-selected) {
-  background-color: #0d55b3 !important;
-  color: #ffffff !important;
-}
-
-:global(.darkMode .react-datepicker__day--selected),
-:global(.darkMode .react-datepicker__day--in-selecting-range),
-:global(.darkMode .react-datepicker__day--in-range) {
-  background-color: #0d55b3 !important;
-  color: #ffffff !important;
-}
-
-.darkMode :global(.react-datepicker__navigation-icon::before) {
-  border-color: #fff !important;
-}
-
-/* Chart elements dark mode */
-.darkMode :global(.recharts-cartesian-axis-tick-value) {
-  fill: #ffffff !important;
-}
-
-.darkMode :global(.recharts-legend-item-text) {
-  color: #ffffff !important;
-}
-
-/* Loading and error text in dark mode */
-.darkMode :global(p) {
-  color: #ffffff !important;
-}
-
-.darkMode .error {
-  color: #ff6b6b !important;
-}
-
-.darkMode .empty {
-  color: #a0a0a0 !important;
-}
-/* Recharts default tick text selector (X axis) */
-.darkModeWrapper :global(.recharts-xAxis .recharts-cartesian-axis-tick-value) {
+/* Chart axis ticks and legend text render via inline SVG fill/color, so they need an
+   explicit override to stay readable in dark mode (scoped to the live .injuryChartDark
+   wrapper, not the unused .darkMode/.darkModeWrapper classes from an earlier attempt). */
+.injuryChartDark :global(.recharts-cartesian-axis-tick-value) {
   fill: #fff !important;
 }
-:global(.darkMode .injurySelect__multi-value) {
-  background-color: #375071 !important;
+
+.injuryChartDark :global(.recharts-legend-item-text) {
+  color: #fff !important;
 }
 
-:global(.darkMode .injurySelect__multi-value__label) {
-  color: #ffffff !important;
-}
-
-:global(.darkMode .injurySelect__multi-value__remove) {
-  color: #ffffff !important;
-  background-color: transparent !important;
-}
-
-:global(.darkMode .injurySelect__multi-value__remove:hover) {
-  background-color: #0d55b3 !important;
-  color: #ffffff !important;
-}
-
+/* ===== Tooltip rows keep their project color ===== */
 .tooltipSeriesRow {
   color: var(--tooltip-series-color) !important;
   margin: 8px 0 0;
@@ -346,10 +214,11 @@
   color: inherit !important;
 }
 
-:global(.darkMode) .tooltipSeriesRow {
+/* Higher specificity so a global dark-mode text color can't turn the rows white */
+.injuryChartDark .tooltipSeriesRow {
   color: var(--tooltip-series-color) !important;
 }
 
-:global(.darkMode) .tooltipSeriesRow * {
+.injuryChartDark .tooltipSeriesRow * {
   color: inherit !important;
 }

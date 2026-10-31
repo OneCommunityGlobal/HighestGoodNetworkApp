@@ -43,7 +43,7 @@ function TeamChart({ teamData, darkMode }) {
 
   const theadClass = darkMode ? styles.theadDark : styles.theadLight;
   return (
-    <table className={styles.teamChartTable}>
+    <table className={styles.teamChart}>
       <thead className={theadClass}>
         <tr>
           <th>Name</th>
