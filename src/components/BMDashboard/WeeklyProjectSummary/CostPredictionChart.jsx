@@ -275,7 +275,7 @@ CustomTooltip.defaultProps = {
   payload: [],
 };
 
-function CostPredictionChart({ projectId }) {
+function CostPredictionChart({ projectId, storageKey = 'bm_cost_prediction_project' }) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -283,7 +283,14 @@ function CostPredictionChart({ projectId }) {
   const theme = getTheme(darkMode);
 
   // filter state
-  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState(() => {
+    const saved = localStorage.getItem(storageKey);
+    return PROJECTS.some(project => project.id === saved) ? saved : '';
+  });
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, selectedProjectId);
+  }, [storageKey, selectedProjectId]);
   const [dateRange, setDateRange] = useState({ start: '', end: '' }); // 'YYYY-MM-DD'
 
   const legendItems = [
@@ -296,6 +303,7 @@ function CostPredictionChart({ projectId }) {
   const effectiveProjectId = selectedProjectId || projectId;
 
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -304,6 +312,7 @@ function CostPredictionChart({ projectId }) {
           projectCostService.getProjectPredictions(effectiveProjectId),
         ]);
 
+        if (cancelled) return;
         const costsData = costsResponse.data.costs;
         const predictionsData = predictionsResponse.data.predictions;
 
@@ -320,16 +329,20 @@ function CostPredictionChart({ projectId }) {
         setChartData(combinedData.length ? combinedData : buildSampleData(effectiveProjectId));
         setError(null);
       } catch {
+        if (cancelled) return;
         // Backend has no data for this project (common on reviewer machines):
         // show sample data so the chart is still visible to everyone. Data is fixed per-project so switching the filter still moves the chart.
         setChartData(buildSampleData(effectiveProjectId));
         setError(null);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     if (effectiveProjectId) fetchData();
+    return () => {
+      cancelled = true;
+    };
   }, [effectiveProjectId]);
 
   const filteredData = useMemo(() => {
@@ -418,11 +431,11 @@ function CostPredictionChart({ projectId }) {
 
       <div className={styles.filterBar} style={filterStyles.bar}>
         <div className={styles.filterGroup}>
-          <label htmlFor="project-filter" style={filterStyles.label}>
+          <label htmlFor={`${storageKey}-project-filter`} style={filterStyles.label}>
             Project
           </label>
           <select
-            id="project-filter"
+            id={`${storageKey}-project-filter`}
             className={styles.control}
             style={filterStyles.control}
             value={selectedProjectId}
@@ -438,11 +451,11 @@ function CostPredictionChart({ projectId }) {
         </div>
 
         <div className={styles.filterGroup}>
-          <label htmlFor="start-date" style={filterStyles.label}>
+          <label htmlFor={`${storageKey}-start-date`} style={filterStyles.label}>
             Start Date
           </label>
           <input
-            id="start-date"
+            id={`${storageKey}-start-date`}
             type="date"
             className={`${styles.control} ${styles.dateInput} ${
               darkMode ? styles.dateInputDark : ''
@@ -456,11 +469,11 @@ function CostPredictionChart({ projectId }) {
         </div>
 
         <div className={styles.filterGroup}>
-          <label htmlFor="end-date" style={filterStyles.label}>
+          <label htmlFor={`${storageKey}-end-date`} style={filterStyles.label}>
             End Date
           </label>
           <input
-            id="end-date"
+            id={`${storageKey}-end-date`}
             type="date"
             className={`${styles.control} ${styles.dateInput} ${
               darkMode ? styles.dateInputDark : ''
@@ -599,6 +612,7 @@ function CostPredictionChart({ projectId }) {
 }
 
 CostPredictionChart.propTypes = {
+  storageKey: PropTypes.string,
   projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 };
 
