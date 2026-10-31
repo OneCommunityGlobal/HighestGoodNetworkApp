@@ -15,7 +15,7 @@
 
 .equipmentUpdateHeader h2 {
   font-size: clamp(1.5rem, 2.5vw, 2.5rem);
-  margin-left: 1rem;
+  margin-left: 0;
 }
 
 @media screen and (width <= 800px) {
@@ -35,5 +35,19 @@
 .updateSubText {
   margin-top: 8px;
   font-size: 0.95rem;
+  color: #495563;
+}
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  overflow-wrap: anywhere;
+}
+.breadcrumb a {
+  color: #0755a3;
+  text-decoration: underline;
+}
+.equipmentUpdateWrapper:global(.bg-oxford-blue) .updateSubText {
   color: #cbd5e1;
+}
+.equipmentUpdateWrapper:global(.bg-oxford-blue) .breadcrumb a {
+  color: #93c5fd;
 }
