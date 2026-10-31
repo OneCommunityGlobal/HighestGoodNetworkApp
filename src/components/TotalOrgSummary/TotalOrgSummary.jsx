@@ -223,7 +223,7 @@ function buildPDFStyles(darkMode) {
     img, svg { max-width: 100% !important; height: auto !important; page-break-inside: avoid !important; }
     .recharts-wrapper { width: 100% !important; height: auto !important; }
     table { page-break-inside: avoid !important; }
-    .Collapsible__trigger {
+    .Collapsible__trigger:not(.org-section-header) {
       background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
       color: ${darkMode ? '#fff' : '#000'} !important;
     }
@@ -315,6 +315,7 @@ async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoadin
   );
   const originalCanvases = replaceCanvasesWithImages(chartCanvases);
   const pdfContainer = buildPDFContainer();
+  pdfContainer.classList.toggle('bg-oxford-blue', darkMode);
   const clonedContent = rootRef.current.cloneNode(true);
   clonedContent
     .querySelectorAll('[data-pdf-hide], .controls, .no-print')
@@ -478,22 +479,15 @@ function TotalOrgSummary(props) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  /*
-    BUG FIX: fromDate/toDate now correctly represent the CURRENT week (see
-    calculateStartDate/calculateEndDate above). Since the default label here
-    is 'Previous Week', the initial currentFromDate/currentToDate must be
-    computed via getPreviousWeekDates(fromDate, toDate) - matching what the
-    "Previous Week" dropdown option itself computes - rather than reusing
-    fromDate/toDate directly, which would (after the fix above) describe the
-    CURRENT week instead and mismatch the 'Previous Week' label on first
-    render.
+
+  /* BUG FIX:
+  fromDate/toDate are already the previous week (computed above via getPreviousWeekDates() above).
+  Use them directly as the initial date range to match the 'Previous Week' default label.
   */
-  const [currentFromDate, setCurrentFromDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).start,
-  );
-  const [currentToDate, setCurrentToDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).end,
-  );
+
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
+
   const rootRef = useRef(null);
   const cacheRef = useRef({});
 
@@ -655,7 +649,7 @@ function TotalOrgSummary(props) {
           onApply={handleDatePickerSubmit}
         />
         <hr />
-        <AccordianWrapper title="Volunteer Status">
+        <AccordianWrapper title="Volunteer Status" section="volunteer-status">
           <Row>
             <Col lg={{ size: 12 }}>
               <VolunteerStatus
@@ -678,7 +672,7 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Activities">
+        <AccordianWrapper title="Volunteer Activities" section="volunteer-activities">
           <Row>
             <Col lg={{ size: 12 }}>
               <VolunteerActivities
@@ -693,7 +687,10 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
+        <AccordianWrapper
+          title="Global Distribution and Volunteer Status Overview"
+          section="global-distribution"
+        >
           <Row>
             <Col lg={{ size: 6 }}>
               <div
@@ -745,7 +742,10 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
+        <AccordianWrapper
+          title="Volunteer Workload and Task Completion Analysis"
+          section="volunteer-workload"
+        >
           <Row>
             <Col lg={{ size: 12 }}>
               <div
@@ -942,7 +942,7 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Teams and Blue Squares">
+        <AccordianWrapper title="Teams and Blue Squares" section="teams-blue-squares">
           <Row>
             <Col lg={{ size: 6 }}>
               <div
