@@ -58,6 +58,9 @@ describe('ActivityList', () => {
   test('sorts activities by date (latest to earliest)', () => {
     renderActivityList();
 
+    // 先勾选 Show Past Events 以加载/显示活动数据
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
+
     fireEvent.change(screen.getByLabelText(/Sort By:/i), {
       target: { value: 'latest' },
     });
