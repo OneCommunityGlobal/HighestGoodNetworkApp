@@ -5,13 +5,29 @@ import {
   previousRange,
   defaultRange,
   bucketDateRange,
-  categoryColorIndex,
+  categoryStyleOrder,
+  injuryProjectParams,
 } from './injuryAnalysis';
 
 const period = (records, days = 10) => ({ days, buckets: [{ label: 'Jan 2025', records }] });
 const record = (workerCategory, count) => ({ workerCategory, count, severity: 'Low' });
 
 describe('injury analysis calculations', () => {
+  it('uses source project names for name-based project options and retains ID-only compatibility', () => {
+    expect(
+      injuryProjectParams([
+        {
+          value: 'solar panel project',
+          label: 'Solar Panel Project',
+          projectName: 'Solar Panel Project',
+        },
+      ]),
+    ).toEqual({ projectNames: 'Solar Panel Project' });
+    expect(
+      injuryProjectParams([{ value: '65419e61105441587e2dec99', label: 'Legacy project' }]),
+    ).toEqual({ projectIds: '65419e61105441587e2dec99' });
+    expect(injuryProjectParams([])).toEqual({ projectIds: '' });
+  });
   it('combines severity rows per category and fills missing counts with zero', () => {
     const result = analysisSeries([
       { label: 'Jan', records: [record('Staff', 2), record('Staff', 3)] },
@@ -55,7 +71,7 @@ describe('injury analysis calculations', () => {
       ),
     ).toBe('2024-02-10 – 2024-03-15');
   });
-  it('uses calendar-month presets through today and stable name-based colors', () => {
+  it('uses calendar-month presets through today and keeps separate stable category style slots', () => {
     expect(defaultRange(6, new Date(2026, 9, 30))).toEqual({
       start: '2026-05-01',
       end: '2026-10-30',
@@ -64,11 +80,10 @@ describe('injury analysis calculations', () => {
       start: '2025-02-01',
       end: '2026-01-31',
     });
-    const index = categoryColorIndex('Volunteer');
-    expect(index).toBeGreaterThanOrEqual(0);
-    expect(index).toBeLessThan(6);
-    expect(categoryColorIndex(['Staff', 'Volunteer'].filter(name => name === 'Volunteer')[0])).toBe(
-      index,
-    );
+    const categories = ['Carpenter', 'Electrician', 'Laborer', 'Operator'];
+    const order = categoryStyleOrder([], categories);
+    expect(new Set(categories.map(name => order.indexOf(name))).size).toBe(4);
+    expect(categoryStyleOrder(order, ['Electrician', 'Laborer'])).toEqual(order);
+    expect(categoryStyleOrder(order, ['New category'])).toEqual([...order, 'New category']);
   });
 });

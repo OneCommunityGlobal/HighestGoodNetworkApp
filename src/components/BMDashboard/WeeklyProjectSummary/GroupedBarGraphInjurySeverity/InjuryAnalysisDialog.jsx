@@ -21,14 +21,34 @@ import {
   comparePeriods,
   defaultRange,
   previousRange,
-  categoryColorIndex,
+  categoryStyleOrder,
+  injuryProjectParams,
 } from './injuryAnalysis';
 import styles from './InjuryAnalysisDialog.module.css';
 import { severitySignificance } from './injurySignificance';
-import InjuryStatisticalCallouts from './InjuryStatisticalCallouts';
+import InjuryComparisonCards from './InjuryComparisonCards';
 
-const COLORS = ['#2563eb', '#b45309', '#059669', '#9333ea', '#db2777', '#0891b2'];
-const DARK_COLORS = ['#93c5fd', '#fcd34d', '#6ee7b7', '#c4b5fd', '#f9a8d4', '#67e8f9'];
+const COLORS = [
+  '#2563eb',
+  '#b45309',
+  '#7c3aed',
+  '#047857',
+  '#be185d',
+  '#0e7490',
+  '#b91c1c',
+  '#4d7c0f',
+];
+const DARK_COLORS = [
+  '#60a5fa',
+  '#fbbf24',
+  '#c084fc',
+  '#34d399',
+  '#f472b6',
+  '#22d3ee',
+  '#fb7185',
+  '#a3e635',
+];
+const LINE_PATTERNS = ['', '9 4', '2 4', '9 3 2 3', '14 5', '4 3', '14 3 3 3', '1 3'];
 
 function DateRange({ label, value, onChange }) {
   return (
@@ -85,6 +105,7 @@ function InjuryAnalysisDialog({
     initialSettings?.selectedCategories ?? null,
   );
   const [filtersOpen, setFiltersOpen] = useState(initialSettings?.filtersOpen || false);
+  const [categoryOrder, setCategoryOrder] = useState(initialSettings?.categoryOrder || []);
   useEffect(() => {
     onSettingsChange?.({
       view,
@@ -95,6 +116,7 @@ function InjuryAnalysisDialog({
       baselineMode,
       selectedCategories,
       filtersOpen,
+      categoryOrder,
     });
   }, [
     view,
@@ -105,6 +127,7 @@ function InjuryAnalysisDialog({
     baselineMode,
     selectedCategories,
     filtersOpen,
+    categoryOrder,
     onSettingsChange,
   ]);
   const changeRangeB = range => {
@@ -121,7 +144,7 @@ function InjuryAnalysisDialog({
   const [error, setError] = useState('');
   const params = useMemo(
     () => ({
-      projectIds: filters[0].value.map(option => option.value).join(','),
+      ...injuryProjectParams(filters[0].value),
       severities: filters[1].value.map(option => option.value).join(','),
       types: filters[2].value.map(option => option.value).join(','),
     }),
@@ -187,6 +210,20 @@ function InjuryAnalysisDialog({
     () => (view === 'compare' && result ? severitySignificance(result[0], result[1]) : null),
     [result, view],
   );
+  useEffect(() => {
+    if (!trend.series.length) return;
+    setCategoryOrder(current => {
+      const next = categoryStyleOrder(
+        current,
+        trend.series.map(series => series.name),
+      );
+      return next.length === current.length ? current : next;
+    });
+  }, [trend.series]);
+  const styleOrder = categoryStyleOrder(
+    categoryOrder,
+    trend.series.map(series => series.name),
+  );
   const options = trend.series.map(series => ({ value: series.name, label: series.name }));
   const chosen =
     selectedCategories === null
@@ -235,6 +272,16 @@ function InjuryAnalysisDialog({
             </label>
           )}
         </div>
+        {loading && <p role="status">Loading analysis…</p>}
+        {error && <p role="alert">{error}</p>}
+        {!loading && !error && !hasData && (
+          <p role="status">
+            <span className={styles.changeLabel}>
+              No recorded injuries for these filters and dates.
+            </span>
+            Try an earlier date range or clear the project filter.
+          </p>
+        )}
         <p>
           Explore recorded injury counts by worker category. Filters are shared with the snapshot.
         </p>
@@ -327,11 +374,6 @@ function InjuryAnalysisDialog({
             onChange={changeRangeB}
           />
         </div>
-        {loading && <p role="status">Loading analysis…</p>}
-        {error && <p role="alert">{error}</p>}
-        {!loading && !error && !hasData && (
-          <p role="status">No recorded injuries for these filters and dates.</p>
-        )}
         {!loading && !error && hasData && (
           <>
             {view === 'trend' ? (
@@ -384,10 +426,16 @@ function InjuryAnalysisDialog({
                             dataKey={series.key}
                             name={series.name}
                             stroke={
-                              (darkMode ? DARK_COLORS : COLORS)[categoryColorIndex(series.name)]
+                              (darkMode ? DARK_COLORS : COLORS)[
+                                styleOrder.indexOf(series.name) % COLORS.length
+                              ]
                             }
-                            strokeWidth={2}
-                            dot={false}
+                            strokeWidth={2.5}
+                            strokeDasharray={
+                              LINE_PATTERNS[styleOrder.indexOf(series.name) % LINE_PATTERNS.length]
+                            }
+                            strokeLinecap="round"
+                            dot={trend.rows.length <= 24 ? { r: 3 } : false}
                             activeDot={{ r: 5 }}
                             isAnimationActive={false}
                           />
@@ -429,17 +477,16 @@ function InjuryAnalysisDialog({
               </>
             ) : (
               <>
-                <p>
-                  Period A: {result[0].days} days · Period B: {result[1].days} days. Arrows describe
-                  changes in total counts.
+                <p className={styles.periodSummary}>
+                  {result[0].days === result[1].days
+                    ? `A → B · ${result[0].days} days each`
+                    : `A: ${result[0].days} days → B: ${result[1].days} days`}
+                  {result[0].days !== result[1].days && (
+                    <span className={styles.neutralStatus}>
+                      Unequal periods · compare counts/day
+                    </span>
+                  )}
                 </p>
-                {result[0].days !== result[1].days && (
-                  <p className={styles.note}>
-                    These periods have different lengths. Use counts per day in the table when
-                    comparing their frequency.
-                  </p>
-                )}
-                <InjuryStatisticalCallouts analysis={statisticalAnalysis} />
                 <div
                   className={styles.comparisonChart}
                   style={{ height: Math.max(280, comparison.length * 70) }}
@@ -500,43 +547,21 @@ function InjuryAnalysisDialog({
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <div className={styles.tableWrap}>
-                  <table>
-                    <caption>Change from Period A to Period B</caption>
-                    <thead>
-                      <tr>
-                        <th scope="col">Worker category</th>
-                        <th scope="col">A count</th>
-                        <th scope="col">B count</th>
-                        <th scope="col">Change</th>
-                        <th scope="col">A / day</th>
-                        <th scope="col">B / day</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {comparison.map(row => (
-                        <tr key={row.category}>
-                          <th scope="row">{row.category}</th>
-                          <td>{row.countA}</td>
-                          <td>{row.countB}</td>
-                          <td>
-                            <strong className={styles.changeLabel}>{row.direction}</strong>
-                            {row.change !== 0 && <span>{row.description.slice(2)}</span>}
-                          </td>
-                          <td>{row.rateA.toFixed(2)}</td>
-                          <td>{row.rateB.toFixed(2)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <InjuryComparisonCards rows={comparison} analysis={statisticalAnalysis} />
               </>
             )}
-            <p className={styles.note}>
-              Counts reflect recorded injuries, not workforce-adjusted risk. Zero means no recorded
-              injuries in that period. Changes alone do not establish the effect of a safety
-              intervention.
-            </p>
+            {view === 'trend' && (
+              <details className={styles.note}>
+                <summary>
+                  About these counts <span aria-hidden="true">ⓘ</span>
+                </summary>
+                <p>
+                  Counts reflect recorded injuries, not workforce-adjusted risk. Zero means no
+                  recorded injuries in that period. Changes alone do not establish the effect of a
+                  safety intervention.
+                </p>
+              </details>
+            )}
           </>
         )}
       </ModalBody>

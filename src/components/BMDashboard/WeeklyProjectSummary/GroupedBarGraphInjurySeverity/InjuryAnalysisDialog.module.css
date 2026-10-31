@@ -80,6 +80,260 @@
   font-size: 1.05rem;
 }
 
+.periodSummary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.neutralStatus {
+  display: inline-block;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid #94a3b8;
+  border-radius: 0.4rem;
+  color: #475569;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+.statMeta {
+  font-size: 0.85rem;
+  color: #475569;
+  margin: 0.5rem 0;
+}
+
+.countPair {
+  white-space: nowrap;
+}
+
+.changeBadge {
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.35rem;
+  background: #e2e8f0;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.changeBadge[data-change='increase'] {
+  background: #b91c1c;
+  color: #fff;
+}
+
+.changeBadge[data-change='decrease'] {
+  background: #15803d;
+  color: #fff;
+}
+
+.dark .changeBadge {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.dark .changeBadge[data-change='increase'] {
+  background: #fb7185;
+  color: #4c0519;
+}
+
+.dark .changeBadge[data-change='decrease'] {
+  background: #22c55e;
+  color: #052e16;
+}
+
+.evidenceHeader,
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.evidenceHeader h4,
+.categoryHeader h5 {
+  margin: 0;
+}
+
+.categoryHeader h5 {
+  font-size: 1.1rem;
+}
+
+.categoryChange {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.categoryChange small {
+  font-size: 0.85rem;
+}
+
+.detailsButton {
+  background: transparent;
+  color: #1d4ed8;
+  border: 0;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.expandedDetails {
+  border-top: 1px solid #94a3b8;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+}
+
+.expandedDetails p:last-child {
+  margin-bottom: 0;
+}
+
+.comparisonControls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.categoryComparisons {
+  margin: 1rem 0;
+}
+
+.categoryCard {
+  background: #f8fafc;
+  border: 1px solid #94a3b8;
+  border-radius: 0.6rem;
+  padding: 1rem;
+  margin: 0.75rem 0;
+}
+
+.categoryCard > .detailsButton {
+  font-size: 0.85rem;
+  padding: 0.3rem 0;
+  text-decoration: none;
+}
+
+.evidenceLabel {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.categoryMetrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.85rem 0 0.6rem;
+}
+
+.periodMetric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #cbd5e1;
+  border-left-width: 3px;
+  border-radius: 0.4rem;
+  background: #fff;
+}
+
+.periodMetric > strong {
+  font-size: 1.8rem;
+  line-height: 1.2;
+}
+
+.periodMetric > span,
+.periodMetric > small {
+  line-height: 1.25rem;
+}
+
+.dark .periodMetric {
+  background: #1b2a40;
+  border-color: #64748b;
+}
+
+.periodMetric[data-period='a'] {
+  border-left-color: #60a5fa;
+}
+
+.periodMetric[data-period='b'] {
+  border-left-color: #fb923c;
+}
+
+.severityTable {
+  min-width: 520px;
+  table-layout: fixed;
+}
+
+.severityNameColumn {
+  width: 31%;
+}
+
+.severityTable td,
+.severityTable th {
+  vertical-align: top;
+}
+
+.supportedSignal {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #166534;
+}
+
+.supportedSignal[data-change='increase'] {
+  color: #991b1b;
+}
+
+.dark .supportedSignal {
+  color: #86efac;
+}
+
+.dark .supportedSignal[data-change='increase'] {
+  color: #fda4af;
+}
+
+.dark .categoryCard {
+  background: #24334b;
+  border-color: #64748b;
+}
+
+.dark .detailsButton {
+  color: #93c5fd;
+}
+
+.categoryCard > .detailsButton:hover {
+  text-decoration: underline;
+}
+
+.dark .evidenceLabel {
+  color: #cbd5e1;
+}
+
+.comparisonDelta {
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.dark .neutralStatus,
+.dark .statMeta,
+.dark .comparisonDelta {
+  color: #cbd5e1;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .calloutList {
   padding: 0;
   list-style: none;
@@ -271,6 +525,10 @@
 }
 
 @media (width <= 600px) {
+  .comparisonControls {
+    grid-template-columns: 1fr;
+  }
+
   .dialog {
     width: 100%;
     max-width: none;

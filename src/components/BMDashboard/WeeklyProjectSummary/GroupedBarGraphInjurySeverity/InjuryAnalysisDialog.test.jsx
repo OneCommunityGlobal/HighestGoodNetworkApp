@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 import InjuryAnalysisDialog from './InjuryAnalysisDialog';
@@ -170,7 +170,7 @@ describe('injury analysis dialog', () => {
     const initial = props();
     const { rerender } = render(<InjuryAnalysisDialog {...initial} />);
     await screen.findByText('Timeline chart');
-    expect(screen.queryByRole('heading', { name: 'Statistical callouts' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Significant changes' })).toBeNull();
     const makeData = count => ({
       days: 31,
       buckets: [{ records: [{ workerCategory: 'Carpenter', severity: 'Serious', count }] }],
@@ -179,17 +179,87 @@ describe('injury analysis dialog', () => {
       .mockResolvedValueOnce({ data: makeData(1) })
       .mockResolvedValueOnce({ data: makeData(30) });
     fireEvent.click(screen.getByRole('button', { name: 'Compare periods' }));
-    await screen.findAllByText('↑ Statistically significant increase');
-    expect(screen.getByText('Carpenter · Serious')).toBeTruthy();
+    const card = await screen.findByRole('article', { name: 'Carpenter comparison' });
+    expect(screen.queryByRole('heading', { name: 'Significant changes' })).toBeNull();
+    fireEvent.click(within(card).getByRole('button', { name: 'Show Carpenter severity details' }));
+    await screen.findAllByText(/Rate increase supported/);
+    expect(within(card).getByText('Serious')).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Details', exact: true })).toBeNull();
     rerender(
       <InjuryAnalysisDialog
         {...initial}
         filters={makeFilters([{ value: 'project', label: 'Different project' }])}
       />,
     );
-    await screen.findByText(
-      'No statistically significant difference detected for the assessed category/severity combinations.',
+    await screen.findByRole('article', { name: 'Staff comparison' });
+    expect(screen.queryByRole('heading', { name: 'Significant changes' })).toBeNull();
+    expect(screen.queryByText('Inconclusive')).toBeNull();
+    expect(screen.queryAllByText(/Rate increase supported/)).toHaveLength(0);
+  });
+
+  it('sends project names from the actual project-list response rather than invalid MongoDB IDs', async () => {
+    render(
+      <InjuryAnalysisDialog
+        {...props()}
+        filters={makeFilters([
+          {
+            value: 'solar panel project',
+            label: 'Solar Panel Project',
+            projectName: 'Solar Panel Project',
+          },
+        ])}
+      />,
     );
-    expect(screen.queryAllByText('↑ Statistically significant increase')).toHaveLength(0);
+    await screen.findByText('Timeline chart');
+    expect(axios.get.mock.lastCall[1].params.projectNames).toBe('Solar Panel Project');
+    expect(axios.get.mock.lastCall[1].params.projectIds).toBeUndefined();
+  });
+
+  it('shows count reductions separately from evidence, expands details, and searches and sorts cards', async () => {
+    const makeData = (carpenter, electrician) => ({
+      days: 183,
+      buckets: [
+        {
+          records: [
+            { workerCategory: 'Carpenter', severity: 'Serious', count: carpenter },
+            { workerCategory: 'Electrician', severity: 'Serious', count: electrician },
+          ],
+        },
+      ],
+    });
+    axios.get
+      .mockResolvedValueOnce({ data: makeData(6, 12) })
+      .mockResolvedValueOnce({ data: makeData(0, 3) });
+    render(
+      <InjuryAnalysisDialog
+        {...props()}
+        initialSettings={{ view: 'compare', rangeB: { start: '2025-01-01', end: '2025-01-31' } }}
+      />,
+    );
+    const card = await screen.findByRole('article', { name: 'Carpenter comparison' });
+    expect(within(card).getByText('A total')).toBeTruthy();
+    expect(within(card).getByText('B total')).toBeTruthy();
+    expect(within(card).getByText('↓ 100%')).toBeTruthy();
+    expect(within(card).queryByText('Inconclusive')).toBeNull();
+    expect(screen.queryByText('Totals across selected severities')).toBeNull();
+    expect(screen.queryByText(/Poisson|Holm/)).toBeNull();
+    fireEvent.click(within(card).getByRole('button', { name: 'Show Carpenter severity details' }));
+    expect(within(card).getByText('Serious')).toBeVisible();
+    const breakdown = within(card).getByRole('table', { name: 'Severity breakdown' });
+    const headers = within(breakdown).getAllByRole('columnheader');
+    expect(headers[0]).toHaveTextContent('Severity');
+    expect(headers[1]).toHaveTextContent('A total');
+    expect(headers[2]).toHaveTextContent('B total');
+    expect(headers[3]).toHaveTextContent('Change');
+    const values = within(within(breakdown).getByRole('row', { name: /Serious/ })).getAllByRole(
+      'cell',
+    );
+    expect(values[0]).toHaveTextContent('6');
+    expect(values[1]).toHaveTextContent('0');
+    expect(screen.queryByText('Inconclusive')).toBeNull();
+    fireEvent.change(screen.getByLabelText('Sort categories'), { target: { value: 'decrease' } });
+    expect(screen.getAllByRole('article')[0]).toHaveAccessibleName('Electrician comparison');
+    fireEvent.change(screen.getByLabelText('Find category'), { target: { value: 'Electrician' } });
+    expect(screen.queryByRole('article', { name: 'Carpenter comparison' })).toBeNull();
   });
 });

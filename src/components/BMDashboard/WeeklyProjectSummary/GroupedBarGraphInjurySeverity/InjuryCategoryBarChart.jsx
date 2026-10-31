@@ -14,6 +14,7 @@ import DatePicker from 'react-datepicker';
 
 import styles from './InjuryCategoryBarChart.module.css';
 import InjuryAnalysisDialog from './InjuryAnalysisDialog';
+import { injuryProjectParams } from './injuryAnalysis';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchInjuryData,
@@ -111,7 +112,7 @@ function InjuryCategoryBarChart() {
       // Reuse the stable label when filtered options are rebuilt from project IDs.
       const label = projectLabelById.get(id);
       if (!id || !label) continue;
-      opts.push({ value: id, label });
+      opts.push({ value: id, label, projectName: p.name });
     }
     return opts.sort((a, b) => a.label.localeCompare(b.label));
   }, [projects, projectLabelById]);
@@ -128,7 +129,7 @@ function InjuryCategoryBarChart() {
 
   useEffect(() => {
     const params = {
-      projectIds: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
+      ...injuryProjectParams(projectNameFilter),
       startDate: toYMD(startDate),
       endDate: toYMD(endDate),
       severities: severityFilter.map(s => s.value).join(','),

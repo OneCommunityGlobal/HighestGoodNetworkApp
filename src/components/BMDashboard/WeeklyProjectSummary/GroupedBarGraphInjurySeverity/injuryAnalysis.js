@@ -1,5 +1,19 @@
-export const categoryColorIndex = name =>
-  Array.from(name).reduce((hash, character) => (hash * 31 + character.charCodeAt(0)) >>> 0, 0) % 6;
+// Allocate separate palette slots rather than hashing names into colliding colors.
+// Retain earlier assignments when categories disappear under a filter.
+export const categoryStyleOrder = (remembered, names) => [...new Set([...remembered, ...names])];
+
+// project-injury returns name-based keys for legacy injury projects. They are
+// not MongoDB IDs; send the source project name to the existing name filter.
+export const injuryProjectParams = (projects = []) => {
+  if (projects.every(project => !project.projectName && /^[a-f\d]{24}$/i.test(project.value))) {
+    return { projectIds: projects.map(project => project.value).join(',') };
+  }
+  return {
+    projectNames: projects
+      .map(project => project.projectName || project.label || project.value)
+      .join(','),
+  };
+};
 
 export const bucketDateRange = (bucket, start, end, interval) => {
   if (!bucket.key || !start || !end) return bucket.label;
