@@ -538,10 +538,6 @@ const WeeklyUpdateComposer = ({ onClose }) => {
   let imageUploadTextColor = '#6b7280';
   let imageUploadPrompt = getImageUploadPrompt();
 
-  if (imageDragging) {
-    imageUploadPrompt = 'Drop image here';
-  }
-
   if (darkMode) {
     imageDropZoneBackgroundColor = '#2d2d2d';
     imageDropZoneBorder = '2px dashed #666';
@@ -557,9 +553,6 @@ const WeeklyUpdateComposer = ({ onClose }) => {
   }
   let videoUploadPrompt = getVideoUploadPrompt();
 
-  if (videoDragging) {
-    videoUploadPrompt = 'Drop YouTube link here!';
-  }
   let videoDropZoneBackgroundColor = '#f9fafb';
   let videoDropZoneBorder = '2px dashed #d1d5db';
   let videoUploadIconColor = '#9ca3af';
