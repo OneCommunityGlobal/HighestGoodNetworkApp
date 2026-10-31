@@ -7,10 +7,14 @@ import { ENDPOINTS } from '../../../utils/URL';
 import styles from './Issue.module.css';
 import { useSelector } from 'react-redux';
 
+// Must match the severity values accepted by the backend (BuildingIssue model)
+const SEVERITY_OPTIONS = ['Low', 'Medium', 'High', 'Critical'];
+
 function Issue() {
   const ISSUE_FORM_HEADER = 'ISSUE LOG';
   const ISSUE_DATE = 'Issue Date:';
   const ISSUE_TYPE = 'Issue Type:';
+  const SEVERITY = 'Severity:';
   const CONSEQUENCES_TITLE = 'Consequence(s): select all that apply';
   const NOTE = 'Note: MET means Materials, Equipment and/or Tool.';
   const DESCRIPTION_PLACEHOLDER =
@@ -47,6 +51,7 @@ function Issue() {
   const [formData, setFormData] = useState({
     issueDate: '',
     dropdown: defaultOption,
+    severity: '',
     checkboxes: new Set(),
     other: '',
     resolved: '',
@@ -161,6 +166,8 @@ function Issue() {
       issueText: formData.description,
       createdBy: userId,
       projectId,
+      // Severity is optional; only send it when one was chosen
+      ...(formData.severity ? { severity: formData.severity } : {}),
     };
     if (!isDataValid) {
       return false;
@@ -277,6 +284,34 @@ function Issue() {
                 required
               >
                 {dropdownOptions.map(option => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Input>
+            </Col>
+          </Row>
+        </FormGroup>
+        <FormGroup>
+          <Row>
+            <Col>
+              <Label for="issueSeverity" className={`${styles.subTitleText}`}>
+                {SEVERITY}
+              </Label>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Input
+                className={`${styles.issueFormOverrideCss}`}
+                type="select"
+                name="severity"
+                id="issueSeverity"
+                value={formData.severity}
+                onChange={e => setFormData({ ...formData, severity: e.target.value })}
+              >
+                <option value="">Not specified</option>
+                {SEVERITY_OPTIONS.map(option => (
                   <option key={option} value={option}>
                     {option}
                   </option>
