@@ -6,6 +6,15 @@ import styles from './DistributionLaborHours.module.css';
 
 const COLORS = ['#4f8fa8', '#3fa4b8', '#ffab91', '#ffccbb', '#c7c7c7', '#f9f3e3'];
 
+const SWATCH_CLASSES = [
+  styles.swatch0,
+  styles.swatch1,
+  styles.swatch2,
+  styles.swatch3,
+  styles.swatch4,
+  styles.swatch5,
+];
+
 const CustomTooltip = ({ active, payload, total, darkMode }) => {
   if (active && payload && payload.length) {
     const { name, value } = payload[0];
@@ -291,7 +300,9 @@ export default function DistributionLaborHours() {
                 {filteredData.map((entry, index) => (
                   <div key={entry.name} className={styles.legendItem}>
                     <span
-                      className={`${styles.colorBox} ${styles[`swatch${index % COLORS.length}`]}`}
+                      className={`${styles.colorBox} ${
+                        SWATCH_CLASSES[index % SWATCH_CLASSES.length]
+                      }`}
                     />
 
                     <span
