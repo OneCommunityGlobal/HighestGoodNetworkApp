@@ -145,7 +145,21 @@ const EMAIL_TEMPLATE_STYLES = `
     margin: 5px 0;
   }
 `;
+const getImageUploadPrompt = imageDragging => {
+  if (imageDragging) {
+    return 'Drop image here';
+  }
 
+  return 'Click to upload or drag and drop';
+};
+
+const getVideoUploadPrompt = videoDragging => {
+  if (videoDragging) {
+    return 'Drop YouTube link here!';
+  }
+
+  return 'Drag & drop YouTube link here';
+};
 const WeeklyUpdateComposer = ({ onClose }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const currentUser = useSelector(state => state.auth?.user);
@@ -522,7 +536,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
   let imageDropZoneBorder = '2px dashed #d1d5db';
   let imageUploadIconColor = '#9ca3af';
   let imageUploadTextColor = '#6b7280';
-  let imageUploadPrompt = 'Click to upload or drag and drop';
+  let imageUploadPrompt = getImageUploadPrompt();
 
   if (imageDragging) {
     imageUploadPrompt = 'Drop image here';
@@ -541,7 +555,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     imageUploadIconColor = '#60a5fa';
     imageUploadTextColor = '#60a5fa';
   }
-  let videoUploadPrompt = 'Drag & drop YouTube link here';
+  let videoUploadPrompt = getVideoUploadPrompt();
 
   if (videoDragging) {
     videoUploadPrompt = 'Drop YouTube link here!';
