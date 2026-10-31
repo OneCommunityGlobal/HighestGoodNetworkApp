@@ -103,7 +103,7 @@
 .utilizationChartContainer:not(.darkMode) :global(.react-datepicker__day--in-selecting-range),
 .utilizationChartContainer:not(.darkMode) :global(.react-datepicker__day--in-range) {
   background-color: #1d4ed8;
-  color: #fff !important;
+  color: #fff;
 }
 
 .button {

@@ -2,11 +2,11 @@
 
 /* Top Bar Navigation */
 .emailUpdateContainer {
-  width: 100% !important;
-  max-width: 1400px !important;
-  margin: 0 auto !important;
-  padding: 20px 40px !important;
-  min-height: 100vh !important;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 40px;
+  min-height: 100vh;
 }
 
 /* Light mode background */
@@ -188,10 +188,10 @@
 
 /* Email content area */
 .emailUpdateContainer:global(.dark-mode) .emailContentArea {
-  background-color: #1a1d23 !important;
+  background-color: #1a1d23;
 }
 
 /* Container background */
 .emailUpdateContainer:global(.dark-mode) {
-  background-color: #1a1d23 !important;
+  background-color: #1a1d23;
 }

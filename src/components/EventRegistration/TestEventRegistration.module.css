@@ -557,7 +557,7 @@
 .darkMode :global(.react-tel-input .form-control:focus) {
   background: #162333 !important;
   border-color: #6a9fc0 !important;
-  box-shadow: 0 0 0 0.2rem rgb(106 159 192 / 30%) !important;
+  box-shadow: 0 0 0 0.2rem rgb(106 159 192 / 30%);
 }
 
 /* Dark mode for phone dropdown search box */
