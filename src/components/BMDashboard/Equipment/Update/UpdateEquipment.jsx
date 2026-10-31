@@ -35,6 +35,23 @@ const formatHistoryDate = date => {
     : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(parsedDate);
 };
 
+// Most recent known user: a populated Check Out log entry or a saved status update's lastUsedBy.
+const getLatestKnownUser = equipment => {
+  const checkOut = getLatestRecord(
+    equipment?.logRecord,
+    record => record?.type === 'Check Out' && Boolean(getDisplayName(record.responsibleUser)),
+  );
+  const savedUpdate = getLatestRecord(equipment?.updateRecord, record =>
+    Boolean(getDisplayName(record?.lastUsedBy).trim()),
+  );
+  const checkOutName = getDisplayName(checkOut?.responsibleUser);
+  const savedName = getDisplayName(savedUpdate?.lastUsedBy).trim();
+  if (checkOutName && savedName) {
+    return Date.parse(savedUpdate.date) > Date.parse(checkOut.date) ? savedName : checkOutName;
+  }
+  return checkOutName || savedName;
+};
+
 export default function UpdateEquipment() {
   const history = useHistory();
   const { equipmentId } = useParams();
@@ -124,17 +141,13 @@ export default function UpdateEquipment() {
 
       setHistoryState({ equipmentId, status: 'loaded', equipment: result });
       const latestStatus = getLatestRecord(result.updateRecord);
-      const latestUsage = getLatestRecord(
-        result.logRecord,
-        record => record?.type === 'Check Out' && Boolean(getDisplayName(record.responsibleUser)),
-      );
       const latestPurpose = getLatestRecord(
         result.updateRecord,
         record => typeof record?.lastUsedFor === 'string' && record.lastUsedFor.trim().length > 0,
       );
 
       if (!editedHistoryFieldsRef.current.lastUsedBy) {
-        setLastUsedBy(getDisplayName(latestUsage?.responsibleUser));
+        setLastUsedBy(getLatestKnownUser(result));
       }
       if (!editedHistoryFieldsRef.current.lastUsedFor) {
         setLastUsedFor(latestPurpose?.lastUsedFor || '');
@@ -472,10 +485,7 @@ export default function UpdateEquipment() {
       ? historyState.equipment
       : null;
   const latestSummaryUpdate = getLatestRecord(summaryEquipment?.updateRecord);
-  const latestSummaryUsage = getLatestRecord(
-    summaryEquipment?.logRecord,
-    record => record?.type === 'Check Out' && Boolean(getDisplayName(record.responsibleUser)),
-  );
+  const latestSummaryUser = getLatestKnownUser(summaryEquipment);
   const hasStatusHistory = Array.isArray(summaryEquipment?.updateRecord)
     ? summaryEquipment.updateRecord.length > 0
     : false;
@@ -597,7 +607,7 @@ export default function UpdateEquipment() {
                 <dt>Previous status/condition</dt>
                 <dd>{latestSummaryUpdate?.condition || 'Unknown'}</dd>
                 <dt>Last known user</dt>
-                <dd>{getDisplayName(latestSummaryUsage?.responsibleUser) || 'Unknown'}</dd>
+                <dd>{latestSummaryUser || 'Unknown'}</dd>
               </dl>
             )}
           </Alert>

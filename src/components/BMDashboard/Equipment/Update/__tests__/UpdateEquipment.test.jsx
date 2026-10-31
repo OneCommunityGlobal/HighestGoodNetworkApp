@@ -283,3 +283,168 @@ describe('UpdateEquipment history and status form', () => {
     expect(mocks.updateEquipment.mock.calls[0][1]).not.toHaveProperty('images');
   });
 });
+
+describe('UpdateEquipment smart default sources', () => {
+  const userField = () => screen.getByLabelText(/Who used the tool\/equipment last time/i);
+  const purposeField = () => screen.getByLabelText(/What was it used for last time/i);
+  const loadWith = history => {
+    mocks.fetchEquipmentById.mockImplementation(() => async () => ({
+      ...equipmentHistory,
+      ...history,
+    }));
+    return renderForm();
+  };
+
+  it('selects the saved status-update user and purpose when there is no checkout history', async () => {
+    loadWith({
+      logRecord: [],
+      updateRecord: [
+        {
+          date: '2025-03-05T12:00:00.000Z',
+          condition: 'Working well',
+          lastUsedBy: 'Jane Doe (Volunteer #2)',
+          lastUsedFor: 'Garden - landscaping',
+        },
+      ],
+    });
+
+    await waitFor(() => expect(userField()).toHaveValue('Jane Doe (Volunteer #2)'));
+    expect(purposeField()).toHaveValue('Garden - landscaping');
+    expect(screen.getAllByText('Jane Doe (Volunteer #2)').length).toBeGreaterThan(1);
+  });
+
+  it('uses whichever of checkout and saved update is more recent', async () => {
+    const updateRecord = [
+      {
+        date: '2025-03-08T12:00:00.000Z',
+        condition: 'Working well',
+        lastUsedBy: 'Jane Doe (Volunteer #3)',
+      },
+    ];
+    const { unmount } = loadWith({ updateRecord });
+    await waitFor(() => expect(userField()).toHaveValue('Jane Doe (Volunteer #3)'));
+    unmount();
+
+    loadWith({ updateRecord: [{ ...updateRecord[0], date: '2025-03-01T12:00:00.000Z' }] });
+    await waitFor(() => expect(userField()).toHaveValue('Taylor Volunteer'));
+  });
+
+  it('skips unpopulated user ids and falls back to a readable saved name', async () => {
+    loadWith({
+      logRecord: [
+        { date: '2025-03-09T12:00:00.000Z', type: 'Check Out', responsibleUser: 'a'.repeat(24) },
+        {
+          date: '2025-03-10T12:00:00.000Z',
+          type: 'Check In',
+          responsibleUser: { firstName: 'No' },
+        },
+      ],
+      updateRecord: [
+        {
+          date: '2025-03-05T12:00:00.000Z',
+          condition: 'Working well',
+          lastUsedBy: 'Jane Doe (Volunteer #1)',
+        },
+      ],
+    });
+    await waitFor(() => expect(userField()).toHaveValue('Jane Doe (Volunteer #1)'));
+  });
+
+  it('picks the newest record that actually has a purpose, not simply the newest record', async () => {
+    loadWith({
+      updateRecord: [
+        { date: '2025-03-01T12:00:00.000Z', condition: 'Good', lastUsedFor: 'Bathroom - plumbing' },
+        { date: '2025-03-04T12:00:00.000Z', condition: 'Good', lastUsedFor: 'Kitchen - tiling' },
+        { date: '2025-03-09T12:00:00.000Z', condition: 'Needs Repair', lastUsedFor: '  ' },
+      ],
+    });
+    await waitFor(() => expect(purposeField()).toHaveValue('Kitchen - tiling'));
+  });
+
+  it('leaves the user empty when no previous user exists and the purpose empty when none exists', async () => {
+    loadWith({
+      logRecord: [],
+      updateRecord: [{ date: '2025-03-05T12:00:00.000Z', condition: 'Working well' }],
+    });
+    await screen.findByText('Last Update Summary');
+    expect(userField()).toHaveValue('');
+    expect(purposeField()).toHaveValue('');
+  });
+
+  it('shows a previously saved free-text value as a selected option', async () => {
+    loadWith({
+      logRecord: [],
+      updateRecord: [
+        {
+          date: '2025-03-05T12:00:00.000Z',
+          condition: 'Working well',
+          lastUsedBy: 'Morgan Custom',
+          lastUsedFor: 'Roof repair',
+        },
+      ],
+    });
+    await waitFor(() => expect(userField()).toHaveValue('Morgan Custom'));
+    expect(purposeField()).toHaveValue('Roof repair');
+    expect(screen.getByRole('option', { name: 'Morgan Custom', selected: true })).toBeTruthy();
+  });
+
+  it('defaults from the saved record on a fresh load after a successful save, but not after a failed one', async () => {
+    const saved = {
+      ...equipmentHistory,
+      logRecord: [],
+      updateRecord: [
+        {
+          date: '2025-03-07T12:00:00.000Z',
+          condition: 'Working well',
+          lastUsedBy: 'Jane Doe (Volunteer #4)',
+          lastUsedFor: 'Living room - painting',
+          replacementRequired: 'no',
+        },
+      ],
+    };
+    let serverState = { ...equipmentHistory, logRecord: [], updateRecord: [] };
+    mocks.fetchEquipmentById.mockImplementation(() => async () => serverState);
+    mocks.updateEquipment.mockImplementationOnce(() => async () => {
+      throw new Error('Server down');
+    });
+    mocks.updateEquipment.mockImplementationOnce(() => async () => {
+      serverState = saved;
+      return saved;
+    });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { unmount: unmountFirst } = renderForm();
+    await screen.findByText('Last Update Summary');
+    fireEvent.change(userField(), { target: { value: 'Jane Doe (Volunteer #4)' } });
+    fireEvent.change(purposeField(), { target: { value: 'Living room - painting' } });
+    fireEvent.change(screen.getByLabelText(/Status\/Condition Now/i), {
+      target: { value: 'Working well' },
+    });
+    fireEvent.click(screen.getAllByLabelText('No')[0]);
+    fireEvent.click(screen.getByRole('button', { name: /Update Status/i }));
+    await screen.findByText(/Failed to update equipment/i);
+    unmountFirst();
+
+    const { unmount: unmountSecond } = renderForm();
+    await screen.findByText('Last Update Summary');
+    expect(userField()).toHaveValue('');
+    expect(purposeField()).toHaveValue('');
+    unmountSecond();
+
+    const { unmount: unmountThird } = renderForm();
+    await screen.findByText('Last Update Summary');
+    fireEvent.change(userField(), { target: { value: 'Jane Doe (Volunteer #4)' } });
+    fireEvent.change(purposeField(), { target: { value: 'Living room - painting' } });
+    fireEvent.change(screen.getByLabelText(/Status\/Condition Now/i), {
+      target: { value: 'Working well' },
+    });
+    fireEvent.click(screen.getAllByLabelText('No')[0]);
+    fireEvent.click(screen.getByRole('button', { name: /Update Status/i }));
+    await screen.findByText(/status saved as/i);
+    unmountThird();
+
+    renderForm();
+    await waitFor(() => expect(userField()).toHaveValue('Jane Doe (Volunteer #4)'));
+    expect(purposeField()).toHaveValue('Living room - painting');
+  });
+});
