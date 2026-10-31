@@ -143,7 +143,7 @@ function LeaderBoard({
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
   const darkModeStyle = darkMode
-    ? { backgroundColor: '#3a506b', color: 'white' }
+    ? { backgroundColor: '#223b5a', color: 'white' }
     : { backgroundColor: '#f0f8ff', color: 'black' };
   useEffect(() => {
     const fetchInitial = async () => {
@@ -683,10 +683,7 @@ function LeaderBoard({
               </div>
             </Alert>
           )}
-          <div
-            id="leaderboard"
-            className={`${styles['my-custom-scrollbar']} table-wrapper-scroll-y mb-5`}
-          >
+          <div id="leaderboard" className={`${styles['my-custom-scrollbar']} mb-5`}>
             <div className="search-container mx-1">
               <input
                 className={`form-control col-12 mb-2 ${
@@ -699,11 +696,13 @@ function LeaderBoard({
               />
             </div>
             <div className={styles.leaderboardTableScrollWrap}>
-              <div className={styles.leaderboardTableScroll}>
+              <div
+                className={`${styles.leaderboardTableScroll} ${darkMode ? styles.darkScroll : ''}`}
+              >
                 <Table
                   data-testid="dark-mode-table"
                   className={`${styles.leaderboard} leaderboard table-fixed ${
-                    darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+                    darkMode ? `text-light dark-mode ${styles.darkTable}` : ''
                   } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
                   style={{
                     minWidth: '700px',
@@ -753,7 +752,7 @@ function LeaderBoard({
                       <th
                         style={
                           darkMode
-                            ? { backgroundColor: '#3a506b', color: 'white', textAlign: 'right' }
+                            ? { backgroundColor: '#223b5a', color: 'white', textAlign: 'right' }
                             : { backgroundColor: '#f0f8ff', color: 'black', textAlign: 'right' }
                         }
                       >

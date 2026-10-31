@@ -1,6 +1,5 @@
 /* stylelint-disable */
 
-/* Allow the leaderboard column to shrink without widening the dashboard. */
 .leaderboardRoot {
   min-width: 0;
   width: 100%;
@@ -10,7 +9,6 @@
   font-size: 1rem;
 }
 
-/* The outer container must not create a second vertical scrolling area. */
 .my-custom-scrollbar {
   width: 100%;
   max-width: 100%;
@@ -27,7 +25,7 @@
   box-sizing: border-box;
 }
 
-/* Horizontal scrolling on narrow screens; no artificial vertical row cap. */
+/* Desktop: retain the full, unrestricted Leaderboard height. */
 .leaderboardTableScroll {
   width: 100%;
   max-width: 100%;
@@ -36,13 +34,52 @@
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #e2e8f0;
+}
+
+.darkScroll {
+  scrollbar-color: #64748b #1b263b;
+  background-color: #1b263b;
+}
+
+.darkTable {
+  background-color: #223b5a;
+  color: #fff;
+}
+
+.leaderboardTableScroll::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+.leaderboardTableScroll::-webkit-scrollbar-track,
+.leaderboardTableScroll::-webkit-scrollbar-corner {
+  background-color: #e2e8f0;
+}
+
+.leaderboardTableScroll::-webkit-scrollbar-thumb {
+  background-color: #94a3b8;
+  border-radius: 5px;
+}
+
+.leaderboardTableScroll.darkScroll::-webkit-scrollbar-track,
+.leaderboardTableScroll.darkScroll::-webkit-scrollbar-corner {
+  background-color: #1b263b;
+}
+
+.leaderboardTableScroll.darkScroll::-webkit-scrollbar-thumb {
+  background-color: #64748b;
+  border-radius: 5px;
+}
+
+.leaderboardTableScroll.darkScroll::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
 }
 
 .leaderboardTableScroll .leaderboard {
   min-width: 700px;
 }
 
-/* Sticky headers work when the table scrolls horizontally. */
 .leaderboard thead th {
   position: sticky;
   top: 0;
@@ -51,33 +88,52 @@
   background-clip: padding-box;
 }
 
-.dark-leaderboard-row,
-.dark-leaderboard-row th {
-  background-color: #3a506b;
+.darkTable thead th {
+  background-color: #223b5a;
   color: #fff;
 }
 
-.dark-leaderboard-row:hover,
-.dark-leaderboard-row:hover > td,
-.dark-leaderboard-row:hover > th {
+.leaderboard tbody tr.dark-leaderboard-row,
+.leaderboard tbody tr.dark-leaderboard-row > td,
+.leaderboard tbody tr.dark-leaderboard-row > th {
+  background-color: #223b5a;
+  color: #fff;
+}
+
+/* Apply the highlight to cells as well as the row, including pointer and keyboard states. */
+.leaderboard tbody tr.dark-leaderboard-row:hover,
+.leaderboard tbody tr.dark-leaderboard-row:hover > td,
+.leaderboard tbody tr.dark-leaderboard-row:hover > th,
+.leaderboard tbody tr.dark-leaderboard-row:active,
+.leaderboard tbody tr.dark-leaderboard-row:active > td,
+.leaderboard tbody tr.dark-leaderboard-row:active > th,
+.leaderboard tbody tr.dark-leaderboard-row:focus-within,
+.leaderboard tbody tr.dark-leaderboard-row:focus-within > td,
+.leaderboard tbody tr.dark-leaderboard-row:focus-within > th {
   background-color: #111831;
   color: #fff;
 }
 
-.light-leaderboard-row {
+.light-leaderboard-row,
+.light-leaderboard-row > td,
+.light-leaderboard-row > th {
   background-color: #fff;
   color: #000;
+}
+
+.light-leaderboard-row {
   display: table-row;
 }
 
-.light-leaderboard-row th {
-  background-color: #fff;
-  color: #000;
-}
-
-.light-leaderboard-row:hover,
-.light-leaderboard-row:hover > td,
-.light-leaderboard-row:hover > th {
+.leaderboard tbody tr.light-leaderboard-row:hover,
+.leaderboard tbody tr.light-leaderboard-row:hover > td,
+.leaderboard tbody tr.light-leaderboard-row:hover > th,
+.leaderboard tbody tr.light-leaderboard-row:active,
+.leaderboard tbody tr.light-leaderboard-row:active > td,
+.leaderboard tbody tr.light-leaderboard-row:active > th,
+.leaderboard tbody tr.light-leaderboard-row:focus-within,
+.leaderboard tbody tr.light-leaderboard-row:focus-within > td,
+.leaderboard tbody tr.light-leaderboard-row:focus-within > th {
   background-color: #f0f8ff;
   color: #000;
 }
@@ -100,32 +156,37 @@
   width: 97%;
 }
 
-/* Mobile horizontal scrolling and a visible scrollbar. */
+/* Mobile/tablet: a generous scrollport enables sticky table headers
+   without the former 65vh/85vh cap that exposed only 8–9 rows. */
 @media (width <= 768px) {
   .leaderboardTableScrollWrap {
-    max-width: 100vw;
+    max-width: 100%;
   }
 
   .leaderboardTableScroll {
-    overflow-x: scroll;
+    width: 100%;
+    max-width: 100%;
+    max-height: 1800px;
+    overflow-x: auto;
+    overflow-y: auto;
+    overscroll-behavior-x: contain;
   }
 
-  .leaderboardTableScroll::-webkit-scrollbar {
-    height: 8px;
+  .leaderboard thead th {
+    z-index: 20;
   }
 
-  .leaderboardTableScroll::-webkit-scrollbar-track {
-    background: rgb(0 0 0 / 20%);
-    border-radius: 4px;
+  /* Cell-level feedback for touch press, keyboard focus, and mouse hover. */
+  .leaderboard tbody tr.dark-leaderboard-row:is(:hover, :active, :focus-within) > *,
+  .leaderboard tbody tr.dark-leaderboard-row:is(:hover, :active, :focus-within) {
+    background-color: #111831;
+    color: #fff;
   }
 
-  .leaderboardTableScroll::-webkit-scrollbar-thumb {
-    background: rgb(128 128 128 / 65%);
-    border-radius: 4px;
-  }
-
-  .leaderboardTableScroll::-webkit-scrollbar-thumb:hover {
-    background: rgb(128 128 128 / 85%);
+  .leaderboard tbody tr.light-leaderboard-row:is(:hover, :active, :focus-within) > *,
+  .leaderboard tbody tr.light-leaderboard-row:is(:hover, :active, :focus-within) {
+    background-color: #e2efff;
+    color: #000;
   }
 }
 
