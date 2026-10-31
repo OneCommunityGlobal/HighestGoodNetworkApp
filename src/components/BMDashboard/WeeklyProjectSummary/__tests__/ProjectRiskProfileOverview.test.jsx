@@ -1,4 +1,4 @@
-// v1.0.0
+// v1.1.0
 import React from 'react';
 import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -13,15 +13,9 @@ vi.mock('recharts', async () => {
   const original = await vi.importActual('recharts');
   return {
     ...original,
-    ResponsiveContainer: ({ children }) => (
-      <original.ResponsiveContainer
-        width="100%"
-        height={340}
-        initialDimension={{ width: 800, height: 340 }}
-      >
-        {children}
-      </original.ResponsiveContainer>
-    ),
+    // jsdom has no layout; keep real charts with deterministic measured dimensions.
+    ResponsiveContainer: ({ children }) =>
+      React.cloneElement(children, { width: 800, height: 340 }),
   };
 });
 const data = [
@@ -174,4 +168,81 @@ it.each([
     expect(screen.queryByText('Project Risk Profile Overview')).not.toBeInTheDocument(),
   );
   expect(httpService.get).not.toHaveBeenCalled();
+});
+
+it('lets users deselect and reselect projects directly from the dropdown', async () => {
+  renderPage();
+  const table = await screen.findByRole('table');
+  fireEvent.keyDown(screen.getByLabelText('Projects'), { key: 'ArrowDown' });
+  const option = await screen.findByRole('option', { name: 'Bravo' });
+  fireEvent.click(option);
+  expect(within(table).queryByRole('rowheader', { name: /Bravo/ })).not.toBeInTheDocument();
+  expect(within(table).getAllByRole('row')).toHaveLength(3);
+  expect(screen.queryByText('Bravo', { selector: 'tspan' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('option', { name: 'Bravo' }));
+  expect(within(table).getByRole('rowheader', { name: /Bravo/ })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
+  expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'All projects' }));
+  expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(4);
+  expect(httpService.get).toHaveBeenCalledTimes(1);
+});
+
+it('updates the chart and score when a valid historical period changes', async () => {
+  httpService.get.mockResolvedValue({
+    data: [
+      {
+        ...data[0],
+        history: [
+          { ...data[0], date: '2026-09-01' },
+          { ...data[1], date: '2026-09-10' },
+        ],
+      },
+    ],
+  });
+  renderPage();
+  fireEvent.change(await screen.findByLabelText('History period'), { target: { value: 'custom' } });
+  fireEvent.change(screen.getByLabelText('Start date'), { target: { value: '2026-09-01' } });
+  fireEvent.change(screen.getByLabelText('End date'), { target: { value: '2026-09-01' } });
+  expect(screen.getByRole('table')).toHaveTextContent('0/100');
+  expect(screen.getByText('-10%', { selector: '.recharts-label tspan' })).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText('End date'), { target: { value: '2026-09-10' } });
+  expect(screen.getByRole('table')).toHaveTextContent('100/100');
+  expect(screen.getByText('15%', { selector: '.recharts-label tspan' })).toBeInTheDocument();
+  expect(httpService.get).toHaveBeenCalledTimes(1);
+});
+
+it('shows zero-delay chart labels instead of an apparently empty graph', async () => {
+  httpService.get.mockResolvedValue({ data: [data[0], data[2]] });
+  renderPage();
+  await screen.findByRole('table');
+  fireEvent.change(screen.getByLabelText('Chart metric'), { target: { value: 'delay' } });
+  expect(
+    screen.getByText(/All selected projects with delay data report 0% delay/),
+  ).toBeInTheDocument();
+  expect(screen.getAllByText('0%', { selector: '.recharts-label tspan' })).toHaveLength(2);
+});
+
+it('aborts an unfinished request when the panel is unmounted', () => {
+  let signal;
+  let aborted = false;
+  httpService.get.mockImplementation((url, config) => {
+    signal = config?.signal;
+    signal?.addEventListener('abort', () => {
+      aborted = true;
+    });
+    return new Promise(() => {});
+  });
+  const { unmount } = renderPage();
+  expect(screen.getByRole('status')).toHaveTextContent('Loading');
+  unmount();
+  expect(aborted).toBe(true);
+});
+
+it('rejects malformed project names instead of crashing during rendering', async () => {
+  httpService.get.mockResolvedValue({
+    data: [{ ...data[0], projectName: { name: 'Bad payload' } }],
+  });
+  renderPage();
+  expect(await screen.findByRole('alert')).toHaveTextContent('Failed to fetch');
 });

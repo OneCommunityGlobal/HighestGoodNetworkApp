@@ -1,4 +1,4 @@
-﻿// v1.0.0
+// v1.1.0
 import {
   assessRisk,
   buildRiskRows,
@@ -132,4 +132,26 @@ describe('project risk assessment', () => {
       comparisonText({ cost: 5, delay: null, issues: 0 }, { cost: null, delay: 0, issues: 1 }),
     ).toContain('Cost variance: unavailable; Time delay: unavailable; Open issues: -1');
   });
+});
+
+it('uses the latest timestamp when observations arrive out of order on the same day', () => {
+  const [row] = buildRiskRows(
+    [
+      {
+        ...snapshot,
+        history: [
+          { ...snapshot, date: '2026-10-14T20:00:00Z', predictedCostOverrun: 15 },
+          { ...snapshot, date: '2026-10-14T08:00:00Z', predictedCostOverrun: 2 },
+        ],
+      },
+    ],
+    '2026-10-01',
+    '2026-10-14',
+  );
+  expect(row.cost).toBe(15);
+});
+
+it('returns no results for invalid or reversed history ranges instead of throwing', () => {
+  expect(buildRiskRows([snapshot], 'bad-date', '2026-10-14')).toEqual([]);
+  expect(buildRiskRows([snapshot], '2026-10-14', '2026-10-01')).toEqual([]);
 });

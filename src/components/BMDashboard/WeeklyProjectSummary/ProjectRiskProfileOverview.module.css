@@ -1,4 +1,4 @@
-/* v1.0.0 */
+/* v1.1.0 */
 .container {
   --surface: #fff;
   --subtle: #f1f5f9;
@@ -16,11 +16,11 @@
 }
 
 .darkMode {
-  --surface: #172234;
-  --subtle: #243247;
-  --text: #e2e8f0;
-  --muted: #c2cede;
-  --border: #526077;
+  --surface: #2b3e59;
+  --subtle: #253342;
+  --text: #fff;
+  --muted: #cbd5e1;
+  --border: #4a5a77;
 
   color-scheme: dark;
 }
@@ -58,7 +58,7 @@
 }
 
 .container :focus-visible {
-  outline: 3px solid #3b82f6;
+  outline: 3px solid var(--focus-border-color, #3b82f6);
   outline-offset: 3px;
 }
 

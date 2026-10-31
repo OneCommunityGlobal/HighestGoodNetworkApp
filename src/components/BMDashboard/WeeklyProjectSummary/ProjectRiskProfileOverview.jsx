@@ -1,4 +1,4 @@
-// v1.0.0
+// v1.1.0
 import React, { useState, useEffect, useMemo, useId } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
   Cell,
+  LabelList,
   ReferenceArea,
   ReferenceLine,
   LineChart,
@@ -28,10 +29,10 @@ const COLORS = {
   Unknown: '#64748b',
 };
 const DARK_COLORS = {
-  Low: '#86d9ab',
-  Medium: '#ffd17c',
-  High: '#ffa3a3',
-  Unknown: '#b6c5d9',
+  Low: '#22c55e',
+  Medium: '#e8a71c',
+  High: '#ef4444',
+  Unknown: '#94a3b8',
 };
 
 function RiskBadge({ level }) {
@@ -78,13 +79,26 @@ export default function ProjectRiskProfileOverview() {
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setError(false);
     httpService
-      .get(`${process.env.REACT_APP_APIENDPOINT}/projects/risk-profile`)
+      .get(`${process.env.REACT_APP_APIENDPOINT}/projects/risk-profile`, {
+        signal: controller.signal,
+        timeout: 30000,
+      })
       .then(({ data }) => {
         const result = Array.isArray(data) ? data : [data];
-        if (result.some(p => !p || typeof p !== 'object' || Array.isArray(p))) {
+        if (
+          result.some(
+            p =>
+              !p ||
+              typeof p !== 'object' ||
+              Array.isArray(p) ||
+              (p.projectName != null && typeof p.projectName !== 'string') ||
+              (p.name != null && typeof p.name !== 'string'),
+          )
+        ) {
           throw new Error('Invalid risk profile response');
         }
         if (!cancelled) {
@@ -100,6 +114,7 @@ export default function ProjectRiskProfileOverview() {
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [reload]);
 
@@ -123,14 +138,14 @@ export default function ProjectRiskProfileOverview() {
   }, [projects, start, end, validRange, selectedProjects, sort]);
   const metric = METRICS.find(m => m.key === metricKey);
   const colors = darkMode ? DARK_COLORS : COLORS;
-  const textColor = darkMode ? '#e2e8f0' : '#334155';
+  const textColor = darkMode ? '#fff' : '#334155';
   const options = projects.map((p, index) => ({
     value: String(p.projectId || p._id || index),
     label: p.projectName || p.name || 'Unknown project',
   }));
   const chartRows = rows.filter(row => row[metricKey] !== null);
-  const chartMin = Math.min(0, ...chartRows.map(row => row[metricKey]));
-  const chartMax = Math.max(20, ...chartRows.map(row => row[metricKey]));
+  const chartMin = chartRows.reduce((min, row) => Math.min(min, row[metricKey]), 0);
+  const chartMax = chartRows.reduce((max, row) => Math.max(max, row[metricKey]), 20);
 
   return (
     <Container fluid className="mt-5 pt-5 mb-5">
@@ -157,7 +172,9 @@ export default function ProjectRiskProfileOverview() {
                 <Select
                   inputId={`${id}-projects`}
                   isMulti
+                  hideSelectedOptions={false}
                   closeMenuOnSelect={false}
+                  aria-describedby={`${id}-project-help`}
                   options={options}
                   value={options.filter(p => selectedProjects.includes(p.value))}
                   onChange={values => setSelectedProjects((values || []).map(p => p.value))}
@@ -166,26 +183,27 @@ export default function ProjectRiskProfileOverview() {
                   styles={{
                     control: base => ({
                       ...base,
-                      backgroundColor: darkMode ? '#243247' : '#fff',
-                      borderColor: darkMode ? '#64748b' : '#94a3b8',
+                      backgroundColor: 'var(--subtle)',
+                      borderColor: 'var(--border)',
                     }),
                     menu: base => ({
                       ...base,
-                      backgroundColor: darkMode ? '#243247' : '#fff',
+                      backgroundColor: 'var(--surface)',
                       zIndex: 5,
                     }),
                     option: (base, state) => ({
                       ...base,
-                      backgroundColor: state.isFocused
-                        ? darkMode
-                          ? '#3b4f68'
-                          : '#e2e8f0'
-                        : 'transparent',
+                      backgroundColor:
+                        state.isFocused || state.isSelected
+                          ? darkMode
+                            ? '#3a506b'
+                            : '#e2e8f0'
+                          : 'transparent',
                       color: textColor,
                     }),
                     multiValue: base => ({
                       ...base,
-                      backgroundColor: darkMode ? '#3b4f68' : '#e2e8f0',
+                      backgroundColor: darkMode ? '#3a506b' : '#e2e8f0',
                     }),
                     multiValueLabel: base => ({ ...base, color: textColor }),
                     multiValueRemove: base => ({ ...base, color: textColor }),
@@ -193,6 +211,19 @@ export default function ProjectRiskProfileOverview() {
                     placeholder: base => ({ ...base, color: textColor }),
                   }}
                 />
+                <p id={`${id}-project-help`} className={styles.note}>
+                  {selectedProjects.length} of {options.length} selected. Select a project in the
+                  menu to include or exclude it.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProjects(options.map(p => p.value))}
+                >
+                  All projects
+                </button>{' '}
+                <button type="button" onClick={() => setSelectedProjects([])}>
+                  Clear selection
+                </button>
               </div>
               <div>
                 <label htmlFor={`${id}-sort`}>Sort projects</label>
@@ -316,6 +347,14 @@ export default function ProjectRiskProfileOverview() {
                   Hover a bar for details. The table below provides the same information without
                   hovering. Missing metrics are omitted from the chart.
                 </p>
+                {metricKey === 'delay' &&
+                  chartRows.length > 0 &&
+                  chartRows.every(row => row.delay === 0) && (
+                    <p role="status" className={styles.note}>
+                      All selected projects with delay data report 0% delay. The markers sit on the
+                      zero baseline.
+                    </p>
+                  )}
                 {chartRows.length > 0 ? (
                   <div className={styles.chartScroll}>
                     <div
@@ -331,7 +370,7 @@ export default function ProjectRiskProfileOverview() {
                           <CartesianGrid
                             strokeDasharray="3 3"
                             vertical={false}
-                            stroke={darkMode ? '#526077' : '#d5dce5'}
+                            stroke={darkMode ? '#4a5a77' : '#d5dce5'}
                           />
                           <XAxis
                             dataKey="projectName"
@@ -369,7 +408,7 @@ export default function ProjectRiskProfileOverview() {
                             strokeDasharray="4 4"
                             label={{
                               value: 'Medium 5%',
-                              fill: colors.Medium,
+                              fill: textColor,
                               position: 'insideTopRight',
                             }}
                           />
@@ -379,7 +418,7 @@ export default function ProjectRiskProfileOverview() {
                             strokeDasharray="4 4"
                             label={{
                               value: 'High 15%',
-                              fill: colors.High,
+                              fill: textColor,
                               position: 'insideTopRight',
                             }}
                           />
@@ -391,8 +430,15 @@ export default function ProjectRiskProfileOverview() {
                             dataKey={metricKey}
                             name={metric.label}
                             maxBarSize={48}
+                            minPointSize={3}
                             isAnimationActive={false}
                           >
+                            <LabelList
+                              dataKey={metricKey}
+                              position="top"
+                              fill={textColor}
+                              formatter={value => `${Number(value.toFixed(2))}%`}
+                            />
                             {chartRows.map(row => (
                               <Cell
                                 key={row.id}
@@ -479,7 +525,7 @@ export default function ProjectRiskProfileOverview() {
                         <YAxis tick={{ fill: textColor }} tickFormatter={value => `${value}%`} />
                         <Tooltip
                           contentStyle={{
-                            background: darkMode ? '#243247' : '#fff',
+                            background: darkMode ? '#2b3e59' : '#fff',
                             color: textColor,
                           }}
                           formatter={value => formatMetric(metricKey, value)}

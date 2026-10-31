@@ -1,4 +1,4 @@
-// v1.0.0
+// v1.1.0
 export const METRICS = [
   { key: 'cost', label: 'Cost variance', medium: 5, high: 15, weight: 0.4 },
   { key: 'delay', label: 'Time delay', medium: 5, high: 15, weight: 0.4 },
@@ -87,14 +87,16 @@ export function comparisonText(current, previous) {
 }
 
 export function buildRiskRows(projects, start, end) {
+  if (!Number.isFinite(Date.parse(start)) || !Number.isFinite(Date.parse(end)) || start > end)
+    return [];
   const days = Math.round((Date.parse(end) - Date.parse(start)) / 86400000) + 1;
   const previousStart = new Date(Date.parse(start) - days * 86400000).toISOString().slice(0, 10);
   return projects
     .map((project, index) => {
       const history = (Array.isArray(project.history) ? project.history : [])
         .filter(h => h && typeof h.date === 'string' && Number.isFinite(Date.parse(h.date)))
-        .map(h => ({ ...normalizeMetrics(h), date: new Date(h.date).toISOString().slice(0, 10) }))
-        .sort((a, b) => a.date.localeCompare(b.date));
+        .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
+        .map(h => ({ ...normalizeMetrics(h), date: new Date(h.date).toISOString().slice(0, 10) }));
       const selected = history.filter(h => h.date >= start && h.date <= end);
       const previous = history.filter(h => h.date >= previousStart && h.date < start).slice(-1)[0];
       // Snapshot-only responses have no historical dates; never invent observations.
