@@ -21,6 +21,7 @@ import hasPermission from '~/utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import styles from './BasicInformationTab.module.css';
+import phoneInputStyles from '../phoneInputDark.module.css';
 import RoleChangePermissionsModal from '~/components/UserProfile/RoleChangePermissionsModal';
 
 
@@ -64,6 +65,11 @@ export const Name = props => {
               placeholder="First Name"
               invalid={!formValid.firstName}
             />
+            {/* FormFeedback must be a direct sibling of Input, right after it,
+                for Bootstrap's `.is-invalid ~ .invalid-feedback` visibility
+                rule (and the app's dark-mode red-text override for
+                `.invalid-feedback`) to match at all. */}
+            <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
             <FontAwesomeIcon
               icon={faCopy}
               title="Copy first name"
@@ -77,12 +83,11 @@ export const Name = props => {
                 fontSize: '1rem',
                 color: darkMode ? '#fff' : '#000',
                 top: '50%',
-                right: '10px', 
+                right: '10px',
                 transform: 'translateY(-50%)',
               }}
             />
             </div>
-            <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
           </FormGroup>
         </Col>
         <Col md={desktopDisplay ? '3' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -110,6 +115,7 @@ export const Name = props => {
               placeholder="Last Name"
               invalid={!formValid.lastName}
             />
+            <FormFeedback>Last Name Can&apos;t have less than 2 characters</FormFeedback>
             <FontAwesomeIcon
               icon={faCopy}
               title="Copy last name"
@@ -123,12 +129,11 @@ export const Name = props => {
                 fontSize: '1rem',
                 color: darkMode ? '#fff' : '#000',
                 top: '50%',
-                right: '10px', 
+                right: '10px',
                 transform: 'translateY(-50%)',
               }}
             />
             </div>
-            <FormFeedback>Last Name Can&apos;t have less than 2 characters</FormFeedback>
           </FormGroup>
         </Col>
       </>
@@ -360,6 +365,7 @@ export const Phone = props => {
               style={{ position: 'relative', width: '100%' }}
             >
               <PhoneInput
+                containerClass={darkMode ? phoneInputStyles.phoneInputDark : ''}
                 buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
                 inputClass={`phone-input-style ${
                   darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''

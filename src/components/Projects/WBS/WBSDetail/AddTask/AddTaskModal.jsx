@@ -1038,6 +1038,7 @@ useEffect(() => {
                         disableInput={false}
                         inputTestId="resource-input"
                         projectId={props.projectId}
+                        darkMode={darkMode}
                       />
                     </div>
 

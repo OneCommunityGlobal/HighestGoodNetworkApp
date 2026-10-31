@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 import { useEffect, useRef, useState } from 'react';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
@@ -57,6 +58,10 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
 
   if (teamsStatsFetchingError) {
     return <div>Cannot be fetched as of now.</div>;
+  }
+
+  if (!usersInTeamStats?.inTeam || !usersInTeamStats?.notInTeam) {
+    return <div>No team data available for this period.</div>;
   }
 
   const { inTeam, notInTeam } = usersInTeamStats;

@@ -268,7 +268,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? styles.editInputDark : ''
             }`}
             value={formData.firstName}
             onChange={e => {
@@ -299,7 +299,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} text-center ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? styles.editInputDark : ''
             }`}
             value={formData.lastName}
             onChange={e => {
@@ -327,7 +327,7 @@ const UserTableDataComponent = props => {
               updateFormData({ ...formData, role: e.target.value });
               addUserInformation('role', e.target.value, props.user._id);
             }}
-            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            className={darkMode ? styles.editInputDark : ''}
           >
             {roles?.map((e, index) => (
               // eslint-disable-next-line react/no-array-index-key
@@ -389,7 +389,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? styles.editInputDark : ''
             }`}
             value={formData.email}
             onChange={e => {
@@ -409,7 +409,7 @@ const UserTableDataComponent = props => {
             type="number"
             step={0.5}
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? styles.editInputDark : ''
             }`}
             value={formData.weeklycommittedHours}
             onChange={e => {
@@ -562,7 +562,7 @@ const UserTableDataComponent = props => {
           <input
             type="date"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? styles.editInputDark : ''
             }`}
             value={formData.startDate}
             onChange={e => {
@@ -590,7 +590,7 @@ const UserTableDataComponent = props => {
           <input
             type="date"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? styles.editInputDark : ''
             }`}
             value={formData.endDate}
             onChange={e => {

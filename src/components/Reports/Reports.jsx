@@ -644,6 +644,7 @@ endDate: moment()
                     filterStatus={this.state.filterStatus}
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
+                    wildCardSearchText={this.state.wildCardSearchText}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
                     onSearchClick={this.handleSearchClick}
                     darkMode={darkMode}
@@ -828,7 +829,7 @@ endDate: moment()
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddPersonHistory}>
                           {this.state.showAddPersonHistory
                             ? 'Hide Person Lost Time'
@@ -845,7 +846,7 @@ endDate: moment()
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddTeamHistory}>
                           {this.state.showAddTeamHistory
                             ? 'Hide Team Lost Time'

@@ -1,10 +1,13 @@
+/* Version 1.0.0 */
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styles from './BiddingOverview.module.css';
 
 import logo from '../../../assets/images/logo2.png';
 
 function BiddingOverview() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [rentingFrom, setRentingFrom] = useState('');
   const [rentingTo, setRentingTo] = useState('');
   const [name, setName] = useState('');
@@ -76,7 +79,7 @@ function BiddingOverview() {
   };
 
   return (
-    <div className={`${styles.biddingPage}`}>
+    <div className={`${styles.biddingPage} ${darkMode ? styles.darkMode : ''}`}>
       <div className={`${styles.topLogoContainer}`}>
         <img src={logo} alt="One Community Logo" className={`${styles.topLogo}`} />
       </div>
@@ -148,7 +151,9 @@ function BiddingOverview() {
                   {unitDetails.images.map((image, index) => (
                     <span
                       key={image} // Using unique image URL as key is correct here
-                      className={`image-dot ${index === currentImageIndex ? 'active' : ''}`}
+                      className={`${styles.imageDot} ${
+                        index === currentImageIndex ? styles.active : ''
+                      }`}
                       onClick={() => setCurrentImageIndex(index)}
                       onKeyDown={e => {
                         // Added for accessibility

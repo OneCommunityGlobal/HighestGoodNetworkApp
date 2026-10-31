@@ -128,3 +128,9 @@
     color: #b8c4e0;
   }
 }
+
+/* Sits on the same element as .people-pie-charts-wrapper, so it must stay below it
+   to win on source order and override that rule's hardcoded rgba(0, 0, 0, 0.5). */
+.text-light {
+  color: #f5f5f5;
+}

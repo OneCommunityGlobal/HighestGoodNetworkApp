@@ -1,0 +1,34 @@
+/* Shared by all 8 TSAFormPage components.
+   The pages are written almost entirely as inline `style={{}}` objects, and inline
+   styles outrank classes — so the colour properties these rules replace had to be
+   deleted from the JSX, not just overridden. Only the colours moved here; the
+   layout (position/overflow/z-index/padding) stays inline.
+
+   Dark mode is keyed off `.dark`, applied to the page wrapper alongside `.page`.
+   Text colour is deliberately not set: `public/index.css` has
+   `body.dark-mode * { color: #fff !important }`, which wins regardless. That rule
+   is also the original bug — the cards kept their white background while every
+   text node was forced white, so the form rendered white-on-white. Giving the
+   surfaces a dark background is what actually fixes it. */
+
+.page {
+  background-color: #e6f5fb;
+}
+
+.card {
+  background-color: #fff;
+}
+
+/* ─── Dark mode ─── */
+
+.page.dark {
+  background-color: #1a2634;
+}
+
+.page.dark .card {
+  background-color: #1e2d3d;
+  border-color: #3a506b;
+}
+
+/* The teal section banners (#4d87a1) are left alone — white-on-teal reads
+   correctly in both themes. */

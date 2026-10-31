@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './UploadPanel.module.css';
 
 /* Small inline icons */
-const CloudUp = ({ className }) => (
+const CloudUp = ({ className, stroke = '#111' }) => (
   <svg className={className} viewBox="0 0 24 24" width="28" height="28" aria-hidden>
     <path
       d="M6 19h12a4 4 0 0 0 0-8h-.5a6 6 0 0 0-11.6-2A4.5 4.5 0 0 0 6 19Z"
       fill="none"
-      stroke="#111"
+      stroke={stroke}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -15,19 +16,19 @@ const CloudUp = ({ className }) => (
     <path
       d="M12 14V8M9.5 10.5 12 8l2.5 2.5"
       fill="none"
-      stroke="#111"
+      stroke={stroke}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
   </svg>
 );
-const UploadIcon = () => (
+const UploadIcon = ({ stroke = '#111' }) => (
   <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden>
     <path
       d="M12 16V6M8.5 9.5 12 6l3.5 3.5M4 18h16"
       fill="none"
-      stroke="#111"
+      stroke={stroke}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -42,6 +43,8 @@ const UploadIcon = () => (
  * - onFilesUploaded(files[]) : callback => [{name,url,size,at}]
  */
 export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUploaded }) {
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const iconStroke = darkMode ? '#e0e0e0' : '#111';
   const inputRef = useRef(null);
 
   const [pendingFiles, setPendingFiles] = useState([]); // File[]
@@ -176,7 +179,9 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
     <div className={`${styles.outer}`} id={id}>
       {/* DROP ZONE */}
       <div
-        className={`${styles.dropzone} ${isDragOver ? styles.over : ''}`}
+        className={`${styles.dropzone} ${darkMode ? styles.dropzoneDark : ''} ${
+          isDragOver ? styles.over : ''
+        }`}
         onDrop={onDrop}
         onDragEnter={onDragEnter}
         onDragOver={onDragOver}
@@ -189,19 +194,21 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
         }}
         aria-label="File upload drop zone"
       >
-        <CloudUp className={`${styles.cloud}`} />
-        <div className={`${styles.dzTitle}`}>{dzLabel}</div>
+        <CloudUp className={`${styles.cloud}`} stroke={iconStroke} />
+        <div className={`${styles.dzTitle} ${darkMode ? styles.dzTitleDark : ''}`}>{dzLabel}</div>
 
         {isUploading ? (
           <div className={`${styles.progressWrap}`} aria-live="polite">
-            <div className={`${styles.progressTrack}`}>
+            <div className={`${styles.progressTrack} ${darkMode ? styles.progressTrackDark : ''}`}>
               <div className={`${styles.progressFill}`} style={{ width: `${progress}%` }} />
             </div>
-            <div className={`${styles.progressPct}`}>{progress}%</div>
+            <div className={`${styles.progressPct} ${darkMode ? styles.progressPctDark : ''}`}>
+              {progress}%
+            </div>
           </div>
         ) : (
           <>
-            <div className={`${styles.or}`}>OR</div>
+            <div className={`${styles.or} ${darkMode ? styles.orDark : ''}`}>OR</div>
             <div className={`${styles.actions}`}>
               <input
                 ref={inputRef}
@@ -213,7 +220,7 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
               />
               <button
                 type="button"
-                className={`${styles.browseBtn}`}
+                className={`${styles.browseBtn} ${darkMode ? styles.browseBtnDark : ''}`}
                 // eslint-disable-next-line testing-library/no-node-access
                 onClick={() => inputRef.current?.click()}
               >
@@ -222,7 +229,7 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
 
               <button
                 type="button"
-                className={`${styles.uploadBtn}`}
+                className={`${styles.uploadBtn} ${darkMode ? styles.uploadBtnDark : ''}`}
                 onClick={doUpload}
                 disabled={pendingFiles.length === 0}
                 title={
@@ -231,7 +238,7 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
                     : 'Select a file first'
                 }
               >
-                <UploadIcon />
+                <UploadIcon stroke={iconStroke} />
                 <span>Upload</span>
               </button>
             </div>
@@ -243,12 +250,15 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
 
       {/* Notes to Teacher (optional) */}
       <div className={`${styles.notesBlock}`}>
-        <label className={`${styles.notesLabel}`} htmlFor={notesInputId}>
+        <label
+          className={`${styles.notesLabel} ${darkMode ? styles.notesLabelDark : ''}`}
+          htmlFor={notesInputId}
+        >
           Notes to Teacher <span className={`${styles.muted}`}>(Optional)</span>
         </label>
         <textarea
           id={notesInputId}
-          className={`${styles.notes}`}
+          className={`${styles.notes} ${darkMode ? styles.notesDark : ''}`}
           placeholder="Add any notes for the teacher here"
           value={notes}
           onChange={e => setNotes(e.target.value)}

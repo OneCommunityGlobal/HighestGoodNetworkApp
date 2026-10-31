@@ -1,3 +1,4 @@
+/* Version 1.0.1 */
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -11,6 +12,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const STORAGE_KEY = 'bookingDraft_v1';
+const LISTING_PHOTO = 'https://images.unsplash.com/photo-1570793005386-840846445fed';
 
 // Helper to safely save booking draft to localStorage
 function saveDraft(payload) {
@@ -195,16 +197,28 @@ export default function BookingPage() {
               <Row>
                 <Col md={12} className="text-center mb-3">
                   <div>
-                    <img
-                      className={styles.listingPhoto}
-                      src="https://images.unsplash.com/photo-1570793005386-840846445fed?w=900&auto=format&fit=crop"
-                      alt="Unit 405"
-                    />
+                    <a
+                      href={`${LISTING_PHOTO}?w=1800&auto=format&fit=crop`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="View full-size photo of Unit 405"
+                    >
+                      <img
+                        className={styles.listingPhoto}
+                        src={`${LISTING_PHOTO}?w=900&auto=format&fit=crop`}
+                        alt="Unit 405"
+                      />
+                    </a>
                     <div className={styles.photoCaption}>
                       Unit 405, Earthbag Village –{' '}
-                      <button href="#" onClick={e => e.preventDefault()}>
-                        More photos
-                      </button>
+                      <a
+                        href={`${LISTING_PHOTO}?w=1800&auto=format&fit=crop`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.morePhotosBtn}
+                      >
+                        View photo
+                      </a>
                     </div>
                   </div>
                 </Col>

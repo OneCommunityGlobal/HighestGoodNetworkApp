@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 /* stylelint-disable  */
 * {
   margin: 0;
@@ -382,13 +383,87 @@ input[type='date'] {
   font-weight: bold;
 }
 
+.darkMode,
+.darkMode .topLogoContainer {
+  background-color: #0d1117;
+  color: #f0f6fc;
+}
+
+.darkMode .boxContainer,
+.darkMode .biddingCard {
+  background-color: #1b2a41;
+}
+
+.darkMode .biddingHeader {
+  background-color: #24344d;
+}
+
+.darkMode .biddingFormGroup input,
+.darkMode .villageSelect,
+.darkMode .goButton,
+.darkMode .actionButton {
+  background-color: #1e293b;
+  border-color: #3a506b;
+  color: #f0f6fc;
+  color-scheme: dark;
+}
+
+.darkMode .biddingFormGroup input::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+.darkMode .unitTitle,
+.darkMode .unitSubtitle {
+  color: #f0f6fc;
+}
+
+.darkMode .imageNavButton {
+  background-color: rgb(15 23 42 / 90%);
+  color: #fff;
+}
+
+.darkMode .submitButton1 {
+  background-color: #198754;
+}
+
 /* Responsive Adjustments */
 @media (width <= 900px) {
+  .biddingHeader {
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .biddingContainer,
+  .biddingLeft {
+    padding: 1rem;
+  }
+
   .biddingCard {
     flex-direction: column;
   }
 
   .formRowContainer {
     flex-direction: column;
+  }
+
+  .fullWidth {
+    width: 100%;
+  }
+
+  .submitButton1 {
+    min-width: 0;
+    width: 100%;
+    white-space: normal;
+  }
+
+  .biddingForm {
+    margin-bottom: 1.5rem;
+  }
+
+  .biddingActions {
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
   }
 }
