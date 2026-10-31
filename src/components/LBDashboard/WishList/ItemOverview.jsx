@@ -224,7 +224,6 @@ function WishListItem(props) {
                       styles['item__form-input--dark'],
                       darkMode,
                     )}
-                    style={darkMode ? { colorScheme: 'dark' } : {}}
                   />
                 </label>
                 <label
@@ -241,7 +240,6 @@ function WishListItem(props) {
                       styles['item__form-input--dark'],
                       darkMode,
                     )}
-                    style={darkMode ? { colorScheme: 'dark' } : {}}
                   />
                 </label>
               </div>

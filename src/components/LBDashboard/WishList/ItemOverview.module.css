@@ -337,7 +337,7 @@
 }
 
 .err-message{
-  color: red;
+  color: #b00020;
   font-size: 12px;
   margin-top: 12px;
   display: block;
@@ -395,7 +395,7 @@
 }
 
 .item__icon {
-  color: red;
+  color: #d32f2f;
   font-size: 1.3rem
 }
 
