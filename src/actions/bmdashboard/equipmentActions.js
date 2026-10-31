@@ -97,7 +97,7 @@ export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
     });
 }
 
-export const updateEquipment = (equipmentId, updateData) => async (dispatch, getState) => {
+export const updateEquipment = (equipmentId, updateData, imageFile = null) => async (dispatch, getState) => {
   const url = `${ENDPOINTS.BM_EQUIPMENT_STATUS_UPDATE(equipmentId)}`;
 
   try {
@@ -126,15 +126,30 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
 
     const statusUpdateData = {
       condition: updateData.condition,
-      lastUsedBy: updateData.lastUsedBy,
-      lastUsedFor: updateData.lastUsedFor,
-      replacementRequired: updateData.replacementRequired,
+      lastUsedBy: updateData.lastUsedBy || '',
+      lastUsedFor: updateData.lastUsedFor || '',
+      replacementRequired: updateData.replacementRequired || '',
       description: updateData.description || '',
       notes: updateData.notes || '',
       createdBy: currentUserId,
     };
 
-    const res = await axios.put(url, statusUpdateData);
+    let res;
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append('condition', statusUpdateData.condition);
+      formData.append('createdBy', statusUpdateData.createdBy);
+      formData.append('lastUsedBy', statusUpdateData.lastUsedBy);
+      formData.append('lastUsedFor', statusUpdateData.lastUsedFor);
+      formData.append('replacementRequired', statusUpdateData.replacementRequired);
+      formData.append('description', statusUpdateData.description);
+      formData.append('notes', statusUpdateData.notes);
+      formData.append('image', imageFile);
+      // Do NOT set Content-Type — axios sets multipart/form-data with the correct boundary
+      res = await axios.put(url, formData);
+    } else {
+      res = await axios.put(url, statusUpdateData);
+    }
 
     dispatch(setEquipment(res.data));
     toast.success('Equipment status updated successfully!');
@@ -142,7 +157,6 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
 
     return res.data;
   } catch (err) {
-
     let errorMessage = 'Failed to update equipment status.';
 
     if (err.response) {
