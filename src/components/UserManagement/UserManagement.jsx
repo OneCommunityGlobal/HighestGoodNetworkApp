@@ -43,6 +43,7 @@ import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
+import { fetchCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -83,6 +84,8 @@ class UserManagement extends React.PureComponent {
       activeInactivePopupOpen: false,
       finalDayPopupOpen: false,
       selectedUser: null,
+      // null until loaded (or if the request fails), so no indicator is shown by mistake
+      completedQuestionnaireUserIds: null,
     };
     this.onPauseResumeClick = this.onPauseResumeClick.bind(this);
     this.onLogTimeOffClick = this.onLogTimeOffClick.bind(this);
@@ -103,6 +106,7 @@ class UserManagement extends React.PureComponent {
     document.body.classList.add('no-global-theme');
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
+    void this.loadQuestionnaireCompletion();
     const { darkMode } = this.props.state.theme;
     const { userProfiles } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
@@ -124,6 +128,17 @@ class UserManagement extends React.PureComponent {
     window.removeEventListener('resize', this.handleResize);
     this.debouncedApplyWildCardSearch.cancel();
   }
+
+  loadQuestionnaireCompletion = async () => {
+    try {
+      const completedQuestionnaireUserIds = await fetchCompletedQuestionnaireUserIds();
+      this.setState({ completedQuestionnaireUserIds });
+    } catch (error) {
+      // Leave as null so users are not wrongly flagged as incomplete
+      // eslint-disable-next-line no-console
+      console.error('Failed to load questionnaire completion status', error);
+    }
+  };
 
   handleResize = () => {
     this.setState({ isMobile: window.innerWidth <= 750 });
@@ -160,13 +175,16 @@ class UserManagement extends React.PureComponent {
     const userProfilesChanged =
       prevProps.state.allUserProfiles.userProfiles !==
       this.props.state.allUserProfiles.userProfiles;
+    const questionnaireCompletionChanged =
+      prevState.completedQuestionnaireUserIds !== this.state.completedQuestionnaireUserIds;
 
     if (
       prevState.selectedPage !== this.state.selectedPage ||
       prevState.wildCardSearchText !== this.state.wildCardSearchText ||
       searchStateChanged ||
       pageSizeChanged ||
-      userProfilesChanged
+      userProfilesChanged ||
+      questionnaireCompletionChanged
     ) {
       const { darkMode } = this.props.state.theme;
       const { userProfiles } = this.props.state.allUserProfiles;
@@ -334,6 +352,10 @@ class UserManagement extends React.PureComponent {
             isMobile={isMobile}
             mobileFontSize={mobileFontSize}
             onUserUpdate={this.onUserUpdate}
+            questionnaireIncomplete={
+              !!this.state.completedQuestionnaireUserIds &&
+              !this.state.completedQuestionnaireUserIds.has(user._id)
+            }
           />
         ));
     }
