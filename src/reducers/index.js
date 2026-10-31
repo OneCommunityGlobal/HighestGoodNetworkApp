@@ -86,6 +86,7 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
 // lbdashboard
 import wishListReducer from './listBidDashboard/wishListItemReducer';
+import { lbUserManagementReducer } from './listBidDashboard/userManagementReducer';
 
 // listing and biddding dashboard
 
@@ -179,6 +180,7 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  lbUserManagement: lbUserManagementReducer,
 
   WishListItem: wishListReducer,
 

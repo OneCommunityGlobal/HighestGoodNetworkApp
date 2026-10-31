@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import {
@@ -162,13 +163,23 @@ const DashboardHeader = ({ darkMode, onBack }) => (
     <h1 className={getClassNames(styles.title, styles.darkText, darkMode)}>
       Listing and Bidding Platform Dashboard
     </h1>
-    <Button
-      size="sm"
-      onClick={onBack}
-      className={getClassNames(styles.backBtn, styles.darkBackBtn, darkMode)}
-    >
-      Back
-    </Button>
+    <div className="d-flex align-items-center" style={{ gap: '8px' }}>
+      <Button
+        tag={Link}
+        to="/lbdashboard/admin/users"
+        size="sm"
+        className={getClassNames(styles.filterBtn, styles.darkFilterBtn, darkMode)}
+      >
+        User Management
+      </Button>
+      <Button
+        size="sm"
+        onClick={onBack}
+        className={getClassNames(styles.backBtn, styles.darkBackBtn, darkMode)}
+      >
+        Back
+      </Button>
+    </div>
   </header>
 );
 
