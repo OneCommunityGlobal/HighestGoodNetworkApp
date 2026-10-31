@@ -89,7 +89,7 @@ function FinancialsTrackingSection() {
             <ActualVsPlannedCost />
           </div>
           <div className={styles.chartCard}>
-            <CostPredictionChart projectId={1} />
+            <CostPredictionChart projectId="building-1" />
           </div>
         </div>
       ) : (
@@ -101,7 +101,7 @@ function FinancialsTrackingSection() {
               <ActualVsPlannedCost />
             </div>
             <div className={styles.chartCard}>
-              <CostPredictionChart projectId={1} />
+              <CostPredictionChart projectId="building-1" />
             </div>
           </div>
         </div>
