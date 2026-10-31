@@ -11,6 +11,9 @@
 }
 
 .analysisAction button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   background: transparent;
   color: #1d4ed8;
   border: 1px solid #94a3b8;
@@ -242,4 +245,18 @@
 
 .injuryChartDark .tooltipSeriesRow * {
   color: inherit !important;
+}
+
+/* Keep percentage-sized Recharts content from growing its own grid row on phones. */
+@media (width <=576px) {
+  .injuryChartContainer {
+    height: auto;
+  }
+
+  .chartArea {
+    flex: none;
+    overflow-x: auto;
+    height: 560px;
+    min-height: 560px;
+  }
 }

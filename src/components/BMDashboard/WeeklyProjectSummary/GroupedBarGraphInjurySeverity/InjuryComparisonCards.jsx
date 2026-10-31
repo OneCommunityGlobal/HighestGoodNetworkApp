@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import styles from './InjuryAnalysisDialog.module.css';
 
 const evidenceLabels = {
@@ -41,10 +41,41 @@ function CountChange({ countA, countB, description }) {
 
 function CategoryCard({ row, evidence }) {
   const [expanded, setExpanded] = useState(false);
+  const detailsId = useId();
+  const signals = evidence.filter(item => ['increase', 'decrease'].includes(item.status));
+  const signalDirection = signals.every(item => item.status === 'increase')
+    ? 'increase'
+    : signals.every(item => item.status === 'decrease')
+    ? 'decrease'
+    : 'mixed';
+  const signalArrow =
+    signalDirection === 'increase' ? '↑' : signalDirection === 'decrease' ? '↓' : '↕';
   return (
     <article className={styles.categoryCard} aria-label={`${row.category} comparison`}>
       <header className={styles.categoryHeader}>
         <h5>{row.category}</h5>
+        {signals.length > 0 && (
+          <button
+            type="button"
+            className={styles.significanceBadge}
+            data-change={signalDirection}
+            aria-label={`Show significant severity changes for ${row.category}`}
+            aria-expanded={expanded}
+            aria-controls={detailsId}
+            title={signals
+              .map(
+                item =>
+                  `${item.severity}: statistically significant ${item.status} in recorded injuries per day`,
+              )
+              .join('; ')}
+            onClick={() => setExpanded(true)}
+          >
+            <span aria-hidden="true">{signalArrow}</span>{' '}
+            {signals.length === 1
+              ? `${signals[0].severity} · Significant`
+              : `${signals.length} significant severity changes`}
+          </button>
+        )}
         <div className={styles.categoryChange} aria-label="Count change">
           <CountChange countA={row.countA} countB={row.countB} description={row.description} />
         </div>
@@ -65,6 +96,7 @@ function CategoryCard({ row, evidence }) {
         type="button"
         className={styles.detailsButton}
         aria-expanded={expanded}
+        aria-controls={detailsId}
         aria-label={`${expanded ? 'Hide' : 'Show'} ${row.category} severity details`}
         onClick={() => setExpanded(open => !open)}
       >
@@ -72,7 +104,7 @@ function CategoryCard({ row, evidence }) {
         <span aria-hidden="true">{expanded ? '▴' : '▾'}</span>
       </button>
       {expanded && (
-        <div className={styles.expandedDetails}>
+        <div id={detailsId} className={styles.expandedDetails}>
           {evidence.length ? (
             <div className={styles.tableWrap}>
               <table className={styles.severityTable}>

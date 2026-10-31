@@ -14,6 +14,7 @@ import {
   BarChart,
   Bar,
   Text,
+  ReferenceLine,
 } from 'recharts';
 import { ENDPOINTS } from '../../../../utils/URL';
 import {
@@ -27,6 +28,8 @@ import {
 import styles from './InjuryAnalysisDialog.module.css';
 import { severitySignificance } from './injurySignificance';
 import InjuryComparisonCards from './InjuryComparisonCards';
+import SafetyEventMarkers from './SafetyEventMarkers';
+import { timelineMarkers, timelineDomain, timelineLabel } from './safetyEventAnalysis';
 
 const COLORS = [
   '#2563eb',
@@ -84,7 +87,31 @@ function InjuryAnalysisDialog({
   selectStyles,
   initialSettings,
   onSettingsChange,
+  projectsLoading = false,
+  projectsError = '',
 }) {
+  const [selectedProjects, setSelectedProjects] = useState(
+    () => initialSettings?.analysisFilters?.projects || [...filters[0].value],
+  );
+  const [selectedSeverities, setSelectedSeverities] = useState(
+    () => initialSettings?.analysisFilters?.severities || [...filters[1].value],
+  );
+  const [selectedTypes, setSelectedTypes] = useState(
+    () => initialSettings?.analysisFilters?.types || [...filters[2].value],
+  );
+  const analysisFilters = useMemo(
+    () => ({ projects: selectedProjects, severities: selectedSeverities, types: selectedTypes }),
+    [selectedProjects, selectedSeverities, selectedTypes],
+  );
+  const dialogFilters = filters.map((filter, index) => ({
+    ...filter,
+    value: [selectedProjects, selectedSeverities, selectedTypes][index],
+    onChange: [setSelectedProjects, setSelectedSeverities, setSelectedTypes][index],
+  }));
+  // Event annotations live only in this mounted dialog, never in saved settings.
+  const [events, setEvents] = useState([]);
+  const [showEvents, setShowEvents] = useState(true);
+  const [dataOpen, setDataOpen] = useState(false);
   const [view, setView] = useState(initialSettings?.view || 'trend');
   const [interval, setInterval] = useState(initialSettings?.interval || 'monthly');
   const [preset, setPreset] = useState(
@@ -117,6 +144,7 @@ function InjuryAnalysisDialog({
       selectedCategories,
       filtersOpen,
       categoryOrder,
+      analysisFilters,
     });
   }, [
     view,
@@ -129,6 +157,7 @@ function InjuryAnalysisDialog({
     filtersOpen,
     categoryOrder,
     onSettingsChange,
+    analysisFilters,
   ]);
   const changeRangeB = range => {
     setPreset('custom');
@@ -144,11 +173,11 @@ function InjuryAnalysisDialog({
   const [error, setError] = useState('');
   const params = useMemo(
     () => ({
-      ...injuryProjectParams(filters[0].value),
-      severities: filters[1].value.map(option => option.value).join(','),
-      types: filters[2].value.map(option => option.value).join(','),
+      ...injuryProjectParams(selectedProjects),
+      severities: selectedSeverities.map(option => option.value).join(','),
+      types: selectedTypes.map(option => option.value).join(','),
     }),
-    [filters[0].value, filters[1].value, filters[2].value],
+    [selectedProjects, selectedSeverities, selectedTypes],
   );
 
   useEffect(() => {
@@ -235,6 +264,11 @@ function InjuryAnalysisDialog({
     chosen.some(option => option.value === series.name),
   );
   const hasData = view === 'trend' ? trend.series.length > 0 : comparison.length > 0;
+  const eventMarkers = useMemo(() => timelineMarkers(events, rangeB, selectedProjects), [
+    events,
+    rangeB,
+    selectedProjects,
+  ]);
   const tick = { fill: darkMode ? '#e2e8f0' : '#334155', fontSize: 12 };
 
   return (
@@ -282,38 +316,50 @@ function InjuryAnalysisDialog({
             Try an earlier date range or clear the project filter.
           </p>
         )}
-        <p>
-          Explore recorded injury counts by worker category. Filters are shared with the snapshot.
-        </p>
         <section className={styles.filterSection} aria-label="Analysis filters">
           <button
             type="button"
             className={styles.filterToggle}
             aria-expanded={filtersOpen}
             aria-controls="injury-analysis-filters"
+            aria-label="Filters"
+            aria-describedby="injury-filter-summary"
             onClick={() => setFiltersOpen(open => !open)}
           >
-            Filters <span aria-hidden="true">{filtersOpen ? '▴' : '▾'}</span>
+            <span className={styles.filterHeading}>
+              <svg
+                aria-hidden="true"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M3 4h18l-7 8v7l-4 2v-9z" />
+              </svg>{' '}
+              Filters <span aria-hidden="true">{filtersOpen ? '▴' : '▾'}</span>
+            </span>
+            <span id="injury-filter-summary" className={styles.filterSummary}>
+              {dialogFilters
+                .map(
+                  filter =>
+                    `${filter.label}: ${
+                      filter.value.length
+                        ? `${filter.value
+                            .slice(0, 2)
+                            .map(option => option.label)
+                            .join(', ')}${
+                            filter.value.length > 2 ? ` +${filter.value.length - 2} more` : ''
+                          }`
+                        : 'All'
+                    }`,
+                )
+                .join(' · ')}
+            </span>
           </button>
-          <p className={styles.filterSummary}>
-            {filters
-              .map(
-                filter =>
-                  `${filter.label}: ${
-                    filter.value.length
-                      ? `${filter.value
-                          .slice(0, 2)
-                          .map(option => option.label)
-                          .join(', ')}${
-                          filter.value.length > 2 ? ` +${filter.value.length - 2} more` : ''
-                        }`
-                      : 'All'
-                  }`,
-              )
-              .join(' · ')}
-          </p>
           <div id="injury-analysis-filters" className={styles.filters} hidden={!filtersOpen}>
-            {filters.map(filter => (
+            {dialogFilters.map((filter, index) => (
               <div key={filter.id}>
                 <label htmlFor={`analysis-${filter.id}`}>{filter.label}</label>
                 <Select
@@ -323,10 +369,12 @@ function InjuryAnalysisDialog({
                   value={filter.value}
                   onChange={filter.onChange}
                   styles={selectStyles}
+                  isLoading={index === 0 && projectsLoading}
                   placeholder={`All ${filter.label.toLowerCase()}`}
                 />
               </div>
             ))}
+            {projectsError && <p role="alert">{projectsError}</p>}
           </div>
         </section>
         <div className={styles.dateOptions}>
@@ -340,6 +388,7 @@ function InjuryAnalysisDialog({
                 if (value !== 'custom') setRangeB(defaultRange(Number(value)));
               }}
             >
+              <option value="3">Last 3 months</option>
               <option value="6">Last 6 months</option>
               <option value="12">Last 12 months</option>
               <option value="custom">Custom</option>
@@ -361,9 +410,6 @@ function InjuryAnalysisDialog({
             </label>
           )}
         </div>
-        <p className={styles.note}>
-          Presets include the current month through today. Editing a date switches to Custom.
-        </p>
         <div className={styles.ranges}>
           {view === 'compare' && (
             <DateRange label="Period A · baseline" value={rangeA} onChange={changeRangeA} />
@@ -374,196 +420,252 @@ function InjuryAnalysisDialog({
             onChange={changeRangeB}
           />
         </div>
-        {!loading && !error && hasData && (
-          <>
-            {view === 'trend' ? (
-              <>
-                <label htmlFor="analysis-worker-categories">Worker categories</label>
-                <Select
-                  inputId="analysis-worker-categories"
-                  isMulti
-                  options={options}
-                  value={chosen}
-                  onChange={setSelectedCategories}
-                  styles={selectStyles}
-                />
-                <p className={styles.note}>
-                  Showing {visibleSeries.length} of {trend.series.length} categories. Select
-                  categories to keep the timeline readable. Partial months or quarters include only
-                  the selected dates.
-                </p>
-                {visibleSeries.length > 0 ? (
+        {view === 'trend' && (
+          <SafetyEventMarkers
+            events={events}
+            onChange={setEvents}
+            projects={filters[0].options}
+            markers={eventMarkers}
+            shown={showEvents}
+            onToggle={() => setShowEvents(value => !value)}
+          />
+        )}
+        {!loading &&
+          !error &&
+          (hasData || (view === 'trend' && showEvents && eventMarkers.length > 0)) && (
+            <>
+              {view === 'trend' ? (
+                <>
+                  {trend.series.length > 0 && (
+                    <>
+                      <label htmlFor="analysis-worker-categories">Worker categories</label>
+                      <Select
+                        inputId="analysis-worker-categories"
+                        isMulti
+                        options={options}
+                        value={chosen}
+                        onChange={setSelectedCategories}
+                        styles={selectStyles}
+                      />
+                      <p className={styles.statMeta}>
+                        {visibleSeries.length} of {trend.series.length} categories
+                      </p>
+                    </>
+                  )}
+                  <div className={styles.chartActions}>
+                    <button
+                      type="button"
+                      className={styles.toolButton}
+                      aria-pressed={dataOpen}
+                      aria-controls="injury-trend-content"
+                      onClick={() => setDataOpen(value => !value)}
+                    >
+                      <span aria-hidden="true">▦</span> {dataOpen ? 'View chart' : 'View data'}
+                    </button>
+                  </div>
+                  <div id="injury-trend-content">
+                    {!dataOpen &&
+                    (visibleSeries.length > 0 || (showEvents && eventMarkers.length > 0)) ? (
+                      <div
+                        className={styles.chart}
+                        role="img"
+                        aria-label="Injury counts over time by worker category"
+                      >
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart
+                            data={trend.rows}
+                            margin={{ top: 12, right: 24, bottom: 12, left: 0 }}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke={darkMode ? '#475569' : '#e2e8f0'}
+                            />
+                            <XAxis
+                              dataKey="time"
+                              type="number"
+                              scale="time"
+                              domain={timelineDomain(rangeB)}
+                              ticks={trend.rows.map(row => row.time).filter(Number.isFinite)}
+                              tickFormatter={time => timelineLabel(time, interval)}
+                              tick={tick}
+                              minTickGap={25}
+                            />
+                            <YAxis
+                              allowDecimals={false}
+                              tick={tick}
+                              hide={visibleSeries.length === 0}
+                            />
+                            <Tooltip
+                              labelFormatter={(label, payload) =>
+                                payload?.[0]?.payload?.dateRange || label
+                              }
+                              contentStyle={{
+                                background: darkMode ? '#1e293b' : '#fff',
+                                color: darkMode ? '#fff' : '#111',
+                              }}
+                            />
+                            <Legend />
+                            {showEvents &&
+                              eventMarkers.map(marker => (
+                                <ReferenceLine
+                                  key={marker.date}
+                                  x={marker.time}
+                                  stroke={darkMode ? '#f8fafc' : '#475569'}
+                                  strokeDasharray="2 5"
+                                  strokeWidth={2}
+                                  label={({ viewBox }) => (
+                                    <text
+                                      x={viewBox.x + 4}
+                                      y={viewBox.y + 14}
+                                      fill={darkMode ? '#f8fafc' : '#334155'}
+                                      fontSize={11}
+                                    >
+                                      <title>
+                                        {marker.date}:{' '}
+                                        {marker.events
+                                          .map(event => `${event.name} (${event.type})`)
+                                          .join(', ')}
+                                      </title>
+                                      {marker.label}
+                                    </text>
+                                  )}
+                                />
+                              ))}
+                            {visibleSeries.map(series => (
+                              <Line
+                                key={series.key}
+                                type="linear"
+                                dataKey={series.key}
+                                name={series.name}
+                                stroke={
+                                  (darkMode ? DARK_COLORS : COLORS)[
+                                    styleOrder.indexOf(series.name) % COLORS.length
+                                  ]
+                                }
+                                strokeWidth={2.5}
+                                strokeDasharray={
+                                  LINE_PATTERNS[
+                                    styleOrder.indexOf(series.name) % LINE_PATTERNS.length
+                                  ]
+                                }
+                                strokeLinecap="round"
+                                dot={trend.rows.length <= 24 ? { r: 3 } : false}
+                                activeDot={{ r: 5 }}
+                                isAnimationActive={false}
+                              />
+                            ))}
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    ) : !dataOpen ? (
+                      <p>Select at least one worker category.</p>
+                    ) : null}
+                    {dataOpen && (
+                      <div className={styles.tableWrap}>
+                        <table>
+                          <caption>Recorded injuries by period and worker category</caption>
+                          <thead>
+                            <tr>
+                              <th scope="col">Period</th>
+                              {visibleSeries.map(series => (
+                                <th scope="col" key={series.key}>
+                                  {series.name}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {trend.rows.map(row => (
+                              <tr key={row.label}>
+                                <th scope="row">{row.label}</th>
+                                {visibleSeries.map(series => (
+                                  <td key={series.key}>{row[series.key]}</td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className={styles.periodSummary}>
+                    {result[0].days === result[1].days
+                      ? `A → B · ${result[0].days} days each`
+                      : `A: ${result[0].days} days → B: ${result[1].days} days`}
+                    {result[0].days !== result[1].days && (
+                      <span className={styles.neutralStatus}>
+                        Unequal periods · compare counts/day
+                      </span>
+                    )}
+                  </p>
                   <div
-                    className={styles.chart}
+                    className={styles.comparisonChart}
+                    style={{ height: Math.max(280, comparison.length * 70) }}
                     role="img"
-                    aria-label="Injury counts over time by worker category"
+                    aria-label="Injury counts in Period A and Period B by worker category"
                   >
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={trend.rows}
-                        margin={{ top: 12, right: 24, bottom: 12, left: 0 }}
+                      <BarChart
+                        data={comparison}
+                        layout="vertical"
+                        margin={{ top: 12, right: 24, bottom: 12, left: 12 }}
                       >
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke={darkMode ? '#475569' : '#e2e8f0'}
+                        <XAxis type="number" allowDecimals={false} tick={tick} />
+                        <YAxis
+                          type="category"
+                          dataKey="category"
+                          width={145}
+                          tick={({ x, y, payload }) => (
+                            <Text
+                              x={x - 8}
+                              y={y}
+                              width={130}
+                              textAnchor="end"
+                              verticalAnchor="middle"
+                              {...tick}
+                            >
+                              {payload.value}
+                            </Text>
+                          )}
                         />
-                        <XAxis dataKey="label" tick={tick} minTickGap={25} />
-                        <YAxis allowDecimals={false} tick={tick} />
                         <Tooltip
-                          labelFormatter={(label, payload) =>
-                            payload?.[0]?.payload?.dateRange || label
-                          }
+                          formatter={(value, name) => [
+                            value,
+                            `${name}: ${
+                              name === 'Period A'
+                                ? `${rangeA.start} – ${rangeA.end}`
+                                : `${rangeB.start} – ${rangeB.end}`
+                            }`,
+                          ]}
                           contentStyle={{
                             background: darkMode ? '#1e293b' : '#fff',
                             color: darkMode ? '#fff' : '#111',
                           }}
                         />
                         <Legend />
-                        {visibleSeries.map(series => (
-                          <Line
-                            key={series.key}
-                            type="linear"
-                            dataKey={series.key}
-                            name={series.name}
-                            stroke={
-                              (darkMode ? DARK_COLORS : COLORS)[
-                                styleOrder.indexOf(series.name) % COLORS.length
-                              ]
-                            }
-                            strokeWidth={2.5}
-                            strokeDasharray={
-                              LINE_PATTERNS[styleOrder.indexOf(series.name) % LINE_PATTERNS.length]
-                            }
-                            strokeLinecap="round"
-                            dot={trend.rows.length <= 24 ? { r: 3 } : false}
-                            activeDot={{ r: 5 }}
-                            isAnimationActive={false}
-                          />
-                        ))}
-                      </LineChart>
+                        <Bar
+                          dataKey="countA"
+                          name="Period A"
+                          fill="#60a5fa"
+                          isAnimationActive={false}
+                        />
+                        <Bar
+                          dataKey="countB"
+                          name="Period B"
+                          fill="#fb923c"
+                          isAnimationActive={false}
+                        />
+                      </BarChart>
                     </ResponsiveContainer>
                   </div>
-                ) : (
-                  <p>Select at least one worker category.</p>
-                )}
-                <details>
-                  <summary>View timeline counts as a table</summary>
-                  <div className={styles.tableWrap}>
-                    <table>
-                      <caption>Recorded injuries by period and worker category</caption>
-                      <thead>
-                        <tr>
-                          <th scope="col">Period</th>
-                          {visibleSeries.map(series => (
-                            <th scope="col" key={series.key}>
-                              {series.name}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {trend.rows.map(row => (
-                          <tr key={row.label}>
-                            <th scope="row">{row.label}</th>
-                            {visibleSeries.map(series => (
-                              <td key={series.key}>{row[series.key]}</td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </details>
-              </>
-            ) : (
-              <>
-                <p className={styles.periodSummary}>
-                  {result[0].days === result[1].days
-                    ? `A → B · ${result[0].days} days each`
-                    : `A: ${result[0].days} days → B: ${result[1].days} days`}
-                  {result[0].days !== result[1].days && (
-                    <span className={styles.neutralStatus}>
-                      Unequal periods · compare counts/day
-                    </span>
-                  )}
-                </p>
-                <div
-                  className={styles.comparisonChart}
-                  style={{ height: Math.max(280, comparison.length * 70) }}
-                  role="img"
-                  aria-label="Injury counts in Period A and Period B by worker category"
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={comparison}
-                      layout="vertical"
-                      margin={{ top: 12, right: 24, bottom: 12, left: 12 }}
-                    >
-                      <XAxis type="number" allowDecimals={false} tick={tick} />
-                      <YAxis
-                        type="category"
-                        dataKey="category"
-                        width={145}
-                        tick={({ x, y, payload }) => (
-                          <Text
-                            x={x - 8}
-                            y={y}
-                            width={130}
-                            textAnchor="end"
-                            verticalAnchor="middle"
-                            {...tick}
-                          >
-                            {payload.value}
-                          </Text>
-                        )}
-                      />
-                      <Tooltip
-                        formatter={(value, name) => [
-                          value,
-                          `${name}: ${
-                            name === 'Period A'
-                              ? `${rangeA.start} – ${rangeA.end}`
-                              : `${rangeB.start} – ${rangeB.end}`
-                          }`,
-                        ]}
-                        contentStyle={{
-                          background: darkMode ? '#1e293b' : '#fff',
-                          color: darkMode ? '#fff' : '#111',
-                        }}
-                      />
-                      <Legend />
-                      <Bar
-                        dataKey="countA"
-                        name="Period A"
-                        fill="#60a5fa"
-                        isAnimationActive={false}
-                      />
-                      <Bar
-                        dataKey="countB"
-                        name="Period B"
-                        fill="#fb923c"
-                        isAnimationActive={false}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <InjuryComparisonCards rows={comparison} analysis={statisticalAnalysis} />
-              </>
-            )}
-            {view === 'trend' && (
-              <details className={styles.note}>
-                <summary>
-                  About these counts <span aria-hidden="true">ⓘ</span>
-                </summary>
-                <p>
-                  Counts reflect recorded injuries, not workforce-adjusted risk. Zero means no
-                  recorded injuries in that period. Changes alone do not establish the effect of a
-                  safety intervention.
-                </p>
-              </details>
-            )}
-          </>
-        )}
+                  <InjuryComparisonCards rows={comparison} analysis={statisticalAnalysis} />
+                </>
+              )}
+            </>
+          )}
       </ModalBody>
     </Modal>
   );

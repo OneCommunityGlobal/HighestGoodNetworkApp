@@ -32,21 +32,110 @@
 }
 
 .filterSection {
-  border-bottom: 1px solid #94a3b8;
   margin-bottom: 1rem;
 }
 
 .filterToggle {
-  border: 0;
-  background: transparent;
+  border: 1px solid #94a3b8;
+  border-radius: 0.5rem;
+  width: 100%;
+  text-align: left;
+  background: #f1f5f9;
   color: inherit;
-  padding: 0.4rem 0;
+  padding: 0.7rem 0.85rem;
   font-weight: 600;
 }
 
 .filterSummary {
+  display: block;
   font-size: 0.875rem;
-  margin: 0.25rem 0 0.75rem;
+  font-weight: 400;
+  margin-top: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.filterHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dark .filterToggle {
+  background: #293d58;
+  border-color: #94a3b8;
+  color: #f8fafc;
+}
+
+.chartActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 0.6rem 0;
+}
+
+.toolButton {
+  border: 1px solid #64748b;
+  border-radius: 0.4rem;
+  background: #fff;
+  color: #1e40af;
+  padding: 0.4rem 0.7rem;
+  font-weight: 600;
+}
+
+.toolButton[aria-pressed='true'] {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.dark .toolButton {
+  background: #293d58;
+  color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.dark .toolButton[aria-pressed='true'] {
+  background: #1d4ed8;
+}
+
+.eventSection {
+  margin: 0.75rem 0;
+}
+
+.eventEditor {
+  border: 1px solid #94a3b8;
+  border-radius: 0.5rem;
+  padding: 0.85rem;
+}
+
+.eventFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.eventList,
+.eventKey {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+}
+
+.eventList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid #94a3b8;
+  overflow-wrap: anywhere;
+}
+
+.eventKey li {
+  border-left: 2px dotted #64748b;
+  padding-left: 0.5rem;
+  margin: 0.3rem 0;
   overflow-wrap: anywhere;
 }
 
@@ -168,6 +257,54 @@
 
 .categoryChange small {
   font-size: 0.85rem;
+}
+
+.significanceBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  max-width: 100%;
+  border: 1px solid #86efac;
+  border-radius: 0.4rem;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 0.25rem 0.5rem;
+  overflow-wrap: anywhere;
+  text-align: left;
+  cursor: pointer;
+}
+
+.significanceBadge[data-change='increase'] {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.significanceBadge[data-change='mixed'] {
+  border-color: #c4b5fd;
+  background: #f5f3ff;
+  color: #5b21b6;
+}
+
+.dark .significanceBadge {
+  border-color: #4ade80;
+  background: #173d2a;
+  color: #86efac;
+}
+
+.dark .significanceBadge[data-change='increase'] {
+  border-color: #fb7185;
+  background: #4c1d25;
+  color: #fda4af;
+}
+
+.dark .significanceBadge[data-change='mixed'] {
+  border-color: #a78bfa;
+  background: #312e81;
+  color: #ddd6fe;
 }
 
 .detailsButton {
@@ -374,6 +511,10 @@
   color: #dbeafe;
 }
 
+.dark .eventKey li {
+  border-color: #f8fafc;
+}
+
 .dialog label {
   display: block;
   font-weight: 600;
@@ -517,6 +658,30 @@
   caption-side: top;
 }
 
+.severityTable caption {
+  font-weight: 600;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.severityTable thead th {
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.85rem;
+}
+
+.severityTable tbody tr:hover {
+  background: #eef2ff;
+}
+
+.dark .severityTable thead th {
+  background: #14253a;
+  color: #e2e8f0;
+}
+
+.dark .severityTable tbody tr:hover {
+  background: #2b405f;
+}
+
 .dialog button:focus-visible,
 .dialog input:focus-visible,
 .dialog select:focus-visible {
@@ -525,6 +690,28 @@
 }
 
 @media (width <= 600px) {
+  .categoryHeader {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+  }
+
+  .categoryHeader h5 {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .categoryChange {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .significanceBadge {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+  }
+
   .comparisonControls {
     grid-template-columns: 1fr;
   }

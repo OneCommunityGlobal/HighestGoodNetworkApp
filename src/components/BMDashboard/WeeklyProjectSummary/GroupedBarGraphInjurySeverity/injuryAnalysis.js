@@ -1,3 +1,5 @@
+import { bucketTime } from './safetyEventAnalysis';
+
 // Allocate separate palette slots rather than hashing names into colliding colors.
 // Retain earlier assignments when categories disappear under a filter.
 export const categoryStyleOrder = (remembered, names) => [...new Set([...remembered, ...names])];
@@ -36,6 +38,7 @@ export const analysisSeries = (buckets, start, end, interval) => {
     const row = {
       label: bucket.label,
       records: bucket.records,
+      time: bucketTime(bucket, start, end, interval),
       dateRange: bucketDateRange(bucket, start, end, interval),
     };
     series.forEach(({ name, key }) => {
