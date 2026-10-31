@@ -522,6 +522,11 @@ const WeeklyUpdateComposer = ({ onClose }) => {
   let imageDropZoneBorder = '2px dashed #d1d5db';
   let imageUploadIconColor = '#9ca3af';
   let imageUploadTextColor = '#6b7280';
+  let imageUploadPrompt = 'Click to upload or drag and drop';
+
+  if (imageDragging) {
+    imageUploadPrompt = 'Drop image here';
+  }
 
   if (darkMode) {
     imageDropZoneBackgroundColor = '#2d2d2d';
@@ -535,6 +540,11 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     imageDropZoneBorder = '3px dashed #3b82f6';
     imageUploadIconColor = '#60a5fa';
     imageUploadTextColor = '#60a5fa';
+  }
+  let videoUploadPrompt = 'Drag & drop YouTube link here';
+
+  if (videoDragging) {
+    videoUploadPrompt = 'Drop YouTube link here!';
   }
   let videoDropZoneBackgroundColor = '#f9fafb';
   let videoDropZoneBorder = '2px dashed #d1d5db';
@@ -623,7 +633,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
                 color: imageUploadTextColor,
               }}
             >
-              {imageDragging ? 'Drop image here' : 'Click to upload or drag and drop'}
+              {imageUploadPrompt}
             </p>
 
             <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>JPG, PNG, GIF, etc.</small>
@@ -731,7 +741,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
                 color: videoUploadTextColor,
               }}
             >
-              {videoDragging ? 'Drop YouTube link here!' : 'Drag & drop YouTube link here'}
+              {videoUploadPrompt}
             </p>
 
             <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>or paste URL below</small>
