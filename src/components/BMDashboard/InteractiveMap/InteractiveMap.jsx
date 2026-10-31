@@ -514,7 +514,7 @@ export default function InteractiveMap() {
                 url={
                   darkMode
                     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
                 }
                 minZoom={2}
                 maxZoom={15}
@@ -550,17 +550,17 @@ export default function InteractiveMap() {
                         <div style={{ marginBottom: '8px' }}>
                           <strong>Status:</strong>{' '}
                           <span
-                            style={{
-                              color:
-                                org.status === 'active'
-                                  ? '#DE6A6A'
-                                  : org.status === 'delayed'
-                                  ? '#E3D270'
-                                  : org.status === 'completed'
-                                  ? '#6ACFDE'
-                                  : '#AAAAAA',
-                              fontWeight: 'bold',
-                            }}
+                            className={
+                              // eslint-disable-next-line no-nested-ternary
+                              org.status === 'active'
+                                ? styles.statusActive
+                                : // eslint-disable-next-line no-nested-ternary
+                                org.status === 'delayed'
+                                ? styles.statusDelayed
+                                : org.status === 'completed'
+                                ? styles.statusCompleted
+                                : styles.statusDefault
+                            }
                           >
                             {org.status}
                           </span>
