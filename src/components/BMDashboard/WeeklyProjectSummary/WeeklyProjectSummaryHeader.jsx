@@ -58,7 +58,11 @@ export default function WeeklyProjectSummaryHeader({
   }, [dateRangeOptions, dateRangeFilter]);
 
   const comparisonOptions = useMemo(
-    () => [formatWeekLabel(selectedWeeksAgo + 1), formatWeekLabel(selectedWeeksAgo + 4)],
+    () => [
+      'No Comparison',
+      formatWeekLabel(selectedWeeksAgo + 1),
+      formatWeekLabel(selectedWeeksAgo + 4),
+    ],
     [selectedWeeksAgo],
   );
 

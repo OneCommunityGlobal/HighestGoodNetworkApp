@@ -35,7 +35,7 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
+import { parseWeeklySummaryDateRange } from './comparisonDateUtils';
 
 import styles from './WeeklyProjectSummary.module.css';
 
@@ -101,7 +101,7 @@ function getProjectStatusUnavailableReason(metric) {
 }
 
 function getProjectStatusComparisonUnavailableText(comparisonPeriodFilter) {
-  return `No ${comparisonPeriodFilter.toLowerCase()} comparison available`;
+  return `No comparison data available for ${comparisonPeriodFilter}`;
 }
 
 function formatProjectStatusChange(metric, comparisonPeriodFilter) {
@@ -122,7 +122,7 @@ function formatProjectStatusChange(metric, comparisonPeriodFilter) {
 
   const percent = Math.round(percentageChange * 100);
   const prefix = percent > 0 ? '+' : '';
-  return `${prefix}${percent}% ${comparisonPeriodFilter.toLowerCase()}`;
+  return `${prefix}${percent}% vs ${comparisonPeriodFilter}`;
 }
 
 function getProjectStatusChangeColor(metric) {
@@ -177,26 +177,29 @@ function WeeklyProjectSummary() {
   const selectedDateRangeLabel = dateRangeFilter || 'Latest completed week';
   const selectedComparisonRangeLabel = comparisonPeriodFilter || 'Previous week';
 
-  // Comparison data is always fetched alongside current data whenever a real comparison
-  // period is selected (this PR's header never produces a "No Comparison" sentinel), so
-  // it's ready instantly if the user later checks "Compare with Previous Week" — that
-  // checkbox only gates whether the comparison is *displayed* (see showProjectStatusComparison
-  // below), not whether it's fetched.
-  const comparisonEnabled = Boolean(comparisonPeriodFilter);
+  // The header's dropdown now offers literal comparison date ranges (e.g. "Oct 11, 26 -
+  // Oct 17, 26") rather than the old semantic types ("Week Over Week" etc.) that
+  // calculateComparisonDates knows how to shift from the current range, so comparison is
+  // only meaningful when the user has both picked a real range (not the "No Comparison"
+  // sentinel) and opted in via the "Compare with Previous Week" checkbox.
+  const comparisonEnabled =
+    compareWithPreviousWeek &&
+    Boolean(comparisonPeriodFilter) &&
+    comparisonPeriodFilter !== 'No Comparison';
 
   const currentDateRange = useMemo(() => parseWeeklySummaryDateRange(dateRangeFilter), [
     dateRangeFilter,
   ]);
 
-  const comparisonDateRange = useMemo(
-    () =>
-      calculateComparisonDates(
-        comparisonPeriodFilter,
-        currentDateRange.startDate,
-        currentDateRange.endDate,
-      ),
-    [comparisonPeriodFilter, currentDateRange.startDate, currentDateRange.endDate],
-  );
+  // comparisonPeriodFilter already *is* the target date range (not a type to shift the
+  // current range by), so it's parsed directly the same way dateRangeFilter is.
+  const comparisonDateRange = useMemo(() => {
+    if (!comparisonEnabled) {
+      return { comparisonStartDate: null, comparisonEndDate: null };
+    }
+    const parsed = parseWeeklySummaryDateRange(comparisonPeriodFilter);
+    return { comparisonStartDate: parsed.startDate, comparisonEndDate: parsed.endDate };
+  }, [comparisonEnabled, comparisonPeriodFilter]);
 
   useEffect(() => {
     if (materials.length === 0) dispatch(fetchAllMaterials());
@@ -420,7 +423,10 @@ function WeeklyProjectSummary() {
         title: 'Injury Severity by Projects',
         key: 'Injury Severity by Projects',
         className: 'full',
+        badgeLabel: 'Injury',
         hasData: true,
+        emptyMessage: 'No injury severity data for this week.',
+        comparisonText: `Injury severity: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
             <InjurySeverityChart />
@@ -657,6 +663,10 @@ function WeeklyProjectSummary() {
         title: 'Rental Tracking',
         key: 'Rental Tracking',
         className: 'full',
+        badgeLabel: 'Rental',
+        hasData: true,
+        emptyMessage: 'No rental tracking data for this week.',
+        comparisonText: `Rental tracking: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div className={styles.fullWidthStack}>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
@@ -1050,6 +1060,11 @@ function WeeklyProjectSummary() {
           <span className={styles.activeSummaryValue}>
             {selectedProjectLabel} | {selectedDateRangeLabel}
           </span>
+          {isProjectStatusLoading && (
+            <span className={styles.activeSummaryLoading} role="status" aria-live="polite">
+              Updating…
+            </span>
+          )}
         </div>
 
         <div className={styles.weeklySummaryActionRow}>

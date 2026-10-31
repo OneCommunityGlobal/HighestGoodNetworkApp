@@ -1153,6 +1153,13 @@
   font-weight: 600;
 }
 
+.activeSummaryLoading {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-secondary, #6b7280);
+  margin-left: 4px;
+}
+
 .weeklySummaryActionRow {
   display: flex;
   align-items: center;
