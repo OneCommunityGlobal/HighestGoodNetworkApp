@@ -5,13 +5,14 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import ReactTooltip from 'react-tooltip';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import EquipmentListModal from './EquipmentListModal';
 import styles from './Equipments.module.css';
 
 function EquipmentsTable({ equipment, project }) {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const equipments = useSelector(state => state.bmEquipments.equipmentslist);
   const [recordType, setRecordType] = useState(null);
@@ -181,7 +182,7 @@ function EquipmentsTable({ equipment, project }) {
                   <td className="materials_cell">
                     <button
                       type="button"
-                      onClick={() => handleOpenModal(rec, 'UpdatesEdit')}
+                      onClick={() => history.push(`/bmdashboard/tools/${rec._id}/update`)}
                       aria-label="Edit updates"
                     >
                       <BiPencil />
