@@ -12,10 +12,7 @@
   padding: 2rem 1rem;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
+
 
 .title {
   font-size: 2.5rem;
@@ -260,8 +257,18 @@
   color: #fff;
 }
 
-:global(.dark-mode) .subtitle {
-  color: #9ca3af;
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.dark {
+  background-color: #0b132b;
+  color: #f8f9fa;
+}
+
+.dark .title {
+  color: #f8f9fa;
 }
 
 :global(.dark-mode) .sectionTitle {
@@ -305,13 +312,16 @@
   box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
-:global(.dark-mode) .toggleButton {
-  color: #9ca3af;
+.dark .subtitle {
+  color: #adb5bd;
 }
 
-:global(.dark-mode) .toggleButton:hover {
-  background-color: #363636;
-  color: #d1d5db;
+.dark .sectionTitle {
+  color: #f8f9fa;
+}
+
+.dark .viewToggle {
+  background-color: #1c2541;
 }
 
 :global(.dark-mode) .toggleButton.active {
@@ -319,19 +329,6 @@
   color: #fff;
 }
 
-:global(.dark-mode) .loadingContainer {
-  color: #9ca3af;
-}
-
-:global(.dark-mode) .spinner {
-  border-color: #404040;
-  border-top-color: #60a5fa;
-}
-
-:global(.dark-mode) .errorContainer {
-  color: #9ca3af;
-}
-
-:global(.dark-mode) .errorMessage {
-  color: #f87171;
+.dark .toggleButton {
+  color: #ced4da;
 }
