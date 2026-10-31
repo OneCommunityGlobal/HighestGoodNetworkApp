@@ -44,7 +44,7 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
 
-const matchesNameSearch = (name, searchText) => {
+export const matchesNameSearch = (name, searchText) => {
   // Ignore leading spaces, but preserve trailing spaces because a trailing space changes the search behavior.
   const trimmedSearch = searchText.trimStart();
 
@@ -52,9 +52,9 @@ const matchesNameSearch = (name, searchText) => {
   if (!trimmedSearch) {
     return true;
   }
-
-  const normalizedSearch = trimmedSearch.toLowerCase();
-  const normalizedName = name.toLowerCase();
+  
+  const normalizedSearch = trimmedSearch.toLowerCase().replace(/\s+/g, ' ');
+  const normalizedName = name.toLowerCase().replace(/\s+/g, ' ').trim();
 
   // Without a trailing space, perform the normal substring search. 
   // For example, "li" matches "Liam", "Olivia", and "Li"
