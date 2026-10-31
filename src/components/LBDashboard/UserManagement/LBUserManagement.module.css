@@ -2,7 +2,7 @@
   background: #faf9fb;
   min-height: 100vh;
   padding: 24px 20px 40px;
-  font-family: 'Poppins', sans-serif;
+  font-family: Poppins, sans-serif;
   color: #1f2937;
 }
 
@@ -74,14 +74,14 @@
   border-radius: 14px;
   padding: 16px 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.04);
+  box-shadow: 0 2px 8px rgb(17 24 39 / 4%);
 }
 
 .pageContainer .darkCard {
   background: #1c2541;
   border-color: #3a506b;
   color: #e1e1e1;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 25%);
 }
 
 .controlsRow {
@@ -168,7 +168,7 @@
   border: 1px solid #ece7f4;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(17, 24, 39, 0.05);
+  box-shadow: 0 2px 10px rgb(17 24 39 / 5%);
 }
 
 .tableResponsive {
@@ -313,7 +313,7 @@
   color: #e1e1e1;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .pageContainer {
     padding: 16px 12px;
   }

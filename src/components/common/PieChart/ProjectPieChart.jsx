@@ -1,13 +1,7 @@
 /* eslint-disable import/prefer-default-export */
-import { useMemo, useState } from 'react';
-import {
-  ResponsiveContainer,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Label,
-} from 'recharts';
+import { useMemo } from 'react';
+import { Cell, Label, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { useTable } from 'react-table';
 import { CHART_RADIUS, CHART_SIZE } from './constants'; // use same numbers as the D3 chart
 import styles from './UserProjectPieChart.module.css';
 
@@ -42,148 +36,192 @@ function toChartData(projectsData) {
     .filter(d => d.value > 0);
 }
 
-/** Single-line label + center toggle (matches bottom donut behavior) */
-function CenterLabel({ viewBox, total, darkMode, showPct, onToggle }) {
-  if (!viewBox || total <= 0) return null;
-  const { cx, cy } = viewBox;
-  const text = showPct ? '100% All Projects' : `${total.toFixed(2)} Hrs`;
-
+export function ProjectColorCell({ value }) {
   return (
-    <g>
-      <text x={cx} y={cy + 4} textAnchor="middle" fill={darkMode ? '#fff' : '#111'} fontSize="18">
-        {text}
-      </text>
-
-      {/* same switch you use in the D3 chart */}
-      <foreignObject x={cx - 18} y={cy + 12} width="36" height="28">
-        <div
-          xmlns="http://www.w3.org/1999/xhtml"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '100%',
-          }}
-        >
-          <label className={styles['switch']}>
-            {/* Accessible text for the label */}
-            <span className={styles['sr-only']}>Show percentage</span>
-
-            {/* The control associated with the label */}
-            <input
-              type="checkbox"
-              checked={showPct}
-              onChange={e => onToggle(e.target.checked)}
-              aria-label="Show percentage"
-            />
-
-            <span className={styles['slider']} aria-hidden="true" />
-          </label>
-        </div>
-      </foreignObject>
-    </g>
+    <div
+      data-testid="project-color-cell"
+      className={styles['project-chart-legend']}
+      style={{ backgroundColor: value }}
+    />
   );
 }
 
-export default function UserProjectD3PieChart({ projectsData, darkMode }) {
+export function ProjectNameCell({ value }) {
+  return <span className={styles.projectNameText}>{value}</span>;
+}
+
+export function ProjectPieTooltip({ active, payload, colors, darkMode, total }) {
+  if (!active || !payload?.length) return null;
+
+  const item = payload[0];
+  const name = item.name;
+  const value = Number(item.value);
+  const swatch = item.payload?.fill || colors?.[item.payload?.index ?? 0];
+  const hours = value.toFixed(2);
+  const pct = total ? ((value / total) * 100).toFixed(1) : '0.0';
+  return (
+    <div className={darkMode ? styles['tooltip-box-dark'] : styles['tooltip-box-light']}>
+      <div className={styles['tooltip-row']}>
+        {swatch && (
+          <span
+            aria-hidden="true"
+            data-testid="tooltip-swatch"
+            className={styles['tooltip-swatch']}
+            style={{ backgroundColor: swatch }}
+          />
+        )}
+        <span data-testid="tooltip-name" className={styles['tooltip-name']}>
+          {name}
+        </span>
+      </div>
+      <div
+        data-testid="tooltip-detail"
+        className={darkMode ? styles['tooltip-detail-dark'] : styles['tooltip-detail-light']}
+      >
+        {`${hours} hrs (${pct}%)`}
+      </div>
+    </div>
+  );
+}
+
+const renderCenterLabel = (total, darkMode) => (
+  <text
+    x="50%"
+    y="50%"
+    textAnchor="middle"
+    dominantBaseline="central"
+    fill={darkMode ? '#ffffff' : '#000000'}
+    fontSize={14}
+  >
+    {`${total.toFixed(2)} Hrs`}
+  </text>
+);
+
+export default function UserProjectD3PieChart({
+  projectsData,
+  darkMode,
+  pieChartId = 'projectsPieChart',
+}) {
   const data = useMemo(() => toChartData(projectsData), [projectsData]);
   const total = useMemo(() => data.reduce((s, d) => s + d.value, 0), [data]);
   const colors = useMemo(() => data.map((_, i) => BASE_COLORS[i % BASE_COLORS.length]), [
     data.length,
   ]);
-  const [showPct, setShowPct] = useState(false);
+  const tableData = useMemo(
+    () => data.map((project, index) => ({ ...project, color: colors[index] })),
+    [colors, data],
+  );
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Color',
+        accessor: 'color',
+        headerClassName: styles.colorColumn,
+        cellClassName: styles.colorRow,
+        Cell: ProjectColorCell,
+      },
+      {
+        Header: 'Project Name',
+        accessor: 'name',
+        headerClassName: styles.projectNameColumn,
+        cellClassName: styles.projectNameRow,
+        Cell: ProjectNameCell,
+      },
+      {
+        Header: 'Hours',
+        accessor: 'value',
+        headerClassName: styles.hoursColumn,
+        cellClassName: styles.hoursRow,
+        Cell: ({ value }) => value.toFixed(2),
+      },
+    ],
+    [],
+  );
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+    columns,
+    data: tableData,
+  });
 
   if (!data.length || total === 0) return null;
 
   return (
-    <div
-      className={`${styles['pie-chart-wrapper']} donut-no-outline ${
-        darkMode ? styles['text-light'] : ''
-      }`}
-    >
-      {/* Square box so the donut isn't clipped; same size as D3 chart */}
-      <div style={{ width: CHART_SIZE, height: CHART_SIZE }}>
+    <div className={styles['pie-chart-wrapper']}>
+      <div
+        id={`pie-chart-container-${pieChartId}`}
+        style={{ width: CHART_SIZE, height: CHART_SIZE }}
+      >
         <ResponsiveContainer width="100%" height="100%">
-          <RechartsPieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+          <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
             <Pie
               data={data}
               dataKey="value"
               nameKey="name"
               cx="50%"
               cy="50%"
-              innerRadius={70} // <- same as D3
-              outerRadius={CHART_RADIUS} // <- same as D3
-              label={false} // no labels
-              labelLine={false} // no pointers
-              isAnimationActive={false}
+              innerRadius={70}
+              outerRadius={CHART_RADIUS}
+              paddingAngle={1}
               stroke="none"
+              isAnimationActive={false}
             >
-              <Label
-                position="center"
-                content={props => (
-                  <CenterLabel
-                    {...props}
-                    total={total}
-                    darkMode={darkMode}
-                    showPct={showPct}
-                    onToggle={setShowPct}
-                  />
-                )}
-              />
-              {data.map((_, i) => (
-                <Cell key={i} fill={colors[i]} />
+              {data.map((entry, index) => (
+                <Cell key={entry.id ?? index} fill={colors[index]} />
               ))}
+              <Label position="center" content={() => renderCenterLabel(total, darkMode)} />
             </Pie>
-
             <Tooltip
-              formatter={(value, _name, entry) =>
-                showPct
-                  ? [`${((Number(value) * 100) / total).toFixed(2)}%`, entry?.payload?.name]
-                  : [`${Number(value).toFixed(2)} hrs`, entry?.payload?.name]
-              }
+              content={<ProjectPieTooltip colors={colors} darkMode={darkMode} total={total} />}
+              wrapperStyle={{ zIndex: 9999 }}
             />
-          </RechartsPieChart>
+          </PieChart>
         </ResponsiveContainer>
       </div>
 
-      <div
-        className={styles['pie-chart-legend-container']}
-        style={{ marginTop: 8, marginLeft: 40 }}
-      >
-        <table
-          className={
-            darkMode ? styles['pie-chart-legend-table-dark'] : styles['pie-chart-legend-table']
-          }
-        >
+      <div className={styles['pie-chart-table-container']}>
+        <table {...getTableProps()}>
           <thead>
-            <tr>
-              <th>Color</th>
-              <th>Project Name</th>
-              <th>Hours</th>
-            </tr>
+            {headerGroups.map(headerGroup => {
+              const { key, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
+              return (
+                <tr key={key} {...headerGroupProps}>
+                  {headerGroup.headers.map(column => {
+                    const { key: headerKey, ...headerProps } = column.getHeaderProps();
+                    return (
+                      <th key={headerKey} {...headerProps} className={column.headerClassName}>
+                        {column.render('Header')}
+                      </th>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </thead>
-          <tbody>
-            {data.map((p, i) => (
-              <tr key={p.id || p.name}>
-                <td>
-                  <div
-                    className={styles['project-chart-legend']}
-                    style={{ backgroundColor: colors[i] }}
-                  />
-                </td>
-                <td>{p.name}</td>
-                <td>{p.value.toFixed(2)}</td>
-              </tr>
-            ))}
+          <tbody {...getTableBodyProps()}>
+            {rows.map(row => {
+              prepareRow(row);
+              const { key, ...rowProps } = row.getRowProps();
+              return (
+                <tr key={key} {...rowProps}>
+                  {row.cells.map(cell => {
+                    const { key: cellKey, ...cellProps } = cell.getCellProps();
+                    return (
+                      <td key={cellKey} {...cellProps} className={cell.column.cellClassName}>
+                        {cell.render('Cell')}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
-        <div className={styles['data-total-value']} style={{ marginTop: 8 }}>
-          <strong className={`strong-text ${darkMode ? styles['text-light'] : ''}`}>
-            Total Hours:
-          </strong>{' '}
-          {total.toFixed(2)}
+        <div
+          className={`${styles['data-total-value']} ${darkMode ? styles['text-light'] : ''}`}
+          style={{ marginTop: 8, color: darkMode ? '#f5f5f5' : 'inherit' }}
+        >
+          <strong>Total Hours:</strong> {total.toFixed(2)}
         </div>
       </div>
     </div>

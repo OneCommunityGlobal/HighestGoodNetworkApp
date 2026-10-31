@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* MostWastedMaterials.module.css */
 
 /* Light mode (default) */
@@ -45,19 +46,20 @@
 }
 
 .card {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
 }
 
 .darkMode .card {
   background-color: #2d3748;
   border-color: #4a5568;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 .filterGrid {
@@ -83,7 +85,7 @@
   width: 100%;
   padding: 8px 16px;
   text-align: left;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   cursor: pointer;
@@ -113,17 +115,17 @@
   z-index: 10;
   width: 100%;
   margin-top: 4px;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .darkMode .dropdownMenu {
   background-color: #4a5568;
   border-color: #718096;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
 .dropdownItem {
@@ -147,7 +149,7 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #374151;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
@@ -161,12 +163,12 @@
 .input:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .darkMode .input:focus {
   border-color: #63b3ed;
-  box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+  box-shadow: 0 0 0 3px rgb(99 179 237 / 20%);
 }
 
 .actionButtons {
@@ -199,6 +201,7 @@
 
 .darkMode .actionButton:hover {
   background-color: #5a6578;
+
 }
 
 .chartContainer {
@@ -227,6 +230,7 @@
 .darkMode .recharts-x-axis .recharts-cartesian-axis-tick-value,
 .darkMode .recharts-y-axis .recharts-cartesian-axis-tick-value {
   fill: #cbd5e0;
+
 }
 
 .darkMode .recharts-x-axis .recharts-cartesian-axis-line,

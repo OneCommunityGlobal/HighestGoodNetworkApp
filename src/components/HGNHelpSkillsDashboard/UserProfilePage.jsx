@@ -25,6 +25,178 @@ import {
   Tooltip,
 } from 'recharts';
 import { ENDPOINTS } from '~/utils/URL';
+// import styles from './style/UserProfilePage.module.css';
+
+// Sample data for skills
+const mockSkillsData = {
+  Frontend: [
+    {
+      id: 'fe1',
+      name: 'UX/UI Design',
+      score: 8,
+      question: 'How comfortable are you with UX/UI Design principles and implementation?',
+    },
+    {
+      id: 'fe2',
+      name: 'Bootstrap',
+      score: 4,
+      question: 'Rate your proficiency with the Bootstrap framework',
+    },
+    {
+      id: 'fe3',
+      name: 'Advanced React',
+      score: 10,
+      question:
+        'How would you rate your expertise with advanced React concepts like hooks, context API, and optimizations?',
+    },
+    {
+      id: 'fe4',
+      name: 'Overall Frontend',
+      score: 3,
+      question: 'Rate your overall frontend development skills',
+    },
+    {
+      id: 'fe5',
+      name: 'Web Sockets',
+      score: 1,
+      question: 'How comfortable are you integrating web sockets in frontend applications?',
+    },
+    {
+      id: 'fe6',
+      name: 'HTML Semantics',
+      score: 2,
+      question: 'Rate your knowledge of semantic HTML structure and accessibility',
+    },
+    {
+      id: 'fe7',
+      name: 'CSS Advanced',
+      score: 9,
+      question:
+        'How would you rate your expertise with CSS preprocessing, animations, and layouts?',
+    },
+    {
+      id: 'fe8',
+      name: 'Redux',
+      score: 7,
+      question: 'Rate your proficiency with Redux state management and middleware',
+    },
+    {
+      id: 'fe9',
+      name: 'Responsive UI',
+      score: 6,
+      question:
+        'How proficient are you with implementing responsive design across different devices?',
+    },
+    {
+      id: 'fe10',
+      name: 'Figma',
+      score: 5,
+      question: 'Rate your proficiency with Figma for UI/UX design',
+    },
+  ],
+  Backend: [
+    {
+      id: 'be1',
+      name: 'Backend',
+      score: 6,
+      question: 'Rate your overall backend development skills',
+    },
+    {
+      id: 'be2',
+      name: 'TDD Backend',
+      score: 5,
+      question: 'How comfortable are you with Test-Driven Development for backend?',
+    },
+    {
+      id: 'be3',
+      name: 'Database',
+      score: 8,
+      question: 'Rate your knowledge of database design and management',
+    },
+    {
+      id: 'be4',
+      name: 'MongoDB',
+      score: 7,
+      question: 'How would you rate your expertise with MongoDB?',
+    },
+    {
+      id: 'be5',
+      name: 'Mock MongoDB',
+      score: 4,
+      question: 'Rate your proficiency with mocking MongoDB for testing',
+    },
+    {
+      id: 'be6',
+      name: 'MERN Stack',
+      score: 9,
+      question: 'How comfortable are you working with the complete MERN stack?',
+    },
+  ],
+  DevOps: [
+    {
+      id: 'devops1',
+      name: 'Deployment',
+      score: 5,
+      question: 'How comfortable are you with deploying applications to production?',
+    },
+    {
+      id: 'devops2',
+      name: 'Version Control',
+      score: 8,
+      question: 'Rate your proficiency with version control systems like Git',
+    },
+    {
+      id: 'devops3',
+      name: 'Env Setup',
+      score: 3,
+      question: 'How would you rate your expertise with setting up development environments?',
+    },
+    {
+      id: 'devops4',
+      name: 'Testing',
+      score: 7,
+      question: 'Rate your knowledge of different testing methodologies',
+    },
+  ],
+  SWPractices: [
+    {
+      id: 'sp1',
+      name: 'Agile',
+      score: 7,
+      question: 'How comfortable are you working in an Agile environment?',
+    },
+    {
+      id: 'sp2',
+      name: 'Code Review',
+      score: 9,
+      question: 'Rate your proficiency with conducting thorough code reviews',
+    },
+    {
+      id: 'sp3',
+      name: 'Advanced Coding',
+      score: 6,
+      question: 'How would you rate your expertise with advanced coding practices?',
+    },
+    {
+      id: 'sp4',
+      name: 'Documentation',
+      score: 8,
+      question: 'Rate your skill with creating clear and comprehensive documentation',
+    },
+    {
+      id: 'sp5',
+      name: 'Markdown & Graphs',
+      score: 5,
+      question: 'How comfortable are you with markdown and creating graphs/charts?',
+    },
+    {
+      id: 'sp6',
+      name: 'Leadership Skills',
+      score: 7,
+      question: 'Rate your leadership skills within a development team',
+    },
+  ],
+};
 import styles from './style/UserProfile.module.css';
 
 // Custom tooltip for RadarChart
@@ -161,6 +333,41 @@ function SkillsTabbedSection({ skillsData }) {
 }
 
 // Main UserProfilePage
+
+const normalizeSkillInfo = skillInfo => {
+  const toSkills = (section, fields = Object.keys(section || {})) =>
+    fields
+      .filter(name => {
+        const score = section?.[name];
+        return (
+          score !== '' && score !== null && score !== undefined && !Number.isNaN(Number(score))
+        );
+      })
+      .map(name => ({
+        id: name,
+        name,
+        score: Number(section[name]),
+        question: name,
+      }));
+
+  const backend = skillInfo?.backend || {};
+
+  const devOpsFields = ['Deployment', 'VersionControl', 'EnvironmentSetup'];
+  const softwarePracticeFields = ['CodeReview', 'AdvancedCoding', 'AgileDevelopment'];
+
+  const categorizedFields = new Set([...devOpsFields, ...softwarePracticeFields]);
+
+  return {
+    Frontend: toSkills(skillInfo?.frontend),
+    Backend: toSkills(
+      backend,
+      Object.keys(backend).filter(name => !categorizedFields.has(name)),
+    ),
+    DevOps: toSkills(backend, devOpsFields),
+    SWPractices: toSkills(backend, softwarePracticeFields),
+  };
+};
+
 function UserProfilePage() {
   const { userId } = useParams();
   const [userProfile, setUserProfile] = useState(null);
@@ -173,7 +380,7 @@ function UserProfilePage() {
 
       try {
         setLoading(true);
-        const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+        const response = await axios.get(ENDPOINTS.SKILLS_PROFILE(userId));
         setUserProfile(response.data);
         setLoading(false);
       } catch (err) {
@@ -191,12 +398,26 @@ function UserProfilePage() {
   return (
     <div className={`${styles.userProfilePage}`}>
       <div>
-        <div>User Profile Page Placeholder</div>
+        <h2>{userProfile?.name?.displayName || 'User Profile'}</h2>
+        {userProfile?.teams?.length > 0 && (
+          <div>
+            <h3>Teams</h3>
+            {userProfile.teams.map(team => (
+              <div key={team.id}>{team.role ? `${team.name} (${team.role})` : team.name}</div>
+            ))}
+          </div>
+        )}
+        {userProfile?.skillInfo?.general?.leadership_experience && (
+          <p>Leadership experience: {userProfile.skillInfo.general.leadership_experience}</p>
+        )}
+        {userProfile?.skillInfo?.followUp?.additional_info && (
+          <p>Additional experience: {userProfile.skillInfo.followUp.additional_info}</p>
+        )}
       </div>
 
-      {userProfile?.skills && (
+      {userProfile?.skillInfo && (
         <div className={`${styles.skillsSection}`}>
-          <SkillsTabbedSection skillsData={userProfile.skills} />
+          <SkillsTabbedSection skillsData={normalizeSkillInfo(userProfile.skillInfo)} />
         </div>
       )}
     </div>

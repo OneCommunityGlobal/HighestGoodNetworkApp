@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { updateQuestion } from '~/actions/formActions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function RichTextEditor({ data }) {
   // console.log('Data', data);
@@ -10,6 +10,7 @@ export default function RichTextEditor({ data }) {
   const [content, setContent] = useState(data.description);
   const [text, setText] = useState('');
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const onEditorChange = (newContent, editor) => {
     setContent(newContent);
@@ -31,6 +32,8 @@ export default function RichTextEditor({ data }) {
         height: 250,
         width: '100%',
         menubar: false,
+        skin: darkMode ? 'oxide-dark' : 'oxide',
+        content_css: darkMode ? 'dark' : false,
         plugins: [
           'mentions advlist autolink lists link image charmap print preview anchor',
           'searchreplace visualblocks code fullscreen',
@@ -41,7 +44,9 @@ export default function RichTextEditor({ data }) {
           'bold italic underline backcolor | alignleft aligncenter ' +
           'alignright alignjustify | bullist numlist outdent indent | ' +
           'removeformat',
-        content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 14px }',
+        content_style: darkMode
+          ? 'body { font-family: Helvetica, Arial, sans-serif; font-size: 14px; background-color: #1f3044; color: #e9eef5; margin: 0.5rem; }'
+          : 'body { font-family: Helvetica, Arial, sans-serif; font-size: 14px; background-color: #fff; color: #212529; margin: 0.5rem; }',
         emoticons_append: {
           custom_mind_explode: {
             keywords: ['brain', 'mind', 'explode', 'blown'],

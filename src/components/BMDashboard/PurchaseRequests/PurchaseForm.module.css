@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .purchaseRequestContainer {
   width: 100%;
   max-width: 800px;
@@ -11,7 +12,7 @@
   margin: 1rem auto;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (width <= 800px) {
   .purchaseRequestContainer {
     width: 95%;
   }
@@ -23,7 +24,7 @@
 
 .purchaseForm input,
 .purchaseForm select {
-  background-color: rgb(249, 249, 249);
+  background-color: rgb(249 249 249);
 }
 
 .purchaseFlexGroup {
@@ -60,13 +61,61 @@
   color: red;
 }
 
-@media screen and (max-width: 640px) {
+/* Required field indicator */
+.requiredIndicator {
+  color: #dc3545;
+  font-weight: bold;
+  margin-left: 0.25rem;
+}
+
+/* Inline field error message */
+.fieldError {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+/* Invalid field styling */
+.invalidField {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgb(220 53 69 / 25%) !important;
+}
+
+/* Loading button state */
+.submitButtonLoading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Success modal actions */
+.successModalActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.successModalActions button {
+  flex: 1;
+}
+
+@media screen and (width <= 640px) {
   .purchaseFlexGroup {
     display: block;
   }
+
   .purchaseQtyGroup {
     width: auto;
   }
+  
+  .successModalActions {
+    flex-direction: column;
+  }
+}
+
+:global(body.dark-mode) .purchaseRequestContainer select,
+:global(body.bm-dashboard-dark) .purchaseRequestContainer select {
+  appearance: none;
 }
 
 

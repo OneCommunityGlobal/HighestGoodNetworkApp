@@ -1,11 +1,11 @@
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import TeamMembersPopup from '~/components/Teams/TeamMembersPopup';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const mockOnClose = vi.fn();
 const mockOnDeleteClick = vi.fn();

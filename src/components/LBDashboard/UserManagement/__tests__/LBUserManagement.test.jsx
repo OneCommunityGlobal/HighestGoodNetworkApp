@@ -20,7 +20,7 @@ import {
   setLBUsersLimit,
   setLBUsersSearch,
   clearLBUsersError,
-} from '../../../../actions/lbDashboard/userManagementActions';
+} from '../../../../actions/lbdashboard/userManagementActions';
 import {
   FETCH_LB_USERS_REQUEST,
   FETCH_LB_USERS_SUCCESS,

@@ -16,10 +16,11 @@ import {
   PointElement,
   LineController,
 } from 'chart.js';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import styles from './QuantityOfMaterialsUsed.module.css';
 
 ChartJS.register(
@@ -68,13 +69,15 @@ function getRandomColor() {
 }
 
 function QuantityOfMaterialsUsed({ data }) {
+  const dispatch = useDispatch();
   const [chartData, setChartData] = useState(null);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedDate, setSelectedDate] = useState('Last Week');
   const [dateRangeOne, setDateRangeOne] = useState([null, null]);
   const [dateRangeTwo, setDateRangeTwo] = useState([null, null]);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const selectedOrg = useSelector(state => state.weeklyProjectSummary.projectFilter);
+  const projects = useSelector(state => state.bmProjects);
+  const [selectedProjects, setSelectedProjects] = useState([]);
   const [legendColors, setLegendColors] = useState([]);
   const chartContainerRef = useRef(null);
   const [visibleRange, setVisibleRange] = useState([0, 30]);
@@ -82,6 +85,10 @@ function QuantityOfMaterialsUsed({ data }) {
   const [showModal, setShowModal] = useState(false);
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchBMProjects());
+  }, [dispatch]);
 
   const selectStyles = useMemo(
     () => ({
@@ -190,7 +197,10 @@ function QuantityOfMaterialsUsed({ data }) {
     return Array.from(uniqueMaterials.values());
   }, [data]);
 
-  const orgOptions = useMemo(() => [{ value: selectedOrg, label: selectedOrg }], [selectedOrg]);
+  const projectOptions = projects.map(project => ({
+    value: project._id,
+    label: project.name,
+  }));
 
   const dateOptions = useMemo(
     () => [
@@ -493,7 +503,7 @@ function QuantityOfMaterialsUsed({ data }) {
           : []),
       ],
     });
-  }, [data, selectedMaterials, selectedOrg, selectedDate, dateRangeOne, dateRangeTwo]);
+  }, [data, selectedMaterials, selectedProjects, selectedDate, dateRangeOne, dateRangeTwo]);
 
   const barWidth = 12;
   // Subtract the 40-px y-axis offset
@@ -657,12 +667,24 @@ function QuantityOfMaterialsUsed({ data }) {
 
       <ReactTooltip
         id="materials-info"
-        place="left"
+        // Place below the info icon so the long overview panel does not open behind the navbar.
+        place="bottom"
         effect="solid"
         className={`${styles.quantityOfMaterialsUsedChartTooltip}`}
         clickable
         event="click"
         globalEventOff="click"
+        overridePosition={({ left, top }, _event, _trigger, tooltip) => {
+          if (typeof window === 'undefined' || window.innerWidth > 640) return { left, top };
+
+          // Clamp the mobile tooltip inside the viewport because ReactTooltip anchors it near the right-side icon.
+          const margin = 24;
+          const tooltipWidth = tooltip?.offsetWidth || 0;
+          return {
+            left: Math.max(margin, Math.min(left, window.innerWidth - tooltipWidth - margin)),
+            top,
+          };
+        }}
       >
         <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Chart Overview</div>
         <div>This chart compares material quantities across two time periods.</div>
@@ -735,13 +757,16 @@ function QuantityOfMaterialsUsed({ data }) {
         />
 
         <Select
-          options={orgOptions}
-          value={orgOptions.find(option => option.value === selectedOrg)}
-          placeholder="Organization"
+          options={projectOptions}
+          isMulti
+          isSearchable
+          value={projectOptions.find(option => option.value === selectedProjects)}
+          placeholder="Projects"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
-          // isDisabled
+          closeMenuOnSelect={false}
+          hideSelectedOptions={true}
           styles={selectStyles}
         />
         <Select

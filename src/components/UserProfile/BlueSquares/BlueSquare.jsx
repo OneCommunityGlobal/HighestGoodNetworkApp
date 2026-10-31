@@ -5,6 +5,7 @@ import { formatCreatedDate, formatDate } from '~/utils/formatDate';
 import { useEffect } from 'react';
 
 
+import { permissions } from '../../../utils/constants';
 const BlueSquare = (props) => {
   const {
     blueSquares,
@@ -13,9 +14,9 @@ const BlueSquare = (props) => {
     darkMode
   } = props;
 
-  const canAddInfringements = hasPermission('addInfringements');
-  const canEditInfringements = hasPermission('editInfringements');
-  const canDeleteInfringements = hasPermission('deleteInfringements');
+  const canAddInfringements = hasPermission(permissions.addInfringements);
+  const canEditInfringements = hasPermission(permissions.editInfringements);
+  const canDeleteInfringements = hasPermission(permissions.deleteInfringements);
   const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements;
 
   const monthMap = {
@@ -73,7 +74,7 @@ const BlueSquare = (props) => {
     }
   }, []);
   return (
-    <div id="bluesquare" className={`${styles.blueSquareContainer} ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
+    <div id="bluesquare" className={`${styles.blueSquareContainer} ${darkMode ? styles.bgDarkmodeLibblack: ''}`}>
       <div className={`${styles.blueSquares} ${blueSquares?.length ? '' : styles.NoBlueSquares}`}>
         {blueSquares?.length ? (
           sortedBlueSquares

@@ -9,7 +9,7 @@ import {
 } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
 import styles from './WeeklyProjectSummary.module.css';
 
-export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
+export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGeneratingPDF = false }) {
   const dispatch = useDispatch();
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter);
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter);
@@ -100,8 +100,18 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
             ))}
           </Input>
 
-          <Button className={`${styles.weeklySummaryShareBtn}`} onClick={handleSaveAsPDF}>
-            Share PDF
+          <Button
+            className={`${styles.weeklySummaryShareBtn}`}
+            onClick={handleSaveAsPDF}
+            disabled={isGeneratingPDF}
+          >
+            {isGeneratingPDF ? (
+              <>
+                <span className={styles.spinner} /> Generating PDF...
+              </>
+            ) : (
+              'Share PDF'
+            )}
           </Button>
         </div>
       </header>

@@ -4,6 +4,8 @@ import { ENDPOINTS } from '~/utils/URL';
 
 import {
   RECEIVE_ALL_USER_TEAMS,
+  FETCH_USER_TEAMS_START,
+  CLEAR_TEAM_MEMBERS,
   USER_TEAMS_UPDATE,
   UPDATE_TEAM,
   ADD_NEW_TEAM,
@@ -25,6 +27,10 @@ export const teamMembersFectchACtion = payload => ({
   type: RECEIVE_ALL_USER_TEAMS,
   payload,
 });
+
+export const clearTeamMembers = () => dispatch => {
+  dispatch({ type: CLEAR_TEAM_MEMBERS });
+};
 
 /**
  * Action for Updating an teams
@@ -118,6 +124,8 @@ export const updateVisibilityAction = (visibility, userId, teamId) => ({
 export const getAllUserTeams = () => {
   const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
   return async dispatch => {
+    dispatch({ type: FETCH_USER_TEAMS_START });
+
     return userTeamsPromise
       .then(res => {
         dispatch(teamMembersFectchACtion(res.data));
@@ -132,30 +140,42 @@ export const getAllUserTeams = () => {
 /**
  * posting new team
  */
-export const postNewTeam = (name, status, source) => {
+export const postNewTeam = (name, status, signal) => {
   const data = { teamName: name, isActive: status };
 
-  const config = source ? { cancelToken: source.token } : {};
+  const config = signal ? { signal } : {};
 
-  const teamCreationPromise = axios.post(ENDPOINTS.TEAM, data, config);
+  const teamCreationPromise = axios.post(
+    ENDPOINTS.TEAM,
+    data,
+    config
+  );
+
   return dispatch => {
     return teamCreationPromise
       .then(res => {
         dispatch(addNewTeam(res.data, true));
-        return res; // return the server response
+        return res;
       })
       .catch(error => {
         if (error.response) {
-          return error.response; // return the server response
+          return error.response;
         }
+
         if (error.request) {
-          return { status: 500, message: 'No response received from the server' };
+          return {
+            status: 500,
+            message: 'No response received from the server',
+          };
         }
-        return { status: 500, message: error.message };
+
+        return {
+          status: 500,
+          message: error.message,
+        };
       });
   };
 };
-
 /**
  * delete an existing team
  * @param {*} teamId  - the team to be deleted
@@ -177,7 +197,7 @@ export const deleteTeam = teamId => {
  * updating the team status
  */
 export const updateTeam = (teamName, teamId, isActive, teamCode) => {
-  const requestData = { teamName, isActive, teamCode };
+  const requestData = { teamName, isActive, teamCode: teamCode || '' };
   const url = ENDPOINTS.TEAM_DATA(teamId);
   return async dispatch => {
     try {
@@ -198,17 +218,15 @@ export const updateTeam = (teamName, teamId, isActive, teamCode) => {
  * fetching team members
  */
 export const getTeamMembers = teamId => {
-  const teamMembersPromise = axios.get(ENDPOINTS.TEAM_USERS(teamId));
   return async dispatch => {
     await dispatch(teamUsersFetchAction());
-    return teamMembersPromise
-      .then(res => {
-        dispatch(teamUsersFetchCompleteAction(res.data));
-        return res.data;
-      })
-      .catch(() => {
-        dispatch(teamUsersFetchErrorAction());
-      });
+    try {
+      const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+      dispatch(teamUsersFetchCompleteAction(res.data));
+      return res.data;
+    } catch {
+      dispatch(teamUsersFetchErrorAction());
+    }
   };
 };
 
@@ -218,24 +236,28 @@ export const getTeamMembers = teamId => {
  */
 export const deleteTeamMember = (teamId, userId) => {
   const requestData = { userId, operation: 'UnAssign' };
-  const teamMemberDeletePromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
-    teamMemberDeletePromise.then(() => {
-      dispatch(teamMemberDeleteAction(userId));
-    });
+    await axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
+    dispatch(teamMemberDeleteAction(userId));
   };
 };
 
 /**
- * Adding an existing user to team
+ * add an existing team member
+ * @param {*} teamId  - the team to be deleted
+ * @param {*} teamId  - the team to be deleted
  */
 export const addTeamMember = (teamId, userId) => {
   const requestData = { userId, operation: 'Assign' };
-  const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
-    teamMemberAddPromise.then(res => {
-      dispatch(teamMemberAddAction(res.data.newMember));
-    });
+    const res = await axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
+    dispatch(
+      teamMemberAddAction({
+        ...res.data.newMember,
+        addDateTime: new Date().toISOString(), //newMember data doesn't have the date - required to update the Date Added column
+      }),
+    );
+    return res.data; // return so caller can await
   };
 };
 
@@ -244,7 +266,7 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
   const updateVisibilityPromise = axios.put(ENDPOINTS.TEAM, updateData);
 
   return async dispatch => {
-    updateVisibilityPromise
+    return updateVisibilityPromise
       .then(() => {
         dispatch(updateVisibilityAction(visibility, userId, teamId));
       })

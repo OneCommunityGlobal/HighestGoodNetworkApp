@@ -219,11 +219,11 @@ function EventNoShowChart() {
       </div>
 
       <h2 className={`${styles.eventTitle}`}>Attendance Trend by Day of the Week</h2>
-      <label className="no-show-viz-label" htmlFor="event-type-select">
+      <label className={styles['no-show-viz-label']} htmlFor="event-type-select">
         Select Event Type:
       </label>
       <select
-        className="no-show-viz-select"
+        className={styles['no-show-viz-select']}
         value={selectedEventType}
         onChange={handleEventTypeChange}
       >

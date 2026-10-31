@@ -21,8 +21,6 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
   const onDeliteLessonCard = async lessonId => {
     try {
       await dispatch(deleteBMLesson(lessonId));
-
-      // Update filtered lessons
       setFilteredLessons(prevLessons => prevLessons.filter(lesson => lesson._id !== lessonId));
     } catch (error) {
       // console.error('Error deleting lesson:', error);

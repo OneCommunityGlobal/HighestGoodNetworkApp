@@ -1,12 +1,16 @@
 import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
+import buildVersionPlugin, { resolveBuildId } from './scripts/viteBuildVersionPlugin';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const buildId = resolveBuildId(env);
   return {
+    base: '/',
     resolve: {
       alias: {
+        '@': resolve('src/'),
         '~': resolve('src/'),
       },
     },
@@ -28,10 +32,28 @@ export default defineConfig(({ mode }) => {
         prev[`process.env.${sanitizedKey}`] = JSON.stringify(env[key]);
         return prev;
       }, {}),
+      'import.meta.env.VITE_APP_BUILD_ID': JSON.stringify(buildId),
     },
     build: {
       outDir: 'build',
     },
-    plugins: [react()],
+    plugins: [
+      buildVersionPlugin(buildId),
+      react({
+        babel: {
+          plugins: ['@babel/plugin-transform-logical-assignment-operators'],
+        },
+      }),
+    ],
+    optimizeDeps: {
+      include: [
+        'react-popper',
+        'react-datepicker',
+        'react-tooltip',
+        'react-bootstrap',
+        'libphonenumber-js/max',
+      ],
+      force: true, // force re-bundle after cache issues; set to false once deps load
+    },
   };
 });

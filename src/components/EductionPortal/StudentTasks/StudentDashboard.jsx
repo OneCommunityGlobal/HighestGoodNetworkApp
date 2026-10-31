@@ -1,7 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import Sidebar from './StudentSidebar';
 import styles from './StudentDashboard.module.css';
 
 const LIFE_CARD_IDS = ['lc-a', 'lc-b', 'lc-c', 'lc-d', 'lc-e', 'lc-f'];
@@ -44,7 +43,6 @@ export default function StudentDashboard() {
 
   return (
     <div className={`${styles.pageLayout} ${darkMode ? styles.pageLayoutDark : ''}`}>
-      <Sidebar active="home" />
       <div className={`${styles.content} ${darkMode ? styles.contentDark : ''}`}>
         <div className={styles.headerRow}>
           <h1 className={styles.title}>Dashboard</h1>

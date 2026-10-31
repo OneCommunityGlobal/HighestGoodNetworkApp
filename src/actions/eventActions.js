@@ -13,8 +13,9 @@ import { ENDPOINTS } from '~/utils/URL';
  */
 export async function getEvents(params = {}) {
   try {
-    const { type = '', location = '', page = 1, limit = 9, sortBy = 'date' } = params;
+    const { type = '', location = '', page = 1, limit = 9, sortBy = 'date', userId = '' } = params;
     const queryParams = new URLSearchParams();
+    if (userId) queryParams.append('userId', userId);
     if (type) queryParams.append('type', type);
     if (location) queryParams.append('location', location);
     queryParams.append('page', page);
@@ -67,4 +68,29 @@ export async function getEventLocations() {
       status: error.response?.status || 500,
     };
   }
+}
+
+export async function joinWaitlist(eventId, userId, token) {
+  const url = `${ENDPOINTS.EVENTS}/${eventId}/waitlist`;
+
+  return axios.post(
+    url,
+    { userId },
+    {
+      headers: {
+        Authorization: token,
+      },
+    }
+  );
+}
+
+export async function leaveWaitlist(eventId, userId, token) {
+  const url = `${ENDPOINTS.EVENTS}/${eventId}/waitlist`;
+
+  return axios.delete(url, {
+    data: { userId },
+    headers: {
+      Authorization: token,
+    },
+  });
 }

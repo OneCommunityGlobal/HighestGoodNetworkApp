@@ -1,8 +1,12 @@
+import { useSelector } from 'react-redux';
 import ApplicationTimeChart from './ApplicationTimeChart';
+import styles from './ApplicationTimeChart.module.css';
 
 function ApplicationTimeChartContainer() {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
+
   return (
-    <div style={{ padding: '20px', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+    <div className={`${styles.pageContainer} ${darkMode ? styles.darkMode : ''}`}>
       <ApplicationTimeChart />
     </div>
   );

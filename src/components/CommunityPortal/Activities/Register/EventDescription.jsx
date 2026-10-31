@@ -1,58 +1,5 @@
-// import React, { useState } from 'react';
-
-// function DescriptionSection() {
-//   // State to manage active tab
-//   const [activeTab, setActiveTab] = useState('Description');
-
-//   // Mock data for the Description section
-//   const descriptionData = [
-//     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-//     'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-//     'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-//   ];
-
-//   return (
-//     <div className="p-4">
-//       {/* Header Tabs */}
-//       <div className="flex space-x-4 border-b-2 border-gray-300 mb-4">
-//         <button
-//           onClick={() => setActiveTab('Description')}
-//           className={`px-4 py-2 font-bold ${
-//             activeTab === 'Description'
-//               ? 'text-blue-500 border-b-2 border-blue-500'
-//               : 'text-gray-500'
-//           }`}
-//         >
-//           Description
-//         </button>
-//         <button className="px-4 py-2 font-bold text-gray-500" disabled>
-//           Participates
-//         </button>
-//         <button className="px-4 py-2 font-bold text-gray-500" disabled>
-//           Comments
-//         </button>
-//         <button className="px-4 py-2 font-bold text-gray-500" disabled>
-//           FAQs
-//         </button>
-//       </div>
-
-//       {/* Tab Content */}
-//       {activeTab === 'Description' && (
-//         <div>
-//           {descriptionData.map((item, index) => (
-//             <p key={index} className="mb-2 text-gray-700">
-//               {item}
-//             </p>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default DescriptionSection;
-
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './DescriptionSection.module.css';
 
@@ -63,7 +10,7 @@ const DEFAULT_TAB_CONTENT = {
     'The event will cover various topics including best practices, industry trends, and practical applications. Participants will have the opportunity to ask questions, share experiences, and learn from both instructors and fellow attendees.',
     'Note: Please arrive 15 minutes early to complete registration and get settled. All necessary materials will be provided, but feel free to bring a notebook for taking notes.',
   ],
-  Participates: [
+  Participants: [
     'John Doe - Project Manager',
     'Jane Smith - Developer',
     'Alice Brown - Designer',
@@ -71,10 +18,9 @@ const DEFAULT_TAB_CONTENT = {
     'Emily Davis - Analyst',
   ],
   Comments: [
-    'Looking forward to this event! The agenda looks very comprehensive.',
-    'This will be my first time attending. Any tips for newcomers?',
-    'Great to see such a diverse group of participants registered.',
-    'The location is perfect and easily accessible by public transport.',
+    { author: 'John Doe', comment: 'Looking forward to this event!' },
+    { author: 'Jane Smith', comment: 'This will be my first time attending.' },
+    { author: 'Alice Brown', comment: 'Excited to collaborate with everyone.' },
   ],
   FAQs: [
     'Q: What should I bring to the event?\nA: Just bring yourself and a positive attitude! All materials will be provided.',
@@ -92,7 +38,7 @@ function DescriptionSection({ activity, registrants = [] }) {
     if (Array.isArray(activity?.descriptionParagraphs) && activity.descriptionParagraphs.length) {
       return activity.descriptionParagraphs;
     }
-    if (typeof activity?.description === 'string') {
+    if (typeof activity?.description === 'string' && activity.description.trim()) {
       return activity.description
         .split('\n')
         .map(line => line.trim())
@@ -105,20 +51,14 @@ function DescriptionSection({ activity, registrants = [] }) {
     const baseParticipants =
       Array.isArray(activity?.participants) && activity.participants.length
         ? activity.participants
-        : DEFAULT_TAB_CONTENT.Participates;
+        : DEFAULT_TAB_CONTENT.Participants;
 
     const dynamicEntries = registrants
       .map(reg => {
-        if (!reg?.name) return null;
-        const trimmedName = reg.name.trim();
-        if (!trimmedName) return null;
+        if (!reg?.name?.trim()) return null;
         const title = reg.jobTitle && reg.jobTitle !== 'Participant' ? ` - ${reg.jobTitle}` : '';
-        const label = `${trimmedName}${title}`;
-        return {
-          label,
-          isNew: true,
-          key: label.toLowerCase(),
-        };
+        const label = `${reg.name.trim()}${title}`;
+        return { label, isNew: true, key: label.toLowerCase() };
       })
       .filter(Boolean);
 
@@ -126,18 +66,12 @@ function DescriptionSection({ activity, registrants = [] }) {
       .map(participant => {
         const label = typeof participant === 'string' ? participant.trim() : '';
         if (!label) return null;
-        return {
-          label,
-          isNew: false,
-          key: label.toLowerCase(),
-        };
+        return { label, isNew: false, key: label.toLowerCase() };
       })
       .filter(Boolean);
 
-    const combined = [...dynamicEntries, ...baseEntries];
     const seen = new Set();
-
-    return combined
+    return [...dynamicEntries, ...baseEntries]
       .filter(entry => {
         if (seen.has(entry.key)) return false;
         seen.add(entry.key);
@@ -146,37 +80,183 @@ function DescriptionSection({ activity, registrants = [] }) {
       .map(({ label, isNew }) => ({ label, isNew }));
   }, [activity?.participants, registrants]);
 
+  const participantNameSet = useMemo(
+    () => new Set(participantEntries.map(p => p.label.split(' - ')[0].toLowerCase())),
+    [participantEntries],
+  );
+
   const commentEntries = useMemo(() => {
-    if (Array.isArray(activity?.comments) && activity.comments.length) {
-      return activity.comments;
-    }
-    return DEFAULT_TAB_CONTENT.Comments;
-  }, [activity]);
+    const baseComments =
+      Array.isArray(activity?.comments) && activity.comments.length
+        ? activity.comments
+        : DEFAULT_TAB_CONTENT.Comments;
+
+    return baseComments.map((comment, idx) => {
+      if (typeof comment !== 'object') {
+        return { comment, author: `User ${idx + 1}`, isParticipant: false };
+      }
+      return {
+        comment: comment.comment,
+        author: comment.author,
+        isParticipant: participantNameSet.has(comment.author?.toLowerCase().trim()),
+      };
+    });
+  }, [activity?.comments, participantNameSet]);
 
   const faqEntries = useMemo(() => {
     if (Array.isArray(activity?.faqs) && activity.faqs.length) {
       return activity.faqs
         .map(faq => {
           if (typeof faq === 'string') return faq;
-          if (faq?.question && faq?.answer) {
-            return `Q: ${faq.question}\nA: ${faq.answer}`;
-          }
+          if (faq?.question && faq?.answer) return `Q: ${faq.question}\nA: ${faq.answer}`;
           return null;
         })
         .filter(Boolean);
     }
     return DEFAULT_TAB_CONTENT.FAQs;
-  }, [activity]);
+  }, [activity?.faqs]);
 
   const tabContent = useMemo(
     () => ({
       Description: descriptionParagraphs,
-      Participates: participantEntries,
+      Participants: participantEntries,
       Comments: commentEntries,
       FAQs: faqEntries,
     }),
     [descriptionParagraphs, participantEntries, commentEntries, faqEntries],
   );
+
+  const keyUsageMap = new Map();
+  const buildUniqueKey = rawKey => {
+    const baseKey = String(rawKey || 'item')
+      .trim()
+      .toLowerCase()
+      .replaceAll(/\s+/gu, '-');
+    const seenCount = keyUsageMap.get(baseKey) || 0;
+    keyUsageMap.set(baseKey, seenCount + 1);
+    return seenCount === 0 ? baseKey : `${baseKey}-${seenCount + 1}`;
+  };
+
+  const renderFaqItem = (label, key) => {
+    const lines = label.split('\n');
+    const question = lines
+      .find(l => l.startsWith('Q:'))
+      ?.replaceAll('Q:', '')
+      .trim();
+    const answer = lines
+      .find(l => l.startsWith('A:'))
+      ?.replaceAll('A:', '')
+      .trim();
+    const faqKey = buildUniqueKey(`faq-${question || 'unknown'}-${answer || 'unknown'}`);
+    return (
+      <div
+        key={key || faqKey}
+        className={`${styles.faqCard} ${darkMode ? styles.faqCardDark : ''}`}
+      >
+        <div className={styles.faqQuestionRow}>
+          <span className={styles.faqQBadge}>Q</span>
+          <p className={`${styles.faqQuestionText} ${darkMode ? styles.faqQuestionTextDark : ''}`}>
+            {question}
+          </p>
+        </div>
+        <div className={styles.faqAnswerRow}>
+          <span className={styles.faqABadge}>A</span>
+          <p className={`${styles.faqAnswerText} ${darkMode ? styles.faqAnswerTextDark : ''}`}>
+            {answer}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCommentItem = item => {
+    const commentText = item.comment || item;
+    const commentAuthor = item.author || 'User';
+    const commentKey = buildUniqueKey(`comment-${commentAuthor}-${commentText}`);
+    const initials = commentAuthor
+      .split(' ')
+      .map(s => s[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+    return (
+      <div
+        key={commentKey}
+        className={`${styles.commentEntry} ${darkMode ? styles.commentEntryDark : ''}`}
+      >
+        <div className={styles.commentAvatar}>
+          <span>{initials}</span>
+        </div>
+        <div className={styles.commentContent}>
+          <p className={`${styles.commentAuthor} ${darkMode ? styles.commentAuthorDark : ''}`}>
+            {commentAuthor}
+          </p>
+          <p className={`${styles.commentText} ${darkMode ? styles.commentTextDark : ''}`}>
+            {commentText}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderParticipantItem = (label, isNewParticipant) => {
+    const nameOnly = label.split(' - ')[0];
+    const participantKey = buildUniqueKey(`participant-${nameOnly}-${label}`);
+    const initials = nameOnly
+      .split(' ')
+      .map(s => s[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+    return (
+      <div
+        key={participantKey}
+        className={`${styles.participantRow} ${darkMode ? styles.participantRowDark : ''}`}
+      >
+        <div
+          className={`${styles.participantAvatar} ${darkMode ? styles.participantAvatarDark : ''}`}
+        >
+          {initials}
+        </div>
+        <div className={styles.participantInfo}>
+          <span className={styles.participantName}>{label}</span>
+          {isNewParticipant && (
+            <span
+              className={`${styles.participantBadge} ${
+                darkMode ? styles.participantBadgeDark : ''
+              }`}
+            >
+              New
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTabItem = item => {
+    const isParticipantTab = activeTab === 'Participants';
+    const isCommentTab = activeTab === 'Comments';
+    const isFaqTab = activeTab === 'FAQs';
+    const label = typeof item === 'string' ? item : item.label;
+    const isNewParticipant = isParticipantTab && typeof item === 'object' && item.isNew;
+
+    if (isFaqTab) return renderFaqItem(label);
+    if (isCommentTab) return renderCommentItem(item);
+    if (isParticipantTab) return renderParticipantItem(label, isNewParticipant);
+
+    const descriptionKey = buildUniqueKey(`description-${label}`);
+    return (
+      <p
+        key={descriptionKey}
+        className={`${styles.descriptionParagraph} ${
+          darkMode ? styles.descriptionParagraphDark : ''
+        }`}
+      >
+        {label}
+      </p>
+    );
+  };
 
   return (
     <div
@@ -201,37 +281,7 @@ function DescriptionSection({ activity, registrants = [] }) {
 
       <div className={styles.tabContent}>
         {tabContent[activeTab]?.length > 0 ? (
-          tabContent[activeTab].map((item, index) => {
-            const isParticipantTab = activeTab === 'Participates';
-            const label = typeof item === 'string' ? item : item.label;
-            const isNewParticipant = isParticipantTab && typeof item === 'object' && item.isNew;
-
-            const paragraphClasses = [styles.descriptionParagraph];
-            if (darkMode) paragraphClasses.push(styles.descriptionParagraphDark);
-            if (isParticipantTab) {
-              paragraphClasses.push(styles.participantEntry);
-              if (darkMode) paragraphClasses.push(styles.participantEntryDark);
-              if (isNewParticipant) paragraphClasses.push(styles.participantEntryNew);
-            }
-
-            return (
-              <p
-                key={`${activeTab}-${index}`}
-                className={paragraphClasses.filter(Boolean).join(' ')}
-              >
-                <span>{label}</span>
-                {isNewParticipant ? (
-                  <span
-                    className={`${styles.participantBadge} ${
-                      darkMode ? styles.participantBadgeDark : ''
-                    }`}
-                  >
-                    New
-                  </span>
-                ) : null}
-              </p>
-            );
-          })
+          tabContent[activeTab].map(item => renderTabItem(item))
         ) : (
           <div className={`${styles.emptyState} ${darkMode ? styles.emptyStateDark : ''}`}>
             No {activeTab.toLowerCase()} available at the moment.
@@ -241,5 +291,37 @@ function DescriptionSection({ activity, registrants = [] }) {
     </div>
   );
 }
+
+DescriptionSection.propTypes = {
+  activity: PropTypes.shape({
+    descriptionParagraphs: PropTypes.arrayOf(PropTypes.string),
+    description: PropTypes.string,
+    participants: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.object])),
+    comments: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          author: PropTypes.string,
+          comment: PropTypes.string,
+        }),
+      ]),
+    ),
+    faqs: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          question: PropTypes.string,
+          answer: PropTypes.string,
+        }),
+      ]),
+    ),
+  }),
+  registrants: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      jobTitle: PropTypes.string,
+    }),
+  ),
+};
 
 export default DescriptionSection;

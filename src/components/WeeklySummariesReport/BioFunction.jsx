@@ -1,7 +1,9 @@
 /* eslint-disable no-nested-ternary */
 import { useState } from 'react';
-import styles from './WeeklySummariesReport.module.scss';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
+import PropTypes from 'prop-types';
+import { isQualifiedForBio } from '~/utils/bioQualification';
+import styles from './WeeklySummariesReport.module.scss';
 
 function BioFunction(props) {
   const {
@@ -17,7 +19,7 @@ function BioFunction(props) {
 
   const [bioStatus, setBioStatus] = useState(bioPosted);
 
-  const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
+  const isMeetCriteria = isQualifiedForBio({ totalTangibleHrs, daysInTeam, bioPosted });
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -26,7 +28,7 @@ function BioFunction(props) {
     <div
       data-testid="bio-announcement"
       id="bio-announcement"
-      style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}
+      style={isMeetCriteria ? { backgroundColor: 'yellow', color: '#000000' } : {}}
     >
       <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
@@ -53,5 +55,16 @@ function BioFunction(props) {
     </div>
   );
 }
+
+BioFunction.propTypes = {
+  bioPosted: PropTypes.string,
+  totalTangibleHrs: PropTypes.number,
+  daysInTeam: PropTypes.number,
+  textColors: PropTypes.object,
+  summary: PropTypes.object,
+  bioCanEdit: PropTypes.bool,
+  handleProfileChange: PropTypes.func,
+  userId: PropTypes.string,
+};
 
 export default BioFunction;

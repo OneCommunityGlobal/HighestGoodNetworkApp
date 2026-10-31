@@ -1,109 +1,198 @@
-import { useState } from 'react';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+import { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import styles from './DisplayBox.module.css';
 
-export default function DisplayBox({ onClose }) {
-  const mockPromotionData = [
-    {
-      prReviewer: 'Akshay - Jayram',
-      teamCode: '123',
-      teamReviewerName: '""',
-      weeklyPRs: [
-        { week: '2024-06-01', prCount: 12 },
-        { week: '2024-06-08', prCount: 15 },
-        { week: '2024-06-15', prCount: 10 },
-        { week: '2024-06-22', prCount: 18 },
-        { week: '2024-06-29', prCount: 14 },
-        { week: '2024-07-06', prCount: 16 },
-        { week: '2024-07-13', prCount: 20 },
-      ],
-    },
-    {
-      prReviewer: 'Ghazi1212',
-      teamCode: '456',
-      teamReviewerName: '""',
-      weeklyPRs: [
-        { week: '2024-06-01', prCount: 12 },
-        { week: '2024-06-08', prCount: 15 },
-        { week: '2024-06-15', prCount: 10 },
-        { week: '2024-06-22', prCount: 18 },
-        { week: '2024-06-29', prCount: 14 },
-      ],
-    },
-  ];
+const VIBGYOR_COLOR_COUNT = 7;
 
-  const [checkedItems, setCheckedItems] = useState(new Array(mockPromotionData.length).fill(true));
-  const allChecked = checkedItems.every(Boolean);
+const MOCK_PROMOTION_DATA = [
+  {
+    prReviewer: 'Akshay - Jayram',
+    teamCode: '123',
+    teamReviewerName: 'Team Leader 1',
+    weeklyPRs: [
+      { week: '2024-06-01', prCount: 12 },
+      { week: '2024-06-08', prCount: 15 },
+      { week: '2024-06-15', prCount: 10 },
+      { week: '2024-06-22', prCount: 18 },
+      { week: '2024-06-29', prCount: 14 },
+      { week: '2024-07-06', prCount: 16 },
+      { week: '2024-07-13', prCount: 20 },
+    ],
+  },
+  {
+    prReviewer: 'Ghazi1212',
+    teamCode: '456',
+    teamReviewerName: 'Team Leader 2',
+    weeklyPRs: [
+      { week: '2024-06-01', prCount: 12 },
+      { week: '2024-06-08', prCount: 15 },
+      { week: '2024-06-15', prCount: 10 },
+      { week: '2024-06-22', prCount: 18 },
+      { week: '2024-06-29', prCount: 14 },
+    ],
+  },
+];
+
+export default function DisplayBox({ onClose, darkMode = false }) {
+  const [checkedItems, setCheckedItems] = useState(() => MOCK_PROMOTION_DATA.map(() => true));
+
+  const masterCheckboxRef = useRef(null);
+
+  const allChecked = checkedItems.length > 0 && checkedItems.every(Boolean);
+
+  const someChecked = checkedItems.some(Boolean);
+
+  useEffect(() => {
+    if (masterCheckboxRef.current) {
+      masterCheckboxRef.current.indeterminate = someChecked && !allChecked;
+    }
+  }, [someChecked, allChecked]);
+
+  useEffect(() => {
+    const handleKeyDown = event => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
   const handleCheckedBoxChange = index => {
-    const newChecked = [...checkedItems];
-    newChecked[index] = !newChecked[index];
-    setCheckedItems(newChecked);
+    setCheckedItems(currentItems =>
+      currentItems.map((checked, itemIndex) => (itemIndex === index ? !checked : checked)),
+    );
   };
 
-  const handleSelectAll = () => {
-    setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
+  const handleSelectAll = event => {
+    const shouldSelectAll = event.target.checked;
+
+    setCheckedItems(currentItems => currentItems.map(() => shouldSelectAll));
   };
+
+  const handleConfirm = () => {
+    const selectedReviewers = MOCK_PROMOTION_DATA.filter((_, index) => checkedItems[index]);
+
+    console.log('Selected reviewers:', selectedReviewers);
+
+    onClose();
+  };
+
+  const handleOverlayMouseDown = event => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
+
+  const tableClassName = [styles.popupTable, darkMode ? styles.popupTableDark : '']
+    .filter(Boolean)
+    .join(' ');
+
+  const getBadgeClassName = index =>
+    [styles.prCountBadge, styles[`color-${index % VIBGYOR_COLOR_COUNT}`]].filter(Boolean).join(' ');
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.popup}>
-        <h2 className={styles['popup-heading']}>
+    <div className={styles.overlay} onMouseDown={handleOverlayMouseDown}>
+      <dialog
+        open
+        className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}
+        aria-labelledby="promotion-dialog-heading"
+      >
+        <h2
+          id="promotion-dialog-heading"
+          className={`${styles.popupHeading} ${darkMode ? styles.popupHeadingDark : ''}`}
+        >
           Are you sure you want to promote these PR reviewers?
         </h2>
-        <table className={styles['popup-table']}>
+
+        <table className={tableClassName}>
           <thead>
             <tr>
               <th>
                 <input
+                  ref={masterCheckboxRef}
+                  className={styles.checkbox}
                   type="checkbox"
                   checked={allChecked}
                   onChange={handleSelectAll}
                   aria-label="Select all reviewers"
                 />
               </th>
+
               <th>PR Reviewer</th>
               <th>Team Code</th>
-              <th>Team Reviewer Name</th>
+              <th>Team Leader Name</th>
               <th>Weekly PR Counts</th>
             </tr>
           </thead>
+
           <tbody>
-            {mockPromotionData.map((promotion, index) => (
+            {MOCK_PROMOTION_DATA.map((promotion, index) => (
               <tr key={`${promotion.prReviewer}-${promotion.teamCode}`}>
                 <td>
                   <input
+                    className={styles.checkbox}
                     type="checkbox"
                     checked={checkedItems[index]}
                     onChange={() => handleCheckedBoxChange(index)}
                     aria-label={`Select reviewer ${promotion.prReviewer}`}
                   />
                 </td>
+
                 <td>{promotion.prReviewer}</td>
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
+
                 <td>
-                  {promotion.weeklyPRs.map((pr, prIndex) => (
-                    <span
-                      key={`${promotion.prReviewer}-${pr.week}`}
-                      className={`${styles['pr-count-badge']} ${styles[`color-${prIndex}`]}`}
-                    >
-                      {pr.prCount}
-                    </span>
-                  ))}
+                  <div className={styles.prBadgeRow}>
+                    {promotion.weeklyPRs.map((pr, prIndex) => (
+                      <span
+                        key={`${promotion.prReviewer}-${pr.week}`}
+                        className={getBadgeClassName(prIndex)}
+                      >
+                        {pr.prCount}
+                      </span>
+                    ))}
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className={styles['button-row']}>
-          <button type="button" className={styles.button} onClick={onClose}>
+
+        <div className={styles.buttonRow}>
+          <button
+            type="button"
+            className={`${styles.button} ${styles.cancelButton}`}
+            onClick={onClose}
+          >
             Cancel
           </button>
-          <button type="button" className={styles.button} disabled={!checkedItems.some(Boolean)}>
+
+          <button
+            type="button"
+            className={`${styles.button} ${styles.confirmButton}`}
+            disabled={!someChecked}
+            onClick={handleConfirm}
+          >
             Confirm
           </button>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 }
+
+DisplayBox.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+DisplayBox.defaultProps = {
+  darkMode: false,
+};

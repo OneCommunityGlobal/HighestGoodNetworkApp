@@ -1,7 +1,9 @@
 import { updateQuestion, deleteQuestion } from '~/actions/formActions';
+import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import OptionMaker from './OptionMaker';
 import RichTextEditor from './RichTextEditor';
+import styles from '../formsPage.module.css';
 
 export default function QuestionMaker({ data }) {
   const dispatch = useDispatch();
@@ -15,7 +17,7 @@ export default function QuestionMaker({ data }) {
   };
 
   return (
-    <div className="shadow-sm rounded row border border-primary mb-2 p-2">
+    <div className={`shadow-sm rounded row border border-primary mb-2 p-2 ${styles.questionCard}`}>
       <div className="row w-100 ml-2">
         <div className="col mb-1 mt-1 d-flex flex-row-reverse w-100">
           <button
@@ -69,7 +71,7 @@ export default function QuestionMaker({ data }) {
         </select>
       </div>
       <div className="row m-auto">
-        <div className="col">
+        <div className={`col ${styles.richTextHost}`}>
           <RichTextEditor data={data} />
         </div>
       </div>
@@ -86,25 +88,36 @@ export default function QuestionMaker({ data }) {
           {data.type === 'radio' && <OptionMaker data={data} />}
         </div>
       </div>
-      <div className="row w-100 ml-2">
-        <div className="col mb-1">
-          <div>
-            <input
-              className="form-check-input mb-1"
-              value="required"
-              type="checkbox"
-              checked={data.required}
-              onChange={() => dispatch(updateQuestion(data.id, { required: !data.required }))}
-            />
-          </div>
-          <div>
-            <input type="checkbox" id="required" name="required" />
-            <label htmlFor="required" className="form-check-label">
-              Required
-            </label>
-          </div>
+      <div className="mb-1 mt-1">
+        <div className="form-check mb-0">
+          <input
+            id={`question-required-${data.id}`}
+            className="form-check-input"
+            type="checkbox"
+            checked={data.required}
+            onChange={() => dispatch(updateQuestion(data.id, { required: !data.required }))}
+          />
+          <label className="form-check-label" htmlFor={`question-required-${data.id}`}>
+            Required
+          </label>
         </div>
       </div>
     </div>
   );
 }
+
+QuestionMaker.propTypes = {
+  data: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string,
+    description: PropTypes.string,
+    type: PropTypes.string.isRequired,
+    required: PropTypes.bool,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        value: PropTypes.string,
+      }),
+    ),
+  }).isRequired,
+};

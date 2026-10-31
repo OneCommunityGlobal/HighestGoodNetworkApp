@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 
-import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader, Spinner } from 'reactstrap';
 import styles from './PermissionsManagement.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -10,7 +10,6 @@ import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip
 // eslint-disable-next-line import/named
 import { updateUserProfile, getUserProfile } from '../../actions/userProfile';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/index.css';
 import { ENDPOINTS } from '~/utils/URL';
 import { ModalContext } from '~/context/ModalContext';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
@@ -21,15 +20,23 @@ import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
 import PermissionChangeLogTable from './PermissionChangeLogTable';
 
-function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode }) {
+import { permissions } from '../../utils/constants';
+function PermissionsManagement({
+  roles,
+  auth,
+  getUserRole,
+  userProfile,
+  darkMode,
+  hasPermission: checkPermission,
+}) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
   const [reminderModal, setReminderModal] = useState(false);
   const { modalStatus, reminderUser } = useContext(ModalContext);
 
-  const canPostRole = hasPermission('postRole');
-  const canPutRole = hasPermission('putRole');
-  const canManageUserPermissions = hasPermission('putUserProfilePermissions');
+  const canPostRole = checkPermission(permissions.postRole);
+  const canPutRole = checkPermission(permissions.putRole);
+  const canManageUserPermissions = checkPermission(permissions.putUserProfilePermissions);
 
   // Added permissionChangeLogs state management
   const [changeLogs, setChangeLogs] = useState([]);
@@ -163,7 +170,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
                     >
                       {roleName}
                     </button>
-                    <div className="infos">
+                    <div className={styles.infos}>
                       <EditableInfoModal
                         role={role}
                         areaName={`${roleName} Info`}
@@ -262,7 +269,17 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
           </Modal>
         </div>
       </div>
-      {loading && <p className={styles['loading-message']}>Loading...</p>}
+      {loading && (
+        <div className={styles['loading-message-div']}>
+          <p
+            data-testid="loading-message"
+            className={`${styles['loading-message']} ${darkMode ? 'text-light' : 'text-dark'} mb-2`}
+          >
+            Loading...
+          </p>
+          <Spinner color="primary" />
+        </div>
+      )}
       {error && (
         <p data-testid="error-message" className={styles['error-message']}>
           {error}

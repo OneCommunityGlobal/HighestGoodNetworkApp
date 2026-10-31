@@ -24,7 +24,7 @@ import {
   updateLBUser,
   deleteLBUser,
   clearLBUsersError,
-} from '../../../actions/lbDashboard/userManagementActions';
+} from '../../../actions/lbdashboard/userManagementActions';
 import styles from './LBUserManagement.module.css';
 
 const LIMIT_OPTIONS = [5, 10, 20, 50];

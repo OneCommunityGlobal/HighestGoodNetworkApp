@@ -15,6 +15,7 @@ import { editTeamMemberTimeEntry } from '../../actions/task';
 import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
 import styles from './Timelog.module.css';
 
+import { permissions } from '../../utils/constants';
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
  *  1. In TimeLog - current week time log, last week, week before ... tabs:
@@ -43,9 +44,9 @@ function TimeEntry(props) {
   const dispatch = useDispatch();
 
   const hasATimeEntryEditPermission =
-    props.hasPermission('editTimeEntryTime') ||
-    props.hasPermission('editTimeEntryDescription') ||
-    props.hasPermission('editTimeEntryDate');
+    props.hasPermission(permissions.editTimeEntryTime) ||
+    props.hasPermission(permissions.editTimeEntryDescription) ||
+    props.hasPermission(permissions.editTimeEntryDate);
 
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(
     timeEntryUserProfile?.email ? timeEntryUserProfile.email : '',
@@ -64,17 +65,17 @@ function TimeEntry(props) {
   const isAuthUserAndSameDayEntry = isAuthUser && isSameDay;
 
   // permission to edit any time log entry (from other user's Dashboard
-  // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
+  // For Administrator/Owner role, hasPermission(permissions.editTimelogInfo) should be true by default
   const canEditTangibility =
     (isAuthUser
-      ? dispatch(hasPermission('toggleTangibleTime'))
-      : dispatch(hasPermission('editTimeEntryToggleTangible'))) && !cantEditJaeRelatedRecord;
+      ? dispatch(hasPermission(permissions.toggleTangibleTime))
+      : dispatch(hasPermission(permissions.editTimeEntryToggleTangible))) && !cantEditJaeRelatedRecord;
 
   // permission to Delete any time entry from other user's Dashboard
-  const canDeleteOther = dispatch(hasPermission('deleteTimeEntryOthers'));
+  const canDeleteOther = dispatch(hasPermission(permissions.deleteTimeEntryOthers));
 
   // permission to delete any time entry on their own time logs tab
-  const canDeleteOwn = dispatch(hasPermission('deleteTimeEntryOwn'));
+  const canDeleteOwn = dispatch(hasPermission(permissions.deleteTimeEntryOwn));
 
   // condition for allowing delete in delete model
   // default permission: delete own sameday tangible entry = isAuthUserAndSameDayEntry
@@ -193,12 +194,21 @@ function TimeEntry(props) {
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&
                   !cantEditJaeRelatedRecord && (
-                    <button type="button" aria-label="FAEdit" className="mr-3 text-primary">
-                      <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
+                    <button
+                      type="button"
+                      aria-label="FAEdit"
+                      className={`${styles.iconBtn} mr-3 text-primary`}
+                      onClick={toggle}
+                    >
+                      <FontAwesomeIcon icon={faEdit} size="lg" />
                     </button>
                   )}
                 {canDelete && (
-                  <button type="button" aria-label="DeleteModal" className="text-primary">
+                  <button
+                    type="button"
+                    aria-label="DeleteModal"
+                    className={`${styles.iconBtn} text-primary`}
+                  >
                     <DeleteModal timeEntry={data} />
                   </button>
                 )}

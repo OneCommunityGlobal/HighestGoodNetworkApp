@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Dropdown, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import debounce from 'lodash/debounce';
+import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
+import appStyles from '~/App.module.css';
+
 const TEAM_NAME_MAX_LENGTH = 100;
+const SEARCH_DEBOUNCE_MS = 300;
 
 // eslint-disable-next-line react/display-name
 const AddTeamsAutoComplete = React.memo((props) => {
-  const { teamsData, searchText, setSearchText, setInputs, onCreateNewTeam } = props;
+  const { teamsData, searchText, setSearchText, onDropDownSelect, onCreateNewTeam } = props;
   const [isOpen, setIsOpen] = React.useState(false);
   const darkMode = useSelector((state) => state.theme.darkMode);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
 
   // Accept both shapes: { allTeams: [...] } OR just [...]
@@ -18,25 +29,42 @@ const AddTeamsAutoComplete = React.memo((props) => {
   const normalize = (s) =>
     (s ?? '').toString().toLowerCase().trim().replace(/\s+/g, ' ');
 
+  // The input stays fully responsive via searchText; only the (re)filtering of the
+  // suggestion list is debounced so rapid keystrokes don't recompute it every time.
+  const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
+  const debouncedSetSearchText = useRef(
+    debounce((value) => setDebouncedSearchText(value), SEARCH_DEBOUNCE_MS, {
+      leading: true,
+      trailing: true,
+    }),
+  ).current;
+
+  useEffect(() => {
+    debouncedSetSearchText(searchText);
+  }, [searchText, debouncedSetSearchText]);
+
+  useEffect(() => () => debouncedSetSearchText.cancel(), [debouncedSetSearchText]);
+
   const suggestions = React.useMemo(() => {
-    const q = normalize(searchText);
+    const q = normalize(debouncedSearchText);
     if (!q) return allTeams; // show all when empty
     return allTeams.filter((t) => normalize(t.teamName).includes(q));
-  }, [allTeams, searchText]);
+  }, [allTeams, debouncedSearchText]);
 
   const handlePick = (team) => {
-    setInputs(team);                 // parent expects the TEAM OBJECT
+    onDropDownSelect(team);
     setSearchText(team.teamName);
     setIsOpen(false);
-  };
+    };
 
+  const trimmedSearchText = (searchText ?? '').toString().trim();
   const showCreateNew =
-    !!searchText &&
-    !allTeams.some((t) => normalize(t.teamName) === normalize(searchText));
+    trimmedSearchText.length > 0 &&
+    !allTeams.some((t) => normalize(t.teamName) === normalize(trimmedSearchText));
 
   // NEW: don’t show “No teams found” when input is empty
   const shouldShowNoTeams =
-    searchText.trim().length > 0 && suggestions.length === 0;
+    trimmedSearchText.length > 0 && suggestions.length === 0;
 
   return (
     <Dropdown
@@ -47,7 +75,8 @@ const AddTeamsAutoComplete = React.memo((props) => {
       <Input
         type="text"
         value={searchText}
-        autoFocus // eslint-disable-line jsx-a11y/no-autofocus
+        innerRef={inputRef}
+        //autoFocus // eslint-disable-line jsx-a11y/no-autofocus
         onFocus={() => setIsOpen(true)}
         onBlur={() => setTimeout(() => setIsOpen(false), 120)}
         onChange={(e) => {
@@ -55,23 +84,23 @@ const AddTeamsAutoComplete = React.memo((props) => {
           setIsOpen(true);
         }}
         maxLength={TEAM_NAME_MAX_LENGTH}
-        className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+        className={darkMode ? `${appStyles['bg-darkmode-liblack']} border-0 text-light` : ''}
         placeholder="Search or select a team..."
         aria-label="Add to Team"
       />
-      <small 
-        className={darkMode ? 'text-light' : 'text-muted'} 
+      <small
+        className={darkMode ? 'text-light' : 'text-muted'}
         style={{ display: 'block', marginTop: '0.25rem', fontSize: '0.875rem' }}
       >
         {searchText.length}/{TEAM_NAME_MAX_LENGTH} characters
       </small>
-      
+
       {isOpen && (
         <div
           tabIndex="-1"
           role="menu"
           aria-hidden="false"
-          className={`dropdown-menu show ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`dropdown-menu show ${darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''}`}
           style={{ marginTop: 0, width: '100%', maxHeight: 260, overflowY: 'auto' }}
         >
           {/* If input is empty and we have nothing yet, show nothing (quiet state) */}
@@ -100,10 +129,10 @@ const AddTeamsAutoComplete = React.memo((props) => {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 setIsOpen(false);
-                onCreateNewTeam?.(searchText);
+                onCreateNewTeam?.(trimmedSearchText);
               }}
             >
-              Create new team: {searchText}
+              Create new team: {trimmedSearchText}
             </div>
           )}
         </div>
@@ -112,4 +141,23 @@ const AddTeamsAutoComplete = React.memo((props) => {
   );
 });
 
+AddTeamsAutoComplete.propTypes = {
+  teamsData: PropTypes.oneOfType([
+    PropTypes.shape({ allTeams: PropTypes.array }),
+    PropTypes.array,
+  ]),
+  searchText: PropTypes.string,
+  setSearchText: PropTypes.func.isRequired,
+  onDropDownSelect: PropTypes.func.isRequired,
+  onCreateNewTeam: PropTypes.func,
+};
+
+AddTeamsAutoComplete.defaultProps = {
+  teamsData: {},
+  searchText: '',
+  onCreateNewTeam: undefined,
+};
+
 export default AddTeamsAutoComplete;
+
+

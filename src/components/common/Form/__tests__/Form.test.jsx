@@ -18,18 +18,21 @@ describe('Form ', () => {
 
     form.dosubmit = vi.fn();
 
-    global.FileReader = vi.fn().mockImplementation(() => {
-      return {
-        readAsDataURL(file) {
-          // Simulate calling onload immediately with mock base64 content
-          const result = `data:${file.type};base64,dGVzdGZpbGU=`; // Example base64 for "testfile"
-          const event = { target: { result } };
-          if (this.onload) {
-            this.onload(event);
-          }
-        },
-      };
-    });
+    global.FileReader = class FileReader {
+      constructor() {
+        this.result = null;
+        this.onload = null;
+        this.onerror = null;
+      }
+      readAsDataURL(file) {
+        // Simulate calling onload immediately with mock base64 content
+        this.result = `data:${file.type};base64,dGVzdGZpbGU=`; // Example base64 for "testfile"
+        const event = { target: { result: this.result } };
+        if (this.onload) {
+          setTimeout(() => this.onload(event), 0);
+        }
+      }
+    };
   });
 
   // 1. Initial Rendering and Component Structure

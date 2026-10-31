@@ -28,6 +28,7 @@ import {
 } from '~/utils/leaderboardPermissions';
 import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 import hasPermission from '~/utils/permissions';
+import { permissions } from '../../utils/constants';
 // import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
@@ -37,8 +38,8 @@ import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
-import '../Header/index.css';
-import '../UserProfile/TeamsAndProjects/autoComplete.css';
+import '../Header/index.module.css';
+import '../UserProfile/TeamsAndProjects/autoComplete.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
@@ -92,8 +93,8 @@ function LeaderBoard({
   usersOnFutureTimeOff,
 }) {
   const userId = displayUserId;
-  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+  const hasSummaryIndicatorPermission = hasPermission(permissions.seeSummaryIndicator); // ??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission(permissions.seeVisibilityIcon); // ??? this permission doesn't exist?
   const todaysDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -176,14 +177,22 @@ function LeaderBoard({
 
   useEffect(() => {
     const checkAbbreviatedView = () => {
-      const isAbbrev = window.innerWidth < window.screen.width * 0.75;
+      const isAbbrev = window.innerWidth < 1500;
       setIsAbbreviatedView(isAbbrev);
     };
 
-    checkAbbreviatedView(); // run on mount
-    window.addEventListener('resize', checkAbbreviatedView);
+    let timer;
+    const debouncedCheck = () => {
+      clearTimeout(timer);
+      timer = setTimeout(checkAbbreviatedView, 200); // increase to 200ms
+    };
 
-    return () => window.removeEventListener('resize', checkAbbreviatedView);
+    checkAbbreviatedView();
+    window.addEventListener('resize', debouncedCheck);
+    return () => {
+      window.removeEventListener('resize', debouncedCheck);
+      clearTimeout(timer);
+    };
   }, []);
 
   const updateOrganizationData = (usersTaks, contUsers) => {
@@ -691,9 +700,9 @@ function LeaderBoard({
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
-              style={{ minWidth: '500px' }}
+              style={{ width: '100%', tableLayout: isAbbreviatedView ? 'fixed' : 'auto' }}
             >
-              <thead className="responsive-font-size">
+              <thead className={styles['responsive-font-size']}>
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
                   <th style={darkModeStyle}>
                     <span>{isAbbreviatedView ? 'Stat.' : 'Status'}</span>
@@ -701,12 +710,18 @@ function LeaderBoard({
                   <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
                       <span className="mr-2">{isAbbreviatedView ? 'Name' : 'Name'}</span>
-                      <span style={{ position: 'relative', top: '2px' }}>
+                      <span
+                        style={{
+                          position: 'relative',
+                          top: isAbbreviatedView ? '-13px' : '2px',
+                          left: isAbbreviatedView ? '10px' : '0px',
+                        }}
+                      >
                         <EditableInfoModal
                           areaName="Leaderboard"
                           areaTitle="Team Members Navigation"
                           role={loggedInUser.role}
-                          fontSize={18}
+                          fontSize={isAbbreviatedView ? 13 : 18}
                           isPermissionPage
                           darkMode={darkMode}
                           className="p-2"
@@ -746,7 +761,11 @@ function LeaderBoard({
                 </tr>
               </thead>
               <tbody className="my-custome-scrollbar responsive-font-size">
-                <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
+                <tr
+                  className={
+                    darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
+                  }
+                >
                   {isAbbreviatedView ? (
                     <td colSpan={2}>
                       <div className="leaderboard-totals-container text-center">
@@ -764,7 +783,7 @@ function LeaderBoard({
                   ) : (
                     <>
                       <td aria-label="Placeholder" />
-                      <td className="leaderboard-totals-container">
+                      <td className={styles['leaderboard-totals-container']}>
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
@@ -827,7 +846,9 @@ function LeaderBoard({
                   return (
                     <tr
                       key={item.personId}
-                      className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
+                      className={
+                        darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
+                      }
                     >
                       <td className="align-middle">
                         <div>

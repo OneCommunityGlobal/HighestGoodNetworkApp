@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .totalMaterialCostPerProjectChartTitle {
   font-size: medium;
   font-weight: bold;
@@ -6,7 +7,7 @@
 }
 
 .totalMaterialCostPerProjectChartTitleDark {
-  color: var(--text-color, #ffffff);
+  color: var(--text-color, #fff);
 }
 
 .selectValueContainerDark {

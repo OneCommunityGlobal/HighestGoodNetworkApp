@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { permissions } from '../../../utils/constants';
 // import { getUserProfile } from '../../actions/userProfile'
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
@@ -47,9 +48,10 @@ import {
   SEND_EMAILS,
   ACTIVITY_RESOURCE_MANGEMENT,
   ACTIVITY_RESOURCE_USAGE,
+  EVENT_DATABASE_DESIGN,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
-// import './CPHeader.css';
+// import './CPHeader.module.css';
 import styles from '../../Header/Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
@@ -70,55 +72,73 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
 
+  const PROFILE_ROUTE = '/communityportal/profile';
+  const userProfileLink = (
+    <NavLink tag={Link} to={`${PROFILE_ROUTE}/${displayUserId}`}>
+      <img
+        src={profilePic || '/pfp-default-header.png'}
+        alt=""
+        style={{ maxWidth: '60px', maxHeight: '60px' }}
+        className="dashboardimg"
+      />
+    </NavLink>
+  );
+
   // Users
   const canAccessUserManagement =
-    props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission(permissions.postUserProfile, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.deleteUserProfile, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.changeUserStatus, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.getUserProfiles, !isAuthUser && canInteractWithViewingUser);
 
   // Badges
   const canAccessBadgeManagement =
-    props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission(permissions.seeBadges, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.createBadges, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.updateBadges, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.deleteBadges, !isAuthUser && canInteractWithViewingUser);
 
   // Projects
   const canAccessProjects =
-    props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission(permissions.postProject, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.deleteProject, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.putProject, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.getProjectMembers, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(
+      permissions.assignProjectToUsers,
+      !isAuthUser && canInteractWithViewingUser,
+    ) ||
+    props.hasPermission(permissions.postWbs, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.deleteWbs, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.postTask, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.updateTask, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.deleteTask, !isAuthUser && canInteractWithViewingUser);
   // Tasks
   const canUpdateTask = props.hasPermission(
-    'updateTask',
+    permissions.updateTask,
     !isAuthUser && canInteractWithViewingUser,
   );
   // Teams
   const canAccessTeams =
-    props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission(permissions.postTeam, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.putTeam, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.deleteTeam, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.assignTeamToUsers, !isAuthUser && canInteractWithViewingUser);
   // Popups
   const canAccessPopups =
-    props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission(permissions.createPopup, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.updatePopup, !isAuthUser && canInteractWithViewingUser);
   // SendEmails
-  const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
+  const canAccessSendEmails = props.hasPermission(permissions.sendEmails, !isAuthUser);
   // Permissions
   const canAccessPermissionsManagement =
-    props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission(permissions.postRole, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.putRole, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(permissions.deleteRole, !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission(
+      permissions.putUserProfilePermissions,
+      !isAuthUser && canInteractWithViewingUser,
+    );
 
   const dispatch = useDispatch();
   const { darkMode } = props;
@@ -231,16 +251,7 @@ export function Header(props) {
             )}
             <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
               {/* --PROFILE SHOWS ON TOP IN MOBILE VIEW */}
-              <NavItem className={styles.showInMobile}>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                  <img
-                    alt=""
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
-              </NavItem>
+              <NavItem className={styles.showInMobile}>{userProfileLink}</NavItem>
               <UncontrolledDropdown inNavbar nav className={styles.showInMobile}>
                 <DropdownToggle nav caret>
                   <span>
@@ -254,7 +265,7 @@ export function Header(props) {
                 >
                   <DropdownItem
                     tag={Link}
-                    to={`/userprofile/${displayUserId}`}
+                    to={`${PROFILE_ROUTE}/{displayUserId}`}
                     className={fontColor}
                   >
                     {VIEW_PROFILE}
@@ -315,6 +326,13 @@ export function Header(props) {
                     className={fontColor}
                   >
                     {REGISTRATION}
+                  </DropdownItem>
+                  <DropdownItem
+                    tag={Link}
+                    to="/communityportal/database/design"
+                    className={fontColor}
+                  >
+                    {EVENT_DATABASE_DESIGN}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
@@ -428,16 +446,7 @@ export function Header(props) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               )}
-              <NavItem className={styles.hideInMobile}>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                  <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
-              </NavItem>
+              <NavItem className={styles.hideInMobile}>{userProfileLink}</NavItem>
               <UncontrolledDropdown nav className={styles.hideInMobile}>
                 <DropdownToggle nav caret>
                   <span>
@@ -449,11 +458,11 @@ export function Header(props) {
                     darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                   }`}
                 >
-                  <DropdownItem header className={fontColor}>
-                    Hello {firstName}
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`} className={fontColor}>
+                  <DropdownItem
+                    tag={Link}
+                    to={`${PROFILE_ROUTE}/${user.userid}`}
+                    className={fontColor}
+                  >
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (

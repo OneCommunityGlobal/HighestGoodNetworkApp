@@ -9,6 +9,7 @@ import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import styles from './UserRoleTab.module.css';
 
+import { permissions } from '../../utils/constants';
 function PermissionListItem(props) {
   const {
     rolePermissions,
@@ -22,6 +23,7 @@ function PermissionListItem(props) {
     setPermissions,
     setRemovedDefaultPermissions,
     removedDefaultPermissions,
+    editPermission,
   } = props;
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
@@ -38,9 +40,9 @@ function PermissionListItem(props) {
   const currentUserRole = useSelector(state => state.auth?.user?.role || '');
 
   // Only restrict the specific Blue Square Email Management permissio
-  const isRestrictedPermission = permission === 'resendBlueSquareAndSummaryEmails';
+  const isRestrictedPermission = permission === permissions.resendBlueSquareAndSummaryEmails;
   const userHasRestrictedPermission = currentUserPermissions.includes(
-    'resendBlueSquareAndSummaryEmails',
+    permissions.resendBlueSquareAndSummaryEmails,
   );
   const userHasRoleWithRestrictedPermission = currentUserRole === 'Owner';
   const shouldDisableForRestriction =
@@ -48,6 +50,8 @@ function PermissionListItem(props) {
     isRestrictedPermission &&
     !userHasRestrictedPermission &&
     !userHasRoleWithRestrictedPermission;
+
+  const canEditPermissions = props.hasPermission(editPermission || permissions.putRole);
 
   const { updateModalStatus } = useContext(ModalContext);
 
@@ -206,9 +210,7 @@ function PermissionListItem(props) {
               title="Click for more information"
               aria-hidden="true"
               className="fa fa-info-circle"
-              onClick={() => {
-                handleModalOpen(description);
-              }}
+              onClick={handleModalOpen}
               style={{ color: darkMode ? 'white' : 'black' }}
             />
           </div>
@@ -231,7 +233,7 @@ function PermissionListItem(props) {
                 props.onChange();
                 updateModalStatus(true);
               }}
-              disabled={!props.hasPermission('putRole')}
+              disabled={!canEditPermissions}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -245,9 +247,9 @@ function PermissionListItem(props) {
                 updateModalStatus(true);
               }}
               disabled={
-                !props.hasPermission('putRole') ||
+                !canEditPermissions ||
                 (immutablePermissions.includes(permission) &&
-                  !props.hasPermission('putUserProfilePermissions')) ||
+                  !props.hasPermission(permissions.putUserProfilePermissions)) ||
                 shouldDisableForRestriction
               }
               style={darkMode ? boxStyleDark : boxStyle}
@@ -275,6 +277,7 @@ function PermissionListItem(props) {
             permissionsList={subperms}
             immutablePermissions={immutablePermissions}
             editable={editable}
+            editPermission={editPermission}
             setPermissions={setPermissions}
             // eslint-disable-next-line react/destructuring-assignment
             onChange={props.onChange}

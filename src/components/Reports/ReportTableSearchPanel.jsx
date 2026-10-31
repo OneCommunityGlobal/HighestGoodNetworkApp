@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import debounce from 'lodash/debounce';
 import { SEARCH } from '../../languages/en/ui';
-import './reportsPage.css';
+import styles from './reportsPage.module.css';
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 /**
  * The search panel stateless component for Report grid
  */
 function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Keep the input responsive to every keystroke while debouncing the (expensive)
+  // filter recompute that onSearch triggers upstream in ReportsPage.
+  const [localSearchText, setLocalSearchText] = useState(wildCardSearchText ?? '');
+  const onSearchRef = useRef(onSearch);
+  onSearchRef.current = onSearch;
+
+  const debouncedSearch = useRef(
+    debounce(value => onSearchRef.current(value), SEARCH_DEBOUNCE_MS, {
+      leading: true,
+      trailing: true,
+    }),
+  ).current;
+
+  useEffect(() => () => debouncedSearch.cancel(), [debouncedSearch]);
+
+  // Stay in sync when the search text is reset externally (e.g. "Clear Filters").
+  useEffect(() => {
+    if (wildCardSearchText === '' && localSearchText !== '') {
+      setLocalSearchText('');
+    }
+  }, [wildCardSearchText]);
 
   const handleSearchClick = () => {
     // Call the parent's search click handler if provided
@@ -18,11 +43,11 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
     // Scroll to results when search button is clicked, but ensure header remains visible
     setTimeout(() => {
       // Try to find the table data container (where results are shown)
-      let resultsContainer = document.querySelector('.table-data-container');
+      let resultsContainer = document.querySelector(`.${styles['table-data-container']}`);
       
       // If table data container is not visible, scroll to the report container data
       if (!resultsContainer || resultsContainer.offsetHeight === 0) {
-        resultsContainer = document.querySelector('.report-container-data');
+        resultsContainer = document.querySelector(`.${styles['report-container-data']}`);
       }
       
       if (resultsContainer) {
@@ -43,7 +68,7 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
         });
       } else {
         // Fallback: scroll to the category container with header offset
-        const categoryContainer = document.querySelector('.category-container');
+        const categoryContainer = document.querySelector(`.${styles['category-container']}`);
         if (categoryContainer) {
           const header = document.querySelector('.header-wrapper, .navbar, [data-testid="header"]');
           const headerHeight = header ? header.offsetHeight : 80;
@@ -62,11 +87,11 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
 
   return (
     <div>
-      <div className="input-group" id="new_team">
+      <div className={`input-group`} id="new_team">
         <div className="input-group-prepend">
           <button
             type="button"
-            className={`btn ${darkMode ? 'bg-yinmn-blue text-light' : 'btn-secondary'}`}
+            className={`btn ${styles['report-filter-label-action']} ${darkMode ? 'bg-yinmn-blue text-light' : 'btn-secondary'}`}
             onClick={handleSearchClick}
           >
             {SEARCH}
@@ -77,13 +102,15 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
           /* eslint-disable-next-line jsx-a11y/no-autofocus */
           autoFocus
           type="text"
-          className={`form-control search-field-container ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`form-control ${styles['search-field-container']} ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
           aria-label="Search"
           placeholder="Search Text"
           id="team-profiles-wild-card-search"
-          value={wildCardSearchText}
+          value={localSearchText}
           onChange={e => {
-            onSearch(e.target.value); // Use destructured onSearch directly
+            const { value } = e.target;
+            setLocalSearchText(value);
+            debouncedSearch(value);
           }}
         />
       </div>

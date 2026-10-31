@@ -9,11 +9,11 @@ import {
 import { Provider } from 'react-redux';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import Badge from '../Badge';
 import thunk from 'redux-thunk';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 describe('Badge Component', () => {
   let store;

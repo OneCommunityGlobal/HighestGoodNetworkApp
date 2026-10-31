@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
+import PropTypes from 'prop-types';
+import { useEffect, useMemo, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
+import { Card, CardBody, CardImg, CardText, CustomInput, Popover } from 'reactstrap';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 function AssignTableRow(props) {
@@ -30,20 +31,16 @@ function AssignTableRow(props) {
   const badgeId = props.badge?._id;
   const domId = `assign-badge-${badgeId}`;
 
-  // Initialize selection from props (badges that user already has)
-  useEffect(() => {
-    if (props.propExistBadges?.includes(badgeId)) {
-      dispatch(addSelectBadge(badgeId));
-    }
-    // run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const isSelected = selectedBadges.includes(badgeId);
+  const isExisting = props.propExistBadges?.includes(badgeId);
+  const isSelected =
+    isExisting ||
+    selectedBadges.includes(badgeId) ||
+    selectedBadges.includes(`assign-badge-${badgeId}`);
   // eslint-disable-next-line no-console
   console.log(selectedBadges, 'sele', badgeId, props);
 
   const handleCheckBoxChange = e => {
+    if (props.propExistBadges?.includes(badgeId)) return; // existing badges not re-assignable
     if (e.target.checked) {
       dispatch(addSelectBadge(badgeId));
       setSelect(true);
@@ -78,11 +75,24 @@ function AssignTableRow(props) {
           id={domId}
           onChange={handleCheckBoxChange}
           checked={isSelected}
+          className="cursor-pointer"
         />
       </td>
     </tr>
   );
 }
+
+AssignTableRow.propTypes = {
+  badge: PropTypes.shape({
+    _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    imageUrl: PropTypes.string,
+    badgeName: PropTypes.string,
+    description: PropTypes.string,
+  }),
+  index: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  selectedBadges: PropTypes.array,
+  propExistBadges: PropTypes.array,
+};
 
 const mapDispatchToProps = dispatch => ({
   addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),

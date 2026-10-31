@@ -23,13 +23,14 @@ import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import styles from '../wbs.module.css';
 
+import { permissions } from '../../../../../utils/constants';
 function ControllerRow(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
   // permissions
-  const canDeleteTask = props.hasPermission('deleteTask');
-  const canPostTask = props.hasPermission('postTask');
+  const canDeleteTask = props.hasPermission(permissions.deleteTask);
+  const canPostTask = props.hasPermission(permissions.postTask);
 
   // props from store
   const { role, userPermissions, roles, popupContent, darkMode, tasks } = props;
@@ -124,7 +125,7 @@ function ControllerRow(props) {
             <DropdownToggle caret color="primary" className={styles["controlBtn"]} size="sm" style={darkMode ? boxStyleDark : boxStyle}>
               Move
             </DropdownToggle>
-            <DropdownMenu>
+            <DropdownMenu className={darkMode ? styles.moveDropdownMenuDark : ''}>
               {props.siblings.map((item, i) => {
                 if (item.num !== props.num) {
                   return (
@@ -141,7 +142,7 @@ function ControllerRow(props) {
             color="secondary"
             size="sm"
             className={styles["controlBtn"]}
-            onClick={() => onCopy(props.taskId)}
+            onClick={onCopy}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {isCopied ? 'Copied' : 'Copy'}

@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
 import { createEvent } from '../../../../actions/communityPortal/eventActions';
 import '../../../Header/DarkMode.module.css';
 
-function CreateEventModal({ isOpen, toggle }) {
+function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const [loading, setLoading] = useState(false);
@@ -29,6 +29,12 @@ function CreateEventModal({ isOpen, toggle }) {
     maxAttendees: 10,
     coverImage: '',
   });
+
+  useEffect(() => {
+    if (isOpen && !loading) {
+      resetForm();
+    }
+  }, [isOpen]);
 
   const resetForm = () => {
     setFormData({
@@ -55,9 +61,11 @@ function CreateEventModal({ isOpen, toggle }) {
 
   const handleToggle = () => {
     if (!loading) {
-      toggle();
-      if (!isOpen) {
+      if (isOpen) {
+        toggle();
+      } else {
         resetForm();
+        toggle();
       }
     }
   };
@@ -88,6 +96,16 @@ function CreateEventModal({ isOpen, toggle }) {
 
     if (!formData.date) {
       newErrors.date = 'Date is required';
+    }
+
+    if (formData.date) {
+      const selectedDate = moment(formData.date, 'YYYY-MM-DD').startOf('day');
+      const today = moment()
+        .tz('America/Los_Angeles')
+        .startOf('day');
+      if (selectedDate.isBefore(today)) {
+        newErrors.date = 'Event Date Cannot be in the past';
+      }
     }
 
     if (!formData.startTime) {
@@ -151,11 +169,11 @@ function CreateEventModal({ isOpen, toggle }) {
     try {
       const result = await dispatch(createEvent(eventData));
       if (result?.success) {
+        onEventCreated();
         handleToggle();
-        // The events list will be refreshed when the component re-renders
       }
     } catch (error) {
-      // Error handling is done in the action
+      setErrors('Unable to create a new event. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -273,6 +291,9 @@ function CreateEventModal({ isOpen, toggle }) {
               value={formData.date}
               onChange={handleChange}
               disabled={loading}
+              min={moment()
+                .tz('America/Los_Angeles')
+                .format('YYYY-MM-DD')}
               style={darkMode ? { colorScheme: 'dark' } : {}}
             />
             {errors.date && <div className="text-danger small">{errors.date}</div>}

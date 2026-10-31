@@ -30,6 +30,12 @@ const wishlists = [
     ],
     location: 'Location',
     price: '$28/Day',
+    host: {
+      userId: '507f1f77bcf86cd799439011',
+      firstName: 'Earthbag',
+      lastName: 'Host',
+      profilePic: '',
+    },
   },
   {
     id: '2',
@@ -48,6 +54,12 @@ const wishlists = [
     ],
     location: 'Location',
     price: '$25/Day',
+    host: {
+      userId: '507f1f77bcf86cd799439012',
+      firstName: 'Cob Village',
+      lastName: 'Host',
+      profilePic: '',
+    },
   },
   {
     id: '3',
@@ -72,6 +84,12 @@ const wishlists = [
     ],
     location: 'Location',
     price: '$50/Day',
+    host: {
+      userId: '507f1f77bcf86cd799439013',
+      firstName: 'Rob Village',
+      lastName: 'Host',
+      profilePic: '',
+    },
   },
 ];
 

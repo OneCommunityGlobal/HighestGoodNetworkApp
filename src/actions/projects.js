@@ -34,6 +34,17 @@ const setProjectsError = ({ status, error }) => ({
 });
 
 /**
+ * set archived projects in store, under their own key
+ * @param projects: archived projects
+ * @param status: status code
+ */
+const setArchivedProjectsSuccess = ({ projects, status }) => ({
+  type: types.FETCH_ARCHIVED_PROJECTS_SUCCESS,
+  projects,
+  status,
+});
+
+/**
  * Add new project to store
  * @param payload : new project
  * @param status: status code
@@ -98,6 +109,24 @@ export const fetchAllProjects = () => {
       status = res.status;
       const projects = res.data;
       dispatch(setProjectsSuccess({ projects, status }));
+    } catch (err) {
+      status = err.response.status;
+      error = err.response.data;
+      dispatch(setProjectsError({ status, error }));
+    }
+  };
+};
+
+export const fetchAllArchivedProjects = () => {
+  return async dispatch => {
+    const url = ENDPOINTS.ARCHIVEDPROJECTS;
+    let status, error;
+    dispatch(setProjectsStart());
+    try {
+      const res = await axios.get(url);
+      status = res.status;
+      const projects = res.data;
+      dispatch(setArchivedProjectsSuccess({ projects, status }));
     } catch (err) {
       status = err.response.status;
       error = err.response.data;

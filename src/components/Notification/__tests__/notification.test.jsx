@@ -2,12 +2,12 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import NotificationCard from '../notificationCard';
 import * as actions from '../../../actions/notificationAction';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 vi.mock('../../../actions/notificationAction');
 
