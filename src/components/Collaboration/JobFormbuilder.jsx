@@ -1,6 +1,6 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { Prompt } from 'react-router-dom';
@@ -75,40 +75,42 @@ function JobFormBuilder() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isLoadingForm, setIsLoadingForm] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [hasModalChanges, setHasModalChanges] = useState(false);
+
+  const hasUnsavedChanges = hasUnsavedJobFormChanges({
+    formFields,
+    initialFormFields,
+    newField,
+    initialNewField,
+    templateName,
+    jobTitle,
+    initialJobTitle,
+    newOption,
+    hasModalChanges,
+  });
 
   const markAsSaved = (fields, savedJobTitle) => {
     setInitialFormFields(structuredClone(fields));
     if (savedJobTitle !== undefined) setInitialJobTitle(savedJobTitle);
-    setHasUnsavedChanges(false);
   };
 
-  // Prevent refresh while unsaved changes exist
-  useEffect(() => {
+  // Back/Forward can leave the document entirely, bypassing React Router's Prompt.
+  useLayoutEffect(() => {
+    if (!hasUnsavedChanges) return undefined;
     const handler = event => {
-      if (hasUnsavedChanges) {
-        event.preventDefault();
-        event.returnValue = '';
-      }
+      event.preventDefault();
+      // Keep a nonempty value for browsers that still use the legacy signal.
+      // The browser supplies its own text for the native confirmation dialog.
+      event.returnValue = 'You have unsaved changes.';
+      return event.returnValue;
     };
 
-    globalThis.addEventListener('beforeunload', handler);
-    return () => globalThis.removeEventListener('beforeunload', handler);
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
   }, [hasUnsavedChanges]);
-
-  // Reset builder after template is saved
-  const resetBuilderState = () => {
-    setFormFields([]);
-    setNewField({
-      questionText: '',
-      questionType: 'textbox',
-      options: [],
-      visible: true,
-      isRequired: false,
-      required: false,
-    });
-    setNewOption('');
-  };
 
   // Auto-load existing form on component mount
   useEffect(() => {
@@ -134,6 +136,9 @@ function JobFormBuilder() {
         }
       } catch (error) {
         console.error('Error auto-loading form:', error);
+        setSaveError('Unable to load the form. Please refresh before editing.');
+      } finally {
+        setIsLoadingForm(false);
       }
     };
 
@@ -142,68 +147,17 @@ function JobFormBuilder() {
     });
   }, []);
 
-  // Detect unsaved changes
-  useEffect(() => {
-    const changed = hasUnsavedJobFormChanges({
-      formFields,
-      initialFormFields,
-      newField,
-      initialNewField,
-      templateName,
-      jobTitle,
-      initialJobTitle,
-    });
-
-    setHasUnsavedChanges(changed);
-  }, [formFields, initialFormFields, newField, templateName, jobTitle, initialJobTitle]);
-
-  // CRUD Functions with Dynamic Form ID
-  const moveField = async (index, direction) => {
+  // Keep question changes local until Save Form succeeds.
+  const moveField = (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-
-    if (
-      (direction === 'up' && index > 0) ||
-      (direction === 'down' && index < formFields.length - 1)
-    ) {
-      // Update local state immediately
-      const newFields = [...formFields];
-      [newFields[index], newFields[newIndex]] = [newFields[newIndex], newFields[index]];
-      setFormFields(newFields);
-
-      // Sync with backend if form exists
-      if (currentFormId) {
-        try {
-          await axios.put(ENDPOINTS.REORDER_QUESTIONS(currentFormId), {
-            fromIndex: index,
-            toIndex: newIndex,
-            requestor: getRequestor(),
-          });
-          markAsSaved(newFields);
-        } catch (error) {
-          console.error('Error reordering questions on server:', error);
-        }
-      }
-    }
+    if (newIndex < 0 || newIndex >= formFields.length) return;
+    const newFields = [...formFields];
+    [newFields[index], newFields[newIndex]] = [newFields[newIndex], newFields[index]];
+    setFormFields(newFields);
   };
 
-  const deleteField = async index => {
-    // Update local state immediately
-    const newFields = [...formFields];
-    newFields.splice(index, 1);
-    setFormFields(newFields);
-
-    // Sync with backend if form exists
-    if (currentFormId) {
-      try {
-        await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index), {
-          data: { requestor: getRequestor() },
-        });
-        markAsSaved(newFields);
-        console.log('Question deleted successfully');
-      } catch (error) {
-        console.error('Error deleting question on server:', error);
-      }
-    }
+  const deleteField = index => {
+    setFormFields(fields => fields.filter((field, fieldIndex) => fieldIndex !== index));
   };
 
   const editField = (field, index) => {
@@ -221,7 +175,7 @@ function JobFormBuilder() {
     setEditModalOpen(true);
   };
 
-  const handleSaveEditedQuestion = async editedQuestion => {
+  const handleSaveEditedQuestion = editedQuestion => {
     const isRequired = Boolean(editedQuestion.required || editedQuestion.isRequired);
     const updatedField = normalizeQuestionForApi({
       ...formFields[editingIndex],
@@ -233,25 +187,11 @@ function JobFormBuilder() {
       placeholder: editedQuestion.placeholder,
     });
 
-    // Update local state immediately
     const updatedFields = [...formFields];
     updatedFields[editingIndex] = updatedField;
     setFormFields(updatedFields);
 
-    // Sync with backend if form exists
-    if (currentFormId) {
-      try {
-        await axios.put(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), {
-          ...updatedField,
-          requestor: getRequestor(),
-        });
-        markAsSaved(updatedFields);
-        console.log('Question updated successfully');
-      } catch (error) {
-        console.error('Error updating question on server:', error);
-      }
-    }
-
+    setHasModalChanges(false);
     // Close the modal
     setEditModalOpen(false);
     setEditingQuestion(null);
@@ -259,6 +199,7 @@ function JobFormBuilder() {
   };
 
   const handleCancelEdit = () => {
+    setHasModalChanges(false);
     setEditModalOpen(false);
     setEditingQuestion(null);
     setEditingIndex(null);
@@ -281,7 +222,7 @@ function JobFormBuilder() {
     setNewOption('');
   };
 
-  const handleAddField = async () => {
+  const handleAddField = () => {
     if (newField.questionText.trim() === '') {
       alert('Field label is required!');
       return;
@@ -301,22 +242,7 @@ function JobFormBuilder() {
       const confirmAdd = window.confirm('You already have a similar question. Add Anyway?');
       if (!confirmAdd) return;
     }
-    const updatedFields = [...formFields, fieldToAdd];
-    setFormFields(updatedFields);
-
-    // Sync with backend if form exists
-    if (currentFormId) {
-      try {
-        await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-          question: fieldToAdd,
-          position: formFields.length,
-          requestor: getRequestor(),
-        });
-        markAsSaved(updatedFields);
-      } catch (error) {
-        console.error('Error adding question to server:', error);
-      }
-    }
+    setFormFields([...formFields, fieldToAdd]);
 
     setNewField({
       questionText: '',
@@ -345,6 +271,8 @@ function JobFormBuilder() {
       return;
     }
 
+    setIsSaving(true);
+    setSaveError('');
     try {
       await axios.put(ENDPOINTS.UPDATE_JOB_FORM, {
         formId: currentFormId,
@@ -363,7 +291,10 @@ function JobFormBuilder() {
         error.response?.data?.message ||
         error.response?.data?.error?.message ||
         'Failed to save form. Please try again.';
+      setSaveError(message);
       alert(message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -373,7 +304,9 @@ function JobFormBuilder() {
         when={hasUnsavedChanges}
         message="You have unsaved changes. Are you sure you want to leave this page?"
       />
-      <div className={styles.formBuilderContainer}>
+      <fieldset className={styles.formBuilderContainer} disabled={isLoadingForm || isSaving}>
+        {isLoadingForm && <p role="status">Loading form…</p>}
+        {saveError && <p role="alert">{saveError}</p>}
         <img
           src={OneCommunityImage}
           alt="One Community Logo"
@@ -382,7 +315,12 @@ function JobFormBuilder() {
         />
         <div className={styles.jobformNavbar}>
           <div>
-            <input placeholder="Enter Job Title" className={styles.jobformInput} />
+            <input
+              placeholder="Enter Job Title"
+              className={styles.jobformInput}
+              value={jobTitle === 'Please Choose an option' ? '' : jobTitle}
+              onChange={event => setJobTitle(event.target.value)}
+            />
             <button type="button" className={styles.goButton}>
               Go
             </button>
@@ -394,6 +332,9 @@ function JobFormBuilder() {
               className={styles.jobformSelect}
             >
               <option value="Please Choose an option">Please Choose an Option</option>
+              {jobTitle &&
+                jobTitle !== 'Please Choose an option' &&
+                !jobPositions.includes(jobTitle) && <option value={jobTitle}>{jobTitle}</option>}
               {jobPositions.map(e => (
                 <option key={uuidv4()} value={e}>
                   {e}
@@ -403,6 +344,9 @@ function JobFormBuilder() {
           </div>
         </div>
         <h1 className={styles.jobformTitle}>Job Question Set Builder</h1>
+        {hasUnsavedChanges && (
+          <p role="status">Unsaved changes — click Save Form to keep your changes.</p>
+        )}
         {canManageJobForms ? (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
@@ -413,14 +357,7 @@ function JobFormBuilder() {
             <QuestionSetManager
               formFields={formFields}
               setFormFields={setFormFields}
-              onImportQuestions={fields => {
-                importQuestions(fields);
-                markAsSaved(fields);
-              }}
-              onTemplateSaved={() => {
-                markAsSaved(formFields);
-                resetBuilderState();
-              }}
+              onImportQuestions={importQuestions}
               darkMode={darkMode}
               templateName={templateName}
               setTemplateName={setTemplateName}
@@ -656,6 +593,7 @@ function JobFormBuilder() {
 
             {editModalOpen && editingQuestion && (
               <QuestionEditModal
+                onDirtyChange={setHasModalChanges}
                 question={editingQuestion}
                 onSave={handleSaveEditedQuestion}
                 onCancel={handleCancelEdit}
@@ -682,7 +620,7 @@ function JobFormBuilder() {
           jobTitle={jobTitle}
           darkMode={darkMode}
         />
-      </div>
+      </fieldset>
     </div>
   );
 }

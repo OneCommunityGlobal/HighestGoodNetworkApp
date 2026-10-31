@@ -20,7 +20,7 @@ const toOptionRows = options =>
     value: value ?? '',
   }));
 
-function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
+function QuestionEditModal({ question, onSave, onCancel, darkMode = false, onDirtyChange }) {
   const [editedQuestion, setEditedQuestion] = useState({
     ...question,
     required: question.required || question.isRequired || false,
@@ -41,6 +41,17 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
     });
     setOptionRows(toOptionRows(question.options));
   }, [question]);
+
+  useEffect(() => {
+    onDirtyChange?.(
+      JSON.stringify(editedQuestion) !==
+        JSON.stringify({
+          ...question,
+          required: question.required || question.isRequired || false,
+          options: question.options || [],
+        }),
+    );
+  }, [editedQuestion, question, onDirtyChange]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -235,6 +246,7 @@ QuestionEditModal.propTypes = {
   onSave: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   darkMode: PropTypes.bool,
+  onDirtyChange: PropTypes.func,
 };
 
 export default QuestionEditModal;

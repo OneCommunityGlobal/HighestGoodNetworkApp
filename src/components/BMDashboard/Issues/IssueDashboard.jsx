@@ -31,14 +31,14 @@ import { jsPDF } from 'jspdf';
 
 export default function IssueDashboard() {
   const dispatch = useDispatch();
-  const issues = useSelector(state => state.bmIssues || []);
+  const issues = useSelector(state => state.issue.issues);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [menuOpen, setMenuOpen] = useState(null);
   const itemsPerPage = 5;
   const displayIssues = issues;
-  const totalPages = Math.ceil(displayIssues.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(displayIssues.length / itemsPerPage));
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showCopyModal, setShowCopyModal] = useState(false);

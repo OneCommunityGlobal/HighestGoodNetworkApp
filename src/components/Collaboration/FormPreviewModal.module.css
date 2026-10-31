@@ -276,7 +276,14 @@
 .darkMode .previewSelect {
   background-color: #444;
   border-color: #555;
-  color: #999;
+  color: #e0e0e0;
+  opacity: 1;
+}
+
+.darkMode .previewInput::placeholder,
+.darkMode .previewTextarea::placeholder {
+  color: #cfd8dc;
+  opacity: 1;
 }
 
 .darkMode .previewOptionLabel {
