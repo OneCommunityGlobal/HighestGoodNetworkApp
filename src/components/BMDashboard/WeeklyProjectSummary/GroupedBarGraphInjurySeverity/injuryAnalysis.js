@@ -32,7 +32,7 @@ export const bucketDateRange = (bucket, start, end, interval) => {
 export const analysisSeries = (buckets, start, end, interval) => {
   const categories = [
     ...new Set(buckets.flatMap(bucket => bucket.records.map(record => record.workerCategory))),
-  ].sort();
+  ].sort((first, second) => first.localeCompare(second));
   const series = categories.map((name, index) => ({ name, key: `category${index}` }));
   const rows = buckets.map(bucket => {
     const row = {
@@ -63,30 +63,32 @@ export const comparePeriods = (a, b) => {
   };
   const first = totals(a);
   const second = totals(b);
-  return [...new Set([...first.keys(), ...second.keys()])].sort().map(category => {
-    const countA = first.get(category) || 0;
-    const countB = second.get(category) || 0;
-    const change = countB - countA;
-    let description = '→ Unchanged';
-    if (change !== 0) {
-      const direction = change > 0 ? '↑' : '↓';
-      const amount = `${Math.abs(change)} ${change > 0 ? 'more' : 'fewer'}`;
-      const percentage = countA
-        ? `${Math.abs((change / countA) * 100).toFixed(1)}%`
-        : 'new injuries';
-      description = `${direction} ${amount} (${percentage})`;
-    }
-    return {
-      category,
-      countA,
-      countB,
-      change,
-      description,
-      direction: change === 0 ? '→ Unchanged' : change > 0 ? '↑ Increased' : '↓ Decreased',
-      rateA: countA / a.days,
-      rateB: countB / b.days,
-    };
-  });
+  return [...new Set([...first.keys(), ...second.keys()])]
+    .sort((first, second) => first.localeCompare(second))
+    .map(category => {
+      const countA = first.get(category) || 0;
+      const countB = second.get(category) || 0;
+      const change = countB - countA;
+      let description = '→ Unchanged';
+      if (change !== 0) {
+        const direction = change > 0 ? '↑' : '↓';
+        const amount = `${Math.abs(change)} ${change > 0 ? 'more' : 'fewer'}`;
+        const percentage = countA
+          ? `${Math.abs((change / countA) * 100).toFixed(1)}%`
+          : 'new injuries';
+        description = `${direction} ${amount} (${percentage})`;
+      }
+      return {
+        category,
+        countA,
+        countB,
+        change,
+        description,
+        direction: change === 0 ? '→ Unchanged' : change > 0 ? '↑ Increased' : '↓ Decreased',
+        rateA: countA / a.days,
+        rateB: countB / b.days,
+      };
+    });
 };
 
 export const defaultRange = (months = 12, end = new Date()) => {
