@@ -14,6 +14,7 @@ import {
   FaUndoAlt,
 } from 'react-icons/fa';
 import { connect, useDispatch } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Progress } from 'reactstrap';
@@ -26,7 +27,7 @@ import css from './Timer.module.css';
 import TimerPopout from './TimerPopout';
 import TimerStatus from './TimerStatus';
 
-function Timer({ authUser, darkMode, isPopout }) {
+function Timer({ authUser, darkMode, isPopout, history }) {
   const dispatch = useDispatch();
   const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!globalThis.opener;
   /**
@@ -804,6 +805,7 @@ function Timer({ authUser, darkMode, isPopout }) {
         onTimeSubmitted={handleTimeSubmitted}
         sessionId={sessionId}
         timerStats={getTimerStats()}
+        onDuplicateCancel={personId => history.push(`/timelog/${personId}#currentWeek`)}
       />
     );
 
@@ -1174,7 +1176,12 @@ function Timer({ authUser, darkMode, isPopout }) {
             </div>
           </button>
           {!realIsPopout && (
-            <TimerPopout authUser={authUser} darkMode={darkMode} TimerComponent={Timer} />
+            <TimerPopout
+              authUser={authUser}
+              darkMode={darkMode}
+              history={history}
+              TimerComponent={RoutedTimer}
+            />
           )}
         </div>
       )}
@@ -1226,6 +1233,7 @@ Timer.propTypes = {
   }),
   darkMode: PropTypes.bool,
   isPopout: PropTypes.bool,
+  history: PropTypes.shape({ push: PropTypes.func }),
 };
 
 const mapStateToProps = state => ({
@@ -1233,4 +1241,6 @@ const mapStateToProps = state => ({
   userProfile: state.userProfile,
 });
 
-export default connect(mapStateToProps, {})(Timer);
+const RoutedTimer = withRouter(Timer);
+
+export default connect(mapStateToProps, {})(RoutedTimer);
