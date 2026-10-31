@@ -117,16 +117,20 @@
   opacity: 1 !important;
 }
 
-/* Dark mode styles for recharts surface */
-.chartWrapper :global(.recharts-surface) {
+/* Dark mode styles for recharts surface. chartWrapper is present in both themes,
+   so it must be combined with the dark-mode-only bg-oxford-blue class (applied
+   alongside it in AgeChart.jsx) — otherwise this dark navy background and its
+   children leak into the light-mode chart, whose black axis labels then become
+   unreadable against it. */
+.chartWrapper:global(.bg-oxford-blue) :global(.recharts-surface) {
   background-color: #1b2a41 !important;
 }
 
-.chartWrapper :global(.recharts-wrapper) {
+.chartWrapper:global(.bg-oxford-blue) :global(.recharts-wrapper) {
   background-color: #1b2a41 !important;
 }
 
-.chartWrapper :global(.recharts-cartesian-grid) {
+.chartWrapper:global(.bg-oxford-blue) :global(.recharts-cartesian-grid) {
   stroke: #555 !important;
 }
 
