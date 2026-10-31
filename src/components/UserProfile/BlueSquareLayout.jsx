@@ -10,8 +10,7 @@ import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import BluequareEmailAssignmentPopUp from './BluequareEmailBBCPopUp';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
-import {useHistory } from 'react-router-dom';
-
+import { useHistory } from 'react-router-dom';
 
 import { permissions } from '../../utils/constants';
 const BlueSquareLayout = ({
@@ -22,7 +21,7 @@ const BlueSquareLayout = ({
   user,
   darkMode,
 }) => {
-    const history = useHistory();
+  const history = useHistory();
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const canManageTimeOffRequests = dispatch(hasPermission(permissions.manageTimeOffRequests));
@@ -54,6 +53,7 @@ const BlueSquareLayout = ({
   };
 
   const toggleEmailBCCModal = () => setShowEmailBCCModal(false);
+  const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
 
   const checkIfUserCanScheduleTimeOff = () => {
     let scheduledVacation = 0;
@@ -62,12 +62,19 @@ const BlueSquareLayout = ({
     });
     const blueSquares = Number(userProfile.infringements?.length) || 0;
     const infringementAndTimeOff = scheduledVacation + blueSquares;
-    const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
     if (infringementAndTimeOff >= 4 && !hasRolePermission && !canManageTimeOffRequests) {
       return false;
     }
     return true;
   };
+
+  const isNewUser = () => {
+    if (!userProfile?.startDate || hasRolePermission) return false;
+    const twoMonthsAfterStart = new Date(userProfile.startDate);
+    twoMonthsAfterStart.setMonth(twoMonthsAfterStart.getMonth() + 2);
+    return new Date() < twoMonthsAfterStart;
+  };
+  const scheduleDisabled = isNewUser();
 
   // ===============================================================
   if (canEdit) {
@@ -117,15 +124,31 @@ const BlueSquareLayout = ({
             </>
           ) : (
             <>
-              <Button
-                variant="primary"
-                onClick={() => handleOpen(null)}
-                className="w-100"
-                size="md"
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Schedule Blue Square Reason
-              </Button>
+              <div className="Schedule-Reason-div">
+                <Button
+                  variant="primary"
+                  onClick={() => !scheduleDisabled && handleOpen(null)}
+                  disabled={scheduleDisabled}
+                  className="w-100 Schedule-Reason-button"
+                  size="md"
+                  style={{
+                    ...(darkMode ? boxStyleDark : boxStyle),
+                    ...(scheduleDisabled ? { pointerEvents: 'none' } : {}),
+                  }}
+                >
+                  Schedule Blue Square Reason
+                </Button>
+                {scheduleDisabled && (
+                  <div
+                    className={`Schedule-Reason-tooltip ${
+                      darkMode ? 'bg-space-cadet text-light' : ''
+                    }`}
+                  >
+                    New users (within 2 months of their start date) cannot schedule a Blue Square
+                    reason yet.
+                  </div>
+                )}
+              </div>
               {hasBlueSquareEmailBCCRolePermission && (
                 <div className="Blue-Square-Email-BCC-div">
                   <Button
@@ -137,7 +160,11 @@ const BlueSquareLayout = ({
                   >
                     Blue Square Email BCCs
                   </Button>
-                  <div className={`Blue-Square-Email-BCC-tooltip ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
+                  <div
+                    className={`Blue-Square-Email-BCC-tooltip ${
+                      darkMode ? 'bg-space-cadet text-light' : ''
+                    }`}
+                  >
                     This designates who gets a copy of the blue square emails. It includes ONLY
                     sending to active team members, so we don’t have to remove people from the list
                     if they are made inactive. It doesn’t include getting copies of the time-off
@@ -149,14 +176,20 @@ const BlueSquareLayout = ({
                 <div className="Job-Email-CC-div">
                   <Button
                     variant="primary"
-                    onClick={() => {history.push("/job-notification-dashboard")}}
+                    onClick={() => {
+                      history.push('/job-notification-dashboard');
+                    }}
                     className="mt-3 w-100 Job-Email-CC-button"
                     size="md"
                     style={darkMode ? boxStyleDark : boxStyle}
                   >
                     Edit Job Application Email CC
                   </Button>
-                  <div className={`Job-Email-CC-tooltip ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
+                  <div
+                    className={`Job-Email-CC-tooltip ${
+                      darkMode ? 'bg-space-cadet text-light' : ''
+                    }`}
+                  >
                     This designates who gets an email for specific job applications.
                   </div>
                 </div>
@@ -180,7 +213,11 @@ const BlueSquareLayout = ({
           />
         </Modal>
         {show && (
-          <Modal show={show} onHide={handleClose} className={darkMode ? 'text-light dark-mode' : ''}>
+          <Modal
+            show={show}
+            onHide={handleClose}
+            className={darkMode ? 'text-light dark-mode' : ''}
+          >
             <ScheduleReasonModal
               handleClose={handleClose}
               userId={userProfile._id}
@@ -195,7 +232,6 @@ const BlueSquareLayout = ({
         )}
       </div>
     );
-
   }
   return (
     <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">
