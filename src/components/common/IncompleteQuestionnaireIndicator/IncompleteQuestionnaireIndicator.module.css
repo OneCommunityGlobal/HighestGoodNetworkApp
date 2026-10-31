@@ -1,0 +1,28 @@
+.indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  color: #e67e22;
+  font-size: 14px;
+  line-height: 1;
+  cursor: help;
+  vertical-align: middle;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+  min-width: 10px;
+  height: 10px;
+  padding: 0 2px;
+  border-radius: 50%;
+  background-color: #dc3545;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 10px;
+  text-align: center;
+}
