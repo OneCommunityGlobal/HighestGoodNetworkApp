@@ -78,7 +78,7 @@ export class EditableInfoModal extends Component {
 
   // ✅ Centralized: derive modal state from collections + props
   deriveFromCollections = infoCollections => {
-    const { role, areaName, fontSize, isPermissionPage } = this.props;
+    const { role, areaName, fontSize, isPermissionPage, initialInfo } = this.props;
 
     let content = '';
     let visible = '0';
@@ -101,13 +101,16 @@ export class EditableInfoModal extends Component {
       (visible === '2' && role !== 'Volunteer');
 
     const CanEdit = role === 'Owner';
-
+    const contentToDisplay = () => {
+      if (content) return content;
+      return initialInfo ? this.sanitizeText(initialInfo) : 'Please input information!';
+    };
     return {
       infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
       fetchError: this.props.fetchError,
       loading: this.props.loading,
       infoName: areaName,
-      infoContent: content || 'Please input information!',
+      infoContent: contentToDisplay(),
       visibility: visible,
       CanRead,
       CanEdit,
@@ -231,7 +234,7 @@ export class EditableInfoModal extends Component {
     if (saveResult === 200 || saveResult === 201) {
       await this.handleSaveSuccess();
       // ✅ Refresh collections so UI is always in sync
-      this.props.getInfoCollections();
+      this.props.getInfoCollections(true);
     } else {
       this.handleSaveError();
     }
@@ -241,7 +244,7 @@ export class EditableInfoModal extends Component {
     const { infoId } = this.handleChangeInInfos();
     await this.props.deleteInfoCollectionById(infoId);
     // Refresh collections after delete
-    this.props.getInfoCollections();
+    this.props.getInfoCollections(true);
   };
 
   handleClose = () => {
@@ -260,7 +263,7 @@ export class EditableInfoModal extends Component {
     const { darkMode } = this.props;
     const headerDarkClass = darkMode ? `${appStyles['bg-space-cadet']} text-light` : '';
 
-    const sanitizedContent = infoContent;
+    const sanitizedContent = this.sanitizeText(infoContent);
 
     return (
       CanRead && (
@@ -269,9 +272,9 @@ export class EditableInfoModal extends Component {
             data-toggle="tooltip"
             data-placement="right"
             title="Click for information about this"
-            style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '8px' }}
+            style={{ fontSize: fontSize }}
             aria-hidden="true"
-            className="fa fa-info-circle"
+            className={`fa fa-info-circle ${styles.infoIcon}`}
             onClick={() => this.setState({ editableModalOpen: true })}
           />
 
@@ -321,6 +324,7 @@ export class EditableInfoModal extends Component {
                         Who can view this information?
                       </div>
                       <Select
+                        className={`${styles.visibility} ${darkMode ? styles.darkMode: ''}`}
                         options={options}
                         onChange={this.handleSelectChange}
                         value={options.find(option => option.value === this.state.visibility)}
@@ -367,6 +371,7 @@ EditableInfoModal.propTypes = {
   areaName: PropTypes.string,
   fontSize: PropTypes.number,
   isPermissionPage: PropTypes.bool,
+  initialInfo: PropTypes.string,
   darkMode: PropTypes.bool,
 };
 
@@ -388,7 +393,7 @@ const mapStateToProps = ({ infoCollections }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getInfoCollections: () => dispatch(getInfoCollections()),
+  getInfoCollections: retrieveInfos => dispatch(getInfoCollections(retrieveInfos)),
   updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
   addInfoCollection: newInfo => dispatch(addInfoCollection(newInfo)),
   deleteInfoCollectionById: infoId => dispatch(deleteInfoCollectionById(infoId)),
