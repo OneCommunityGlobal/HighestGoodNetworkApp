@@ -154,6 +154,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
@@ -161,6 +163,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 20px;
   color: #fff;
 }
@@ -179,8 +183,13 @@
   white-space: nowrap;
 }
 
+.trackingFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .trackingFilters select {
-  margin-left: 10px;
   padding: 8px;
   font-size: 0.8rem;
   border: 1px solid #ccc;
@@ -308,6 +317,17 @@
   border-bottom: 1px solid #eee;
 }
 
+.sortableHeader {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sortableHeaderContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 /* Phone view: with table-layout: fixed each column is ~25% wide, but the
    nowrap headers ("No-show rate", "Drop-off rate") are wider than that and
    overflow into the neighbouring columns. Let headers wrap and tighten the
@@ -367,6 +387,9 @@
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .insightsHeaderDark {
@@ -375,6 +398,21 @@
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.insightsTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.insightsFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .insightsHeader h3 {
@@ -390,7 +428,6 @@
 }
 
 .insightsFilters select {
-  margin-left: 10px;
   padding: 8px;
   font-size: 0.8rem;
   border: 1px solid #ccc;
@@ -429,12 +466,45 @@
   color: #66b3ff;
 }
 
-.insightsFilters select {
-  margin-left: 10px;
-  padding: 8px;
-  font-size: 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.insightsTabsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.icons {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.tooltipWrapper:hover .tooltip {
+  opacity: 1;
 }
 
 .insightsTabs {
@@ -442,6 +512,7 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
+  flex: 1;
   max-width: 60%;
 }
 
@@ -522,7 +593,7 @@
 }
 
 .insightLabel {
-  flex: 1;
+  flex: 0 0 110px;
   font-size: 0.9rem;
   color: #555;
   margin-right: 10px;
@@ -531,12 +602,13 @@
 .insightLabelDark {
   color: #fff;
   font-size: 0.9rem;
-  flex: 1;
+  flex: 0 0 110px;
   margin-right: 10px;
 }
 
 .insightBar {
-  flex: 2;
+  flex: 1;
+  min-width: 0;
   height: 8px;
   background: #e9ecef;
   border-radius: 4px;
@@ -557,6 +629,14 @@
   font-size: 0.9rem;
   font-weight: bold;
   color: #333;
+}
+
+.insightsPercentage {
+  flex: 0 0 45px;
+  text-align: right;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #c00;
 }
 
 /* Header Section Styles */
@@ -615,9 +695,11 @@
 }
 
 .insightsPercentageDark {
+  flex: 0 0 45px;
+  text-align: right;
   font-size: 0.9rem;
   font-weight: bold;
-  color: var(--color-text-dark);
+  color: #ff6b6b;
 }
 
 /* ---------- PDF/Print helpers ---------- */
@@ -2037,6 +2119,10 @@
 .insightsDark .insightItem *,
 .barChartSectionDark .insightItem * {
   color: #e5e7eb;
+}
+
+.insightsDark .insightItem .insightsPercentageDark {
+  color: #ff6b6b;
 }
 
 .insightIcon {
