@@ -27,6 +27,7 @@ import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
+import { getProjectStatusChangeColor, LOWER_IS_BETTER_METRICS } from './projectStatusTrend';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
@@ -126,18 +127,6 @@ function formatProjectStatusChange(metric, comparisonPeriodFilter) {
   const percent = Math.round(percentageChange * 100);
   const prefix = percent > 0 ? '+' : '';
   return `${prefix}${percent}% ${comparisonPeriodFilter.toLowerCase()}`;
-}
-
-function getProjectStatusChangeColor(metric) {
-  if (typeof metric?.percentageChange !== 'number') {
-    return '#C82F2F';
-  }
-
-  if (metric.percentageChange === 0) {
-    return '#000';
-  }
-
-  return metric.percentageChange > 0 ? '#328D1B' : '#C82F2F';
 }
 
 function getProjectStatusErrorMessage(error) {
@@ -293,7 +282,10 @@ function WeeklyProjectSummary() {
           value: formatProjectStatusValue(metric),
           unavailableReason: getProjectStatusUnavailableReason(metric),
           change: formatProjectStatusChange(metric, comparisonPeriodFilter),
-          changeColor: getProjectStatusChangeColor(metric),
+          changeColor: getProjectStatusChangeColor(
+            metric,
+            LOWER_IS_BETTER_METRICS.has(button.metricKey),
+          ),
         };
       }),
     [comparisonPeriodFilter, projectStatusMetrics],
