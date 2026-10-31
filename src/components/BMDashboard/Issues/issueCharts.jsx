@@ -51,15 +51,14 @@ const BREAKDOWN_OPTIONS = [
 const joinText = value => (Array.isArray(value) ? value.filter(Boolean).join(' ') : value || '');
 
 // Severity levels stored on building issues; older issues without one are "Unspecified"
-const SEVERITY_LEVELS = ['Low', 'Medium', 'High', 'Critical'];
+const SEVERITY_LEVELS = new Set(['Low', 'Medium', 'High', 'Critical']);
 const UNSPECIFIED_SEVERITY = 'Unspecified';
 const SEVERITY_OPTIONS = [...SEVERITY_LEVELS, UNSPECIFIED_SEVERITY].map(level => ({
   value: level,
   label: level,
 }));
 const getSeverity = issue =>
-  SEVERITY_LEVELS.includes(issue?.severity) ? issue.severity : UNSPECIFIED_SEVERITY;
-
+  SEVERITY_LEVELS.has(issue?.severity) ? issue.severity : UNSPECIFIED_SEVERITY;
 // projectId / createdBy may come back as an id string or a populated object
 const toId = value => String(value?._id ?? value ?? '');
 
@@ -883,20 +882,17 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     frame.style.width = '0';
     frame.style.height = '0';
     frame.style.border = '0';
-    document.body.appendChild(frame);
-    const doc = frame.contentWindow.document;
-    doc.open();
-    doc.write(
-      `<html><head><title>Issue Chart</title></head><body style="margin:24px;font-family:sans-serif">` +
-        `<h2>Issue Chart</h2>` +
-        `<img src="${image}" style="max-width:100%" /></body></html>`,
-    );
-    doc.close();
     frame.onload = () => {
       frame.contentWindow.focus();
       frame.contentWindow.print();
       setTimeout(() => frame.remove(), 1000);
     };
+    // srcdoc instead of the deprecated document.write
+    frame.srcdoc =
+      `<html><head><title>Issue Chart</title></head><body style="margin:24px;font-family:sans-serif">` +
+      `<h2>Issue Chart</h2>` +
+      `<img src="${image}" style="max-width:100%" /></body></html>`;
+    document.body.appendChild(frame);
   };
 
   const handleExportChart = () => {
