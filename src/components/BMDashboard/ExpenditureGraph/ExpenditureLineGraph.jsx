@@ -126,9 +126,12 @@ export default function ExpenditureLineGraph() {
   useEffect(() => {
     const fetchProjectIds = async () => {
       try {
-        const response = await axios.get(ENDPOINTS.EXPENDITURE_PROJECT_IDS);
+        const response = await axios.get(ENDPOINTS.EXPENDITURE_PROJECT_IDS, {
+          params: { includeNames: true },
+        });
         if (response?.data?.success) {
           setProjects(response.data.data);
+          setProjectNameMap(response.data.projectNames || {});
         }
       } catch (err) {
         // eslint-disable-next-line no-console
@@ -136,24 +139,7 @@ export default function ExpenditureLineGraph() {
       }
     };
 
-    const fetchProjectNames = async () => {
-      try {
-        const response = await axios.get(ENDPOINTS.BM_PROJECT_NAMES);
-        if (Array.isArray(response?.data)) {
-          const nameMap = {};
-          response.data.forEach(({ projectId, projectName }) => {
-            if (projectId) nameMap[projectId] = projectName || projectId;
-          });
-          setProjectNameMap(nameMap);
-        }
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching project names:', err);
-      }
-    };
-
     void fetchProjectIds();
-    void fetchProjectNames();
   }, []);
 
   // Fetch the (already aggregated) cost breakdown whenever the project or date filters change.
@@ -386,7 +372,7 @@ export default function ExpenditureLineGraph() {
                 <option value="all">All Projects</option>
                 {projects.map(project => (
                   <option key={project} value={project}>
-                    {projectNameMap[project] || project}
+                    {projectNameMap[project] || 'Unknown Project'}
                   </option>
                 ))}
               </select>
