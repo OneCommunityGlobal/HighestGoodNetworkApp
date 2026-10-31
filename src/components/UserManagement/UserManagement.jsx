@@ -106,7 +106,7 @@ class UserManagement extends React.PureComponent {
     document.body.classList.add('no-global-theme');
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
-    this.loadQuestionnaireCompletion();
+    void this.loadQuestionnaireCompletion();
     const { darkMode } = this.props.state.theme;
     const { userProfiles } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
