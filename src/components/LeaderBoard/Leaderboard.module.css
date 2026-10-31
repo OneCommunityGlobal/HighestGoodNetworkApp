@@ -1,44 +1,145 @@
-/* stylelint-disable  */
+/* stylelint-disable */
+
+.leaderboardRoot {
+  min-width: 0;
+  width: 100%;
+}
+
 .leaderboard {
   font-size: 1rem;
 }
 
 .my-custom-scrollbar {
-  overflow-y: auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin-bottom: 1rem;
+  box-sizing: border-box;
 }
 
-.dark-leaderboard-row {
-  background-color: #3a506b;
-  color: white;
+.leaderboardTableScrollWrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-.dark-leaderboard-row th {
-  background-color: #3a506b;
-  color: white;
+/* Desktop: retain the full, unrestricted Leaderboard height. */
+.leaderboardTableScroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #e2e8f0;
 }
 
-.dark-leaderboard-row:hover {
+.darkScroll {
+  scrollbar-color: #64748b #1b263b;
+  background-color: #1b263b;
+}
+
+.darkTable {
+  background-color: #223b5a;
+  color: #fff;
+}
+
+.leaderboardTableScroll::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+.leaderboardTableScroll::-webkit-scrollbar-track,
+.leaderboardTableScroll::-webkit-scrollbar-corner {
+  background-color: #e2e8f0;
+}
+
+.leaderboardTableScroll::-webkit-scrollbar-thumb {
+  background-color: #94a3b8;
+  border-radius: 5px;
+}
+
+.leaderboardTableScroll.darkScroll::-webkit-scrollbar-track,
+.leaderboardTableScroll.darkScroll::-webkit-scrollbar-corner {
+  background-color: #1b263b;
+}
+
+.leaderboardTableScroll.darkScroll::-webkit-scrollbar-thumb {
+  background-color: #64748b;
+  border-radius: 5px;
+}
+
+.leaderboardTableScroll.darkScroll::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+.leaderboardTableScroll .leaderboard {
+  min-width: 700px;
+}
+
+.leaderboard thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-top: 1px solid rgb(222 226 230);
+  background-clip: padding-box;
+}
+
+.darkTable thead th {
+  background-color: #223b5a;
+  color: #fff;
+}
+
+.leaderboard tbody tr.dark-leaderboard-row,
+.leaderboard tbody tr.dark-leaderboard-row > td,
+.leaderboard tbody tr.dark-leaderboard-row > th {
+  background-color: #223b5a;
+  color: #fff;
+}
+
+/* Apply the highlight to cells as well as the row, including pointer and keyboard states. */
+.leaderboard tbody tr.dark-leaderboard-row:hover,
+.leaderboard tbody tr.dark-leaderboard-row:hover > td,
+.leaderboard tbody tr.dark-leaderboard-row:hover > th,
+.leaderboard tbody tr.dark-leaderboard-row:active,
+.leaderboard tbody tr.dark-leaderboard-row:active > td,
+.leaderboard tbody tr.dark-leaderboard-row:active > th,
+.leaderboard tbody tr.dark-leaderboard-row:focus-within,
+.leaderboard tbody tr.dark-leaderboard-row:focus-within > td,
+.leaderboard tbody tr.dark-leaderboard-row:focus-within > th {
   background-color: #111831;
+  color: #fff;
+}
+
+.light-leaderboard-row,
+.light-leaderboard-row > td,
+.light-leaderboard-row > th {
+  background-color: #fff;
+  color: #000;
 }
 
 .light-leaderboard-row {
-  background-color: white;
-  color: black;
   display: table-row;
 }
 
-.light-leaderboard-row th {
-  background-color: white;
-  color: black;
-}
-
-.light-leaderboard-row:hover {
+.leaderboard tbody tr.light-leaderboard-row:hover,
+.leaderboard tbody tr.light-leaderboard-row:hover > td,
+.leaderboard tbody tr.light-leaderboard-row:hover > th,
+.leaderboard tbody tr.light-leaderboard-row:active,
+.leaderboard tbody tr.light-leaderboard-row:active > td,
+.leaderboard tbody tr.light-leaderboard-row:active > th,
+.leaderboard tbody tr.light-leaderboard-row:focus-within,
+.leaderboard tbody tr.light-leaderboard-row:focus-within > td,
+.leaderboard tbody tr.light-leaderboard-row:focus-within > th {
   background-color: #f0f8ff;
+  color: #000;
 }
 
 .table-fixed tbody td {
-  white-space: normal; /* Allow text wrapping within cells */
+  white-space: normal;
 }
 
 .table-fixed {
@@ -46,45 +147,70 @@
   overflow-wrap: break-word;
 }
 
-.leaderboard thead th {
-  top: 0;
-  border-top: 1px solid rgb(222 226 230);
-}
-
-.leaderboard tbody tr td, 
+.leaderboard tbody tr td,
 .leaderboard thead tr th {
-  text-align: left !important;
-}
-
-
-/* Small devices (landscape phones, 544px and up) */
-@media (545px <= width <= 1119px) {
-  .leaderboard {
-    font-size: 0.7rem;
-  }
-
-  .my-custom-scrollbar {
-    max-height: 500px;
-    overflow: auto;
-    margin-bottom: 1rem;
-  }
-
-  .leaderboard thead th {
-    white-space: nowrap; 
-    top: 0;
-    border-top: 1px solid rgb(222 226 230);
-  }
+  text-align: left;
 }
 
 .row {
   width: 97%;
 }
 
+/* Mobile/tablet: a generous scrollport enables sticky table headers
+   without the former 65vh/85vh cap that exposed only 8–9 rows. */
+@media (width <= 768px) {
+  .leaderboardTableScrollWrap {
+    max-width: 100%;
+  }
+
+  .leaderboardTableScroll {
+    width: 100%;
+    max-width: 100%;
+    max-height: 1800px;
+    overflow-x: auto;
+    overflow-y: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  .leaderboard thead th {
+    z-index: 20;
+  }
+
+  /* Cell-level feedback for touch press, keyboard focus, and mouse hover. */
+  .leaderboard tbody tr.dark-leaderboard-row:is(:hover, :active, :focus-within) > *,
+  .leaderboard tbody tr.dark-leaderboard-row:is(:hover, :active, :focus-within) {
+    background-color: #111831;
+    color: #fff;
+  }
+
+  .leaderboard tbody tr.light-leaderboard-row:is(:hover, :active, :focus-within) > *,
+  .leaderboard tbody tr.light-leaderboard-row:is(:hover, :active, :focus-within) {
+    background-color: #e2efff;
+    color: #000;
+  }
+}
+
+@media (width <= 544px) {
+  .leaderboard {
+    font-size: 0.7rem;
+  }
+}
+
+@media (545px <= width <= 1119px) {
+  .leaderboard {
+    font-size: 0.7rem;
+  }
+
+  .leaderboard thead th {
+    white-space: nowrap;
+  }
+}
+
 @keyframes l-animation {
   0% {
     transform: rotate(0deg);
   }
-  
+
   100% {
     transform: rotate(360deg);
   }
@@ -106,7 +232,7 @@
 
 @media (width <= 980px) {
   .responsive-font-size {
-    font-size: 0.5rem !important;
+    font-size: 0.5rem;
   }
 }
 
