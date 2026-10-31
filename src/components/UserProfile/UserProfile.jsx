@@ -82,6 +82,8 @@ import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import RehireableStatusControl from './RehireableStatusControl';
+import IncompleteQuestionnaireIndicator from '../common/IncompleteQuestionnaireIndicator';
+import { fetchCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 
 import { permissions } from '../../utils/constants';
 function UserProfile(props) {
@@ -137,6 +139,8 @@ function UserProfile(props) {
   const [showSelect, setShowSelect] = useState(false);
   const [summaries, setSummaries] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
+  // null until known (or if the request fails), so the indicator is never shown by mistake
+  const [questionnaireIncomplete, setQuestionnaireIncomplete] = useState(null);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
   const [originalTasks, setOriginalTasks] = useState([]);
 
@@ -1061,6 +1065,26 @@ setUpdatedTasks(prev => {
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
+    const userId = props?.match?.params?.userId;
+    let cancelled = false;
+    setQuestionnaireIncomplete(null);
+    if (!userId) return undefined;
+
+    fetchCompletedQuestionnaireUserIds()
+      .then(completedUserIds => {
+        if (!cancelled) setQuestionnaireIncomplete(!completedUserIds.has(userId));
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load questionnaire completion status', error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
     if (userProfile?.firstName || userProfile?.lastName) {
       document.title = `${userProfile.firstName ?? ''} ${userProfile.lastName ?? ''}`.trim();
     } else {
@@ -1486,6 +1510,12 @@ setUpdatedTasks(prev => {
           ) : null} */}
           <div className="profile-head">
             <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
+            {questionnaireIncomplete && (
+              <IncompleteQuestionnaireIndicator
+                id={targetUserId}
+                className="profile-questionnaire-indicator mr-2"
+              />
+            )}
             <div style={{ marginTop: '6px' }}>
               <EditableInfoModal
                 areaName="UserProfileInfoModal"

@@ -4,11 +4,21 @@
   align-items: center;
   justify-content: center;
   margin-left: 4px;
-  color: #e67e22;
   font-size: 14px;
   line-height: 1;
   cursor: help;
   vertical-align: middle;
+}
+
+/*
+ * public/index.css forces `body.dark-mode * { color: #fff !important }`, which
+ * hits the <svg>/<path> directly and turns the icon white (FontAwesome paints
+ * with fill: currentColor). Setting `fill` explicitly is not affected by that
+ * color rule, so the icon stays orange in both themes.
+ */
+.indicator svg,
+.indicator svg path {
+  fill: #f39c12;
 }
 
 .badge {

@@ -256,7 +256,7 @@ const UserTableDataComponent = props => {
             <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
               {formData.firstName}{' '}
             </a>
-            {props.questionnaireIncomplete && <IncompleteQuestionnaireIndicator />}
+            {props.questionnaireIncomplete && <IncompleteQuestionnaireIndicator id={props.user._id} />}
             <FontAwesomeIcon
               className={styles.userManagementCellControl}
               icon={faCopy}
@@ -279,7 +279,9 @@ const UserTableDataComponent = props => {
             }}
           />
         )}
-        {!editUser?.first && props.questionnaireIncomplete && <IncompleteQuestionnaireIndicator />}
+        {!editUser?.first && props.questionnaireIncomplete && (
+          <IncompleteQuestionnaireIndicator id={props.user._id} />
+        )}
       </td>
 
       {/* LAST NAME */}
