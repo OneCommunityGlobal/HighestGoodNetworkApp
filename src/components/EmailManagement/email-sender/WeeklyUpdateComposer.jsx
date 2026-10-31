@@ -512,9 +512,71 @@ const WeeklyUpdateComposer = ({ onClose }) => {
       setIsSending(false);
     }
   }, [emailDistribution, recipientList, generateEmailHTML, currentUser]);
+  let composerThemeClass = 'weekly-update-composer light-mode';
+
+  if (darkMode) {
+    composerThemeClass = 'weekly-update-composer dark-mode';
+  }
+
+  let imageDropZoneBackgroundColor;
+  let imageDropZoneBorder;
+  let imageUploadIconColor;
+  let imageUploadTextColor;
+
+  if (imageDragging) {
+    imageDropZoneBackgroundColor = '#eff6ff';
+    imageDropZoneBorder = '3px dashed #3b82f6';
+    imageUploadIconColor = '#60a5fa';
+    imageUploadTextColor = '#60a5fa';
+
+    if (darkMode) {
+      imageDropZoneBackgroundColor = '#26374a';
+    }
+  } else {
+    imageDropZoneBorder = '2px dashed #d1d5db';
+    imageUploadIconColor = '#9ca3af';
+    imageUploadTextColor = '#6b7280';
+
+    if (darkMode) {
+      imageDropZoneBackgroundColor = '#2d2d2d';
+      imageDropZoneBorder = '2px dashed #666';
+      imageUploadIconColor = '#d1d5db';
+      imageUploadTextColor = '#e5e7eb';
+    } else {
+      imageDropZoneBackgroundColor = '#f9fafb';
+    }
+  }
+
+  let videoDropZoneBackgroundColor;
+  let videoDropZoneBorder;
+  let videoUploadIconColor;
+  let videoUploadTextColor;
+
+  if (videoDragging) {
+    videoDropZoneBackgroundColor = '#fef2f2';
+    videoDropZoneBorder = '3px dashed #ef4444';
+    videoUploadIconColor = '#f87171';
+    videoUploadTextColor = '#f87171';
+
+    if (darkMode) {
+      videoDropZoneBackgroundColor = '#452626';
+    }
+  } else {
+    videoDropZoneBackgroundColor = '#f9fafb';
+    videoDropZoneBorder = '2px dashed #d1d5db';
+    videoUploadIconColor = '#9ca3af';
+    videoUploadTextColor = '#6b7280';
+
+    if (darkMode) {
+      videoDropZoneBackgroundColor = '#2d2d2d';
+      videoDropZoneBorder = '2px dashed #666';
+      videoUploadIconColor = '#d1d5db';
+      videoUploadTextColor = '#e5e7eb';
+    }
+  }
 
   return (
-    <div className={`weekly-update-composer ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+    <div className={composerThemeClass}>
       <div className="page-title-container mb-3">
         <h2 className="page-title">📰 Weekly Progress Update</h2>
         <p className="text-muted">Fill in the 4 fields below - everything else is automatic!</p>
@@ -532,6 +594,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
         {/* 1. Header Image */}
         <FormGroup>
           <Label>1. Header Image *</Label>
+
           {/* Drag & Drop Zone */}
           <div
             role="button"
@@ -548,19 +611,11 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             onDragOver={handleImageDragOver}
             onDragLeave={handleImageDragLeave}
             style={{
-              border: imageDragging
-                ? '3px dashed #3b82f6'
-                : `2px dashed ${darkMode ? '#666' : '#d1d5db'}`,
+              border: imageDropZoneBorder,
               borderRadius: '8px',
               padding: '30px',
               textAlign: 'center',
-              backgroundColor: imageDragging
-                ? darkMode
-                  ? '#26374a'
-                  : '#eff6ff'
-                : darkMode
-                ? '#2d2d2d'
-                : '#f9fafb',
+              backgroundColor: imageDropZoneBackgroundColor,
               cursor: 'pointer',
               transition: 'all 0.2s',
             }}
@@ -579,20 +634,16 @@ const WeeklyUpdateComposer = ({ onClose }) => {
                   handleImageFile(file);
                 }
 
-                // Allow selecting the same file again.
                 e.target.value = '';
               }}
             />
 
-            <FaUpload
-              size={32}
-              color={imageDragging ? '#60a5fa' : darkMode ? '#d1d5db' : '#9ca3af'}
-            />
+            <FaUpload size={32} color={imageUploadIconColor} />
 
             <p
               style={{
                 margin: '10px 0',
-                color: imageDragging ? '#60a5fa' : darkMode ? '#e5e7eb' : '#6b7280',
+                color: imageUploadTextColor,
               }}
             >
               {imageDragging ? 'Drop image here' : 'Click to upload or drag and drop'}
@@ -608,13 +659,16 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             invalid={!!validationErrors.headerImage}
             placeholder="Or paste image URL here (e.g., https://example.com/image.jpg)"
           />
+
           {validationErrors.headerImage && (
             <div className="invalid-feedback d-block">{validationErrors.headerImage}</div>
           )}
+
           <small className="text-muted d-block mt-1">
             <FaImage className="me-1" />
             Supports: Drag & drop image files, or paste image URLs
           </small>
+
           {/* Image Preview */}
           {imagePreview && (
             <div className="mt-3">
@@ -657,6 +711,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             </div>
           )}
         </FormGroup>
+
         {/* 2. Intro Paragraph */}
         <FormGroup>
           <Label>2. Opening Paragraph *</Label>
@@ -683,35 +738,26 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             onDragOver={handleVideoDragOver}
             onDragLeave={handleVideoDragLeave}
             style={{
-              border: videoDragging
-                ? '3px dashed #ef4444'
-                : `2px dashed ${darkMode ? '#666' : '#d1d5db'}`,
+              border: videoDropZoneBorder,
               borderRadius: '8px',
               padding: '30px',
               textAlign: 'center',
-              backgroundColor: videoDragging
-                ? darkMode
-                  ? '#452626'
-                  : '#fef2f2'
-                : darkMode
-                ? '#2d2d2d'
-                : '#f9fafb',
+              backgroundColor: videoDropZoneBackgroundColor,
               cursor: 'pointer',
               transition: 'all 0.2s',
             }}
           >
-            <FaImage
-              size={32}
-              color={videoDragging ? '#f87171' : darkMode ? '#d1d5db' : '#9ca3af'}
-            />
+            <FaImage size={32} color={videoUploadIconColor} />
+
             <p
               style={{
                 margin: '10px 0',
-                color: videoDragging ? '#f87171' : darkMode ? '#e5e7eb' : '#6b7280',
+                color: videoUploadTextColor,
               }}
             >
               {videoDragging ? 'Drop YouTube link here!' : 'Drag & drop YouTube link here'}
             </p>
+
             <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>or paste URL below</small>
           </div>
 
@@ -722,9 +768,11 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             invalid={!!validationErrors.youtubeLink}
             placeholder="Or paste YouTube URL: https://youtube.com/watch?v=..."
           />
+
           {validationErrors.youtubeLink && (
             <div className="invalid-feedback d-block">{validationErrors.youtubeLink}</div>
           )}
+
           {youtubeLink && extractYouTubeId(youtubeLink) && (
             <small className="text-success d-block mt-1">✓ Valid YouTube link detected</small>
           )}
