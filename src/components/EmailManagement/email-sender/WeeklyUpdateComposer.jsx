@@ -1,12 +1,13 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   FaExclamationTriangle,
   FaEye,
   FaImage,
   FaPaperPlane,
   FaTimes,
+  FaTrash,
   FaUpload,
 } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
@@ -144,11 +145,25 @@ const EMAIL_TEMPLATE_STYLES = `
     margin: 5px 0;
   }
 `;
+const getImageUploadPrompt = imageDragging => {
+  if (imageDragging) {
+    return 'Drop image here';
+  }
 
+  return 'Click to upload or drag and drop';
+};
+
+const getVideoUploadPrompt = videoDragging => {
+  if (videoDragging) {
+    return 'Drop YouTube link here!';
+  }
+
+  return 'Drag & drop YouTube link here';
+};
 const WeeklyUpdateComposer = ({ onClose }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const currentUser = useSelector(state => state.auth?.user);
-
+  const imageInputRef = useRef(null);
   // Form state - only what changes each week
   const [headerImage, setHeaderImage] = useState('');
   const [introParagraph, setIntroParagraph] = useState('');
@@ -193,30 +208,39 @@ const WeeklyUpdateComposer = ({ onClose }) => {
   }, []);
 
   // Handle image file drop
-  const handleImageDrop = useCallback(e => {
-    e.preventDefault();
-    e.stopPropagation();
-    setImageDragging(false);
+  // Process an image file from either the file picker or drag-and-drop
+  const handleImageFile = useCallback(file => {
+    if (!file) return;
 
-    const files = e.dataTransfer?.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-
-      // Check if it's an image
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = event => {
-          const base64Image = event.target.result;
-          setHeaderImage(base64Image);
-          setImagePreview(base64Image);
-          toast.success('Image loaded successfully!');
-        };
-        reader.readAsDataURL(file);
-      } else {
-        toast.error('Please drop an image file (jpg, png, gif, etc.)');
-      }
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please drop an image file (jpg, png, gif, etc.)');
+      return;
     }
+
+    const reader = new FileReader();
+
+    reader.onload = event => {
+      const base64Image = event.target.result;
+      setHeaderImage(base64Image);
+      setImagePreview(base64Image);
+      toast.success('Image loaded successfully!');
+    };
+
+    reader.readAsDataURL(file);
   }, []);
+
+  // Handle image drag-and-drop events
+  const handleImageDrop = useCallback(
+    e => {
+      e.preventDefault();
+      e.stopPropagation();
+      setImageDragging(false);
+
+      const file = e.dataTransfer?.files?.[0];
+      handleImageFile(file);
+    },
+    [handleImageFile],
+  );
 
   const handleImageDragOver = useCallback(e => {
     e.preventDefault();
@@ -502,9 +526,54 @@ const WeeklyUpdateComposer = ({ onClose }) => {
       setIsSending(false);
     }
   }, [emailDistribution, recipientList, generateEmailHTML, currentUser]);
+  let composerThemeClass = 'weekly-update-composer light-mode';
+
+  if (darkMode) {
+    composerThemeClass = 'weekly-update-composer dark-mode';
+  }
+
+  let imageDropZoneBackgroundColor = '#f9fafb';
+  let imageDropZoneBorder = '2px dashed #d1d5db';
+  let imageUploadIconColor = '#9ca3af';
+  let imageUploadTextColor = '#6b7280';
+  let imageUploadPrompt = getImageUploadPrompt();
+
+  if (darkMode) {
+    imageDropZoneBackgroundColor = '#2d2d2d';
+    imageDropZoneBorder = '2px dashed #666';
+    imageUploadIconColor = '#d1d5db';
+    imageUploadTextColor = '#e5e7eb';
+  }
+
+  if (imageDragging) {
+    imageDropZoneBackgroundColor = darkMode ? '#26374a' : '#eff6ff';
+    imageDropZoneBorder = '3px dashed #3b82f6';
+    imageUploadIconColor = '#60a5fa';
+    imageUploadTextColor = '#60a5fa';
+  }
+  let videoUploadPrompt = getVideoUploadPrompt();
+
+  let videoDropZoneBackgroundColor = '#f9fafb';
+  let videoDropZoneBorder = '2px dashed #d1d5db';
+  let videoUploadIconColor = '#9ca3af';
+  let videoUploadTextColor = '#6b7280';
+
+  if (darkMode) {
+    videoDropZoneBackgroundColor = '#2d2d2d';
+    videoDropZoneBorder = '2px dashed #666';
+    videoUploadIconColor = '#d1d5db';
+    videoUploadTextColor = '#e5e7eb';
+  }
+
+  if (videoDragging) {
+    videoDropZoneBackgroundColor = darkMode ? '#452626' : '#fef2f2';
+    videoDropZoneBorder = '3px dashed #ef4444';
+    videoUploadIconColor = '#f87171';
+    videoUploadTextColor = '#f87171';
+  }
 
   return (
-    <div className={`weekly-update-composer ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+    <div className={composerThemeClass}>
       <div className="page-title-container mb-3">
         <h2 className="page-title">📰 Weekly Progress Update</h2>
         <p className="text-muted">Fill in the 4 fields below - everything else is automatic!</p>
@@ -524,28 +593,58 @@ const WeeklyUpdateComposer = ({ onClose }) => {
           <Label>1. Header Image *</Label>
 
           {/* Drag & Drop Zone */}
-          <div
+          <button
+            type="button"
+            aria-label="Upload header image"
+            onClick={() => imageInputRef.current?.click()}
             onDrop={handleImageDrop}
             onDragOver={handleImageDragOver}
             onDragLeave={handleImageDragLeave}
             style={{
-              border: imageDragging ? '3px dashed #3b82f6' : '2px dashed #d1d5db',
+              display: 'block',
+              width: '100%',
+              border: imageDropZoneBorder,
               borderRadius: '8px',
-              padding: '20px',
+              padding: '30px',
               textAlign: 'center',
-              backgroundColor: imageDragging ? '#eff6ff' : '#f9fafb',
-              transition: 'all 0.2s ease',
-              marginBottom: '10px',
+              backgroundColor: imageDropZoneBackgroundColor,
               cursor: 'pointer',
+              transition: 'all 0.2s',
+              font: 'inherit',
+              color: 'inherit',
             }}
           >
-            <FaUpload size={32} color={imageDragging ? '#3b82f6' : '#9ca3af'} />
-            <p style={{ margin: '10px 0', color: imageDragging ? '#3b82f6' : '#6b7280' }}>
-              {imageDragging ? 'Drop image here!' : 'Drag & drop an image here'}
-            </p>
-            <small style={{ color: '#9ca3af' }}>or paste URL below</small>
-          </div>
+            <input
+              ref={imageInputRef}
+              id="header-image-upload"
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onClick={e => e.stopPropagation()}
+              onChange={e => {
+                const file = e.target.files?.[0];
 
+                if (file) {
+                  handleImageFile(file);
+                }
+
+                e.target.value = '';
+              }}
+            />
+
+            <FaUpload size={32} color={imageUploadIconColor} />
+
+            <p
+              style={{
+                margin: '10px 0',
+                color: imageUploadTextColor,
+              }}
+            >
+              {imageUploadPrompt}
+            </p>
+
+            <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>JPG, PNG, GIF, etc.</small>
+          </button>
           <Input
             type="url"
             value={headerImage}
@@ -553,9 +652,11 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             invalid={!!validationErrors.headerImage}
             placeholder="Or paste image URL here (e.g., https://example.com/image.jpg)"
           />
+
           {validationErrors.headerImage && (
             <div className="invalid-feedback d-block">{validationErrors.headerImage}</div>
           )}
+
           <small className="text-muted d-block mt-1">
             <FaImage className="me-1" />
             Supports: Drag & drop image files, or paste image URLs
@@ -564,7 +665,26 @@ const WeeklyUpdateComposer = ({ onClose }) => {
           {/* Image Preview */}
           {imagePreview && (
             <div className="mt-3">
-              <Label>Preview:</Label>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <Label className="mb-0">Preview:</Label>
+                <Button
+                  type="button"
+                  color="danger"
+                  size="sm"
+                  onClick={() => {
+                    setHeaderImage('');
+                    setImagePreview('');
+                    setValidationErrors(prev => ({
+                      ...prev,
+                      headerImage: null,
+                    }));
+                  }}
+                >
+                  <FaTrash className="me-1" />
+                  Delete Image
+                </Button>
+              </div>
+
               <img
                 src={imagePreview}
                 alt="Header preview"
@@ -578,6 +698,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
                 onError={() => {
                   toast.error('Invalid image URL');
                   setImagePreview('');
+                  setHeaderImage('');
                 }}
               />
             </div>
@@ -610,21 +731,27 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             onDragOver={handleVideoDragOver}
             onDragLeave={handleVideoDragLeave}
             style={{
-              border: videoDragging ? '3px dashed #ef4444' : '2px dashed #d1d5db',
+              border: videoDropZoneBorder,
               borderRadius: '8px',
-              padding: '20px',
+              padding: '30px',
               textAlign: 'center',
-              backgroundColor: videoDragging ? '#fef2f2' : '#f9fafb',
-              transition: 'all 0.2s ease',
-              marginBottom: '10px',
+              backgroundColor: videoDropZoneBackgroundColor,
               cursor: 'pointer',
+              transition: 'all 0.2s',
             }}
           >
-            <FaImage size={32} color={videoDragging ? '#ef4444' : '#9ca3af'} />
-            <p style={{ margin: '10px 0', color: videoDragging ? '#ef4444' : '#6b7280' }}>
-              {videoDragging ? 'Drop YouTube link here!' : 'Drag & drop YouTube link here'}
+            <FaImage size={32} color={videoUploadIconColor} />
+
+            <p
+              style={{
+                margin: '10px 0',
+                color: videoUploadTextColor,
+              }}
+            >
+              {videoUploadPrompt}
             </p>
-            <small style={{ color: '#9ca3af' }}>or paste URL below</small>
+
+            <small style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>or paste URL below</small>
           </div>
 
           <Input
@@ -634,9 +761,11 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             invalid={!!validationErrors.youtubeLink}
             placeholder="Or paste YouTube URL: https://youtube.com/watch?v=..."
           />
+
           {validationErrors.youtubeLink && (
             <div className="invalid-feedback d-block">{validationErrors.youtubeLink}</div>
           )}
+
           {youtubeLink && extractYouTubeId(youtubeLink) && (
             <small className="text-success d-block mt-1">✓ Valid YouTube link detected</small>
           )}
