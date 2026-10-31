@@ -31,8 +31,8 @@
 :global(.tools-availability-page.dark-mode .react-datepicker-wrapper input.datePickerInput),
 :global(.tools-availability-page.dark-mode .datePickerInput),
 :global(.tools-availability-page.dark-mode .react-datepicker-wrapper input),
-:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"]),
-:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"].datePickerInput) {
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type='text']),
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type='text'].datePickerInput) {
   /* Only override colors - sizes inherit from base */
   background-color: #2b3e59 !important;
   color: #fff !important;
@@ -84,7 +84,7 @@
 }
 
 /* Dark theme calendar container */
-:global(.darkThemeCalendar) { 
+:global(.darkThemeCalendar) {
   background-color: #2b3e59 !important;
   color: #fff !important;
   border: 1px solid #6b6767 !important;
@@ -133,6 +133,7 @@
   flex-direction: column;
   box-sizing: border-box;
   background-color: #fff !important; /* White background to show through transparent canvas */
+  min-height: 0;
   overflow: visible; /* Allow chart labels and tooltips to render outside */
 }
 
@@ -164,8 +165,8 @@
 
 /* Override min-height for tools-availability-page when used in card context */
 :global(.tools-availability-page) {
-  min-height: auto !important; /* Override 100vh from ToolsAvailabilityPage.css */
-  height: 100%; /* Fill parent card height */
+  min-height: 0;
+  height: auto; /* Allow the chart card to grow with its content */
   padding: 8px; /* Remove excessive padding (24px) since card already has padding */
   width: 100%;
   max-width: 100%;

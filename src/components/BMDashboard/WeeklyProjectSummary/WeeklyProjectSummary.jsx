@@ -460,7 +460,7 @@ function WeeklyProjectSummary() {
               <SupplierPerformanceGraph />
             </div>
             <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard} ${styles.toolsStoppageCard}`}
               style={{ width: '100%' }}
             >
               <ToolsStoppageHorizontalBarChart />
