@@ -1,4 +1,4 @@
-// v1.1.0
+// v1.2.0
 import {
   assessRisk,
   buildRiskRows,
@@ -16,6 +16,14 @@ const snapshot = {
 };
 
 describe('project risk assessment', () => {
+  it('keeps legacy profiles with the same project reference independently selectable', () => {
+    const rows = buildRiskRows(
+      ['profile-a', 'profile-b'].map(_id => ({ ...snapshot, _id, projectId: 'shared-project' })),
+      '2026-10-01',
+      '2026-10-30',
+    );
+    expect(rows.map(row => row.id)).toEqual(['profile-a', 'profile-b']);
+  });
   it('keeps savings and converts planned-duration utilization into actual delay', () => {
     expect(normalizeMetrics(snapshot)).toEqual({ cost: -20, delay: 0, issues: 0 });
     expect(normalizeMetrics({ ...snapshot, predictedTimeDelay: 120 }).delay).toBe(20);

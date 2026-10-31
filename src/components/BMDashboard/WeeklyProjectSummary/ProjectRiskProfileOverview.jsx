@@ -1,4 +1,4 @@
-// v1.1.0
+// v1.2.0
 import React, { useState, useEffect, useMemo, useId } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -69,7 +69,7 @@ export default function ProjectRiskProfileOverview() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [timeRange, setTimeRange] = useState('30');
+  const [timeRange, setTimeRange] = useState('current');
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
   const [selectedProjects, setSelectedProjects] = useState([]);
@@ -103,7 +103,7 @@ export default function ProjectRiskProfileOverview() {
         }
         if (!cancelled) {
           setProjects(result);
-          setSelectedProjects(result.map((p, index) => String(p.projectId || p._id || index)));
+          setSelectedProjects(result.map((p, index) => String(p._id || p.projectId || index)));
         }
       })
       .catch(() => {
@@ -123,24 +123,28 @@ export default function ProjectRiskProfileOverview() {
   const start =
     timeRange === 'custom'
       ? customStart
-      : new Date(Date.parse(today) - (Number(timeRange) - 1) * 86400000).toISOString().slice(0, 10);
+      : new Date(
+          Date.parse(today) - ((timeRange === 'current' ? 1 : Number(timeRange)) - 1) * 86400000,
+        )
+          .toISOString()
+          .slice(0, 10);
   const validRange = Boolean(start && end && start <= end);
   const hasHistory = projects.some(p => Array.isArray(p.history) && p.history.length > 0);
   const rows = useMemo(() => {
     if (!validRange) return [];
-    return buildRiskRows(projects, start, end)
+    return buildRiskRows(projects, start, end, timeRange === 'current')
       .filter(p => selectedProjects.includes(p.id))
       .sort((a, b) =>
         sort === 'name'
           ? a.projectName.localeCompare(b.projectName)
           : (b.score ?? -1) - (a.score ?? -1) || a.projectName.localeCompare(b.projectName),
       );
-  }, [projects, start, end, validRange, selectedProjects, sort]);
+  }, [projects, start, end, validRange, selectedProjects, sort, timeRange]);
   const metric = METRICS.find(m => m.key === metricKey);
   const colors = darkMode ? DARK_COLORS : COLORS;
   const textColor = darkMode ? '#fff' : '#334155';
   const options = projects.map((p, index) => ({
-    value: String(p.projectId || p._id || index),
+    value: String(p._id || p.projectId || index),
     label: p.projectName || p.name || 'Unknown project',
   }));
   const chartRows = rows.filter(row => row[metricKey] !== null);
@@ -240,6 +244,7 @@ export default function ProjectRiskProfileOverview() {
                     value={timeRange}
                     onChange={e => setTimeRange(e.target.value)}
                   >
+                    <option value="current">Current snapshot</option>
                     <option value="7">Last 7 days</option>
                     <option value="30">Last 30 days</option>
                     <option value="90">Last 90 days</option>
@@ -276,7 +281,7 @@ export default function ProjectRiskProfileOverview() {
             {!validRange && <p role="alert">Choose a start date on or before the end date.</p>}
             <p className={styles.note}>
               {hasHistory
-                ? 'History uses the latest recorded observation in each period. Snapshot-only projects always show current values.'
+                ? 'Current snapshot uses live metrics and compares with yesterday. Other periods use the latest stored daily observation; up to 365 days of history are available. Snapshot-only projects always show current values.'
                 : 'Current snapshot. Previous-period changes and historical trends are unavailable because no recorded history is available.'}
             </p>
             <div className={styles.summary} aria-label="Risk summary">
@@ -302,9 +307,12 @@ export default function ProjectRiskProfileOverview() {
                 unavailable. A High individual metric still calls for escalation.
               </p>
               <p>
-                Cost variance uses the reported forecast: negative means under budget. Delay is the
-                amount above 100% of planned duration; elapsed time within the plan is not a delay.
-                These are review guidelines, not a probability of project failure.
+                Cost forecast projects spending pace over planned duration, capped at 100% elapsed;
+                completed projects use final cost. Negative variance means under budget. Delay is
+                the amount above planned duration. Active projects keep accruing delay; completed
+                projects stop at their completion date. Older projects without a known duration or
+                status may have unavailable metrics. These are review guidelines, not a probability
+                of project failure.
               </p>
               <p>
                 When history is available, change compares the last observation in the selected
@@ -386,7 +394,7 @@ export default function ProjectRiskProfileOverview() {
                           <YAxis
                             domain={[chartMin, chartMax]}
                             tick={{ fill: textColor }}
-                            tickFormatter={value => `${value}%`}
+                            tickFormatter={value => `${Number(value.toFixed(2))}%`}
                           />
                           <ReferenceArea
                             y1={chartMin}
@@ -522,7 +530,10 @@ export default function ProjectRiskProfileOverview() {
                     <ResponsiveContainer width="100%" height={260}>
                       <LineChart data={rows[0].history} margin={{ right: 25 }}>
                         <XAxis dataKey="date" tick={{ fill: textColor, fontSize: 11 }} />
-                        <YAxis tick={{ fill: textColor }} tickFormatter={value => `${value}%`} />
+                        <YAxis
+                          tick={{ fill: textColor }}
+                          tickFormatter={value => `${Number(value.toFixed(2))}%`}
+                        />
                         <Tooltip
                           contentStyle={{
                             background: darkMode ? '#2b3e59' : '#fff',

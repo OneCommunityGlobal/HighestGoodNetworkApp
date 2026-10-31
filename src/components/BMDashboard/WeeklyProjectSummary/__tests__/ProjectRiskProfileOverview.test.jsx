@@ -1,4 +1,4 @@
-// v1.1.0
+// v1.2.0
 import React from 'react';
 import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -51,6 +51,17 @@ function renderPage(
 beforeEach(() => {
   vi.clearAllMocks();
   httpService.get.mockResolvedValue({ data });
+});
+
+it('rounds percentage axis labels for fractional delays', async () => {
+  httpService.get.mockResolvedValue({ data: [{ ...data[1], predictedTimeDelay: 126.32 }] });
+  renderPage();
+  await screen.findByRole('table');
+  fireEvent.change(screen.getByLabelText('Chart metric'), { target: { value: 'delay' } });
+  const chart = screen.getByRole('application');
+  within(chart)
+    .getAllByText(/%$/)
+    .forEach(label => expect(label).not.toHaveTextContent(/\.\d{3}/));
 });
 
 it.each([false, true])(
@@ -125,12 +136,22 @@ it('validates historical dates and displays real period comparisons', async () =
   });
   renderPage();
   const table = await screen.findByRole('table');
+  fireEvent.change(screen.getByLabelText('History period'), { target: { value: '30' } });
   expect(table).toHaveTextContent('Cost variance: +10 pp');
   fireEvent.change(screen.getByLabelText('History period'), { target: { value: 'custom' } });
   expect(screen.getByRole('alert')).toHaveTextContent('Choose a start date');
   fireEvent.change(screen.getByLabelText('Start date'), { target: { value: '2026-10-15' } });
   fireEvent.change(screen.getByLabelText('End date'), { target: { value: '2026-10-01' } });
   expect(screen.getByRole('alert')).toHaveTextContent('on or before');
+});
+
+it('defaults to current values instead of replacing them with older recorded history', async () => {
+  httpService.get.mockResolvedValue({
+    data: [{ ...data[1], history: [{ ...data[0], date: new Date().toISOString() }] }],
+  });
+  renderPage();
+  expect(await screen.findByRole('table')).toHaveTextContent('100/100');
+  expect(screen.getByLabelText('History period')).toHaveValue('current');
 });
 
 it('shows explanations, comparisons, and actions in hover details', () => {
