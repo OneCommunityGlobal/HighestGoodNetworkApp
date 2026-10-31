@@ -3,11 +3,11 @@
 .classPerformance {
   padding: 1.5rem;
   transition: all 0.3s ease;
-  animation: fade-in 0.5s ease-out;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .classPerformance.darkMode {
-  color: #fff;
+  color: #ffffff;
 }
 
 /* Empty State */
@@ -20,7 +20,7 @@
 }
 
 .emptyState.darkMode {
-  color: #fff;
+  color: #ffffff;
 }
 
 .emptyContent {
@@ -32,16 +32,6 @@
   font-size: 4rem;
   color: #d1d5db;
   margin-bottom: 1rem;
-}
-
-.loading i {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-.loading p {
-  margin: 0;
-  font-weight: 500;
 }
 
 .darkMode .emptyContent i {
@@ -81,42 +71,27 @@
 
 /* Report Cards */
 .reportCard {
-  background-color: #fff;
+  background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 1.5rem;
   transition: all 0.3s ease;
-}
-
-/* Reactstrap <CardBody> wrapper */
-
-.darkMode .cardBody {
-  background-color: #0f172a;
 }
 
 .reportCard.darkMode {
   background-color: #1f2937;
   border-color: #374151;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
-}
-
-.reportCard:focus-within {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .reportCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
-}
-
-.darkMode .reportCard:focus-within {
-  outline-color: #818cf8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .darkMode .reportCard:hover {
-  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Card Headers */
@@ -146,109 +121,12 @@
 
 /* Chart Styles */
 .chartCol {
-  margin-bottom: 30px;
-}
-
-/* Table Styles (match ReportsView) */
-.tableContainer {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.performanceTable {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-.performanceTable th {
-  background-color: #f9fafb;
-  color: #374151;
-  font-weight: 600;
-  border: none;
-  padding: 1rem 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
-}
-
-.darkMode .performanceTable th {
-  background-color: #374151;
-  color: #d1d5db;
-}
-
-.performanceTable td {
-  padding: 1rem 0.75rem;
-  border-top: 1px solid #e5e7eb;
-  vertical-align: middle;
-}
-
-.darkMode .performanceTable td {
-  border-top-color: #374151;
-  color: #d1d5db;
-}
-
-.performanceTable tbody tr:hover {
-  background-color: #f9fafb;
-}
-
-.darkMode .performanceTable tbody tr:hover {
-  background-color: #374151;
-}
-
-.subjectCell {
-  font-weight: 500;
-  color: #111827;
-}
-
-.darkMode .subjectCell {
-  color: #f9fafb;
-}
-
-.performanceCell {
-  font-size: 0.875rem;
-}
-
-.performanceBar {
-  position: relative;
-  height: 20px;
-  background-color: #e5e7eb;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.darkMode .performanceBar {
-  background-color: rgb(255 255 255 / 12%);
-}
-
-.performanceFill {
-  height: 100%;
-  border-radius: 10px;
-  transition: width 0.6s ease;
-}
-
-.performanceText {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 12px;
-  font-weight: 600;
-  color: #111827;
-  text-shadow: 0 1px 1px rgb(255 255 255 / 65%);
-}
-
-.darkMode .performanceText {
-  color: #f9fafb;
-  text-shadow: 0 1px 1px rgb(0 0 0 / 60%);
-}
-
-.visualCell {
-  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
 .chartContainer {
   position: relative;
-  margin: 20px 0;
+  margin-bottom: 1rem;
 }
 
 .legend {
@@ -326,6 +204,16 @@
   color: #9ca3af;
 }
 
+.loading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.loading p {
+  margin: 0;
+  font-weight: 500;
+}
+
 /* Insights Section */
 .insightsContainer {
   margin-top: 1rem;
@@ -335,76 +223,7 @@
   border: none;
   border-radius: 8px;
   margin-bottom: 1rem;
-  padding: 0.75rem 1rem;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-}
-
-/* Alert variants — match ReportsView colors exactly */
-.insightAlert.insightAlertInfo {
-  background-color: #d1ecf1;
-  border: 1px solid #bee5eb;
-  color: #0c5460;
-}
-
-.insightAlert.insightAlertSuccess {
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  color: #155724;
-}
-
-.insightAlert.insightAlertWarning {
-  background-color: #fff3cd;
-  border: 1px solid #ffeeba;
-  color: #856404;
-}
-
-.insightAlert.insightAlertDanger {
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
-}
-
-.insightAlert.insightAlertPrimary {
-  background-color: #cce5ff;
-  border: 1px solid #b8daff;
-  color: #004085;
-}
-
-.darkMode .insightAlert {
-  color: #e2e8f0;
-  background-color: #1e293b;
-  box-shadow: 0 10px 24px rgb(0 0 0 / 35%);
-  border: 1px solid #334155;
-}
-
-.darkMode .insightAlert.insightAlertInfo {
-  background-color: #172554;
-  border-color: #1e40af;
-  color: #93c5fd;
-}
-
-.darkMode .insightAlert.insightAlertSuccess {
-  background-color: #052e16;
-  border-color: #166534;
-  color: #86efac;
-}
-
-.darkMode .insightAlert.insightAlertWarning {
-  background-color: #451a03;
-  border-color: #92400e;
-  color: #fde68a;
-}
-
-.darkMode .insightAlert.insightAlertDanger {
-  background-color: #450a0a;
-  border-color: #991b1b;
-  color: #fca5a5;
-}
-
-.darkMode .insightAlert.insightAlertPrimary {
-  background-color: #172554;
-  border-color: #1e40af;
-  color: #93c5fd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .insightAlert:last-child {
@@ -438,16 +257,16 @@
   justify-content: flex-end;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgb(0 0 0 / 10%);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .darkMode .insightAction {
-  border-top-color: rgb(255 255 255 / 10%);
+  border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 .actionButton {
   background-color: #4f46e5;
-  color: #fff;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   padding: 0.5rem 1rem;
@@ -461,102 +280,23 @@
 .actionButton:hover {
   background-color: #3730a3;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgb(79 70 229 / 30%);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
 }
 
 .actionButton:active {
   transform: translateY(0);
 }
 
-.actionButton:focus {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
-}
-
 .darkMode .actionButton {
   background-color: #4338ca;
-}
-
-/* Keep buttons high-contrast on colored alerts */
-.insightAlertInfo .actionButton {
-  background: #0ea5e9;
-}
-
-.insightAlertSuccess .actionButton {
-  background: #22c55e;
-}
-
-.insightAlertWarning .actionButton {
-  background: #b45309;
-  color: #fff;
-}
-
-.insightAlertDanger .actionButton {
-  background: #ef4444;
-}
-
-.insightAlertInfo .actionButton:hover {
-  background: #0284c7;
-}
-
-.insightAlertSuccess .actionButton:hover {
-  background: #16a34a;
-}
-
-.insightAlertWarning .actionButton:hover {
-  background: #9a3412;
-}
-
-.insightAlertDanger .actionButton:hover {
-  background: #dc2626;
 }
 
 .darkMode .actionButton:hover {
   background-color: #3730a3;
 }
 
-.darkMode .actionButton:focus {
-  outline-color: #818cf8;
-}
-
-.darkMode .insightAlert .actionButton {
-  color: #fff;
-}
-
-.darkMode .insightAlert.insightAlertInfo .actionButton {
-  background: #0284c7;
-}
-
-.darkMode .insightAlert.insightAlertSuccess .actionButton {
-  background: #16a34a;
-}
-
-.darkMode .insightAlert.insightAlertWarning .actionButton {
-  background: #b45309;
-}
-
-.darkMode .insightAlert.insightAlertDanger .actionButton {
-  background: #dc2626;
-}
-
-.darkMode .insightAlert.insightAlertInfo .actionButton:hover {
-  background: #0369a1;
-}
-
-.darkMode .insightAlert.insightAlertSuccess .actionButton:hover {
-  background: #15803d;
-}
-
-.darkMode .insightAlert.insightAlertWarning .actionButton:hover {
-  background: #9a3412;
-}
-
-.darkMode .insightAlert.insightAlertDanger .actionButton:hover {
-  background: #b91c1c;
-}
-
 /* Responsive Design */
-@media (width <= 992px) {
+@media (max-width: 992px) {
   .classPerformance {
     padding: 1rem;
   }
@@ -578,13 +318,13 @@
   }
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .classPerformance {
     padding: 0.5rem;
   }
 
   .reportCard {
-    margin: 0 -0.5rem 1.5rem;
+    margin: 0 -0.5rem 1.5rem -0.5rem;
   }
 
   .cardTitle {
@@ -615,7 +355,7 @@
   }
 }
 
-@media (width <= 480px) {
+@media (max-width: 480px) {
   .emptyContent i {
     font-size: 3rem;
   }
@@ -647,12 +387,11 @@
   }
 }
 
-@keyframes fade-in {
+@keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(10px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -680,7 +419,7 @@
 
   .insightAlert {
     background: transparent !important;
-    border: 1px solid currentcolor;
+    border: 1px solid currentColor;
   }
 
   .actionButton {
@@ -688,6 +427,25 @@
     color: black !important;
     border: 1px solid black;
   }
+}
+
+/* Accessibility */
+.reportCard:focus-within {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.darkMode .reportCard:focus-within {
+  outline-color: #818cf8;
+}
+
+.actionButton:focus {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.darkMode .actionButton:focus {
+  outline-color: #818cf8;
 }
 
 /* Chart-specific adjustments */
@@ -723,71 +481,4 @@
 
 .impactBar.low {
   background-color: #fbbf24;
-}
-
-/* Status Badge Styles */
-.statusBadge {
-  display: inline-block;
-  padding: 5px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
-  min-width: 80px;
-  border: 1px solid transparent;
-}
-
-.statusBadge.excellent {
-  background-color: #dcfce7;
-  color: #15803d;
-  border-color: #bbf7d0;
-}
-
-.statusBadge.good {
-  background-color: #fefce8;
-  color: #a16207;
-  border-color: #fef08a;
-}
-
-.statusBadge.needsImprovement,
-.statusBadge.needs-improvement {
-  background-color: #fff7ed;
-  color: #c2410c;
-  border-color: #fed7aa;
-}
-
-.statusBadge.critical {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border-color: #fecaca;
-}
-
-.darkMode .statusBadge.excellent {
-  background-color: #064e3b;
-  color: #6ee7b7 !important;
-  border-color: #065f46;
-}
-
-.darkMode .statusBadge.good {
-  background-color: #78350f;
-  color: #fde68a !important;
-  border-color: #92400e;
-}
-
-.darkMode .statusBadge.needsImprovement,
-.darkMode .statusBadge.needs-improvement {
-  background-color: #7c2d12;
-  color: #fed7aa !important;
-  border-color: #9a3412;
-}
-
-.darkMode .statusBadge.critical {
-  background-color: #7f1d1d;
-  color: #fecaca !important;
-  border-color: #991b1b;
-}
-
-.visualIndicator {
-  font-size: 18px;
-  display: inline-block;
 }
