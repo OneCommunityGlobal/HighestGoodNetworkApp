@@ -114,15 +114,86 @@
   background-color: var(--section-title-hover);
 }
 
+/* Match the Total Org Summary comparison dropdown interaction inside this header only. */
+.weeklySummaryComparisonDropdown {
+  flex: 0 0 auto;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle) {
+  box-sizing: border-box;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.25;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  background-color: #6f42c1;
+  color: white;
+  box-shadow: 0 2px 6px rgb(111 66 193 / 30%);
+  transition: all 0.3s ease;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle):hover {
+  background-color: #5a359a;
+  box-shadow: 0 4px 12px rgb(111 66 193 / 40%);
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle):focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(111 66 193 / 30%);
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-menu) {
+  min-width: 180px;
+  padding: 8px 0;
+  margin-top: 8px;
+  border: none;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 15%);
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-item) {
+  padding: 12px 20px;
+  border: none;
+  background-color: transparent;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-item):hover {
+  background-color: #f8f9fa;
+  color: #6f42c1;
+  transform: translateX(4px);
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-menu) {
+  background-color: #34495e;
+  border: 1px solid #6f42c1;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 30%);
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-item) {
+  color: #fff;
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-item):hover {
+  background-color: #6f42c1;
+  color: #fff;
+}
+
 /* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
 
 /* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
-   the label overflows outside the painted background (overlapping the last dropdown).
-   .weeklySummaryShareBtn ties reactstrap's own .btn/.btn-secondary on specificity, so the
-   class is repeated below to add one specificity unit instead of using !important. */
-/* stylelint-disable-next-line no-duplicate-selectors -- repeated class raises specificity to beat
-   reactstrap's .btn/.btn-secondary rules without !important */
-.weeklySummaryShareBtn.weeklySummaryShareBtn {
+   the label overflows outside the painted background (overlapping the last dropdown). */
+.weeklySummaryHeaderControls .weeklySummaryShareBtn {
   height: 38px;
   min-height: 38px;
   min-width: 7.25rem;
@@ -147,12 +218,12 @@
 }
 
 /* Bootstrap .btn can add vertical offset; align with selects */
-.weeklySummaryHeaderControls :global(button.btn.btn) {
+.weeklySummaryHeaderControls :global(button.btn) {
   margin: 0;
   vertical-align: middle;
 }
 
-.darkMode .weeklySummaryShareBtn.weeklySummaryShareBtn {
+.darkMode .weeklySummaryShareBtn {
   background-color: var(--button-bg);
 }
 
@@ -166,11 +237,11 @@
   cursor: not-allowed;
 }
 
-.darkMode .weeklySummaryShareBtn.weeklySummaryShareBtn:hover {
+.darkMode .weeklySummaryShareBtn:hover {
   background-color: var(--button-hover);
 }
 
-.weeklySummaryShareBtn.weeklySummaryShareBtn:hover:not(:disabled) {
+.weeklySummaryShareBtn:hover:not(:disabled) {
   background-color: var(--button-hover);
 }
 
@@ -529,15 +600,18 @@
   justify-content: center;
   border-radius: 25px;
   width: 100%;
-  max-width: 284px;
-  min-height: 190px;
+
+  /* Fill the responsive grid track instead of capping cards at a fixed desktop width. */
+  max-width: none;
+  min-width: 0;
+  height: 190px;
   text-align: center;
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
   border: 1px solid rgb(0 0 0 / 10%);
   position: relative;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-  box-sizing: border-box;
+  overflow: visible;
+  transition: all 0.3s ease;
 }
 
 .weeklyCardTitle {
@@ -558,28 +632,74 @@
   white-space: nowrap;
 }
 
-.weeklyStatusChange {
+.projectStatusUnavailableInfo {
+  align-items: center;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  color: inherit;
+  cursor: help;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 700;
+  height: 16px;
+  justify-content: center;
+  line-height: 1;
+  margin-left: 6px;
+  vertical-align: middle;
+  width: 16px;
+}
+
+.projectStatusUnavailableButton {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: help;
+  display: inline-flex;
+  font: inherit;
+  height: 100%;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 100%;
+}
+
+.projectStatusUnavailableTooltip {
+  z-index: 1060;
+}
+
+.weekly-status-change {
   transition: color 0.3s ease;
   font-size: 14px;
   font-weight: 500;
+  line-height: 1.3;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .darkMode .statusCard {
-  background: var(--card-bg);
-  color: var(--text-color);
-  border-color: rgb(255 255 255 / 10%);
+  color: var(--text-color) !important;
+  border-color: rgb(255 255 255 / 10%) !important;
 }
 
-.darkMode .weeklyCardTitle {
-  color: var(--text-color);
+/* Keep all Project Status text readable on the preserved pastel status cards in dark mode. */
+.darkMode .statusCard .weeklyCardTitle,
+.darkMode .statusCard .weeklyStatusValue {
+  color: #000 !important;
 }
 
-/* The change text sits on the card background, which does switch with the
-   theme, so give it a dark-safe color instead of the light-mode inline one.
-   In dark mode the JSX passes style={undefined} for this element, so there is
-   no inline style left to beat here. */
-.darkMode .weeklyStatusChange {
-  color: var(--text-color);
+.darkMode .statusCard .projectStatusUnavailableInfo {
+  color: #000 !important;
+}
+
+.darkMode .statusCard .projectStatusUnavailableButton {
+  color: #000 !important;
+}
+
+/* Preserve semantic comparison colors against broad dark-mode inherited text rules. */
+.darkMode .statusCard :global(.weekly-status-change) {
+  color: var(--project-status-change-color) !important;
 }
 
 /* Tooltip styles */
@@ -649,13 +769,20 @@
 /* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+
+  /* Let status cards choose the largest safe column count at every viewport width. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 20px;
   justify-content: center;
   align-items: center;
   width: 100%;
   max-width: 1600px;
   margin: auto;
+}
+
+/* Keep Project Status from being squeezed into one parent category column on tablets. */
+.weeklyProjectSummaryDashboardCategoryContent .projectStatusGrid {
+  grid-column: 1 / -1;
 }
 
 /* .projectStatusGrid {
@@ -667,7 +794,10 @@
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-  width: min(130px, 100%);
+  /* Keep the original pill size for short values while letting longer values fit. */
+  width: auto;
+  min-width: 130px;
+  max-width: 100%;
   height: 65px;
   border-radius: 50px / 32px;
   display: flex;
@@ -675,8 +805,7 @@
   justify-content: center;
   box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
   margin: 12px 0;
-  box-sizing: border-box;
-  padding: 0 8px;
+  padding: 0 18px;
 }
 
 /* ---------------- RESPONSIVE DESIGN ---------------- */
@@ -756,11 +885,11 @@
     color: #fff;
   }
 
-  /* Matches .weeklySummaryShareBtn.weeklySummaryShareBtn's specificity above so this
-     tablet-width dark override keeps winning by source order without !important. */
-  .darkMode .weeklySummaryShareBtn.weeklySummaryShareBtn {
-    background: #e8a71c;
-    color: #000; /* readable in dark mode */
+  .darkMode .weeklySummaryShareBtn {
+    background: #e8a71c !important;
+    color: #000 !important; /* readable in dark mode */
+
+    /* Tools and Equipment Tracking - 2 column layout on tablet */
   }
 
   /* Tools and Equipment Tracking - 2 column layout on tablet */
@@ -809,13 +938,16 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .normalCard {
+    min-height: 280px;
+  }
+
   .weeklyProjectSummaryDashboardCategoryContent .wideCard,
   .weeklyProjectSummaryDashboardCategoryContent .normalCard {
     grid-column: span 1;
   }
 
   .weeklySummaryShareBtn {
-    width: 100%;
     margin-top: 5px;
   }
 
@@ -830,48 +962,67 @@
     grid-column: span 1;
   }
 
-  .projectStatusGrid {
+  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: 1fr;
+  }
+
+  .weeklyProjectSummaryCard :global(.chartContainer) {
+    min-height: 240px;
+  }
+
+  .lessonsLearnedGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    min-height: auto;
+  }
+
+  .lessonsCard {
+    min-height: 500px;
+  }
+
+  .toolsTrackingLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .toolsDonutWrap {
+    grid-column: span 1;
+  }
+
+  .financialsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .financialsGrid .financialBig {
+    grid-column: span 1;
+  }
+
+  .laborTimeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .financialsTrackingGrid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Status Grid Responsive */
-@media (width >=1600px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(6, 1fr);
+/* Extra Small Screens */
+@media (width <= 480px) {
+  .lessonsCard {
+    min-height: 450px;
   }
-}
 
-@media (width <=1400px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(4, 1fr);
+  .weeklyProjectSummaryCard :global(.chartContainer) {
+    min-height: 220px;
   }
-}
 
-@media (width <=1024px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (width <=768px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (width <=576px) {
-  .weeklyProjectSummaryDashboardContainer {
-    width: 100%;
-    padding: 8px;
+  .normalCard {
+    min-height: 260px;
   }
 
   .weeklySummaryHeaderTitle {
-    font-size: 20px;
-  }
-
-  .projectStatusGrid {
-    grid-template-columns: repeat(1, 1fr);
+    font-size: large;
+    flex-direction: column;
+    gap: 5px;
   }
 }
 

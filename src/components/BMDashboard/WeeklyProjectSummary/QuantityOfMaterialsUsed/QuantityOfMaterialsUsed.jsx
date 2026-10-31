@@ -151,7 +151,12 @@ const createSelectStyles = darkMode => ({
   }),
 });
 
-function QuantityOfMaterialsUsed({ data }) {
+function QuantityOfMaterialsUsed({
+  data,
+  comparisonMode = 'No Comparison',
+  currentDateRange = {},
+  comparisonDateRange = {},
+}) {
   const dispatch = useDispatch();
   const [chartData, setChartData] = useState(null);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
@@ -168,6 +173,7 @@ function QuantityOfMaterialsUsed({ data }) {
   const [showModal, setShowModal] = useState(false);
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const comparisonEnabled = comparisonMode !== 'No Comparison';
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -219,6 +225,28 @@ function QuantityOfMaterialsUsed({ data }) {
     ],
     [],
   );
+
+  useEffect(() => {
+    if (comparisonMode !== 'No Comparison') {
+      const parseDate = date => (date ? new Date(date) : null);
+      setSelectedDate('Custom');
+      setDateRangeOne([parseDate(currentDateRange.startDate), parseDate(currentDateRange.endDate)]);
+      setDateRangeTwo([
+        parseDate(comparisonDateRange.comparisonStartDate),
+        parseDate(comparisonDateRange.comparisonEndDate),
+      ]);
+    } else {
+      setSelectedDate('Last Week');
+      setDateRangeOne([null, null]);
+      setDateRangeTwo([null, null]);
+    }
+  }, [
+    comparisonMode,
+    currentDateRange.startDate,
+    currentDateRange.endDate,
+    comparisonDateRange.comparisonStartDate,
+    comparisonDateRange.comparisonEndDate,
+  ]);
 
   const getPeriodLabel = date => {
     if (date === 'ALL') return 'Total Materials Used';
@@ -383,7 +411,7 @@ function QuantityOfMaterialsUsed({ data }) {
         if (isPeriodOne) {
           periodOneUsage += record?.quantityUsed || 0;
         }
-        if (isPeriodTwo) {
+        if (comparisonEnabled && isPeriodTwo) {
           periodTwoUsage += record?.quantityUsed || 0;
         }
       });
@@ -424,7 +452,7 @@ function QuantityOfMaterialsUsed({ data }) {
       return 'gray';
     });
 
-    if (periodOneUsageMap.size === 0 && periodTwoUsageMap.size > 0) {
+    if (comparisonEnabled && periodOneUsageMap.size === 0 && periodTwoUsageMap.size > 0) {
       let sortedPreviousData = Array.from(periodTwoUsageMap);
 
       if (selectedMaterials.length > 0) {
@@ -485,7 +513,7 @@ function QuantityOfMaterialsUsed({ data }) {
           type: 'bar',
           order: 2,
         },
-        ...(selectedDate !== 'ALL'
+        ...(comparisonEnabled && selectedDate !== 'ALL'
           ? [
               {
                 label: `${getPeriodLabel(selectedDate).split(' vs ')[1]} Usage`,
@@ -507,7 +535,15 @@ function QuantityOfMaterialsUsed({ data }) {
           : []),
       ],
     });
-  }, [data, selectedMaterials, selectedProjects, selectedDate, dateRangeOne, dateRangeTwo]);
+  }, [
+    data,
+    selectedMaterials,
+    selectedProjects,
+    selectedDate,
+    dateRangeOne,
+    dateRangeTwo,
+    comparisonEnabled,
+  ]);
 
   const barWidth = 12;
   // Subtract the 40-px y-axis offset
