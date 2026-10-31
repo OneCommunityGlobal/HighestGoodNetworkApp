@@ -186,8 +186,23 @@
   color: #f5a623;
 }
 
+.calendarTileAvailable {
+  background-color: #e8f0fe;
+  color: #0b2a5b;
+  border: 1px solid #003f87;
+  cursor: pointer;
+}
+
+.eventPageDark :global(.react-calendar__tile).calendarTileAvailableDark {
+  background-color: #2d4a7a;
+  color: #fff;
+  border: 1px solid #9ec1ff;
+  cursor: pointer;
+}
+
 .calendarTileDisabled {
-  color: #ccc;
+  color: #757575;
+  background-color: #f0f0f0;
   pointer-events: none;
 }
 

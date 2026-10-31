@@ -75,10 +75,11 @@ function EventPage() {
   };
 
   const getCalendarTileClassName = ({ date, view }) => {
-    if (view === 'month' && date < new Date().setHours(0, 0, 0, 0)) {
+    if (view !== 'month') return null;
+    if (date < new Date().setHours(0, 0, 0, 0)) {
       return darkMode ? styles.calendarTileDisabledDark : styles.calendarTileDisabled;
     }
-    return null;
+    return darkMode ? styles.calendarTileAvailableDark : styles.calendarTileAvailable;
   };
 
   const handleDescriptionChange = e => {
