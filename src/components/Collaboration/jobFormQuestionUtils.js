@@ -117,7 +117,13 @@ export function findDuplicateQuestions(candidates = [], existingFields = []) {
   });
   return duplicates;
 }
+/** Apply the manager's choice when duplicate questions are found on form load. */
+export function applyDuplicateDecision(questions = [], removeDuplicates = false) {
+  if (!removeDuplicates) return questions;
 
+  const duplicates = findDuplicateQuestions(questions);
+  return questions.filter(question => !duplicates.includes(question));
+}
 /**
  * Removes legacy, manually-entered numbering from a saved question label.
  * The number shown to users is derived from the question's current position,
