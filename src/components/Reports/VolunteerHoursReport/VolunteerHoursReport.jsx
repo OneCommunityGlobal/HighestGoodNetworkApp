@@ -366,8 +366,6 @@ const mapDispatchToProps = {
 
 VolunteerHoursReport.propTypes = {
   darkMode: PropTypes.bool,
-  allTeams: PropTypes.array,
-  projects: PropTypes.array,
   userProfiles: PropTypes.array,
   getUsersTotalHoursForSpecifiedPeriod: PropTypes.func.isRequired,
   getAllUserTeams: PropTypes.func.isRequired,
