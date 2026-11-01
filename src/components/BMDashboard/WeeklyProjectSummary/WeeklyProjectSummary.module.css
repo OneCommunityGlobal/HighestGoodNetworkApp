@@ -628,9 +628,11 @@
 }
 
 .weeklyStatusValue {
-  color: #000;
-  font-size: 40px;
+  /* Pills are always pastel, so the value stays dark in both themes */
+  color: #1a1a1a;
+  font-size: clamp(26px, 2.2vw, 36px);
   font-weight: 600;
+  white-space: nowrap;
   transition: color 0.3s ease;
 }
 
@@ -774,6 +776,8 @@
 
 /* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
+  /* Span the full section even when the section content is a 2-column grid (tablet) */
+  grid-column: 1 / -1;
   display: grid;
 
   /* Let status cards choose the largest safe column count at every viewport width. */
@@ -800,7 +804,7 @@
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-  /* Keep the original pill size for short values while letting longer values fit. */
+  /* Keep the original pill size for short values while letting longer values like "$27.6K" fit. */
   width: auto;
   min-width: 130px;
   max-width: 100%;
@@ -896,10 +900,9 @@
   .darkMode .weeklySummaryShareBtn {
     background: #e8a71c !important;
     color: #000 !important; /* readable in dark mode */
-
-    /* Tools and Equipment Tracking - 2 column layout on tablet */
   }
 
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
   .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
