@@ -276,7 +276,9 @@ function FeedbackModal() {
                 <div className={`${styles.removeBtnContainer}`}>
                   <button
                     type="button"
-                    className={`${styles.removeEntryBtn}`}
+                    className={`${styles.removeEntryBtn} ${
+                      darkMode ? styles.removeEntryBtnDark : ''
+                    }`}
                     onClick={() => removeActiveMember(member.id)}
                     disabled={ratedMembers.length <= 1}
                     aria-label="Remove entry"
@@ -322,7 +324,9 @@ function FeedbackModal() {
                 <div className={`${styles.removeBtnContainer}`}>
                   <button
                     type="button"
-                    className={`${styles.removeEntryBtn}`}
+                    className={`${styles.removeEntryBtn} ${
+                      darkMode ? styles.removeEntryBtnDark : ''
+                    }`}
                     onClick={() => removeInactiveMember(member.id)}
                     disabled={inactiveRatedMembers.length <= 1}
                     aria-label="Remove entry"
