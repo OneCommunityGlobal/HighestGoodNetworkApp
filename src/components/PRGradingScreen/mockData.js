@@ -1,8 +1,7 @@
-// Mock data for PR Grading Screen
-// This file contains sample data for testing the PR grading functionality
-// Delete this file once we have the backend endpoint to get data
+// Mock data for local development/testing only.
+// Do NOT import this in production components.
+// To use for testing, import manually in the component you want to test.
 import { v4 as uuidv4 } from 'uuid';
-
 export const mockTeamData = {
   teamName: '91NePRT',
   dateRange: {

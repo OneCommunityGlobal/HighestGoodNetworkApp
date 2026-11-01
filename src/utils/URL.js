@@ -733,8 +733,10 @@ export const ENDPOINTS = {
     return `${APIEndpoint}/analytics/review-summary?${params.toString()}`;
   },
   PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
+  PR_GRADING_SYNC_REVIEWERS: `${APIEndpoint}/pr-grading-config/sync-reviewers`,
   WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
+  WEEKLY_GRADING_DELETE_REVIEWER: `${APIEndpoint}/weekly-grading/reviewer`,
 
   PM_EDUCATORS: () => `${APIEndpoint}/pm/educators`,
   PM_EDUCATOR_STUDENTS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/students`,
