@@ -534,4 +534,25 @@ describe('FormattedReport requested week off notice', () => {
     fireEvent.keyDown(button, { key: 'Escape' });
     expect(screen.queryByText('Family trip')).toBeNull();
   });
+
+  it('updates the correct report user and applies the warning returned by the API', async () => {
+    const handleTeamCodeChange = vi.fn();
+    axios.patch.mockResolvedValueOnce({
+      data: { updatedUsers: [{ userId: '1', teamCodeWarning: true }] },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} handleTeamCodeChange={handleTeamCodeChange} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const codeInput = screen.getByPlaceholderText('X-XXX');
+    fireEvent.change(codeInput, { target: { value: 'HaHUS' } });
+    fireEvent.blur(codeInput);
+
+    await waitFor(() => expect(handleTeamCodeChange).toHaveBeenCalledWith('1', 'HaHUS', true));
+  });
 });

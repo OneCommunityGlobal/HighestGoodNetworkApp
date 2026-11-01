@@ -8,6 +8,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import CardSelector from './CardSelector';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 
@@ -32,14 +33,12 @@ import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import CostPredictionChart from './CostPredictionChart';
 import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
 
 const projectStatusButtonData = [
@@ -171,6 +170,20 @@ function WeeklyProjectSummary() {
     state => state.weeklyProjectSummary?.projectStatusErrorRequestKey,
   );
   const containerRef = useRef(null);
+  const userId = useSelector(state => state.auth?.user?.userid);
+  const cardPrefsKey = `weeklyProjectSummaryCards:${userId || 'guest'}`;
+  // Saved card selection per user: { visibleKeys, cardLimit }. null = show all.
+  const [cardPrefs, setCardPrefs] = useState(null);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(cardPrefsKey) || 'null');
+      setCardPrefs(saved && Array.isArray(saved.visibleKeys) ? saved : null);
+    } catch {
+      setCardPrefs(null);
+    }
+  }, [cardPrefsKey]);
+
   const comparisonEnabled = comparisonPeriodFilter !== 'No Comparison';
 
   const currentDateRange = useMemo(() => parseWeeklySummaryDateRange(dateRangeFilter), [
@@ -564,7 +577,7 @@ function WeeklyProjectSummary() {
         content: (
           <div
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
-            style={{ height: '500px', padding: '0' }}
+            style={{ padding: '0' }}
           >
             <InteractiveMap />
           </div>
@@ -626,21 +639,6 @@ function WeeklyProjectSummary() {
         content: (
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection />
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '15px',
-                marginTop: '15px',
-              }}
-            >
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <CostPredictionChart projectId={1} />
-              </div>
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <ActualVsPlannedCost />
-              </div>
-            </div>
           </div>
         ),
       },
@@ -657,6 +655,22 @@ function WeeklyProjectSummary() {
       comparisonDateRange,
     ],
   );
+
+  const visibleKeys = cardPrefs?.visibleKeys ?? sections.map(section => section.key);
+  const cardLimit = cardPrefs?.cardLimit ?? 'all';
+  const selectedSections = sections.filter(section => visibleKeys.includes(section.key));
+  const visibleSections =
+    cardLimit === 'all' ? selectedSections : selectedSections.slice(0, Number(cardLimit));
+
+  const handleCardsChange = (keys, limit) => {
+    const next = { visibleKeys: keys, cardLimit: limit };
+    setCardPrefs(next);
+    try {
+      localStorage.setItem(cardPrefsKey, JSON.stringify(next));
+    } catch {
+      // Storage unavailable (e.g. private browsing); keep the in-memory choice.
+    }
+  };
 
   const handleSaveAsPDF = async () => {
     // Prevent multiple simultaneous PDF generations
@@ -843,8 +857,25 @@ function WeeklyProjectSummary() {
         isGeneratingPDF={isGeneratingPDF}
       />
       <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
+        {isGeneratingPDF === false && (
+          <div className={styles.cardSelectorBar}>
+            <CardSelector
+              cards={sections.map(({ key, title }) => ({ key, title }))}
+              visibleKeys={visibleKeys}
+              cardLimit={cardLimit}
+              shownCount={visibleSections.length}
+              onChange={handleCardsChange}
+              darkMode={darkMode}
+            />
+          </div>
+        )}
+        {visibleSections.length === 0 && (
+          <p className={styles.noCardsMessage}>
+            No cards selected. Use Customize Cards to choose which cards to show.
+          </p>
+        )}
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
-          {sections.map(({ title, key, className, content }) => (
+          {visibleSections.map(({ title, key, className, content }) => (
             <div
               key={key}
               className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}

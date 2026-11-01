@@ -35,13 +35,13 @@
   color: #fff;
 }
 
-/* ===== Filters: equal-width grid so every label and field lines up ===== */
+/* ===== Filters: even 2-column grid: Projects | Severities, Injury types (full row), Start | End ===== */
 .injuryChartFilters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
   width: 100%;
-  align-items: start;
+  align-items: end;
 }
 
 .injuryFilter {
@@ -49,6 +49,10 @@
   flex-direction: column;
   gap: 0.375rem;
   min-width: 0;
+}
+
+.injuryFilter:nth-child(3) {
+  grid-column: 1 / -1;
 }
 
 .injuryFilterLabel {
@@ -220,4 +224,10 @@
 
 .injuryChartDark .tooltipSeriesRow * {
   color: inherit !important;
+}
+
+@media (width <= 480px) {
+  .injuryChartFilters {
+    grid-template-columns: 1fr;
+  }
 }
