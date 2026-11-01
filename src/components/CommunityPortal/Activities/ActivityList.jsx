@@ -318,22 +318,28 @@ function ActivityList() {
         {loading && <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>}
 
         {!loading && hasActivities && (
-          <ul>
+          <ul className={styles.activityUl}>
             {paginatedActivities.map(activity => (
-              <div
+              <li
                 key={activity.id}
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleActivityClick(activity)}
-                tabIndex={0}
-                role="button"
-                aria-label={`View details for ${activity.name}`}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleActivityClick(activity);
-                  }
-                }}
+                className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
               >
-                <li className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}>
+                <div
+                  style={{
+                    cursor: 'pointer',
+                    display: 'block',
+                    width: '100%',
+                  }}
+                  onClick={() => handleActivityClick(activity)}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`View details for ${activity.name}`}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleActivityClick(activity);
+                    }
+                  }}
+                >
                   <strong>{activity.name}</strong>
 
                   {/* Type */}
@@ -354,17 +360,17 @@ function ActivityList() {
                       <span>{activity.date}</span>
                     </div>
                   </div>
+                </div>
 
-                  <button
-                    type="button"
-                    onClick={event => goToReschedule(event, activity)}
-                    className="btn btn-primary btn-sm mt-2"
-                    aria-label={`Reschedule ${activity.name}`}
-                  >
-                    Reschedule
-                  </button>
-                </li>
-              </div>
+                <button
+                  type="button"
+                  onClick={event => goToReschedule(event, activity)}
+                  className="btn btn-primary btn-sm mt-2"
+                  aria-label={`Reschedule ${activity.name}`}
+                >
+                  Reschedule
+                </button>
+              </li>
             ))}
           </ul>
         )}
