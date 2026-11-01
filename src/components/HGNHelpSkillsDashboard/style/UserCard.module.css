@@ -172,3 +172,23 @@
 .userCard.darkMode .scoreValue.scoreLow {
   color: #ff6b6b !important;
 }
+
+.summaryIncompleteBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a1c1c;
+  background-color: #fdecea;
+  border: 1px solid #f5c2c0;
+  border-radius: 12px;
+}
+
+.darkMode .summaryIncompleteBadge {
+  color: #ffb4ab;
+  background-color: #3b1c1c;
+  border-color: #7a2e2e;
+}
