@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  LabelList,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -105,6 +106,11 @@ const getTrendIndicator = (current, previous) => {
   return { symbol: '→', color: '#FBBC05', label: 'Unchanged' };
 };
 
+const formatPercent = (value, digits = 2) => {
+  const num = Number(value) || 0;
+  return `${Number.isInteger(num) ? num : num.toFixed(digits)}%`;
+};
+
 const RiskTooltip = ({ active, payload, label, darkMode }) => {
   if (!active || !payload?.length) return null;
   const row = payload[0]?.payload;
@@ -127,14 +133,14 @@ const RiskTooltip = ({ active, payload, label, darkMode }) => {
   return (
     <div className={`${styles.tooltip} ${darkMode ? styles.tooltipDark : ''}`}>
       <div className={styles.tooltipTitle}>{label}</div>
-      <div>Cost overrun: {row.predictedCostOverrun}</div>
-      <div>Time delay: {row.predictedTimeDelay}</div>
+      <div>Cost overrun: {formatPercent(row.predictedCostOverrun)}</div>
+      <div>Time delay: {formatPercent(row.predictedTimeDelay)}</div>
       <div>Issues: {row.totalOpenIssues}</div>
       <hr className={styles.tooltipDivider} />
       <div className={styles.tooltipSubtitle}>Summary (selected period)</div>
       <div>
-        Key drivers of change: Cost {getArrow(deltas.cost)} {deltas.cost.toFixed(2)}, Delay{' '}
-        {getArrow(deltas.delay)} {deltas.delay.toFixed(2)}, Issues {getArrow(deltas.issues)}{' '}
+        Key drivers of change: Cost {getArrow(deltas.cost)} {formatPercent(deltas.cost)}, Delay{' '}
+        {getArrow(deltas.delay)} {formatPercent(deltas.delay)}, Issues {getArrow(deltas.issues)}{' '}
         {deltas.issues.toFixed(0)}
       </div>
       <div>Largest risk contributor: {contributor || 'N/A'}</div>
@@ -264,7 +270,7 @@ export default function ProjectRiskProfileOverview() {
 
   const filteredProjects = useMemo(() => {
     return projectsWithHistory
-      .filter(p => selectedProjects.length === 0 || selectedProjects.includes(p.projectName))
+      .filter(p => selectedProjects.includes(p.projectName))
       .map(p => {
         const hist = (p.history || []).filter(
           h => h.date >= effectiveWindow.start && h.date <= effectiveWindow.end,
@@ -457,10 +463,14 @@ export default function ProjectRiskProfileOverview() {
 
           <div className={styles.chartWrapper}>
             {barChartData.length === 0 ? (
-              <div className={styles.emptyState}>No data available for the selected filters.</div>
+              <div className={styles.emptyState}>
+                {selectedProjects.length === 0 && allProjects.length > 0
+                  ? 'No projects selected. Choose at least one project to see its risk profile.'
+                  : 'No data available for the selected filters.'}
+              </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barChartData} margin={{ top: 20, right: 40, left: 20, bottom: 80 }}>
+                <BarChart data={barChartData} margin={{ top: 30, right: 40, left: 20, bottom: 80 }}>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     horizontal={true}
@@ -493,21 +503,45 @@ export default function ProjectRiskProfileOverview() {
                     fill="#4285F4"
                     radius={[3, 3, 0, 0]}
                     barSize={35}
-                  />
+                  >
+                    <LabelList
+                      dataKey="predictedCostOverrun"
+                      position="top"
+                      formatter={value => formatPercent(value, 0)}
+                      fill={chartColors.text}
+                      fontSize={11}
+                    />
+                  </Bar>
                   <Bar
                     dataKey="totalOpenIssues"
                     name="Issues"
                     fill="#EA4335"
                     radius={[3, 3, 0, 0]}
                     barSize={35}
-                  />
+                  >
+                    <LabelList
+                      dataKey="totalOpenIssues"
+                      position="top"
+                      formatter={value => Math.round(Number(value) || 0)}
+                      fill={chartColors.text}
+                      fontSize={11}
+                    />
+                  </Bar>
                   <Bar
                     dataKey="predictedTimeDelay"
                     name="Predicted Time Delay (%)"
                     fill="#FBBC05"
                     radius={[3, 3, 0, 0]}
                     barSize={35}
-                  />
+                  >
+                    <LabelList
+                      dataKey="predictedTimeDelay"
+                      position="top"
+                      formatter={value => formatPercent(value, 0)}
+                      fill={chartColors.text}
+                      fontSize={11}
+                    />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             )}
