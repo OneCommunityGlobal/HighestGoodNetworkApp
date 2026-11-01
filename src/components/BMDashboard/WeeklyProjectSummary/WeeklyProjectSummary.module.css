@@ -1063,3 +1063,20 @@
     display: none;
   }
 }
+
+/* Customize Cards control */
+.cardSelectorBar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.noCardsMessage {
+  padding: 24px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.darkMode .noCardsMessage {
+  color: #cfd7e3;
+}
