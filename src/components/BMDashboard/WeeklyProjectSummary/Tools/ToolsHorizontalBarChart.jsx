@@ -7,18 +7,6 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ToolsHorizontalBarChart.module.css';
 
-const getChartFontSize = width => {
-  if (width <= 480) return 10;
-  if (width <= 768) return 11;
-  return 12;
-};
-
-const getYAxisWidth = width => {
-  if (width <= 480) return 90;
-  if (width <= 768) return 120;
-  return 150;
-};
-
 function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || !payload.length) {
     return null;
@@ -70,6 +58,18 @@ CustomTooltip.defaultProps = {
   payload: [],
   label: '',
   darkMode: false,
+};
+
+const getChartFontSize = windowWidth => {
+  if (windowWidth < 480) return 10;
+  if (windowWidth < 768) return 11;
+  return 12;
+};
+
+const getYAxisWidth = windowWidth => {
+  if (windowWidth < 480) return 70;
+  if (windowWidth < 768) return 90;
+  return 110;
 };
 
 function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
