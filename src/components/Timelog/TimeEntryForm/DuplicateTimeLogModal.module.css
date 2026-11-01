@@ -1,0 +1,79 @@
+.content {
+  overflow-wrap: anywhere;
+}
+
+.darkContent {
+  background-color: #1c2541;
+  color: #fff;
+}
+
+.darkHeader {
+  background-color: #1c2541;
+  color: #fff;
+  border-bottom-color: #3a506b;
+}
+
+.darkBody {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+.warning {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.optionButton {
+  flex: 1 1 auto;
+  text-align: left;
+  white-space: normal;
+}
+
+/* Makes the keyboard default (EDIT) visibly selected beyond the focus ring. */
+.defaultAction {
+  font-weight: 700;
+  box-shadow: 0 0 0 3px rgb(0 123 255 / 55%);
+}
+
+.infoButton {
+  flex: 0 0 auto;
+  padding: 0.25rem;
+  border: 0;
+  background: transparent;
+  color: #0d6efd;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.infoButton:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.darkInfoButton {
+  color: #9ec5fe;
+}
+
+@media (width <= 576px) {
+  .optionRow {
+    align-items: flex-start;
+  }
+
+  .optionButton {
+    padding: 0.6rem 0.75rem;
+  }
+}
