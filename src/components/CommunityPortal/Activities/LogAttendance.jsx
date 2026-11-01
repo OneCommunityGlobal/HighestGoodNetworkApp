@@ -18,15 +18,17 @@ import {
   getAttendanceByEvent,
   getAttendanceSummary,
   getMockAttendanceForEvent,
+  updateAttendanceLog,
 } from '~/actions/attendanceActions';
 import styles from './LogAttendance.module.css';
 
 const tabs = ['Description', 'Analysis', 'Participates', 'Comments'];
-const statusFilters = ['all', 'checked_in', 'no_show', 'pending'];
+const statusFilters = ['all', 'checked_in', 'no_show', 'pending', 'cancelled'];
 
 const recordStatusLabel = status => {
   if (status === 'checked_in') return 'Checked In';
   if (status === 'no_show') return 'No Show';
+  if (status === 'cancelled') return 'Cancelled';
   return 'Pending';
 };
 
@@ -34,6 +36,7 @@ const filterStatusLabel = filter => {
   if (filter === 'all') return 'All Statuses';
   if (filter === 'checked_in') return 'Checked In';
   if (filter === 'no_show') return 'No Shows';
+  if (filter === 'cancelled') return 'Cancelled';
   return 'Pending';
 };
 
@@ -54,6 +57,8 @@ function LogAttendance() {
   const [attendanceSummary, setAttendanceSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [attendanceUpdateError, setAttendanceUpdateError] = useState(null);
+  const [updatingAttendanceId, setUpdatingAttendanceId] = useState(null);
   const [useMockData, setUseMockData] = useState(false);
   const isFetchingRef = useRef(false);
   const fetchedActivityIdRef = useRef(null);
@@ -111,6 +116,7 @@ function LogAttendance() {
         // Transform attendance records
         const records = (attendanceResponse.data || []).map(record => ({
           id: record.attendanceCode || record._id,
+          attendanceId: record._id,
           participantName: record.participantName,
           participantId:
             record.participantId?._id || record.participantId || record.participantExternalId,
@@ -152,13 +158,8 @@ function LogAttendance() {
     if (statusFilter === 'all') {
       return attendanceRecords;
     }
-    if (statusFilter === 'checked_in') {
-      return attendanceRecords.filter(record => record.status === 'Checked In');
-    }
-    if (statusFilter === 'no_show') {
-      return attendanceRecords.filter(record => record.status === 'No Show');
-    }
-    return attendanceRecords.filter(record => record.status === 'Pending');
+
+    return attendanceRecords.filter(record => record.rawStatus === statusFilter);
   }, [attendanceRecords, statusFilter]);
 
   const sortedRecords = useMemo(() => {
@@ -189,6 +190,52 @@ function LogAttendance() {
       }
       return { key, direction: 'asc' };
     });
+  };
+
+  const handleAttendanceStatusChange = async (record, nextStatus) => {
+    if (!record.attendanceId || record.rawStatus === nextStatus) return;
+
+    setUpdatingAttendanceId(record.attendanceId);
+    setAttendanceUpdateError(null);
+
+    try {
+      const response = await updateAttendanceLog(record.attendanceId, {
+        status: nextStatus,
+      });
+
+      if (response?.status && response.status >= 400) {
+        throw new Error(response.message || 'Failed to update attendance');
+      }
+
+      setAttendanceRecords(previous =>
+        previous.map(item =>
+          item.attendanceId === record.attendanceId
+            ? {
+                ...item,
+                rawStatus: nextStatus,
+                status: recordStatusLabel(nextStatus),
+                checkInTime:
+                  nextStatus === 'checked_in'
+                    ? moment(response?.data?.checkInTime || new Date()).format('h:mm A')
+                    : '-',
+              }
+            : item,
+        ),
+      );
+
+      const summaryResponse = await getAttendanceSummary(
+        activityId,
+        eventDetails?.seatsFilled || 0,
+      );
+
+      if (summaryResponse?.data) {
+        setAttendanceSummary(summaryResponse.data);
+      }
+    } catch (err) {
+      setAttendanceUpdateError(err.message || 'Failed to update attendance');
+    } finally {
+      setUpdatingAttendanceId(null);
+    }
   };
 
   const attendanceStats = useMemo(() => {
@@ -440,6 +487,7 @@ function LogAttendance() {
                 </label>
               </div>
             </header>
+            {attendanceUpdateError && <p role="alert">{attendanceUpdateError}</p>}
             <div className={styles.tableWrapper}>
               <table>
                 <thead>
@@ -470,6 +518,7 @@ function LogAttendance() {
                       sortConfig={sortConfig}
                       onSort={handleSort}
                     />
+                    <th>Mark Attendance</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -486,6 +535,25 @@ function LogAttendance() {
                         >
                           {record.status}
                         </span>
+                      </td>
+                      <td>
+                        <select
+                          aria-label={`Update attendance for ${record.participantName}`}
+                          value={record.rawStatus || 'pending'}
+                          disabled={
+                            useMockData ||
+                            !record.attendanceId ||
+                            updatingAttendanceId === record.attendanceId
+                          }
+                          onChange={event =>
+                            handleAttendanceStatusChange(record, event.target.value)
+                          }
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="checked_in">Checked In</option>
+                          <option value="no_show">No Show</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
                       </td>
                     </tr>
                   ))}
