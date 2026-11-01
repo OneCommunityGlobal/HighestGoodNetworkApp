@@ -8,7 +8,7 @@ vi.mock('react-toastify', () => ({
 }));
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
@@ -17,7 +17,7 @@ import { Provider } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { themeMock } from '__tests__/mockStates';
-import { ModalContext } from '~/context/ModalContext';
+import { ModalContext, ModalProvider } from '~/context/ModalContext';
 import UserPermissionsPopUp from '../UserPermissionsPopUp';
 
 const mockStore = configureMockStore([thunk]);
@@ -301,3 +301,119 @@ describe('UserPermissionsPopup component', () => {
     });
   });
 }, 10000);
+
+describe('UserPermissionsPopup unsaved changes', () => {
+  const REMINDER = 'Remember to Save Your Changes!';
+  const savedUser = {
+    _id: 'abc123',
+    role: 'Volunteer',
+    firstName: 'Test1',
+    lastName: 'Volunteer',
+    email: 'Test1.Volunteer@gmail.com',
+    permissions: { frontPermissions: [], removedDefaultPermissions: [] },
+  };
+
+  beforeEach(() => {
+    axios.get.mockResolvedValue({ status: 200, data: savedUser });
+  });
+
+  // The signed-in user may edit user permissions, so the Add/Delete buttons are enabled
+  const allowEditing = () => {
+    const state = store.getState();
+    store = mockStore({
+      ...state,
+      auth: {
+        ...state.auth,
+        user: {
+          ...state.auth.user,
+          permissions: { frontPermissions: ['putUserProfilePermissions'], backPermissions: [] },
+        },
+      },
+    });
+  };
+
+  it('shows the reminder only while the permissions differ from the saved ones', async () => {
+    allowEditing();
+    // Real ModalProvider; the parent page passes modalStatus down the same way
+    render(
+      <Provider store={store}>
+        <ModalProvider>
+          <ModalContext.Consumer>
+            {({ modalStatus }) => <UserPermissionsPopUp modalStatus={modalStatus} />}
+          </ModalContext.Consumer>
+        </ModalProvider>
+      </Provider>,
+    );
+    fireEvent.click(screen.getByText('Test1 Volunteer'));
+    await flushAllPromises();
+    expect(screen.queryByText(REMINDER)).not.toBeInTheDocument();
+
+    fireEvent.click(within(screen.getByTestId('postRole')).getByRole('button', { name: 'Add' }));
+    expect(await screen.findByText(REMINDER)).toBeInTheDocument();
+
+    // Removing the same permission again leaves nothing to save
+    fireEvent.click(within(screen.getByTestId('postRole')).getByRole('button', { name: 'Delete' }));
+    await waitFor(() => expect(screen.queryByText(REMINDER)).not.toBeInTheDocument());
+  });
+
+  it('clears the flag and closes the pop-up after a successful Submit', async () => {
+    allowEditing();
+    axios.patch.mockResolvedValue({ status: 200 });
+    const updateModalStatus = vi.fn();
+    const closePopUp = vi.fn();
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={{ modalStatus: false, updateModalStatus }}>
+          <UserPermissionsPopUp closePopUp={closePopUp} getChangeLogs={vi.fn()} />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    fireEvent.click(screen.getByText('Test1 Volunteer'));
+    await flushAllPromises();
+    // A real change first, so the flag is on when Submit is pressed
+    fireEvent.click(within(screen.getByTestId('postRole')).getByRole('button', { name: 'Add' }));
+    await waitFor(() => expect(updateModalStatus).toHaveBeenLastCalledWith(true));
+    fireEvent.click(screen.getByText('Submit'));
+
+    await waitFor(() => expect(closePopUp).toHaveBeenCalledTimes(1));
+    expect(updateModalStatus).toHaveBeenLastCalledWith(false);
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+
+  it('shows "Submit" again after a failed Submit', async () => {
+    axios.patch.mockRejectedValue(new Error('server error'));
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    fireEvent.click(screen.getByText('Test1 Volunteer'));
+    fireEvent.click(screen.getByText('Submit'));
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
+    expect(await screen.findByRole('button', { name: 'Submit' })).toBeInTheDocument();
+  });
+
+  it('shows "Submit" again when Submit stops early because no user name is typed', async () => {
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    fireEvent.click(screen.getByText('Test1 Volunteer'));
+    await flushAllPromises();
+    fireEvent.change(screen.getByPlaceholderText('Shows only ACTIVE users'), {
+      target: { value: '' },
+    });
+    const patchCallsBefore = axios.patch.mock.calls.length;
+    fireEvent.click(screen.getByText('Submit'));
+
+    expect(toast.error).toHaveBeenCalledWith('Please type the name of a user.');
+    expect(axios.patch).toHaveBeenCalledTimes(patchCallsBefore);
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
+  });
+});
