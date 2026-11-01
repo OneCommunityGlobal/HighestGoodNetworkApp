@@ -375,8 +375,6 @@ VolunteerHoursReport.propTypes = {
 
 VolunteerHoursReport.defaultProps = {
   darkMode: false,
-  allTeams: [],
-  projects: [],
   userProfiles: [],
 };
 export default connect(mapStateToProps, mapDispatchToProps)(VolunteerHoursReport);
