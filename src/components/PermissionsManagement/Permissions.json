@@ -327,11 +327,6 @@
                 "description": "Lets the user see and use the task 'X' on Dashboard > Tasks."
               },
               {
-                "label": "Unassign Team Members from Tasks",
-                "key": "deleteDashboardTask",
-                "description": "Lets the user unassign their team members from tasks on the Dashboard."
-              },
-              {
                 "label": "See How Many Times a Task's Estimated Hours Changed",
                 "key": "seeNumberOfTimesTimeAdded",
                 "description": "Shows, next to each task's hours on Dashboard > Tasks, how many times its estimated hours changed; click for the history."
