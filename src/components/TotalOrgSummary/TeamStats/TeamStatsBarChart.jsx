@@ -48,7 +48,14 @@ function createTeamStatsTooltipContent(yAxisLabel, darkMode) {
       payload: { ...item.payload, change: formatChangePercent(item.payload?.change) },
     }));
     return (
-      <CustomTooltip {...props} payload={formatted} yAxisLabel={yAxisLabel} darkMode={darkMode} />
+      <CustomTooltip
+        {...props}
+        payload={formatted}
+        yAxisLabel={yAxisLabel}
+        darkMode={darkMode}
+        valueLabel="Volunteers"
+        formatValue
+      />
     );
   }
   TeamStatsTooltipContent.displayName = 'TeamStatsTooltipContent';
