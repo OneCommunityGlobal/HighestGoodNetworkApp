@@ -70,6 +70,8 @@ describe('ActivityList', () => {
     renderActivityList();
     fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
+
     fireEvent.change(screen.getByLabelText(/Sort By:/i), {
       target: { value: 'latest' },
     });
