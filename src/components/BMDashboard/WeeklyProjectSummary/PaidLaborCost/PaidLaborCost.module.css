@@ -179,15 +179,154 @@
 
 .paidLaborCostChartWrapper {
   width: 100%;
-  min-height: 400px;
   margin-bottom: 24px;
   flex-grow: 1;
 }
 
+/* Explicit height: Chart.js (maintainAspectRatio: false) sizes the canvas to this box */
 .paidLaborCostChartContainer {
-  height: 100%;
+  height: clamp(320px, 45vh, 460px);
   width: 100%;
   position: relative;
+}
+
+/* ---------- Legend (one entry per task; Actual vs Budget key) ---------- */
+.chartLegend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.legendKey {
+  display: flex;
+  gap: 18px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.legendKeyItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendKeySwatch {
+  width: 16px;
+  height: 11px;
+  border-radius: 3px;
+}
+
+.legendKeyActual {
+  background-color: #64748b;
+}
+
+.legendKeyBudget {
+  background-color: rgb(100 116 139 / 35%);
+  border: 2px dashed #64748b;
+  border-bottom: 0;
+}
+
+.legendTasks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 100%;
+}
+
+.legendTask {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.legendTask:hover {
+  background-color: rgb(100 116 139 / 12%);
+}
+
+.legendTask:focus-visible {
+  outline: 2px solid #0d55b3;
+  outline-offset: 1px;
+}
+
+.legendTaskSwatch {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legendTaskLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legendTaskHidden {
+  opacity: 0.45;
+}
+
+.legendTaskHidden .legendTaskLabel {
+  text-decoration: line-through;
+}
+
+/* !important: a global dark-mode rule forces text white/inherits elsewhere */
+.darkMode .chartLegend {
+  color: #e2e8f0 !important;
+}
+
+.darkMode .legendKey {
+  color: #94a3b8 !important;
+}
+
+.darkMode .legendKeyActual {
+  background-color: #94a3b8;
+}
+
+.darkMode .legendKeyBudget {
+  background-color: rgb(148 163 184 / 35%);
+  border-color: #94a3b8;
+}
+
+.darkMode .legendTask {
+  color: #e2e8f0 !important;
+}
+
+.darkMode .legendTask:hover {
+  background-color: rgb(148 163 184 / 15%);
+}
+
+.darkMode .legendTask:focus-visible {
+  outline-color: #e8a71c;
+}
+
+@media (width <= 600px) {
+  .paidLaborCostChartContainer {
+    height: 300px;
+  }
+
+  .chartLegend {
+    font-size: 12px;
+  }
+
+  .legendTasks {
+    gap: 4px 10px;
+  }
 }
 
 .emptyState {
@@ -597,30 +736,3 @@
     border-width: 4px;
   }
 }
-
-.paidLaborCostChartScrollWrapper {
-  width: 100%;
-  overflow-x: auto;
-  background-color: var(--bg-color);
-  scrollbar-width: thin;
-  scrollbar-color: var(--button-bg) var(--card-shadow);
-
-}
-
-.paidLaborCostChartScrollWrapper::-webkit-scrollbar {
-  height: 6px;
-}
-
-.paidLaborCostChartScrollWrapper::-webkit-scrollbar-track {
-  background: var(--bg-color);
-}
-
-.paidLaborCostChartScrollWrapper::-webkit-scrollbar-thumb {
-  background: var(--button-bg);
-  border-radius: 3px;
-}
-
-/* .paidLaborCostChartScrollWrapper {
-  scrollbar-width: thin;
-  scrollbar-color: var(--button-bg) var(--card-shadow);
-} */

@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  LabelList,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -17,10 +18,6 @@ import Select from 'react-select';
 import { Container } from 'reactstrap';
 import httpService from '../../../services/httpService';
 import styles from './ProjectRiskProfileOverview.module.css';
-
-function clamp(n, min, max) {
-  return Math.max(min, Math.min(max, n));
-}
 
 function hashString(str) {
   let h = 2166136261;
@@ -46,30 +43,31 @@ function buildDateRange(endDateISO, days) {
   return dates;
 }
 
+// The API only provides one current snapshot per project. Build an
+// illustrative trend that ENDS at the real current values (walking backwards
+// in time), so the bars always show the real numbers. Values are floored at 0
+// only - there is no artificial upper cap.
 function generateSyntheticHistory(projectName, snapshot, days, endDateISO) {
   const seed = hashString(projectName);
   const dates = buildDateRange(endDateISO, days);
-  const baseCost = Number(snapshot.predictedCostOverrun ?? 0);
-  const baseDelay = Number(snapshot.predictedTimeDelay ?? 0);
-  const baseIssues = Number(snapshot.totalOpenIssues ?? 0);
-  let cost = baseCost,
-    delay = baseDelay,
-    issues = baseIssues;
+  let cost = Number(snapshot.predictedCostOverrun ?? 0);
+  let delay = Number(snapshot.predictedTimeDelay ?? 0);
+  const issues = Number(snapshot.totalOpenIssues ?? 0);
+  const r1 = ((seed % 97) / 97 - 0.5) * 2;
+  const r2 = (((seed >> 3) % 89) / 89 - 0.5) * 2;
 
-  return dates.map((date, idx) => {
-    const r1 = ((seed % 97) / 97 - 0.5) * 2;
-    const r2 = (((seed >> 3) % 89) / 89 - 0.5) * 2;
-    const r3 = (((seed >> 7) % 83) / 83 - 0.5) * 2;
-    cost = clamp(cost + r1 * 1.2 + Math.sin((idx + seed) / 5) * 0.6, 0, 999);
-    delay = clamp(delay + r2 * 0.4 + Math.cos((idx + seed) / 6) * 0.2, 0, 999);
-    issues = clamp(Math.round(issues + r3 * 0.3 + Math.sin((idx + seed) / 7) * 0.1), 0, 999);
-    return {
-      date,
+  const points = new Array(dates.length);
+  for (let idx = dates.length - 1; idx >= 0; idx -= 1) {
+    points[idx] = {
+      date: dates[idx],
       predictedCostOverrun: Number(cost.toFixed(2)),
       predictedTimeDelay: Number(delay.toFixed(2)),
       totalOpenIssues: issues,
     };
-  });
+    cost = Math.max(0, cost - (r1 * 1.2 + Math.sin((idx + seed) / 5) * 0.6));
+    delay = Math.max(0, delay - (r2 * 0.4 + Math.cos((idx + seed) / 6) * 0.2));
+  }
+  return points;
 }
 
 function getArrow(delta) {
@@ -108,6 +106,11 @@ const getTrendIndicator = (current, previous) => {
   return { symbol: '→', color: '#FBBC05', label: 'Unchanged' };
 };
 
+const formatPercent = (value, digits = 2) => {
+  const num = Number(value) || 0;
+  return `${Number.isInteger(num) ? num : num.toFixed(digits)}%`;
+};
+
 const RiskTooltip = ({ active, payload, label, darkMode }) => {
   if (!active || !payload?.length) return null;
   const row = payload[0]?.payload;
@@ -130,14 +133,14 @@ const RiskTooltip = ({ active, payload, label, darkMode }) => {
   return (
     <div className={`${styles.tooltip} ${darkMode ? styles.tooltipDark : ''}`}>
       <div className={styles.tooltipTitle}>{label}</div>
-      <div>Cost overrun: {row.predictedCostOverrun}</div>
-      <div>Time delay: {row.predictedTimeDelay}</div>
+      <div>Cost overrun: {formatPercent(row.predictedCostOverrun)}</div>
+      <div>Time delay: {formatPercent(row.predictedTimeDelay)}</div>
       <div>Issues: {row.totalOpenIssues}</div>
       <hr className={styles.tooltipDivider} />
       <div className={styles.tooltipSubtitle}>Summary (selected period)</div>
       <div>
-        Key drivers of change: Cost {getArrow(deltas.cost)} {deltas.cost.toFixed(2)}, Delay{' '}
-        {getArrow(deltas.delay)} {deltas.delay.toFixed(2)}, Issues {getArrow(deltas.issues)}{' '}
+        Key drivers of change: Cost {getArrow(deltas.cost)} {formatPercent(deltas.cost)}, Delay{' '}
+        {getArrow(deltas.delay)} {formatPercent(deltas.delay)}, Issues {getArrow(deltas.issues)}{' '}
         {deltas.issues.toFixed(0)}
       </div>
       <div>Largest risk contributor: {contributor || 'N/A'}</div>
@@ -166,6 +169,7 @@ export default function ProjectRiskProfileOverview() {
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const projectWrapperRef = useRef(null);
+  const selectionInitialized = useRef(false);
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -175,37 +179,6 @@ export default function ProjectRiskProfileOverview() {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await httpService.get(
-          `${process.env.REACT_APP_APIENDPOINT}/projects/risk-profile`,
-        );
-        let result = res.data;
-
-        if (!Array.isArray(result)) result = [result];
-
-        const normalized = result.map(p => ({
-          ...p,
-          projectName: p.projectName || p.name || 'Unknown Project',
-          history: Array.isArray(p.history) ? p.history : null,
-        }));
-
-        setRawProjects(normalized);
-        const names = normalized.map(p => p.projectName);
-        setAllProjects(names);
-        setSelectedProjects(names);
-      } catch (err) {
-        setError('Failed to fetch project risk profile data.');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
   }, []);
 
   const effectiveWindow = useMemo(() => {
@@ -227,6 +200,42 @@ export default function ProjectRiskProfileOverview() {
     startDate.setDate(startDate.getDate() - (days - 1));
     return { start: formatDateISO(startDate), end, days };
   }, [timeRange, customStart, customEnd]);
+
+  // Reload when the time range changes so range-based counts (e.g. issues)
+  // can come from the API.
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await httpService.get(
+          `${process.env.REACT_APP_APIENDPOINT}/projects/risk-profile?startDate=${effectiveWindow.start}&endDate=${effectiveWindow.end}`,
+        );
+        let result = res.data;
+
+        if (!Array.isArray(result)) result = [result];
+
+        const normalized = result.map(p => ({
+          ...p,
+          projectName: p.projectName || p.name || 'Unknown Project',
+          history: Array.isArray(p.history) ? p.history : null,
+        }));
+
+        setRawProjects(normalized);
+        const names = normalized.map(p => p.projectName);
+        setAllProjects(names);
+        if (selectionInitialized.current === false) {
+          setSelectedProjects(names);
+          selectionInitialized.current = true;
+        }
+      } catch (err) {
+        setError('Failed to fetch project risk profile data.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [effectiveWindow.start, effectiveWindow.end]);
 
   const projectsWithHistory = useMemo(() => {
     if (!rawProjects || rawProjects.length === 0) return [];
@@ -261,7 +270,7 @@ export default function ProjectRiskProfileOverview() {
 
   const filteredProjects = useMemo(() => {
     return projectsWithHistory
-      .filter(p => selectedProjects.length === 0 || selectedProjects.includes(p.projectName))
+      .filter(p => selectedProjects.includes(p.projectName))
       .map(p => {
         const hist = (p.history || []).filter(
           h => h.date >= effectiveWindow.start && h.date <= effectiveWindow.end,
@@ -457,10 +466,14 @@ export default function ProjectRiskProfileOverview() {
 
           <div className={styles.chartWrapper}>
             {barChartData.length === 0 ? (
-              <div className={styles.emptyState}>No data available for the selected filters.</div>
+              <div className={styles.emptyState}>
+                {selectedProjects.length === 0 && allProjects.length > 0
+                  ? 'No projects selected. Choose at least one project to see its risk profile.'
+                  : 'No data available for the selected filters.'}
+              </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barChartData} margin={{ top: 20, right: 40, left: 20, bottom: 80 }}>
+                <BarChart data={barChartData} margin={{ top: 30, right: 40, left: 20, bottom: 80 }}>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     horizontal={true}
@@ -493,21 +506,45 @@ export default function ProjectRiskProfileOverview() {
                     fill="#4285F4"
                     radius={[3, 3, 0, 0]}
                     barSize={35}
-                  />
+                  >
+                    <LabelList
+                      dataKey="predictedCostOverrun"
+                      position="top"
+                      formatter={value => formatPercent(value, 0)}
+                      fill={chartColors.text}
+                      fontSize={11}
+                    />
+                  </Bar>
                   <Bar
                     dataKey="totalOpenIssues"
                     name="Issues"
                     fill="#EA4335"
                     radius={[3, 3, 0, 0]}
                     barSize={35}
-                  />
+                  >
+                    <LabelList
+                      dataKey="totalOpenIssues"
+                      position="top"
+                      formatter={value => Math.round(Number(value) || 0)}
+                      fill={chartColors.text}
+                      fontSize={11}
+                    />
+                  </Bar>
                   <Bar
                     dataKey="predictedTimeDelay"
                     name="Predicted Time Delay (%)"
                     fill="#FBBC05"
                     radius={[3, 3, 0, 0]}
                     barSize={35}
-                  />
+                  >
+                    <LabelList
+                      dataKey="predictedTimeDelay"
+                      position="top"
+                      formatter={value => formatPercent(value, 0)}
+                      fill={chartColors.text}
+                      fontSize={11}
+                    />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             )}
