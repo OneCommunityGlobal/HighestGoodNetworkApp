@@ -105,9 +105,9 @@ describe('PermissionList info texts', () => {
     renderList(store);
     await settle();
 
-    // every permission row has the blue icon and every heading keeps the black one
-    expect(screen.getAllByTitle(BLUE_ICON_TITLE)).toHaveLength(4);
-    expect(screen.getAllByTitle(BLACK_ICON_TITLE)).toHaveLength(3);
+    // every heading and every permission row has the blue icon; no black one is left
+    expect(screen.getAllByTitle(BLUE_ICON_TITLE)).toHaveLength(7);
+    expect(screen.queryByTitle(BLACK_ICON_TITLE)).not.toBeInTheDocument();
     // desktop layout: rows under a heading are indented
     expect(screen.getByText('See Reports')).toHaveStyle({ textIndent: '50px' });
 
@@ -140,7 +140,7 @@ describe('PermissionList info texts', () => {
     renderList(store, { isNested: true });
     await settle();
 
-    expect(screen.getAllByTitle(BLUE_ICON_TITLE)).toHaveLength(4);
+    expect(screen.getAllByTitle(BLUE_ICON_TITLE)).toHaveLength(7);
     expect(infoTextRequests()).toHaveLength(0);
     expect(store.getActions()).toHaveLength(0);
   });
@@ -160,8 +160,8 @@ describe('PermissionList info texts', () => {
     await settle();
 
     const { headings, permissions } = countRows(permissionLabel);
-    expect(screen.getAllByTitle(BLUE_ICON_TITLE)).toHaveLength(permissions);
-    expect(screen.getAllByTitle(BLACK_ICON_TITLE)).toHaveLength(headings);
+    expect(screen.getAllByTitle(BLUE_ICON_TITLE)).toHaveLength(headings + permissions);
+    expect(screen.queryByTitle(BLACK_ICON_TITLE)).not.toBeInTheDocument();
     expect(infoTextRequests()).toHaveLength(1);
   });
 });

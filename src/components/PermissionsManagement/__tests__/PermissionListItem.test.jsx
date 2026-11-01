@@ -144,22 +144,45 @@ describe('PermissionListItem info icons', () => {
     expect(screen.getByRole('document')).toHaveClass('text-light');
   });
 
-  it('keeps the old black info icon and modal on a heading row', () => {
+  it('shows the blue, editable info icon on a heading row too', () => {
     renderItem({ itemProps: headingRow });
 
-    // only the heading has the black icon; its permission row has the blue one
-    const blackIcons = screen.getAllByTitle(BLACK_ICON_TITLE);
-    expect(blackIcons).toHaveLength(1);
-    expect(blackIcons[0]).toHaveStyle({ color: 'rgb(0, 0, 0)' }); // black, as before
-    expect(screen.getAllByTitle(BLUE_ICON_TITLE)).toHaveLength(1);
+    // no black icon is left: the heading and its permission row both have the blue one
+    expect(screen.queryByTitle(BLACK_ICON_TITLE)).not.toBeInTheDocument();
+    const blueIcons = screen.getAllByTitle(BLUE_ICON_TITLE);
+    expect(blueIcons).toHaveLength(2);
     expect(
       within(screen.getByTestId('putReviewStatus')).getByTitle(BLUE_ICON_TITLE),
     ).toBeInTheDocument();
     // the sub-list under the heading is nested, so it does not ask the server
     expect(infoTextRequests()).toHaveLength(0);
 
-    fireEvent.click(blackIcons[0]);
-    expect(screen.getByText('Permission Info')).toBeInTheDocument();
-    expect(screen.getByText(headingRow.description)).toBeInTheDocument();
+    // the heading's icon comes first
+    fireEvent.click(blueIcons[0]);
+    expect(screen.getByText('Welcome to the Tasks Information Page!')).toBeInTheDocument();
+    // nothing saved yet: the description from Permissions.json is shown
+    const text = screen.getByText(headingRow.description);
+
+    // the signed-in Owner can edit the text
+    fireEvent.click(text);
+    expect(screen.getByText('Save')).toBeInTheDocument();
+  });
+
+  it('shows the saved heading text stored under the lower-case label', () => {
+    renderItem({
+      itemProps: headingRow,
+      infos: [
+        {
+          infoName: 'Permission Heading: tasks Info',
+          infoContent: '<p>Saved by an Owner</p>',
+          visibility: '0',
+        },
+      ],
+    });
+
+    fireEvent.click(screen.getAllByTitle(BLUE_ICON_TITLE)[0]);
+
+    expect(screen.getByText('Saved by an Owner')).toBeInTheDocument();
+    expect(screen.queryByText(headingRow.description)).not.toBeInTheDocument();
   });
 });
