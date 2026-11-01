@@ -15,6 +15,7 @@ import { getTurnstileSiteKey } from './turnstile';
 import {
   getUploadSizeError,
   isJobApplicationFileUploadQuestion,
+  isResumeQuestion,
 } from './jobApplicationQuestionUtils';
 import { checkEmail } from '../../../utils/emailValidation';
 import {
@@ -500,24 +501,12 @@ function getQuestionType(q) {
   return String(q.questionType || q.type || '').toLowerCase();
 }
 
-function isResumeQuestion(q) {
-  const label = (q.label || q.questionText || '').toLowerCase();
-  return /\b(resume|résumé|curriculum\s*vitae|cv)\b/.test(label);
-}
-
 /** Resume/CV and built-in profile prompts are collected above — skip duplicates in the list. */
 function shouldHideQuestionFromApplicantList(q) {
   if (isResumeQuestion(q)) return true;
   if (isStandardProfileFieldQuestion(q)) return true;
   const raw = (q.label || q.questionText || '').trim();
   return /^(19|20)[.)\s]/.test(raw) || /^question\s*(19|20)\b/i.test(raw);
-}
-
-function formRequiresResumeUpload(form) {
-  if (!form?.questions) return false;
-  return form.questions.some(
-    q => q.visible !== false && isResumeQuestion(q) && isQuestionRequired(q),
-  );
 }
 
 function formatFileSize(bytes) {
@@ -799,17 +788,17 @@ function getProfileValidationErrors({
   return errors;
 }
 
-function collectMissingRequiredFields({
+export function collectMissingRequiredFields({
   profileErrors,
   visibleQuestions,
   answers,
   questionFiles,
   resumeFile,
-  resumeRequired,
 }) {
   const missing = Object.values(profileErrors);
 
-  if (resumeRequired && !resumeFile) missing.push('Resume');
+  /* Resume is mandatory for every role, independent of the role's template questions. */
+  if (!resumeFile) missing.push('Resume');
   for (const [idx, q] of visibleQuestions.entries()) {
     const label = getQuestionLabel(q, idx);
     const requiredLabel = missingRequiredQuestionLabel(q, idx, answers, questionFiles);
@@ -1138,7 +1127,6 @@ function JobApplicationForm() {
   }, []);
 
   const visibleQuestions = useMemo(() => getVisibleQuestionsForForm(filteredForm), [filteredForm]);
-  const resumeRequired = useMemo(() => formRequiresResumeUpload(filteredForm), [filteredForm]);
 
   const applyQuestionnairePreFill = data => {
     if (!data) return;
@@ -1580,7 +1568,6 @@ function JobApplicationForm() {
       answers,
       questionFiles,
       resumeFile,
-      resumeRequired,
     });
 
     return { missing, profileErrors };
@@ -2199,14 +2186,13 @@ function JobApplicationForm() {
                 </div>
                 <FileUploadField
                   id="jaf-resume-upload"
-                  label={resumeRequired ? 'Upload Resume' : 'Upload Resume (optional)'}
+                  label="Upload Resume"
                   accept=".pdf,.doc,.docx"
                   file={resumeFile}
                   onChange={handleResumeChange}
                   onClear={clearResumeFile}
                   inputRef={resumeInputRef}
-                  optional={!resumeRequired}
-                  required={resumeRequired}
+                  required
                   error={resumeFileError}
                 />
               </div>
