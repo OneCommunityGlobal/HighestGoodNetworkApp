@@ -17,8 +17,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 const VolunteerHoursReport = ({
   darkMode,
-  allTeams,
-  projects,
   userProfiles,
   getUsersTotalHoursForSpecifiedPeriod,
   getAllUserTeams,
@@ -36,6 +34,7 @@ const VolunteerHoursReport = ({
 });
 
   const [validationError, setValidationError] = useState('');
+  const [reportError, setReportError] = useState('');
   const [loading, setLoading] = useState(false);
   const [reportData, setReportData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -83,6 +82,8 @@ if (
 }
 
 setValidationError('');
+setReportData([]);
+setCurrentPage(1);
 setLoading(true);
 
 try {
@@ -130,10 +131,14 @@ try {
       setReportData(data);
       setCurrentPage(1);
     } catch (error) {
-     console.error('Error generating report:', error);
-    } finally {
-      setLoading(false);
-    }
+                console.error('Error generating report:', error);
+                setReportData([]);
+                setReportError(
+                  `Failed to load ${reportType} report. Please try again.`
+                );
+              } finally {
+                setLoading(false);
+              }
   }, [reportType, appliedDateRange,userProfiles,getUsersTotalHoursForSpecifiedPeriod]);
 
   // Auto-generate report when report type or date range changes
@@ -193,8 +198,8 @@ try {
         </CardHeader>
         <CardBody>
           {/* Report Type Selection */}
-          <Row className="mb-4">
-            <Col md={3}>
+          <Row className={styles.filterRow}>
+            <Col md={3} className={styles.filterColumn}>
               <FormGroup>
                 <Label for="reportType">Report Type</Label>
                 <Input
@@ -210,9 +215,9 @@ try {
                 </Input>
               </FormGroup>
             </Col>
-            <Col md={6}>
-              <Row>
-                <Col md={6}>
+            <Col md={6} classname={styles.filterColumn}>
+              <Row className={styles.filterRow}>
+                <Col md={6} classname={styles.filterColumn}>
                   <FormGroup>
                     <Label for="fromDate">From Date</Label>
                     <DatePicker
@@ -229,7 +234,7 @@ try {
                     />
                   </FormGroup>
                 </Col>
-                <Col md={6}>
+                <Col md={6} classname={styles.filterColumn}>
                   <FormGroup>
                     <Label for="toDate">To Date</Label>
                     <DatePicker
@@ -248,7 +253,7 @@ try {
                 </Col>
               </Row>
             </Col>
-            <Col md={2}>
+            <Col md={2} classname={styles.filterColumn}>
               <FormGroup>
 
              <Col md={6} className={styles.refreshButtonContainer}>
@@ -271,9 +276,15 @@ try {
               {validationError}
             </div>
           )}
+          
+          {reportError && !loading && (
+            <div className="alert alert-danger" role="alert">
+              {reportError}
+            </div>
+          )}
           {/* Report Results */}
           {loading && <Loading />}
-
+          
           {reportData.length > 0 && !loading && (
             <div>
               <h4 className="mb-3">{getReportTitle()}</h4>
