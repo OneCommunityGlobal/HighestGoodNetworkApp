@@ -789,11 +789,10 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
     const earnedDates = Array.isArray(badge.earnedDate) ? badge.earnedDate : [];
 
     const earnedThisWeek = earnedDates.some(date => {
-      const earnedDate = moment(date, ['MMM-DD-YY', 'YYYY-MM-DD'], true);
+      const earnedDate = moment.tz(date, [moment.ISO_8601, 'MMM-DD-YY', 'MMM-D-YY'], true, TZ);
+      const earnedDay = earnedDate.format('YYYY-MM-DD');
 
-      return (
-        earnedDate.isValid() && earnedDate.isBetween(badgeStartDate, badgeEndDate, 'day', '[]')
-      );
+      return earnedDate.isValid() && earnedDay >= badgeStartDate && earnedDay <= badgeEndDate;
     });
 
     if (earnedThisWeek) {

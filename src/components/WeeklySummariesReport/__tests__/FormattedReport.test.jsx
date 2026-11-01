@@ -234,23 +234,8 @@ describe('FormattedReport minimal test', () => {
     expect(screen.getByText('ABC123')).toBeInTheDocument();
   });
 
-  it('renders a badge when any earnedDate falls within the selected week', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-09-19T12:00:00-07:00'));
-
+  describe.each([false, true])('historical badges (darkMode=%s)', darkMode => {
     const historicalBadgeId = '67919bab07b2a31a54e59265';
-
-    const summaryWithHistoricalBadge = {
-      ...dummySummary,
-      badgeCollection: [
-        {
-          count: 1,
-          earnedDate: ['Sep-12-26', 'Sep-19-26'],
-          badge: historicalBadgeId,
-        },
-      ],
-    };
-
     const badgeData = [
       {
         _id: historicalBadgeId,
@@ -259,30 +244,68 @@ describe('FormattedReport minimal test', () => {
       },
     ];
 
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <FormattedReport
-            summaries={[summaryWithHistoricalBadge]}
-            weekIndex={1}
-            bioCanEdit={defaultProps.bioCanEdit}
-            allRoleInfo={defaultProps.allRoleInfo}
-            badges={badgeData}
-            loadBadges
-            canEditTeamCode={defaultProps.canEditTeamCode}
-            auth={defaultProps.auth}
-            canSeeBioHighlight={defaultProps.canSeeBioHighlight}
-            handleTeamCodeChange={defaultProps.handleTeamCodeChange}
-            handleSpecialColorDotClick={defaultProps.handleSpecialColorDotClick}
-          />
-        </MemoryRouter>
-      </Provider>,
-    );
-
-    const badgeImage = screen.getByAltText('', {
-      selector: 'img[src="https://example.com/test-badge.png"]',
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-09-19T12:00:00-07:00'));
     });
 
-    expect(badgeImage).toBeInTheDocument();
+    it.each([
+      ['earlier entry in a multi-week history', ['Sep-12-26', 'Sep-19-26'], 1, true],
+      ['unpadded writer output', ['Sep-6-26', 'Sep-19-26'], 1, true],
+      ['padded single-digit day', ['Sep-06-26'], 1, true],
+      ['ISO calendar date', ['2026-09-06'], 1, true],
+      ['stored ISO timestamp', ['2026-09-05T20:49:24.113Z'], 2, true],
+      ['stored timestamp outside the selected week', ['2026-09-05T20:49:24.113Z'], 1, false],
+      ['inclusive week start', ['2026-09-06T07:00:00.000Z'], 1, true],
+      ['just before week start', ['2026-09-06T06:59:59.999Z'], 1, false],
+      ['inclusive week end', ['2026-09-13T06:59:59.999Z'], 1, true],
+      ['just after week end', ['2026-09-13T07:00:00.000Z'], 1, false],
+      ['timestamp with an explicit offset', ['2026-09-12T23:30:00-07:00'], 1, true],
+      ['next-week calendar date', ['2026-09-13'], 1, false],
+      ['previous-week calendar date', ['Sep-5-26'], 1, false],
+      ['invalid dates', ['garbage', 'Sep-31-26', '2026-09-10Tgarbage'], 1, false],
+      ['multiple matching entries render once', ['Sep-6-26', 'Sep-12-26'], 1, true],
+      ['empty history uses lastModified', [], 1, true],
+      ['missing history uses lastModified', undefined, 1, true],
+    ])('%s', (_label, earnedDate, weekIndex, visible) => {
+      const themeStore = createStore(
+        state => state,
+        { theme: { darkMode } },
+        applyMiddleware(thunk),
+      );
+      const summaryWithHistoricalBadge = {
+        ...dummySummary,
+        badgeCollection: [
+          {
+            count: 1,
+            earnedDate,
+            badge: historicalBadgeId,
+            // A populated history must take precedence over this fallback.
+            lastModified: '2026-09-10T12:00:00.000Z',
+          },
+        ],
+      };
+
+      render(
+        <Provider store={themeStore}>
+          <MemoryRouter>
+            <FormattedReport
+              {...defaultProps}
+              summaries={[summaryWithHistoricalBadge]}
+              weekIndex={weekIndex}
+              badges={badgeData}
+              darkMode={darkMode}
+              loadBadges
+            />
+          </MemoryRouter>
+        </Provider>,
+      );
+
+      expect(
+        screen.queryAllByAltText('', {
+          selector: 'img[src="https://example.com/test-badge.png"]',
+        }),
+      ).toHaveLength(visible ? 1 : 0);
+    });
   });
 });
