@@ -700,12 +700,25 @@ function TotalOrgSummary(props) {
                 <div
                   className={clsx(
                     styles.totalOrgChartTitle,
+                    styles.mapTitle,
                     darkMode && styles.totalOrgChartTitleDark,
                   )}
                   data-pdf-title
                 >
                   <p>Global Volunteer Network: Uniting Communities Worldwide</p>
                 </div>
+                {!isLoading && volunteerStats?.countryCounts && (
+                  <div className={styles.countryCounts} aria-label="Volunteer country counts">
+                    <p>
+                      All-time contributing countries:{' '}
+                      <strong>{volunteerStats.countryCounts.allTime}</strong>
+                    </p>
+                    <p>
+                      Currently active countries:{' '}
+                      <strong>{volunteerStats.countryCounts.active}</strong>
+                    </p>
+                  </div>
+                )}
                 <GlobalVolunteerMap
                   isLoading={isLoading}
                   locations={volunteerStats?.userLocations}

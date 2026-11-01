@@ -36,6 +36,7 @@ const TeamLocations = forwardRef(() => {
   const [searchText, setSearchText] = useState('');
   const [popupsOpen, setPopupsOpen] = useState(false);
   const [mapMarkers, setMapMarkers] = useState([]);
+  const [countryCounts, setCountryCounts] = useState(null);
   const [tableVisible, setTableVisible] = useState(false);
   const [markerPopupVisible, setMarkerPopupVisible] = useState(false);
   const role = useSelector(state => state.auth.user.role);
@@ -71,6 +72,7 @@ const TeamLocations = forwardRef(() => {
 
         setUserProfiles(users);
         setManuallyAddedProfiles(mUsers);
+        setCountryCounts(locations.countryCounts ?? null);
         const allMapMarkers = [...users, ...mUsers];
         const allMapMarkersOffset = allMapMarkers.map(ele => ({
           ...ele,
@@ -223,6 +225,14 @@ const TeamLocations = forwardRef(() => {
             Total Countries:
             {totalUniqueCountries}
           </h5>
+          <div aria-label="Volunteer country counts">
+            <p className="mb-1">
+              All-time contributing countries: <strong>{countryCounts?.allTime ?? '—'}</strong>
+            </p>
+            <p className="mb-1">
+              Currently active countries: <strong>{countryCounts?.active ?? '—'}</strong>
+            </p>
+          </div>
           <button
             type="button"
             id="toggle-table-button"
