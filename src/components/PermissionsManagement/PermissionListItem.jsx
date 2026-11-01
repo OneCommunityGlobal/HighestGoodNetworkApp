@@ -6,6 +6,7 @@ import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import hasPermission from '../../utils/permissions';
 import styles from './UserRoleTab.module.css';
 
@@ -204,15 +205,28 @@ function PermissionListItem(props) {
         </p>
         <div className={styles.iconButtonContainer}>
           <div className="infos">
-            <i
-              data-toggle="tooltip"
-              data-placement="center"
-              title="Click for more information"
-              aria-hidden="true"
-              className="fa fa-info-circle"
-              onClick={handleModalOpen}
-              style={{ color: darkMode ? 'white' : 'black' }}
-            />
+            {isCategory ? (
+              <i
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={handleModalOpen}
+                style={{ color: darkMode ? 'white' : 'black' }}
+              />
+            ) : (
+              // Owner-editable info text; the outer PermissionList fetches the texts once
+              <EditableInfoModal
+                role={currentUserRole}
+                areaName={`Permission: ${permission} Info`}
+                areaTitle={label}
+                initialInfo={description}
+                skipFetch
+                fontSize={24}
+                darkMode={darkMode}
+              />
+            )}
           </div>
           {!editable ? (
             <></>
@@ -273,6 +287,8 @@ function PermissionListItem(props) {
           }}
         >
           <PermissionList
+            // the outer list already asked for the info texts
+            isNested
             rolePermissions={rolePermissions}
             permissionsList={subperms}
             immutablePermissions={immutablePermissions}

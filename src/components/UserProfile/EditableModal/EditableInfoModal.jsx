@@ -77,7 +77,7 @@ export class EditableInfoModal extends Component {
 
   // ✅ Centralized: derive modal state from collections + props
   deriveFromCollections = infoCollections => {
-    const { role, areaName, fontSize, isPermissionPage } = this.props;
+    const { role, areaName, fontSize, isPermissionPage, initialInfo } = this.props;
 
     let content = '';
     let visible = '0';
@@ -100,13 +100,16 @@ export class EditableInfoModal extends Component {
       (visible === '2' && role !== 'Volunteer');
 
     const CanEdit = role === 'Owner';
-
+    const contentToDisplay = () => {
+      if (content) return content;
+      return initialInfo ? this.sanitizeText(initialInfo) : 'Please input information!';
+    };
     return {
       infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
       fetchError: this.props.fetchError,
       loading: this.props.loading,
       infoName: areaName,
-      infoContent: content || 'Please input information!',
+      infoContent: contentToDisplay(),
       visibility: visible,
       CanRead,
       CanEdit,
@@ -119,7 +122,10 @@ export class EditableInfoModal extends Component {
     this._isMounted = true;
 
     // Fire fetch; do NOT assume await means props have data (depends on thunk impl)
-    this.props.getInfoCollections();
+    // skipFetch: the parent already asked for all info texts once (e.g. the permission list)
+    if (!this.props.skipFetch) {
+      this.props.getInfoCollections();
+    }
 
     // Initialize from whatever we currently have (maybe empty)
     if (this._isMounted) {
@@ -365,7 +371,9 @@ EditableInfoModal.propTypes = {
   areaName: PropTypes.string,
   fontSize: PropTypes.number,
   isPermissionPage: PropTypes.bool,
+  initialInfo: PropTypes.string,
   darkMode: PropTypes.bool,
+  skipFetch: PropTypes.bool,
 };
 
 EditableInfoModal.defaultProps = {
@@ -377,6 +385,8 @@ EditableInfoModal.defaultProps = {
   fontSize: 24,
   isPermissionPage: false,
   darkMode: false,
+  skipFetch: false,
+  initialInfo: '',
 };
 
 const mapStateToProps = ({ infoCollections }) => ({
