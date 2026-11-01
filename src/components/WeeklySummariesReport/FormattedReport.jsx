@@ -858,19 +858,26 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   const badgeIdThisWeek = [];
   const badgeThisWeek = [];
   summary.badgeCollection.forEach(badge => {
-    if (badge.earnedDate) {
-      const { length } = badge.earnedDate;
-      const earnedDate = moment(badge.earnedDate[length - 1]);
-      if (earnedDate.isBetween(badgeStartDate, badgeEndDate, 'days', '[]')) {
-        badgeIdThisWeek.push(badge.badge);
-      }
-    } else {
+    const earnedDates = Array.isArray(badge.earnedDate) ? badge.earnedDate : [];
+
+    const earnedThisWeek = earnedDates.some(date => {
+      const earnedDate = moment.tz(date, [moment.ISO_8601, 'MMM-DD-YY', 'MMM-D-YY'], true, TZ);
+      const earnedDay = earnedDate.format('YYYY-MM-DD');
+
+      return earnedDate.isValid() && earnedDay >= badgeStartDate && earnedDay <= badgeEndDate;
+    });
+
+    if (earnedThisWeek) {
+      badgeIdThisWeek.push(badge.badge);
+    } else if (earnedDates.length === 0 && badge.lastModified) {
       const modifiedDate = badge.lastModified.substring(0, 10);
+
       if (modifiedDate <= badgeEndDate && modifiedDate >= badgeStartDate) {
         badgeIdThisWeek.push(badge.badge);
       }
     }
   });
+
   if (badgeIdThisWeek.length > 0) {
     badgeIdThisWeek.forEach(badgeId => {
       // eslint-disable-next-line no-shadow
