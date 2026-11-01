@@ -14,7 +14,7 @@ import {
   DISABLE_USER_PROFILE_EDIT,
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
-  FINISH_USER_INFO_UPDATE,
+  FINISH_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
@@ -209,6 +209,7 @@ export const buildUpdatedUserLifecycleDetails = (user, payload) => {
 };
 
 const buildBackendPayload = (userDetails, action) => {
+  console.log('Building backend payload with:', { userDetails, action });
   switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
@@ -475,6 +476,10 @@ export const changePagination = value => dispatch => {
 
 export const updateUserInfomation = value => dispatch => {
   dispatch({ type: START_USER_INFO_UPDATE, payload: value });
+};
+
+export const clearUserInformation = () => dispatch => {
+  dispatch({ type: CLEAR_USER_INFO_UPDATE });
 };
 
 /**

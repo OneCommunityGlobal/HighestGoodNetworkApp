@@ -29,12 +29,22 @@ import styles from './usermanagement.module.css';
  */
 const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
-    const [editFlag, setEditFlag] = useState(editUser);
+    const defaultEditFlags = {
+       first: 1,
+       last: 1,
+       role: 1,
+       jobTitle: 1,
+       email: 1,
+       weeklycommittedHours: 1,
+       startDate: 1,
+       endDate: 1,
+   };
+    const [editFlag, setEditFlag] = useState(editUser ?? defaultEditFlags);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
-        if (response.status === 200) {
+        if (response.status >= 200 && response.status < 300) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
           // Clear the pending edit queue now that it has been saved successfully.
           // Without this, these edits would remain queued and get resubmitted
@@ -44,26 +54,36 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
           await dispatch(getAllUserProfile());
           toast.update(toastId, {
             render: 'Data Updated successfully !',
-            // type: toast.TYPE.SUCCESS,
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
             autoClose: 3000,
           });
+          // setTimeout(() => {
+          // globalThis.location.reload();
+          // }, 1000);
         } else {
           toast.error('Error Updating Data!');
         }
+        
       } catch (error) {
         toast.error('Error Updating Data ! ');
       }
     };
-    const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#3a506b' } : { backgroundColor: "#f0f8ff",color:"black"};
+    const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#364456' } : { backgroundColor: "#f0f8ff",color:"black"};
     const enableEdit = value => {
       setEditFlag(value);
       enableEditUserInfo(value);
     };
+    
     const disableEdit = value => {
       setEditFlag(value);
       disableEditUserInfo(value);
-      saveUserInformation(updatedUserData);
+
+      if (updatedUserData.length > 0) {
+        saveUserInformation(updatedUserData);
+      }
     };
+
 
     return (
       <tr className={darkMode ? 'bg-space-cadet' : ''}
