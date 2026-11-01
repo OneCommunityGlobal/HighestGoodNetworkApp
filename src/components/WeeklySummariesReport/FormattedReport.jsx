@@ -53,6 +53,15 @@ import styles from './WeeklySummariesReport.module.scss';
 import getActiveTimeOffRequest from './getActiveTimeOffRequest';
 
 const TZ = 'America/Los_Angeles';
+const LATE_SUBMISSION_COLOR = '#FF00FF';
+
+/** Summaries are due by the end of Saturday (Pacific) of their week. */
+export const isSubmittedAfterDeadline = (uploadDate, dueDate) =>
+  moment(uploadDate).isAfter(
+    moment(dueDate)
+      .tz(TZ)
+      .endOf('week'),
+  );
 
 const textColors = {
   Default: '#000000',
@@ -474,12 +483,13 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
   }
   // Keeping this block commented intentionally for future reference —
   // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
-  let summaryDate = moment()
+  const weekEnd = moment()
     .tz(TZ)
     .endOf('week')
-    .subtract(weekIndex, 'week')
-    .format('YYYY-MMM-DD');
+    .subtract(weekIndex, 'week');
+  let summaryDate = weekEnd.format('YYYY-MMM-DD');
   let summaryDateText = `Weekly Summary (${summaryDate}):`;
+  let isLateSubmission = false;
 
   const summaryContent = (() => {
     if (summaryText) {
@@ -493,6 +503,11 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
           .tz('America/Los_Angeles')
           .format('MMM-DD-YY');
         summaryDateText = `Summary Submitted On (${summaryDate}):`;
+        if (
+          isSubmittedAfterDeadline(currentSummary.uploadDate, currentSummary.dueDate || weekEnd)
+        ) {
+          isLateSubmission = true;
+        }
       }
       return (
         <div style={style} className={styles.weeklySummaryReportContainer}>
@@ -526,7 +541,12 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
   return (
     <>
       <p>
-        <b>{summaryDateText}</b>
+        <b
+          className={isLateSubmission ? styles.lateSubmissionDate : undefined}
+          style={isLateSubmission ? { color: LATE_SUBMISSION_COLOR } : undefined}
+        >
+          {summaryDateText}
+        </b>
       </p>
       {summaryContent}
     </>
