@@ -94,6 +94,9 @@ function Timer({ authUser, darkMode, isPopout }) {
       const expirySec = new Date(decoded.expiryTimestamp).getTime() / 1000;
       return expirySec > Date.now() / 1000;
     } catch (_error) {
+      // A malformed/undecodable token is just as unusable as an expired one -
+      // treat it the same way (not usable) instead of letting the decode error
+      // bubble up and break the reconnect check.
       return false;
     }
   }, []);

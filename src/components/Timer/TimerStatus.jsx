@@ -3,6 +3,23 @@ import { BsXLg, BsArrowClockwise } from 'react-icons/bs';
 import cs from 'classnames';
 import css from './Countdown.module.css';
 
+const READY_STATE_LABELS = {
+  [ReadyState.CONNECTING]: 'Connecting to the timer service',
+  [ReadyState.OPEN]: 'Open',
+  [ReadyState.CLOSING]: 'Closing the connection',
+  [ReadyState.CLOSED]: 'The connection with the timer service is closed',
+  [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+};
+
+// While auto-reconnect is still retrying in the background, show "Reconnecting..."
+// regardless of the exact underlying readyState - only once attempts are
+// exhausted (or the stored token is unusable) do we ask the user to act.
+function getConnectionStatus(isReconnecting, reconnectExhausted, readyState) {
+  if (isReconnecting) return 'Reconnecting...';
+  if (reconnectExhausted) return 'Disconnected';
+  return READY_STATE_LABELS[readyState];
+}
+
 export default function TimerStatus({
   readyState,
   toggleTimer,
@@ -13,21 +30,8 @@ export default function TimerStatus({
   This is the status of the connection with the timer service
   We just use the readyState of the websocket connection to show the status
   */
-  // While auto-reconnect is still retrying in the background, show "Reconnecting..."
-  // regardless of the exact underlying readyState - only once attempts are
-  // exhausted (or the stored token is unusable) do we ask the user to act.
   const isReconnecting = readyState !== ReadyState.OPEN && !reconnectExhausted;
-  const connectionStatus = isReconnecting
-    ? 'Reconnecting...'
-    : reconnectExhausted
-    ? 'Disconnected'
-    : {
-        [ReadyState.CONNECTING]: 'Connecting to the timer service',
-        [ReadyState.OPEN]: 'Open',
-        [ReadyState.CLOSING]: 'Closing the connection',
-        [ReadyState.CLOSED]: 'The connection with the timer service is closed',
-        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-      }[readyState];
+  const connectionStatus = getConnectionStatus(isReconnecting, reconnectExhausted, readyState);
 
   const showRefreshButton = reconnectExhausted;
 
