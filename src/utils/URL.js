@@ -585,6 +585,19 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+  LB_ADMIN_USERS_BASE: `${APIEndpoint}/lbdashboard/admin/users`,
+  LB_ADMIN_USERS: (page = 1, limit = 10, search = '') => {
+    const params = new URLSearchParams();
+    if (page) params.append('page', page);
+    if (limit) params.append('limit', limit);
+    const trimmedSearch = search ? String(search).trim() : '';
+    if (trimmedSearch) params.append('search', trimmedSearch);
+    const qs = params.toString();
+    return qs
+      ? `${APIEndpoint}/lbdashboard/admin/users?${qs}`
+      : `${APIEndpoint}/lbdashboard/admin/users`;
+  },
+  LB_ADMIN_USER_BY_ID: userId => `${APIEndpoint}/lbdashboard/admin/users/${userId}`,
 
   // Phase 2 summary dashboard
   SUPPLIER_PERFORMANCE: (projectId, startDate, endDate) =>

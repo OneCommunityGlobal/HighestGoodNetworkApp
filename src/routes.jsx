@@ -129,6 +129,7 @@ import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverv
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
+import LBUserManagement from './components/LBDashboard/UserManagement/LBUserManagement';
 
 // Most Wasted Materials
 import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
@@ -380,6 +381,17 @@ export default (
     />
 
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
+    <LBProtectedRoute
+      exact
+      path={['/lbdashboard/admin/users', '/lbdashboard/usermanagement', '/lbdashboard/users']}
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <LBUserManagement />
+        </>
+      )}
+    />
     {/* ----- LB Dashboard Routing Ends----- */}
 
     <Route path="/EventPopularity" component={EventPopularity} />
@@ -1020,6 +1032,11 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
+        <LBProtectedRoute
+          exact
+          path={['/lbdashboard/admin/users', '/lbdashboard/usermanagement', '/lbdashboard/users']}
+          component={LBUserManagement}
+        />
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />

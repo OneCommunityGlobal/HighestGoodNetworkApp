@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -180,13 +181,23 @@ const DashboardHeader = ({ darkMode, onBack }) => (
     <h1 className={getClassNames(styles.title, styles.darkText, darkMode)}>
       Listing and Bidding Platform Dashboard
     </h1>
-    <Button
-      size="sm"
-      onClick={onBack}
-      className={getClassNames(styles.backBtn, styles.darkBackBtn, darkMode)}
-    >
-      Back
-    </Button>
+    <div className="d-flex align-items-center" style={{ gap: '8px' }}>
+      <Button
+        tag={Link}
+        to="/lbdashboard/admin/users"
+        size="sm"
+        className={getClassNames(styles.filterBtn, styles.darkFilterBtn, darkMode)}
+      >
+        User Management
+      </Button>
+      <Button
+        size="sm"
+        onClick={onBack}
+        className={getClassNames(styles.backBtn, styles.darkBackBtn, darkMode)}
+      >
+        Back
+      </Button>
+    </div>
   </header>
 );
 
@@ -475,7 +486,6 @@ export function LBDashboard() {
   // Derive villagesData from backend
   const villagesData = useMemo(() => {
     if (!villagesRaw.length) return [];
-
     return villagesRaw
       .map(v => {
         const analytics = v.analytics || {};
@@ -582,7 +592,6 @@ export function LBDashboard() {
       className={getClassNames(styles.dashboardContainer, styles.darkContainer, darkMode)}
     >
       <DashboardHeader darkMode={darkMode} onBack={goBack} />
-
       <FilterSection
         darkMode={darkMode}
         activeCategory={activeCategory}
