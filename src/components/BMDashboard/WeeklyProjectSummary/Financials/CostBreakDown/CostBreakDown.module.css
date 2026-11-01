@@ -430,3 +430,10 @@
     display: none;
   }
 }
+
+/* Dark mode date inputs: two classes so the global input[type='date'] rule does not override them */
+.wrapperDark .filterInput {
+  background-color: var(--cb-input-bg);
+  color: var(--cb-text-color);
+  color-scheme: dark;
+}
