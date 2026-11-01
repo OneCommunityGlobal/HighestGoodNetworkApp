@@ -438,7 +438,11 @@ function WeeklyProjectSummary() {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
         className: 'small',
-        content: <IssuesCharts bmProjects={bmProjects} />,
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssuesCharts bmProjects={bmProjects} />
+          </div>
+        ),
       },
       {
         title: 'Tools and Equipment Tracking',

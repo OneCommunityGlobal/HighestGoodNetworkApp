@@ -1,7 +1,7 @@
 /* stylelint-disable no-descending-specificity */
 
 .tools-horizontal-bar-chart-card {
-  background-color: var(--card-bg, #fff);
+  background-color: #fff;
   border-radius: 8px;
   padding: 16px;
   width: 100%;
@@ -22,8 +22,13 @@
 }
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode {
-  background-color: var(--card-bg, #2b3e59);
-  color: var(--text-color, #fff);
+  /* A shared --card-bg custom property is set (unconditionally, not theme-aware) by
+     an unrelated ancestor and inherits through the DOM regardless of CSS Module
+     scoping, so var(--card-bg, ...) silently ignored this fallback and the card
+     stayed white — with its white title text — in dark mode. Literal colors avoid
+     that inheritance entirely. */
+  background-color: #2b3e59;
+  color: #fff;
   box-shadow: 0 2px 8px rgb(0 0 0 / 40%);
 }
 

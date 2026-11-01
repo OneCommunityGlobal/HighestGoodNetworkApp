@@ -197,6 +197,16 @@
   color: #cbd5e1;
 }
 
+/* Axis tick fill is already set correctly via the chart's own `tick={{ fill: ... }}`
+   prop (see InjuryCategoryBarChart.jsx), so no CSS override is needed here. Legend
+   text renders with a per-series inline color though, so it still needs an explicit
+   !important override to stay readable in dark mode (scoped to the live
+   .injuryChartDark wrapper, not the unused .darkMode/.darkModeWrapper classes from
+   an earlier attempt). */
+.injuryChartDark :global(.recharts-legend-item-text) {
+  color: #fff !important;
+}
+
 /* ===== Tooltip rows keep their project color ===== */
 .tooltipSeriesRow {
   color: var(--tooltip-series-color) !important;
