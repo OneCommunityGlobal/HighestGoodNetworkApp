@@ -24,13 +24,24 @@ function useMaterialConsumptionData(quantityOfMaterialsUsedData) {
   }, [materials, quantityOfMaterialsUsedData, shouldUseStoreMaterials]);
 }
 
-function renderMaterialCard(cardKey, quantityOfMaterialsUsedData) {
+function renderMaterialCard(
+  cardKey,
+  quantityOfMaterialsUsedData,
+  comparisonMode,
+  currentDateRange,
+  comparisonDateRange,
+) {
   if (cardKey === 'quantity') {
     return (
       <div
         className={`${materialStyles.materialConsumptionContent} ${materialStyles.quantityContent}`}
       >
-        <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
+        <QuantityOfMaterialsUsed
+          data={quantityOfMaterialsUsedData}
+          comparisonMode={comparisonMode}
+          currentDateRange={currentDateRange}
+          comparisonDateRange={comparisonDateRange}
+        />
       </div>
     );
   }
@@ -55,7 +66,12 @@ function renderMaterialCard(cardKey, quantityOfMaterialsUsedData) {
   );
 }
 
-export function MaterialConsumptionCards({ quantityOfMaterialsUsedData }) {
+export function MaterialConsumptionCards({
+  quantityOfMaterialsUsedData,
+  comparisonMode = 'No Comparison',
+  currentDateRange = {},
+  comparisonDateRange = {},
+}) {
   const materialData = useMaterialConsumptionData(quantityOfMaterialsUsedData);
   const darkMode = useSelector(state => state.theme.darkMode);
   // Keep this order aligned with the PR requirement for the Material Consumption section and route.
@@ -75,7 +91,13 @@ export function MaterialConsumptionCards({ quantityOfMaterialsUsedData }) {
             darkMode ? materialStyles.materialConsumptionCardDark : ''
           }`}
         >
-          {renderMaterialCard(cardKey, materialData)}
+          {renderMaterialCard(
+            cardKey,
+            materialData,
+            comparisonMode,
+            currentDateRange,
+            comparisonDateRange,
+          )}
         </div>
       ))}
     </>
