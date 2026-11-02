@@ -7,6 +7,62 @@ import ActionDoneGraph from './ActionDoneGraph';
 import PRQualityGraph from './PRQualityGraph';
 import sharedStyles from './ReviewsInsight.module.css';
 
+// Dark-mode styling for the Team Code <Select>. Light mode keeps react-select's
+// own defaults (`base.*`); only colours change under dark mode. Shared helpers
+// keep the repeated element shapes to a single definition each.
+const getTeamSelectStyles = darkMode => {
+  const surface = darkMode ? '#1c2541' : '#fff';
+  const fg = darkMode ? '#f1f1f1' : '#000';
+
+  const dmText = base => ({ ...base, color: darkMode ? '#f1f1f1' : base.color });
+  const dmIndicator = base => ({
+    ...base,
+    color: darkMode ? '#b8c1d9' : base.color,
+    ':hover': { color: darkMode ? '#f1f1f1' : base.color },
+  });
+
+  return {
+    control: base => ({
+      ...base,
+      backgroundColor: surface,
+      boxShadow: '2px 2px 4px 1px black',
+      border: 'none',
+      color: fg,
+      minHeight: '40px',
+    }),
+    menu: base => ({ ...base, backgroundColor: surface, color: fg }),
+    menuList: base => ({ ...base, backgroundColor: surface, color: fg }),
+    option: (base, state) => {
+      let optionBg = surface;
+      if (state.isFocused) optionBg = darkMode ? '#23304d' : '#e6e6e6';
+      return { ...base, backgroundColor: optionBg, color: fg, cursor: 'pointer' };
+    },
+    // Selected-team chips: without these, react-select's default light grey chip
+    // stays light in dark mode.
+    multiValue: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#334155' : base.backgroundColor,
+    }),
+    multiValueLabel: dmText,
+    multiValueRemove: base => ({
+      ...base,
+      color: darkMode ? '#f1f1f1' : base.color,
+      ':hover': {
+        backgroundColor: darkMode ? '#48597e' : '#ffbdad',
+        color: darkMode ? '#fff' : '#de350b',
+      },
+    }),
+    placeholder: base => ({ ...base, color: darkMode ? '#b8c1d9' : base.color }),
+    input: dmText,
+    indicatorSeparator: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#48597e' : base.backgroundColor,
+    }),
+    dropdownIndicator: dmIndicator,
+    clearIndicator: dmIndicator,
+  };
+};
+
 function ReviewsInsight() {
   const [duration, setDuration] = useState('Last Week');
   const [selectedTeams, setSelectedTeams] = useState([{ value: 'All', label: 'All Teams' }]);
@@ -132,41 +188,7 @@ function ReviewsInsight() {
             onChange={handleTeamChange}
             placeholder="Search and select teams..."
             classNamePrefix="react-select"
-            styles={{
-              control: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#1c2541' : '#fff',
-                boxShadow: '2px 2px 4px 1px black',
-                border: 'none',
-                color: darkMode ? '#f1f1f1' : '#000',
-                minHeight: '40px',
-              }),
-
-              menu: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#1c2541' : '#fff',
-                color: darkMode ? '#f1f1f1' : '#000',
-              }),
-
-              menuList: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#1c2541' : '#fff',
-                color: darkMode ? '#f1f1f1' : '#000',
-              }),
-
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isFocused
-                  ? darkMode
-                    ? '#23304d'
-                    : '#e6e6e6'
-                  : darkMode
-                  ? '#1c2541'
-                  : '#fff',
-                color: darkMode ? '#f1f1f1' : '#000',
-                cursor: 'pointer',
-              }),
-            }}
+            styles={getTeamSelectStyles(darkMode)}
           />
         </div>
 

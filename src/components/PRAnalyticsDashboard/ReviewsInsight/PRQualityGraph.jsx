@@ -50,9 +50,15 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedT
   const options = {
     responsive: true,
     interaction: {
+      // Dataset mode lists every category in one tooltip rather than only the
+      // hovered slice, per the "pie tooltip lists all values" requirement.
       mode: 'dataset',
     },
     plugins: {
+      // ProjectStatus.jsx registers a "centerText" plugin globally, so it draws
+      // "Total Projects / 0" on top of every chart.js chart app-wide. Opt this
+      // chart out (chart.js skips a plugin whose options key is literally false).
+      centerText: false,
       legend: {
         position: 'bottom',
         labels: {
@@ -60,16 +66,21 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedT
           color: darkMode ? '#fff' : '#333',
         },
       },
-      // tooltip: {
-      //   enabled: true,
-      // },
       tooltip: {
+        // Chart.js defaults this to true, which paints a colour swatch next
+        // to each line. Keeping it false matches the pre-existing light-mode
+        // appearance.
         displayColors: false,
         enabled: true,
         callbacks: {
-          title: items =>
-            items && items[0] ? `${items[0].label}: ${items[0].formattedValue}` : '',
-          label: ctx => (isDataViewActive ? `${ctx.raw.toFixed(1)}%` : ctx.raw),
+          // Heading: the chart's own title ("PR Quality Distribution for <team>").
+          title: items => items?.[0]?.dataset?.label ?? '',
+          // Colour-key line: the hovered slice's category and its value
+          // ("Sufficient: 1", or "Sufficient: 33.3%" in the percentage view).
+          label: ctx => {
+            const value = isDataViewActive ? `${Number(ctx.raw).toFixed(1)}%` : ctx.raw;
+            return `${ctx.label}: ${value}`;
+          },
         },
       },
       datalabels: {
