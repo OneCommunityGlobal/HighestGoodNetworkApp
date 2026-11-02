@@ -157,21 +157,6 @@
   background-color: var(--color-h100);
 }
 
-/* Modal button styles */
-.modalBtnCancel {
-  background-color: #495057 !important;
-  border-color: #495057 !important;
-  color: #fff !important;
-  font-weight: 500;
-  padding: 8px 20px;
-  opacity: 1 !important;
-}
-
-.modalBtnCancel:hover {
-  background-color: #3d4349 !important;
-  border-color: #3d4349 !important;
-}
-
 .modalBtnCancel:disabled {
   background-color: #6c757d !important;
   border-color: #6c757d !important;
@@ -289,7 +274,7 @@
   margin: 0 !important;
 }
 
-:global(.react-datepicker-time__input) input[type="time"] {
+:global(.react-datepicker-time__input) input[type='time'] {
   width: 100% !important;
   min-width: 0 !important;
 }
@@ -349,8 +334,8 @@
 :global(.dark-mode) #timestamp,
 :global(.bm-dashboard-dark) #timestamp {
   background-color: #1c3354 !important;
-  color: #fff !important;
-  border-color: rgb(255 255 255 / 20%) !important;
+  color: #fff;
+  border-color: rgb(255 255 255 / 20%);
 }
 
 :global(.dark-mode) .timestampContainer,
@@ -434,8 +419,8 @@
 }
 
 /* Native time input dark mode — color-scheme forces browser UI to dark */
-:global(.dark-mode) :global(.react-datepicker-time__input) input[type="time"],
-:global(.bm-dashboard-dark) :global(.react-datepicker-time__input) input[type="time"] {
+:global(.dark-mode) :global(.react-datepicker-time__input) input[type='time'],
+:global(.bm-dashboard-dark) :global(.react-datepicker-time__input) input[type='time'] {
   background-color: #14253d !important;
   color: #fff !important;
   border: 1px solid rgb(255 255 255 / 20%) !important;
@@ -679,7 +664,7 @@
 }
 
 .typeRowDeleteModalTitle {
-  filter: none !important;  
+  filter: none !important;
 }
 
 :global(.bm-dashboard-dark) .typeRowCancelButton:global(.btn.btn-secondary) {
@@ -810,4 +795,173 @@
   background-color: #4dabf7;
   color: #0f172a;
   border-color: #4dabf7;
+}
+
+/* Inventory modal - light mode */
+.inventoryModal .modal-content {
+  background-color: #fff;
+  color: #212529;
+}
+
+.inventoryModal .modal-title,
+.inventoryModal .modal-body,
+.inventoryModal .form-label {
+  color: #212529;
+}
+
+/* Cancel button - light mode */
+.inventoryModal .modal-footer .modalBtnCancel {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff !important;
+}
+
+.inventoryModal .modal-footer .modalBtnCancel:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+/* Inventory modal - dark mode */
+:global(.dark-mode) .inventoryModal .modal-content,
+:global(.bm-dashboard-dark) .inventoryModal .modal-content {
+  background-color: #242424;
+  color: #f5f5f5;
+}
+
+:global(.dark-mode) .inventoryModal .modal-title,
+:global(.dark-mode) .inventoryModal .modal-body,
+:global(.dark-mode) .inventoryModal .form-label,
+:global(.bm-dashboard-dark) .inventoryModal .modal-title,
+:global(.bm-dashboard-dark) .inventoryModal .modal-body,
+:global(.bm-dashboard-dark) .inventoryModal .form-label {
+  color: #f5f5f5;
+}
+
+:global(.dark-mode) .inventoryModal .form-control,
+:global(.bm-dashboard-dark) .inventoryModal .form-control {
+  background-color: #333;
+  border-color: #555;
+  color: #f5f5f5;
+}
+
+/* Preserve the existing dark-mode Cancel button color */
+:global(.dark-mode) .inventoryModal .modal-footer .modalBtnCancel,
+:global(.bm-dashboard-dark) .inventoryModal .modal-footer .modalBtnCancel {
+  background-color: #495057 !important;
+  border-color: #495057 !important;
+  color: #fff !important;
+}
+
+.inventoryModal .modal-content .form-label {
+  color: #212529;
+  font-weight: 600;
+}
+
+:global(.dark-mode) .inventoryModal .modal-content .form-label,
+:global(.bm-dashboard-dark) .inventoryModal .modal-content .form-label {
+  color: #f5f5f5;
+}
+
+/* Inventory modal labels - light mode */
+.modalLabel {
+  color: #212529;
+  font-weight: 600;
+}
+
+/* Inventory modal - dark mode */
+:global(.dark-mode) .modalLabel,
+:global(.bm-dashboard-dark) .modalLabel {
+  color: #f5f5f5;
+}
+
+/* Modal Cancel button */
+.modalBtnCancel {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff;
+}
+
+.modalBtnCancel:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+/* Preserve the existing Cancel color in dark mode */
+:global(.dark-mode) .modalBtnCancel,
+:global(.bm-dashboard-dark) .modalBtnCancel {
+  background-color: #495057;
+  border-color: #495057;
+  color: #fff;
+}
+
+.actionsCell {
+  white-space: nowrap;
+}
+
+.editButton,
+.deleteButton {
+  min-width: 64px;
+  margin-right: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Light mode */
+.editButton {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+.editButton:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+  color: #fff;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: #fff;
+}
+
+.deleteButton:hover {
+  background-color: #bb2d3b;
+  border-color: #b02a37;
+  color: #fff;
+}
+
+/* Dark mode */
+:global(body.dark-mode) .editButton {
+  background-color: #375a9e;
+  border-color: #668ed6;
+  color: #fff;
+}
+
+:global(body.dark-mode) .editButton:hover {
+  background-color: #466db5;
+  border-color: #8aabe8;
+}
+
+/* Delete button - dark mode */
+:global(body.dark-mode:not(.no-global-theme)) .deleteButton,
+:global(body.bm-dashboard-dark:not(.no-global-theme)) .deleteButton,
+:global(body.dark-mode) .deleteButton,
+:global(body.bm-dashboard-dark) .deleteButton {
+  background-color: #dc3545 !important;
+  border-color: #dc3545;
+  color: #fff;
+}
+
+:global(body.dark-mode) .deleteButton:hover,
+:global(body.bm-dashboard-dark) .deleteButton:hover {
+  background-color: #bb2d3b;
+  border-color: #b02a37;
+}
+
+/* Keyboard accessibility */
+.editButton:focus-visible,
+.deleteButton:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 3px;
 }
