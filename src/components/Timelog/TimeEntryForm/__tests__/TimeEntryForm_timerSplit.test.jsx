@@ -41,22 +41,13 @@ vi.mock('@tinymce/tinymce-react', () => ({
 
 vi.mock('axios', async () => {
   const actual = await vi.importActual('axios');
-  return {
-    __esModule: true,
-    ...actual,
-    get: vi.fn(url => {
-      if (url.includes('/userProjects')) {
-        return Promise.resolve({ data: userProjectMock.projects });
-      }
-      if (url.includes('/tasks')) {
-        return Promise.resolve({ data: [] });
-      }
-      if (url.includes('/userProfile')) {
-        return Promise.resolve({ data: userProfileMock });
-      }
-      return Promise.resolve({ data: [] });
-    }),
+  // Only the lists the form loads on open are needed; everything else answers empty.
+  const answerFor = url => {
+    if (url.includes('/userProjects')) return userProjectMock.projects;
+    if (url.includes('/userProfile')) return userProfileMock;
+    return [];
   };
+  return { __esModule: true, ...actual, get: vi.fn(async url => ({ data: answerFor(url) })) };
 });
 
 const mockStore = configureMockStore([thunk]);
