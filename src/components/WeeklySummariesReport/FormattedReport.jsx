@@ -324,8 +324,8 @@ function ReportDetails({
   const hoursLogged = ((totalSecondsArray[weekIndex] || 0) / 3600).toFixed(2);
   const promisedHours = promisedHoursArray[weekIndex] ?? 0;
 
-  // No bar for anyone unqualified, whatever the toggle says. 'default' and 'requested'
-  // both count as "still to do"; only 'posted' ends the workflow and clears the bar.
+  // Toggling 'requested' overrides the hours/summaries thresholds and forces the yellow bar;
+  // when toggled off ('default'), standard qualification rules apply, and 'posted' clears the bar.
   const activeTimeOffRequest = getActiveTimeOffRequest(timeOffRequests, summary._id, weekIndex);
   const isMeetCriteria = canSeeBioHighlight && isQualifiedForBio(summary);
 
@@ -720,17 +720,17 @@ function TotalValidWeeklySummaries({
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    parseInt(summary.weeklySummariesCount, 10) || 0,
+    Number.parseInt(summary.weeklySummariesCount, 10) || 0,
   );
 
   useEffect(() => {
-    setWeeklySummariesCount(parseInt(summary.weeklySummariesCount, 10) || 0);
+    setWeeklySummariesCount(Number.parseInt(summary.weeklySummariesCount, 10) || 0);
   }, [summary.weeklySummariesCount]);
 
   const handleOnChange = async (userProfileSummary, count) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
     const previousCount = weeklySummariesCount;
-    const parsedCount = parseInt(count, 10);
+    const parsedCount = Number.parseInt(count, 10);
     const normalizedCount = Number.isNaN(parsedCount) ? 0 : parsedCount;
     try {
       await axios.patch(url, { key: 'weeklySummariesCount', value: count });
@@ -739,6 +739,8 @@ function TotalValidWeeklySummaries({
       }
     } catch (err) {
       setWeeklySummariesCount(previousCount);
+      // eslint-disable-next-line no-console
+      console.error('Failed to update weekly summaries count:', err);
       // eslint-disable-next-line no-alert
       alert(
         'An error occurred while attempting to save the new weekly summaries count change to the profile.',

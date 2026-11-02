@@ -1,14 +1,16 @@
 /**
  * Single source of truth for "is this person qualified for a bio".
  *
- * Business rule (confirmed by Jae, 2026-10-13): a team member qualifies for the yellow
- * bio-announcement strip once they have
+ * Business rule (confirmed by Jae):
+ * - A team member whose bio status is set to 'requested' always qualifies for the yellow
+ *   bio-announcement strip (overriding the hours and valid summaries thresholds).
+ * - Otherwise, a team member qualifies once they have:
  *   1. a minimum of 80 tangible hours logged, and
  *   2. a minimum of 8 Total Valid Weekly Summaries (`weeklySummariesCount`),
- * and their bio has not been posted yet.
+ *   and their bio has not been posted yet.
  *
  * Tenure (`daysInTeam`) is not part of the rule: someone 60+ days in with only three
- * valid summaries must not qualify.
+ * valid summaries must not qualify unless their bio status is explicitly 'requested'.
  *
  * Keep every consumer on this function: the yellow highlight bar and the Bio Status
  * filter must agree, or a user shows a bar while being absent from the filter list.
