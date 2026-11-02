@@ -155,6 +155,9 @@ export const ENDPOINTS = {
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
     ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+  ORG_SUMMARY_EMAIL_STATUS: () => `${APIEndpoint}/reports/orgsummaryemail/status`,
+  ORG_SUMMARY_EMAIL_SETTINGS: () => `${APIEndpoint}/reports/orgsummaryemail/settings`,
+  ORG_SUMMARY_EMAIL_SEND: () => `${APIEndpoint}/reports/orgsummaryemail/send`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
     `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
