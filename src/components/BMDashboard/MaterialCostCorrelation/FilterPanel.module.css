@@ -93,26 +93,13 @@
 .datePickerLight,
 .datePickerDark {
   padding: 8px 12px;
-  border: 1px solid var(--input-border) !important;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
   width: 100%;
-  background-color: var(--input-bg) !important;
-  color: var(--input-text) !important;
+  background-color: var(--input-bg);
+  color: var(--input-text);
   font-size: 14px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-/* The InjuryCategoryBarChart module leaks an unscoped global rule
-   (`:global(.darkMode .react-datepicker__input-container input)`) that
-   matches any .darkMode ancestor app-wide, including this panel, and
-   wins on !important + specificity, forcing its own background color
-   onto our date inputs. Match its selector shape with our own scoped
-   ancestor + !important to beat it without touching the other file. */
-.filterPanel.darkMode :global(.react-datepicker__input-container input) {
-  background-color: var(--input-bg) !important;
-  border: 1px solid var(--input-border) !important;
-  border-radius: 6px !important;
-  color: var(--input-text) !important;
 }
 
 /* Keep the react-datepicker calendar icon visible in dark mode. */
@@ -123,7 +110,7 @@
 
 /* Leave space for the calendar icon so it does not overlap the date text. */
 .filterPanel :global(.react-datepicker__view-calendar-icon input) {
-  padding-left: 40px !important;
+  padding-left: 40px;
 }
 
 .datePickerLight:focus,
@@ -223,179 +210,179 @@
 }
 
 /* React-Select Styling */
-:global(.select__control) {
-  min-height: 42px !important;
+.filterPanel :global(.select__control) {
+  min-height: 42px;
 }
 
-.controlLight {
-  background-color: var(--input-bg) !important;
-  border-color: var(--input-border) !important;
-  color: var(--input-text) !important;
-  border-radius: 6px !important;
-  box-shadow: none !important;
+.filterPanel .controlLight {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-text);
+  border-radius: 6px;
+  box-shadow: none;
 }
 
-.controlLight:hover {
-  border-color: var(--button-bg) !important;
+.filterPanel .controlLight:hover {
+  border-color: var(--button-bg);
 }
 
-.controlLight:focus-within {
-  border-color: var(--button-bg) !important;
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%) !important;
+.filterPanel .controlLight:focus-within {
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
-.controlDark {
-  background-color: var(--input-bg) !important;
-  border-color: var(--input-border) !important;
-  color: var(--input-text) !important;
-  border-radius: 6px !important;
-  box-shadow: none !important;
+.filterPanel .controlDark {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-text);
+  border-radius: 6px;
+  box-shadow: none;
 }
 
-.controlDark:hover {
-  border-color: var(--button-bg) !important;
+.filterPanel .controlDark:hover {
+  border-color: var(--button-bg);
 }
 
-.controlDark:focus-within {
-  border-color: var(--button-bg) !important;
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 20%) !important;
+.filterPanel .controlDark:focus-within {
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
 }
 
-.menuLight {
-  background-color: var(--input-bg) !important;
-  border: 1px solid var(--input-border) !important;
-  border-radius: 6px !important;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%) !important;
+.filterPanel .menuLight {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
 }
 
-.menuDark {
-  background-color: var(--input-bg) !important;
-  border: 1px solid var(--input-border) !important;
-  border-radius: 6px !important;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 40%) !important;
+.filterPanel .menuDark {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
 }
 
-.optionLight {
-  background-color: transparent !important;
-  color: var(--input-text) !important;
-  padding: 10px 12px !important;
+.filterPanel .optionLight {
+  background-color: transparent;
+  color: var(--input-text);
+  padding: 10px 12px;
 }
 
-.optionLight:hover {
-  background-color: #e9ecef !important;
+.filterPanel .optionLight:hover {
+  background-color: #e9ecef;
 }
 
-.optionLight:active {
-  background-color: #dee2e6 !important;
+.filterPanel .optionLight:active {
+  background-color: #dee2e6;
 }
 
-.optionDark {
-  background-color: transparent !important;
-  color: var(--input-text) !important;
-  padding: 10px 12px !important;
+.filterPanel .optionDark {
+  background-color: transparent;
+  color: var(--input-text);
+  padding: 10px 12px;
 }
 
-.optionDark:hover {
-  background-color: #334155 !important;
+.filterPanel .optionDark:hover {
+  background-color: #334155;
 }
 
-.optionDark:active {
-  background-color: #475569 !important;
+.filterPanel .optionDark:active {
+  background-color: #475569;
 }
 
-.multiValueLight {
-  background-color: #dceeff !important;
-  border-radius: 4px !important;
+.filterPanel .multiValueLight {
+  background-color: #dceeff;
+  border-radius: 4px;
 }
 
-.multiValueDark {
-  background-color: #334155 !important;
-  border-radius: 4px !important;
+.filterPanel .multiValueDark {
+  background-color: #334155;
+  border-radius: 4px;
 }
 
-.multiValueLabelLight {
-  color: #1a202c !important;
-  font-size: 13px !important;
-  padding: 4px 8px !important;
+.filterPanel .multiValueLabelLight {
+  color: #1a202c;
+  font-size: 13px;
+  padding: 4px 8px;
 }
 
-.multiValueLabelDark {
-  color: #f7fafc !important;
-  font-size: 13px !important;
-  padding: 4px 8px !important;
+.filterPanel .multiValueLabelDark {
+  color: #f7fafc;
+  font-size: 13px;
+  padding: 4px 8px;
 }
 
 /* React-DatePicker Styling */
-:global(.react-datepicker) {
-  background-color: var(--input-bg) !important;
-  color: var(--input-text) !important;
-  border: 1px solid var(--input-border) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%) !important;
-  font-family: inherit !important;
+.filterPanel :global(.react-datepicker) {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  font-family: inherit;
 }
 
-:global(.react-datepicker__header) {
-  background-color: var(--filter-panel-bg) !important;
-  border-bottom: 1px solid var(--input-border) !important;
-  border-radius: 8px 8px 0 0 !important;
+.filterPanel :global(.react-datepicker__header) {
+  background-color: var(--filter-panel-bg);
+  border-bottom: 1px solid var(--input-border);
+  border-radius: 8px 8px 0 0;
 }
 
-:global(.react-datepicker__current-month),
-:global(.react-datepicker__day-name),
-:global(.react-datepicker__day),
-:global(.react-datepicker__month-text),
-:global(.react-datepicker__year-text) {
-  color: var(--input-text) !important;
+.filterPanel :global(.react-datepicker__current-month),
+.filterPanel :global(.react-datepicker__day-name),
+.filterPanel :global(.react-datepicker__day),
+.filterPanel :global(.react-datepicker__month-text),
+.filterPanel :global(.react-datepicker__year-text) {
+  color: var(--input-text);
 }
 
-:global(.react-datepicker__day:hover),
-:global(.react-datepicker__month-text:hover),
-:global(.react-datepicker__year-text:hover) {
-  background-color: var(--preset-button-hover-bg) !important;
-  border-radius: 4px !important;
+.filterPanel :global(.react-datepicker__day:hover),
+.filterPanel :global(.react-datepicker__month-text:hover),
+.filterPanel :global(.react-datepicker__year-text:hover) {
+  background-color: var(--preset-button-hover-bg);
+  border-radius: 4px;
 }
 
-:global(.react-datepicker__day--selected),
-:global(.react-datepicker__day--in-selecting-range),
-:global(.react-datepicker__day--in-range) {
-  background-color: var(--button-bg) !important;
-  color: var(--button-text) !important;
-  border-radius: 4px !important;
+.filterPanel :global(.react-datepicker__day--selected),
+.filterPanel :global(.react-datepicker__day--in-selecting-range),
+.filterPanel :global(.react-datepicker__day--in-range) {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-radius: 4px;
 }
 
-:global(.react-datepicker__day--selected:hover) {
-  background-color: var(--button-hover-bg) !important;
+.filterPanel :global(.react-datepicker__day--selected:hover) {
+  background-color: var(--button-hover-bg);
 }
 
-:global(.react-datepicker__day--today) {
-  font-weight: 700 !important;
-  border: 1px solid var(--button-bg) !important;
-  border-radius: 4px !important;
+.filterPanel :global(.react-datepicker__day--today) {
+  font-weight: 700;
+  border: 1px solid var(--button-bg);
+  border-radius: 4px;
 }
 
-:global(.react-datepicker__day--keyboard-selected) {
-  background-color: var(--preset-button-hover-bg) !important;
-  color: var(--input-text) !important;
-  border-radius: 4px !important;
+.filterPanel :global(.react-datepicker__day--keyboard-selected) {
+  background-color: var(--preset-button-hover-bg);
+  color: var(--input-text);
+  border-radius: 4px;
 }
 
-:global(.select__input-container),
-:global(.select__input-container input),
-:global(.select__input) {
-  color: var(--input-text) !important;
+.filterPanel :global(.select__input-container),
+.filterPanel :global(.select__input-container input),
+.filterPanel :global(.select__input) {
+  color: var(--input-text);
 }
 
-:global(.react-datepicker__close-icon::after) {
-  background-color: transparent !important;
-  color: var(--input-text) !important;
+.filterPanel :global(.react-datepicker__close-icon::after) {
+  background-color: transparent;
+  color: var(--input-text);
   opacity: 0.6;
-  font-size: 16px !important;
+  font-size: 16px;
   font-weight: 400;
 }
 
-:global(.react-datepicker-popper) {
-  z-index: 999 !important;
+.filterPanel :global(.react-datepicker-popper) {
+  z-index: 999;
   max-width: 100vw;
 }
 

@@ -901,19 +901,6 @@
   }
 }
 
-/* Animation */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
 
 /* MERGED: keep ONLY one projectStatusGrid */
@@ -1165,28 +1152,6 @@
     grid-column: span 1;
   }
 
-  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
-    grid-template-columns: 1fr;
-  }
-
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 240px;
-  }
-
-  .normalCard {
-    min-height: 280px;
-  }
-
-  .lessonsLearnedGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    min-height: auto;
-  }
-
-  .lessonsCard {
-    min-height: 500px;
-  }
-
   .toolsTrackingLayout {
     grid-template-columns: 1fr;
   }
@@ -1259,27 +1224,6 @@
 
   .financialsTrackingGrid {
     grid-template-columns: 1fr;
-  }
-}
-
-/* Extra Small Screens */
-@media (width <= 480px) {
-  .lessonsCard {
-    min-height: 450px;
-  }
-
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 220px;
-  }
-
-  .normalCard {
-    min-height: 260px;
-  }
-
-  .weeklySummaryHeaderTitle {
-    font-size: large;
-    flex-direction: column;
-    gap: 5px;
   }
 }
 
