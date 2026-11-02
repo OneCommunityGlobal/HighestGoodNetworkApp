@@ -181,7 +181,8 @@ import GardenManagement from './components/KitchenandInventory/GardenManagement/
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
-import KitchenReports from './components/KitchenandInventory/KitchenReports/KitchenReports';
+import KitchenReports from './components/KitchenandInventory/Reports/KitchenReports';
+import PreservationEfficiency from './components/KitchenandInventory/Reports/PreservationEfficiency';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 
@@ -1108,6 +1109,17 @@ export default (
         {/* ----- END BM Dashboard Routing ----- */}
         {/* ----- Kitchen and Inventory Portal Routes ----- */}
         <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
+        <ProtectedRoute path="/kitchenandinventory/reports" exact component={KitchenReports} />
+        <ProtectedRoute
+          path="/kitchenandinventory/reports/preservation-efficiency"
+          exact
+          component={PreservationEfficiency}
+        />
+        <ProtectedRoute
+          path="/kitchenandinventory/reports/forecast-accuracy"
+          exact
+          component={KitchenReports}
+        />
         <ProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
         <ProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
         <ProtectedRoute

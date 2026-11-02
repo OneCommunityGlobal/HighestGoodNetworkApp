@@ -7,6 +7,7 @@ import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import hasPermission from '../../utils/permissions';
 import KIHeader from '../KitchenandInventory/KIHeader/KIHeader';
+import KitchenHeader from '../KitchenInterfaces/KitchenHeader';
 
 export function HeaderRenderer(props) {
   const location = useLocation();
@@ -17,6 +18,10 @@ export function HeaderRenderer(props) {
   // Hide header for educator reports page
   if (isEducatorReports) {
     return null;
+  }
+
+  if (location.pathname.startsWith('/kitchenandinventory/reports')) {
+    return <KitchenHeader />;
   }
 
   if (isKitchenAndInventory) {
