@@ -4,7 +4,7 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable no-param-reassign */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useDispatch } from 'react-redux';
 import {
@@ -34,6 +34,7 @@ import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
+import { splitSessionByDay } from './splitSessionByDay';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/index.module.css';
 import styles from '../Timelog.module.css';
@@ -41,6 +42,13 @@ import styles from '../Timelog.module.css';
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
 import { permissions } from '../../../utils/constants';
+// Days of a split timer session that are already logged, so that submitting again after a
+// failure (even from a re-opened form) does not log them twice. Keyed by the session's runs.
+const loggedSessionDays = new Map();
+
+const formatEntryTime = ({ hours, minutes }) =>
+  [hours ? `${hours}h` : '', minutes ? `${minutes}m` : ''].filter(Boolean).join(' ');
+
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
   new Promise((_, reject) => {
@@ -85,6 +93,8 @@ function TimeEntryForm(props) {
     sessionId,
     timerConnected,
     maxHoursPerEntry,
+    sessionRuns,
+    sessionRunLimitMs,
   } = props;
   // props from store
   const { authUser } = props;
@@ -175,6 +185,22 @@ function TimeEntryForm(props) {
   const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+
+  // One entry per calendar day the timer ran on, so a session that crosses midnight is logged
+  // against both days. Null when there is nothing to split by.
+  const daySplit = useMemo(
+    () =>
+      from === 'Timer' && !edit
+        ? splitSessionByDay({
+            runs: sessionRuns,
+            hours: formValues.hours,
+            minutes: formValues.minutes,
+            openRunLimitMs: sessionRunLimitMs,
+          })
+        : null,
+    [from, edit, sessionRuns, sessionRunLimitMs, formValues.hours, formValues.minutes],
+  );
+  const splitsAcrossDays = Boolean(daySplit) && daySplit.length > 1;
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
@@ -455,9 +481,54 @@ function TimeEntryForm(props) {
       }
     };
 
+    // Logs one entry per day of a session that crossed midnight. Returns false (and tells the
+    // user) when one fails, so submitting again only logs the days that are still missing.
+    const postEntriesPerDay = async () => {
+      const sessionKey = `${timeEntryUserId}:${JSON.stringify(sessionRuns)}`;
+      const loggedDays = loggedSessionDays.get(sessionKey) ?? new Set();
+      loggedSessionDays.set(sessionKey, loggedDays);
+
+      for (let i = 0; i < daySplit.length; i += 1) {
+        const part = daySplit[i];
+        if (!loggedDays.has(part.dateOfWork)) {
+          const label = `<p><em>Part ${i + 1} of ${daySplit.length} (${moment(
+            part.dateOfWork,
+          ).format('MMM D')})</em></p>`;
+          // eslint-disable-next-line no-await-in-loop
+          const status = await props.postTimeEntry(
+            {
+              ...timeEntry,
+              dateOfWork: part.dateOfWork,
+              hours: part.hours,
+              minutes: part.minutes,
+              notes: `${label}${timeEntry.notes}`,
+            },
+            { displayedUserId: props.displayedUserId },
+          );
+          if (Number(status) >= 400) {
+            toast.error(
+              `Could not log ${moment(part.dateOfWork).format('MMM D')}. ${loggedDays.size} of ${
+                daySplit.length
+              } entries were logged and the timer was not stopped. Press Submit to log the rest.`,
+            );
+            return false;
+          }
+          loggedDays.add(part.dateOfWork);
+        }
+      }
+
+      loggedSessionDays.delete(sessionKey);
+      return true;
+    };
+
     try {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
+      } else if (splitsAcrossDays) {
+        if (!(await postEntriesPerDay())) {
+          setSubmitting(false);
+          return;
+        }
       } else {
         await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
       }
@@ -671,12 +742,15 @@ function TimeEntryForm(props) {
     if (actualDate && !edit) {
       setFormValues(prev => ({
         ...prev,
-        dateOfWork: moment(actualDate)
-          .tz('America/Los_Angeles')
-          .format('YYYY-MM-DD'),
+        // Time from the timer belongs to the day it was worked, not the day it is logged.
+        dateOfWork: daySplit
+          ? daySplit[0].dateOfWork
+          : moment(actualDate)
+              .tz('America/Los_Angeles')
+              .format('YYYY-MM-DD'),
       }));
     }
-  }, [actualDate, edit]);
+  }, [actualDate, edit, daySplit]);
 
   useEffect(() => {
     setFormValues(prev => ({ ...prev, ...data }));
@@ -740,6 +814,20 @@ function TimeEntryForm(props) {
               {'dateOfWork' in errors && (
                 <div className="text-danger">
                   <small>{errors.dateOfWork}</small>
+                </div>
+              )}
+              {splitsAcrossDays && (
+                <div className={fontColor} data-testid="split-notice">
+                  <small>
+                    This session ran past midnight, so it will be logged as {daySplit.length} entries:{' '}
+                    {daySplit
+                      .map(
+                        part =>
+                          `${moment(part.dateOfWork).format('MMM D')} ${formatEntryTime(part)}`,
+                      )
+                      .join(', ')}
+                    .
+                  </small>
                 </div>
               )}
             </FormGroup>
@@ -952,6 +1040,14 @@ TimeEntryForm.propTypes = {
   timerConnected: PropTypes.bool,
   maxHoursPerEntry: PropTypes.number,
   handleStop: PropTypes.func,
+  sessionRuns: PropTypes.arrayOf(
+    PropTypes.shape({
+      startedAt: PropTypes.string,
+      endedAt: PropTypes.string,
+      open: PropTypes.bool,
+    }),
+  ),
+  sessionRunLimitMs: PropTypes.number,
 };
 
 const mapStateToProps = state => ({
