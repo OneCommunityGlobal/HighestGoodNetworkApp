@@ -555,4 +555,97 @@ describe('FormattedReport requested week off notice', () => {
 
     await waitFor(() => expect(handleTeamCodeChange).toHaveBeenCalledWith('1', 'HaHUS', true));
   });
+
+  it('notifies parent and shows the yellow bio highlight banner immediately when weeklySummariesCount reaches 8', async () => {
+    function StatefulBioCountReport() {
+      const [summaries, setSummaries] = React.useState([
+        {
+          ...dummySummary,
+          weeklySummariesCount: 3,
+          totalTangibleHrs: 100,
+          bioPosted: 'default',
+        },
+      ]);
+
+      const handleWeeklySummariesCountChange = (userId, newCount) => {
+        setSummaries(prev =>
+          prev.map(s => (s._id === userId ? { ...s, weeklySummariesCount: newCount } : s)),
+        );
+      };
+
+      return (
+        <FormattedReport
+          {...defaultProps}
+          summaries={summaries}
+          handleWeeklySummariesCountChange={handleWeeklySummariesCountChange}
+        />
+      );
+    }
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <StatefulBioCountReport />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const bioHighlightContainer = screen.getByTestId('bio-highlight-banner');
+    expect(bioHighlightContainer.style.backgroundColor).toBe('transparent');
+
+    const countInput = screen.getByRole('spinbutton');
+    fireEvent.change(countInput, { target: { value: '8' } });
+
+    await waitFor(() => {
+      expect(axios.patch).toHaveBeenCalledWith(expect.any(String), {
+        key: 'weeklySummariesCount',
+        value: '8',
+      });
+      expect(bioHighlightContainer).toHaveStyle({ backgroundColor: '#FFF200' });
+    });
+  });
+
+  it('forces yellow bio highlight when bioPosted is requested even below thresholds, and re-applies criteria when switched back to default', () => {
+    const unqualifiedSummary = {
+      ...dummySummary,
+      totalTangibleHrs: 40,
+      weeklySummariesCount: 3,
+      bioPosted: 'default',
+    };
+
+    const { rerender } = render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} summaries={[unqualifiedSummary]} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const bioHighlightContainer = screen.getByTestId('bio-highlight-banner');
+    expect(bioHighlightContainer.style.backgroundColor).toBe('transparent');
+
+    rerender(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[{ ...unqualifiedSummary, bioPosted: 'requested' }]}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(bioHighlightContainer).toHaveStyle({ backgroundColor: '#FFF200' });
+
+    rerender(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[{ ...unqualifiedSummary, bioPosted: 'default' }]}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(bioHighlightContainer.style.backgroundColor).toBe('transparent');
+  });
 });

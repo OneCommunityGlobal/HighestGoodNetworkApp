@@ -24,6 +24,10 @@ export const BIO_MIN_VALID_SUMMARIES = 8;
 export const isQualifiedForBio = summary => {
   if (!summary) return false;
 
+  if (summary.bioPosted === 'requested') {
+    return true;
+  }
+
   // weeklySummariesCount can arrive as a string from the report payload.
   const tangibleHrs = Number(summary.totalTangibleHrs);
   const validSummaries = Number(summary.weeklySummariesCount);

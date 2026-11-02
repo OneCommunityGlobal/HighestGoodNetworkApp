@@ -19,6 +19,23 @@ describe('isQualifiedForBio()', () => {
     expect(isQualifiedForBio({ ...qualified, bioPosted: 'requested' })).toBe(true);
   });
 
+  it('forces qualification when bioPosted is requested even if thresholds are not met', () => {
+    expect(
+      isQualifiedForBio({
+        totalTangibleHrs: 10,
+        weeklySummariesCount: 2,
+        bioPosted: 'requested',
+      }),
+    ).toBe(true);
+    expect(
+      isQualifiedForBio({
+        totalTangibleHrs: 10,
+        weeklySummariesCount: 2,
+        bioPosted: 'default',
+      }),
+    ).toBe(false);
+  });
+
   it('disqualifies once the bio is posted, ending the workflow', () => {
     expect(isQualifiedForBio({ ...qualified, bioPosted: 'posted' })).toBe(false);
   });
