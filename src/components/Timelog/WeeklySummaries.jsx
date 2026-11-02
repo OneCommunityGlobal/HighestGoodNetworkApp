@@ -41,6 +41,18 @@ export const moveWeeklySummary = (
   });
 };
 
+/** Editing counts as submitting, so a changed summary gets a fresh upload date. */
+export const editWeeklySummary = (
+  weeklySummaries,
+  index,
+  summary,
+  uploadDate = new Date().toISOString(),
+) =>
+  weeklySummaries.map((item, i) => {
+    if (i !== index || item?.summary === summary) return item;
+    return { ...item, summary, uploadDate };
+  });
+
 function WeeklySummaries({ userProfile }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -111,9 +123,7 @@ function WeeklySummaries({ userProfile }) {
       setLoadingHandleSave(index);
       const updatedUserProfile = {
         ...userProfile,
-        weeklySummaries: userProfile.weeklySummaries.map((item, i) =>
-          i === index ? { ...item, summary: editedSummary } : item,
-        ),
+        weeklySummaries: editWeeklySummary(userProfile.weeklySummaries, index, editedSummary),
       };
 
       const status = await dispatch(updateWeeklySummaries(userProfile._id, updatedUserProfile));

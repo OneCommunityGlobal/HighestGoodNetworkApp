@@ -110,9 +110,6 @@ export class WeeklySummary extends Component {
       uploadDateBeforeLast: this.dueDateBeforeLast,
       uploadDateThreeWeeksAgo: this.dueDateThreeWeeksAgo,
     },
-    submittedDate: moment()
-      .tz('America/Los_Angeles')
-      .toISOString(),
     submittedCountInFourWeeks: 0,
     activeTab: '1',
     errors: {},
@@ -553,7 +550,6 @@ export class WeeklySummary extends Component {
   handleChangeInSummary = async (isMove = false) => {
     // Extract state variables for ease of access
     const {
-      submittedDate,
       formElements,
       uploadDatesElements,
       originSummaries,
@@ -589,6 +585,8 @@ export class WeeklySummary extends Component {
         summariesCountShowing: newformElements.weeklySummariesCount + diffInSubmittedCount,
       });
     }
+    // Stamp the actual save time, not when the dashboard was opened, so late saves read as late
+    const submittedDate = moment().toISOString();
     for (let i = 0; i < summaries.length; i++) {
       if (newformElements[summaries[i]] !== newOriginSummaries[summaries[i]]) {
         newOriginSummaries[summaries[i]] = newformElements[summaries[i]];
