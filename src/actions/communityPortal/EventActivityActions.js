@@ -52,8 +52,10 @@ export const createEvent = (token, eventDetails) => async dispatch => {
       throw new Error(data.error || 'Failed to create Event');
     }
     dispatch({ type: EVENT_CREATE_REQUEST_SUCCESS, payload: data });
+    return { success: true, event: data };
   } catch (error) {
     dispatch({ type: EVENT_CREATE_REQUEST_FAILURE, payload: error.message });
+    return { success: false, error: error.message };
   }
 };
 

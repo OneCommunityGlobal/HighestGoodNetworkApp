@@ -1,15 +1,19 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Loading from '~/components/common/Loading';
-import VolunteerStatusPieChart from './VolunteerStatusPieChart';
-import MentorStatusPieChart from './MentorStatusPieChart';
+import { getMentorTotal } from '~/utils/totalOrgSummary';
+import DonutChart from '../DonutChart/DonutChart';
 import styles from './VolunteerStatusChart.module.css';
+
+const VOLUNTEER_COLORS = ['#4C4AF5', '#2CCCF8', '#FF00C3'];
+const MENTOR_COLORS = ['#287D5A', '#2D9DA6', '#F26B38'];
 
 function VolunteerStatusChart({
   isLoading,
   volunteerNumberStats,
   mentorNumberStats,
   comparisonType,
+  darkMode,
 }) {
   const volunteerChartData = useMemo(() => {
     if (!volunteerNumberStats) {
@@ -56,7 +60,8 @@ function VolunteerStatusChart({
 
     return {
       totalVolunteers: computedTotal,
-      percentageChange: Number(totalVolunteers?.comparisonPercentage) || 0,
+      // raw value: DonutChart shows N/A for "No Comparison Data" instead of a fake +0%
+      percentageChange: totalVolunteers?.comparisonPercentage ?? null,
       data: chartDataValues,
     };
   }, [volunteerNumberStats]);
@@ -75,7 +80,6 @@ function VolunteerStatusChart({
     } = mentorNumberStats;
 
     let chartDataValues;
-    let computedTotal;
 
     if (donutChartData && donutChartData.existingActive !== undefined) {
       const existingActive = donutChartData.existingActive.count || 0;
@@ -87,8 +91,6 @@ function VolunteerStatusChart({
         { label: 'New Active', value: newActive },
         { label: 'Deactivated', value: deactivated },
       ];
-
-      computedTotal = existingActive + newActive + deactivated;
     } else {
       const active = activeMentors?.count || 0;
       const newM = newMentors?.count || 0;
@@ -99,13 +101,13 @@ function VolunteerStatusChart({
         { label: 'New', value: newM },
         { label: 'Deactivated This Week', value: deactM },
       ];
-
-      computedTotal = active + newM + deactM;
     }
 
     return {
-      totalMentors: computedTotal,
-      percentageChange: Number(totalMentors?.comparisonPercentage) || 0,
+      // Shared with the Mentors card so the two totals always match.
+      totalMentors: getMentorTotal(mentorNumberStats),
+      // raw value: DonutChart shows N/A for "No Comparison Data" instead of a fake +0%
+      percentageChange: totalMentors?.comparisonPercentage ?? null,
       data: chartDataValues,
     };
   }, [mentorNumberStats]);
@@ -121,23 +123,36 @@ function VolunteerStatusChart({
       ) : (
         <>
           <div className={styles.volunteerMentorChartsWrapper}>
-            <div className={styles.volunteerChartSection}>
-              {volunteerChartData && (
-                <VolunteerStatusPieChart
-                  data={volunteerChartData}
+            {volunteerChartData && (
+              <div className={styles.chartSection} data-chart="volunteer-status">
+                <DonutChart
+                  title="TOTAL VOLUNTEERS*"
+                  totalCount={volunteerChartData.totalVolunteers}
+                  percentageChange={volunteerChartData.percentageChange}
+                  data={volunteerChartData.data}
+                  colors={VOLUNTEER_COLORS}
                   comparisonType={comparisonType}
+                  darkMode={darkMode}
                 />
-              )}
-            </div>
+              </div>
+            )}
             {mentorChartData && (
-              <div className={styles.mentorChartSection}>
-                <MentorStatusPieChart data={mentorChartData} comparisonType={comparisonType} />
+              <div className={styles.chartSection} data-chart="mentor-status">
+                <DonutChart
+                  title="TOTAL MENTORS"
+                  totalCount={mentorChartData.totalMentors}
+                  percentageChange={mentorChartData.percentageChange}
+                  data={mentorChartData.data}
+                  colors={MENTOR_COLORS}
+                  comparisonType={comparisonType}
+                  darkMode={darkMode}
+                />
               </div>
             )}
           </div>
           {(volunteerChartData || mentorChartData) && (
             <p className={styles.volunteerMentorFootnote}>
-              *Does not include the “Mentor” members shown in the graph to the right.
+              *Does not include the “Mentor” members shown in the Total Mentors graph.
             </p>
           )}
         </>
@@ -149,6 +164,7 @@ function VolunteerStatusChart({
 VolunteerStatusChart.propTypes = {
   isLoading: PropTypes.bool,
   comparisonType: PropTypes.string,
+  darkMode: PropTypes.bool,
   volunteerNumberStats: PropTypes.shape({
     donutChartData: PropTypes.shape({
       existingActive: PropTypes.shape({

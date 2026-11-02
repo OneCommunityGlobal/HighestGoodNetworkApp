@@ -4,7 +4,7 @@ import InfoTooltip from './InfoTooltip';
 import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import mockEvents from './mockData';
+import mockEvents, { demoDemographicInsights } from './mockData';
 import styles from './Participation.module.css';
 import { filterEventsByDate } from './FilterByDate';
 
@@ -12,6 +12,7 @@ function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('This Week');
   const [scopeFilter, setScopeFilter] = useState('My Event');
   const [activeTab, setActiveTab] = useState('Event type');
+  const [demographicType, setDemographicType] = useState('Age');
   const [sortOrder, setSortOrder] = useState('none');
   const darkMode = useSelector(state => state.theme.darkMode);
   const insightsRef = useRef(null);
@@ -29,9 +30,14 @@ function NoShowInsights() {
   const SortIcon = sortOrder === 'none' ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
 
   const getTooltipContent = () => {
+    if (activeTab === 'Demographics') {
+      return 'Demonstration-only sample percentages by demographic category. No real participant demographic or attendance data is available from the event API.';
+    }
+
     let categoryDescription;
     if (activeTab === 'Event type') categoryDescription = 'event types';
     else if (activeTab === 'Time') categoryDescription = 'time periods';
+    else if (activeTab === 'Location') categoryDescription = 'locations';
     else categoryDescription = 'locations';
 
     return `Percentages represent the average no-show rate for each ${categoryDescription} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
@@ -72,7 +78,10 @@ function NoShowInsights() {
       scopeFilter === 'My Event'
         ? dateFilteredEvents.filter(event => event.id % 2 === 0)
         : dateFilteredEvents;
-    const stats = calculateStats(filteredEvents);
+    const stats =
+      activeTab === 'Demographics'
+        ? demoDemographicInsights[demographicType] ?? []
+        : calculateStats(filteredEvents);
     const finalStats =
       sortOrder === 'none'
         ? stats
@@ -294,7 +303,7 @@ function NoShowInsights() {
 
         <div className={styles.insightsTabsContainer}>
           <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDarkMode : ''}`}>
-            {['Event type', 'Time', 'Location'].map(tab => (
+            {['Demographics', 'Event type', 'Time', 'Location'].map(tab => (
               <button
                 key={tab}
                 type="button"
@@ -312,7 +321,14 @@ function NoShowInsights() {
           </div>
           <div className={styles.icons}>
             <div className={styles.tooltipWrapper}>
-              <SortIcon onClick={handleSortClick} className={styles.sortIcon} />
+              <button
+                type="button"
+                className={styles.iconButton}
+                onClick={handleSortClick}
+                aria-label="Change no-show insight sort order"
+              >
+                <SortIcon className={styles.sortIcon} />
+              </button>
               <span className={styles.tooltip}>
                 {sortOrder === 'none'
                   ? 'Default'
@@ -322,16 +338,44 @@ function NoShowInsights() {
               </span>
             </div>
             <div className={styles.tooltipWrapper}>
-              <SquareArrowOutUpRight
+              <button
+                type="button"
+                className={styles.iconButton}
+                aria-label="Export no-show insight data"
                 onClick={() => {
                   setExportError('');
                   setIsExportOpen(true);
                 }}
-              />
+              >
+                <SquareArrowOutUpRight />
+              </button>
               <span className={styles.tooltip}>Export Data</span>
             </div>
           </div>
         </div>
+
+        {activeTab === 'Demographics' && (
+          <div className={styles.demographicControls}>
+            <label htmlFor="demographic-breakdown">Demographic category</label>
+            <select
+              id="demographic-breakdown"
+              value={demographicType}
+              onChange={e => setDemographicType(e.target.value)}
+              className={styles.selectDemographic}
+            >
+              {Object.keys(demoDemographicInsights).map(category => (
+                <option key={category} value={category}>
+                  {category === 'Segment' ? 'Participant segment' : category}
+                </option>
+              ))}
+            </select>
+            <p className={styles.demographicDisclaimer} role="note">
+              Demonstration data only. The event API does not provide participant demographics or
+              demographic attendance outcomes; these sample percentages are not real user metrics.
+              Date and scope filters do not change these sample values.
+            </p>
+          </div>
+        )}
 
         <div className={styles.insightsContent}>{renderStats()}</div>
       </div>

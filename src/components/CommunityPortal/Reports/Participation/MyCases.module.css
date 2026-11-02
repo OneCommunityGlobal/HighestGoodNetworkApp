@@ -22,7 +22,7 @@
 
 .myCasesPageDark {
   padding: 16px;
-  background-color: #1C2541;
+  background-color: #1c2541;
   border: 1px solid var(--color-border-dark);
   border-radius: 6px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
@@ -40,6 +40,12 @@
   display: flex;
   align-items: center;
   gap: 15px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .myCasesPageDark .header {
@@ -81,6 +87,11 @@
     align-items: center;
     gap: 15px;
   }
+
+  .titleGroup {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .viewSwitcher {
@@ -102,7 +113,7 @@
 
 .myCasesPageDark .viewSwitcher button,
 .myCasesPageDark .createNew {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: var(--color-text-dark);
   border: 1px solid var(--color-border-dark);
 }
@@ -121,6 +132,9 @@
 
 .filterWrapper {
   display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 /* ---------- Dropdown Styles ---------- */
@@ -135,7 +149,7 @@
 }
 
 .myCasesPageDark .filterDropdown {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: var(--color-text-dark);
   border: 1px solid var(--color-border-dark);
 }
@@ -152,6 +166,22 @@
   outline: none;
 }
 
+.dateInput {
+  min-height: 38px;
+  padding: 7px 10px;
+  color: #333;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.dateInputDarkMode {
+  color: #fff;
+  color-scheme: dark;
+  background: #1e293b;
+  border-color: #5a6b7d;
+}
+
 /* Dark mode dropdown (component-level) */
 .filterDropdownDarkMode {
   padding: 8px 16px;
@@ -165,7 +195,7 @@
   box-sizing: border-box;
 
   /* Custom arrow */
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E");
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
   background-repeat: no-repeat;
   background-position: right 0.7em center;
   background-size: 0.65em auto;
@@ -250,9 +280,8 @@
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
-
 .caseCardDark {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: var(--color-text-dark);
   border: 1px solid var(--color-border-dark);
   border-radius: 8px;
@@ -323,6 +352,30 @@
   border: 1px solid #c084fc;
 }
 
+.caseCardDark .eventBadge[data-type='Workshop'] {
+  background-color: #1e3a5f;
+  color: #60a5fa;
+  border: 1px solid #60a5fa;
+}
+
+.caseCardDark .eventBadge[data-type='Meeting'] {
+  background-color: #4d3d1e;
+  color: #fbbf24;
+  border: 1px solid #fbbf24;
+}
+
+.caseCardDark .eventBadge[data-type='Webinar'] {
+  background-color: #3d1e4d;
+  color: #c084fc;
+  border: 1px solid #c084fc;
+}
+
+.caseCardDark .eventBadge[data-type='Social Gathering'] {
+  background-color: #1e4d2e;
+  color: #4ade80;
+  border: 1px solid #4ade80;
+}
+
 .eventTime {
   font-size: 14px;
   color: #555;
@@ -367,7 +420,7 @@
   height: 24px;
   border-radius: 50%;
   margin-right: -8px;
-  border: 2px solid #1c2541; 
+  border: 2px solid #1c2541;
 }
 
 .attendeesInfoDark .avatars img {
@@ -375,7 +428,7 @@
   height: 24px;
   border-radius: 50%;
   margin-right: -8px;
-  border: 2px solid #fff; 
+  border: 2px solid #fff;
 }
 
 /* Combined duplicated selector blocks */
@@ -401,7 +454,7 @@
 }
 
 .myCasesPageDark .rateCard {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: #fff;
   border: 1px solid #555;
 }
@@ -483,6 +536,49 @@
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
+.calendarViewDark :global(.fc) {
+  --fc-page-bg-color: #1c2541;
+  --fc-neutral-bg-color: #2c3e50;
+  --fc-neutral-text-color: #f8fafc;
+  --fc-border-color: #5a6b7d;
+  --fc-list-event-hover-bg-color: #465d7b;
+  --fc-today-bg-color: rgb(59 130 246 / 22%);
+
+  color: #f8fafc;
+}
+
+.calendarViewDark :global(.fc-col-header-cell),
+.calendarViewDark :global(.fc-daygrid-day),
+.calendarViewDark :global(.fc-timegrid-slot),
+.calendarViewDark :global(.fc-list-day-cushion) {
+  background-color: #1c2541;
+}
+
+.calendarViewDark :global(.fc-daygrid-day:hover),
+.calendarViewDark :global(.fc-timegrid-col:hover) {
+  background-color: #304663;
+}
+
+.calendarViewDark :global(.fc-daygrid-day-number),
+.calendarViewDark :global(.fc-col-header-cell-cushion),
+.calendarViewDark :global(.fc-list-day-text),
+.calendarViewDark :global(.fc-list-day-side-text) {
+  color: #f8fafc;
+}
+
+.calendarViewDark :global(.fc-button-primary) {
+  color: #fff;
+  background-color: #3a506b;
+  border-color: #6f86a3;
+}
+
+.calendarViewDark :global(.fc-button-primary:hover),
+.calendarViewDark :global(.fc-button-primary:focus),
+.calendarViewDark :global(.fc-button-primary:not(:disabled).fc-button-active) {
+  background-color: #2563a9;
+  border-color: #8eb8e5;
+}
+
 /* ---------- More button ---------- */
 .moreBtn {
   background-color: #007bff;
@@ -527,67 +623,67 @@
     break-inside: auto !important;
   }
 
- .caseCard {
-  background: white !important;
-  color: #333 !important;
-  border: 1px solid #ddd !important;
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-  break-inside: avoid-page !important;
-  break-inside: avoid !important;
-}
+  .caseCard {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    break-inside: avoid-page !important;
+    break-inside: avoid !important;
+  }
 
-.caseCardDark {
-  background: #3a506b !important;
-  color: #fff !important;
-  border: 1px solid #555 !important;
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-  break-inside: avoid-page !important;
-  break-inside: avoid !important;
-}
+  .caseCardDark {
+    background: #3a506b !important;
+    color: #fff !important;
+    border: 1px solid #555 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    break-inside: avoid-page !important;
+    break-inside: avoid !important;
+  }
 
-.caseList {
-  max-height: none !important;
-  height: auto !important;
-  overflow: visible !important;
-  break-inside: auto !important;
-}
+  .caseList {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    break-inside: auto !important;
+  }
 
-.caseListItem {
-  break-inside: avoid-page !important;
-  break-inside: avoid !important;
-}
+  .caseListItem {
+    break-inside: avoid-page !important;
+    break-inside: avoid !important;
+  }
 
-.caseListItemDark {
-  break-inside: avoid-page !important;
-  break-inside: avoid !important;
-}
+  .caseListItemDark {
+    break-inside: avoid-page !important;
+    break-inside: avoid !important;
+  }
 
-.eventBadge {
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-}
+  .eventBadge {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 
-.eventBadge[data-type='Yoga Class'] {
-  background-color: #e9f7ef !important;
-  color: #28a745 !important;
-}
+  .eventBadge[data-type='Yoga Class'] {
+    background-color: #e9f7ef !important;
+    color: #28a745 !important;
+  }
 
-.eventBadge[data-type='Cooking Workshop'] {
-  background-color: #fdecea !important;
-  color: #e74c3c !important;
-}
+  .eventBadge[data-type='Cooking Workshop'] {
+    background-color: #fdecea !important;
+    color: #e74c3c !important;
+  }
 
-.eventBadge[data-type='Dance Class'] {
-  background-color: #fff5e6 !important;
-  color: #f39c12 !important;
-}
+  .eventBadge[data-type='Dance Class'] {
+    background-color: #fff5e6 !important;
+    color: #f39c12 !important;
+  }
 
-.eventBadge[data-type='Fitness Bootcamp'] {
-  background-color: #f5e6ff !important;
-  color: #9b59b6 !important;
-}
+  .eventBadge[data-type='Fitness Bootcamp'] {
+    background-color: #f5e6ff !important;
+    color: #9b59b6 !important;
+  }
 }
 
 /* ---------- Attendees Hover (Light Mode) ---------- */
@@ -639,23 +735,23 @@
 
 .caseListItem .attendeesCount:hover {
   background-color: rgb(0 123 255 /12%);
-  color: inherit; 
+  color: inherit;
   border-radius: 4px;
 }
 
 .caseListItemDark .attendeesCount:hover {
   background-color: rgb(255 255 255 /12%);
-  color: inherit; 
+  color: inherit;
   border-radius: 4px;
 }
 
 .myCasesPageDark .moreBtn {
-  background-color: #3A506B;
-  border: 1px solid #5A6B7D;
+  background-color: #2563a9;
+  border: 1px solid #8eb8e5;
   color: #fff;
 }
 
 .myCasesPageDark .moreBtn:hover {
-  background-color: #5A6B7D;
+  background-color: #1d4f8a;
   color: #fff;
 }

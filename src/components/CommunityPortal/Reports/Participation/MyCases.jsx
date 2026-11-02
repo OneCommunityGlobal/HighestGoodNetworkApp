@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import CreateEventModal from './CreateEventModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
-import { filterEventsByDate } from './FilterByDate';
+import { filterEventsByDate, getEventInterval } from './FilterByDate';
 import { fetchEventDetails } from '../../../../actions/communityPortal/EventActivityActions';
 import { transformEvents } from './HelperFunctions';
 import { EventsCalendar } from './EventsCalendar';
@@ -12,6 +12,7 @@ import { EventsCalendar } from './EventsCalendar';
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('All Time');
+  const [selectedDate, setSelectedDate] = useState('');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -21,7 +22,7 @@ function MyCases() {
   const [eventsData, setEventsData] = useState([]);
   const [eventsError, setEventsError] = useState('');
 
-  useEffect(() => {
+  const loadEvents = useCallback(() => {
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -31,6 +32,10 @@ function MyCases() {
 
     dispatch(fetchEventDetails(token));
   }, [dispatch]);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
 
   useEffect(() => {
     if (fetchEventState?.data?.events) {
@@ -59,13 +64,21 @@ function MyCases() {
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
 
-  const now = new Date();
-
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(eventsData, filter).filter(
-    event => new Date(event.eventDate).getTime() >= now.getTime(),
-  );
+  const now = new Date();
+  const filteredEvents = filterEventsByDate(eventsData, filter, selectedDate).filter(event => {
+    const interval = getEventInterval(event);
+    return interval && interval.end >= now;
+  });
+
+  const handleEventCreated = () => {
+    loadEvents();
+  };
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [filter, selectedDate]);
 
   let visibleEvents = filteredEvents;
 
@@ -166,16 +179,30 @@ function MyCases() {
     </ul>
   );
 
-  const renderCalendarView = () => <EventsCalendar />;
+  const renderCalendarView = () => (
+    <EventsCalendar events={filteredEvents} selectedDate={selectedDate} />
+  );
 
   return (
     <div
       className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
     >
       <header className={styles.header}>
-        <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
-          Upcoming Events
-        </h2>
+        <div className={styles.titleGroup} role="group" aria-label="Upcoming Events controls">
+          <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
+            Upcoming Events
+          </h2>
+
+          {view !== 'calendar' && filteredEvents.length > 10 && !isExporting && (
+            <button
+              type="button"
+              className={`more-btn-global ${styles.moreBtn}`}
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? 'Show Less' : 'More'}
+            </button>
+          )}
+        </div>
 
         <div className={styles.headerActions}>
           <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
@@ -210,13 +237,29 @@ function MyCases() {
                 darkMode ? styles.filterDropdownDarkMode : ''
               }`}
               value={filter}
-              onChange={e => setFilter(e.target.value)}
+              aria-label="Filter upcoming events by date range"
+              onChange={e => {
+                const nextFilter = e.target.value;
+                setFilter(nextFilter);
+                if (nextFilter !== 'Specific Date') setSelectedDate('');
+              }}
             >
               <option value="All Time">All Time</option>
               <option value="Today">Today</option>
               <option value="This Week">This Week</option>
               <option value="This Month">This Month</option>
+              <option value="Specific Date">Specific Date</option>
             </select>
+
+            {filter === 'Specific Date' && (
+              <input
+                type="date"
+                className={`${styles.dateInput} ${darkMode ? styles.dateInputDarkMode : ''}`}
+                value={selectedDate}
+                aria-label="Select a specific event date"
+                onChange={e => setSelectedDate(e.target.value)}
+              />
+            )}
           </div>
 
           <button
@@ -226,16 +269,6 @@ function MyCases() {
           >
             + Create New
           </button>
-
-          {filteredEvents.length > 10 && !isExporting && (
-            <button
-              type="button"
-              className={`more-btn-global ${styles.moreBtn}`}
-              onClick={() => setExpanded(!expanded)}
-            >
-              {expanded ? 'Show Less' : 'More'}
-            </button>
-          )}
         </div>
       </header>
 
@@ -263,6 +296,7 @@ function MyCases() {
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+        onEventCreated={handleEventCreated}
       />
     </div>
   );

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
-import { createEvent } from '../../../../actions/communityPortal/eventActions';
+import { toast } from 'react-toastify';
+import { createEvent } from '../../../../actions/communityPortal/EventActivityActions';
 import '../../../Header/DarkMode.module.css';
 
 function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
@@ -61,12 +62,7 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
 
   const handleToggle = () => {
     if (!loading) {
-      if (isOpen) {
-        toggle();
-      } else {
-        resetForm();
-        toggle();
-      }
+      toggle();
     }
   };
 
@@ -85,6 +81,11 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
 
   const validateForm = () => {
     const newErrors = {};
+    const maxAttendees = Number(formData.maxAttendees);
+
+    if (!Number.isInteger(maxAttendees) || maxAttendees < 1) {
+      newErrors.maxAttendees = 'Max Attendees must be a positive integer';
+    }
 
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
@@ -116,10 +117,6 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
       newErrors.endTime = 'End time is required';
     }
 
-    if (formData.maxAttendees < 1) {
-      newErrors.maxAttendees = 'Max attendees must be at least 1';
-    }
-
     // Validate that end time is after start time
     if (formData.startTime && formData.endTime) {
       const start = moment(`${formData.date} ${formData.startTime}`, 'YYYY-MM-DD HH:mm');
@@ -144,6 +141,7 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
 
     // Format the event data according to the Event model
     const eventData = {
+      id: `local-${Date.now()}`,
       title: formData.title.trim(),
       type: formData.type,
       location: formData.location,
@@ -166,17 +164,27 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
       eventData.coverImage = formData.coverImage.trim();
     }
 
-    try {
-      const result = await dispatch(createEvent(eventData));
-      if (result?.success) {
-        onEventCreated();
-        handleToggle();
-      }
-    } catch (error) {
-      setErrors('Unable to create a new event. Please try again later.');
-    } finally {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setErrors(prev => ({ ...prev, submit: 'Please log in before creating an event.' }));
       setLoading(false);
+      return;
     }
+
+    const result = await dispatch(createEvent(token, eventData));
+
+    if (result?.success) {
+      toast.success('Event created successfully!');
+      onEventCreated(result.event);
+      resetForm();
+      toggle();
+      return;
+    }
+
+    const message = result?.error || 'Unable to create a new event. Please try again later.';
+    setErrors(prev => ({ ...prev, submit: message }));
+    toast.error(message);
+    setLoading(false);
   };
 
   return (
@@ -194,6 +202,7 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <form onSubmit={handleSubmit}>
+          {errors.submit && <div className="alert alert-danger">{errors.submit}</div>}
           <div className="form-group">
             <label htmlFor="title" className={darkMode ? 'text-light' : ''}>
               Event Title

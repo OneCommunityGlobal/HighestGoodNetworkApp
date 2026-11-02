@@ -1,6 +1,12 @@
 import { createElement } from 'react';
-import { render } from '@testing-library/react';
-import DonutChart, { buildDonutTooltipOptions, formatLegendLabel } from '../DonutChart';
+import { render, screen } from '@testing-library/react';
+import DonutChart, {
+  buildDonutTooltipOptions,
+  formatComparison,
+  formatLegendLabel,
+  formatPercent,
+  holeSizePlugin,
+} from '../DonutChart';
 
 // Chart.js draws to a <canvas> jsdom doesn't implement; capture the options instead.
 let lastDoughnutProps;
@@ -76,5 +82,146 @@ describe('buildDonutTooltipOptions', () => {
       titleColor: '#fff',
       bodyColor: '#90cdf4',
     });
+  });
+});
+
+describe('DonutChart center title', () => {
+  it('splits any "TOTAL ..." title onto two lines so long names stay inside the hole', () => {
+    render(
+      createElement(DonutChart, {
+        title: 'TOTAL VOLUNTEERS*',
+        totalCount: 3127,
+        percentageChange: 0,
+        data: [{ label: 'Existing Active', value: 2049 }],
+        colors: ['#4C4AF5'],
+        comparisonType: 'No Comparison',
+      }),
+    );
+    expect(screen.getByText('TOTAL')).toBeInTheDocument();
+    expect(screen.getByText('VOLUNTEERS*')).toBeInTheDocument();
+  });
+});
+
+describe('DonutChart small slices', () => {
+  const renderRoles = minLabelPercent =>
+    render(
+      createElement(DonutChart, {
+        title: 'TOTAL MEMBERS',
+        totalCount: 2685,
+        percentageChange: 0,
+        data: [
+          { label: 'Volunteer', value: 2654 },
+          { label: 'TestRole', value: 30 },
+          { label: 'Soham Admin', value: 1 },
+        ],
+        colors: ['#8ebfff', '#2F80ED', '#56CCF2'],
+        comparisonType: 'No Comparison',
+        minLabelPercent,
+      }),
+    );
+
+  it('skips outside labels below minLabelPercent', () => {
+    renderRoles(2);
+    const { formatter } = lastDoughnutProps.options.plugins.externalLabelGuides;
+    expect(formatter({ value: 2654, percentage: 99 })).toEqual(['2654', '(98.8%)']);
+    expect(formatter({ value: 30, percentage: 1 })).toBeNull();
+  });
+
+  it('keeps slivers too small to draw in the legend', () => {
+    renderRoles(0);
+    expect(lastDoughnutProps.data.labels).not.toContain('Soham Admin');
+    expect(screen.getByText('Soham Admin: 1 (<0.1%)')).toBeInTheDocument();
+  });
+});
+
+const renderSmall = () =>
+  render(
+    createElement(DonutChart, {
+      title: 'TOTAL VOLUNTEERS*',
+      totalCount: 2573,
+      percentageChange: 0,
+      data: [
+        { label: 'Existing Active', value: 2565 },
+        { label: 'New Active', value: 8 },
+      ],
+      colors: ['#4C4AF5', '#2CCCF8'],
+      comparisonType: 'No Comparison',
+    }),
+  );
+
+describe('DonutChart review fixes (#5608)', () => {
+  it('never rounds a non-zero slice to 0%: label and legend use the same value', () => {
+    expect(formatPercent(8, 2573)).toBe('0.3%');
+    renderSmall();
+    const { formatter } = lastDoughnutProps.options.plugins.externalLabelGuides;
+    // the plugin's own whole-number percentage is ignored
+    expect(formatter({ value: 8, percentage: 0 })).toEqual(['8', '(0.3%)']);
+    expect(screen.getByText('New Active: 8 (0.3%)')).toBeInTheDocument();
+  });
+
+  it('shows N/A instead of NaN when the backend sends No Comparison Data', () => {
+    expect(formatComparison('No Comparison Data', 'Year Over Year')).toBe('N/A YEAR OVER YEAR');
+    expect(formatComparison(null, 'Week Over Week')).toBe('N/A WEEK OVER WEEK');
+    expect(formatComparison(Number.NaN, 'Week Over Week')).toBe('N/A WEEK OVER WEEK');
+    expect(formatComparison(0.12, 'Week Over Week')).toBe('+12% WEEK OVER WEEK');
+    expect(formatComparison(-0.05, 'Month Over Month')).toBe('-5% MONTH OVER MONTH');
+  });
+
+  it('shows centerCount in the centre while percentages use the slice total', () => {
+    render(
+      createElement(DonutChart, {
+        title: 'TOTAL HOURS WORKED',
+        totalCount: 5,
+        centerCount: 1234,
+        unitLabel: 'volunteers',
+        data: [
+          { label: '10-19 hrs', value: 2 },
+          { label: '20-29 hrs', value: 3 },
+        ],
+        colors: ['#00AFF4', '#FFA500'],
+        comparisonType: 'No Comparison',
+      }),
+    );
+    expect(screen.getByText('1234')).toBeInTheDocument();
+    expect(screen.getByText('10-19 hrs: 2 volunteers (40.0%)')).toBeInTheDocument();
+  });
+
+  it('publishes the hole diameter after update, ignoring the 0 radius seen mid-layout', () => {
+    const wrapper = document.createElement('div');
+    const canvas = document.createElement('canvas');
+    wrapper.appendChild(canvas);
+    const chartWith = innerRadius => ({
+      canvas,
+      getDatasetMeta: () => ({ controller: { innerRadius } }),
+    });
+    holeSizePlugin.afterUpdate(chartWith(53));
+    expect(wrapper.style.getPropertyValue('--donut-hole')).toBe('106px');
+    // a 0 reading must not collapse the centre to one character per line
+    holeSizePlugin.afterUpdate(chartWith(0));
+    expect(wrapper.style.getPropertyValue('--donut-hole')).toBe('106px');
+  });
+
+  it('shows <0.1% for a tiny non-zero slice instead of 0.0%', () => {
+    expect(formatPercent(1, 2708)).toBe('<0.1%');
+    expect(formatPercent(0, 2708)).toBe('0.0%');
+  });
+
+  it('draws a single 100% slice as a full ring, with no spacing notch', () => {
+    render(
+      createElement(DonutChart, {
+        title: 'TOTAL HOURS WORKED',
+        totalCount: 3,
+        data: [{ label: '10-19 hrs', value: 3 }],
+        colors: ['#00AFF4'],
+        comparisonType: 'No Comparison',
+      }),
+    );
+    expect(lastDoughnutProps.data.datasets[0].spacing).toBe(0);
+  });
+
+  it('uses the singular unit for a count of 1', () => {
+    expect(formatLegendLabel({ label: '10-19 hrs', value: 1 }, 2, 'volunteers')).toBe(
+      '10-19 hrs: 1 volunteer (50.0%)',
+    );
   });
 });

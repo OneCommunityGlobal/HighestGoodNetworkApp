@@ -17,7 +17,7 @@ const formatLocalDate = date => {
   return `${year}-${month}-${day}`;
 };
 
-export const EventsCalendar = () => {
+export const EventsCalendar = ({ events: suppliedEvents, selectedDate = '' }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const calendarRef = useRef(null);
   const fetchCalendarEvent = useSelector(state => state.fetchCalendarEvent);
@@ -45,20 +45,24 @@ export const EventsCalendar = () => {
     setPrevDate(normalizeDate(month - 3, year));
     setNextDate(normalizeDate(month + 3, year));
 
-    if (token) {
+    if (suppliedEvents === undefined && token) {
       dispatch(fetchCalendarEventDetails(token, queryParams));
     }
-  }, [dispatch, token]);
+  }, [dispatch, suppliedEvents, token]);
 
   useEffect(() => {
-    if (fetchCalendarEvent.data?.events) {
+    if (suppliedEvents === undefined && fetchCalendarEvent.data?.events) {
       setEventsData(transformEvents(fetchCalendarEvent.data.events));
     }
-  }, [fetchCalendarEvent.data]);
+  }, [fetchCalendarEvent.data, suppliedEvents]);
 
   useEffect(() => {
-    setEvents(eventsData);
-  }, [eventsData]);
+    setEvents(suppliedEvents ?? eventsData);
+  }, [eventsData, suppliedEvents]);
+
+  useEffect(() => {
+    if (selectedDate) calendarRef.current?.getApi().gotoDate(selectedDate);
+  }, [selectedDate]);
 
   useEffect(() => {
     setIsNextDisabled(fetchCalendarEvent.loading);
@@ -94,6 +98,11 @@ export const EventsCalendar = () => {
   };
 
   const handlePrevChange = () => {
+    if (suppliedEvents !== undefined) {
+      calendarRef.current.getApi().prev();
+      return;
+    }
+
     if (!isNextDisabled && !isPrevDisabled) {
       const api = calendarRef.current.getApi();
       api.prev();
@@ -109,6 +118,11 @@ export const EventsCalendar = () => {
   };
 
   const handleNextChange = () => {
+    if (suppliedEvents !== undefined) {
+      calendarRef.current.getApi().next();
+      return;
+    }
+
     if (!isNextDisabled && !isPrevDisabled) {
       const api = calendarRef.current.getApi();
       api.next();
@@ -134,7 +148,7 @@ export const EventsCalendar = () => {
 
         {!fetchCalendarEvent.loading &&
           !fetchCalendarEvent.error &&
-          eventsData.length === 0 &&
+          events.length === 0 &&
           'No events found for the selected date range.'}
       </div>
       <FullCalendar
@@ -151,6 +165,7 @@ export const EventsCalendar = () => {
         }}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
         initialView="dayGridMonth"
+        initialDate={selectedDate || undefined}
         headerToolbar={{
           left: 'prevBtn,nextBtn today',
           center: 'title',
@@ -158,14 +173,29 @@ export const EventsCalendar = () => {
         }}
         events={events.map(event => ({
           title: event.type + ' ' + event.title,
-          date: event.startTime.split('T')[0],
           start: event.startTime,
           end: event.endTime,
+          extendedProps: {
+            attendees: event.currentAttendees,
+            location: event.location,
+            status: event.status,
+          },
         }))}
         eventClick={info => {
           const calendar = info.view.calendar;
           calendar.changeView('timeGridDay', info.event.start);
         }}
+        eventDidMount={info => {
+          const { attendees, location, status } = info.event.extendedProps;
+          const details = [location, status, `${attendees ?? 0} attendees`]
+            .filter(Boolean)
+            .join(' • ');
+          info.el.setAttribute(
+            'title',
+            details ? `${info.event.title} — ${details}` : info.event.title,
+          );
+        }}
+        height="auto"
       />
     </div>
   );

@@ -103,19 +103,18 @@ describe('Team Member Task Component', () => {
     const href = linkElement[0].getAttribute('href');
     expect(href).toBe(`/userprofile/${props.personId}`);
   });
-  it('shows the deadline checkbox but not the deadline count to volunteers with permission', () => {
-    const volunteerAuth = {
-      ...authMock,
-      user: {
-        ...authMock.user,
-        role: 'Volunteer',
-        permissions: {
-          frontPermissions: ['viewAndInteractWithTaskDeadlinesBoxes'],
+  it('shows the deadline checkbox but not the count with only the deadline permission', () => {
+    const volunteerStore = mockStore({
+      auth: {
+        ...authMock,
+        user: {
+          ...authMock.user,
+          role: 'Volunteer',
+          permissions: {
+            frontPermissions: ['viewAndInteractWithTaskDeadlinesBoxes'],
+          },
         },
       },
-    };
-    const volunteerStore = mockStore({
-      auth: volunteerAuth,
       userProfile: userProfileMock,
       role: rolesMock.role,
       theme: themeMock,
@@ -126,17 +125,18 @@ describe('Team Member Task Component', () => {
     expect(screen.getByRole('checkbox')).toBeInTheDocument();
     expect(screen.queryByTestId('deadline-Task 1')).not.toBeInTheDocument();
   });
-  it('does not show the deadline checkbox to volunteers without permission', () => {
-    const volunteerAuth = {
-      ...authMock,
-      user: {
-        ...authMock.user,
-        role: 'Volunteer',
-        permissions: { frontPermissions: [] },
-      },
-    };
+  it('shows the count but not the deadline checkbox with only the time-added permission', () => {
     const volunteerStore = mockStore({
-      auth: volunteerAuth,
+      auth: {
+        ...authMock,
+        user: {
+          ...authMock.user,
+          role: 'Volunteer',
+          permissions: {
+            frontPermissions: ['seeNumberOfTimesTimeAdded'],
+          },
+        },
+      },
       userProfile: userProfileMock,
       role: rolesMock.role,
       theme: themeMock,
@@ -145,6 +145,7 @@ describe('Team Member Task Component', () => {
     renderComponent({ ...props, role: 'Volunteer' }, volunteerStore);
 
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    expect(screen.getByTestId('deadline-Task 1')).toBeInTheDocument();
   });
   it('weeklycommittedHours, LoggedHours, remainingHours,  showing up beside the task is right', () => {
     renderComponent(props);

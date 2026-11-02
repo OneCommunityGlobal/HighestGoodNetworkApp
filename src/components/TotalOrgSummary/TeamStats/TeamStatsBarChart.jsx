@@ -36,9 +36,20 @@ function renderTeamStatsBarLabel(data, totalValue) {
   return TeamStatsBarLabelContent;
 }
 
+// change is a growth fraction (-0.02); show it as the bar label does ("-2%")
+const formatChangePercent = change =>
+  `${change >= 0 ? '+' : ''}${Math.round((Number(change) || 0) * 100)}%`;
+
 function createTeamStatsTooltipContent(yAxisLabel, darkMode) {
   function TeamStatsTooltipContent(props) {
-    return <CustomTooltip {...props} yAxisLabel={yAxisLabel} darkMode={darkMode} />;
+    const { payload } = props;
+    const formatted = payload?.map(item => ({
+      ...item,
+      payload: { ...item.payload, change: formatChangePercent(item.payload?.change) },
+    }));
+    return (
+      <CustomTooltip {...props} payload={formatted} yAxisLabel={yAxisLabel} darkMode={darkMode} />
+    );
   }
   TeamStatsTooltipContent.displayName = 'TeamStatsTooltipContent';
   return TeamStatsTooltipContent;
@@ -77,7 +88,11 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
             className={styles.teamStatsYAxis}
             tick={{ fill: darkMode ? 'white' : '#666' }}
           />
-          <Tooltip content={tooltipContent} />
+          <Tooltip
+            content={tooltipContent}
+            // Default hover band is #ccc, which glares on the dark card.
+            cursor={{ fill: darkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)' }}
+          />
           <Bar dataKey="value" fill="#1B6DDF">
             {data.map((_, index) => (
               <Cell key={`cell-${data[index].value}`} fill={data[index].color} />

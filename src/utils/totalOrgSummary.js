@@ -1,6 +1,27 @@
 import { VOLUNTEER_STATUS_TAB, VOLUNTEER_ACTIVITIES_TAB } from '../constants/totalOrgSummary';
 
-export const normalizeVolunteerStats = (volunteerNumberStats = {}, totalHoursWorked = {}) => {
+// Single source of truth for the mentor total.
+// Used by both the Mentors card and the TOTAL MENTORS donut so they always match.
+export const getMentorTotal = mentorNumberStats => {
+  if (!mentorNumberStats) return 0;
+  const { donutChartData, activeMentors, newMentors, deactivatedMentors } = mentorNumberStats;
+
+  if (donutChartData && donutChartData.existingActive !== undefined) {
+    return (
+      (donutChartData.existingActive?.count || 0) +
+      (donutChartData.newActive?.count || 0) +
+      (donutChartData.deactivated?.count || 0)
+    );
+  }
+
+  return (activeMentors?.count || 0) + (newMentors?.count || 0) + (deactivatedMentors?.count || 0);
+};
+
+export const normalizeVolunteerStats = (
+  volunteerNumberStats = {},
+  totalHoursWorked = {},
+  mentorNumberStats = null,
+) => {
   const statsObj = volunteerNumberStats || {};
 
   const normalizeStats = (stats, key) => {
@@ -32,7 +53,13 @@ export const normalizeVolunteerStats = (volunteerNumberStats = {}, totalHoursWor
   return [
     normalizeStats(statsObj.activeVolunteers, 'activeVolunteers'),
     normalizeStats(statsObj.newVolunteers, 'newVolunteers'),
-    normalizeStats(statsObj.mentorNumberStats?.totalMentors ?? 83, 'mentors'),
+    normalizeStats(
+      {
+        count: getMentorTotal(mentorNumberStats),
+        comparisonPercentage: mentorNumberStats?.totalMentors?.comparisonPercentage ?? 0,
+      },
+      'mentors',
+    ),
     normalizeStats(statsObj.deactivatedVolunteers, 'deactivatedVolunteers'),
     {
       ...VOLUNTEER_STATUS_TAB.totalHoursWorked,

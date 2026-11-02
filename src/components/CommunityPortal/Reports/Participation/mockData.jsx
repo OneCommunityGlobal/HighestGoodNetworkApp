@@ -1,6 +1,32 @@
 const eventTypes = ['Yoga Class', 'Cooking Workshop', 'Dance Class', 'Fitness Bootcamp'];
 const locations = ['New York', 'San Francisco', 'Los Angeles', 'Chicago', 'Austin'];
 
+// Demonstration-only aggregate values. The event API does not currently provide
+// participant demographic attributes or attendance outcomes by demographic group.
+export const demoDemographicInsights = {
+  Age: [
+    { label: '18–25', percentage: 24 },
+    { label: '26–35', percentage: 18 },
+    { label: '36–50', percentage: 14 },
+    { label: '51+', percentage: 11 },
+  ],
+  Gender: [
+    { label: 'Women', percentage: 17 },
+    { label: 'Men', percentage: 16 },
+    { label: 'Non-binary / self-described', percentage: 13 },
+    { label: 'Prefer not to say', percentage: 12 },
+  ],
+  Education: [
+    { label: 'High school or equivalent', percentage: 19 },
+    { label: 'Undergraduate', percentage: 16 },
+    { label: 'Graduate or professional', percentage: 12 },
+  ],
+  Segment: [
+    { label: 'New participants', percentage: 23 },
+    { label: 'Returning participants', percentage: 13 },
+  ],
+};
+
 let __lcgSeed =
   (Date.now() ^ (typeof performance !== 'undefined' ? Math.floor(performance.now()) : 0)) >>> 0;
 const secureRandInt = (min, max) => {

@@ -190,13 +190,13 @@
 }
 
 .trackingHeaderDark .trackingFilters select {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: var(--color-text-dark);
   border: 1px solid var(--color-border-dark);
 }
 
 .trackingHeaderDark .trackingFilters select option {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: var(--color-text-dark);
 }
 
@@ -263,7 +263,7 @@
   border: 1px solid var(--color-border-dark);
   border-radius: 10px;
   padding: 10px;
-  background: #3A506B;
+  background: #3a506b;
   color: var(--color-text-dark);
   scrollbar-color: #6b7fa0 #2c3e50;
 }
@@ -334,7 +334,7 @@
 }
 
 .trackingTableDark thead th {
-  background: #1C2541;
+  background: #1c2541;
   color: var(--color-text-dark);
 }
 
@@ -400,13 +400,13 @@
 }
 
 .insightsHeaderDark .insightsFilters select {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: var(--color-text-dark);
   border: 1px solid var(--color-border-dark);
 }
 
 .insightsHeaderDark .insightsFilters select option {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: var(--color-text-dark);
 }
 
@@ -437,6 +437,23 @@
   border-radius: 5px;
 }
 
+.insightsTitleWrapper,
+.insightsTabsContainer,
+.icons,
+.demographicControls {
+  display: flex;
+  align-items: center;
+}
+
+.insightsTitleWrapper {
+  gap: 8px;
+}
+
+.insightsTabsContainer {
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .insightsTabs {
   display: flex;
   border: 1px solid #ccc;
@@ -459,7 +476,7 @@
 
 .insightsDark .insightsTab {
   color: var(--color-text-dark);
-  background-color: #3A506B;
+  background-color: #3a506b;
   border: 1px solid var(--color-border-dark);
 }
 
@@ -485,6 +502,113 @@
 
 .insightsTab:hover {
   background-color: #e0e0e0;
+}
+
+.activeTab,
+.activeTabDarkMode {
+  color: #fff;
+  font-weight: 700;
+  background-color: #0056b3;
+}
+
+.insightsTabsDarkMode {
+  border-color: var(--color-border-dark);
+}
+
+.insightsTabDarkMode {
+  color: #fff;
+  background-color: #3a506b;
+}
+
+.icons {
+  gap: 8px;
+}
+
+.tooltipWrapper {
+  position: relative;
+}
+
+.iconButton {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: #334155;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  place-items: center;
+}
+
+.insightsDark .iconButton {
+  color: #fff;
+  border-color: #6f86a3;
+}
+
+.iconButton:hover,
+.iconButton:focus-visible {
+  color: #fff;
+  background-color: #0056b3;
+  outline: none;
+}
+
+.tooltip {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 5;
+  display: none;
+  min-width: max-content;
+  padding: 5px 8px;
+  color: #fff;
+  background: #111827;
+  border-radius: 4px;
+}
+
+.tooltipWrapper:hover .tooltip,
+.tooltipWrapper:focus-within .tooltip {
+  display: block;
+}
+
+.demographicControls {
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.demographicControls label {
+  font-weight: 600;
+}
+
+.selectDemographic {
+  padding: 7px 10px;
+  color: #334155;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+}
+
+.insightsDark .selectDemographic {
+  color: #fff;
+  color-scheme: dark;
+  background: #3a506b;
+  border-color: #6f86a3;
+}
+
+.demographicDisclaimer {
+  flex-basis: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  color: #7c2d12;
+  font-size: 0.82rem;
+  background: #fff7ed;
+  border-left: 3px solid #f97316;
+}
+
+.insightsDark .demographicDisclaimer {
+  color: #ffedd5;
+  background: #432b1f;
 }
 
 /* Dark mode hover states */
@@ -551,6 +675,128 @@
   background: #007bff;
   border-radius: 4px;
   transition: width 0.3s ease-in-out;
+}
+
+.insightsPercentage {
+  min-width: 42px;
+  color: #b91c1c;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: grid;
+  padding: 20px;
+  background: rgb(15 23 42 / 65%);
+  place-items: center;
+}
+
+.modal {
+  width: min(520px, 100%);
+  color: #1f2937;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 30%);
+}
+
+.modalDark {
+  color: #f8fafc;
+  background: #1c2541;
+  border: 1px solid #5a6b7d;
+}
+
+.modalHeader,
+.modalActions {
+  display: flex;
+  align-items: center;
+}
+
+.modalHeader {
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.modalClose {
+  padding: 2px 8px;
+  color: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.modalBody {
+  padding: 20px;
+}
+
+.modalMeta {
+  display: grid;
+  gap: 6px;
+}
+
+.modalError {
+  margin-top: 12px;
+  padding: 8px 10px;
+  color: #991b1b;
+  background: #fee2e2;
+  border-radius: 5px;
+}
+
+.modalActions {
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.exportOptionsButtons,
+.exportOptionsButtonsDark {
+  padding: 8px 12px;
+  color: #fff;
+  cursor: pointer;
+  background: #0056b3;
+  border: 1px solid #0056b3;
+  border-radius: 5px;
+}
+
+.exportOptionsButtonsDark {
+  background: #2563a9;
+  border-color: #8eb8e5;
+}
+
+.exportOptionsButtons:disabled,
+.exportOptionsButtonsDark:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+@media (width <= 640px) {
+  .insightsTabsContainer,
+  .insightsHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .insightsTabs {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+
+  .insightsTab {
+    min-width: 50%;
+  }
+
+  .icons {
+    justify-content: flex-end;
+  }
 }
 
 .insightPercentage {
@@ -621,10 +867,15 @@
 }
 
 /* ---------- PDF/Print helpers ---------- */
-.pageBreakBefore { break-before: always; }
-.pageBreakAfter  { break-after: always; }
-.avoidBreak       { break-inside: avoid; }
-
+.pageBreakBefore {
+  break-before: always;
+}
+.pageBreakAfter {
+  break-after: always;
+}
+.avoidBreak {
+  break-inside: avoid;
+}
 
 .navLinks {
   display: flex;
