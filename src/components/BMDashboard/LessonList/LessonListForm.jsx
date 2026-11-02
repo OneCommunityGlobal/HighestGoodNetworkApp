@@ -11,10 +11,13 @@ import ConfirmationModal from './ConfirmationModal';
 import ExportConfirmationModal from './ExportConfirmationModal';
 import styles from './LessonListForm.module.css';
 import LessonListRemovableTag from './LessonListRemovableTag';
+import BulkLessonTags from './BulkLessonTags';
+import { canEditLesson } from './lessonEditPermissions';
 
 function LessonList(props) {
-  const { lessons, darkMode, dispatch } = props;
+  const { lessons, darkMode, dispatch, currentUser } = props;
   const [tags, setTags] = useState([]);
+  const [selectedLessonIds, setSelectedLessonIds] = useState([]);
   const [tagFilterLogic, setTagFilterLogic] = useState('AND');
   const [inputValue, setInputValue] = useState('');
   const [deleteValue, setDeleteInputValue] = useState('');
@@ -29,6 +32,23 @@ function LessonList(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [showExportModal, setShowExportModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+
+  // A new filter clears selection so hidden lessons cannot be changed by accident.
+  useEffect(() => {
+    setSelectedLessonIds([]);
+  }, [tags, filterOption, tagFilterLogic]);
+  useEffect(() => {
+    setSelectedLessonIds(previous =>
+      previous.filter(id =>
+        lessons?.some(lesson => lesson._id === id && canEditLesson(lesson, currentUser)),
+      ),
+    );
+  }, [lessons, currentUser]);
+  const refreshBulkTags = async () => {
+    await dispatch(fetchBMLessons());
+    const response = await axios.get(ENDPOINTS.BM_TAGS);
+    setAvailableTags(response.data);
+  };
 
   // Load saved tags from localStorage on mount
   useEffect(() => {
@@ -806,6 +826,15 @@ function LessonList(props) {
                 darkMode={darkMode}
               />
             </div>
+            <BulkLessonTags
+              currentUser={currentUser}
+              filteredLessons={filteredLessons}
+              selectedIds={selectedLessonIds}
+              setSelectedIds={setSelectedLessonIds}
+              availableTags={availableTags}
+              darkMode={darkMode}
+              onRefresh={refreshBulkTags}
+            />
           </Form.Group>
         </Form>
         {isLoading && <div className={styles.loading}>Loading lessons…</div>}
@@ -822,6 +851,8 @@ function LessonList(props) {
           isExporting={isExporting}
         />
         <Lessons
+          selectedLessonIds={selectedLessonIds}
+          setSelectedLessonIds={setSelectedLessonIds}
           filteredLessons={filteredLessons}
           setFilteredLessons={setFilteredLessons}
           dispatch={dispatch}
@@ -835,6 +866,7 @@ function LessonList(props) {
 const mapStateToProps = state => {
   return {
     lessons: state.lessons.lessons,
+    currentUser: state.auth?.user,
     darkMode: state.theme?.darkMode || false,
   };
 };
