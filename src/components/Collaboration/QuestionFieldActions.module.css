@@ -107,19 +107,16 @@ button:not(:disabled):hover {
 
 .darkControls .moveButton {
   background-color: #5a6a7a;
-  color: var(--jfb-white);
 }
 
 .darkControls .moveButton:hover:not(:disabled) {
-  background-color: #647484;
+  background-color: #6a7a8a;
 }
 
 .darkControls .deleteButton {
-  background-color: #4a2020;
-  color: #ffcdd2;
-  border-color: #ef9a9a;
+  background-color: #6a6a6a;
 }
 
 .darkControls .deleteButton:hover:not(:disabled) {
-  background-color: #622b2b;
+  background-color: #7a7a7a;
 }

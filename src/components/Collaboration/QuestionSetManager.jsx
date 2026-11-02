@@ -14,16 +14,7 @@ import {
   findDuplicateQuestions,
 } from './jobFormQuestionUtils';
 
-function QuestionSetManager({
-  formFields,
-  setFormFields,
-  onImportQuestions,
-  templateName,
-  setTemplateName,
-  selectedTemplate,
-  setSelectedTemplate,
-  darkMode = false,
-}) {
+function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode = false }) {
   const { auth } = useSelector(state => state);
   const getRequestor = () => buildJobFormRequestor(auth?.user);
 
@@ -36,6 +27,8 @@ function QuestionSetManager({
     placeholder: field.placeholder || '',
   });
   const [templates, setTemplates] = useState([]);
+  const [templateName, setTemplateName] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -527,10 +520,6 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
-  templateName: PropTypes.string.isRequired,
-  setTemplateName: PropTypes.func.isRequired,
-  selectedTemplate: PropTypes.string.isRequired,
-  setSelectedTemplate: PropTypes.func.isRequired,
   darkMode: PropTypes.bool,
 };
 
