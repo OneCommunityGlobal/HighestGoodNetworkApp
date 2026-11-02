@@ -220,7 +220,9 @@ function FollowupQuestions() {
         if (res.status === 201) toast.success('Form submitted successfully!');
       })
       .catch(error => {
-        if (error.response.status === 500) toast.error('Error submitting form. Please try again.');
+        if (error.response?.status === 403)
+          toast.error('You are not authorized to submit this questionnaire.');
+        if (error.response?.status === 500) toast.error('Error submitting form. Please try again.');
       });
     navigate.push('/hgnform/page6');
   };
