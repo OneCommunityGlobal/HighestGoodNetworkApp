@@ -465,6 +465,7 @@ function MaterialCostCorrelationChart() {
       </div>
 
       <FilterPanel
+        correlationData={data || []}
         selectedProjects={filters.selectedProjects || []}
         selectedMaterialTypes={filters.selectedMaterialTypes || []}
         startDate={filters.startDate}
@@ -506,7 +507,10 @@ function MaterialCostCorrelationChart() {
                 tick={yAxisProps.tick}
                 width={yAxisProps.width}
               />
-              <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+              <Tooltip
+                allowEscapeViewBox={{ x: true, y: true }}
+                content={<CustomTooltip darkMode={darkMode} />}
+              />
               <Legend wrapperStyle={{ color: chartConfig.textColor }} />
               <Bar
                 yAxisId="cost"

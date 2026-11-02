@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
  * @param {boolean} darkMode - Whether dark mode is enabled
  */
 function FilterPanel({
+  correlationData,
   selectedProjects,
   selectedMaterialTypes,
   startDate,
@@ -52,15 +53,33 @@ function FilterPanel({
 
   // Build project options
   useEffect(() => {
+    const projectMap = new Map();
+
+    projects.forEach(project => {
+      if (project?._id) {
+        projectMap.set(project._id, {
+          value: project._id,
+          label: project.name || 'Unknown Project',
+        });
+      }
+    });
+
+    correlationData.forEach(project => {
+      if (project?.projectId && !projectMap.has(project.projectId)) {
+        projectMap.set(project.projectId, {
+          value: project.projectId,
+          label: project.projectName || 'Unknown Project',
+        });
+      }
+    });
+
     const options = [
       { value: 'all', label: 'All Projects' },
-      ...projects.map(project => ({
-        value: project._id,
-        label: project.name,
-      })),
+      ...Array.from(projectMap.values()).sort((a, b) => a.label.localeCompare(b.label)),
     ];
+
     setProjectOptions(options);
-  }, [projects]);
+  }, [projects, correlationData]);
 
   // Build material type options
   useEffect(() => {
@@ -293,6 +312,12 @@ function FilterPanel({
 }
 
 FilterPanel.propTypes = {
+  correlationData: PropTypes.arrayOf(
+    PropTypes.shape({
+      projectId: PropTypes.string,
+      projectName: PropTypes.string,
+    }),
+  ),
   selectedProjects: PropTypes.arrayOf(PropTypes.string),
   selectedMaterialTypes: PropTypes.arrayOf(PropTypes.string),
   startDate: PropTypes.instanceOf(Date),
@@ -305,6 +330,7 @@ FilterPanel.propTypes = {
 };
 
 FilterPanel.defaultProps = {
+  correlationData: [],
   selectedProjects: [],
   selectedMaterialTypes: [],
   startDate: null,

@@ -65,16 +65,14 @@
 
 .chartContainer {
   width: 100%;
-  min-width: 0; /* allow shrink so ResponsiveContainer can fit viewport */
+  min-width: 0;
   padding: 12px;
   background: var(--chart-bg);
   border-radius: 8px;
   min-height: 300px;
   border: 1px solid var(--chart-border);
   box-sizing: border-box;
-  overflow: hidden;
-  overflow-x: auto; /* if chart content is wide (many bars), scroll inside card only */
-  -webkit-overflow-scrolling: touch;
+  overflow: visible;
 }
 
 .loadingContainer,

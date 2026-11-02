@@ -120,7 +120,16 @@ const extractErrorDetails = (error, projectIds, materialTypeIds, startDate, endD
 
 const getAutoClose = errorType =>
   errorType === 'network' || errorType === 'permission' ? false : 5000;
+const normalizeIds = ids => {
+  if (!Array.isArray(ids)) return [];
 
+  return ids.filter(
+    id =>
+      typeof id === 'string' &&
+      id.trim() !== '' &&
+      id !== 'all',
+  );
+};
 const validateInputs = (projectIds, materialTypeIds, startDate, endDate, dispatch) => {
   const dateValidation = validateDateRange(startDate, endDate);
   if (!dateValidation.valid) {
@@ -170,12 +179,30 @@ export const fetchMaterialCostCorrelation = (
   startDate = null,
   endDate = null,
 ) => async dispatch => {
+
+    const safeProjectIds = normalizeIds(projectIds);
+    const safeMaterialTypeIds = normalizeIds(materialTypeIds);
   try {
-    if (!validateInputs(projectIds, materialTypeIds, startDate, endDate, dispatch)) return;
+    if (
+      !validateInputs(
+        safeProjectIds,
+        safeMaterialTypeIds,
+        startDate,
+        endDate,
+        dispatch,
+      )
+    ) {
+      return;
+    }
 
     dispatch(fetchMaterialCostCorrelationRequest());
 
-    const url = buildRequestUrl(projectIds, materialTypeIds, startDate, endDate);
+    const url = buildRequestUrl(
+      safeProjectIds,
+      safeMaterialTypeIds,
+      startDate,
+      endDate,
+    );
     const response = await axios.get(url);
 
     if (!response.data) {
@@ -185,7 +212,7 @@ export const fetchMaterialCostCorrelation = (
     dispatch(fetchMaterialCostCorrelationSuccess(response.data));
   } catch (error) {
     const { errorMessage, errorType, statusCode } = extractErrorDetails(
-      error, projectIds, materialTypeIds, startDate, endDate,
+      error, safeProjectIds, safeMaterialTypeIds, startDate, endDate,
     );
 
     logger.logError(

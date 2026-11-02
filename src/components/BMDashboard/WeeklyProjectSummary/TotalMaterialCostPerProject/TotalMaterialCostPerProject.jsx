@@ -65,7 +65,10 @@ function TotalMaterialCostPerProject() {
         // Emphasize the displayed values without changing label position or chart data.
         font: { weight: 'bold' },
         // Round only the displayed label text; keep the chart data unchanged.
-        formatter: value => Number(value).toFixed(3),
+        formatter: value => {
+          const numericValue = Number(value);
+          return Number.isFinite(numericValue) ? numericValue.toFixed(3) : '0.000';
+        },
       },
       title: { display: false },
     },
@@ -112,7 +115,8 @@ function TotalMaterialCostPerProject() {
           );
         }
         const projectCostsData = costResponse.data.reduce((acc, item) => {
-          acc[item.project] = item.totalCostK;
+          const cost = Number(item.totalCostK);
+          acc[item.project] = Number.isFinite(cost) ? cost : 0;
           return acc;
         }, {});
         setProjectCosts(projectCostsData);
@@ -135,7 +139,10 @@ function TotalMaterialCostPerProject() {
       datasets: [
         {
           label: 'Total Material Cost (*1000$)',
-          data: selectedProjects.map(p => projectCosts[p.value]),
+          data: selectedProjects.map(p => {
+            const cost = Number(projectCosts[p.value]);
+            return Number.isFinite(cost) ? cost : 0;
+          }),
           backgroundColor: 'rgb(23, 154, 197)',
           borderRadius: 10,
         },
