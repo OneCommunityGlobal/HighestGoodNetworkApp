@@ -139,7 +139,8 @@
   color: var(--preset-button-text);
   font-size: 13px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .presetButtonLight:hover,
@@ -167,7 +168,8 @@
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    box-shadow 0.2s ease, transform 0.2s ease;
   width: 100%;
 }
 

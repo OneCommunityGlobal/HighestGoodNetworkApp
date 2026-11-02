@@ -1201,30 +1201,6 @@
   .materialConsumptionGrid {
     grid-template-columns: 1fr;
   }
-
-  .toolsTrackingLayout {
-    grid-template-columns: 1fr;
-  }
-
-  .toolsDonutWrap {
-    grid-column: span 1;
-  }
-
-  .financialsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .financialsGrid .financialBig {
-    grid-column: span 1;
-  }
-
-  .laborTimeGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .financialsTrackingGrid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Extra Small Screens */
