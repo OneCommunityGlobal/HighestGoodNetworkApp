@@ -66,6 +66,34 @@ function MyCases() {
     event => new Date(event.startTime).getTime() >= now.getTime(),
   );
 
+  const handleEventCreated = createdEvent => {
+    if (!createdEvent) return;
+
+    const eventDate = createdEvent.startTime || createdEvent.date || Date.now();
+
+    setEvents(prev => [
+      {
+        id: createdEvent._id || createdEvent.id || `local-${Date.now()}`,
+        isNew: true,
+        eventType: createdEvent.type || 'all',
+        eventDate: new Date(eventDate).toISOString(),
+        startTime: eventDate,
+        eventTime: new Date(eventDate).toLocaleString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+        eventName: createdEvent.title,
+        attendees: 0,
+        location: createdEvent.location,
+      },
+      ...prev,
+    ]);
+  };
+
   let visibleEvents = filteredEvents;
 
   if (!isExporting) {
@@ -78,8 +106,9 @@ function MyCases() {
   // Memoized event cache by date for calendar
   const eventCacheByDate = useMemo(() => {
     const cache = new Map();
-    filteredEvents.forEach(event => {
-      const eventDate = new Date(event.eventDate);
+    events.forEach(event => {
+      const eventDate = new Date(event.startTime || event.eventDate);
+      if (Number.isNaN(eventDate.getTime())) return;
       const dateKey = eventDate.toDateString();
       if (!cache.has(dateKey)) {
         cache.set(dateKey, []);
@@ -87,7 +116,7 @@ function MyCases() {
       cache.get(dateKey).push(event);
     });
     return cache;
-  }, [filteredEvents]);
+  }, [events]);
 
   // Get events for selected date
   const selectedDateEvents = useMemo(() => {
@@ -118,56 +147,104 @@ function MyCases() {
     );
   };
 
-  const renderCardView = () => (
-    <div
-      className={`case-cards-global ${styles.caseCards} ${
-        expanded || isExporting ? styles.expanded : ''
-      }`}
-    >
-      {visibleEvents.map(event => (
-        <div
-          className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
-          key={event.id}
-        >
-          <span className={styles.eventBadge} data-type={event.eventType}>
-            {event.eventType}
-          </span>
+  const renderCardView = () => {
+    if (visibleEvents.length === 0) {
+      return <div className={styles.noEventsMessage}>No upcoming events.</div>;
+    }
 
-          <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
-            {event.eventTime}
-          </span>
+    return (
+      <div
+        className={`case-cards-global ${styles.caseCards} ${
+          expanded || isExporting ? styles.expanded : ''
+        }`}
+      >
+        {visibleEvents.map(event => (
+          <div
+            className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
+            key={event.id}
+          >
+            <span className={styles.eventBadge} data-type={event.eventType}>
+              {event.eventType}
+            </span>
 
-          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
-            {isEventToday(event.eventDate) ? "Today's " : ''}
-            {event.eventName}
-          </span>
+            <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
+              {event.eventTime}
+            </span>
 
-          <div className={styles.eventImageContainer}>
-            <img
-              src={getEventImage(event)}
-              alt={event.eventName}
-              className={styles.eventImage}
-              onError={e => {
-                if (e.currentTarget.src !== FALLBACK_IMG) {
-                  e.currentTarget.src = FALLBACK_IMG;
-                }
-              }}
-            />
-          </div>
-          <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
-            <div className={styles.avatars}>
+            <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+              {isEventToday(event.eventDate) ? "Today's " : ''}
+              {event.eventName}
+            </span>
+
+            <div className={styles.eventImageContainer}>
               <img
-                alt="profile img"
-                src="/pfp-default-header.png"
-                width="24"
-                height="24"
-                crossOrigin="anonymous"
-                loading="lazy"
+                src={getEventImage(event)}
+                alt={event.eventName}
+                className={styles.eventImage}
                 onError={e => {
-                  e.currentTarget.src = FALLBACK_IMG;
+                  if (e.currentTarget.src !== FALLBACK_IMG) {
+                    e.currentTarget.src = FALLBACK_IMG;
+                  }
                 }}
               />
             </div>
+            <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
+              <div className={styles.avatars}>
+                <img
+                  alt="profile img"
+                  src="/pfp-default-header.png"
+                  width="24"
+                  height="24"
+                  crossOrigin="anonymous"
+                  loading="lazy"
+                  onError={e => {
+                    e.currentTarget.src = FALLBACK_IMG;
+                  }}
+                />
+              </div>
+
+              <span
+                className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
+                title="Number of members who attended this event"
+                data-tooltip="Members Attended"
+              >
+                <FontAwesomeIcon icon={faUsers} className="me-2" />
+                {`+${event.attendees}`} Attendees
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderListView = () => {
+    if (visibleEvents.length === 0) {
+      return <div className={styles.noEventsMessage}>No upcoming events.</div>;
+    }
+
+    return (
+      <ul
+        className={`case-list-global ${styles.caseList} ${
+          expanded || isExporting ? styles.expanded : ''
+        }`}
+      >
+        {visibleEvents.map(event => (
+          <li
+            className={`case-list-item-global ${styles.caseListItem} ${
+              darkMode ? styles.caseListItemDark : ''
+            }`}
+            key={event.id}
+          >
+            <span className={`${styles.eventType} ${darkMode ? styles.eventTypeDark : ''}`}>
+              {event.eventType}
+            </span>
+            <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
+              {event.eventTime}
+            </span>
+            <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+              {event.eventName}
+            </span>
 
             <span
               className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
@@ -177,47 +254,11 @@ function MyCases() {
               <FontAwesomeIcon icon={faUsers} className="me-2" />
               {`+${event.attendees}`} Attendees
             </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
-  const renderListView = () => (
-    <ul
-      className={`case-list-global ${styles.caseList} ${
-        expanded || isExporting ? styles.expanded : ''
-      }`}
-    >
-      {visibleEvents.map(event => (
-        <li
-          className={`case-list-item-global ${styles.caseListItem} ${
-            darkMode ? styles.caseListItemDark : ''
-          }`}
-          key={event.id}
-        >
-          <span className={`${styles.eventType} ${darkMode ? styles.eventTypeDark : ''}`}>
-            {event.eventType}
-          </span>
-          <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
-            {event.eventTime}
-          </span>
-          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
-            {event.eventName}
-          </span>
-
-          <span
-            className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
-            title="Number of members who attended this event"
-            data-tooltip="Members Attended"
-          >
-            <FontAwesomeIcon icon={faUsers} className="me-2" />
-            {`+${event.attendees}`} Attendees
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
   // Memoized tile content for calendar
   const tileContent = useCallback(
@@ -420,7 +461,7 @@ function MyCases() {
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
-        onEventCreated={loadEvents}
+        onEventCreated={handleEventCreated}
       />
     </div>
   );

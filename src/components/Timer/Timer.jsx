@@ -120,6 +120,8 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [viewingUserId, setViewingUserId] = useState(null);
   const [weekEndModal, setWeekEndModal] = useState(false);
   const isWSOpenRef = useRef(0);
+  const pendingStopRef = useRef(null);
+  const stopRequestSequenceRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
   const audioUnlockedRef = useRef(false);
@@ -132,6 +134,50 @@ function Timer({ authUser, darkMode, isPopout }) {
   const isCurrentlyPaused = !started || paused;
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendJsonMessage]);
+
+  const sendStopAndConfirm = useCallback(
+    targetUserId =>
+      new Promise(resolve => {
+        const socket = getWebSocket();
+        if (!socket || socket.readyState !== ReadyState.OPEN) {
+          resolve(false);
+          return;
+        }
+
+        if (pendingStopRef.current) {
+          clearTimeout(pendingStopRef.current.timeoutId);
+          pendingStopRef.current.resolve(false);
+        }
+
+        stopRequestSequenceRef.current += 1;
+        const requestId = `stop-${Date.now()}-${stopRequestSequenceRef.current}`;
+        const timeoutId = setTimeout(() => {
+          if (pendingStopRef.current?.requestId === requestId) {
+            pendingStopRef.current = null;
+            resolve(false);
+          }
+        }, 10000);
+
+        pendingStopRef.current = {
+          requestId,
+          timeoutId,
+          resolve,
+        };
+
+        try {
+          sendJsonMessageNoQueue({
+            action: 'STOP_TIMER',
+            ...(targetUserId == null ? {} : { userId: targetUserId }),
+            requestId,
+          });
+        } catch (_error) {
+          clearTimeout(timeoutId);
+          pendingStopRef.current = null;
+          resolve(false);
+        }
+      }),
+    [getWebSocket, sendJsonMessageNoQueue],
+  );
 
   // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
@@ -335,10 +381,11 @@ function Timer({ authUser, darkMode, isPopout }) {
           sendJsonMessageNoQueue({ action: action.PAUSE_TIMER });
         },
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
-        sendStop: () => {
-          sendJsonMessageNoQueue({ action: action.STOP_TIMER });
+        sendStop: async () => {
+          const stopped = await sendStopAndConfirm(null);
           // Clear the submitted time when stopping
           clearSubmittedTime();
+          return stopped;
         },
         sendAckForced: () => sendJsonMessageNoQueue({ action: action.ACK_FORCED }),
         sendGetTimer: () => sendJsonMessageNoQueue({ action: action.GET_TIMER }),
@@ -362,10 +409,11 @@ function Timer({ authUser, darkMode, isPopout }) {
       },
       sendClear: () =>
         sendJsonMessageNoQueue({ action: action.CLEAR_TIMER, userId: viewingUserId }),
-      sendStop: () => {
-        sendJsonMessageNoQueue({ action: action.STOP_TIMER, userId: viewingUserId });
+      sendStop: async () => {
+        const stopped = await sendStopAndConfirm(viewingUserId);
         // Clear the submitted time when stopping
         clearSubmittedTime();
+        return stopped;
       },
       sendAckForced: () =>
         sendJsonMessageNoQueue({ action: action.ACK_FORCED, userId: viewingUserId }),
@@ -390,7 +438,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       sendHeartbeat: () =>
         sendJsonMessageNoQueue({ action: action.HEARTBEAT, userId: viewingUserId }),
     };
-  }, [sendJsonMessageNoQueue, viewingUserId, clearSubmittedTime]);
+  }, [sendJsonMessageNoQueue, sendStopAndConfirm, viewingUserId, clearSubmittedTime]);
 
   const {
     sendStart,
@@ -457,6 +505,14 @@ function Timer({ authUser, darkMode, isPopout }) {
       ...prev,
       started: true,
       paused: false,
+      // The server resets startAt to now on every START_TIMER, and only resets time to goal
+      // on a *first* start (mirrored here from startTimer() in clientsHandler.js). Without this,
+      // updateRemaining() runs against the stale/invalid startAt left over from before the click
+      // and immediately computes remaining as 0, which pops the time-over modal before the
+      // server's real response arrives - most visible on short goals (1-2 min) since any amount
+      // of staleness is likely to exceed them.
+      startAt: Date.now(),
+      time: prev.started ? prev.time : prev.goal,
     }));
     setRunning(true);
     sendStart();
@@ -577,6 +633,15 @@ function Timer({ authUser, darkMode, isPopout }) {
     if (lastJsonMessage && lastJsonMessage.type === 'TIMELOG_EVENT') {
       return;
     }
+    if (
+      lastJsonMessage?.requestId &&
+      pendingStopRef.current?.requestId === lastJsonMessage.requestId
+    ) {
+      const { timeoutId, resolve } = pendingStopRef.current;
+      clearTimeout(timeoutId);
+      pendingStopRef.current = null;
+      resolve(lastJsonMessage.started === false);
+    }
     // Handle explicit week close pause action messages
     if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
       handleWeekEndPause();
@@ -656,12 +721,21 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   }, [remaining, logHours, logMinutes, goal, lastSubmittedTime, validateTimeForSubmission]);
 
-  // Enhanced useEffect for timer state changes
+  // Reset the submission guard once the timer is no longer started (e.g. after
+  // Reset/Clear, whose server response flips started to false). This used to also
+  // fire on "goal !== lastSubmittedTime?.goal", but lastSubmittedTime is a plain
+  // dedup-key string (see trackTimeSubmission), not an object, so .goal was always
+  // undefined - making that half of the condition always true. That wiped logTimer
+  // back to 0/0 on every goal/started change, including right after a reload synced
+  // the real goal/remaining from the server and the effect above had just computed
+  // the correct hours/minutes still owed. The goal check was also redundant: the
+  // dedup key below already embeds goal, so a changed goal naturally produces a
+  // different key without needing separate invalidation here.
   useEffect(() => {
-    if (!started || goal !== lastSubmittedTime?.goal) {
+    if (!started) {
       clearSubmittedTime();
     }
-  }, [started, goal, clearSubmittedTime]);
+  }, [started, clearSubmittedTime]);
 
   useEffect(() => {
     if (timeIsOverModalOpen) {
