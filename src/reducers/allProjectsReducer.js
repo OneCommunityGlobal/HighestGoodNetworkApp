@@ -4,6 +4,10 @@ const allProjectsInital = {
   fetching: false,
   fetched: false,
   projects: [],
+  // Archived projects are held separately so that `projects` always means
+  // "not archived". The Projects page needs both counts at once to show a
+  // total that does not change when the archived view is toggled.
+  archivedProjects: [],
   status: 200,
   error: null,
 };
@@ -35,6 +39,15 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
       });
     }
 
+    case types.FETCH_ARCHIVED_PROJECTS_SUCCESS: {
+      return updateState({
+        fetching: false,
+        fetched: true,
+        archivedProjects: action.projects,
+        status,
+      });
+    }
+
     case types.ADD_NEW_PROJECT: {
       if (status !== 201) return updateState({ status, error });
       const { newProject } = action;
@@ -46,6 +59,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
 
     case types.UPDATE_PROJECT: {
       if (status !== 200) return updateState({ status, error });
+
       const { updatedProject } = action;
       const index = allProjects.projects.findIndex(project => project._id === updatedProject._id);
 
@@ -56,9 +70,9 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
           ...allProjects.projects.slice(index + 1),
         ];
         return updateState({ projects: updatedProjects, status });
+      } else {
+        return updateState({ status: 404, error: 'Project not found.' });
       }
-
-      return updateState({ status: 404, error: 'Project not found.' });
     }
 
     case types.DELETE_PROJECT: {

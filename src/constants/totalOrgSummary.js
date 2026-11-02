@@ -27,6 +27,12 @@ export const VOLUNTEER_STATUS_TAB = {
     tabBackgroundColor: '#ffe9fa',
     shapeBackgroundColor: '#fecff3',
   },
+  mentors: {
+    title: 'Mentors',
+    type: 'mentors',
+    tabBackgroundColor: '#fdf5e5',
+    shapeBackgroundColor: '#F0E6D2',
+  },
   totalHoursWorked: {
     title: 'Total Hours Worked',
     type: 'total-hours-worked',
@@ -69,7 +75,7 @@ export const VOLUNTEER_ACTIVITIES_TAB = [
     tabBackgroundColor: '#E8E8FF',
   },
   {
-    title: 'Total Active Teams',
+    title: 'Active Teams (2+ Members)',
     type: 'totalActiveTeams',
     number: 77,
     percentageChange: 1,

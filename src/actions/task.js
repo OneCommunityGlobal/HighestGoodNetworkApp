@@ -15,9 +15,10 @@ import {
 } from '../components/TeamMemberTasks/actions';
 import { createTaskEditSuggestionHTTP } from '../components/TaskEditSuggestions/service';
 import * as types from '../constants/task';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 import { fetchTaskEditSuggestions } from '../components/TaskEditSuggestions/thunks';
+import { incrementDashboardTaskCount } from './dashboardActions';
 
 const selectUserId = state => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) =>
@@ -189,7 +190,7 @@ export const deleteChildrenTasks = taskId => {
     try {
       await axios.post(ENDPOINTS.DELETE_CHILDREN(taskId));
     } catch (error) {
-      toast.info(error);
+      toast.info(error?.message || String(error));
     }
   };
 };
@@ -212,7 +213,7 @@ export const addNewTask = (newTask, wbsId, pageLoadTime) => async dispatch => {
 
     const userIds = task.resources.map(resource => resource.userID);
     await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
-    return task._id;
+    return task;
   } catch (error) {
     status = 400;
     toast.error('Failed to add new task');
@@ -236,8 +237,17 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
     }
     if (hasPermission) {
       await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
-      const userIds = updatedTask.resources.map(resource => resource.userID);
-      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+      
+      // Only create task notification if resources actually changed
+      const oldResourceIds = oldTask.resources?.map(r => r.userID).sort().join(',') || '';
+      const newResourceIds = updatedTask.resources?.map(r => r.userID).sort().join(',') || '';
+      
+      if (oldResourceIds !== newResourceIds) {
+        const userIds = updatedTask.resources.map(resource => resource.userID);
+        await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+      }
+      
+      dispatch(incrementDashboardTaskCount(taskId));
     } else {
       await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask).then(
         () => {
@@ -247,7 +257,7 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
     }
   } catch (error) {
     // dispatch(fetchTeamMembersTaskError());
-    toast.info(error);
+    toast.info(error?.message || String(error));
     status = 400;
   }
   // TODO: DISPATCH TO TASKEDITSUGGESETIONS REDUCER TO UPDATE STATE

@@ -1,0 +1,401 @@
+/* stylelint-disable */
+.returned-late-chart {
+  padding: 20px;
+
+  /* Lets the small-screen rules below follow the card's width, not the viewport */
+  container-type: inline-size;
+}
+
+.returned-late-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.returned-late-chart h1 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.returned-late-legend-hint {
+  margin: 4px 0 10px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.returned-late-legend-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: min(100%, 720px);
+}
+
+.returned-late-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.returned-late-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #fff;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.returned-late-legend-item:hover {
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+.returned-late-legend-item:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.returned-late-legend-item-hidden {
+  opacity: 0.55;
+  background: #f8fafc;
+}
+
+.returned-late-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.returned-late-legend-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Same centered, inline-label filter row as the Rental Cost chart */
+.returned-late-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px 24px;
+  margin: 10px 0 20px;
+}
+
+.returned-late-filter-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+/* Forces a descending stacking order so open dropdowns cover the next filter */
+.returned-late-filter-group:nth-child(1) {
+  z-index: 5;
+}
+
+.returned-late-filter-group:nth-child(2) {
+  z-index: 4;
+}
+
+.returned-late-filter-group:nth-child(3) {
+  z-index: 3;
+}
+
+.returned-late-filter-group:nth-child(4) {
+  z-index: 2;
+}
+
+.returned-late-filter-group:nth-child(5) {
+  z-index: 1;
+}
+
+.returned-late-filter-label {
+  margin: 0;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.bg-oxford-blue .returned-late-filter-label {
+  color: #ffffff;
+}
+
+/* Datepicker's inline wrapper adds a gap under the input; its input is forced to
+   width: 100% by a dashboard-wide rule, so size the wrapper instead */
+.returned-late-filter-group :global(.react-datepicker-wrapper) {
+  display: block;
+  width: 130px;
+}
+
+.returned-late-date-picker {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  height: 38px;
+  box-sizing: border-box;
+}
+
+.returned-late-project-select {
+  width: 170px;
+  height: 38px;
+}
+
+/* Scoped: this used to resize every antd select in the app */
+.returned-late-chart :global(.ant-select-selector) {
+  height: 38px !important;
+  border-radius: 4px !important;
+  border-color: #ccc !important;
+  align-items: center !important;
+}
+
+/* Left-align selected values, like the Rental Cost filters */
+.returned-late-chart :global(.ant-select-selection-item),
+.returned-late-chart :global(.rmsc .dropdown-heading-value) {
+  text-align: left;
+}
+
+/* Tools multi-select, themed through the library's own CSS variables */
+.returned-late-chart .returned-late-tools-select {
+  --rmsc-main: #3ea0cb;
+  --rmsc-hover: #efeff0;
+  --rmsc-selected: #e8f4f9;
+  --rmsc-border: #ccc;
+  --rmsc-gray: #63676c;
+  --rmsc-bg: #fff;
+  --rmsc-radius: 4px;
+  --rmsc-h: 36px;
+
+  width: 200px;
+  font-size: 14px;
+}
+
+.bg-oxford-blue .returned-late-tools-select {
+  --rmsc-main: #3ea0cb;
+  --rmsc-hover: #2c3e50;
+  --rmsc-selected: #2e5061;
+  --rmsc-border: #555;
+  --rmsc-gray: #b6b8ba;
+  --rmsc-bg: #1b2a41;
+
+  color: #e0e0e0;
+}
+
+/* Tools filter stays disabled until a project is picked */
+.returned-late-tools-select-disabled {
+  opacity: 0.55;
+}
+
+.returned-late-tools-select-disabled :global(.dropdown-container),
+.returned-late-tools-select-disabled :global(.dropdown-heading) {
+  cursor: not-allowed;
+}
+
+/* Options are <label>s, so the app-wide label margin/bold leaked in as gaps between rows */
+.returned-late-tools-select :global(.select-item) {
+  margin: 0;
+  padding: 8px 10px;
+  font-weight: 400;
+}
+
+.returned-late-tools-select :global(.select-item input) {
+  accent-color: #3ea0cb;
+}
+
+.returned-late-tools-select :global(.search input) {
+  color: inherit;
+}
+
+.returned-late-tools-select :global(.dropdown-content) {
+  z-index: 9999;
+}
+
+.returned-late-chart-container {
+  height: 520px;
+  position: relative;
+  z-index: 0;
+}
+
+.returned-late-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 18px;
+  color: #666;
+}
+
+.bg-oxford-blue .returned-late-loading {
+  color: #ffffff;
+}
+
+.returned-late-error {
+  color: #ffffff !important;
+  background-color: #b3261e;
+  padding: 14px 16px;
+  border-radius: 6px;
+  margin: 20px 0;
+  font-weight: 500;
+  text-align: center;
+}
+
+.returned-late-no-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 16px;
+  color: #666;
+  font-style: italic;
+}
+
+.bg-oxford-blue .returned-late-no-data {
+  color: #ffffff;
+}
+
+
+.bg-oxford-blue .returned-late-date-picker {
+  background-color: #1b2a41 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #555 !important;
+}
+
+.bg-oxford-blue .returned-late-project-select {
+  background-color: #1b2a41 !important;
+  border: none !important;
+}
+
+.bg-oxford-blue {
+  background-color: #1b2a41 !important;
+  color: #ffffff;
+}
+
+.bg-oxford-blue .returned-late-chart-container {
+  background-color: #1b2a41 !important;
+}
+
+/* ==========================================================================
+   Ant Design Dropdown Menu Overrides (Dark Mode)
+   ========================================================================== */
+
+.bg-oxford-blue :global(.ant-select:not(.ant-select-disabled) .ant-select-selector) {
+  background-color: #1b2a41 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #555555 !important;
+
+}
+
+.bg-oxford-blue :global(.ant-select-selection-item) {
+  color: #e0e0e0 !important;
+}
+
+.bg-oxford-blue :global(.ant-select-arrow) {
+  color: #e0e0e0 !important;
+}
+
+.dark-dropdown-menu {
+  background-color: #1b2a41 !important;
+}
+
+.dark-dropdown-menu :global(.ant-select-item) {
+  color: #e0e0e0 !important;
+}
+
+
+.dark-dropdown-menu :global(.ant-select-item-option-active):not(:global(.ant-select-item-option-disabled)) {
+  background-color: #2c3e50 !important;
+}
+
+
+.dark-dropdown-menu :global(.ant-select-item-option-selected):not(:global(.ant-select-item-option-disabled)) {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+
+.dark-dropdown-menu :global(.ant-select-empty) {
+  color: #374151 !important;
+}
+
+.bg-oxford-blue .returned-late-legend-item {
+  background-color: #1b2a41 !important;
+  border-color: #555555 !important;
+  color: #ffffff !important;
+}
+
+.bg-oxford-blue .returned-late-legend-item-hidden {
+  opacity: 0.45 !important;
+  background-color: #152234 !important;
+  border-color: #334155 !important;
+}
+
+/* ==========================================================================
+   Small Screens
+   ========================================================================== */
+@container (width <= 640px) {
+  .returned-late-chart h1 {
+    margin-bottom: 12px;
+    font-size: 20px;
+  }
+
+  .returned-late-legend-block {
+    align-items: flex-start;
+  }
+
+  .returned-late-legend {
+    justify-content: flex-start;
+  }
+
+  /* One filter per row, labels in a fixed column so the controls line up */
+  .returned-late-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+    margin: 10px auto 16px;
+  }
+
+  .returned-late-filter-group {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .returned-late-filter-label {
+    text-align: left;
+  }
+
+  .returned-late-filter-group > div,
+  .returned-late-project-select,
+  .returned-late-chart .returned-late-tools-select,
+  .returned-late-filter-group :global(.react-datepicker-wrapper) {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .returned-late-chart-container {
+    height: 380px;
+  }
+}
+
+@media (width <= 576px) {
+  .returned-late-chart {
+    padding: 12px;
+  }
+}

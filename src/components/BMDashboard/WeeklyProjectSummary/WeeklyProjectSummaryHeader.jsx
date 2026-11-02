@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react';
-import { Input, Button } from 'reactstrap';
+import { useEffect, useMemo, useState } from 'react';
+import { Input, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment-timezone';
 import {
@@ -7,14 +7,16 @@ import {
   setDateRangeFilter,
   setComparisonPeriodFilter,
 } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
-import './WeeklyProjectSummary.css';
+import { COMPARISON_OPTIONS } from './comparisonDateUtils';
+import styles from './WeeklyProjectSummary.module.css';
 
-export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
+export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGeneratingPDF = false }) {
   const dispatch = useDispatch();
-  const projectFilter = useSelector(state => state.weeklyProjectSummary.projectFilter);
-  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary.dateRangeFilter);
+  const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
+  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter);
+  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter);
   const comparisonPeriodFilter = useSelector(
-    state => state.weeklyProjectSummary.comparisonPeriodFilter,
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter,
   );
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -46,21 +48,21 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
   };
 
   useEffect(() => {
-    const { lastWeek, prevWeek } = getLastTwoCompletedWeeks();
+    const { lastWeek } = getLastTwoCompletedWeeks();
     dispatch(setDateRangeFilter(lastWeek));
-    dispatch(setComparisonPeriodFilter(prevWeek));
+    dispatch(setComparisonPeriodFilter('No Comparison'));
   }, [dispatch]);
 
   const projectOptions = useMemo(() => ['One Community'], []);
   const dateRangeOptions = useMemo(() => [getLastTwoCompletedWeeks().lastWeek], []);
-  const comparisonOptions = useMemo(() => [getLastTwoCompletedWeeks().prevWeek], []);
+  const comparisonOptions = useMemo(() => COMPARISON_OPTIONS, []);
 
   return (
-    <div className={`weekly-summary-header-wrapper ${darkMode ? 'dark-mode' : ''}`}>
-      <header className="weekly-summary-header-container">
-        <h1 className="weekly-summary-header-title">Weekly Project Summary</h1>
+    <div className={`${styles.weeklySummaryHeaderWrapper} ${darkMode ? styles.darkMode : ''}`}>
+      <header className={`${styles.weeklySummaryHeaderContainer}`}>
+        <h1 className={`${styles.weeklySummaryHeaderTitle}`}>Weekly Project Summary</h1>
 
-        <div className="weekly-summary-header-controls">
+        <div className={`${styles.weeklySummaryHeaderControls}`}>
           <Input
             type="select"
             value={projectFilter}
@@ -87,21 +89,36 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
             ))}
           </Input>
 
-          <Input
-            type="select"
-            value={comparisonPeriodFilter}
-            onChange={e => dispatch(setComparisonPeriodFilter(e.target.value))}
-            aria-label="Comparison Period"
+          <Dropdown
+            className={styles.weeklySummaryComparisonDropdown}
+            isOpen={comparisonDropdownOpen}
+            toggle={() => setComparisonDropdownOpen(prev => !prev)}
           >
-            {comparisonOptions.map(option => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </Input>
+            <DropdownToggle caret>{comparisonPeriodFilter || 'No Comparison'}</DropdownToggle>
+            <DropdownMenu>
+              {comparisonOptions.map(option => (
+                <DropdownItem
+                  key={option}
+                  onClick={() => dispatch(setComparisonPeriodFilter(option))}
+                >
+                  {option}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
 
-          <Button className="weekly-summary-share-btn" onClick={handleSaveAsPDF}>
-            Share PDF
+          <Button
+            className={`${styles.weeklySummaryShareBtn}`}
+            onClick={handleSaveAsPDF}
+            disabled={isGeneratingPDF}
+          >
+            {isGeneratingPDF ? (
+              <>
+                <span className={styles.spinner} /> Generating PDF...
+              </>
+            ) : (
+              'Share PDF'
+            )}
           </Button>
         </div>
       </header>

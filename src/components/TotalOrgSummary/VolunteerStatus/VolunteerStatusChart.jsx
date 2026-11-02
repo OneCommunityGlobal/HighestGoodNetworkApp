@@ -1,33 +1,119 @@
 import { useMemo } from 'react';
-import Loading from 'components/common/Loading';
-import VolunteerStatusPieChart from './VolunteerStatusPieChart';
+import PropTypes from 'prop-types';
+import Loading from '~/components/common/Loading';
+import { getMentorTotal } from '~/utils/totalOrgSummary';
+import DonutChart from '../DonutChart/DonutChart';
+import styles from './VolunteerStatusChart.module.css';
 
-function VolunteerStatusChart({ isLoading, volunteerNumberStats }) {
-  const chartData = useMemo(() => {
+const VOLUNTEER_COLORS = ['#4C4AF5', '#2CCCF8', '#FF00C3'];
+const MENTOR_COLORS = ['#287D5A', '#2D9DA6', '#F26B38'];
+
+function VolunteerStatusChart({
+  isLoading,
+  volunteerNumberStats,
+  mentorNumberStats,
+  comparisonType,
+  darkMode,
+}) {
+  const volunteerChartData = useMemo(() => {
     if (!volunteerNumberStats) {
       return null;
     }
 
     const {
+      donutChartData,
       activeVolunteers,
       deactivatedVolunteers,
       newVolunteers,
       totalVolunteers,
     } = volunteerNumberStats;
 
+    let chartDataValues;
+    let computedTotal;
+
+    if (donutChartData && donutChartData.existingActive !== undefined) {
+      const existingActive = donutChartData.existingActive.count || 0;
+      const newActive = donutChartData.newActive.count || 0;
+      const deactivated = donutChartData.deactivated.count || 0;
+
+      chartDataValues = [
+        { label: 'Existing Active', value: existingActive },
+        { label: 'New Active', value: newActive },
+        { label: 'Deactivated', value: deactivated },
+      ];
+
+      // Sum exact non-overlapping segments to prevent any inflation
+      computedTotal = existingActive + newActive + deactivated;
+    } else {
+      const existing = activeVolunteers?.count || 0;
+      const newV = newVolunteers?.count || 0;
+      const deact = deactivatedVolunteers?.count || 0;
+
+      chartDataValues = [
+        { label: 'Existing Active', value: existing },
+        { label: 'New Active', value: newV },
+        { label: 'Deactivated', value: deact },
+      ];
+
+      computedTotal = existing + newV + deact;
+    }
+
     return {
-      totalVolunteers: totalVolunteers.count,
-      percentageChange: totalVolunteers.comparisonPercentage || 0,
-      data: [
-        { label: 'Active', value: activeVolunteers.count },
-        { label: 'New', value: newVolunteers.count },
-        { label: 'Deactivated This Week', value: deactivatedVolunteers.count },
-      ],
+      totalVolunteers: computedTotal,
+      // raw value: DonutChart shows N/A for "No Comparison Data" instead of a fake +0%
+      percentageChange: totalVolunteers?.comparisonPercentage ?? null,
+      data: chartDataValues,
     };
   }, [volunteerNumberStats]);
 
+  const mentorChartData = useMemo(() => {
+    if (!mentorNumberStats) {
+      return null;
+    }
+
+    const {
+      donutChartData,
+      activeMentors,
+      deactivatedMentors,
+      newMentors,
+      totalMentors,
+    } = mentorNumberStats;
+
+    let chartDataValues;
+
+    if (donutChartData && donutChartData.existingActive !== undefined) {
+      const existingActive = donutChartData.existingActive.count || 0;
+      const newActive = donutChartData.newActive.count || 0;
+      const deactivated = donutChartData.deactivated.count || 0;
+
+      chartDataValues = [
+        { label: 'Existing Active', value: existingActive },
+        { label: 'New Active', value: newActive },
+        { label: 'Deactivated', value: deactivated },
+      ];
+    } else {
+      const active = activeMentors?.count || 0;
+      const newM = newMentors?.count || 0;
+      const deactM = deactivatedMentors?.count || 0;
+
+      chartDataValues = [
+        { label: 'Active', value: active },
+        { label: 'New', value: newM },
+        { label: 'Deactivated This Week', value: deactM },
+      ];
+    }
+
+    return {
+      // Shared with the Mentors card so the two totals always match.
+      totalMentors: getMentorTotal(mentorNumberStats),
+      // raw value: DonutChart shows N/A for "No Comparison Data" instead of a fake +0%
+      percentageChange: totalMentors?.comparisonPercentage ?? null,
+      data: chartDataValues,
+    };
+  }, [mentorNumberStats]);
+
   return (
-    <section className="mt-4">
+    <section className={styles.chartRoot}>
       {isLoading ? (
         <div className="d-flex justify-content-center align-items-center">
           <div className="w-100vh">
@@ -35,10 +121,102 @@ function VolunteerStatusChart({ isLoading, volunteerNumberStats }) {
           </div>
         </div>
       ) : (
-        <VolunteerStatusPieChart data={chartData} />
+        <>
+          <div className={styles.volunteerMentorChartsWrapper}>
+            {volunteerChartData && (
+              <div className={styles.chartSection} data-chart="volunteer-status">
+                <DonutChart
+                  title="TOTAL VOLUNTEERS*"
+                  totalCount={volunteerChartData.totalVolunteers}
+                  percentageChange={volunteerChartData.percentageChange}
+                  data={volunteerChartData.data}
+                  colors={VOLUNTEER_COLORS}
+                  comparisonType={comparisonType}
+                  darkMode={darkMode}
+                />
+              </div>
+            )}
+            {mentorChartData && (
+              <div className={styles.chartSection} data-chart="mentor-status">
+                <DonutChart
+                  title="TOTAL MENTORS"
+                  totalCount={mentorChartData.totalMentors}
+                  percentageChange={mentorChartData.percentageChange}
+                  data={mentorChartData.data}
+                  colors={MENTOR_COLORS}
+                  comparisonType={comparisonType}
+                  darkMode={darkMode}
+                />
+              </div>
+            )}
+          </div>
+          {(volunteerChartData || mentorChartData) && (
+            <p className={styles.volunteerMentorFootnote}>
+              *Does not include the “Mentor” members shown in the Total Mentors graph.
+            </p>
+          )}
+        </>
       )}
     </section>
   );
 }
+
+VolunteerStatusChart.propTypes = {
+  isLoading: PropTypes.bool,
+  comparisonType: PropTypes.string,
+  darkMode: PropTypes.bool,
+  volunteerNumberStats: PropTypes.shape({
+    donutChartData: PropTypes.shape({
+      existingActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      newActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      deactivated: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+    }),
+    activeVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    newVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    deactivatedVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    totalVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+      comparisonPercentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    }),
+  }),
+  mentorNumberStats: PropTypes.shape({
+    donutChartData: PropTypes.shape({
+      existingActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      newActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      deactivated: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+    }),
+    activeMentors: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    newMentors: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    deactivatedMentors: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    totalMentors: PropTypes.shape({
+      count: PropTypes.number,
+      comparisonPercentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    }),
+  }),
+};
 
 export default VolunteerStatusChart;

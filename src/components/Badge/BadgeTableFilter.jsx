@@ -1,5 +1,5 @@
 import { Button } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import TextSearchBox from '../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
 

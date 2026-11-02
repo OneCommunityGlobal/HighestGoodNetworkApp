@@ -1,0 +1,223 @@
+/* Injury Severity by Category of Worker Injured.
+   All classes are module-scoped so nothing here can leak into other components. */
+
+/* ===== Card layout ===== */
+.injuryChartContainer {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-sizing: border-box;
+}
+
+.injuryChartDark {
+  border-color: #4a5a77;
+}
+
+.injuryChartHeader {
+  width: 100%;
+}
+
+.injuryChartTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #333;
+  text-align: center;
+}
+
+.injuryChartDark .injuryChartTitle {
+  color: #fff;
+}
+
+/* ===== Filters: even 2-column grid: Projects | Severities, Injury types (full row), Start | End ===== */
+.injuryChartFilters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+  width: 100%;
+  align-items: end;
+}
+
+.injuryFilter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.injuryFilter:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.injuryFilterLabel {
+  margin: 0;
+  font-weight: 600;
+  text-align: center;
+  color: #333;
+}
+
+.injuryChartDark .injuryFilterLabel {
+  color: #f3f4f6;
+}
+
+/* ===== Date inputs: full column width, same height as the dropdowns ===== */
+.injuryDateWrapper {
+  width: 100%;
+}
+
+.injuryDateWrapper :global(.react-datepicker__input-container) {
+  display: block;
+  width: 100%;
+}
+
+.injuryDateInput {
+  width: 100%;
+  min-height: 38px;
+  box-sizing: border-box;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #111827;
+  cursor: pointer;
+}
+
+.injuryDateInput::placeholder {
+  color: #6b7280;
+}
+
+.injuryDateInput:hover,
+.injuryDateInput:focus {
+  border-color: #3b82f6;
+}
+
+.injuryDateInput:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+/* !important: a global input style elsewhere in the app forces a white background */
+.injuryChartDark .injuryDateInput {
+  background-color: #2b3e59 !important;
+  border-color: #6b7280 !important;
+  color: #fff !important;
+}
+
+.injuryChartDark .injuryDateInput::placeholder {
+  color: #cbd5e1;
+}
+
+/* ===== Dark calendar popup (class is set on the calendar via calendarClassName) ===== */
+.injuryDarkCalendar {
+  background-color: #3a506b;
+  border-color: #555;
+  color: #fff;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__header) {
+  background-color: #1c2541;
+  border-bottom-color: #555;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__current-month),
+.injuryDarkCalendar :global(.react-datepicker__day-name),
+.injuryDarkCalendar :global(.react-datepicker__day) {
+  color: #fff;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__day:hover),
+.injuryDarkCalendar :global(.react-datepicker__day--keyboard-selected),
+.injuryDarkCalendar :global(.react-datepicker__day--selected),
+.injuryDarkCalendar :global(.react-datepicker__day--in-range),
+.injuryDarkCalendar :global(.react-datepicker__day--in-selecting-range) {
+  background-color: #0d55b3;
+  color: #fff;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__day--outside-month) {
+  color: #cbd5e1;
+}
+
+.injuryDarkCalendar :global(.react-datepicker__day--disabled),
+.injuryDarkCalendar :global(.react-datepicker__day--disabled:hover) {
+  background-color: transparent;
+  color: #64748b;
+}
+
+/* Month arrows: light enough to see on the dark header */
+.injuryDarkCalendar :global(.react-datepicker__navigation-icon::before) {
+  border-color: #e5e7eb;
+}
+
+.injuryDarkCalendar
+  :global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
+  border-color: #fff;
+}
+
+/* ===== Chart area ===== */
+.chartArea {
+  /* Fills the card space left after filters while keeping Recharts responsive. */
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: clamp(560px, 62vh, 760px);
+}
+
+/* ===== Loading / error / empty states ===== */
+.injuryStatusText {
+  color: #374151;
+  text-align: center;
+}
+
+.injuryChartDark .injuryStatusText {
+  color: #f3f4f6;
+}
+
+.injuryErrorText {
+  color: #dc2626;
+  text-align: center;
+}
+
+.injuryChartDark .injuryErrorText {
+  color: #ff6b6b;
+}
+
+.injuryEmptyText {
+  color: #6b7280;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.injuryChartDark .injuryEmptyText {
+  color: #cbd5e1;
+}
+
+/* ===== Tooltip rows keep their project color ===== */
+.tooltipSeriesRow {
+  color: var(--tooltip-series-color) !important;
+  margin: 8px 0 0;
+}
+
+.tooltipSeriesRow * {
+  color: inherit !important;
+}
+
+/* Higher specificity so a global dark-mode text color can't turn the rows white */
+.injuryChartDark .tooltipSeriesRow {
+  color: var(--tooltip-series-color) !important;
+}
+
+.injuryChartDark .tooltipSeriesRow * {
+  color: inherit !important;
+}
+
+@media (width <= 480px) {
+  .injuryChartFilters {
+    grid-template-columns: 1fr;
+  }
+}

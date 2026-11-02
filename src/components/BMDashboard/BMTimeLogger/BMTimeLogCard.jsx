@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
+import BMTimeLogSummary from './BMTimeLogSummary';
 
 function BMTimeLogCard(props) {
   const [isError, setIsError] = useState(false);
@@ -21,11 +22,18 @@ function BMTimeLogCard(props) {
   }, [props.selectedProject, dispatch]);
 
   useEffect(() => {
-    if (projectInfo && projectInfo.members) {
-      setMemberList(projectInfo.members);
-      setFilteredMembers(projectInfo.members);
-      setIsMemberFetched(true);
+    let members = [];
+    if (projectInfo?.members) {
+      if (Array.isArray(projectInfo.members)) {
+        members = projectInfo.members;
+      } else if (projectInfo.members.members && Array.isArray(projectInfo.members.members)) {
+        members = projectInfo.members.members;
+      }
     }
+
+    setMemberList(members);
+    setFilteredMembers(members);
+    setIsMemberFetched(true);
   }, [projectInfo]);
 
   // trigger an error state if there is an errors object
@@ -44,22 +52,22 @@ function BMTimeLogCard(props) {
 
     const query = searchQuery.toLowerCase();
     const filtered = memberList.filter(member => {
-      const firstName = member.user.firstName.toLowerCase();
-      const lastName = member.user.lastName.toLowerCase();
+      // Skip members without valid user data
+      if (!member?.user) return false;
+
+      const firstName = member.user.firstName?.toLowerCase() || '';
+      const lastName = member.user.lastName?.toLowerCase() || '';
+      const role = member.user.role?.toLowerCase() || '';
       const fullName = `${firstName} ${lastName}`;
-      const role = member.user.role.toLowerCase();
 
       // Check if user has teams and search in them too
       const teamMatch =
         member.user.teams && member.user.teams.length > 0
-          ? member.user.teams.some(team =>
-              // eslint-disable-next-line no-nested-ternary
-              typeof team === 'string'
-                ? team.toLowerCase().includes(query)
-                : team.name
-                ? team.name.toLowerCase().includes(query)
-                : false,
-            )
+          ? member.user.teams.some(team => {
+              if (typeof team === 'string') return team.toLowerCase().includes(query);
+              if (team?.name) return team.name.toLowerCase().includes(query);
+              return false;
+            })
           : false;
 
       return (
@@ -80,6 +88,9 @@ function BMTimeLogCard(props) {
 
   return (
     <Container fluid>
+      {/* Time Log Summary Section */}
+      <BMTimeLogSummary projectId={props.selectedProject} />
+
       {isMemberFetched && (
         <>
           <Row className="my-3">
@@ -100,23 +111,29 @@ function BMTimeLogCard(props) {
 
           {filteredMembers.length > 0 ? (
             <Row>
-              {filteredMembers.map((value, index) => (
-                <Col md={4} key={value.user._id}>
-                  <BMTimeLogDisplayMember
-                    firstName={value.user.firstName}
-                    lastName={value.user.lastName}
-                    role={value.user.role}
-                    index={index}
-                    memberId={value.user._id}
-                    projectId={props.selectedProject}
-                  />
-                </Col>
-              ))}
+              {filteredMembers
+                .filter(value => value?.user?._id)
+                .map((value, index) => (
+                  <Col md={4} key={value.user._id}>
+                    <BMTimeLogDisplayMember
+                      firstName={value.user.firstName || ''}
+                      lastName={value.user.lastName || ''}
+                      role={value.user.role || ''}
+                      index={index}
+                      memberId={value.user._id}
+                      projectId={props.selectedProject}
+                    />
+                  </Col>
+                ))}
             </Row>
           ) : (
             <Row>
               <Col className="text-center py-4">
-                <h5>No members found matching &quot;{searchQuery}&quot;</h5>
+                {searchQuery.trim() ? (
+                  <h5>No members found matching &quot;{searchQuery}&quot;</h5>
+                ) : (
+                  <h5>No members available for this project</h5>
+                )}
               </Col>
             </Row>
           )}

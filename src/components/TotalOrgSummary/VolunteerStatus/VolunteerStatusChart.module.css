@@ -1,0 +1,26 @@
+/* stylelint-disable  */
+.chartRoot {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.volunteerMentorChartsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  width: 100%;
+}
+
+.chartSection {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.volunteerMentorFootnote {
+  margin-top: 48px;
+  text-align: center;
+  font-size: 0.75rem;
+  max-width: 560px;
+  align-self: center;
+}

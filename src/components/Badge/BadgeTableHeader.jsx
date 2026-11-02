@@ -8,8 +8,14 @@ function BadgeTableHeader({ darkMode }) {
       <th className="d-xl-table-cell d-none">Description</th>
       <th>Type</th>
       <th className="d-xl-table-cell d-none">Details</th>
-      <th>Ranking{' '}
-        <i className="fa fa-info-circle" id="SortRankingInfo" style={{ marginLeft: '5px' }} />
+      <th>
+        Ranking{' '}
+        <i
+          className="fa fa-info-circle"
+          id="SortRankingInfo"
+          data-testid="sort-ranking-info-icon"
+          style={{ marginLeft: '5px' }}
+        />
         <UncontrolledTooltip
           placement="right"
           target="SortRankingInfo"

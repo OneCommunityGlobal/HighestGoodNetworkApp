@@ -1,27 +1,97 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Button } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
-import './HelpModal.css';
+import { useEffect, useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import { connect, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { availableSkills, formatSkillName } from '../HGNHelpSkillsDashboard/FilerData';
+import httpService from '../../services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
+import styles from './HelpModal.module.css';
+
+const SOFTWARE_DEV_TEAM_ALIASES = new Set([
+  'software development team',
+  'hgn software development team',
+]);
+
+/** Maps common help-category labels to questionnaire skill keys. */
+const TOPIC_TO_SKILL_KEY = {
+  figma: 'UIUXTools',
+  'ui/ux': 'UIUXTools',
+  'frontend and backend overall': 'combined_frontend_backend',
+  'frontend/backend': 'combined_frontend_backend',
+  mern: 'mern_skills',
+  leadership: 'leadership_skills',
+};
+
+const buildSkillFallbackOptions = () =>
+  availableSkills.map(skillKey => ({
+    value: skillKey,
+    label: formatSkillName(skillKey),
+  }));
+
+const normalizeCategoryOptions = categories => {
+  if (!Array.isArray(categories) || categories.length === 0) return [];
+
+  return categories
+    .map(category => {
+      if (typeof category === 'string') {
+        return { value: category, label: category };
+      }
+      const name = category?.name;
+      if (!name) return null;
+      return { value: name, label: name };
+    })
+    .filter(Boolean);
+};
+
+const resolveSkillKey = selectedTopic => {
+  if (!selectedTopic) return null;
+  if (availableSkills.includes(selectedTopic)) return selectedTopic;
+
+  const byLabel = availableSkills.find(
+    skillKey => formatSkillName(skillKey).toLowerCase() === selectedTopic.toLowerCase(),
+  );
+  if (byLabel) return byLabel;
+
+  return TOPIC_TO_SKILL_KEY[selectedTopic.trim().toLowerCase()] || null;
+};
 
 function HelpModal({ show, onHide, auth }) {
+  const history = useHistory();
   const [selectedOption, setSelectedOption] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [teams, setTeams] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const userId = auth?.user?.userid;
 
   useEffect(() => {
     const fetchHelpCategories = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        const response = await axios.get(ENDPOINTS.HELP_CATEGORIES);
-        setOptions(response.data.map(category => category.name));
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load help categories');
+        const categoriesResponse = await httpService.get(ENDPOINTS.HELP_CATEGORIES);
+        const apiOptions = normalizeCategoryOptions(categoriesResponse.data);
+
+        if (apiOptions.length > 0) {
+          setOptions(apiOptions);
+        } else {
+          // DB may be empty — fall back to questionnaire skills so the dropdown is usable
+          setOptions(buildSkillFallbackOptions());
+        }
+      } catch {
+        // Still offer skill fallback, but surface that the categories endpoint failed.
+        setOptions(buildSkillFallbackOptions());
+        setError(
+          'Failed to load help categories from the server. Showing questionnaire skills instead.',
+        );
+      } finally {
         setLoading(false);
       }
     };
@@ -29,14 +99,73 @@ function HelpModal({ show, onHide, auth }) {
     fetchHelpCategories();
   }, []);
 
-  const handleSelect = option => {
-    setSelectedOption(option);
+  useEffect(() => {
+    if (!userId) return undefined;
+
+    const fetchUserProfile = async () => {
+      try {
+        const profileResponse = await httpService.get(ENDPOINTS.USER_PROFILE(userId));
+        setTeams(profileResponse.data?.teams || []);
+      } catch {
+        setTeams([]);
+      }
+    };
+
+    fetchUserProfile();
+    return undefined;
+  }, [userId]);
+
+  const handleSelect = optionValue => {
+    setSelectedOption(optionValue);
     setIsOpen(false);
   };
 
-  const handleSubmit = () => {
-    if (selectedOption) {
-      onHide();
+  const handleSubmit = async () => {
+    if (!selectedOption) {
+      toast.error('Please select a help category');
+      return;
+    }
+
+    if (!userId) {
+      toast.error('User ID not found. Please refresh and try again.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await httpService.post(ENDPOINTS.HELP_REQUEST_CREATE, {
+        userId,
+        topic: selectedOption,
+        description: `Help request for: ${selectedOption}`,
+      });
+
+      toast.success('Help request submitted successfully!');
+
+      const helpTopic = selectedOption;
+      const selectedSkillKey = resolveSkillKey(helpTopic);
+
+      setSelectedOption('');
+
+      // Navigate to community helpers; do not call onHide() (HelpPage would redirect to dashboard).
+      history.push({
+        pathname: '/hgnhelp/community',
+        state: {
+          initialSkills: selectedSkillKey ? [selectedSkillKey] : [],
+          softwareDevTeamOnly: true,
+          helpTopic,
+        },
+      });
+    } catch (err) {
+      if (err.code === 'ERR_NETWORK' || !err.response) {
+        toast.error('Cannot connect to server. Please ensure the backend is running.');
+      } else {
+        const errorMessage =
+          err.response?.data?.message || 'Failed to submit help request. Please try again.';
+        toast.error(errorMessage);
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -45,45 +174,68 @@ function HelpModal({ show, onHide, auth }) {
     onHide();
   };
 
+  const role = auth?.user?.role?.trim().toLowerCase() || '';
+
+  const isSoftwareDevMember =
+    ['owner', 'administrator'].includes(role) ||
+    teams.some(team => SOFTWARE_DEV_TEAM_ALIASES.has(team.teamName?.trim().toLowerCase()));
+
+  const selectedLabel =
+    options.find(option => option.value === selectedOption)?.label || selectedOption;
+
   const renderContent = () => {
     if (loading) return <div>Loading categories...</div>;
-    if (error) return <div className="text-danger">{error}</div>;
+    if (!options.length) {
+      return <div className="text-danger">{error || 'No help categories available.'}</div>;
+    }
 
     return (
       <>
+        {error && <div className="alert alert-warning mb-3">{error}</div>}
         <div
-          className="select-button"
+          className={`${styles.selectButton} ${darkMode ? styles.selectButtonDark : ''}`}
           onClick={() => setIsOpen(!isOpen)}
           role="button"
           tabIndex={0}
           onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              setIsOpen(!isOpen);
-            }
+            if (e.key === 'Enter' || e.key === ' ') setIsOpen(!isOpen);
           }}
         >
-          <span className={`select-button-text ${selectedOption ? 'selected' : ''}`}>
-            {selectedOption || 'Select an option'}
+          <span
+            className={`${styles.selectButtonText}
+              ${selectedOption ? styles.selected : ''}
+              ${darkMode ? styles.selectButtonTextDark : ''}
+              ${darkMode && selectedOption ? styles.selectedDark : ''}
+            `}
+          >
+            {selectedLabel || 'Select an option'}
           </span>
-          <span className={`select-button-arrow ${isOpen ? 'open' : ''}`} />
+
+          <span
+            className={`${styles.selectButtonArrow} ${isOpen ? styles.open : ''} ${
+              darkMode ? styles.selectButtonArrowDark : ''
+            }`}
+          />
         </div>
+
         {isOpen && (
-          <div className="select-options" role="listbox">
+          <div
+            className={`${styles.selectOptions} ${darkMode ? styles.selectOptionsDark : ''}`}
+            role="listbox"
+          >
             {options.map(option => (
               <div
-                key={option}
-                className="select-option"
-                onClick={() => handleSelect(option)}
+                key={option.value}
+                className={`${styles.selectOption} ${darkMode ? styles.selectOptionDark : ''}`}
+                onClick={() => handleSelect(option.value)}
                 role="option"
                 tabIndex={0}
                 onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleSelect(option);
-                  }
+                  if (e.key === 'Enter' || e.key === ' ') handleSelect(option.value);
                 }}
-                aria-selected={selectedOption === option}
+                aria-selected={selectedOption === option.value}
               >
-                {option}
+                {option.label}
               </div>
             ))}
           </div>
@@ -92,35 +244,45 @@ function HelpModal({ show, onHide, auth }) {
     );
   };
 
-  const isOwner = auth.user && auth.user.role === 'Owner';
-
   return (
-    <Modal show={show} onHide={onHide} className="help-modal" centered>
+    <Modal
+      show={show}
+      onHide={onHide}
+      centered
+      className={`${styles.helpModal} ${darkMode ? styles.darkMode : ''}`}
+    >
       <Modal.Header closeButton>
         <Modal.Title>What do you need help with?</Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
-        <div className="select-container">{renderContent()}</div>
-        {!isOwner && (
+        <div className={styles.selectContainer}>{renderContent()}</div>
+
+        {!isSoftwareDevMember && (
           <div className="alert alert-warning mt-3">
-            Only members from the software development team can seek help
+            Only members of the Software Development Team can submit requests.
           </div>
         )}
-        <p className="text-muted">
-          If you have any suggestions please click
+
+        <p className={`${styles.textMuted} ${darkMode ? styles.textMutedDark : ''}`}>
+          If you have any suggestions please click{' '}
           <button
             type="button"
-            className="btn btn-link p-0 border-0 align-baseline"
+            className={`${styles.suggestionsLink} ${darkMode ? styles.suggestionsLinkDark : ''}`}
             onClick={handleSuggestionsClick}
-            style={{ color: '#0066CC', textDecoration: 'none', marginLeft: '4px' }}
           >
             here
           </button>
         </p>
       </Modal.Body>
+
       <Modal.Footer>
-        <Button variant="primary" onClick={handleSubmit} disabled={!selectedOption || !isOwner}>
-          Submit
+        <Button
+          variant="primary"
+          onClick={handleSubmit}
+          disabled={!selectedOption || !isSoftwareDevMember || isSubmitting}
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit'}
         </Button>
       </Modal.Footer>
     </Modal>
@@ -132,6 +294,7 @@ HelpModal.propTypes = {
   onHide: PropTypes.func.isRequired,
   auth: PropTypes.shape({
     user: PropTypes.shape({
+      userid: PropTypes.string,
       role: PropTypes.string,
     }),
   }).isRequired,

@@ -8,6 +8,11 @@ export const FETCH_PROJECTS_START = 'FETCH_PROJECTS_START';
 export const FETCH_PROJECTS_SUCCESS = 'FETCH_PROJECTS_SUCCESS';
 export const FETCH_PROJECTS_ERROR = 'FETCH_PROJECTS_ERROR';
 
+// ARCHIVED PROJECTS
+// Kept separate from FETCH_PROJECTS_SUCCESS so that loading the archived list
+// does not overwrite `projects`, which several other components read.
+export const FETCH_ARCHIVED_PROJECTS_SUCCESS = 'FETCH_ARCHIVED_PROJECTS_SUCCESS';
+
 // ADD NEW PROJECTS
 export const ADD_NEW_PROJECT = 'ADD_NEW_PROJECT';
 export const ADD_NEW_PROJECT_ERROR = 'ADD_NEW_PROJECT_ERROR';
@@ -20,3 +25,5 @@ export const DELETE_PROJECT = 'DELETE_PROJECT';
 
 // CLEAR ERROR
 export const CLEAR_ERROR = 'CLEAR_ERROR';
+
+export const GET_PROJECT_GlOBAL_DISTRIBUTION = 'GET_PROJECT_GlOBAL_DISTRIBUTION';

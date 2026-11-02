@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
+import { connect, useDispatch } from 'react-redux';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
+import appStyles from '~/App.module.css';
 
 function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
@@ -90,7 +90,7 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
           placeholder="Please enter a new role name"
           value={newRoleName}
           onChange={handleRoleName}
-          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+          className={darkMode ? `${appStyles['bg-darkmode-liblack']} text-light border-0` : ''}
         />
         {isValidRole === false || isNotDuplicateRole === false ? (
           <Alert className="createRole__alert" color="danger">

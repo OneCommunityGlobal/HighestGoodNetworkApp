@@ -1,18 +1,22 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../Header/index.module.css';
 import { connect, useSelector } from 'react-redux';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 
+import { permissions } from '../../utils/constants';
 export const DeleteTeamPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const closePopup = () => {
     props.onClose();
   };
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission(permissions.deleteTeam);
+  const canPutTeam = props.hasPermission(permissions.putTeam);
+
+  const wrapLongTeamName = teamName =>
+    teamName && teamName.length >= 60 ? teamName.slice(0, 50) + '...' : teamName;
 
   return (
     <Modal
@@ -25,7 +29,9 @@ export const DeleteTeamPopup = React.memo(props => {
       </ModalHeader>
       <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <span>
-          {`Are you sure you want to delete the team with name "${props.selectedTeamName}"?
+          {`Are you sure you want to delete the team with name "${wrapLongTeamName(
+            props.selectedTeamName,
+          )}"?
           This action cannot be undone. Switch this team to "Inactive" if you'd like to keep it in the system.`}
         </span>
       </ModalBody>
@@ -65,4 +71,7 @@ export const DeleteTeamPopup = React.memo(props => {
     </Modal>
   );
 });
+
+DeleteTeamPopup.displayName = 'DeleteTeamPopup';
+
 export default connect(null, { hasPermission })(DeleteTeamPopup);

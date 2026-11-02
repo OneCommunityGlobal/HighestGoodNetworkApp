@@ -1,0 +1,558 @@
+import React from 'react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import { MemoryRouter } from 'react-router-dom';
+import moment from 'moment';
+import axios from 'axios';
+import momentTz from 'moment-timezone';
+import FormattedReport from '../FormattedReport';
+import '@testing-library/jest-dom/extend-expect';
+
+vi.mock('../../../utils/permissions', () => ({
+  __esModule: true,
+  default: () => () => true,
+  cantUpdateDevAdminDetails: () => false,
+}));
+
+vi.mock('~/actions/weeklySummariesReport', () => ({
+  updateOneSummaryReport: () => () => Promise.resolve({ status: 200 }),
+}));
+
+vi.mock('components/UserProfile/EditableModal/RoleInfoModal', () => {
+  function RoleInfoModalMock() {
+    return <div data-testid="role-info-modal">RoleInfoModal</div>;
+  }
+  RoleInfoModalMock.displayName = 'RoleInfoModalMock';
+  return RoleInfoModalMock;
+});
+
+vi.mock('axios', () => {
+  const mAxios = {
+    defaults: { headers: { post: {} } },
+    patch: vi.fn(() => Promise.resolve({ status: 200 })),
+  };
+  return {
+    __esModule: true,
+    default: mAxios,
+  };
+});
+
+vi.mock('react-toastify', () => ({
+  toast: {
+    success: vi.fn(),
+  },
+}));
+
+const initialState = { theme: { darkMode: false } };
+const store = createStore(state => state, initialState, applyMiddleware(thunk));
+
+const dummySummary = {
+  _id: '1',
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'john@example.com',
+  totalSeconds: [3600],
+  promisedHoursByWeek: [2],
+  weeklySummaries: [
+    {
+      summary: '<p>Test summary</p>',
+      uploadDate: moment().toISOString(),
+    },
+  ],
+  weeklySummariesCount: 10,
+  teamCode: 'ABC123',
+  mediaUrl: 'http://example.com/media',
+  adminLinks: [{ Name: 'Media Folder', Link: 'http://example.com/folder' }],
+  badgeCollection: [],
+  timeOffFrom: moment()
+    .subtract(1, 'days')
+    .format(),
+  timeOffTill: moment()
+    .add(1, 'days')
+    .format(),
+  totalTangibleHrs: 100,
+  bioPosted: 'default',
+  weeklySummaryOption: 'Default',
+};
+
+const dummyAuthAdmin = {
+  user: {
+    email: 'admin@example.com',
+    role: 'Administrator',
+  },
+};
+
+const defaultProps = {
+  summaries: [dummySummary],
+  weekIndex: 0,
+  bioCanEdit: true,
+  allRoleInfo: [],
+  badges: [],
+  loadBadges: false,
+  canEditTeamCode: true,
+  auth: dummyAuthAdmin,
+  canSeeBioHighlight: true,
+  handleTeamCodeChange: vi.fn(),
+  handleSpecialColorDotClick: vi.fn(),
+};
+
+describe('FormattedReport minimal test', () => {
+  it('renders without crashing', () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            summaries={defaultProps.summaries}
+            weekIndex={defaultProps.weekIndex}
+            bioCanEdit={defaultProps.bioCanEdit}
+            allRoleInfo={defaultProps.allRoleInfo}
+            badges={defaultProps.badges}
+            loadBadges={defaultProps.loadBadges}
+            canEditTeamCode={defaultProps.canEditTeamCode}
+            auth={defaultProps.auth}
+            canSeeBioHighlight={defaultProps.canSeeBioHighlight}
+            handleTeamCodeChange={defaultProps.handleTeamCodeChange}
+            handleSpecialColorDotClick={defaultProps.handleSpecialColorDotClick}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+    expect(screen.getByText('Test summary')).toBeInTheDocument();
+  });
+
+  it('does not render the Emails section for non-admin users', () => {
+    const nonAdminAuth = { user: { email: 'user@example.com', role: 'Volunteer' } };
+    const props = { ...defaultProps, auth: nonAdminAuth };
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            summaries={props.summaries}
+            weekIndex={props.weekIndex}
+            bioCanEdit={props.bioCanEdit}
+            allRoleInfo={props.allRoleInfo}
+            badges={props.badges}
+            loadBadges={props.loadBadges}
+            canEditTeamCode={props.canEditTeamCode}
+            auth={props.auth}
+            canSeeBioHighlight={props.canSeeBioHighlight}
+            handleTeamCodeChange={props.handleTeamCodeChange}
+            handleSpecialColorDotClick={props.handleSpecialColorDotClick}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.queryByText('Emails')).toBeNull();
+  });
+  it('only suggests team codes currently in use on the visible weekly summaries page', () => {
+    const activeSummaryOne = {
+      ...dummySummary,
+      _id: 'active-1',
+      email: 'active1@example.com',
+      teamCode: 'ACT01',
+      endDate: null,
+    };
+
+    const activeSummaryTwo = {
+      ...dummySummary,
+      _id: 'active-2',
+      email: 'active2@example.com',
+      teamCode: 'ACT02',
+      endDate: null,
+    };
+
+    const expiredSummary = {
+      ...dummySummary,
+      _id: 'expired-1',
+      email: 'expired@example.com',
+      teamCode: 'OLD01',
+      isActive: false,
+      endDate: moment()
+        .subtract(6, 'weeks')
+        .toISOString(),
+      finalWeekIndex: 6,
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[activeSummaryOne, activeSummaryTwo, expiredSummary]}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const inputs = screen.getAllByPlaceholderText('X-XXX');
+    fireEvent.focus(inputs[0]);
+    fireEvent.change(inputs[0], {
+      target: { value: '' },
+    });
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
+    expect(screen.getByText('ACT02')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('includes an active user with a scheduled end date in team code suggestions', () => {
+    const activeScheduledEndSummary = {
+      ...dummySummary,
+      _id: 'future-end-user',
+      email: 'future@example.com',
+      teamCode: 'FUT01',
+      isActive: true,
+      endDate: moment()
+        .add(2, 'weeks')
+        .toISOString(),
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} summaries={[activeScheduledEndSummary]} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('FUT01')).toBeInTheDocument();
+  });
+
+  it('does not suggest the team code of an inactive user hidden from the current tab', () => {
+    const visibleSummary = {
+      ...dummySummary,
+      _id: 'visible-user',
+      email: 'visible@example.com',
+      teamCode: 'ACT01',
+      isActive: true,
+      endDate: null,
+    };
+
+    const hiddenInactiveSummary = {
+      ...dummySummary,
+      _id: 'inactive-user',
+      email: 'inactive@example.com',
+      teamCode: 'OLD01',
+      isActive: false,
+      endDate: null,
+      finalWeekIndex: 1,
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[visibleSummary, hiddenInactiveSummary]}
+            weekIndex={0}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('updates active team code suggestions after a successful save', async () => {
+    function StatefulReport() {
+      const [summaries, setSummaries] = React.useState([dummySummary]);
+
+      const handleTeamCodeChange = (userId, newTeamCode) => {
+        setSummaries(prevSummaries =>
+          prevSummaries.map(summary =>
+            summary._id === userId ? { ...summary, teamCode: newTeamCode } : summary,
+          ),
+        );
+      };
+
+      return (
+        <FormattedReport
+          {...defaultProps}
+          summaries={summaries}
+          handleTeamCodeChange={handleTeamCodeChange}
+        />
+      );
+    }
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <StatefulReport />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+
+    fireEvent.focus(input);
+
+    expect(screen.getByText('ABC123')).toBeInTheDocument();
+
+    fireEvent.change(input, {
+      target: { value: 'NEW01' },
+    });
+
+    fireEvent.blur(input);
+
+    await waitFor(() => {
+      expect(axios.patch).toHaveBeenCalledWith(expect.any(String), {
+        userIds: ['1'],
+        replaceCode: 'NEW01',
+      });
+    });
+
+    fireEvent.focus(input);
+
+    fireEvent.change(input, {
+      target: { value: '' },
+    });
+
+    expect(screen.getByText('NEW01')).toBeInTheDocument();
+    expect(screen.queryByText('ABC123')).not.toBeInTheDocument();
+  });
+  it('renders fallback text when weekly summary text is missing', () => {
+    const summaryNoText = {
+      ...dummySummary,
+      weeklySummaries: [{}], // Missing the 'summary' property.
+      weeklySummaryOption: 'Default',
+    };
+    const props = { ...defaultProps, summaries: [summaryNoText] };
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            summaries={props.summaries}
+            weekIndex={props.weekIndex}
+            bioCanEdit={props.bioCanEdit}
+            allRoleInfo={props.allRoleInfo}
+            badges={props.badges}
+            loadBadges={props.loadBadges}
+            canEditTeamCode={props.canEditTeamCode}
+            auth={props.auth}
+            canSeeBioHighlight={props.canSeeBioHighlight}
+            handleTeamCodeChange={props.handleTeamCodeChange}
+            handleSpecialColorDotClick={props.handleSpecialColorDotClick}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.getByText(/Not provided!/)).toBeInTheDocument();
+  });
+
+  it('renders media URL link using adminLinks when mediaUrl is not provided', () => {
+    const summaryNoMedia = {
+      ...dummySummary,
+      mediaUrl: null,
+    };
+    const props = { ...defaultProps, summaries: [summaryNoMedia] };
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            summaries={props.summaries}
+            weekIndex={props.weekIndex}
+            bioCanEdit={props.bioCanEdit}
+            allRoleInfo={props.allRoleInfo}
+            badges={props.badges}
+            loadBadges={props.loadBadges}
+            canEditTeamCode={props.canEditTeamCode}
+            auth={props.auth}
+            canSeeBioHighlight={props.canSeeBioHighlight}
+            handleTeamCodeChange={props.handleTeamCodeChange}
+            handleSpecialColorDotClick={props.handleSpecialColorDotClick}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+    const mediaLink = screen.getByText(/Open link to media files/);
+    expect(mediaLink).toBeInTheDocument();
+    expect(mediaLink).toHaveAttribute('href', 'http://example.com/folder');
+  });
+
+  it('displays team code as text when editing is disabled', () => {
+    const props = { ...defaultProps, canEditTeamCode: false };
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            summaries={props.summaries}
+            weekIndex={props.weekIndex}
+            bioCanEdit={props.bioCanEdit}
+            allRoleInfo={props.allRoleInfo}
+            badges={props.badges}
+            loadBadges={props.loadBadges}
+            canEditTeamCode={props.canEditTeamCode}
+            auth={props.auth}
+            canSeeBioHighlight={props.canSeeBioHighlight}
+            handleTeamCodeChange={props.handleTeamCodeChange}
+            handleSpecialColorDotClick={props.handleSpecialColorDotClick}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.queryByPlaceholderText('X-XXX')).toBeNull();
+    expect(screen.getByText('ABC123', { selector: 'div' })).toBeInTheDocument();
+  });
+});
+
+describe('FormattedReport final week banner', () => {
+  const FINAL_WEEK_TEXT = /FINAL WEEK REPORTING: This team member is no longer active/;
+
+  const renderOnTab = (summary, weekIndex) =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} summaries={[summary]} weekIndex={weekIndex} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+  const fourWeeks = {
+    totalSeconds: [3600, 3600, 3600, 3600],
+    promisedHoursByWeek: [2, 2, 2, 2],
+  };
+
+  it('shows the banner for a user deactivated last week on the Last Week tab', () => {
+    renderOnTab(
+      {
+        ...dummySummary,
+        ...fourWeeks,
+        isActive: false,
+        endDate: '2026-09-17T06:59:59.999Z',
+        finalWeekIndex: 1,
+      },
+      1,
+    );
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+    expect(screen.getByText(FINAL_WEEK_TEXT)).toBeInTheDocument();
+  });
+
+  it('does not render a deactivated user on a tab other than their final week', () => {
+    renderOnTab({ ...dummySummary, ...fourWeeks, isActive: false, finalWeekIndex: 1 }, 0);
+    expect(screen.queryByText(/John Doe/)).toBeNull();
+  });
+
+  it('renders an active user with a scheduled end date without the banner', () => {
+    renderOnTab(
+      {
+        ...dummySummary,
+        ...fourWeeks,
+        isActive: true,
+        endDate: '2026-10-11T06:59:59.999Z',
+        finalWeekIndex: null,
+      },
+      0,
+    );
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+    expect(screen.queryByText(FINAL_WEEK_TEXT)).toBeNull();
+  });
+});
+
+describe('FormattedReport requested week off notice', () => {
+  // A request covering the current week, keyed by user id like the reducer state.
+  // Dates are built in Pacific time, like the report, so the test does not depend
+  // on the machine's timezone (CI runs in UTC).
+  const timeOffRequests = {
+    [dummySummary._id]: [
+      {
+        _id: 'req1',
+        reason: 'Family trip',
+        startingDate: momentTz
+          .tz('America/Los_Angeles')
+          .startOf('week')
+          .toISOString(),
+        endingDate: momentTz
+          .tz('America/Los_Angeles')
+          .endOf('week')
+          .toISOString(),
+      },
+    ],
+  };
+
+  const renderReport = (weekIndex = 0) =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            summaries={defaultProps.summaries}
+            weekIndex={weekIndex}
+            bioCanEdit={defaultProps.bioCanEdit}
+            allRoleInfo={defaultProps.allRoleInfo}
+            badges={defaultProps.badges}
+            loadBadges={defaultProps.loadBadges}
+            canEditTeamCode={defaultProps.canEditTeamCode}
+            auth={defaultProps.auth}
+            canSeeBioHighlight={defaultProps.canSeeBioHighlight}
+            handleTeamCodeChange={defaultProps.handleTeamCodeChange}
+            handleSpecialColorDotClick={defaultProps.handleSpecialColorDotClick}
+            timeOffRequests={timeOffRequests}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+  it('shows the notice on the week the request covers, with the reason hidden', () => {
+    renderReport(0);
+    expect(screen.getByText('Requested Week Off')).toBeInTheDocument();
+    expect(screen.queryByText('Family trip')).toBeNull();
+  });
+
+  it('does not show the notice on a week the request does not cover', () => {
+    renderReport(1);
+    expect(screen.queryByText('Requested Week Off')).toBeNull();
+  });
+
+  it('toggles the reason when the info button is clicked', () => {
+    renderReport(0);
+    const button = screen.getByRole('button', { name: 'Show time off reason' });
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(button);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Family trip');
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(button);
+    expect(screen.queryByText('Family trip')).toBeNull();
+  });
+
+  it('closes the reason on Escape', () => {
+    renderReport(0);
+    const button = screen.getByRole('button', { name: 'Show time off reason' });
+    fireEvent.click(button);
+    fireEvent.keyDown(button, { key: 'Escape' });
+    expect(screen.queryByText('Family trip')).toBeNull();
+  });
+
+  it('updates the correct report user and applies the warning returned by the API', async () => {
+    const handleTeamCodeChange = vi.fn();
+    axios.patch.mockResolvedValueOnce({
+      data: { updatedUsers: [{ userId: '1', teamCodeWarning: true }] },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} handleTeamCodeChange={handleTeamCodeChange} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const codeInput = screen.getByPlaceholderText('X-XXX');
+    fireEvent.change(codeInput, { target: { value: 'HaHUS' } });
+    fireEvent.blur(codeInput);
+
+    await waitFor(() => expect(handleTeamCodeChange).toHaveBeenCalledWith('1', 'HaHUS', true));
+  });
+});

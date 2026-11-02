@@ -1,0 +1,145 @@
+/* stylelint-disable  */
+.container {
+  width: 100%;
+  margin-top: 20px;
+  background: #fff;
+  color: #111827;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
+  border: 1px solid rgb(0 0 0 / 12%);
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.filterRow {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.applyBtn {
+  background: #4285f4;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.chartWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 80px;
+  width: 100%;
+}
+
+.summaryBox {
+  flex: 0 0 280px;
+  min-width: 260px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.value {
+  font-size: 22px;
+  color: #d9534f;
+  margin-bottom: 10px;
+}
+
+@media (width <= 768px) {
+  .chartWrapper {
+    flex-direction: column;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .chartContainer {
+    flex: none;
+    width: 92vw;
+    max-width: 420px;
+    height: 92vw;
+    max-height: 420px;
+  }
+
+  .summaryBox {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.centerLabel {
+  font-size: 16px;
+  font-weight: 600;
+  fill: currentcolor;
+}
+
+.centerValue {
+  font-size: 18px;
+  font-weight: 700;
+  fill: currentcolor;
+}
+
+.noDataMessage {
+  text-align: center;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+.tooltip {
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  font-size: 13px;
+  line-height: 1.5;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.tooltipName {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tooltipValue {
+  margin: 0;
+}
+/* DARK MODE */
+.dark {
+  background: #1b2a41;
+  color: #f1f5f9;
+  border-color: #4b5563;
+}
+
+.dark .title {
+  color: #f1f5f9;
+}
+
+.dark .label {
+  color: #94a3b8;
+}
+
+.dark .summaryBox h3 {
+  color: #f1f5f9;
+}
+
+.dark .filterRow input {
+  background: #2e3f55;
+  color: #f1f5f9;
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  padding: 4px 8px;
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import timeZoneMap from 'constants/timeZones';
+import timeZoneMap from '~/constants/timeZones';
 import { useSelector } from 'react-redux';
 
 /**
@@ -35,7 +35,9 @@ const TimeZoneDropDown = props => {
       onChange={props.onChange}
       defaultValue={props.selected}
     >
-      {Object.keys(timeZoneMap).map(timeZoneName => {
+      {Object.keys(timeZoneMap)
+        .sort((a, b) => a.localeCompare(b))
+        .map(timeZoneName => {
         const timeZoneString = `${timeZoneName} (UTC${timeZoneMap[timeZoneName].utcOffset})`;
         if (
           !props.filter ||

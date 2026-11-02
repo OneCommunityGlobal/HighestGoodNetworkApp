@@ -1,0 +1,355 @@
+/* stylelint-disable */
+:root {
+  --bg-color: #fff;
+  --text-color: #1f1f1f;
+  --muted-text: #555;
+  --border-color: #d3d7df;
+  --tooltip-bg: #f6f7f9;
+  --surface: #fff;
+  --surface-muted: #f5f7fb;
+  --accent-color: #2b60ff;
+  --accent-hover: #1c47c7;
+  --grid-color: #e6e9f0;
+  --calendar-icon: #4c566f;
+  --ring: #2b60ff;
+  --ring-offset: #fff;
+  --reset-btn-bg: #e53935;
+  --reset-btn-hover: #c62828;
+  --reset-btn-text: #fff;
+  --radius: 10px;
+  --radius-sm: 8px;
+  --space: 1rem;
+  --shadow: 0 2px 10px rgb(0 0 0 / 8%);
+  --error-color: #dc3545;
+}
+
+.darkMode {
+  --bg-color: #0f1522;
+  --text-color: #f1f3f7;
+  --muted-text: #c9ced8;
+  --border-color: #555;
+  --tooltip-bg: #1b2a41;
+  --surface: #1b2a41;
+  --surface-muted: #111a2b;
+  --accent-color: #7aa2ff;
+  --accent-hover: #9bb9ff;
+  --grid-color: rgb(255 255 255 / 14%);
+  --calendar-icon: #d8dfef;
+  --ring: #7aa2ff;
+  --ring-offset: #0f1522;
+  --reset-btn-bg: #ff6b5e;
+  --reset-btn-hover: #ff4a3a;
+  --reset-btn-text: #0f1522;
+  --error-color: #ff6b6b;
+}
+
+.host {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.lossTrackingChartContainer {
+  padding: 1.25rem;
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  align-self: stretch;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: var(--text-color);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.chartTitle {
+  color: var(--text-color);
+  font-size: 1.05rem;
+  font-weight: 650;
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.1px;
+}
+
+.lossTrackingChartFilters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem var(--space);
+  align-items: end;
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+}
+
+.lossTrackingChartFilters label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.lossTrackingChartFilters select,
+.lossTrackingChartFilters [type="date"] {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  min-height: 40px;
+  background-color: var(--surface);
+  color: var(--text-color);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.monthInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.monthInput {
+  width: 100%;
+  padding-right: 2.45rem !important;
+}
+
+.lossTrackingChartFilters [type="date"] {
+  color-scheme: light;
+}
+
+.darkMode .lossTrackingChartFilters [type="date"] {
+  color-scheme: dark;
+}
+
+.lossTrackingChartFilters input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.monthInputIcon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--calendar-icon);
+  pointer-events: none;
+}
+
+.monthInputIcon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentcolor;
+}
+
+.lossTrackingChartFilters select:focus-visible,
+.lossTrackingChartFilters [type="date"]:focus-visible {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset);
+}
+
+.resetBtn {
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  background-color: var(--reset-btn-bg);
+  color: var(--reset-btn-text);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  min-height: 40px;
+  letter-spacing: 0.2px;
+  transition: background-color 0.15s ease, transform 0.02s ease, box-shadow 0.15s ease, color 0.15s ease;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 4%), 0 2px 8px rgb(0 0 0 / 8%);
+  place-self: end start;
+}
+
+.resetBtn:hover {
+  background-color: var(--reset-btn-hover);
+}
+
+.resetBtn:active {
+  transform: translateY(1px);
+}
+
+.resetBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset);
+}
+
+.resetBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+div.lossTrackingChartContainer span.dateRangeError {
+  grid-column: 1 / -1;
+  color: var(--error-color) !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.15rem 0.1rem;
+  display: block;
+  margin-top: 10px;
+}
+
+.chartWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  /* Height of the plot area only; the wrapper grows to fit the legend below it */
+  --chart-height: clamp(320px, 42vh, 680px);
+
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  min-width: 0;
+}
+
+/* Fixed-height box for ResponsiveContainer (height="100%") */
+.chartArea {
+  height: var(--chart-height);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (width >=1440px) {
+  .chartWrapper {
+    --chart-height: clamp(340px, 40vh, 720px);
+  }
+}
+
+.recharts-cartesian-grid line {
+  stroke: var(--grid-color);
+}
+
+.noDataMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: var(--chart-height);
+  box-sizing: border-box;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted-text);
+  background-color: var(--surface);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  padding: 1rem;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.customLegend {
+  display: flex;
+  flex-wrap: wrap !important;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.legendSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+
+@media (width <=768px) {
+  .resetBtn {
+    justify-self: stretch;
+  }
+}
+
+@media (width <=400px) {
+  .lossTrackingChartFilters {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    padding: 0.75rem;
+  }
+
+  .lossTrackingChartFilters label {
+    min-width: 0;
+  }
+
+  .lossTrackingChartFilters select,
+  .lossTrackingChartFilters [type="date"],
+  .resetBtn {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* ---------- Tooltip ---------- */
+.tooltip {
+  min-width: 190px;
+  padding: 0.6rem 0.75rem;
+  background-color: var(--tooltip-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 18%);
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.tooltipTitle {
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 700;
+}
+
+.tooltipRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+}
+
+.tooltipSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+
+  /* Outline keeps pale colors (e.g. yellow) visible on light backgrounds */
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 15%);
+}
+
+.tooltipLabel {
+  white-space: nowrap;
+}
+
+.tooltipValue {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

@@ -1,5 +1,5 @@
 import httpService from './httpService';
-import { ApiEndpoint } from '../utils/URL';
+import { ApiEndpoint } from '~/utils/URL';
 
 const ApiUri = `${ApiEndpoint}/informations`;
 

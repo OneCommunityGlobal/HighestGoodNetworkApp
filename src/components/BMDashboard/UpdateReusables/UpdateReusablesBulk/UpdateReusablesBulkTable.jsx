@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import { fetchAllReusables, postReusableUpdateBulk } from 'actions/bmdashboard/reusableActions';
+import { fetchAllReusables, postReusableUpdateBulk } from '~/actions/bmdashboard/reusableActions';
 import UpdateReusable from '../UpdateReusable';
+import styles from './UpdateReusablesBulk.module.css';
 
 function UpdateReusablesBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
@@ -84,27 +84,27 @@ function UpdateReusablesBulkTable({ date, setDate, project, setProject }) {
 
   return (
     <div>
-      <Table borderless className="logReusableTable" responsive>
-        <thead className="logMTableHeaderLine">
+      <Table borderless className={`${styles.logReusableTable}`} responsive>
+        <thead className={`${styles.logMTableHeaderLine}`}>
           <tr className="">
             <th colSpan={2}> Item </th>
             <th colSpan={1}>Quantity</th>
-            <th colSpan={5} className="logMTableHead">
+            <th colSpan={5} className={`${styles.logMTableHead}`}>
               {' '}
               Daily Log Input{' '}
             </th>
           </tr>
         </thead>
-        <thead className="logMTableHeaderLine">
+        <thead className={`${styles.logMTableHeaderLine}`}>
           <tr className="table-light">
             <th> Project </th>
             <th>Name</th>
             <th>Available</th>
-            <th className="logMTableHead">Used</th>
-            <th className="logMTableHead">Used(Unit)</th>
-            <th className="logMTableHead">Wasted</th>
-            <th className="logMTableHead">Wasted(Unit) </th>
-            <th className="logMTableHead">New Available </th>
+            <th className={`${styles.logMTableHead}`}>Used</th>
+            <th className={`${styles.logMTableHead}`}>Used(Unit)</th>
+            <th className={`${styles.logMTableHead}`}>Wasted</th>
+            <th className={`${styles.logMTableHead}`}>Wasted(Unit) </th>
+            <th className={`${styles.logMTableHead}`}>New Available </th>
           </tr>
         </thead>
         <tbody>
@@ -138,7 +138,7 @@ function UpdateReusablesBulkTable({ date, setDate, project, setProject }) {
         </Button>
         <Button
           size="md"
-          className="logMButtonBg"
+          className={`${styles.logMButtonBg}`}
           disabled={bulkValidationError}
           onClick={e => submitHandler(e)}
         >

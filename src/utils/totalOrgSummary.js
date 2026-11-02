@@ -1,24 +1,71 @@
 import { VOLUNTEER_STATUS_TAB, VOLUNTEER_ACTIVITIES_TAB } from '../constants/totalOrgSummary';
 
-export const normalizeVolunteerStats = (volunteerNumberStats, totalHoursWorked) => {
-  if (!volunteerNumberStats || !totalHoursWorked) return [];
+// Single source of truth for the mentor total.
+// Used by both the Mentors card and the TOTAL MENTORS donut so they always match.
+export const getMentorTotal = mentorNumberStats => {
+  if (!mentorNumberStats) return 0;
+  const { donutChartData, activeMentors, newMentors, deactivatedMentors } = mentorNumberStats;
 
-  const normalizeStats = (stats, key) => ({
-    ...VOLUNTEER_STATUS_TAB[key],
-    number: stats.count,
-    percentageChange: Math.abs((stats.comparisonPercentage ?? 0) * 100).toFixed(0),
-    isIncreased: (stats.comparisonPercentage ?? 0) >= 0,
-  });
+  if (donutChartData && donutChartData.existingActive !== undefined) {
+    return (
+      (donutChartData.existingActive?.count || 0) +
+      (donutChartData.newActive?.count || 0) +
+      (donutChartData.deactivated?.count || 0)
+    );
+  }
+
+  return (activeMentors?.count || 0) + (newMentors?.count || 0) + (deactivatedMentors?.count || 0);
+};
+
+export const normalizeVolunteerStats = (
+  volunteerNumberStats = {},
+  totalHoursWorked = {},
+  mentorNumberStats = null,
+) => {
+  const statsObj = volunteerNumberStats || {};
+
+  const normalizeStats = (stats, key) => {
+    const countValue = typeof stats === 'object' && stats !== null
+      ? (stats?.current ?? stats?.count ?? stats?.total ?? stats?.value ?? 0)
+      : (Number(stats) || 0);
+
+    const percentage = typeof stats === 'object' && stats !== null
+      ? (stats?.comparisonPercentage ?? stats?.percentage ?? 0)
+      : 0;
+
+    return {
+      ...VOLUNTEER_STATUS_TAB[key],
+      number: countValue,
+      percentageChange: Math.abs(percentage * 100).toFixed(0),
+      isIncreased: percentage >= 0,
+    };
+  };
+
+  const hoursData = totalHoursWorked || {};
+  const hoursCount = typeof hoursData === 'object' && hoursData !== null
+    ? (hoursData.current ?? hoursData.total ?? hoursData.value ?? hoursData.count ?? 0)
+    : (Number(hoursData) || 0);
+
+  const hoursPercentage = typeof hoursData === 'object' && hoursData !== null
+    ? (hoursData.percentage ?? hoursData.comparisonPercentage ?? 0)
+    : 0;
 
   return [
-    normalizeStats(volunteerNumberStats.activeVolunteers, 'activeVolunteers'),
-    normalizeStats(volunteerNumberStats.newVolunteers, 'newVolunteers'),
-    normalizeStats(volunteerNumberStats.deactivatedVolunteers, 'deactivatedVolunteers'),
+    normalizeStats(statsObj.activeVolunteers, 'activeVolunteers'),
+    normalizeStats(statsObj.newVolunteers, 'newVolunteers'),
+    normalizeStats(
+      {
+        count: getMentorTotal(mentorNumberStats),
+        comparisonPercentage: mentorNumberStats?.totalMentors?.comparisonPercentage ?? 0,
+      },
+      'mentors',
+    ),
+    normalizeStats(statsObj.deactivatedVolunteers, 'deactivatedVolunteers'),
     {
       ...VOLUNTEER_STATUS_TAB.totalHoursWorked,
-      number: Math.round(totalHoursWorked.current),
-      percentageChange: Math.abs((totalHoursWorked.percentage ?? 0) * 100).toFixed(0),
-      isIncreased: (totalHoursWorked.percentage ?? 0) >= 0,
+      number: Math.round(hoursCount),
+      percentageChange: Math.abs(hoursPercentage * 100).toFixed(0),
+      isIncreased: hoursPercentage >= 0,
     },
   ];
 };
@@ -31,17 +78,14 @@ export const normalizeVolunteerActivities = (
   totalActiveTeams,
 ) => {
   const normalizeData = (data, key) => {
-    if (!data) {
-      return {
-        ...VOLUNTEER_ACTIVITIES_TAB.find(tab => tab.type === key),
-        number: 0,
-        percentageChange: '0',
-        isIncreased: false,
-      };
-    }
+    const current = typeof data === 'object' && data !== null
+      ? (data.current ?? data.count ?? data.total ?? data.value ?? 0)
+      : (Number(data) || 0);
 
-    const current = data.current || data.count || 0;
-    const percentage = data.percentage ?? data.comparisonPercentage ?? 0;
+    const percentage = typeof data === 'object' && data !== null
+      ? (data.percentage ?? data.comparisonPercentage ?? 0)
+      : 0;
+
     return {
       ...VOLUNTEER_ACTIVITIES_TAB.find(tab => tab.type === key),
       number: current,

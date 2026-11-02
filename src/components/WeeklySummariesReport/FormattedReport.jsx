@@ -1,43 +1,58 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
-import moment from 'moment';
-import 'moment-timezone';
-import ReactHtmlParser from 'react-html-parser';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import UserStateDisplay from '../UserState/UserStateDisplay';
+import { permissions } from '../../utils/constants';
+// import moment from 'moment';
+// import 'moment-timezone';
+import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
-
-import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { toggleUserBio } from 'actions/weeklySummariesReport';
-import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
-  Input,
-  ListGroup,
-  ListGroupItem as LGI,
+  Alert,
+  Button,
   Card,
-  Tooltip,
-  CardTitle,
   CardBody,
   CardImg,
   CardText,
-  UncontrolledPopover,
-  Row,
+  CardTitle,
   Col,
-  Alert,
+  Input,
+  ListGroupItem as LGI,
+  ListGroup,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+  Tooltip,
+  UncontrolledPopover,
 } from 'reactstrap';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import styles from './WeeklySummariesReport.module.scss';
-import hasPermission from '../../utils/permissions';
-import { ENDPOINTS } from '../../utils/URL';
-import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
+import { postLeaderboardData } from '~/actions/leaderBoardData';
+import { toggleUserBio } from '~/actions/weeklySummariesReport';
+import { isFinalWeekOnTab, shouldShowSummaryOnTab } from '~/utils/weeklySummariesFinalWeek';
+import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
+import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
+
+import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal';
+import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
+import { ENDPOINTS } from '~/utils/URL';
+import { isQualifiedForBio } from '~/utils/bioQualification';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
+// import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch'; // Unused import removed
 import GoogleDocIcon from '../common/GoogleDocIcon';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
+import TriStateToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch/TriStateToggleSwitch';
+import styles from './WeeklySummariesReport.module.scss';
+import getActiveTimeOffRequest from './getActiveTimeOffRequest';
+
+const TZ = 'America/Los_Angeles';
 
 const textColors = {
   Default: '#000000',
@@ -52,8 +67,18 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
+const teamColorMap = {
+  purple: 'Admin Team',
+  green: '20 Hour Team',
+  navy: '10 Hour Team',
+};
+
 function ListGroupItem({ children, darkMode }) {
-  return <LGI className={`px-0 border-0 py-1 ${darkMode ? 'bg-yinmn-blue' : ''}`}>{children}</LGI>;
+  return (
+    <LGI className={`px-0 border-0 py-1 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+      {children}
+    </LGI>
+  );
 }
 
 function FormattedReport({
@@ -63,52 +88,101 @@ function FormattedReport({
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   auth,
   canSeeBioHighlight,
   darkMode,
   handleTeamCodeChange,
+  handleBioStatusChange,
   handleSpecialColorDotClick,
+  timeOffRequests,
 }) {
   const dispatch = useDispatch();
-  const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+  const isEditCount = dispatch(hasPermission(permissions.totalValidWeeklySummaries));
 
   // Only proceed if summaries is valid
-  if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+  // if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+  //   return (
+  //     <div className="text-center py-4">
+  //       <p>No data available to display</p>
+  //     </div>
+  //   );
+  // }
+  if (!summaries) {
     return (
       <div className="text-center py-4">
-        <p>No data available to display</p>
+        <p>Loading weekly summaries...</p>
       </div>
     );
   }
 
+  if (Array.isArray(summaries) && summaries.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p>No data available for this week</p>
+      </div>
+    );
+  }
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
+  const activeTeamCodes = [
+    ...new Set(
+      summaries
+        .filter(summary => {
+          if (
+            !summary ||
+            !Array.isArray(summary.totalSeconds) ||
+            !Array.isArray(summary.promisedHoursByWeek)
+          ) {
+            return false;
+          }
+
+          return shouldShowSummaryOnTab(summary, weekIndex);
+        })
+        .map(summary => (typeof summary.teamCode === 'string' ? summary.teamCode.trim() : ''))
+        .filter(Boolean),
+    ),
+  ].sort((a, b) => a.localeCompare(b));
 
   return (
     <>
-      <ListGroup flush>
+      <ListGroup flush className={darkMode ? 'bg-yinmn-blue' : ''}>
         {summaries.map(summary => {
           // Add safety check for each summary
-          if (!summary || !summary.totalSeconds) {
+          if (
+            !summary ||
+            !Array.isArray(summary.totalSeconds) ||
+            !Array.isArray(summary.promisedHoursByWeek)
+          ) {
             return null;
           }
+
+          // Inactive users render only on the tab of the week they left
+          if (!shouldShowSummaryOnTab(summary, weekIndex)) return null;
+          const isFinalWeek = isFinalWeekOnTab(summary, weekIndex);
+
           return (
             <ReportDetails
               loggedInUserEmail={loggedInUserEmail}
               key={summary._id}
               summary={summary}
               weekIndex={weekIndex}
+              activeTeamCodes={activeTeamCodes}
               bioCanEdit={bioCanEdit}
               canEditSummaryCount={isEditCount}
               allRoleInfo={allRoleInfo}
               canEditTeamCode={canEditTeamCode}
               badges={badges}
               loadBadges={loadBadges}
+              loadTrophies={loadTrophies}
               canSeeBioHighlight={canSeeBioHighlight}
               darkMode={darkMode}
               handleTeamCodeChange={handleTeamCodeChange}
+              handleBioStatusChange={handleBioStatusChange}
               auth={auth}
               handleSpecialColorDotClick={handleSpecialColorDotClick}
+              isFinalWeek={isFinalWeek}
+              timeOffRequests={timeOffRequests}
             />
           );
         })}
@@ -198,7 +272,7 @@ function EmailsList({ summaries, auth }) {
   return null;
 }
 
-function getTextColorForHoursLogged(hoursLogged, promisedHours) {
+function getTextColorForHoursLogged(hoursLogged, promisedHours, darkMode) {
   const percentage = (hoursLogged / promisedHours) * 100;
 
   if (percentage < 50) {
@@ -207,72 +281,118 @@ function getTextColorForHoursLogged(hoursLogged, promisedHours) {
   if (percentage < 100) {
     return '#0B6623';
   }
-  return 'black';
+  return darkMode ? '#fff' : 'black';
 }
 
 function ReportDetails({
   summary,
   weekIndex,
+  activeTeamCodes,
   bioCanEdit,
   canEditSummaryCount,
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   canSeeBioHighlight,
   loggedInUserEmail,
   darkMode,
   handleTeamCodeChange,
+  handleBioStatusChange,
   auth,
   handleSpecialColorDotClick,
+  isFinalWeek,
+  timeOffRequests,
 }) {
-  const [filteredBadges, setFilteredBadges] = useState([]);
+  // eslint-disable-next-line no-console
+  // console.log('DEBUG ReportDetails:', {
+  //   summary,
+  //   weekIndex,
+  //   totalSeconds: summary?.totalSeconds,
+  //   promisedHoursByWeek: summary?.promisedHoursByWeek,
+  // });
   const ref = useRef(null);
+  const dispatch = useDispatch();
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-  const isMeetCriteria =
-    canSeeBioHighlight &&
-    summary.totalTangibleHrs > 80 &&
-    summary.daysInTeam > 60 &&
-    summary.bioPosted !== 'posted';
+  const totalSecondsArray = summary.totalSeconds || [];
+  const promisedHoursArray = summary.promisedHoursByWeek || [];
+  const hoursLogged = ((totalSecondsArray[weekIndex] || 0) / 3600).toFixed(2);
+  const promisedHours = promisedHoursArray[weekIndex] ?? 0;
 
-  useEffect(() => {
-    setFilteredBadges(badges.filter(badge => badge.showReport === true));
-  }, []);
+  // No bar for anyone unqualified, whatever the toggle says. 'default' and 'requested'
+  // both count as "still to do"; only 'posted' ends the workflow and clears the bar.
+  const activeTimeOffRequest = getActiveTimeOffRequest(timeOffRequests, summary._id, weekIndex);
+  const isMeetCriteria = canSeeBioHighlight && isQualifiedForBio(summary);
 
   return (
-    <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
-      <ListGroup className="px-0" flush>
+    <li
+      className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+      style={darkMode ? { backgroundColor: '#3a506b', color: '#ffffff' } : {}}
+      ref={ref}
+    >
+      <ListGroup className={`px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} flush>
         <ListGroupItem darkMode={darkMode}>
           <Index
             summary={summary}
             weekIndex={weekIndex}
             allRoleInfo={allRoleInfo}
             auth={auth}
+            loadTrophies={loadTrophies}
             handleSpecialColorDotClick={handleSpecialColorDotClick}
+            isFinalWeek={isFinalWeek}
+            darkMode={darkMode}
           />
         </ListGroupItem>
-        <Row className="flex-nowrap">
-          <Col xs="6" className="flex-grow-0">
+        <ListGroupItem darkMode={darkMode}>
+          <div
+            className={isMeetCriteria && darkMode ? styles.bioHighlightDark : undefined}
+            style={{
+              backgroundColor: isMeetCriteria ? '#FFF200' : 'transparent',
+              color: isMeetCriteria ? '#000000' : 'inherit',
+              width: '100%',
+              padding: '2px 12px 2px 0px',
+            }}
+          >
+            {/* Dev-admin protected records stay read-only here, same as team code and
+                summary count below — they fall through to BioLabel instead of the toggle. */}
+            <Bio
+              bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
+              userId={summary._id}
+              bioPosted={summary.bioPosted}
+              summary={summary}
+              isMeetCriteria={isMeetCriteria}
+              onBioStatusChange={handleBioStatusChange}
+            />
+          </div>
+        </ListGroupItem>
+
+        {/* TWO-COLUMN CONTENT BELOW */}
+        <Row className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Col
+            md="6"
+            xs="12"
+            className={darkMode ? 'bg-yinmn-blue' : ''}
+            style={darkMode ? { backgroundColor: '#3a506b', color: '#ffffff' } : {}}
+          >
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
+                weekOffBadge={
+                  <WeekOffBadge
+                    request={activeTimeOffRequest}
+                    summaryId={summary._id}
+                    weekIndex={weekIndex}
+                  />
+                }
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
+                activeTeamCodes={activeTeamCodes}
                 darkMode={darkMode}
               />
             </ListGroupItem>
-            <ListGroupItem darkMode={darkMode}>
-              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
-                <Bio
-                  bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
-                  userId={summary._id}
-                  bioPosted={summary.bioPosted}
-                  summary={summary}
-                />
-              </div>
-            </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
                 summary={summary}
@@ -280,26 +400,42 @@ function ReportDetails({
                 darkMode={darkMode}
               />
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
-              <p
-                style={{
-                  color: getTextColorForHoursLogged(
-                    hoursLogged,
-                    summary.promisedHoursByWeek[weekIndex],
-                  ),
-                  fontWeight: 'bold',
-                }}
-              >
-                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                <p
+                  style={{
+                    color: getTextColorForHoursLogged(hoursLogged, promisedHours, darkMode),
+                    fontWeight: 'bold',
+                    margin: 0,
+                  }}
+                >
+                  Hours logged: {hoursLogged} / {promisedHours}
+                </p>
+                <UserStateDisplay
+                  userId={summary._id}
+                  canEdit={dispatch(hasPermission(permissions.manage_user_state_indicator))}
+                />
+              </div>
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
-              <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
+              <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} darkMode={darkMode} />
             </ListGroupItem>
           </Col>
-          <Col xs="6">
+
+          <Col
+            xs="6"
+            className={darkMode ? 'bg-yinmn-blue' : ''}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              paddingTop: 0,
+            }}
+          >
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
             )}
           </Col>
         </Row>
@@ -308,7 +444,7 @@ function ReportDetails({
   );
 }
 
-function WeeklySummaryMessage({ summary, weekIndex }) {
+function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
   if (!summary) {
     return (
       <p>
@@ -317,34 +453,62 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
-  const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+  const weeklySummaries = summary?.weeklySummaries || [];
+  const currentSummary = weeklySummaries[weekIndex];
+
+  // Keeping this block commented intentionally for future reference —
+  // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+  const summaryText = currentSummary?.summary;
+  // Add safety check for weeklySummaries array and weekIndex
+  if (
+    !weeklySummaries ||
+    !Array.isArray(weeklySummaries) ||
+    weekIndex < 0 ||
+    weekIndex >= weeklySummaries.length
+  ) {
+    return (
+      <p>
+        <b>Weekly Summary:</b> <span style={{ color: 'red' }}>Not provided!</span>
+      </p>
+    );
+  }
+  // Keeping this block commented intentionally for future reference —
+  // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
   let summaryDate = moment()
-    .tz('America/Los_Angeles')
+    .tz(TZ)
     .endOf('week')
     .subtract(weekIndex, 'week')
     .format('YYYY-MMM-DD');
   let summaryDateText = `Weekly Summary (${summaryDate}):`;
+
   const summaryContent = (() => {
     if (summaryText) {
       const style = {
-        color: textColors[summary?.weeklySummaryOption] || textColors.Default,
+        color: textColors[summary?.weeklySummaryOption] || (darkMode ? '#ffffff' : '#000000'),
       };
 
-      summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
-        .tz('America/Los_Angeles')
-        .format('MMM-DD-YY');
-      summaryDateText = `Summary Submitted On (${summaryDate}):`;
-
+      if (currentSummary?.uploadDate) {
+        // summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
+        summaryDate = moment(currentSummary.uploadDate)
+          .tz('America/Los_Angeles')
+          .format('MMM-DD-YY');
+        summaryDateText = `Summary Submitted On (${summaryDate}):`;
+      }
       return (
         <div style={style} className={styles.weeklySummaryReportContainer}>
-          <div className={styles.weeklySummaryText}>{ReactHtmlParser(summaryText)}</div>
+          <div className={styles.weeklySummaryText}>{parse(summaryText)}</div>
           <FontAwesomeIcon
             icon={faCopy}
             className={styles.copyIcon}
-            onClick={() => {
+            onClick={async () => {
               const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
-              navigator.clipboard.writeText(parsedSummary);
-              toast.success('Summary Copied!');
+
+              try {
+                await navigator.clipboard.writeText(parsedSummary);
+                toast.success('Summary Copied!');
+              } catch {
+                toast.error('Failed to copy summary.');
+              }
             }}
           />
         </div>
@@ -369,18 +533,35 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
+function TeamCodeRow({
+  canEditTeamCode,
+  summary,
+  handleTeamCodeChange,
+  activeTeamCodes,
+  darkMode,
+  weekOffBadge,
+}) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
+  const [savedTeamCode, setSavedTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
 
+  const filteredTeamCodes = activeTeamCodes.filter(code =>
+    code.toLowerCase().includes((teamCode || '').toLowerCase()),
+  );
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
+
     try {
-      await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
-      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
-        [userProfileSummary._id]: true,
-      }); // Update the team code dynamically
+      const response = await axios.patch(url, {
+        userIds: [userProfileSummary._id],
+        replaceCode: newStatus,
+      });
+      const updatedUser = response.data?.updatedUsers?.find(
+        user => user.userId === userProfileSummary._id,
+      );
+      handleTeamCodeChange(userProfileSummary._id, newStatus, updatedUser?.teamCodeWarning);
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -391,16 +572,15 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
 
   const handleCodeChange = e => {
     const { value } = e.target;
-    if (value.length <= 7) {
-      const regexTest = fullCodeRegex.test(value);
-      if (regexTest) {
-        setHasError(false);
-        setTeamCode(value);
-        handleOnChange(summary, value);
-      } else {
-        setTeamCode(value);
-        setHasError(true);
-      }
+    const regexTest = fullCodeRegex.test(value);
+    if (value.length <= 7 && regexTest) {
+      setHasError(false);
+      setTeamCode(value);
+      setSavedTeamCode(value);
+      void handleOnChange(summary, value);
+    } else {
+      setTeamCode(savedTeamCode);
+      setHasError(true);
     }
   };
 
@@ -411,27 +591,77 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
   return (
     <>
       <div className={styles.teamcodeWrapper}>
-        {canEditTeamCode ? (
-          <div style={{ width: '107px', paddingRight: '5px' }}>
-            <Input
-              id="codeInput"
-              value={teamCode}
-              onChange={e => {
-                if (e.target.value !== teamCode) {
-                  handleCodeChange(e);
-                }
-              }}
-              placeholder="X-XXX"
-              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-            />
-          </div>
-        ) : (
-          <div style={{ paddingRight: '5px' }}>
-            {teamCode === '' ? 'No assigned team code!' : teamCode}
-          </div>
-        )}
-        <b>Media URL:</b>
-        <MediaUrlLink summary={summary} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {canEditTeamCode ? (
+            <div style={{ paddingRight: '5px', position: 'relative' }}>
+              <div className={styles.teamCodeInputWrapper}>
+                <Input
+                  id="codeInput"
+                  autoComplete="off"
+                  value={teamCode}
+                  onFocus={() => setShowSuggestions(true)}
+                  onChange={e => {
+                    setTeamCode(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onBlur={e => {
+                    handleCodeChange(e);
+                    setShowSuggestions(false);
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.currentTarget.blur();
+                    }
+
+                    if (e.key === 'Escape') {
+                      setShowSuggestions(false);
+                    }
+                  }}
+                  placeholder="X-XXX"
+                  className={`${styles.weeklySummariesCodeInput} ${
+                    darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                  }`}
+                />
+
+                {showSuggestions && filteredTeamCodes.length > 0 && (
+                  <div
+                    className={`${styles.teamCodeSuggestions} ${
+                      darkMode ? styles.teamCodeSuggestionsDark : ''
+                    }`}
+                  >
+                    {filteredTeamCodes.map(code => (
+                      <button
+                        key={code}
+                        type="button"
+                        className={`${styles.teamCodeSuggestionItem} ${
+                          darkMode ? styles.teamCodeSuggestionItemDark : ''
+                        }`}
+                        onMouseDown={e => {
+                          e.preventDefault();
+                          setTeamCode(code);
+                          setShowSuggestions(false);
+                        }}
+                      >
+                        {code}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{ paddingRight: '5px' }}>
+              {teamCode === '' ? 'No assigned team code!' : teamCode}
+            </div>
+          )}
+
+          {weekOffBadge}
+        </div>
+
+        <div>
+          <b>Media URL:</b>
+          <MediaUrlLink summary={summary} />
+        </div>
       </div>
       {hasError ? (
         <Alert className={styles.codeAlert} color="danger">
@@ -471,16 +701,15 @@ function MediaUrlLink({ summary }) {
       );
     }
   }
-  return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
+  return <span style={{ paddingLeft: '5px' }}>Not provided!</span>;
 }
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   const style = {
-    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
+    color: textColors[summary?.weeklySummaryOption] || (darkMode ? '#ffffff' : '#000000'),
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    // parseInt() returns an integer or NaN, convert to 0 if it's NaM
     parseInt(summary.weeklySummariesCount, 10) || 0,
   );
 
@@ -498,22 +727,25 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
 
   const handleWeeklySummaryCountChange = e => {
     setWeeklySummariesCount(e.target.value);
-    handleOnChange(summary, e.target.value);
+    void handleOnChange(summary, e.target.value);
   };
 
   return (
-    <div className={styles.totalValidWrapper}>
+    <div
+      className={styles.totalValidWrapper}
+      style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap' }}
+    >
       {weeklySummariesCount === 8 ? (
-        <div className="total-valid-text" style={style}>
+        <div className="total-valid-text" style={{ ...style, whiteSpace: 'nowrap', flexShrink: 0 }}>
           <b>Total Valid Weekly Summaries:</b>{' '}
         </div>
       ) : (
-        <div className="total-valid-text">
-          <b style={style}>Total Valid Weekly Summaries:</b>
+        <div className="total-valid-text" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+          <b>Total Valid Weekly Summaries:</b>
         </div>
       )}
       {canEditSummaryCount ? (
-        <div className="pl-2" style={{ width: '150px' }}>
+        <div className={styles.summaryCountInputWrapper}>
           <Input
             type="number"
             name="weeklySummaryCount"
@@ -521,11 +753,16 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
             value={weeklySummariesCount}
             onChange={e => handleWeeklySummaryCountChange(e)}
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            style={{ width: '65px', height: '28px', padding: '2px 6px' }}
             min="0"
+            max="9999"
           />
         </div>
       ) : (
-        <div>&nbsp;{weeklySummariesCount || 'No valid submissions yet!'}</div>
+        <div>
+          &nbsp;
+          {weeklySummariesCount || 'No valid submissions yet!'}
+        </div>
       )}
     </div>
   );
@@ -536,39 +773,57 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary }) {
+function BioSwitch({ userId, bioPosted, summary, onBioStatusChange }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
+  // Sync local state with props when bioPosted changes from Redux store
+  useEffect(() => {
+    setBioStatus(bioPosted);
+  }, [bioPosted]);
+
   // eslint-disable-next-line no-shadow
-  const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(toggleUserBio(userId, bioStatus));
-    if (res.status === 200) {
-      toast.success('You have changed the bio announcement status of this user.');
+  const handleChangeBioPosted = async newBioStatus => {
+    // The knob has already moved by the time this runs, so on any failure put it back —
+    // otherwise it sits on a status the server never accepted.
+    const previousStatus = bioStatus;
+    setBioStatus(newBioStatus);
+
+    try {
+      const res = await dispatch(toggleUserBio(userId, newBioStatus));
+      if (res.status !== 200) {
+        setBioStatus(previousStatus);
+        return;
+      }
+      // toggleUserBio already toasts and updates the Redux store. The report list is local
+      // component state, so tell the parent separately — that is what hides the yellow bar
+      // and drops the user out of the Bio Status filter, with no refetch needed.
+      if (onBioStatusChange) {
+        onBioStatusChange(userId, newBioStatus);
+      }
+    } catch (error) {
+      // toggleUserBio has already shown the user an error toast, so there is nothing more
+      // to report here — just undo the optimistic move and log for diagnostics.
+      setBioStatus(previousStatus);
+      // eslint-disable-next-line no-console
+      console.warn('Failed to update bio status:', error);
     }
   };
 
   return (
-    <div>
-      <div className={styles.bioToggle}>
-        <b style={style}>Bio announcement:</b>
-      </div>
-      <div className={styles.bioToggle}>
-        <ToggleSwitch
-          switchType="bio"
-          state={bioStatus}
-          handleUserProfile={bio => {
-            setBioStatus(bio);
-            handleChangeBioPosted(userId, bio);
-          }}
-        />
+    <div className={styles.bioToggleContainer}>
+      <b style={style}>Bio announcement:</b>
+      <div className={styles.bioToggleWrapper}>
+        <span className={styles.toggleLabel}>posted</span>
+        <TriStateToggleSwitch pos={bioStatus || 'default'} onChange={handleChangeBioPosted} />
+        <span className={styles.toggleLabel}>requested</span>
       </div>
     </div>
   );
 }
 
-function BioLabel({ bioPosted, summary }) {
+function BioLabel({ bioPosted, summary, isMeetCriteria }) {
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -582,8 +837,8 @@ function BioLabel({ bioPosted, summary }) {
     text = 'Requested';
   }
   return (
-    <div>
-      <b style={style}>Bio announcement: </b>
+    <div style={style}>
+      <b>Bio announcement: </b>
       {text}
     </div>
   );
@@ -591,12 +846,12 @@ function BioLabel({ bioPosted, summary }) {
 
 function WeeklyBadge({ summary, weekIndex, badges }) {
   const badgeEndDate = moment()
-    .tz('America/Los_Angeles')
+    .tz(TZ)
     .endOf('week')
     .subtract(weekIndex, 'week')
     .format('YYYY-MM-DD');
   const badgeStartDate = moment()
-    .tz('America/Los_Angeles')
+    .tz(TZ)
     .startOf('week')
     .subtract(weekIndex, 'week')
     .format('YYYY-MM-DD');
@@ -625,7 +880,15 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   }
   return (
     badgeThisWeek.length > 0 && (
-      <ListGroupItem className="row">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: '5px',
+          paddingTop: 0,
+        }}
+      >
         {badgeThisWeek.map((value, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <div className={styles.badgeTd} key={`${weekIndex}_${summary._id}_${index}`}>
@@ -655,15 +918,96 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
             )}
           </div>
         ))}
-      </ListGroupItem>
+      </div>
     )
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotClick }) {
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+// Shows "Requested Week Off" for the viewed week. Clicking (or pressing Enter/Space on)
+// the info button toggles the logged reason, as the ticket asks for; it closes on blur
+// or Escape.
+function WeekOffBadge({ request, summaryId, weekIndex }) {
+  const [showReason, setShowReason] = useState(false);
+  if (!request) return null;
+  const reasonId = `week-off-reason-${summaryId}-${weekIndex}`;
+  return (
+    <span className={styles.weekOffBadge}>
+      Requested Week Off{' '}
+      <button
+        type="button"
+        className={styles.weekOffInfoButton}
+        aria-label="Show time off reason"
+        aria-expanded={showReason}
+        aria-controls={reasonId}
+        onClick={() => setShowReason(prev => !prev)}
+        onBlur={() => setShowReason(false)}
+        onKeyDown={e => {
+          if (e.key === 'Escape') setShowReason(false);
+        }}
+      >
+        <i className="fa fa-info-circle" aria-hidden="true" />
+      </button>
+      {showReason && (
+        <span id={reasonId} role="tooltip" className={styles.weekOffReason}>
+          {request.reason || 'No reason provided'}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function Index({
+  summary,
+  weekIndex,
+  allRoleInfo,
+  auth,
+  loadTrophies,
+  handleSpecialColorDotClick,
+  isFinalWeek,
+  darkMode,
+}) {
   const colors = ['purple', 'green', 'navy'];
+  const tangibleHoursLogged = (summary.totalTangibleSeconds?.[weekIndex] || 0) / 3600;
+  const currentDate = moment.tz(TZ).startOf('day');
+  const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
+  const dispatch = useDispatch();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  // for testing purpose
+  // const promisedHoursByWeek = Array.isArray(summary?.promisedHoursByWeek)
+  //   ? summary.promisedHoursByWeek
+  //   : [];
+  // const filterColor = Array.isArray(summary?.filterColor) ? summary.filterColor : [];
+  // newly added
+  // const getMergedFilterColor = (summary, bulkSelectedColors) => {
+  //   // eslint-disable-next-line no-nested-ternary
+  //   const individual = Array.isArray(summary.filterColor)
+  //     ? summary.filterColor
+  //     : summary.filterColor
+  //     ? [summary.filterColor]
+  //     : [];
+
+  // Intentionally preserved legacy logic for bulk+individual color selection (kept for reference).
+  // If reactivated, it creates a deduplicated list from individual + bulkSelectedColors.
+  //   const bulk = Object.entries(bulkSelectedColors || {})
+  //     // eslint-disable-next-line no-unused-vars
+  //     .filter(([_, active]) => active)
+  //     .map(([color]) => color);
+  //   return [...new Set([...individual, ...bulk])];
+  // };
+
+  const trophyIconToggle = () => {
+    if (auth?.user?.role === 'Owner' || auth?.user?.role === 'Administrator') {
+      setModalOpen(prevState => (prevState ? false : summary._id));
+    }
+  };
+
+  const handleChangingTrophyIcon = async newTrophyStatus => {
+    setModalOpen(false);
+    await dispatch(postLeaderboardData(summary._id, newTrophyStatus));
+    setTrophyFollowedUp(newTrophyStatus);
+    toast.success('Trophy status updated successfully');
+  };
 
   const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
     if (currentElement.Name === 'Google Doc') {
@@ -672,6 +1016,38 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
     }
     return targetLink;
   }, undefined);
+
+  const summarySubmissionDate = moment()
+    .tz(TZ)
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+
+  const durationSinceStarted = calculateDurationBetweenDates(
+    summarySubmissionDate,
+    summary?.startDate?.split('T')[0] || null,
+  );
+
+  const handleIconContent = duration => {
+    if (duration.months >= 5.8 && duration.months <= 6.2) return '6M';
+    if (duration.years >= 0.9) return `${Math.round(duration.years)}Y`;
+    return null;
+  };
+
+  // Drive the banner’s dates from the user’s actual endDate
+  const end = summary?.endDate ? moment.tz(summary.endDate, TZ) : null;
+  const finalWeekStart = end
+    ? end
+        .clone()
+        .startOf('week')
+        .format('MMM D, YYYY')
+    : '';
+  const finalWeekEnd = end
+    ? end
+        .clone()
+        .endOf('week')
+        .format('MMM D, YYYY')
+    : '';
 
   return (
     <>
@@ -690,23 +1066,82 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
       >
         {summary.firstName} {summary.lastName}
       </Link>
-
       <div style={{ display: 'inline-block' }}>
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
           <span>
-            <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+            <b>
+              &nbsp;&nbsp;
+              {summary.role !== 'Volunteer' && `(${summary.role})`}
+            </b>
           </span>
           {summary.role !== 'Volunteer' && (
             <RoleInfoModal
               info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
               auth={auth}
+              roleName={`${summary.role}Info`}
             />
           )}
+          {loadTrophies &&
+            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
+              <i
+                className="fa fa-trophy"
+                style={{
+                  marginLeft: '10px',
+                  fontSize: '25px',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  lineHeight: 1,
+                  marginRight: '16px',
+                  color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
+                }}
+                onClick={trophyIconToggle}
+              >
+                <p
+                  style={{
+                    fontSize: '10px',
+                    position: 'absolute',
+                    left: '100%',
+                    bottom: 0,
+                    marginLeft: '1px',
+                    margin: 0,
+                    lineHeight: 1,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {handleIconContent(durationSinceStarted)}
+                </p>
+              </i>
+            )}
+          <Modal isOpen={modalOpen === summary._id} toggle={trophyIconToggle}>
+            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
+            <ModalBody>
+              <p>Are you sure you have followed up this icon?</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="secondary" onClick={trophyIconToggle}>
+                Cancel
+              </Button>{' '}
+              <Button color="primary" onClick={() => handleChangingTrophyIcon(true)}>
+                Confirm
+              </Button>
+            </ModalFooter>
+          </Modal>
         </div>
       </div>
-
       <div style={{ display: 'inline-block', marginLeft: '10px' }}>
+        {/* <p>{summary.filterColor}</p> */}
+        {(() => {
+          // eslint-disable-next-line no-console
+          // console.log(
+          //   'Rendering:',
+          //   summary.name || summary._id,
+          //   '→ filterColor:',
+          //   summary.filterColor,
+          // );
+          return null;
+        })()}
+
         {colors.map(color => (
           <span
             key={color}
@@ -717,49 +1152,153 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
               height: '15px',
               margin: '0 5px',
               borderRadius: '50%',
-              backgroundColor: summary.filterColor === color ? color : 'transparent',
+              // console.log('Rendering summary:', summary._id, summary.filterColor),
+              backgroundColor:
+                Array.isArray(summary.filterColor) && summary.filterColor.includes(color)
+                  ? color
+                  : 'transparent',
               border: `3px solid ${color}`,
               cursor: 'pointer',
             }}
           />
         ))}
       </div>
-
-      {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
-        <i
-          className="fa fa-star"
-          title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
-          style={{
-            color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
-            fontSize: '55px',
-            marginLeft: '10px',
-            verticalAlign: 'middle',
-            position: 'relative',
-          }}
-        >
-          <span
+      {Array.isArray(summary.filterColor) && summary.filterColor.length > 0 && (
+        <span style={{ marginLeft: '8px', fontSize: '0.85rem', color: '#555' }}>
+          (
+          {summary.filterColor
+            .map(color => teamColorMap[color])
+            .filter(Boolean)
+            .join(', ')}
+          )
+        </span>
+      )}
+      {Array.isArray(summary.promisedHoursByWeek) &&
+        summary.promisedHoursByWeek.length > weekIndex &&
+        showStar(tangibleHoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+          <i
+            className="fa fa-star"
+            title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
             style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: '10px',
+              color: assignStarDotColors(
+                tangibleHoursLogged,
+                summary.promisedHoursByWeek[weekIndex],
+              ),
+              fontSize: '55px',
+              marginLeft: '10px',
+              verticalAlign: 'middle',
+              position: 'relative',
             }}
           >
-            +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
-          </span>
-        </i>
+            <span
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '10px',
+              }}
+            >
+              +
+              {Math.round((tangibleHoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}
+              %
+            </span>
+          </i>
+        )}
+      {isFinalWeek && (
+        <p className={`${styles.finalWeekNotice} ${darkMode ? styles.finalWeekNoticeDark : ''}`}>
+          FINAL WEEK REPORTING: This team member is no longer active
+          <br />
+          <small>
+            (Final Week: {finalWeekStart} - {finalWeekEnd})
+          </small>
+        </p>
       )}
     </>
   );
 }
 
-FormattedReport.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
+Index.propTypes = {
+  summary: PropTypes.shape({
+    _id: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    role: PropTypes.string,
+    totalSeconds: PropTypes.arrayOf(PropTypes.number),
+    totalTangibleSeconds: PropTypes.arrayOf(PropTypes.number),
+    promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+    filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    adminLinks: PropTypes.array,
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    trophyFollowedUp: PropTypes.bool,
+    weeklySummariesCount: PropTypes.number,
+    timeOffFrom: PropTypes.string,
+    timeOffTill: PropTypes.string,
+  }).isRequired,
   weekIndex: PropTypes.number.isRequired,
+  allRoleInfo: PropTypes.array,
+  auth: PropTypes.object,
+  loadTrophies: PropTypes.bool,
+  handleSpecialColorDotClick: PropTypes.func,
+  isFinalWeek: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
+
+FormattedReport.propTypes = {
+  summaries: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+      promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+      totalSeconds: PropTypes.arrayOf(PropTypes.number),
+      totalTangibleSeconds: PropTypes.arrayOf(PropTypes.number),
+      weeklySummaries: PropTypes.arrayOf(PropTypes.shape({ summary: PropTypes.string })),
+    }),
+  ).isRequired,
+  weekIndex: PropTypes.number.isRequired,
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      role: PropTypes.string,
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
+      }),
+    }),
+  }),
+  // Keyed by userId, each value an array of that user's time-off requests
+  // ({ _id, reason, startingDate, endingDate, ... }), from timeOffRequestReducer.
+  timeOffRequests: PropTypes.objectOf(PropTypes.array),
+};
+
+FormattedReport.defaultProps = {
+  auth: {},
+  timeOffRequests: {},
+};
+
+ReportDetails.propTypes = {
+  activeTeamCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  summary: PropTypes.shape({
+    _id: PropTypes.string,
+    email: PropTypes.string,
+    bioPosted: PropTypes.string,
+    teamCode: PropTypes.string,
+  }).isRequired,
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      role: PropTypes.string,
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
+      }),
+    }),
+  }),
+  timeOffRequests: PropTypes.objectOf(PropTypes.array),
+};
+
+ReportDetails.defaultProps = {
+  auth: {},
+  timeOffRequests: {},
 };
 
 export default FormattedReport;

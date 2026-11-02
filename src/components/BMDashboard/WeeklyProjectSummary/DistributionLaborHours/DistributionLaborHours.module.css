@@ -1,0 +1,547 @@
+/* stylelint-disable */
+
+.container {
+  width: 100%;
+  height: 100%;
+  min-height: 650px;
+  box-sizing: border-box;
+  container-type: inline-size;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
+
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/*
+ * Keep the title, filters, Submit button, and chart
+ * grouped together with consistent vertical spacing.
+ * The content starts near the top of the card.
+ */
+.content {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =========================
+   TITLE
+   ========================= */
+
+.title {
+  width: 100%;
+
+  margin: 0 0 20px;
+
+  color: #111827;
+
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+}
+
+:global(.dark) .title,
+:global(.dark-mode) .title,
+:global(.bm-dashboard-dark) .title,
+:global([data-theme='dark']) .title {
+  color: #2563eb !important;
+}
+
+/* =========================
+   FILTERS
+   ========================= */
+
+.filtersSection {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.filterRow {
+  width: 100%;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  justify-content: center;
+  align-items: flex-end;
+
+  column-gap: 18px;
+  row-gap: 12px;
+}
+
+.filterGroup {
+  min-width: 115px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.filterGroup label {
+  margin: 0;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+:global(.dark) .filterGroup label,
+:global(.dark-mode) .filterGroup label,
+:global(.bm-dashboard-dark) .filterGroup label,
+:global([data-theme='dark']) .filterGroup label {
+  color: #fff;
+}
+
+/* =========================
+   DATE INPUTS
+   ========================= */
+
+.filterGroup input[type='date'] {
+  min-height: 38px;
+
+  box-sizing: border-box;
+
+  padding: 7px 9px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+:global(.dark) .filterGroup input[type='date'],
+:global(.dark-mode) .filterGroup input[type='date'],
+:global(.bm-dashboard-dark) .filterGroup input[type='date'],
+:global([data-theme='dark']) .filterGroup input[type='date'] {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border-color: #374151 !important;
+
+  color-scheme: dark;
+}
+
+/* =========================
+   REACT SELECT
+   ========================= */
+
+.selectContainer {
+  min-width: 115px;
+}
+
+:global(.labor-hours-select__control) {
+  min-height: 38px !important;
+  cursor: pointer !important;
+}
+
+:global(.labor-hours-select__option),
+:global(.labor-hours-select__single-value) {
+  white-space: nowrap;
+  font-weight: normal !important;
+}
+
+:global(.labor-hours-select__menu),
+:global(.labor-hours-select__menu-portal) {
+  z-index: 9999 !important;
+}
+
+:global(.labor-hours-select__indicator-separator) {
+  background-color: #ccc !important;
+}
+
+:global(.labor-hours-select__dropdown-indicator) {
+  color: #ccc !important;
+}
+
+/* =========================
+   SELECT DARK MODE
+   ========================= */
+
+:global(.dark) :global(.labor-hours-select__control),
+:global(.dark-mode) :global(.labor-hours-select__control),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__control),
+:global([data-theme='dark']) :global(.labor-hours-select__control) {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+:global(.dark) :global(.labor-hours-select__single-value),
+:global(.dark-mode) :global(.labor-hours-select__single-value),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__single-value),
+:global([data-theme='dark']) :global(.labor-hours-select__single-value) {
+  color: #f9fafb !important;
+}
+
+:global(.dark) :global(.labor-hours-select__input),
+:global(.dark-mode) :global(.labor-hours-select__input),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__input),
+:global([data-theme='dark']) :global(.labor-hours-select__input) {
+  color: #f9fafb !important;
+}
+
+:global(.dark) :global(.labor-hours-select__placeholder),
+:global(.dark-mode) :global(.labor-hours-select__placeholder),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__placeholder),
+:global([data-theme='dark']) :global(.labor-hours-select__placeholder) {
+  color: #9ca3af !important;
+}
+
+:global(.dark) :global(.labor-hours-select__indicator-separator),
+:global(.dark-mode) :global(.labor-hours-select__indicator-separator),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__indicator-separator),
+:global([data-theme='dark']) :global(.labor-hours-select__indicator-separator) {
+  background-color: #4b5563 !important;
+}
+
+:global(.dark) :global(.labor-hours-select__menu),
+:global(.dark-mode) :global(.labor-hours-select__menu),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__menu),
+:global([data-theme='dark']) :global(.labor-hours-select__menu) {
+  background-color: #1f2937 !important;
+  border: 1px solid #374151 !important;
+}
+
+:global(.dark) :global(.labor-hours-select__option),
+:global(.dark-mode) :global(.labor-hours-select__option),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__option),
+:global([data-theme='dark']) :global(.labor-hours-select__option) {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  cursor: pointer;
+}
+
+:global(.dark) :global(.labor-hours-select__option--is-focused),
+:global(.dark-mode) :global(.labor-hours-select__option--is-focused),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__option--is-focused),
+:global([data-theme='dark']) :global(.labor-hours-select__option--is-focused) {
+  background-color: #374151 !important;
+  color: #fff !important;
+}
+
+:global(.dark) :global(.labor-hours-select__option--is-selected),
+:global(.dark-mode) :global(.labor-hours-select__option--is-selected),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__option--is-selected),
+:global([data-theme='dark']) :global(.labor-hours-select__option--is-selected) {
+  background-color: #2563eb !important;
+  color: #fff !important;
+}
+
+/* =========================
+   SUBMIT
+   ========================= */
+
+.submitSection {
+  position: relative;
+
+  width: 100%;
+  height: 42px;
+
+  margin-top: 12px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button {
+  min-height: 38px;
+
+  padding: 8px 18px;
+
+  border: none;
+  border-radius: 6px;
+
+  background-color: #2563eb;
+  color: #fff;
+
+  cursor: pointer;
+
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #1d4ed8;
+}
+
+.button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+:global(.dark) .button,
+:global(.dark-mode) .button,
+:global(.bm-dashboard-dark) .button,
+:global([data-theme='dark']) .button {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.appliedMessage {
+  position: absolute;
+
+  left: calc(50% + 58px);
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  white-space: nowrap;
+
+  color: #166534;
+
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+:global(.dark) .appliedMessage,
+:global(.dark-mode) .appliedMessage,
+:global(.bm-dashboard-dark) .appliedMessage,
+:global([data-theme='dark']) .appliedMessage {
+  color: #86efac;
+}
+
+/* =========================
+   VISUALIZATION
+   ========================= */
+
+/*
+ * Important:
+ * No flex-grow.
+ * No min-height.
+ * No huge padding.
+ *
+ * The chart simply follows the filters with a controlled gap.
+ */
+.visualizationSection {
+  width: 100%;
+  min-width: 0;
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 28px;
+  padding: 0;
+}
+
+.visualizationContent {
+  width: 100%;
+  max-width: 700px;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+
+  justify-content: center;
+  align-items: center;
+  column-gap: 24px;
+}
+
+/* =========================
+   LEGEND
+   ========================= */
+
+.legend {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 9px;
+
+  font-size: 0.85rem;
+}
+
+.legendItem:last-child {
+  margin-bottom: 0;
+}
+
+.legendText {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+
+.colorBox {
+  width: 12px;
+  height: 12px;
+
+  margin-right: 8px;
+
+  border-radius: 2px;
+
+  flex-shrink: 0;
+}
+
+/* =========================
+   PIE
+   ========================= */
+
+.pieChartContainer {
+  width: 100%;
+  max-width: 340px;
+  height: 300px;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================
+   TOOLTIP
+   ========================= */
+
+.tooltip {
+  padding: 8px 10px;
+
+  border-radius: 6px;
+
+  background-color: #f3f4f6;
+  color: #111827;
+
+  box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
+}
+
+.tooltip p {
+  margin: 2px 0;
+}
+
+:global(.dark) .tooltip,
+:global(.dark-mode) .tooltip,
+:global(.bm-dashboard-dark) .tooltip,
+:global([data-theme='dark']) .tooltip {
+  color: #fff;
+}
+
+:global(.dark) .tooltip *,
+:global(.dark-mode) .tooltip *,
+:global(.bm-dashboard-dark) .tooltip *,
+:global([data-theme='dark']) .tooltip * {
+  color: #fff !important;
+}
+
+/* =========================
+   NO DATA
+   ========================= */
+
+.noData {
+  width: 100%;
+  min-height: 250px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #4b5563;
+
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+:global(.dark) .noData,
+:global(.dark-mode) .noData,
+:global(.bm-dashboard-dark) .noData,
+:global([data-theme='dark']) .noData {
+  color: #d1d5db;
+}
+
+@container (max-width: 620px) {
+  .visualizationContent {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    row-gap: 16px;
+  }
+
+  .legend {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .pieChartContainer {
+    width: 100%;
+    max-width: 300px;
+    height: 290px;
+  }
+
+  .visualizationSection {
+    margin-top: 24px;
+  }
+}
+/* =========================
+   TABLET
+   ========================= */
+
+@media (width <= 900px) {
+  .container {
+    height: auto;
+    min-height: auto;
+    padding: 24px 18px;
+  }
+
+  .content {
+    max-width: none;
+  }
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (width <= 768px) {
+  .container {
+    padding: 20px 14px;
+  }
+
+  .filterRow {
+    flex-direction: column;
+    align-items: center;
+
+    gap: 10px;
+  }
+
+  .filterGroup {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .selectContainer {
+    width: 100%;
+  }
+
+  .submitSection {
+    height: auto;
+
+    margin-top: 12px;
+
+    flex-direction: column;
+
+    gap: 6px;
+  }
+
+  .appliedMessage {
+    position: static;
+    transform: none;
+  }
+}
