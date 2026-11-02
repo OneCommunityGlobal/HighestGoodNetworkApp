@@ -171,6 +171,11 @@ const TeamMemberTask = React.memo(
     const canUnassignTask = dispatch(hasPermission(permissions.removeUserFromTask));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
+    const tableRowDarkMode = () => {
+      if (darkMode) return `${styles['table-row']} ${styles.darkMode} bg-yinmn-blue`;
+      return `${styles['table-row']}`;
+    };
+
     const colorsObjs = {
       'Assistant Manager': '#849ced', // blue
       Manager: '#90e766', // green
@@ -256,11 +261,7 @@ const TeamMemberTask = React.memo(
     };
 
     return (
-      <tr
-        ref={ref}
-        className={`${styles['table-row']} ${darkMode ? 'bg-yinmn-blue' : ''}`}
-        key={user.personId}
-      >
+      <tr ref={ref} className={tableRowDarkMode()} key={user.personId}>
         <td className={styles['remove-padding']} colSpan={6}>
           <div className={styles['row-content']}>
             {isTimeOffContentOpen && (
@@ -298,7 +299,7 @@ const TeamMemberTask = React.memo(
             )}
             <Table className={styles['no-bottom-margin']}>
               <tbody>
-                <tr className="remove-child-borders">
+                <tr className={`remove-child-borders ${darkMode ? styles.darkMode : ''}`}>
                   {/* green if member has met committed hours for the week, red if not */}
                   <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
@@ -416,7 +417,10 @@ const TeamMemberTask = React.memo(
                       style={{ margin: '0 auto', width: '100%' }}
                     >
                       <tbody>
-                        <tr style={{ width: '500px' }}>
+                        <tr
+                          className={`${darkMode ? styles.darkMode : ''}`}
+                          style={{ width: '500px' }}
+                        >
                           <td
                             colSpan={2}
                             className={styles['team-member-tasks-user-name']}
@@ -583,7 +587,7 @@ const TeamMemberTask = React.memo(
                                   <tr
                                     key={`${task._id}`}
                                     className={`${styles['task-break']} ${
-                                      darkMode ? 'bg-yinmn-blue' : ''
+                                      darkMode ? `${styles.darkMode} bg-yinmn-blue` : ''
                                     }`}
                                   >
                                     <td

@@ -21,6 +21,11 @@ import {
   editWarningDescription,
   reorderWarningDescriptions,
 } from '../../../actions/warnings';
+import {
+  getInfoCollections,
+  updateInfoCollection,
+  deleteInfoCollectionById,
+} from '../../../actions/information';
 
 import styles from '../Warnings.module.css';
 import reorder from '../reorder.svg';
@@ -41,7 +46,9 @@ function WarningTrackerModal({
 }) {
   const [toggeleWarningInput, setToggeleWarningInput] = useState(false);
   const [newWarning, setNewWarning] = useState('');
+  const [newWarningDescription, setNewWarningDescription] = useState('');
   const [warningDescriptions, setWarningDescriptions] = useState([]);
+  const [originalWarningDescriptions, setOriginalWarningDescriptions] = useState([]);
   const [toggleDeleteModal, setToggleDeleteModal] = useState(false);
   const [warningToDelete, setWarningToDelete] = useState(null);
   const [warningEdited, setWarningEdited] = useState(false);
@@ -52,6 +59,10 @@ function WarningTrackerModal({
   const [dragIndex, setDragIndex] = useState(null);
   const [initialDragIndex, setInitialDragIndex] = useState(null);
   const [warningsEdited, setWarningsEdited] = useState(false);
+  const [infoCollections, setInfoCollections] = useState([]);
+  const [infoCollectionToUpdate, setInfoCollectionToUpdate] = useState(null);
+  const [infoCollectionToDelete, setInfoCollectionToDelete] = useState(null);
+  const [retrieveInfoCollections, setRetrieveInfoCollections] = useState(true); // true on mount to retrieve info collections
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
@@ -76,11 +87,35 @@ function WarningTrackerModal({
         return;
       }
       setWarningDescriptions(res);
+      setOriginalWarningDescriptions(res);
     });
+    if (retrieveInfoCollections) {
+      dispatch(getInfoCollections(true)).then(res => {
+        if (res.error) {
+          setError(res.error);
+          return;
+        }
+        setRetrieveInfoCollections(false);
+        setInfoCollections(res);
+      });
+    }
   };
   useEffect(() => {
     fetchWarningDescriptions();
   }, []);
+
+  useEffect(() => {
+    if (!editedWarning) return;
+    const originalWarning = originalWarningDescriptions.find(
+      warning => warning._id === editedWarning._id,
+    );
+    if (!originalWarning) return;
+    if (!infoCollections.some(info => info?.infoName === originalWarning.warningTitle + 'Info'))
+      return;
+    setInfoCollectionToUpdate(
+      infoCollections.find(info => info?.infoName === originalWarning.warningTitle + 'Info'),
+    );
+  }, [editedWarning]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -161,6 +196,9 @@ function WarningTrackerModal({
   const handleTriggerDeleteWarningDescription = warning => {
     setToggleDeleteModal(true);
     setWarningToDelete(warning);
+    setInfoCollectionToDelete(
+      infoCollections.find(info => info?.infoName === warning.warningTitle + 'Info'),
+    );
   };
 
   const handleDeactivate = warningId => {
@@ -181,10 +219,22 @@ function WarningTrackerModal({
     });
   };
   const handleDeleteWarningDescription = warningId => {
+    if (infoCollectionToDelete) {
+      dispatch(deleteInfoCollectionById(infoCollectionToDelete._id)).then(res => {
+        if (res.error) {
+          setError(res.error);
+          return;
+        }
+        setRetrieveInfoCollections(true);
+      });
+    }
     dispatch(deleteWarningDescription(warningId)).then(res => {
       if (res.error) {
         setError(res.error);
       }
+      fetchWarningDescriptions().catch(err => {
+        setError(err);
+      });
     });
     setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
   };
@@ -208,10 +258,30 @@ function WarningTrackerModal({
     setWarningEdited(false);
     setWarningsEdited(false);
     setWarningWasEdited(false);
+    setInfoCollectionToUpdate(null);
   };
 
   const handleSaveEditedWarning = () => {
     if (warningEdited) {
+      if (infoCollectionToUpdate) {
+        const newInfo = {
+          infoName: editedWarning.warningTitle + 'Info',
+          infoContent: infoCollectionToUpdate.infoContent,
+          visibility: infoCollectionToUpdate.visibility,
+        };
+        dispatch(updateInfoCollection(infoCollectionToUpdate._id, newInfo)).then(res => {
+          if (res.error) {
+            setError(res.error);
+            setWarningEdited(false);
+            setEditedWarning(null);
+            fetchWarningDescriptions().catch(err => {
+              setError(err);
+            });
+            return;
+          }
+          setRetrieveInfoCollections(true);
+        });
+      }
       dispatch(editWarningDescription(editedWarning)).then(res => {
         if (res.error) {
           setError(res.error);
@@ -250,23 +320,29 @@ function WarningTrackerModal({
 
     if (newWarning === '') return;
     const trimmedWarning = newWarning.trim();
-    dispatch(postNewWarning({ newWarning: trimmedWarning, activeWarning: true, isPermanent })).then(
-      res => {
-        setNewWarning('');
-        if (res?.error) {
-          setError(res.error);
-          return;
-        }
-        if (res?.message) {
-          setError(res.message);
-          return;
-        }
-        setWarningDescriptions(res.newWarnings);
-        getUsersWarnings();
-        setError(null);
-        setToggeleWarningInput(false);
-      },
-    );
+    dispatch(
+      postNewWarning({
+        newWarning: trimmedWarning,
+        activeWarning: true,
+        isPermanent,
+        newWarningDescription,
+      }),
+    ).then(res => {
+      setNewWarning('');
+      setNewWarningDescription('');
+      if (res?.error) {
+        setError(res.error);
+        return;
+      }
+      if (res?.message) {
+        setError(res.message);
+        return;
+      }
+      setWarningDescriptions(res.newWarnings);
+      getUsersWarnings();
+      setError(null);
+      setToggeleWarningInput(false);
+    });
   };
 
   if (toggleDeleteModal) {
@@ -377,7 +453,7 @@ function WarningTrackerModal({
         <ul>
           {warningDescriptions.map((warning, index) => (
             <li
-              className={styles.warnings__descriptions}
+              className={`${styles.warnings__descriptions} ${darkMode ? styles.darkMode : ''}`}
               key={warning._id}
               onDragStart={() => handleDragStart(index, warning?.disabled)}
               onDragOver={e => handleDragOver(e, index, warning?.disabled)}
@@ -500,11 +576,24 @@ function WarningTrackerModal({
                   value={isPermanent}
                 />
               </div>
+
+              <label htmlFor="warningDescription" className={styles.warning__title}>
+                Warning Tracker Description
+              </label>
+              <input
+                type="text"
+                id="warningDescription"
+                className={styles.warning__input}
+                value={newWarningDescription}
+                onChange={e => setNewWarningDescription(e.target.value)}
+              />
+
               <div className={styles.warning__form__btns}>
                 <Button
                   color="danger"
                   onClick={() => {
                     setNewWarning(null);
+                    setNewWarningDescription('');
                     setToggeleWarningInput(false);
                   }}
                 >
