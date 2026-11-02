@@ -281,10 +281,7 @@
 }
 
 /* Ensure event badges maintain their colors in dark mode */
-.caseCardDark .eventBadge,
-.caseListItemDark .eventBadge,
-.selectedEventCardDark .eventBadge {
-}
+
 
 .caseCardDark .eventBadge[data-type='Workshop'] {
   background-color: #1e3a5f;
