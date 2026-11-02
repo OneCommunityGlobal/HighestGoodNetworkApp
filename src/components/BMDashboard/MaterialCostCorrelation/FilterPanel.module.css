@@ -388,6 +388,28 @@
   max-width: 100vw;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .datePickerLight,
+  .datePickerDark,
+  .presetButtonLight,
+  .presetButtonDark,
+  .resetButtonLight,
+  .resetButtonDark {
+    transition: none;
+  }
+
+  .presetButtonLight:hover,
+  .presetButtonLight:active,
+  .presetButtonDark:hover,
+  .presetButtonDark:active,
+  .resetButtonLight:hover,
+  .resetButtonLight:active,
+  .resetButtonDark:hover,
+  .resetButtonDark:active {
+    transform: none;
+  }
+}
+
 /* Responsive Media Queries */
 @media (width <= 1024px) {
   .filterPanel {
