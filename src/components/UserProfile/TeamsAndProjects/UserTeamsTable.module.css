@@ -26,7 +26,23 @@
   pointer-events: none;
 }
 
-.user-team-body tr td,
-.user-team-head tr th {
-  text-align: center;
+:global(.bg-dark) .user-team-head tr th {
+  background-color: #343a40;
+  color: #fff;
+  border-color: #6c757d;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+:global(.bg-dark) .user-team-head tr td {
+  background-color: #212529;
+  color: #fff;
+  border-color: #6c757d;
+}
+
+.table-header {
+  text-align: center ;
+  vertical-align: middle ;
+  width: auto ;
+  white-space: nowrap ;
 }
