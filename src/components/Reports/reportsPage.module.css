@@ -130,6 +130,12 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.team-table-container {
+  width: 50%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
 .table-data-container :global(.bg-yinmn-blue tbody tr:hover) {
   background: #2f4157 !important;
 }
@@ -408,6 +414,10 @@
   }
 
   .table-data-container {
+    width: 100%;
+  }
+
+  .team-table-container {
     width: 100%;
   }
 
