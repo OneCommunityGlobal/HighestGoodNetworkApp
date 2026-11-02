@@ -30,7 +30,7 @@
 }
 
 :global(#projects__inv) {
-  width: 16%;
+  width: 14%;
 }
 
 :global(#projects__wbs) {
@@ -179,7 +179,7 @@
 }
 
 .isActive i {
-  color: lawngreen;
+  color: lawngreen !important;
   box-shadow: none !important;
 }
 
