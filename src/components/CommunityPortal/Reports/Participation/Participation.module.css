@@ -660,21 +660,21 @@
 }
 
 /* Use :global for data attributes and print styles */
-:global(html[data-exporting='true']) .caseCards:global(.expanded),
-:global(html[data-exporting='true']) .caseList:global(.expanded),
-:global(html[data-exporting='true']) .trackingListContainer {
-  max-height: none !important;
-  overflow: visible !important;
-  -webkit-overflow-scrolling: auto !important;
+:global(html[data-exporting='true'][data-exporting='true']) .caseCards:global(.expanded),
+:global(html[data-exporting='true'][data-exporting='true']) .caseList:global(.expanded),
+:global(html[data-exporting='true'][data-exporting='true']) .trackingListContainer {
+  max-height: none;
+  overflow: visible;
+  -webkit-overflow-scrolling: auto;
 }
 
 :global(html[data-exporting='true']) * {
-  animation: none !important;
-  transition: none !important;
+  animation: none;
+  transition: none;
 }
 
-:global(html[data-exporting='true']) .participationLandingPageDark {
-  background-color: #1b2a41 !important;
+:global(html[data-exporting='true'][data-exporting='true']) .participationLandingPageDark {
+  background-color: #1b2a41;
 }
 
 .printOnly {
@@ -688,7 +688,7 @@
 .landingPageHeaderDark {
   font-size: 2.2rem;
   font-weight: 700;
-  color: #fff !important;
+  color: #fff;
   letter-spacing: 0.5px;
 }
 
@@ -2267,6 +2267,34 @@
 
 .navigationCardDark .cardArrow {
   color: #ccc;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trackingFilters select,
+  .infoIcon,
+  .insightsFilters select,
+  .insightsTab,
+  .insightFill,
+  .savePdfBtnDark,
+  .navLink,
+  .engagementCard,
+  .valueCard,
+  .trendCard,
+  .performanceCard,
+  .attendanceFill,
+  .engagementFill,
+  .navigationCard {
+    transition: none;
+  }
+
+  .savePdfBtnDark:hover,
+  .engagementCard:hover,
+  .valueCard:hover,
+  .trendCard:hover,
+  .performanceCard:hover,
+  .navigationCard:hover {
+    transform: none;
+  }
 }
 
 @media (width <= 768px) {

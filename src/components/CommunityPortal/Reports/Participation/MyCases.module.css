@@ -132,8 +132,8 @@
 .myCasesPageDark .viewSwitcher button,
 .myCasesPageDark .filterDropdown,
 .myCasesPageDark .createNew {
-  color: #fff !important;
-  border: 1px solid #555 !important;
+  color: #fff;
+  border: 1px solid #555;
 }
 
 .myCasesPageDark .filterDropdown {
@@ -262,29 +262,28 @@
 
 .eventBadge[data-type='Yoga Class'] {
   background-color: #e9f7ef;
-  color: #1e7e34 !important;
+  color: #1e7e34;
 }
 
 .eventBadge[data-type='Cooking Workshop'] {
   background-color: #fdecea;
-  color: #c23f32 !important;
+  color: #c23f32;
 }
 
 .eventBadge[data-type='Dance Class'] {
   background-color: #fff5e6;
-  color: #9b630b !important;
+  color: #9b630b;
 }
 
 .eventBadge[data-type='Fitness Bootcamp'] {
   background-color: #f5e6ff;
-  color: #8e51a7 !important;
+  color: #8e51a7;
 }
 
 /* Ensure event badges maintain their colors in dark mode */
 .caseCardDark .eventBadge,
 .caseListItemDark .eventBadge,
 .selectedEventCardDark .eventBadge {
-  /* Colors are already set above with !important, but ensure background is visible */
 }
 
 .caseCardDark .eventBadge[data-type='Workshop'] {
@@ -446,7 +445,7 @@
 
 .eventTimeDark {
   font-size: 14px;
-  color: #fff !important;
+  color: #fff;
   margin-bottom: 10px;
 }
 
@@ -454,19 +453,19 @@
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 15px;
-  color: #fff !important;
+  color: #fff;
 }
 
 .attendeesInfoDark {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #fff !important;
+  color: #fff;
 }
 
 .attendeesCountDark {
   font-size: 14px;
-  color: #fff !important;
+  color: #fff;
 }
 
 .caseListItemDark {
@@ -680,14 +679,14 @@
   background-color: #1e3a5f;
 }
 
-.selectedDate {
-  background-color: #0069d9 !important;
-  color: #fff !important;
+.calendar :global(.react-calendar__tile).selectedDate {
+  background-color: #0069d9;
+  color: #fff;
 }
 
-.calendarDark .selectedDate {
-  background-color: #0056b3 !important;
-  color: #fff !important;
+.calendarDark :global(.react-calendar__tile).selectedDate {
+  background-color: #0056b3;
+  color: #fff;
 }
 
 .selectedDateEvents {
@@ -1009,32 +1008,32 @@
   }
 
   .eventBadge[data-type='Yoga Class'] {
-    background-color: #e9f7ef !important;
-    color: #1e7e34 !important;
+    background-color: #e9f7ef;
+    color: #1e7e34;
   }
 
   .eventBadge[data-type='Cooking Workshop'] {
-    background-color: #fdecea !important;
-    color: #c23f32 !important;
+    background-color: #fdecea;
+    color: #c23f32;
   }
 
   .eventBadge[data-type='Dance Class'] {
-    background-color: #fff5e6 !important;
-    color: #9b630b !important;
+    background-color: #fff5e6;
+    color: #9b630b;
   }
 
   .eventBadge[data-type='Fitness Bootcamp'] {
-    background-color: #f5e6ff !important;
-    color: #8e51a7 !important;
+    background-color: #f5e6ff;
+    color: #8e51a7;
   }
 
   .myCasesPage.darkMode {
-    background-color: transparent !important;
+    background-color: transparent;
   }
 
   .myCasesPage.darkMode .caseCard {
-    background-color: #3a506b !important;
-    color: #fff !important;
+    background-color: #3a506b;
+    color: #fff;
   }
 }
 
@@ -1108,13 +1107,13 @@
 
 .caseListItem .attendeesCount:hover {
   background-color: rgb(0 123 255 /12%);
-  color: inherit; 
+  color: inherit;
   border-radius: 4px;
 }
 
 .caseListItemDark .attendeesCount:hover {
   background-color: rgb(255 255 255 /12%);
-  color: inherit; 
+  color: inherit;
   border-radius: 4px;
 }
 
@@ -1127,4 +1126,14 @@
 .myCasesPageDark .moreBtn:hover {
   background-color: #5A6B7D;
   color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caseCard {
+    transition: none;
+  }
+
+  .caseCard:hover {
+    transform: none;
+  }
 }

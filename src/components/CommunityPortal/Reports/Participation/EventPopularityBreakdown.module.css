@@ -251,6 +251,16 @@
   color: #94a3b8;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .metricCard {
+    transition: none;
+  }
+
+  .metricCard:hover {
+    transform: none;
+  }
+}
+
 @media (max-width: 768px) {
   .metricsGrid {
     grid-template-columns: 1fr;

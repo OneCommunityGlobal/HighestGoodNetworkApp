@@ -405,6 +405,18 @@
   color: #94a3b8;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .summaryCard,
+  .eventCard {
+    transition: none;
+  }
+
+  .summaryCard:hover,
+  .eventCard:hover {
+    transform: none;
+  }
+}
+
 @media (max-width: 768px) {
   .headerSection {
     flex-direction: column;
