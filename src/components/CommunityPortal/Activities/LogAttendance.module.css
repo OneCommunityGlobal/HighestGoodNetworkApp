@@ -602,23 +602,23 @@
 }
 
 .page.darkMode .shareBtn {
-  background: #e2e8f0;
-  color: #0f172a !important;
+  background: #334155;
+  color: #fff;
 }
 
 .page.darkMode .finishedBadge {
-  background: #c7d2fe;
-  color: #312e81 !important;
+  background: #4338ca;
+  color: #fff;
 }
 
 .page.darkMode .statusBadge {
-  background: #a7f3d0;
-  color: #065f46 !important;
+  background: #166534;
+  color: #fff;
 }
 
 .page.darkMode .avatarStack span {
-  background: #cbd5e1;
-  color: #334155 !important;
+  background: #475569;
+  color: #fff;
 }
 
 .darkMode .controls select {
@@ -634,17 +634,17 @@
 
 .darkMode .statusSuccess {
   background: #166534;
-  color: #dcfce7 !important;
+  color: #fff;
 }
 
 .darkMode .statusPending {
   background: #854d0e;
-  color: #fef9c3 !important;
+  color: #fff;
 }
 
 .darkMode .statusDanger {
   background: #991b1b;
-  color: #fee2e2 !important;
+  color: #fff;
 }
 
 .darkMode thead {
