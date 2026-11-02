@@ -4,7 +4,13 @@ import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import {
+  faUsers,
+  faCalendarDays,
+  faTableCellsLarge,
+  faList,
+  faClock,
+} from '@fortawesome/free-solid-svg-icons';
 import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
@@ -169,33 +175,41 @@ function MyCases() {
             <button
               type="button"
               className={view === 'calendar' ? styles.active : ''}
+              aria-pressed={view === 'calendar'}
               onClick={() => setView('calendar')}
             >
+              <FontAwesomeIcon icon={faCalendarDays} className={styles.viewIcon} />
               Calendar
             </button>
 
             <button
               type="button"
               className={view === 'card' ? styles.active : ''}
+              aria-pressed={view === 'card'}
               onClick={() => setView('card')}
             >
+              <FontAwesomeIcon icon={faTableCellsLarge} className={styles.viewIcon} />
               Card
             </button>
 
             <button
               type="button"
               className={view === 'list' ? styles.active : ''}
+              aria-pressed={view === 'list'}
               onClick={() => setView('list')}
             >
+              <FontAwesomeIcon icon={faList} className={styles.viewIcon} />
               List
             </button>
           </div>
 
-          <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
+          <div className={`filter-wrapper-global ${styles.filterWrapper} ${styles.filterWithIcon}`}>
+            <FontAwesomeIcon icon={faClock} className={styles.filterIcon} />
             <select
               className={`${styles.filterDropdown} ${
                 darkMode ? styles.filterDropdownDarkMode : ''
-              }`}
+              } ${styles.filterDropdownWithIcon}`}
+              aria-label="Filter events by time"
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
