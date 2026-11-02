@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import WeeklyProjectSummary from '../WeeklyProjectSummary';
@@ -136,7 +137,9 @@ describe('WeeklyProjectSummary regression tests', () => {
     expect(() => {
       render(
         <Provider store={store}>
-          <WeeklyProjectSummary />
+          <MemoryRouter>
+            <WeeklyProjectSummary />
+          </MemoryRouter>
         </Provider>,
       );
     }).not.toThrow();
@@ -147,7 +150,9 @@ describe('WeeklyProjectSummary regression tests', () => {
   it('dispatches initial data-loading actions when data is empty', () => {
     render(
       <Provider store={store}>
-        <WeeklyProjectSummary />
+        <MemoryRouter>
+          <WeeklyProjectSummary />
+        </MemoryRouter>
       </Provider>,
     );
 
@@ -163,5 +168,26 @@ describe('WeeklyProjectSummary regression tests', () => {
         }),
       ]),
     );
+  });
+
+  it('renders the "Click here for more" links pointing to their detail pages', () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <WeeklyProjectSummary />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const expected = {
+      'Click here for more on Issues': '/bmdashboard/issues',
+      'Click here for more on Tools Management': '/bmdashboard/tools',
+      'Click here for more on Rentals Tracking': '/bmdashboard/rentalchart',
+      'Click here for more on Injuries': '/bmdashboard/injurychart',
+    };
+
+    Object.entries(expected).forEach(([name, href]) => {
+      expect(screen.getByRole('link', { name })).toHaveAttribute('href', href);
+    });
   });
 });

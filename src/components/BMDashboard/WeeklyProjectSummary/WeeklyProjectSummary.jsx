@@ -3,6 +3,7 @@
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { UncontrolledTooltip } from 'reactstrap';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -424,6 +425,7 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
+        moreLinks: [{ label: 'Issues', to: '/bmdashboard/issues' }],
         // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
         content: (
           <MaterialConsumptionCards
@@ -444,6 +446,10 @@ function WeeklyProjectSummary() {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'full',
+        moreLinks: [
+          { label: 'Tools Management', to: '/bmdashboard/tools' },
+          { label: 'Rentals Tracking', to: '/bmdashboard/rentalchart' },
+        ],
         content: (
           <div
             style={{
@@ -485,6 +491,7 @@ function WeeklyProjectSummary() {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
         className: 'full',
+        moreLinks: [{ label: 'Injuries', to: '/bmdashboard/injurychart' }],
         content: [
           <div
             key="frequent-tags-card"
@@ -871,18 +878,29 @@ function WeeklyProjectSummary() {
           </p>
         )}
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
-          {visibleSections.map(({ title, key, className, content }) => (
+          {visibleSections.map(({ title, key, className, content, moreLinks }) => (
             <div
               key={key}
               className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
             >
-              <button
-                type="button"
-                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
-                onClick={() => toggleSection(key)}
-              >
-                {title} <span>{openSections[key] ? '∧' : '∨'}</span>
-              </button>
+              <div className={styles.sectionTitleBar}>
+                <button
+                  type="button"
+                  className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+                  onClick={() => toggleSection(key)}
+                >
+                  {title} <span>{openSections[key] ? '∧' : '∨'}</span>
+                </button>
+                {moreLinks?.length > 0 && (
+                  <div className={`${styles.sectionMoreLinks} no-print`}>
+                    {moreLinks.map(link => (
+                      <Link key={link.to} to={link.to} className={styles.sectionMoreLink}>
+                        Click here for more on {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
               {openSections[key] && (
                 <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
                   {content}
