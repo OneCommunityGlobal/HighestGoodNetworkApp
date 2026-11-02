@@ -5,16 +5,23 @@ import { ENDPOINTS } from '~/utils/URL';
 import GET_BM_PROJECT_MEMBERS from '~/constants/bmdashboard/projectMemberConstants';
 import { GET_ERRORS } from '~/constants/errors';
 
+// Fetches the members of a BM project.
+// Resolves to { ok: true, members } on success or { ok: false, error } on
+// failure, so the caller can show its own error state and retry instead of
+// relying on the global errors store.
 export const fetchBMProjectMembers = projectId => {
   return async dispatch => {
-    axios
-      .get(ENDPOINTS.BM_PROJECT_MEMBERS(projectId))
-      .then(res => {
-        dispatch(setProjectMembers(res.data.members));
-      })
-      .catch(err => {
-        dispatch(setErrors(err));
-      });
+    try {
+      const res = await axios.get(ENDPOINTS.BM_PROJECT_MEMBERS(projectId));
+      const members = res.data?.members ?? [];
+      dispatch(setProjectMembers(members));
+      return { ok: true, members };
+    } catch (error) {
+      // Clear members from a previously selected project so they are not
+      // shown under the wrong project.
+      dispatch(setProjectMembers([]));
+      return { ok: false, error };
+    }
   };
 };
 

@@ -254,7 +254,6 @@ const PurchaseMaterials = lazy(() =>
 const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
-const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
 const ProjectTeams = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectTeams/ProjectTeams'),
 );
@@ -855,14 +854,10 @@ export default (
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         {/* PR #4812 expects this URL to show the full three-card Material Consumption group. */}
         <BMProtectedRoute path="/bmdashboard/issuechart" component={MaterialConsumption} />
-        <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
+        <BMProtectedRoute path="/bmdashboard/timelog/" exact component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
         <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
-        <BMProtectedRoute
-          path="/bmdashboard/timelog/:projectId"
-          fallback
-          component={BMTimeLogCard}
-        />
+        <BMProtectedRoute path="/bmdashboard/timelog/:projectId" exact component={BMTimeLogger} />
         <BMProtectedRoute
           path="/bmdashboard/mostwastedmaterials"
           exact
