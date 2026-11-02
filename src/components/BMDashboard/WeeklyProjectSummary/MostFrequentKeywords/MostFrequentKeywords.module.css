@@ -225,17 +225,16 @@
 
 .mfkChartContainer {
   width: 100%;
-  flex: 1;
+  flex: 0 0 auto;
   min-height: 350px;
-  height: 100%;
+  height: clamp(360px, 45vw, 480px);
   position: relative;
   border-radius: 0.5rem;
-  overflow: visible;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   background: transparent;
-  transition: all 0.3s ease;
 }
 
 /* Extra small devices */
@@ -268,42 +267,15 @@
 
 .mfkChartContainer svg {
   display: block;
-  overflow: visible;
-  pointer-events: none;
-  transform: scale(1.15);
-  transform-origin: center 40%;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
 }
 
-/* Adjust scaling for extra small devices */
-@media (width < 360px) {
-  .mfkChartContainer svg {
-    transform: scale(1.08);
-    transform-origin: center 45%;
-  }
-}
-
-/* Adjust scaling for small devices */
-@media (width <= 480px) {
-  .mfkChartContainer svg {
-    transform: scale(1.12);
-    transform-origin: center 42%;
-  }
-}
-
-/* Adjust scaling for tablet */
-@media (width <= 768px) {
-  .mfkChartContainer svg {
-    transform: scale(1.14);
-    transform-origin: center 40%;
-  }
-}
-
-/* Adjust scaling for large devices */
-@media (width > 768px) {
-  .mfkChartContainer svg {
-    transform: scale(1.18);
-    transform-origin: center 38%;
-  }
+.mfkChartContainer svg:active {
+  cursor: grabbing;
 }
 
 .mfkCalendarHeader {
@@ -1096,4 +1068,73 @@
   border-color: #e2e8f0 !important;
   border-width: 2px 2px 0 0 !important;
   opacity: 1 !important;
+}
+.mapToolbar,
+.mapLegend {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.mapToolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 4px 8px;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid #64748b;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+}
+
+.mapToolbar button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.mapToolbar button:focus-visible,
+.mapHelp summary:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+.mapHelp {
+  margin: 12px 0;
+  color: inherit;
+}
+.mapHelp summary {
+  cursor: pointer;
+}
+.mapHelp p {
+  margin-top: 8px;
+}
+.mapLegend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mapLegend > span > span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.summaryScroll {
+  overflow-x: auto;
+}
+.keywordSummary {
+  width: 100%;
+  border-collapse: collapse;
+  color: inherit;
+}
+.keywordSummary th,
+.keywordSummary td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #94a3b8;
 }
