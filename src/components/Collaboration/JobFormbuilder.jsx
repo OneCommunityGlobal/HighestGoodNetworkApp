@@ -305,7 +305,7 @@ function JobFormBuilder() {
         message="You have unsaved changes. Are you sure you want to leave this page?"
       />
       <fieldset className={styles.formBuilderContainer} disabled={isLoadingForm || isSaving}>
-        {isLoadingForm && <p role="status">Loading form…</p>}
+        {isLoadingForm && <output>Loading form…</output>}
         {saveError && <p role="alert">{saveError}</p>}
         <img
           src={OneCommunityImage}
@@ -345,7 +345,7 @@ function JobFormBuilder() {
         </div>
         <h1 className={styles.jobformTitle}>Job Question Set Builder</h1>
         {hasUnsavedChanges && (
-          <p role="status">Unsaved changes — click Save Form to keep your changes.</p>
+          <output>Unsaved changes — click Save Form to keep your changes.</output>
         )}
         {canManageJobForms ? (
           <div className={styles.customForm}>

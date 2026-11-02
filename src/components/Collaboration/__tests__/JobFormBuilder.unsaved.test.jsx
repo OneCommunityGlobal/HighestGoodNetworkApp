@@ -82,7 +82,9 @@ describe('builder unsaved work protection', () => {
     Object.defineProperty(event, 'returnValue', { value: '', writable: true });
     window.dispatchEvent(event);
     expect(event.defaultPrevented).toBe(true);
-    expect(event.returnValue).not.toBe('');
+    expect(Object.getOwnPropertyDescriptor(event, 'returnValue').value).toBe(
+      'You have unsaved changes.',
+    );
   });
 
   it('removes the native leave warning only after the added field is saved', async () => {
@@ -99,7 +101,7 @@ describe('builder unsaved work protection', () => {
     Object.defineProperty(event, 'returnValue', { value: '', writable: true });
     window.dispatchEvent(event);
     expect(event.defaultPrevented).toBe(false);
-    expect(event.returnValue).toBe('');
+    expect(Object.getOwnPropertyDescriptor(event, 'returnValue').value).toBe('');
   });
 
   it('tracks template name drafts and clears them when reverted', async () => {
