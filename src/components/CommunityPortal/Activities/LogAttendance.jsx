@@ -522,41 +522,49 @@ function LogAttendance() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedRecords.map(record => (
-                    <tr key={record.id}>
-                      <td>{record.id}</td>
-                      <td>{record.participantName}</td>
-                      <td>{record.participantId}</td>
-                      <td>{record.email}</td>
-                      <td>{record.checkInTime}</td>
-                      <td>
-                        <span
-                          className={`${styles.statusBadge} ${statusBadgeClass(record.status)}`}
-                        >
-                          {record.status}
-                        </span>
-                      </td>
-                      <td>
-                        <select
-                          aria-label={`Update attendance for ${record.participantName}`}
-                          value={record.rawStatus || 'pending'}
-                          disabled={
-                            useMockData ||
-                            !record.attendanceId ||
-                            updatingAttendanceId === record.attendanceId
-                          }
-                          onChange={event =>
-                            handleAttendanceStatusChange(record, event.target.value)
-                          }
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="checked_in">Checked In</option>
-                          <option value="no_show">No Show</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
+                  {sortedRecords.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className={styles.emptyState}>
+                        No attendance records found.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    sortedRecords.map(record => (
+                      <tr key={record.id}>
+                        <td>{record.id}</td>
+                        <td>{record.participantName}</td>
+                        <td>{record.participantId}</td>
+                        <td>{record.email}</td>
+                        <td>{record.checkInTime}</td>
+                        <td>
+                          <span
+                            className={`${styles.statusBadge} ${statusBadgeClass(record.status)}`}
+                          >
+                            {record.status}
+                          </span>
+                        </td>
+                        <td>
+                          <select
+                            aria-label={`Update attendance for ${record.participantName}`}
+                            value={record.rawStatus || 'pending'}
+                            disabled={
+                              useMockData ||
+                              !record.attendanceId ||
+                              updatingAttendanceId === record.attendanceId
+                            }
+                            onChange={event =>
+                              handleAttendanceStatusChange(record, event.target.value)
+                            }
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="checked_in">Checked In</option>
+                            <option value="no_show">No Show</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
