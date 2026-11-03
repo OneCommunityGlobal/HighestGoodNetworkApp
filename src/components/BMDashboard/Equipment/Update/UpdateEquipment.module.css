@@ -246,6 +246,10 @@
   color: #0a2540 !important;
 }
 
+:global(.dark-mode) .lastUpdateSummary h2 {
+  color: #0a2540 !important;
+}
+
 .lastUpdateSummary {
   background-color: #d1ecf1 !important;
   border-color: #bee5eb !important;
