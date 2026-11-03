@@ -305,7 +305,7 @@ function Timer({ authUser, darkMode, isPopout, history }) {
             pendingStopRef.current = null;
             resolve(false);
           }
-        }, 10000);
+        }, 5000);
 
         pendingStopRef.current = {
           requestId,
@@ -357,7 +357,7 @@ function Timer({ authUser, darkMode, isPopout, history }) {
             pendingGetTimerRef.current = null;
             resolve(null);
           }
-        }, 10000);
+        }, 5000);
 
         pendingGetTimerRef.current = {
           requestId,

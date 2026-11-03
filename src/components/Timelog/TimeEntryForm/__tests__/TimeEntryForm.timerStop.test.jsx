@@ -125,6 +125,7 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     expect(sendStop).toHaveBeenCalled();
     expect(callOrder).toEqual(['resync', 'stop', 'save']);
     expect(onTimeSubmitted).toHaveBeenCalled();
+    expect(toggle).toHaveBeenCalled(); // the modal actually closes, not just clears its fields
   });
 
   it('saves the server-authoritative elapsed time, not the possibly-stale local form value', async () => {
@@ -188,6 +189,25 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     expect(sendStop).not.toHaveBeenCalled();
     expect(postTimeEntry).not.toHaveBeenCalled();
     expect(onTimeSubmitted).not.toHaveBeenCalled();
+  });
+
+  it('a resync that times out (null, not an explicit "stopped") still proceeds to stop and save - does not hang the timer running with the form stuck open', async () => {
+    // Reproduces the real bug: sendGetTimerAndConfirm() resolves null whenever the
+    // response never arrives in time (e.g. backend not yet updated to echo requestId
+    // for GET_TIMER) - that used to be treated the same as an explicit "already
+    // stopped elsewhere" and aborted before sendStop() was ever called, leaving the
+    // timer visibly running and the Log Time form open indefinitely.
+    sendGetTimerAndConfirm.mockImplementation(async () => {
+      callOrder.push('resync-timeout');
+      return null;
+    });
+    renderForm();
+    await clickSubmit();
+
+    await waitFor(() => expect(postTimeEntry).toHaveBeenCalled());
+    expect(sendStop).toHaveBeenCalled();
+    expect(callOrder).toEqual(['resync-timeout', 'stop', 'save']);
+    expect(onTimeSubmitted).toHaveBeenCalled();
   });
 
   it('a failed stop confirmation does NOT save, and keeps the form open for retry', async () => {
