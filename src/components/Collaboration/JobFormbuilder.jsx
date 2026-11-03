@@ -1,10 +1,10 @@
-/* eslint-disable no-alert */
 /* eslint-disable no-console */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { Prompt } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 import hasPermission from '~/utils/permissions';
@@ -13,11 +13,15 @@ import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
 import FormPreviewModal from './FormPreviewModal';
-import { JOB_FORM_POSITION_OPTIONS } from '../JobFormManagement/jobFormPositions';
+import JobFormDialog from './JobFormDialog';
+import useJobFormDialog from './useJobFormDialog';
 import {
   normalizeQuestionType,
   resolveInputType,
-  STANDARD_APPLICANT_FIELDS,
+  FIXED_FIELD_GROUP_OPTIONS,
+  DEFAULT_FIXED_FIELDS,
+  normalizeFixedFields,
+  getVisibleStandardApplicantFields,
   buildJobFormRequestor,
   isFieldRequired,
   normalizeQuestionForApi,
@@ -27,6 +31,8 @@ import {
   isDuplicateQuestion,
   numberedQuestionLabel,
   stripLeadingQuestionNumber,
+  isApplicantFacingJobForm,
+  getApplicantVisibleQuestions,
 } from './jobFormQuestionUtils';
 import { hasUnsavedJobFormChanges } from './jobFormDirtyState';
 
@@ -37,6 +43,7 @@ function JobFormBuilder() {
   const frontPermissions = auth?.user?.permissions?.frontPermissions;
   const rolePermissions = useSelector(state => state.role?.roles);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const { dialogProps, showAlert, showConfirm, showPrompt } = useJobFormDialog();
 
   const canManageJobForms = useMemo(() => dispatch(hasPermission(permissions.manageJobForms)), [
     dispatch,
@@ -47,8 +54,7 @@ function JobFormBuilder() {
   const getRequestor = () => buildJobFormRequestor(auth?.user);
   const [formFields, setFormFields] = useState([]);
   const [initialFormFields, setInitialFormFields] = useState([]);
-  const [templateName, setTemplateName] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [jobForms, setJobForms] = useState([]);
   const [currentFormId, setCurrentFormId] = useState(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [newField, setNewField] = useState({
@@ -69,21 +75,113 @@ function JobFormBuilder() {
     required: false,
   };
 
-  const [jobTitle, setJobTitle] = useState('Please Choose an option');
-  const [initialJobTitle, setInitialJobTitle] = useState('Please Choose an option');
-  const jobPositions = JOB_FORM_POSITION_OPTIONS;
+  const [jobTitle, setJobTitle] = useState('');
+  const [initialJobTitle, setInitialJobTitle] = useState('');
+  const [fixedFields, setFixedFields] = useState(() => normalizeFixedFields(DEFAULT_FIXED_FIELDS));
+  const [initialFixedFields, setInitialFixedFields] = useState(() =>
+    normalizeFixedFields(DEFAULT_FIXED_FIELDS),
+  );
 
   const [newOption, setNewOption] = useState('');
+  const [newFieldErrors, setNewFieldErrors] = useState({
+    questionText: '',
+    options: '',
+    newOption: '',
+  });
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const markAsSaved = (fields, savedJobTitle) => {
+  const visibleStandardFields = useMemo(() => getVisibleStandardApplicantFields(fixedFields), [
+    fixedFields,
+  ]);
+
+  const markAsSaved = (fields, savedJobTitle, savedFixedFields) => {
     setInitialFormFields(structuredClone(fields));
     if (savedJobTitle !== undefined) setInitialJobTitle(savedJobTitle);
+    if (savedFixedFields !== undefined) {
+      setInitialFixedFields(normalizeFixedFields(savedFixedFields));
+    }
     setHasUnsavedChanges(false);
   };
+
+  const refreshJobFormsList = useCallback(async () => {
+    const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+    const forms = response.data?.forms ?? (Array.isArray(response.data) ? response.data : []);
+    const visibleForms = forms
+      .filter(isApplicantFacingJobForm)
+      .slice()
+      .sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
+    setJobForms(visibleForms);
+    return visibleForms;
+  }, []);
+
+  const applyLoadedJobForm = useCallback(
+    async (form, { promptDuplicates = true } = {}) => {
+      const formId = form._id || form.id;
+      const rawQuestions = normalizeLoadedQuestions(form.questions || []);
+      // Match /job-application: hide profile/resume fields already collected above, dedupe repeats.
+      const applicantQuestions = normalizeLoadedQuestions(
+        getApplicantVisibleQuestions(rawQuestions),
+      );
+      const loadedTitle = form.title || '';
+      const loadedFixedFields = normalizeFixedFields(form.fixedFields);
+      const hiddenCount = rawQuestions.length - applicantQuestions.length;
+      const duplicateQuestions = findDuplicateQuestions(applicantQuestions);
+
+      let shouldRemoveDuplicates = false;
+      if (promptDuplicates && duplicateQuestions.length > 0) {
+        shouldRemoveDuplicates = await showConfirm(
+          `This form has ${duplicateQuestions.length} repeated question(s). Click OK to remove the extra copies, or Cancel to keep them if they were added intentionally.`,
+          { title: 'Repeated questions', confirmLabel: 'Remove copies', cancelLabel: 'Keep them' },
+        );
+      }
+
+      const questionsToDisplay = applyDuplicateDecision(applicantQuestions, shouldRemoveDuplicates);
+
+      setCurrentFormId(formId);
+      setFormFields(questionsToDisplay);
+      setJobTitle(loadedTitle);
+      setFixedFields(loadedFixedFields);
+      // Baseline is the API payload; a cleaned/deduped list counts as unsaved until Save Form.
+      markAsSaved(rawQuestions, loadedTitle, loadedFixedFields);
+      setNewField(initialNewField);
+
+      if (promptDuplicates && hiddenCount > 0) {
+        toast.info(
+          `Loaded ${questionsToDisplay.length} applicant-visible question(s). ${hiddenCount} stored question(s) were hidden (profile/resume duplicates or repeats). Save Form to persist the cleaned list.`,
+          { autoClose: 7000 },
+        );
+      }
+    },
+    [showConfirm],
+  );
+
+  const handleCreateNewForm = useCallback(async () => {
+    const title = await showPrompt(
+      'Enter the new job form title. Use the exact Collaboration job title so /job-application can match it.',
+      {
+        title: 'Create new job form',
+        confirmLabel: 'Create',
+        inputPlaceholder: 'Job form title',
+        requireInput: true,
+      },
+    );
+    if (title === null) return;
+    const trimmed = String(title).trim();
+    if (!trimmed) return;
+
+    const defaults = normalizeFixedFields(DEFAULT_FIXED_FIELDS);
+    setCurrentFormId(null);
+    setFormFields([]);
+    setJobTitle(trimmed);
+    setFixedFields(defaults);
+    markAsSaved([], trimmed, defaults);
+    setNewField(initialNewField);
+    setNewFieldErrors({ questionText: '', options: '', newOption: '' });
+    setHasUnsavedChanges(true);
+  }, [showPrompt]);
 
   // Prevent refresh while unsaved changes exist
   useEffect(() => {
@@ -98,66 +196,25 @@ function JobFormBuilder() {
     return () => globalThis.removeEventListener('beforeunload', handler);
   }, [hasUnsavedChanges]);
 
-  // Reset builder after template is saved
-  const resetBuilderState = () => {
-    setFormFields([]);
-    setNewField({
-      questionText: '',
-      questionType: 'textbox',
-      options: [],
-      visible: true,
-      isRequired: false,
-      required: false,
-    });
-    setNewOption('');
-  };
-
-  // Auto-load existing form on component mount
+  // Load live job forms (Collaboration apply forms) and open the first applicant-facing one
   useEffect(() => {
-    const loadFirstAvailableForm = async () => {
+    const loadJobForms = async () => {
       try {
-        const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
-        const forms = response.data?.forms ?? (Array.isArray(response.data) ? response.data : []);
-
-        if (forms.length > 0) {
-          const firstForm = forms[0];
-          const formId = firstForm._id || firstForm.id;
-
-          setCurrentFormId(formId);
-          const loadedQuestions = normalizeLoadedQuestions(firstForm.questions || []);
-          const loadedTitle = firstForm.title || 'Please Choose an option';
-          const duplicateQuestions = findDuplicateQuestions(loadedQuestions);
-
-          const shouldRemoveDuplicates =
-            duplicateQuestions.length > 0 &&
-            window.confirm(
-              `This form has ${duplicateQuestions.length} repeated question(s). Click OK to remove the extra copies, or Cancel to keep them if they were added intentionally.`,
-            );
-
-          const questionsToDisplay = applyDuplicateDecision(
-            loadedQuestions,
-            shouldRemoveDuplicates,
-          );
-
-          setFormFields(questionsToDisplay);
-          setJobTitle(loadedTitle);
-
-          // Keep the API version as the saved baseline. Removing duplicates should count
-          // as an unsaved change, so the manager can review and save the cleaned form.
-          markAsSaved(loadedQuestions, loadedTitle);
-          setNewField(initialNewField);
-
-          console.log('Auto-loaded form:', formId);
+        const visibleForms = await refreshJobFormsList();
+        if (visibleForms.length > 0) {
+          applyLoadedJobForm(visibleForms[0], { promptDuplicates: false });
         }
       } catch (error) {
-        console.error('Error auto-loading form:', error);
+        console.error('Error loading job forms:', error);
+        toast.error('Failed to load job forms. Please refresh and try again.');
       }
     };
 
-    loadFirstAvailableForm().catch(error => {
-      console.error('Unexpected error auto-loading form:', error);
+    loadJobForms().catch(error => {
+      console.error('Unexpected error loading job forms:', error);
+      toast.error('Failed to load job forms. Please refresh and try again.');
     });
-  }, []);
+  }, [applyLoadedJobForm, refreshJobFormsList]);
 
   // Detect unsaved changes
   useEffect(() => {
@@ -166,13 +223,23 @@ function JobFormBuilder() {
       initialFormFields,
       newField,
       initialNewField,
-      templateName,
+      templateName: '',
       jobTitle,
       initialJobTitle,
+      fixedFields,
+      initialFixedFields,
     });
 
     setHasUnsavedChanges(changed);
-  }, [formFields, initialFormFields, newField, templateName, jobTitle, initialJobTitle]);
+  }, [
+    formFields,
+    initialFormFields,
+    newField,
+    jobTitle,
+    initialJobTitle,
+    fixedFields,
+    initialFixedFields,
+  ]);
 
   // CRUD Functions with Dynamic Form ID
   const moveField = async (index, direction) => {
@@ -198,6 +265,11 @@ function JobFormBuilder() {
           markAsSaved(newFields);
         } catch (error) {
           console.error('Error reordering questions on server:', error);
+          toast.error(
+            error.response?.data?.message ||
+              error.response?.data?.error?.message ||
+              'Failed to reorder questions. Please try again.',
+          );
         }
       }
     }
@@ -216,9 +288,13 @@ function JobFormBuilder() {
           data: { requestor: getRequestor() },
         });
         markAsSaved(newFields);
-        console.log('Question deleted successfully');
       } catch (error) {
         console.error('Error deleting question on server:', error);
+        toast.error(
+          error.response?.data?.message ||
+            error.response?.data?.error?.message ||
+            'Failed to delete question. Please try again.',
+        );
       }
     }
   };
@@ -263,9 +339,13 @@ function JobFormBuilder() {
           requestor: getRequestor(),
         });
         markAsSaved(updatedFields);
-        console.log('Question updated successfully');
       } catch (error) {
         console.error('Error updating question on server:', error);
+        toast.error(
+          error.response?.data?.message ||
+            error.response?.data?.error?.message ||
+            'Failed to update question. Please try again.',
+        );
       }
     }
 
@@ -281,41 +361,41 @@ function JobFormBuilder() {
     setEditingIndex(null);
   };
 
-  // Import questions from template
-  const importQuestions = questions => {
-    setFormFields(normalizeLoadedQuestions(questions));
-  };
-
   const handleAddOption = () => {
     if (newOption.trim() === '') {
-      alert('Option cannot be empty!');
+      setNewFieldErrors(prev => ({ ...prev, newOption: 'Option cannot be empty.' }));
       return;
     }
     setNewField(prev => ({
       ...prev,
-      options: [...prev.options, newOption],
+      options: [...prev.options, newOption.trim()],
     }));
     setNewOption('');
+    setNewFieldErrors(prev => ({ ...prev, newOption: '', options: '' }));
   };
 
   const handleAddField = async () => {
+    const errors = { questionText: '', options: '', newOption: '' };
     if (newField.questionText.trim() === '') {
-      alert('Field label is required!');
-      return;
+      errors.questionText = 'Field label is required.';
     }
-
     if (
       ['checkbox', 'radio', 'dropdown'].includes(newField.questionType) &&
       newField.options.length === 0
     ) {
-      alert('You must add at least one option for this field!');
-      return;
+      errors.options = 'Add at least one option for this field.';
     }
+
+    setNewFieldErrors(errors);
+    if (errors.questionText || errors.options) return;
 
     const fieldToAdd = normalizeQuestionForApi(newField);
 
     if (isDuplicateQuestion(fieldToAdd, formFields)) {
-      const confirmAdd = window.confirm('You already have a similar question. Add Anyway?');
+      const confirmAdd = await showConfirm('You already have a similar question. Add anyway?', {
+        title: 'Similar question',
+        confirmLabel: 'Add anyway',
+      });
       if (!confirmAdd) return;
     }
     const updatedFields = [...formFields, fieldToAdd];
@@ -332,6 +412,11 @@ function JobFormBuilder() {
         markAsSaved(updatedFields);
       } catch (error) {
         console.error('Error adding question to server:', error);
+        toast.error(
+          error.response?.data?.message ||
+            error.response?.data?.error?.message ||
+            'Failed to add question. Please try again.',
+        );
       }
     }
 
@@ -343,6 +428,7 @@ function JobFormBuilder() {
       isRequired: false,
       required: false,
     });
+    setNewFieldErrors({ questionText: '', options: '', newOption: '' });
   };
 
   const changeVisiblity = (event, field) => {
@@ -354,33 +440,62 @@ function JobFormBuilder() {
     setFormFields(updatedFields);
   };
 
+  const handleFixedFieldToggle = (key, checked) => {
+    setFixedFields(prev => ({ ...prev, [key]: checked }));
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
 
-    if (!currentFormId) {
-      alert('No form loaded to save. Please refresh or select a job position.');
+    const trimmedTitle = String(jobTitle || '').trim();
+    if (!trimmedTitle) {
+      toast.error('Enter a job form title (use the exact Collaboration job title) before saving.');
       return;
     }
 
-    try {
-      await axios.put(ENDPOINTS.UPDATE_JOB_FORM, {
-        formId: currentFormId,
-        title: jobTitle,
-        questions: formFields.map(normalizeQuestionForApi),
-        description: '',
-        requestor: getRequestor(),
-      });
+    const payload = {
+      title: trimmedTitle,
+      questions: formFields.map(normalizeQuestionForApi),
+      fixedFields: normalizeFixedFields(fixedFields),
+      description: '',
+      requestor: getRequestor(),
+    };
 
-      markAsSaved(formFields, jobTitle);
-      console.log('Form updated successfully');
-      alert('Form saved successfully!');
+    try {
+      if (currentFormId) {
+        await axios.put(ENDPOINTS.UPDATE_JOB_FORM, {
+          ...payload,
+          formId: currentFormId,
+        });
+        markAsSaved(formFields, trimmedTitle, fixedFields);
+        await refreshJobFormsList();
+        toast.success('Form saved successfully!');
+        return;
+      }
+
+      const response = await axios.post(ENDPOINTS.CREATE_JOB_FORM, payload);
+      const created = response.data?.form;
+      const createdId = created?._id || created?.id;
+      if (!createdId) {
+        throw new Error('Create succeeded but no form id was returned.');
+      }
+
+      setCurrentFormId(createdId);
+      setJobTitle(created.title || trimmedTitle);
+      setFixedFields(normalizeFixedFields(created.fixedFields || fixedFields));
+      markAsSaved(formFields, created.title || trimmedTitle, created.fixedFields || fixedFields);
+      await refreshJobFormsList();
+      toast.success(
+        'New job form created. It will appear on /job-application when an applicant selects a matching job title.',
+      );
     } catch (error) {
-      console.error('Error updating form:', error);
+      console.error('Error saving form:', error);
       const message =
         error.response?.data?.message ||
         error.response?.data?.error?.message ||
+        error.message ||
         'Failed to save form. Please try again.';
-      alert(message);
+      toast.error(message, { autoClose: 7000 });
     }
   };
 
@@ -397,84 +512,122 @@ function JobFormBuilder() {
           id="onecommunity-image"
           className={styles.oneCommunityGlobalImg}
         />
-        <div className={styles.jobformNavbar}>
-          <div>
-            <input placeholder="Enter Job Title" className={styles.jobformInput} />
-            <button type="button" className={styles.goButton}>
-              Go
-            </button>
-          </div>
-          <div>
-            <select
-              value={jobTitle}
-              onChange={q => setJobTitle(q.target.value)}
-              className={styles.jobformSelect}
-            >
-              <option value="Please Choose an option">Please Choose an Option</option>
-              {jobPositions.map(e => (
-                <option key={uuidv4()} value={e}>
-                  {e}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
         <h1 className={styles.jobformTitle}>Job Question Set Builder</h1>
+        {jobTitle ? (
+          <p className={styles.jobformDesc}>
+            Editing live form: <strong>{jobTitle}</strong>
+          </p>
+        ) : null}
         {canManageJobForms ? (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
-              Use this page to create or edit question templates for job postings. Default questions
-              are preselected automatically, and you can customize the form by adding, removing, or
-              rearranging fields.
+              Load or create a Collaboration job form. Default profile sections are controlled by
+              this form&apos;s backend <code>fixedFields</code>; custom questions are stored in{' '}
+              <code>questions</code>. Save Form writes to /api/jobforms (not /api/templates).
             </p>
             <QuestionSetManager
+              jobForms={jobForms}
+              selectedFormId={currentFormId ? String(currentFormId) : ''}
+              onLoadJobForm={applyLoadedJobForm}
+              onCreateNewForm={handleCreateNewForm}
               formFields={formFields}
               setFormFields={setFormFields}
-              onImportQuestions={fields => {
-                importQuestions(fields);
-                markAsSaved(fields);
-              }}
-              onTemplateSaved={() => {
-                markAsSaved(formFields);
-                resetBuilderState();
-              }}
               darkMode={darkMode}
-              templateName={templateName}
-              setTemplateName={setTemplateName}
-              selectedTemplate={selectedTemplate}
-              setSelectedTemplate={setSelectedTemplate}
+              showAlert={showAlert}
+              showConfirm={showConfirm}
             />
             <div className={styles.standardApplicantSection}>
               <p className={styles.standardApplicantNote}>
-                These profile fields always appear on the application form (including required
-                email).
+                Default profile sections are stored on the job form (<code>fixedFields</code>).
+                Toggle which sections applicants see, then Save Form. Custom questions below come
+                from <code>questions</code>. The &quot;I agree to terms and conditions&quot;
+                checkbox on /job-application is frontend-only (not saved to the backend or this
+                form).
               </p>
-              <div className={styles.standardApplicantGrid}>
-                {STANDARD_APPLICANT_FIELDS.map(field => (
-                  <div key={field.label} className={styles.standardApplicantField}>
-                    <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                      {field.label}
-                      {field.required && (
-                        <span className={styles.requiredMark} aria-hidden="true">
-                          {' '}
-                          *
-                        </span>
+              <div className={styles.fixedFieldsToggles}>
+                {FIXED_FIELD_GROUP_OPTIONS.map(group => {
+                  const inputId = `jfb-fixed-${group.key}`;
+                  return (
+                    <div key={group.key} className={styles.fixedFieldsToggle}>
+                      <input
+                        id={inputId}
+                        type="checkbox"
+                        checked={Boolean(fixedFields[group.key])}
+                        onChange={e => handleFixedFieldToggle(group.key, e.target.checked)}
+                      />
+                      <label htmlFor={inputId}>
+                        {group.label}
+                        <span className={styles.fixedFieldsToggleHint}>{group.description}</span>
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+              {visibleStandardFields.length === 0 ? (
+                <p className={styles.standardApplicantNote}>
+                  No default profile fields enabled. Applicants will only see custom questions
+                  below.
+                </p>
+              ) : (
+                <div className={styles.standardApplicantGrid}>
+                  {visibleStandardFields.map(field => (
+                    <div key={field.label} className={styles.standardApplicantField}>
+                      <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
+                        {field.label}
+                        {field.required && (
+                          <span className={styles.requiredMark} aria-hidden="true">
+                            {' '}
+                            *
+                          </span>
+                        )}
+                      </label>
+                      {field.inputType === 'select' ? (
+                        <select
+                          disabled
+                          tabIndex={-1}
+                          className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
+                          aria-label={`${field.label} preview`}
+                          defaultValue=""
+                        >
+                          <option value="">{field.placeholder}</option>
+                        </select>
+                      ) : field.inputType === 'file' ? (
+                        <input
+                          type="text"
+                          readOnly
+                          tabIndex={-1}
+                          placeholder={field.placeholder}
+                          className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
+                          aria-label={`${field.label} preview`}
+                        />
+                      ) : (
+                        <input
+                          type={field.inputType === 'tel' ? 'tel' : field.inputType}
+                          readOnly
+                          tabIndex={-1}
+                          placeholder={field.placeholder}
+                          className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
+                          aria-label={`${field.label} preview`}
+                        />
                       )}
-                    </label>
-                    <input
-                      type={field.inputType}
-                      readOnly
-                      tabIndex={-1}
-                      placeholder={
-                        field.inputType === 'email'
-                          ? 'Applicant enters email here'
-                          : `Applicant enters ${field.label.toLowerCase()}`
-                      }
-                      className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
-                      aria-label={`${field.label} preview`}
-                    />
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className={styles.frontendOnlyTermsPreview} aria-hidden="true">
+                <label className={styles.frontendOnlyTermsLabel}>
+                  <input type="checkbox" disabled tabIndex={-1} />
+                  <span>
+                    I agree to terms and conditions{' '}
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </span>
+                </label>
+                <p className={styles.fixedFieldsToggleHint}>
+                  Frontend-only on /job-application. Not stored on this job form or in the API
+                  response.
+                </p>
               </div>
             </div>
             <form>
@@ -562,59 +715,95 @@ function JobFormBuilder() {
 
             <div className={styles.newFieldSection}>
               <div>
-                <label className={styles.jbformLabel}>
+                <label className={styles.jbformLabel} htmlFor="jfb-new-field-label">
                   Field Label:
-                  <input
-                    type="text"
-                    value={newField.questionText}
-                    onChange={e => {
-                      e.persist();
-                      setNewField(prev => ({ ...prev, questionText: e.target.value }));
-                    }}
-                    placeholder="Enter Field Label"
-                    className={styles.jobformInput}
-                  />
                 </label>
+                <input
+                  id="jfb-new-field-label"
+                  type="text"
+                  value={newField.questionText}
+                  onChange={e => {
+                    const { value } = e.target;
+                    setNewField(prev => ({ ...prev, questionText: value }));
+                    if (newFieldErrors.questionText) {
+                      setNewFieldErrors(prev => ({ ...prev, questionText: '' }));
+                    }
+                  }}
+                  placeholder="Enter Field Label"
+                  className={`${styles.jobformInput} ${
+                    newFieldErrors.questionText ? styles.jobformInputError : ''
+                  }`}
+                  aria-invalid={Boolean(newFieldErrors.questionText)}
+                  aria-describedby={
+                    newFieldErrors.questionText ? 'jfb-new-field-label-error' : undefined
+                  }
+                />
+                {newFieldErrors.questionText ? (
+                  <p id="jfb-new-field-label-error" className={styles.fieldError} role="alert">
+                    {newFieldErrors.questionText}
+                  </p>
+                ) : null}
               </div>
               <div>
-                <label className={styles.jbformLabel}>
+                <label className={styles.jbformLabel} htmlFor="jfb-new-field-type">
                   Input Type:
-                  <select
-                    value={newField.questionType}
-                    className={styles.jobformSelect}
-                    onChange={e => {
-                      e.persist();
-                      setNewField(prev => ({
-                        ...prev,
-                        questionType: e.target.value,
-                        options: [],
-                      }));
-                    }}
-                  >
-                    <option value="textbox">Text Box</option>
-                    <option value="email">Email</option>
-                    <option value="textarea">Text Area</option>
-                    <option value="checkbox">Check Box</option>
-                    <option value="radio">Radio</option>
-                    <option value="dropdown">Dropdown</option>
-                    <option value="date">Date</option>
-                  </select>
                 </label>
+                <select
+                  id="jfb-new-field-type"
+                  value={newField.questionType}
+                  className={styles.jobformSelect}
+                  onChange={e => {
+                    const { value } = e.target;
+                    setNewField(prev => ({
+                      ...prev,
+                      questionType: value,
+                      options: [],
+                    }));
+                    setNewFieldErrors(prev => ({ ...prev, options: '', newOption: '' }));
+                  }}
+                >
+                  <option value="textbox">Text Box</option>
+                  <option value="email">Email</option>
+                  <option value="textarea">Text Area</option>
+                  <option value="checkbox">Check Box</option>
+                  <option value="radio">Radio</option>
+                  <option value="dropdown">Dropdown</option>
+                  <option value="date">Date</option>
+                </select>
               </div>
 
               {/* Options Section */}
               {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
                 <div className={styles.optionsSection}>
-                  <label className={styles.jbformLabel}>
+                  <label className={styles.jbformLabel} htmlFor="jfb-new-option">
                     Add Option:
-                    <input
-                      type="text"
-                      value={newOption}
-                      onChange={e => setNewOption(e.target.value)}
-                      className={styles.jobformInput}
-                      placeholder="Enter an option"
-                    />
                   </label>
+                  <input
+                    id="jfb-new-option"
+                    type="text"
+                    value={newOption}
+                    onChange={e => {
+                      setNewOption(e.target.value);
+                      if (newFieldErrors.newOption) {
+                        setNewFieldErrors(prev => ({ ...prev, newOption: '' }));
+                      }
+                    }}
+                    className={`${styles.jobformInput} ${
+                      newFieldErrors.newOption ? styles.jobformInputError : ''
+                    }`}
+                    placeholder="Enter an option"
+                    aria-invalid={Boolean(newFieldErrors.newOption)}
+                    aria-describedby={
+                      newFieldErrors.newOption || newFieldErrors.options
+                        ? 'jfb-new-option-error'
+                        : undefined
+                    }
+                  />
+                  {newFieldErrors.newOption || newFieldErrors.options ? (
+                    <p id="jfb-new-option-error" className={styles.fieldError} role="alert">
+                      {newFieldErrors.newOption || newFieldErrors.options}
+                    </p>
+                  ) : null}
                   <button
                     type="button"
                     onClick={handleAddOption}
@@ -624,8 +813,8 @@ function JobFormBuilder() {
                   </button>
                   <div className={styles.optionsList}>
                     <h4>Options:</h4>
-                    {newField.options.map(option => (
-                      <div key={uuidv4()} className={styles.optionItem}>
+                    {newField.options.map((option, optionIndex) => (
+                      <div key={`${option}-${optionIndex}`} className={styles.optionItem}>
                         {option}
                       </div>
                     ))}
@@ -697,8 +886,10 @@ function JobFormBuilder() {
           onClose={() => setShowPreviewModal(false)}
           formFields={formFields}
           jobTitle={jobTitle}
+          fixedFields={fixedFields}
           darkMode={darkMode}
         />
+        <JobFormDialog {...dialogProps} darkMode={darkMode} />
       </div>
     </div>
   );

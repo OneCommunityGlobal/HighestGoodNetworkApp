@@ -59,6 +59,18 @@
   margin-right: 5px;
 }
 
+.fieldError {
+  margin: 4px 0 0;
+  color: #c62828 !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.inputError {
+  border-color: #ef5350 !important;
+}
+
 .optionsGroup {
   border: 1px solid #eee;
   border-radius: 4px;
@@ -160,6 +172,10 @@
 .questionEditModal.darkMode h3 {
   color: #f1f1f1;
   border-bottom-color: #444;
+}
+
+.questionEditModal.darkMode .fieldError {
+  color: #ff8a80 !important;
 }
 
 .questionEditModal.darkMode .formGroup label {
