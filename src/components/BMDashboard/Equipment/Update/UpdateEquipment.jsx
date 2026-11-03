@@ -1,6 +1,13 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEquipmentById, updateEquipment } from '~/actions/bmdashboard/equipmentActions';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCheckCircle,
+  faExclamationCircle,
+  faInfoCircle,
+  faSyncAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import { Button, Form, FormGroup, Label, Container, Row, Col, Input, Alert } from 'reactstrap';
 import CheckTypesModal from '~/components/BMDashboard/shared/CheckTypesModal';
 import { useHistory, useParams } from 'react-router-dom';
@@ -70,6 +77,7 @@ export default function UpdateEquipment() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
+  const [imageError, setImageError] = useState('');
   const [uploadedFilesPreview, setUploadedFilesPreview] = useState([]);
   const [isUpdated, setIsUpdated] = useState(false);
   const [historyState, setHistoryState] = useState({
@@ -80,6 +88,7 @@ export default function UpdateEquipment() {
   const previewFilesRef = useRef([]);
   const historyRequestIdRef = useRef(0);
   const isSubmittingRef = useRef(false);
+  const feedbackRef = useRef(null);
   const editedHistoryFieldsRef = useRef({
     equipmentId: null,
     lastUsedBy: false,
@@ -124,6 +133,7 @@ export default function UpdateEquipment() {
     previewFilesRef.current = [];
     setSubmitError('');
     setSubmitSuccess('');
+    setImageError('');
     setIsUpdated(false);
     setHistoryState({ equipmentId, status: 'loading', equipment: null });
 
@@ -171,12 +181,15 @@ export default function UpdateEquipment() {
 
   useEffect(() => {
     if (!isUpdated) return undefined;
-    const timer = setTimeout(() => {
-      setSubmitSuccess('');
-      setIsUpdated(false);
-    }, 5000);
+    const timer = setTimeout(() => setIsUpdated(false), 5000);
     return () => clearTimeout(timer);
   }, [isUpdated]);
+
+  useEffect(() => {
+    if ((submitError || submitSuccess) && feedbackRef.current?.scrollIntoView) {
+      feedbackRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [submitError, submitSuccess]);
 
   const handleCancel = useCallback(() => history.goBack(), [history]);
 
@@ -195,28 +208,20 @@ export default function UpdateEquipment() {
   }, []);
 
   const validateForm = useCallback(() => {
-    const validations = [
-      [!status, 'Status/Condition is required'],
-      [!lastUsedBy, 'Please specify who used the tool/equipment last time'],
-      [
-        lastUsedBy === 'other' && !lastUsedByOther.trim(),
-        'Please specify the name of who used the tool/equipment',
-      ],
-      [!lastUsedFor, 'Please specify what the tool/equipment was used for'],
-      [
-        lastUsedFor === 'other' && !lastUsedForOther.trim(),
-        'Please specify what the tool/equipment was used for',
-      ],
-      [!replacementRequired, 'Please indicate if replacement is required'],
-      [
-        replacementRequired === 'yes' && !replacementReason.trim(),
-        'Please provide a reason when replacement is required',
-      ],
-      [sendNote === 'yes' && !notes.trim(), 'Please add a note if you selected to send one'],
+    const checks = [
+      [!status, 'Status/Condition'],
+      [!lastUsedBy, 'Who used the tool/equipment last time'],
+      [lastUsedBy === 'other' && !lastUsedByOther.trim(), 'Name of the last user'],
+      [!lastUsedFor, 'What it was used for last time'],
+      [lastUsedFor === 'other' && !lastUsedForOther.trim(), 'Description of the last use'],
+      [!replacementRequired, 'Replacement required'],
+      [replacementRequired === 'yes' && !replacementReason.trim(), 'Replacement reason'],
+      [sendNote === 'yes' && !notes.trim(), 'Note'],
     ];
-
-    const failedValidation = validations.find(([condition]) => condition);
-    return failedValidation ? failedValidation[1] : null;
+    const missing = checks.filter(([isMissing]) => isMissing).map(([, label]) => label);
+    return missing.length > 0
+      ? `Please complete the following required fields: ${missing.join(', ')}.`
+      : null;
   }, [
     status,
     lastUsedBy,
@@ -240,10 +245,11 @@ export default function UpdateEquipment() {
       });
 
       if (validFiles.length === 0) {
-        setSubmitError('Please select a PNG, JPG, JPEG, GIF, or WEBP image.');
+        setImageError('Please select a PNG, JPG, JPEG, GIF, or WEBP image.');
         return;
       }
 
+      setImageError('');
       cleanupFilePreviews(previewFilesRef.current);
       const file = validFiles[0];
       const newPreviews = [
@@ -273,6 +279,7 @@ export default function UpdateEquipment() {
 
       const validationError = validateForm();
       if (validationError) {
+        setSubmitSuccess('');
         setSubmitError(validationError);
         return;
       }
@@ -313,12 +320,18 @@ export default function UpdateEquipment() {
         console.error('Update failed:', error);
 
         let errorMessage = 'Failed to update equipment. Please try again.';
+        const serverMessage = error.response?.data?.error;
 
-        if (error.message?.includes('User not authenticated')) {
+        if (error.message?.includes('User not authenticated') || error.response?.status === 401) {
           errorMessage = 'Authentication error. Please check if you are logged in.';
-        } else if (error.response?.data?.error?.includes('Invalid user ID format')) {
+        } else if (serverMessage?.includes('Invalid user ID format')) {
           errorMessage = 'User ID format error. Please contact support.';
+        } else if (typeof serverMessage === 'string' && serverMessage) {
+          errorMessage = `Failed to update equipment: ${serverMessage}`;
+        } else if (error.request && !error.response) {
+          errorMessage = 'Failed to update equipment: no response from server. Please try again.';
         }
+        errorMessage += ' Your entries have been kept and nothing was saved.';
 
         if (uploadedFiles.length > 0) {
           errorMessage += ' Note: Images were selected and previewed but not saved to database.';
@@ -509,62 +522,13 @@ export default function UpdateEquipment() {
             </h1>
             {isUpdated && (
               <output className="text-success mt-2 d-block" style={{ fontSize: '0.9rem' }}>
-                <i className="fas fa-sync-alt me-2" />
+                <FontAwesomeIcon icon={faSyncAlt} className="mr-2" aria-hidden="true" />
                 Showing updated data for Equipment ID: {equipmentId}
               </output>
             )}
           </header>
         </Col>
       </Row>
-
-      {submitError && (
-        <Row>
-          <Col md={12}>
-            <Alert
-              color="danger"
-              className="mt-3"
-              style={{
-                backgroundColor: darkMode ? '#5c1a1a' : '#f8d7da',
-                borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
-                color: darkMode ? '#f8d7da' : '#842029',
-              }}
-            >
-              <i className="fas fa-exclamation-circle me-2" />
-              {submitError}
-            </Alert>
-          </Col>
-        </Row>
-      )}
-
-      {submitSuccess && (
-        <Row>
-          <Col md={12}>
-            <Alert
-              color="success"
-              className="mt-3"
-              style={{
-                backgroundColor: darkMode ? '#0a3a27' : '#d1e7dd',
-                borderColor: darkMode ? '#badbcc' : '#a3cfbb',
-                color: darkMode ? '#d1e7dd' : '#0f5132',
-              }}
-            >
-              <i className="fas fa-check-circle me-2" />
-              {submitSuccess}
-              <div className="mt-2 small">
-                You can continue editing or{' '}
-                <Button
-                  color="link"
-                  className="p-0"
-                  onClick={() => history.push(`/bmdashboard/tools/${equipmentId}`)}
-                  style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
-                >
-                  view the equipment details
-                </Button>
-              </div>
-            </Alert>
-          </Col>
-        </Row>
-      )}
 
       {equipmentDetails && (
         <Row className="mb-4">
@@ -866,13 +830,18 @@ export default function UpdateEquipment() {
                 color: darkMode ? '#d1ecf1' : '#0c5460',
               }}
             >
-              <i className="fas fa-info-circle me-2" />
+              <FontAwesomeIcon icon={faInfoCircle} className="mr-2" aria-hidden="true" />
               {uploadedFiles.length} image selected for preview only; it will not be saved with this
               update.
             </Alert>
           )}
 
           <DragAndDrop updateUploadedFiles={handleFileUpload} multiple={false} />
+          {imageError && (
+            <Alert color="danger" className="mt-2" role="alert">
+              {imageError}
+            </Alert>
+          )}
 
           {hasFilePreviews && (
             <div className="mt-3">
@@ -907,7 +876,7 @@ export default function UpdateEquipment() {
                   }
                 >
                   <small>
-                    <i className="fas fa-info-circle me-1" />
+                    <FontAwesomeIcon icon={faInfoCircle} className="mr-1" aria-hidden="true" />
                     {hasNotSavedFiles
                       ? 'Images are shown for preview purposes only and are not saved to the database.'
                       : 'Images are uploaded for preview. Form data will be saved to database.'}
@@ -969,6 +938,50 @@ export default function UpdateEquipment() {
           </FormGroup>
         )}
 
+        <div ref={feedbackRef} aria-live="polite" data-testid="submit-feedback">
+          {submitError && (
+            <Alert
+              color="danger"
+              role="alert"
+              className="mt-3"
+              style={{
+                backgroundColor: darkMode ? '#5c1a1a' : '#f8d7da',
+                borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
+                color: darkMode ? '#f8d7da' : '#842029',
+              }}
+            >
+              <FontAwesomeIcon icon={faExclamationCircle} className="mr-2" aria-hidden="true" />
+              {submitError}
+            </Alert>
+          )}
+          {submitSuccess && (
+            <Alert
+              color="success"
+              className="mt-3"
+              style={{
+                backgroundColor: darkMode ? '#0a3a27' : '#d1e7dd',
+                borderColor: darkMode ? '#badbcc' : '#a3cfbb',
+                color: darkMode ? '#d1e7dd' : '#0f5132',
+              }}
+            >
+              <FontAwesomeIcon icon={faCheckCircle} className="mr-2" aria-hidden="true" />
+              {submitSuccess}
+              <div className="mt-2 small">
+                You can continue editing or{' '}
+                <Button
+                  color="link"
+                  className="p-0"
+                  onClick={() => history.push(`/bmdashboard/tools/${equipmentId}`)}
+                  style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
+                >
+                  view the equipment details
+                </Button>
+                .
+              </div>
+            </Alert>
+          )}
+        </div>
+
         <FormGroup>
           <div className={`${styles1.invFormBtnGroup}`}>
             <Button
@@ -980,39 +993,18 @@ export default function UpdateEquipment() {
             >
               Cancel
             </Button>
-            <Button
-              color="primary"
-              type="submit"
-              disabled={isSubmitting}
-              className="position-relative"
-              style={buttonStyle}
-            >
+            <Button color="primary" type="submit" disabled={isSubmitting} style={buttonStyle}>
               {isSubmitting ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                    className="spinner-border spinner-border-sm mr-2"
                     role="status"
                     aria-hidden="true"
                   />
-                  Updating...
+                  Saving...
                 </>
               ) : (
-                <>
-                  <i className="fas fa-save me-2" />
-                  Update Status
-                  {hasUploadedFiles && (
-                    <span
-                      className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                      style={{
-                        backgroundColor: darkMode ? '#0dcaf0' : '#0d6efd',
-                        color: darkMode ? '#000' : '#fff',
-                      }}
-                    >
-                      <i className="fas fa-image me-1" />
-                      {uploadedFiles.length}
-                    </span>
-                  )}
-                </>
+                'Update Status'
               )}
             </Button>
           </div>

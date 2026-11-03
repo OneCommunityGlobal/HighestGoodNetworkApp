@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -138,8 +138,8 @@ describe('UpdateEquipment history and status form', () => {
     fireEvent.click(screen.getByLabelText('Yes'));
     fireEvent.click(screen.getByRole('button', { name: /Update Status/i }));
     expect(
-      await screen.findByText(/Please provide a reason when replacement is required/i),
-    ).toBeInTheDocument();
+      await within(screen.getByTestId('submit-feedback')).findByRole('alert'),
+    ).toHaveTextContent('Please complete the following required fields: Replacement reason.');
 
     fireEvent.change(screen.getByLabelText(/Replacement reason/i), {
       target: { value: 'The drill motor has failed.' },
@@ -446,5 +446,75 @@ describe('UpdateEquipment smart default sources', () => {
     renderForm();
     await waitFor(() => expect(userField()).toHaveValue('Jane Doe (Volunteer #4)'));
     expect(purposeField()).toHaveValue('Living room - painting');
+  });
+
+  describe('submission feedback', () => {
+    const feedback = () => screen.getByTestId('submit-feedback');
+    const submitBtn = () => screen.getByRole('button', { name: /^Update Status$/i });
+
+    it('renders a clean button label with no icon glyphs', () => {
+      renderForm();
+      expect(submitBtn().textContent).toBe('Update Status');
+    });
+
+    it('lists every missing field in one alert placed above the action buttons, with no PUT', async () => {
+      renderForm();
+      fireEvent.click(submitBtn());
+      const alert = await within(feedback()).findByRole('alert');
+      expect(alert).toHaveTextContent(/Please complete the following required fields:/);
+      expect(alert).toHaveTextContent(/Status\/Condition/);
+      expect(alert).toHaveTextContent(/What it was used for last time/);
+      expect(alert).toHaveTextContent(/Replacement required/);
+      expect(within(feedback()).getAllByRole('alert')).toHaveLength(1);
+      expect(
+        alert.compareDocumentPosition(submitBtn()) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+      expect(mocks.updateEquipment).not.toHaveBeenCalled();
+    });
+
+    it('shows Saving... while pending and keeps the confirmation after success', async () => {
+      let resolveSave;
+      mocks.updateEquipment.mockImplementation(() => () =>
+        new Promise(resolve => {
+          resolveSave = resolve;
+        }),
+      );
+      renderForm();
+      await fillRequiredFields();
+      fireEvent.click(submitBtn());
+      const saving = await screen.findByRole('button', { name: /Saving\.\.\./ });
+      expect(saving).toBeDisabled();
+      resolveSave({
+        updateRecord: [
+          {
+            date: '2025-04-01T00:00:00.000Z',
+            condition: 'Working well',
+            lastUsedBy: 'Taylor Volunteer',
+            lastUsedFor: 'Kitchen - tiling',
+            replacementRequired: false,
+          },
+        ],
+      });
+      const status = await within(feedback()).findByRole('alert');
+      expect(status).toHaveTextContent(/status saved as/i);
+      expect(status.textContent).not.toMatch(/image.*(uploaded|saved)/i);
+      expect(submitBtn()).toBeEnabled();
+    });
+
+    it.each([
+      ['backend failure', { response: { status: 500, data: { error: 'Boom' } } }, /Boom/],
+      ['network failure', { request: {}, message: 'Network Error' }, /no response from server/i],
+    ])('shows %s near the buttons and preserves entries', async (_n, err, pattern) => {
+      mocks.updateEquipment.mockImplementation(() => () => Promise.reject(err));
+      renderForm();
+      await fillRequiredFields();
+      fireEvent.click(submitBtn());
+      const alert = await within(feedback()).findByRole('alert');
+      expect(alert).toHaveTextContent(pattern);
+      expect(screen.queryByText(/status saved as/i)).toBeNull();
+      expect(screen.getByLabelText(/What was it used for last time/i)).toHaveValue(
+        'Kitchen - tiling',
+      );
+    });
   });
 });

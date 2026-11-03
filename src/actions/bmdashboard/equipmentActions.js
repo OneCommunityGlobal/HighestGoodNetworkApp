@@ -119,9 +119,7 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
     }
 
     if (!currentUserId) {
-      const errorMsg = 'User not authenticated. Please log in.';
-      toast.error(errorMsg);
-      throw new Error(errorMsg);
+      throw new Error('User not authenticated. Please log in.');
     }
 
     const statusUpdateData = {
@@ -157,7 +155,7 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
       errorMessage = err.message;
     }
 
-    toast.error(errorMessage);
+    err.message = errorMessage;
     throw err;
   }
 };
