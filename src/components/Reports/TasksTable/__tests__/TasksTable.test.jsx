@@ -15,9 +15,9 @@ describe('TasksTable component', () => {
 
   const store = mockStore(mockState);
 
-  const renderComponent = () => render(
+  const renderComponent = props => render(
     <Provider store={store}>
-      <TasksTable tasks={[]} />
+      <TasksTable tasks={[]} {...props} />
     </Provider>
   );
 
@@ -47,5 +47,40 @@ describe('TasksTable component', () => {
 
   it('passes correct props to TasksDetail', () => {
     renderComponent();
+  });
+
+  it('applies scoped dark styles to the Project Report filters', () => {
+    renderComponent({ darkMode: true });
+
+    expect(screen.getByPlaceholderText('Estimated hours').className).toContain(
+      'dark-mode-text-input',
+    );
+    expect(screen.getByText('Any user').className).toContain('tasks-select__placeholder');
+    expect(screen.getByText('Active', { selector: 'label' }).className).toContain(
+      'dark-mode-checkbox-label',
+    );
+  });
+
+  it('applies the scoped dark row style to task rows', () => {
+    renderComponent({
+      darkMode: true,
+      tasks: [
+        {
+          _id: 'task-1',
+          taskName: 'Dark task row',
+          priority: 'High',
+          status: 'Started',
+          resources: [],
+          isAssigned: true,
+          isActive: true,
+          classification: 'Core',
+          estimatedHours: 2,
+        },
+      ],
+    });
+
+    expect(screen.getByRole('row', { name: /Dark task row/ }).className).toContain(
+      'dark-mode-row',
+    );
   });
 });
