@@ -233,6 +233,12 @@
   animation: spin 1s linear infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .loadingSpinner {
+    animation: none;
+  }
+}
+
 .loadingText,
 .noDataText {
   margin: 0;
