@@ -989,7 +989,7 @@ export default function UpdateEquipment() {
                 <Button
                   color="link"
                   className="p-0"
-                  onClick={() => history.push(`/bmdashboard/tools/${equipmentId}`)}
+                  onClick={() => history.push(`/bmdashboard/equipment/${equipmentId}`)}
                   style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
                 >
                   view the equipment details

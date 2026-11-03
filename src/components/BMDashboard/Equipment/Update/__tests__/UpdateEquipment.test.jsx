@@ -551,4 +551,41 @@ describe('UpdateEquipment smart default sources', () => {
       await waitFor(() => expect(statusField()).toHaveValue(label));
     });
   });
+
+  describe('details navigation', () => {
+    const setupWithHistory = () => {
+      const routerHistory = createMemoryHistory({
+        initialEntries: [`/bmdashboard/tools/${equipmentId}/update`],
+      });
+      render(
+        <Provider store={makeStore()}>
+          <Router history={routerHistory}>
+            <Route path="/bmdashboard/tools/:equipmentId/update" component={UpdateEquipment} />
+          </Router>
+        </Provider>,
+      );
+      return routerHistory;
+    };
+
+    it('links the success confirmation to the equipment details route with the same id', async () => {
+      const routerHistory = setupWithHistory();
+      await fillRequiredFields();
+      fireEvent.click(screen.getByRole('button', { name: /^Update Status$/i }));
+
+      fireEvent.click(await screen.findByRole('button', { name: /view the equipment details/i }));
+
+      expect(routerHistory.location.pathname).toBe(`/bmdashboard/equipment/${equipmentId}`);
+    });
+
+    it('does not navigate after an unsuccessful submission', async () => {
+      mocks.updateEquipment.mockImplementation(() => () => Promise.reject(new Error('fail')));
+      const routerHistory = setupWithHistory();
+      await fillRequiredFields();
+      fireEvent.click(screen.getByRole('button', { name: /^Update Status$/i }));
+
+      await within(screen.getByTestId('submit-feedback')).findByRole('alert');
+      expect(screen.queryByRole('button', { name: /view the equipment details/i })).toBeNull();
+      expect(routerHistory.location.pathname).toBe(`/bmdashboard/tools/${equipmentId}/update`);
+    });
+  });
 });
