@@ -170,4 +170,66 @@ describe('EditableInfoModal', () => {
       expect(screen.queryByText('Text passed as defaultText')).not.toBeInTheDocument();
     });
   });
+
+  describe('initialInfoHtml, a starting text with lists and bold', () => {
+    const startingHtml =
+      '<p>Intro line.</p><ul><li><strong>Save:</strong> Click to save.</li><li>Second</li></ul>';
+
+    it('keeps the list and the bold when nothing is saved for this area', () => {
+      renderInfoModal({ initialInfoHtml: startingHtml });
+
+      openInfo();
+
+      expect(screen.getAllByRole('listitem')).toHaveLength(2);
+      expect(screen.getByText('Save:').tagName).toBe('STRONG');
+    });
+
+    it('gives way to the saved text, also when the texts arrive after mount', () => {
+      const { updateProps } = renderInfoModal({ skipFetch: true, initialInfoHtml: startingHtml });
+
+      openInfo();
+      expect(screen.getByText('Intro line.')).toBeInTheDocument();
+
+      updateProps({ infoCollections: [savedRecord] });
+
+      expect(screen.getByText('Saved')).toBeInTheDocument();
+      expect(screen.queryByText('Intro line.')).not.toBeInTheDocument();
+    });
+
+    it('hides the icon from a role the saved visibility leaves out', () => {
+      renderInfoModal({
+        role: 'Volunteer',
+        initialInfoHtml: startingHtml,
+        infoCollections: [{ ...savedRecord, visibility: '2' }],
+      });
+
+      expect(screen.queryByTitle(ICON_TITLE)).not.toBeInTheDocument();
+    });
+
+    it('cleans the starting text the same way as a saved text', () => {
+      renderInfoModal({ initialInfoHtml: '<p>Clean <b>old bold</b></p>' });
+
+      openInfo();
+
+      expect(screen.getByText(/old bold/).tagName).toBe('P');
+    });
+
+    it('goes into the editor and is saved with the list and the bold kept', async () => {
+      const addInfoCollection = vi.fn().mockResolvedValue(201);
+      renderInfoModal({ addInfoCollection, initialInfoHtml: startingHtml });
+
+      openInfo();
+      fireEvent.click(screen.getByText('Intro line.'));
+      expect(screen.getByLabelText('Mock Editor')).toHaveValue(startingHtml);
+      fireEvent.click(screen.getByText('Save'));
+
+      await waitFor(() => {
+        expect(addInfoCollection).toHaveBeenCalledWith({
+          infoName: 'Permission: seeBadges Info',
+          infoContent: startingHtml,
+          visibility: '0',
+        });
+      });
+    });
+  });
 });
