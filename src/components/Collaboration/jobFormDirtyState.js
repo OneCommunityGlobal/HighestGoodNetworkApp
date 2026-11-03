@@ -6,11 +6,14 @@ export function hasUnsavedJobFormChanges({
   templateName,
   jobTitle,
   initialJobTitle,
+  fixedFields,
+  initialFixedFields,
 }) {
   return (
     JSON.stringify(formFields) !== JSON.stringify(initialFormFields) ||
     JSON.stringify(newField) !== JSON.stringify(initialNewField) ||
     templateName !== '' ||
-    jobTitle !== initialJobTitle
+    jobTitle !== initialJobTitle ||
+    JSON.stringify(fixedFields) !== JSON.stringify(initialFixedFields)
   );
 }

@@ -3,7 +3,7 @@ import styles from './FormPreviewModal.module.css';
 import {
   normalizeQuestionType,
   resolveInputType,
-  STANDARD_APPLICANT_FIELDS,
+  getVisibleStandardApplicantFields,
   isFieldRequired,
   numberedQuestionLabel,
 } from './jobFormQuestionUtils';
@@ -17,13 +17,15 @@ import {
  * @param {Function} props.onClose - Callback to close the modal
  * @param {Array} props.formFields - Array of form field objects to display
  * @param {string} props.jobTitle - The job title for the form
+ * @param {Object} props.fixedFields - Backend fixedFields flags for default profile sections
  * @param {boolean} props.darkMode - Dark mode flag
  */
-function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
+function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, fixedFields, darkMode }) {
   if (!isOpen) return null;
 
   // Filter to show only visible fields
   const visibleFields = formFields.filter(field => field.visible !== false);
+  const standardFields = getVisibleStandardApplicantFields(fixedFields);
 
   const renderField = (field, index) => {
     const { questionText, options } = field;
@@ -243,41 +245,52 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
               This is a preview of how the form will appear to applicants.
             </p>
 
-            {visibleFields.length === 0 ? (
+            {visibleFields.length === 0 && standardFields.length === 0 ? (
               <div className={styles.previewEmptyMessage}>
-                <p>
-                  No visible custom questions. Profile fields above are always shown to applicants.
-                </p>
+                <p>No visible profile fields or custom questions for this form.</p>
               </div>
             ) : null}
 
             <div className={styles.previewFieldsContainer}>
-              <div className={styles.previewStandardSection}>
-                <p className={styles.previewStandardNote}>Standard applicant profile fields</p>
-                {STANDARD_APPLICANT_FIELDS.map(field => (
-                  <div key={field.label} className={styles.previewField}>
-                    <label className={styles.previewLabel}>
-                      {field.label}
-                      {field.required && (
-                        <span className={styles.previewRequiredMark} aria-hidden="true">
-                          {' '}
-                          *
-                        </span>
+              {standardFields.length > 0 ? (
+                <div className={styles.previewStandardSection}>
+                  <p className={styles.previewStandardNote}>
+                    Default /job-application profile fields (from fixedFields)
+                  </p>
+                  {standardFields.map(field => (
+                    <div key={field.label} className={styles.previewField}>
+                      <label className={styles.previewLabel}>
+                        {field.label}
+                        {field.required && (
+                          <span className={styles.previewRequiredMark} aria-hidden="true">
+                            {' '}
+                            *
+                          </span>
+                        )}
+                      </label>
+                      {field.inputType === 'select' ? (
+                        <select disabled className={styles.previewInput} defaultValue="">
+                          <option value="">{field.placeholder}</option>
+                        </select>
+                      ) : field.inputType === 'file' ? (
+                        <input
+                          type="text"
+                          placeholder={field.placeholder}
+                          disabled
+                          className={styles.previewInput}
+                        />
+                      ) : (
+                        <input
+                          type={field.inputType === 'tel' ? 'tel' : field.inputType}
+                          placeholder={field.placeholder}
+                          disabled
+                          className={styles.previewInput}
+                        />
                       )}
-                    </label>
-                    <input
-                      type={field.inputType}
-                      placeholder={
-                        field.inputType === 'email'
-                          ? 'Enter email address'
-                          : `Enter ${field.label.toLowerCase()}`
-                      }
-                      disabled
-                      className={styles.previewInput}
-                    />
-                  </div>
-                ))}
-              </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
 
               {visibleFields.length > 0 &&
                 visibleFields.map((field, index) => renderField(field, index))}
