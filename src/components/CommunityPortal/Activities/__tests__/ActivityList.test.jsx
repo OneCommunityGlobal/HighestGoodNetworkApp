@@ -57,6 +57,9 @@ describe('ActivityList', () => {
 
   test('sorts activities by date (latest to earliest)', () => {
     renderActivityList();
+    // All mock activity dates are in the past by now - without this, the
+    // default "hide past events" filter leaves nothing to sort.
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
     fireEvent.change(screen.getByLabelText(/Sort By:/i), {
       target: { value: 'latest' },
