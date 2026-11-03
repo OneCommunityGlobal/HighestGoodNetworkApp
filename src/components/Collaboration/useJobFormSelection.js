@@ -79,26 +79,25 @@ export default function useJobFormSelection({ enabled, onReset, onLoad }) {
     setError('');
     onReset('');
     async function loadCatalog() {
-      try {
-        const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
-        if (ignore) return;
-        const catalog = activeForms(response.data);
-        setForms(catalog);
-        setCatalogLoading(false);
-        if (catalog.length) await loadForm(catalog[0].title, catalog);
-        else {
-          setStatus('error');
-          setError('No active saved questionnaires are available.');
-        }
-      } catch {
+      const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+      if (ignore) return;
+      const catalog = activeForms(response.data);
+      setForms(catalog);
+      setCatalogLoading(false);
+      if (catalog.length) await loadForm(catalog[0].title, catalog);
+      else {
+        setStatus('error');
+        setError('No active saved questionnaires are available.');
+      }
+    }
+    if (enabled) {
+      loadCatalog().catch(() => {
         if (ignore) return;
         setCatalogLoading(false);
         setStatus('error');
         setError('Could not load the job roles. Please retry.');
-      }
-    }
-    if (enabled) loadCatalog();
-    else setCatalogLoading(false);
+      });
+    } else setCatalogLoading(false);
     return () => {
       ignore = true;
       requestVersion.current += 1;
