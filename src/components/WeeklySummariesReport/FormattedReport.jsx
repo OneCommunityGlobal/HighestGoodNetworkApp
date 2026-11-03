@@ -481,7 +481,7 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
             className={styles.copyIcon}
             onClick={() => {
               const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
-              navigator.clipboard.writeText(parsedSummary);
+              void navigator.clipboard.writeText(parsedSummary);
               toast.success('Summary Copied!');
             }}
           />
@@ -518,8 +518,6 @@ function TeamCodeRow({
   const [savedTeamCode, setSavedTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
-  const dispatch = useDispatch();
-
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
 
@@ -543,7 +541,7 @@ function TeamCodeRow({
       setHasError(false);
       setTeamCode(value);
       setSavedTeamCode(value);
-      handleOnChange(summary, value);
+      void handleOnChange(summary, value);
     } else {
       setTeamCode(savedTeamCode);
       setHasError(true);
@@ -651,7 +649,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
 
   const handleWeeklySummaryCountChange = e => {
     setWeeklySummariesCount(e.target.value);
-    handleOnChange(summary, e.target.value);
+    void handleOnChange(summary, e.target.value);
   };
 
   return (
@@ -695,8 +693,6 @@ function Bio({ bioCanEdit, ...props }) {
 function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
-  const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
-
   // Sync local state with props when bioPosted changes from Redux store
   useEffect(() => {
     setBioStatus(bioPosted);
@@ -743,7 +739,7 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
           state={bioStatus}
           handleUserProfile={bio => {
             setBioStatus(bio);
-            handleChangeBioPosted(userId, bio);
+            void handleChangeBioPosted(userId, bio);
           }}
         />
       </div>
