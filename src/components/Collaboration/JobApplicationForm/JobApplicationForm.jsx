@@ -10,7 +10,12 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
-import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
+import TurnstileWidget from './TurnstileWidget';
+import { getTurnstileSiteKey } from './turnstile';
+import {
+  getUploadSizeError,
+  isJobApplicationFileUploadQuestion,
+} from './jobApplicationQuestionUtils';
 import { checkEmail } from '../../../utils/emailValidation';
 import {
   ensurePositionOption,
@@ -111,12 +116,65 @@ function findFormByDeveloperFamily(formsArr, jobTitle) {
 }
 
 /**
+ * Map roles like "Office Coordinator" and "Environmental Planner" to a Management/Administrative form
+ * when an exact match is not found. Does not treat bare "admin" as enough to include a form title
+ * (that incorrectly pulled in "ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER").
+ */
+export function findFormByManagementFamily(formsArr, jobTitle) {
+  const j = normalizeTitleKey(jobTitle);
+  if (
+    !/\bcoordinator\b/.test(j) &&
+    !/\bplanner\b/.test(j) &&
+    !/\bmanager\b/.test(j) &&
+    !/\bmanagement\b/.test(j) &&
+    !/\badministrative\b/.test(j) &&
+    !/\badmin\b/.test(j)
+  ) {
+    return null;
+  }
+
+  const softwareLikeTitle = t =>
+    /\bfrontend\b/.test(t) ||
+    /\btester\b/.test(t) ||
+    /\breact\b/.test(t) ||
+    /\bjavascript\b/.test(t) ||
+    /\bpr review\b/.test(t) ||
+    /\breview team\b/.test(t);
+
+  const candidates = formsArr.filter(f => {
+    const t = normalizeTitleKey(f.title || '');
+    if (!t || softwareLikeTitle(t)) return false;
+    // Prefer real admin/management forms — bare "admin" alone matches PR-review software titles.
+    return /\bmanagement\b/.test(t) || /\bmanager\b/.test(t) || /\badministrative\b/.test(t);
+  });
+
+  if (!candidates.length) return null;
+  if (candidates.length === 1) return candidates[0];
+
+  const score = form => {
+    const t = normalizeTitleKey(form.title || '');
+    if (t.includes('administrative assistant')) return 400;
+    if (/\badministrative\b/.test(t)) return 300;
+    if (t === 'management' || t === 'job application management') return 200;
+    if (/\bmanagement\b/.test(t)) return 150;
+    if (/\bmanager\b/.test(t)) return 100;
+    return 0;
+  };
+
+  return [...candidates].sort((a, b) => {
+    const diff = score(b) - score(a);
+    if (diff !== 0) return diff;
+    return String(a.title || '').localeCompare(String(b.title || ''));
+  })[0];
+}
+
+/**
  * Match a job listing title to a saved applicant-facing form (titles may differ slightly).
  * Retired / internal forms are never matched. A fuzzy step that matches more than one form is
  * treated as no match, so an ambiguous title (e.g. "T.A.S.T") falls back with a warning
  * instead of a silent guess.
  */
-export function findFormForJobTitle(formsArr, jobTitle) {
+export function findFormForJobTitle(formsArr, jobTitle, { includeManagementFamily = true } = {}) {
   if (!jobTitle || !formsArr?.length) return null;
   const candidates = formsArr.filter(isApplicantFacingForm);
   if (!candidates.length) return null;
@@ -135,11 +193,26 @@ export function findFormForJobTitle(formsArr, jobTitle) {
   if (bySubstring.length) return bySubstring.length === 1 ? bySubstring[0] : null;
   const byLikely = candidates.filter(f => titlesLikelyMatch(jobTitle, f.title));
   if (byLikely.length) return byLikely.length === 1 ? byLikely[0] : null;
-  return (
+  const family =
     findFormByTokenOverlap(candidates, jobTitle) ||
     findFormByDeveloperFamily(candidates, jobTitle) ||
-    null
+    null;
+  if (family) return family;
+  if (!includeManagementFamily) return null;
+  return findFormByManagementFamily(candidates, jobTitle);
+}
+
+/** True when the only way this job title maps to the form is the management-family heuristic. */
+export function isManagementFamilySoftMatch(formsArr, jobTitle, matchedForm) {
+  if (!matchedForm || !jobTitle) return false;
+  const without = findFormForJobTitle(formsArr, jobTitle, { includeManagementFamily: false });
+  if (without) return false;
+  const management = findFormByManagementFamily(
+    (formsArr || []).filter(isApplicantFacingForm),
+    jobTitle,
   );
+  if (!management) return false;
+  return String(management._id || management.id) === String(matchedForm._id || matchedForm.id);
 }
 
 /** Role clicked on the job board: React Router state or ?jobTitle= (a bare slug is resolved later). */
@@ -247,8 +320,25 @@ function warnDefaultFormFallback(title, form) {
   );
 }
 
-function notifyInitialFormSelection(navTitle, formMatch, chosen) {
-  if (!navTitle || formMatch) return;
+function warnManagementFamilyMatch(title, form) {
+  toast.warn(
+    `No exact form for "${title}". Showing "${form.title}" — pick another role from the dropdown if this is not the right questionnaire.`,
+    { autoClose: false, closeOnClick: false, toastId: 'job-title-management-family-warning' },
+  );
+}
+
+function notifyInitialFormSelection(
+  navTitle,
+  formMatch,
+  chosen,
+  managementFamilySoftMatch = false,
+) {
+  if (!navTitle) return;
+  if (managementFamilySoftMatch && formMatch) {
+    warnManagementFamilyMatch(navTitle, formMatch);
+    return;
+  }
+  if (formMatch) return;
   if (chosen) {
     warnDefaultFormFallback(navTitle, chosen);
     return;
@@ -379,7 +469,12 @@ export function buildInitialSelection({
   };
   const formMatch = slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
   const chosen = pickInitialForm(formsArr, navState, positionSlug);
-  notifyInitialFormSelection(navTitle, formMatch, chosen);
+  const managementFamilySoftMatch =
+    !slugMatch &&
+    Boolean(navTitle) &&
+    Boolean(formMatch) &&
+    isManagementFamilySoftMatch(formsArr, navTitle, formMatch);
+  notifyInitialFormSelection(navTitle, formMatch, chosen, managementFamilySoftMatch);
 
   // Show a real position or form title, never the raw query / slug: near-miss titles select the
   // matched position, and unmatched ones (e.g. "Applied through site", /apply/<unknown>) select
@@ -792,7 +887,9 @@ function FileUploadField({
   inputRef,
   optional = false,
   required = false,
+  error = '',
 }) {
+  const errorId = `${id}-error`;
   const statusText = file ? `${file.name} (${formatFileSize(file.size)})` : 'No file selected';
   const statusClass = file ? styles.fileStatusSelected : styles.fileStatusEmpty;
 
@@ -823,6 +920,8 @@ function FileUploadField({
             onChange={onChange}
             className={styles.hiddenFileInput}
             required={required && !file}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : undefined}
           />
         </label>
         <span className={`${styles.fileStatus} ${statusClass}`} aria-live="polite">
@@ -834,6 +933,11 @@ function FileUploadField({
           </button>
         )}
       </div>
+      {error && (
+        <p id={errorId} className={styles.fieldError} role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -851,6 +955,7 @@ FileUploadField.propTypes = {
   inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
   optional: PropTypes.bool,
   required: PropTypes.bool,
+  error: PropTypes.string,
 };
 
 FileUploadField.defaultProps = {
@@ -861,6 +966,7 @@ FileUploadField.defaultProps = {
   inputRef: undefined,
   optional: false,
   required: false,
+  error: '',
 };
 
 function JobPositionSelect({ value, options, onChange }) {
@@ -973,7 +1079,12 @@ function JobApplicationForm() {
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const [questionFiles, setQuestionFiles] = useState({});
+  const [resumeFileError, setResumeFileError] = useState('');
+  const [questionFileErrors, setQuestionFileErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+  const [termsError, setTermsError] = useState('');
+  const termsInputRef = useRef(null);
   const resumeInputRef = useRef(null);
   const emailInputRef = useRef(null);
   const questionFileInputRefs = useRef({});
@@ -988,6 +1099,12 @@ function JobApplicationForm() {
   const [requirementPreviewOverrides, setRequirementPreviewOverrides] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [emailSuggestion, setEmailSuggestion] = useState(null);
+  // Bot protection: time the form opened, optional Turnstile token, and a server-side submit error
+  const mountedAtRef = useRef(Date.now());
+  const turnstileRef = useRef(null);
+  const turnstileSiteKey = getTurnstileSiteKey();
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const locationTimezone = [applicantLocation.trim(), timeZone.trim()].filter(Boolean).join(' | ');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
@@ -1171,6 +1288,7 @@ function JobApplicationForm() {
     const qs = getVisibleQuestionsForForm(form);
     setAnswers(initialAnswersForQuestions(qs));
     setQuestionFiles({});
+    setQuestionFileErrors({});
     questionFileInputRefs.current = {};
     setFieldErrors({});
   }, [selectedJob, forms]);
@@ -1192,6 +1310,7 @@ function JobApplicationForm() {
       setFilteredForm(null);
       setAnswers([]);
       setQuestionFiles({});
+      setQuestionFileErrors({});
       questionFileInputRefs.current = {};
       setFieldErrors({});
       return;
@@ -1219,11 +1338,21 @@ function JobApplicationForm() {
     if (!form) form = findDefaultSoftwareForm(forms);
 
     if (positionMatch || form) {
-      const selected = positionMatch || form.title;
-      setSelectedJob(selected);
-      setBannerJobTitle(selected);
-      setJobTitleInput(selected);
-      if (usedDefaultSoftware && form) warnDefaultFormFallback(selected, form);
+      if (usedDefaultSoftware && form) {
+        // Load the default software form, but keep the typed query in the UI and toast.
+        setSelectedJob(form.title);
+        setBannerJobTitle(raw);
+        setJobTitleInput(raw);
+        warnDefaultFormFallback(raw, form);
+      } else {
+        const dropdownJob = positionMatch || form.title;
+        setSelectedJob(dropdownJob);
+        setBannerJobTitle(dropdownJob);
+        setJobTitleInput(dropdownJob);
+        if (form && isManagementFamilySoftMatch(forms, lookupTitle, form)) {
+          warnManagementFamilyMatch(raw, form);
+        }
+      }
     } else {
       toast.info('No position matches that search. Pick one from the dropdown.');
     }
@@ -1314,8 +1443,17 @@ function JobApplicationForm() {
 
     if (!allowedTypes.includes(f.type)) {
       setResumeFile(null);
+      setResumeFileError('');
       if (resumeInputRef.current) resumeInputRef.current.value = '';
       toast.error('Invalid file type. Please upload PDF or DOC/DOCX.');
+      return;
+    }
+
+    const sizeError = getUploadSizeError(f);
+    setResumeFileError(sizeError);
+    if (sizeError) {
+      setResumeFile(null);
+      if (resumeInputRef.current) resumeInputRef.current.value = '';
       return;
     }
 
@@ -1325,11 +1463,29 @@ function JobApplicationForm() {
 
   const clearResumeFile = () => {
     setResumeFile(null);
+    setResumeFileError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
+  };
+
+  const setQuestionFileError = (idx, message) => {
+    setQuestionFileErrors(prev => {
+      const next = { ...prev };
+      if (message) next[idx] = message;
+      else delete next[idx];
+      return next;
+    });
   };
 
   const handleQuestionFileChange = (idx, e) => {
     const f = e.target.files?.[0] || null;
+    const sizeError = getUploadSizeError(f);
+    setQuestionFileError(idx, sizeError);
+    if (sizeError) {
+      const ref = questionFileInputRefs.current[idx];
+      if (ref) ref.value = '';
+      setQuestionFiles(prev => ({ ...prev, [idx]: null }));
+      return;
+    }
     setQuestionFiles(prev => ({ ...prev, [idx]: f }));
   };
 
@@ -1339,6 +1495,7 @@ function JobApplicationForm() {
       delete next[idx];
       return next;
     });
+    setQuestionFileError(idx, '');
     const ref = questionFileInputRefs.current[idx];
     if (ref) ref.value = '';
   };
@@ -1430,6 +1587,8 @@ function JobApplicationForm() {
   };
 
   const resetFormAfterSubmit = () => {
+    setHasAcceptedTerms(false);
+    setTermsError('');
     setFirstName('');
     setLastName('');
     setApplicantEmail('');
@@ -1439,8 +1598,10 @@ function JobApplicationForm() {
     setCompanyPosition('');
     setWebsiteSocial('');
     setResumeFile(null);
+    setResumeFileError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
     setQuestionFiles({});
+    setQuestionFileErrors({});
     questionFileInputRefs.current = {};
     setFullTimeYears('');
     setMonthsVolunteer('');
@@ -1480,6 +1641,12 @@ function JobApplicationForm() {
   const handleSubmit = async e => {
     e.preventDefault();
 
+    if (!hasAcceptedTerms) {
+      setTermsError('Please agree to the terms and conditions before submitting.');
+      termsInputRef.current?.focus();
+      return;
+    }
+
     if (!filteredForm?._id) {
       toast.error('No application form selected. Choose a role from the dropdown.');
       return;
@@ -1517,6 +1684,7 @@ function JobApplicationForm() {
       return;
     }
 
+    setSubmitError('');
     setIsSubmitting(true);
     try {
       const answersPayload = visibleQuestions.map((q, idx) => ({
@@ -1549,6 +1717,13 @@ function JobApplicationForm() {
         }),
       );
 
+      // Bot protection: honeypot stays empty for people, fillMs is how long the form was open
+      formData.append('website_url', '');
+      formData.append('fillMs', String(Math.max(0, Date.now() - mountedAtRef.current)));
+      if (turnstileSiteKey) {
+        formData.append('cf-turnstile-response', turnstileToken);
+      }
+
       if (resumeFile) {
         formData.append('resume', resumeFile);
       }
@@ -1571,7 +1746,19 @@ function JobApplicationForm() {
       resetFormAfterSubmit();
     } catch (err) {
       const apiMessage = err.response?.data?.message || err.response?.data?.error;
-      if (err.response?.status === 409) {
+      const status = err.response?.status;
+      if (turnstileSiteKey) {
+        // A Turnstile token is single use, so every failed submit needs a fresh one
+        turnstileRef.current?.reset();
+      }
+      if (status === 429) {
+        setSubmitError(
+          err.response?.data?.error ||
+            'Too many applications from this connection. Please try again later.',
+        );
+      } else if (status === 400 && err.response?.data?.error === VERIFICATION_FAILED_MESSAGE) {
+        setSubmitError(err.response.data.error);
+      } else if (status === 409) {
         toast.error(apiMessage || 'You already applied for this position.', {
           autoClose: 7000,
         });
@@ -1673,7 +1860,7 @@ function JobApplicationForm() {
               </div>
             </div>
           )}
-          <form className={styles.form} onSubmit={handleSubmit}>
+          <form className={styles.form} onSubmit={handleSubmit} aria-label="Job application">
             {isAdmin && (
               <>
                 <p className={styles.adminRequirementsNote}>
@@ -2020,6 +2207,7 @@ function JobApplicationForm() {
                   inputRef={resumeInputRef}
                   optional={!resumeRequired}
                   required={resumeRequired}
+                  error={resumeFileError}
                 />
               </div>
               {visibleQuestions.map((q, idx) => {
@@ -2195,6 +2383,7 @@ function JobApplicationForm() {
                           questionFileInputRefs.current[idx] = el;
                         }}
                         required={req}
+                        error={questionFileErrors[idx]}
                       />
                     )}
                     {![
@@ -2222,7 +2411,77 @@ function JobApplicationForm() {
                   </div>
                 );
               })}
-              <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+              {/* Honeypot: off-screen, unreachable by keyboard and hidden from screen readers.
+                  Real people never fill it; bots that fill every input give themselves away. */}
+              <div className={styles.honeypot} aria-hidden="true">
+                <input
+                  type="text"
+                  name="website_url"
+                  data-testid="jaf-honeypot"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  defaultValue=""
+                />
+              </div>
+              {turnstileSiteKey && (
+                <TurnstileWidget
+                  ref={turnstileRef}
+                  siteKey={turnstileSiteKey}
+                  darkMode={Boolean(darkMode)}
+                  onToken={setTurnstileToken}
+                />
+              )}
+              {submitError && (
+                <p className={styles.fieldError} role="alert">
+                  {submitError}
+                </p>
+              )}
+              <div className={styles.termsAgreement}>
+                <label htmlFor="jaf-accept-terms" className={styles.termsLabel}>
+                  <input
+                    id="jaf-accept-terms"
+                    ref={termsInputRef}
+                    type="checkbox"
+                    name="acceptedTerms"
+                    checked={hasAcceptedTerms}
+                    onChange={e => {
+                      setHasAcceptedTerms(e.target.checked);
+                      setTermsError('');
+                    }}
+                    required
+                    aria-invalid={Boolean(termsError)}
+                    aria-describedby={termsError ? 'jaf-terms-error' : 'jaf-terms-hint'}
+                  />
+                  <span>
+                    I agree to{' '}
+                    <a
+                      href="https://onecommunityglobal.org/terms-and-conditions/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      terms and conditions
+                    </a>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      {' '}
+                      *
+                    </span>
+                  </span>
+                </label>
+                {termsError ? (
+                  <p id="jaf-terms-error" className={styles.fieldError} role="alert">
+                    {termsError}
+                  </p>
+                ) : (
+                  <p id="jaf-terms-hint" className={styles.termsHint}>
+                    Required before submitting your application.
+                  </p>
+                )}
+              </div>
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={isSubmitting || !hasAcceptedTerms}
+              >
                 {isSubmitting ? 'Submitting…' : 'Submit your application'}
               </button>
             </div>
@@ -2233,6 +2492,8 @@ function JobApplicationForm() {
   );
 }
 
+const VERIFICATION_FAILED_MESSAGE = 'Verification failed. Please try again.';
+
 const requirementsPropType = PropTypes.shape({
   reactExperience: PropTypes.bool,
   twoMonthsCommitment: PropTypes.bool,
@@ -2242,7 +2503,14 @@ const requirementsPropType = PropTypes.shape({
 });
 
 const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
     <path
       d="M11.6667 3.5L5.25 9.91667L2.33334 7"
       stroke="white"

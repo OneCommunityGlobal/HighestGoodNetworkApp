@@ -126,9 +126,6 @@
   color: #616161;
   line-height: 22px;
   overflow-wrap: break-word;
-  max-height: 60px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* --- DARK MODE --- */

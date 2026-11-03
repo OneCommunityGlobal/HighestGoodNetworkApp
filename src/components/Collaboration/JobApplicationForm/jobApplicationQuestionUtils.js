@@ -1,3 +1,12 @@
+/** Per-file upload cap; must match the server limit on POST /jobforms/:formId/responses. */
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+/** Returns a readable error for a file over the upload cap, or '' when it is fine. */
+export function getUploadSizeError(file) {
+  if (file && file.size > MAX_UPLOAD_BYTES) return 'File too large, max 5 MB.';
+  return '';
+}
+
 /** Detect file-upload prompts without treating "document" used as a verb as an upload. */
 export function isJobApplicationFileUploadQuestion(question) {
   const label = String(question?.label || question?.questionText || '').toLowerCase();
