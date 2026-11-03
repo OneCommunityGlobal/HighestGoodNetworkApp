@@ -1,7 +1,7 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
 // eslint-disable-next-line no-alert
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { Prompt } from 'react-router-dom';
@@ -28,6 +28,7 @@ import {
   stripLeadingQuestionNumber,
 } from './jobFormQuestionUtils';
 import { hasUnsavedJobFormChanges } from './jobFormDirtyState';
+import hasPermission from '../../utils/permissions';
 import generateReferralLink from './ReferralLinkGenerator';
 import { permissions } from '../../utils/constants';
 function JobFormBuilder() {
@@ -131,6 +132,18 @@ function JobFormBuilder() {
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [initialFormFields, setInitialFormFields] = useState([]);
+  const [templateName, setTemplateName] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const initialNewField = {
+    questionText: '',
+    questionType: 'textbox',
+    options: [],
+    visible: true,
+    isRequired: false,
+    required: false,
+  };
 
   const markAsSaved = (fields, savedJobTitle) => {
     setInitialFormFields(structuredClone(fields));
@@ -418,8 +431,6 @@ function JobFormBuilder() {
     }
   };
 
-  const darkMode = useSelector(state => state.theme?.darkMode);
-
   return (
     <div className={`${styles.pageWrapper} ${darkMode ? styles.darkMode : ''}`}>
       <Prompt
@@ -453,6 +464,44 @@ function JobFormBuilder() {
                 </option>
               ))}
             </select>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              minWidth: '220px',
+              maxWidth: '100%',
+            }}
+          >
+            <label className={styles.jbformLabel} htmlFor="referralSource">
+              Source Identifier (e.g., LN, FB):
+            </label>
+            <input
+              id="referralSource"
+              type="text"
+              value={referralSource}
+              onChange={event => setReferralSource(event.target.value)}
+              className={styles.jobformInput}
+              placeholder="Enter source identifier"
+              maxLength={10}
+            />
+            {referralLink && (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  value={referralLink}
+                  readOnly
+                  ref={referralInputRef}
+                  className={styles.jobformInput}
+                  title={referralLink}
+                  aria-label="Generated referral link"
+                />
+                <button type="button" onClick={handleCopyReferralLink} className={styles.goButton}>
+                  Copy Link
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <h1 className={styles.jobformTitle}>Job Question Set Builder</h1>
@@ -638,50 +687,55 @@ function JobFormBuilder() {
                 </label>
               </div>
 
-            {/* Options Section */}
-            {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
-              <div className={styles.optionsSection}>
-                <label className={styles.jbformLabel}>
-                  Add Option:
-                  <input
-                    type="text"
-                    value={newOption}
-                    onChange={e => setNewOption(e.target.value)}
-                    className={styles.jobformInput}
-                    placeholder="Enter an option"
-                  />
-                </label>
-                <button type="button" onClick={handleAddOption} className={styles.addOptionButton}>
-                  Add Option
-                </button>
-                <div className={styles.optionsList}>
-                  <h4>Options:</h4>
-                  {newField.options.map(option => (
-                    <div key={uuidv4()} className={styles.optionItem}>
-                      {option}
-                    </div>
-                  ))}
+              {/* Options Section */}
+              {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
+                <div className={styles.optionsSection}>
+                  <label className={styles.jbformLabel}>
+                    Add Option:
+                    <input
+                      type="text"
+                      value={newOption}
+                      onChange={e => setNewOption(e.target.value)}
+                      className={styles.jobformInput}
+                      placeholder="Enter an option"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddOption}
+                    className={styles.addOptionButton}
+                  >
+                    Add Option
+                  </button>
+                  <div className={styles.optionsList}>
+                    <h4>Options:</h4>
+                    {newField.options.map(option => (
+                      <div key={uuidv4()} className={styles.optionItem}>
+                        {option}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
-              Add Field
+              <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
+                Add Field
+              </button>
+            </div>
+            <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
+              Proceed to Submit with Details
             </button>
+            {editModalOpen && editingQuestion && (
+              <QuestionEditModal
+                question={editingQuestion}
+                onSave={handleSaveEditedQuestion}
+                onCancel={handleCancelEdit}
+                darkMode={darkMode}
+              />
+            )}
           </div>
-          <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
-            Proceed to Submit with Details
-          </button>
-          {editModalOpen && editingQuestion && (
-            <QuestionEditModal
-              question={editingQuestion}
-              onSave={handleSaveEditedQuestion}
-              onCancel={handleCancelEdit}
-              darkMode={darkMode}
-            />
-          )}
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   );
 }

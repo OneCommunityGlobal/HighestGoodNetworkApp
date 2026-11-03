@@ -35,24 +35,6 @@
   color: #f1f1f1;
 }
 
-.darkContainer {
-  background-color: #1a2332;
-  color: #e8e8e8;
-  max-width: 100%;
-  margin: 0;
-  box-shadow: none;
-  border-radius: 0;
-}
-
-.darkContainer {
-  background-color: #1a2332;
-  color: #e8e8e8;
-  max-width: 100%;
-  margin: 0;
-  box-shadow: none;
-  border-radius: 0;
-}
-
 .customForm {
   width: 100%;
   background-color: var(--jfb-white);
@@ -134,47 +116,6 @@
   box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
-.darkContainer input,
-.darkContainer select,
-.darkContainer textarea {
-  background-color: #1e2a3a;
-  color: #e8e8e8;
-  border-color: #3a4a5c;
-}
-
-.darkContainer .goButton,
-.darkContainer .jobformNavbar button {
-  background-color: #3d4f62;
-  color: #e8e8e8;
-}
-
-.darkContainer .goButton:hover,
-.darkContainer .jobformNavbar button:hover {
-  background-color: #4a5f75;
-}
-
-.darkContainer .addFieldButton,
-.darkContainer .addOptionButton {
-  background-color: #3d7a40;
-}
-
-.darkContainer .addFieldButton:hover,
-.darkContainer .addOptionButton:hover {
-  background-color: #2f5f33;
-}
-
-.darkContainer .jobSubmitButton {
-  background-color: #3d7a40;
-}
-
-.darkContainer .jobSubmitButton:hover {
-  background-color: #2f5f33;
-}
-
-.jobformNavbar button:hover {
-  background-color: #f5f5f5;
-}
-
 .buttonRow {
   display: flex;
   gap: 8px;
@@ -189,80 +130,26 @@
 }
 
 .goButton {
-  padding: 11px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 10px 20px;
   border: none;
-  background-color: #cccccc;
+  background-color: #ccc;
   color: white;
   font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
+  width: auto;
+  min-width: 100px;
   white-space: nowrap;
-}
-
-.darkContainer input,
-.darkContainer select,
-.darkContainer textarea {
-  background-color: #1e2a3a;
-  color: #e8e8e8;
-  border-color: #3a4a5c;
-}
-
-.darkContainer .goButton,
-.darkContainer .jobformNavbar button {
-  background-color: #3d4f62;
-  color: #e8e8e8;
-}
-
-.darkContainer .goButton:hover,
-.darkContainer .jobformNavbar button:hover {
-  background-color: #4a5f75;
-}
-
-.darkContainer .addFieldButton,
-.darkContainer .addOptionButton {
-  background-color: #3d7a40;
-}
-
-.darkContainer .addFieldButton:hover,
-.darkContainer .addOptionButton:hover {
-  background-color: #2f5f33;
-}
-
-.darkContainer .jobSubmitButton {
-  background-color: #3d7a40;
-}
-
-.darkContainer .jobSubmitButton:hover {
-  background-color: #2f5f33;
+  flex-shrink: 0;
 }
 
 .goButton:hover {
   background-color: grey;
-}
-
-.buttonRow {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.inputGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.goButton {
-  padding: 11px 20px;
-  border: none;
-  background-color: #cccccc;
-  color: white;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .jobformNavbar button:hover {
@@ -271,20 +158,13 @@
 
 .jobformDesc {
   line-height: 2;
+  color: #f1f1f1;
 }
 
 .jobformTitle {
   text-align: center;
   color: black;
   font-weight: bold;
-}
-
-.darkContainer .jobformTitle,
-.darkContainer .jobformDesc,
-.darkContainer .jbformLabel,
-.darkContainer label,
-.darkContainer .fieldLabel {
-  color: #f5f5f5;
 }
 
 .jbformLabel {
@@ -306,14 +186,6 @@
   box-sizing: border-box;
 }
 
-.darkContainer .jobformInput,
-.darkContainer .jobformTextarea,
-.darkContainer .jobformSelect {
-  background-color: #1e2a3a;
-  color: #e8e8e8;
-  border-color: #3a4a5c;
-}
-
 .jobformTextarea {
   height: 80px;
   resize: vertical;
@@ -322,14 +194,6 @@
 .newFieldSection {
   background-color: var(--jfb-white);
   padding: 20px;
-}
-
-.darkContainer .newFieldSection {
-  background-color: #1e2a3a;
-}
-
-.darkContainer .newFieldSection {
-  background-color: #1e2a3a;
 }
 
 /* General Container for Each Question */
@@ -490,6 +354,33 @@
     font-size: 1.5rem;
   }
 
+  .goButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 10px 20px;
+    border: none;
+    background-color: #ccc;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: auto;
+    min-width: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .goButton:hover {
+    background-color: grey;
+  }
+
+  .jobformNavbar button:hover {
+    background-color: grey;
+  }
+
   .jobformDesc {
     line-height: 1.6;
   }
@@ -579,6 +470,60 @@
   justify-content: center;
 }
 
+/* Dark container base overrides */
+
+.darkContainer {
+  background-color: #1a2332;
+  color: #e8e8e8;
+  max-width: 100%;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.darkContainer input,
+.darkContainer select,
+.darkContainer textarea {
+  background-color: #1e2a3a;
+  color: #e8e8e8;
+  border-color: #3a4a5c;
+}
+
+.darkContainer .goButton,
+.darkContainer .jobformNavbar button {
+  background-color: #3d4f62;
+  color: #e8e8e8;
+}
+
+.darkContainer .addFieldButton,
+.darkContainer .addOptionButton {
+  background-color: #3d7a40;
+}
+
+.darkContainer .jobSubmitButton {
+  background-color: #3d7a40;
+}
+
+.darkContainer .jobformTitle,
+.darkContainer .jobformDesc,
+.darkContainer .jbformLabel,
+.darkContainer label,
+.darkContainer .fieldLabel {
+  color: #f5f5f5;
+}
+
+.darkContainer .jobformInput,
+.darkContainer .jobformTextarea,
+.darkContainer .jobformSelect {
+  background-color: #1e2a3a;
+  color: #e8e8e8;
+  border-color: #3a4a5c;
+}
+
+.darkContainer .newFieldSection {
+  background-color: #1e2a3a;
+}
+
 /* Dark mode styles */
 .darkMode {
   background-color: #1b2a41;
@@ -618,8 +563,6 @@
 
 .darkMode .jobformSelect {
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   padding-right: 2.5rem;
   background-image: url("data:image/svg+xml;utf8,<svg fill='lightgray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
@@ -637,8 +580,12 @@
   color: #f1f1f1;
 }
 
-.darkMode .jobformDesc {
-  color: #f1f1f1;
+.goButton:hover {
+  background-color: grey;
+}
+
+.jobformNavbar button:hover {
+  background-color: grey;
 }
 
 .darkMode .formDiv {
@@ -693,7 +640,7 @@
 }
 
 .darkMode .goButton {
-  background-color: #5a6a7a;
+  background-color: #5a6a7a !important;
   color: var(--jfb-white);
   border: none;
 }
@@ -766,7 +713,7 @@
   background-color: var(--jfb-blue);
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .formBuilderContainer {
     width: 98%;
     max-width: 100%;
@@ -822,11 +769,26 @@
     flex-direction: row;
     align-items: center;
     gap: 8px;
-    word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   .oneCommunityGlobalImg {
     max-width: 100%;
     height: auto;
   }
+}
+
+/* Dark container hover overrides */
+.darkContainer .goButton:hover,
+.darkContainer .jobformNavbar button:hover {
+  background-color: #4a5f75;
+}
+
+.darkContainer .addFieldButton:hover,
+.darkContainer .addOptionButton:hover {
+  background-color: #2f5f33;
+}
+
+.darkContainer .jobSubmitButton:hover {
+  background-color: #2f5f33;
 }
