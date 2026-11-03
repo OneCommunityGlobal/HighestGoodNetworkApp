@@ -142,6 +142,16 @@ export const setPostErrorBuildingInventoryTypeResult = payload => {
   };
 };
 
+export const deleteInvTypeById = (id, category) => {
+  return async dispatch => {
+    try {
+      await axios.delete(ENDPOINTS.BM_DELETE_INVENTORTY_TYPE_BY_ID(id));
+      dispatch(fetchInvTypeByType(category));
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
+  };
+};
 
 export const fetchMaterialTypes = () => {
   return async dispatch => {
@@ -206,6 +216,21 @@ export const fetchInvTypeByType = type => {
       .catch(err => {
         console.error('Failed to refresh data:', err);
       });
+  };
+};
+
+export const updateInvTypeById = (id, payload, category) => {
+  return async dispatch => {
+    try {
+      await axios.put(
+        ENDPOINTS.BM_UPDATE_INVENTORY_TYPE_BY_ID(id),
+        payload
+      );
+
+      dispatch(fetchInvTypeByType(category));
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
   };
 };
 
@@ -312,7 +337,7 @@ export const deleteInvType = (type, invtypeId) => {
   return async dispatch => {
     const toastId = `delete-${type}-${Date.now()}`;
     try {
-      await axios.delete(`${ENDPOINTS.BM_INVTYPE_TYPE(type)}/${invtypeId}`);
+      await axios.delete(`${ENDPOINTS.BM_INVTYPE_TYPE(type.toLowerCase())}/${invtypeId}`);
       // Refresh the data after successful deletion
       dispatch(fetchInvTypeByType(type));
       toast.success(`${type.slice(0, -1)} deleted successfully!`, { toastId });
@@ -327,13 +352,15 @@ export const updateInvType = (type, invtypeId, payload) => {
   return async dispatch => {
     const toastId = `update-${type}-${Date.now()}`;
     try {
-      await axios.put(`${ENDPOINTS.BM_INVTYPE_TYPE(type)}/${invtypeId}`, payload);
+      await axios.put(`${ENDPOINTS.BM_INVTYPE_TYPE(type.toLowerCase())}/${invtypeId}`, payload);
       // Refresh the data after successful update
       dispatch(fetchInvTypeByType(type));
       toast.success(`${type.slice(0, -1)} updated successfully!`, { toastId });
+      return { success: true };
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to update item. Please try again.';
       toast.error(errorMessage, { toastId: `update-error-${type}-${Date.now()}` });
+      return { success: false, error: errorMessage };
     }
   };
 };

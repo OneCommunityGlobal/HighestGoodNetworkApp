@@ -567,33 +567,6 @@ export function Header(props) {
   }, [user.userid, props.auth.firstName]);
 
   useEffect(() => {
-    const handleResize = () => {
-      const currentWidth = window.innerWidth;
-      // eslint-disable-next-line no-console
-      console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
-      if (currentWidth >= 1728) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
-      } else if (currentWidth >= 1400) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Desktop - Centered layout`);
-      } else if (currentWidth >= 1200) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Medium desktop - Centered layout`);
-      } else if (currentWidth >= 768) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Tablet - Stacked layout`);
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Mobile - Compact vertical layout`);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
@@ -873,6 +846,16 @@ export function Header(props) {
                       {canAccessUserManagement && <DropdownItem tag={Link} to="/usermanagement" className={fontColor} disabled={headerDisabled}>{USER_MANAGEMENT}</DropdownItem>}
                       {canAccessBadgeManagement && <DropdownItem tag={Link} to="/badgemanagement" className={fontColor} disabled={headerDisabled}>{BADGE_MANAGEMENT}</DropdownItem>}
                       {canAccessProjects && <DropdownItem tag={Link} to="/projects" className={fontColor} disabled={headerDisabled}>{PROJECTS}</DropdownItem>}
+                      {(canAccessProjects || canUpdateTask) && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/resolvedtasks"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          Resolved Tasks
+                        </DropdownItem>
+                      )}
                       {canAccessTeams && <DropdownItem tag={Link} to="/teams" className={fontColor} disabled={headerDisabled}>{TEAMS}</DropdownItem>}
                       {canAccessSendEmails && <DropdownItem tag={Link} to="/announcements" className={fontColor} disabled={headerDisabled}>{SEND_EMAILS}</DropdownItem>}
                       {canAccessScheduleMeetings && (
