@@ -18,6 +18,24 @@ import FilePreview from '~/components/common/FilePreview/FilePreview'; // Import
 import styles from './UpdateEquipment.module.css';
 import styles1 from '../../BMDashboard.module.css';
 
+// Display labels are kept for users; the stored value must match the backend condition enum.
+const STATUS_OPTIONS = [
+  { label: 'Working well', value: 'Good' },
+  { label: 'Broken/Needs repair', value: 'Needs Repair' },
+  { label: 'Stolen/Lost', value: 'Out of Order' },
+  { label: 'End of life', value: 'Out of Order' },
+  { label: 'Returned', value: 'Good' },
+];
+
+// Saved records hold either a legacy label or a canonical value; return the matching dropdown label.
+const toStatusLabel = condition =>
+  (
+    STATUS_OPTIONS.find(o => o.label === condition) ||
+    STATUS_OPTIONS.find(o => o.value === condition)
+  )?.label || '';
+
+const toStoredStatus = label => STATUS_OPTIONS.find(o => o.label === label)?.value || label;
+
 const getLatestRecord = (records, predicate = () => true) =>
   (Array.isArray(records) ? records : []).reduce((latest, record) => {
     if (!predicate(record)) return latest;
@@ -163,7 +181,7 @@ export default function UpdateEquipment() {
         setLastUsedFor(latestPurpose?.lastUsedFor || '');
       }
       if (latestStatus) {
-        setStatus(latestStatus.condition || '');
+        setStatus(toStatusLabel(latestStatus.condition));
         setReplacementRequired(latestStatus.replacementRequired || '');
         setReplacementReason(latestStatus.replacementReason || '');
         setDescription(latestStatus.description || '');
@@ -291,7 +309,7 @@ export default function UpdateEquipment() {
 
       try {
         const updateData = {
-          condition: status,
+          condition: toStoredStatus(status),
           lastUsedBy: lastUsedBy === 'other' ? lastUsedByOther : lastUsedBy,
           lastUsedFor: lastUsedFor === 'other' ? lastUsedForOther : lastUsedFor,
           replacementRequired,
@@ -661,11 +679,11 @@ export default function UpdateEquipment() {
                 className={styles['custom-select']}
               >
                 <option value="">Select status</option>
-                <option value="Working well">Working well</option>
-                <option value="Broken/Needs repair">Broken/Needs repair</option>
-                <option value="Stolen/Lost">Stolen/Lost</option>
-                <option value="End of life">End of life</option>
-                <option value="Returned">Returned</option>
+                {STATUS_OPTIONS.map(option => (
+                  <option key={option.label} value={option.label}>
+                    {option.label}
+                  </option>
+                ))}
               </Input>
             </FormGroup>
           </Col>

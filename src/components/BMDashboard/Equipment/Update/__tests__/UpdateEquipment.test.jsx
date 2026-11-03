@@ -155,9 +155,7 @@ describe('UpdateEquipment history and status form', () => {
         }),
       ),
     );
-    expect(
-      await screen.findByText(/Cordless Drill status saved as Working well/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/Cordless Drill status saved as Good/i)).toBeInTheDocument();
     expect(screen.getAllByText(/The drill motor has failed/).length).toBeGreaterThan(0);
   });
 
@@ -515,6 +513,42 @@ describe('UpdateEquipment smart default sources', () => {
       expect(screen.getByLabelText(/What was it used for last time/i)).toHaveValue(
         'Kitchen - tiling',
       );
+    });
+  });
+
+  describe('status values', () => {
+    const statusField = () => screen.getByLabelText(/Status\/Condition Now/i);
+
+    it.each([
+      ['Working well', 'Good'],
+      ['Broken/Needs repair', 'Needs Repair'],
+      ['Stolen/Lost', 'Out of Order'],
+      ['End of life', 'Out of Order'],
+      ['Returned', 'Good'],
+    ])('keeps the label "%s" and submits the canonical value %s', async (label, stored) => {
+      renderForm();
+      await fillRequiredFields();
+      fireEvent.change(statusField(), { target: { value: label } });
+      fireEvent.click(screen.getByRole('button', { name: /^Update Status$/i }));
+
+      await waitFor(() => expect(mocks.updateEquipment).toHaveBeenCalledTimes(1));
+      expect(mocks.updateEquipment.mock.calls[0][1].condition).toBe(stored);
+      expect(screen.getByRole('option', { name: label })).toBeInTheDocument();
+    });
+
+    it.each([
+      ['Working well', 'Working well'],
+      ['Good', 'Working well'],
+      ['Needs Repair', 'Broken/Needs repair'],
+      ['Broken/Needs repair', 'Broken/Needs repair'],
+      ['Out of Order', 'Stolen/Lost'],
+    ])('preselects the dropdown for a saved %s record', async (saved, label) => {
+      mocks.fetchEquipmentById.mockImplementation(() => async () => ({
+        ...equipmentHistory,
+        updateRecord: [{ date: '2025-03-05T12:00:00.000Z', condition: saved }],
+      }));
+      renderForm();
+      await waitFor(() => expect(statusField()).toHaveValue(label));
     });
   });
 });
