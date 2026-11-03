@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import httpService from '../../../../services/httpService';
 import styles from './DistributionLaborHours.module.css';
 
 const COLORS = ['#4f8fa8', '#3fa4b8', '#ffab91', '#ffccbb', '#c7c7c7', '#f9f3e3'];
@@ -33,8 +34,10 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
 export default function DistributionLaborHours() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [filterOptions, setFilterOptions] = useState({ projects: [], members: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const [dateRange, setDateRange] = useState({
     from: '',
@@ -44,73 +47,6 @@ export default function DistributionLaborHours() {
   const [projectFilter, setProjectFilter] = useState('');
   const [memberFilter, setMemberFilter] = useState('');
   const [filtersApplied, setFiltersApplied] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const mockData = [
-        {
-          name: 'Stud Wall Construction',
-          value: 25.9,
-          project: 'Project A',
-          member: 'Member 1',
-          date: '2026-08-05',
-        },
-        {
-          name: 'Foundation Concreting',
-          value: 18.5,
-          project: 'Project A',
-          member: 'Member 2',
-          date: '2026-08-09',
-        },
-        {
-          name: 'Task A',
-          value: 22.2,
-          project: 'Project B',
-          member: 'Member 1',
-          date: '2026-08-12',
-        },
-        {
-          name: 'Task B',
-          value: 18.5,
-          project: 'Project B',
-          member: 'Member 2',
-          date: '2026-08-16',
-        },
-        {
-          name: 'Task C',
-          value: 14.8,
-          project: 'Project A',
-          member: 'Member 1',
-          date: '2026-08-20',
-        },
-        {
-          name: 'Electrical',
-          value: 12,
-          project: 'Project A',
-          member: 'Member 2',
-          date: '2026-08-22',
-        },
-        {
-          name: 'Plumbing',
-          value: 8,
-          project: 'Project B',
-          member: 'Member 1',
-          date: '2026-08-24',
-        },
-        {
-          name: 'Welding',
-          value: 6,
-          project: 'Project B',
-          member: 'Member 2',
-          date: '2026-08-27',
-        },
-      ];
-
-      setOriginalData(mockData);
-    };
-
-    fetchData();
-  }, []);
 
   const formatChartData = data => {
     const sortedData = [...data].sort((a, b) => b.value - a.value);
@@ -132,32 +68,48 @@ export default function DistributionLaborHours() {
     return top5;
   };
 
+  const fetchData = async filters => {
+    setLoading(true);
+    setError('');
+    try {
+      const params = new URLSearchParams();
+      if (filters.from && filters.to) {
+        params.set('start_date', filters.from);
+        params.set('end_date', filters.to);
+      }
+      if (filters.project) params.set('project', filters.project);
+      if (filters.member) params.set('member', filters.member);
+      const query = params.toString();
+      const response = await httpService.get(
+        `${process.env.REACT_APP_APIENDPOINT}/labor-hours/distribution${query ? `?${query}` : ''}`,
+      );
+      const tasks = (response.data.distribution || []).map(item => ({
+        name: item.task || 'Unspecified task',
+        value: Number(item.hours) || 0,
+      }));
+      setFilteredData(formatChartData(tasks));
+      setFilterOptions(response.data.filters || { projects: [], members: [] });
+    } catch (requestError) {
+      setFilteredData([]);
+      setError(
+        requestError.response?.data?.error || 'Unable to load labor-hour data. Please try again.',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (originalData.length > 0) {
-      setFilteredData(formatChartData(originalData));
-    }
-  }, [originalData]);
+    fetchData({ from: '', to: '', project: '', member: '' });
+  }, []);
 
-  const handleSubmit = () => {
-    let result = [...originalData];
-
-    if (dateRange.from) {
-      result = result.filter(item => item.date >= dateRange.from);
-    }
-
-    if (dateRange.to) {
-      result = result.filter(item => item.date <= dateRange.to);
-    }
-
-    if (projectFilter) {
-      result = result.filter(item => item.project === projectFilter);
-    }
-
-    if (memberFilter) {
-      result = result.filter(item => item.member === memberFilter);
-    }
-
-    setFilteredData(formatChartData(result));
+  const handleSubmit = async () => {
+    await fetchData({
+      from: dateRange.from,
+      to: dateRange.to,
+      project: projectFilter,
+      member: memberFilter,
+    });
     setFiltersApplied(true);
   };
 
@@ -167,14 +119,12 @@ export default function DistributionLaborHours() {
 
   const projectOptions = [
     { value: '', label: 'ALL' },
-    { value: 'Project A', label: 'Project A' },
-    { value: 'Project B', label: 'Project B' },
+    ...filterOptions.projects.map(project => ({ value: project.id, label: project.name })),
   ];
 
   const memberOptions = [
     { value: '', label: 'ALL' },
-    { value: 'Member 1', label: 'Member 1' },
-    { value: 'Member 2', label: 'Member 2' },
+    ...filterOptions.members.map(member => ({ value: member.id, label: member.name })),
   ];
 
   const selectedProject =
@@ -283,8 +233,13 @@ export default function DistributionLaborHours() {
           </div>
 
           <div className={styles.submitSection}>
-            <button className={styles.button} type="button" onClick={handleSubmit}>
-              Submit
+            <button
+              className={styles.button}
+              type="button"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Loading...' : 'Submit'}
             </button>
 
             {filtersApplied && <span className={styles.appliedMessage}>Filters applied</span>}
@@ -292,7 +247,11 @@ export default function DistributionLaborHours() {
         </div>
 
         <div className={styles.visualizationSection}>
-          {filteredData.length > 0 ? (
+          {error ? (
+            <div className={styles.noData} role="alert">
+              {error}
+            </div>
+          ) : filteredData.length > 0 ? (
             <div className={styles.visualizationContent}>
               <div className={styles.legend}>
                 {filteredData.map((entry, index) => (
