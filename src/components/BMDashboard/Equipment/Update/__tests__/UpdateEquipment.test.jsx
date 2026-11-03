@@ -588,4 +588,13 @@ describe('UpdateEquipment smart default sources', () => {
       expect(routerHistory.location.pathname).toBe(`/bmdashboard/tools/${equipmentId}/update`);
     });
   });
+
+  it('applies the scoped navy-on-light-blue summary class regardless of theme', async () => {
+    renderForm();
+    await screen.findByText('Last Update Summary');
+    const panel = screen
+      .getAllByRole('alert')
+      .find(el => within(el).queryByText('Last Update Summary'));
+    expect(panel.className).toMatch(/lastUpdateSummary/);
+  });
 });
