@@ -80,9 +80,9 @@ export default function DistributionLaborHours() {
       if (filters.project) params.set('project', filters.project);
       if (filters.member) params.set('member', filters.member);
       const query = params.toString();
-      const response = await httpService.get(
-        `${process.env.REACT_APP_APIENDPOINT}/labor-hours/distribution${query ? `?${query}` : ''}`,
-      );
+      const endpoint = `${process.env.REACT_APP_APIENDPOINT}/labor-hours/distribution`;
+      const requestUrl = query ? `${endpoint}?${query}` : endpoint;
+      const response = await httpService.get(requestUrl);
       const tasks = (response.data.distribution || []).map(item => ({
         name: item.task || 'Unspecified task',
         value: Number(item.hours) || 0,
@@ -100,7 +100,7 @@ export default function DistributionLaborHours() {
   };
 
   useEffect(() => {
-    fetchData({ from: '', to: '', project: '', member: '' });
+    void fetchData({ from: '', to: '', project: '', member: '' });
   }, []);
 
   const handleSubmit = async () => {
@@ -247,11 +247,12 @@ export default function DistributionLaborHours() {
         </div>
 
         <div className={styles.visualizationSection}>
-          {error ? (
-            <div className={styles.noData} role="alert">
-              {error}
+          {(error || filteredData.length === 0) && (
+            <div className={styles.noData} role={error ? 'alert' : undefined}>
+              {error || 'No labor-hour data found for the selected filters.'}
             </div>
-          ) : filteredData.length > 0 ? (
+          )}
+          {!error && filteredData.length > 0 && (
             <div className={styles.visualizationContent}>
               <div className={styles.legend}>
                 {filteredData.map((entry, index) => (
@@ -318,8 +319,6 @@ export default function DistributionLaborHours() {
                 </ResponsiveContainer>
               </div>
             </div>
-          ) : (
-            <div className={styles.noData}>No labor-hour data found for the selected filters.</div>
           )}
         </div>
       </div>
