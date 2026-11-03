@@ -248,7 +248,7 @@ describe('job role and questionnaire binding', () => {
     await screen.findByRole('alert');
     expect(screen.getByRole('button', { name: 'Save Form' })).toBeDisabled();
     expect(screen.queryByText(/Electrical question/)).not.toBeInTheDocument();
-    select(software.title);
+    fireEvent.click(screen.getByRole('button', { name: 'Retry questionnaire' }));
     await ready(software.title);
   });
 
@@ -285,6 +285,44 @@ describe('job role and questionnaire binding', () => {
     await screen.findByText(/Several saved forms/);
     expect(screen.getByRole('button', { name: 'Save Form' })).toBeDisabled();
     expect(axios.get).not.toHaveBeenCalledWith(ENDPOINTS.GET_JOB_FORM(software._id));
+  });
+
+  it('opens an unambiguous role when the first role has duplicate forms', async () => {
+    catalog.push({ ...electrical, _id: 'electrical-copy' });
+    mount();
+    await ready(software.title);
+    expect(axios.get).not.toHaveBeenCalledWith(ENDPOINTS.GET_JOB_FORM(electrical._id));
+  });
+
+  it('lets users choose and retry a specific duplicate without changing its save target', async () => {
+    const copy = {
+      ...electrical,
+      _id: 'electrical-copy',
+      category: 'General',
+      updatedAt: '2026-10-13T12:00:00Z',
+      questions: [{ questionText: 'Duplicate-specific question', questionType: 'textbox' }],
+    };
+    catalog = [electrical, copy];
+    details.set(ENDPOINTS.GET_JOB_FORM(copy._id), copy);
+    mount();
+    const picker = await screen.findByRole('combobox', { name: 'Saved questionnaire' });
+    expect(screen.getByRole('button', { name: 'Save Form' })).toBeDisabled();
+    expect(
+      screen.getByRole('option', { name: /General.*2026-10-13.*electrical-copy/ }),
+    ).toBeInTheDocument();
+    axios.get.mockRejectedValueOnce(new Error('offline'));
+    fireEvent.change(picker, { target: { value: copy._id } });
+    fireEvent.click(await screen.findByRole('button', { name: 'Retry questionnaire' }));
+    await ready(electrical.title);
+    expect(screen.getByText(/Duplicate-specific question/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Save Form' }));
+    await waitFor(() =>
+      expect(axios.put).toHaveBeenCalledWith(
+        ENDPOINTS.UPDATE_JOB_FORM,
+        expect.objectContaining({ formId: copy._id }),
+      ),
+    );
+    expect(axios.get).not.toHaveBeenCalledWith(ENDPOINTS.GET_JOB_FORM(electrical._id));
   });
 
   it('supports an explicitly empty saved question set', async () => {

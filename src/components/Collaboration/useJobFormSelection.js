@@ -24,6 +24,7 @@ function activeForms(data) {
 export default function useJobFormSelection({ enabled, onReset, onLoad }) {
   const [forms, setForms] = useState([]);
   const [selectedTitle, setSelectedTitle] = useState('');
+  const [selectedFormId, setSelectedFormId] = useState('');
   const [status, setStatus] = useState('loading');
   const [error, setError] = useState('');
   const [catalogLoading, setCatalogLoading] = useState(true);
@@ -31,23 +32,25 @@ export default function useJobFormSelection({ enabled, onReset, onLoad }) {
   const requestVersion = useRef(0);
 
   const loadForm = useCallback(
-    async (title, catalog) => {
+    async (title, catalog, targetId = '') => {
       const version = ++requestVersion.current;
       setSelectedTitle(title);
+      setSelectedFormId(targetId);
       setError('');
       setStatus('loading');
       onReset(title);
       const matches = catalog.filter(form => titleKey(form.title) === titleKey(title));
-      if (matches.length !== 1) {
-        setStatus('error');
-        setError(
-          matches.length
-            ? 'Several saved forms have this role name. Resolve the duplicate before editing.'
-            : `No saved questionnaire is available for ${title}. Choose another role.`,
-        );
+      if (matches.length > 1 && !targetId) {
+        setStatus('choosing');
         return;
       }
-      const target = matches[0];
+      const target = targetId ? matches.find(form => formId(form) === targetId) : matches[0];
+      if (!target) {
+        setStatus('error');
+        setError(`No saved questionnaire is available for ${title}. Choose another role.`);
+        return;
+      }
+      setSelectedFormId(formId(target));
       try {
         const response = await axios.get(ENDPOINTS.GET_JOB_FORM(formId(target)));
         if (version !== requestVersion.current) return;
@@ -66,7 +69,9 @@ export default function useJobFormSelection({ enabled, onReset, onLoad }) {
       } catch {
         if (version !== requestVersion.current) return;
         setStatus('error');
-        setError(`Could not load the questionnaire for ${title}. Select the role again to retry.`);
+        setError(
+          `Could not load the questionnaire for ${title}. Use Retry questionnaire to try again.`,
+        );
       }
     },
     [onReset, onLoad],
@@ -77,6 +82,8 @@ export default function useJobFormSelection({ enabled, onReset, onLoad }) {
     setCatalogLoading(true);
     setStatus('loading');
     setError('');
+    setSelectedTitle('');
+    setSelectedFormId('');
     onReset('');
     async function loadCatalog() {
       const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
@@ -84,8 +91,13 @@ export default function useJobFormSelection({ enabled, onReset, onLoad }) {
       const catalog = activeForms(response.data);
       setForms(catalog);
       setCatalogLoading(false);
-      if (catalog.length) await loadForm(catalog[0].title, catalog);
-      else {
+      if (catalog.length) {
+        const initial = catalog.find(
+          candidate =>
+            catalog.filter(form => titleKey(form.title) === titleKey(candidate.title)).length === 1,
+        );
+        await loadForm((initial || catalog[0]).title, catalog);
+      } else {
         setStatus('error');
         setError('No active saved questionnaires are available.');
       }
@@ -114,11 +126,14 @@ export default function useJobFormSelection({ enabled, onReset, onLoad }) {
   ];
   return {
     selectedTitle,
+    selectedFormId,
+    matchingForms: forms.filter(form => titleKey(form.title) === titleKey(selectedTitle)),
     status,
     error,
     catalogLoading,
     options,
-    selectRole: title => loadForm(title, forms),
+    selectRole: (title, targetId) => loadForm(title, forms, targetId),
+    retryForm: () => loadForm(selectedTitle, forms, selectedFormId),
     retryCatalog: () => setRetry(value => value + 1),
   };
 }

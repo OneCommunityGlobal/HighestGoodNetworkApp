@@ -121,13 +121,13 @@ function JobFormBuilder() {
   const canEditCurrentRole = () =>
     canEdit && version === editorVersion.current && !mutationInFlight.current;
 
-  const selectRole = title => {
+  const selectRole = (title, targetId) => {
     if (mutationInFlight.current) return;
     if (hasUnsavedChanges && !window.confirm('Discard unsaved changes and switch job roles?'))
       return;
     setSearchError('');
     setSearchTitle('');
-    selection.selectRole(title);
+    selection.selectRole(title, targetId);
   };
 
   const searchRole = event => {
@@ -507,6 +507,36 @@ function JobFormBuilder() {
               <p className={styles.roleError} role="alert">
                 {selection.error || searchError}
               </p>
+            )}
+            {selection.matchingForms.length > 1 && (
+              <div className={styles.roleContext}>
+                <label htmlFor="saved-questionnaire">
+                  Several saved forms have this role name. Choose the questionnaire to edit.
+                </label>
+                <select
+                  id="saved-questionnaire"
+                  aria-label="Saved questionnaire"
+                  className={styles.jobformSelect}
+                  value={selection.selectedFormId}
+                  disabled={isSaving || selection.status === 'loading'}
+                  onChange={event => selectRole(selection.selectedTitle, event.target.value)}
+                >
+                  <option value="" disabled>
+                    Choose a saved questionnaire
+                  </option>
+                  {selection.matchingForms.map(form => (
+                    <option key={form._id || form.id} value={form._id || form.id}>
+                      {form.category || 'No category'} —{' '}
+                      {form.updatedAt || 'Update date unavailable'} — {form._id || form.id}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {selection.status === 'error' && selection.selectedFormId && (
+              <button type="button" onClick={selection.retryForm}>
+                Retry questionnaire
+              </button>
             )}
             {selection.error && !selection.selectedTitle && (
               <button type="button" onClick={selection.retryCatalog}>
