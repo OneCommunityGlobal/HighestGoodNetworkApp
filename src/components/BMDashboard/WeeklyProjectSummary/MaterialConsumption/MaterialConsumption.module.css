@@ -134,14 +134,10 @@
   min-height: 0;
 }
 
+/* The filter keeps its natural height (chips wrap) and never widens the card. */
 .totalCostContent :global([data-testid='select-projects-dropdown']) {
   flex: 0 0 auto;
-}
-
-/* Keep long project selections inside the Total Cost filter instead of widening the card. */
-.totalCostContent :global([data-testid='select-projects-dropdown'] [class*='ValueContainer']) {
-  max-height: 72px;
-  overflow: auto;
+  min-width: 0;
 }
 
 .totalCostContent :global([style*='overflow-x: auto']) {
