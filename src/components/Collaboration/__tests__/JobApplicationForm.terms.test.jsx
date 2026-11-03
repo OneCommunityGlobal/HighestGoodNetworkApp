@@ -121,9 +121,10 @@ describe('job application terms acknowledgement', () => {
     const checkbox = screen.getByRole('checkbox', { name: /I agree to terms and conditions/i });
     fireEvent.click(checkbox);
     fireEvent.submit(screen.getByRole('form', { name: 'Job application' }));
-    expect(toast.error).toHaveBeenCalled();
+    expect(toast.error).not.toHaveBeenCalled();
     expect(axios.post).not.toHaveBeenCalled();
     expect(checkbox).toBeChecked();
+    expect(screen.getByText(/First name is required/i)).toBeInTheDocument();
   });
 
   it('submits valid agreed data through the existing mocked API and resets agreement', async () => {
