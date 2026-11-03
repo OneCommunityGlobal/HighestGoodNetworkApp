@@ -391,7 +391,16 @@ function TimeEntryForm(props) {
     // another tab already stopping/logging this same session - doesn't save a duplicate.
     if (from === 'Timer') {
       const resynced = sendGetTimerAndConfirm ? await sendGetTimerAndConfirm() : null;
-      if (!resynced || resynced.started === false) {
+      // Only an EXPLICIT "started: false" from the server means another tab really did
+      // stop/log this session already - abort rather than risk a duplicate entry. A
+      // timeout/no-response (resynced === null) is not that signal - it just means we
+      // couldn't confirm either way (e.g. a slow connection, or a backend that hasn't
+      // picked up the GET_TIMER requestId echo yet). Treating a timeout as "definitely
+      // stopped elsewhere" used to abort the WHOLE submission before sendStop() was ever
+      // called - the timer kept running and the form never closed, looking exactly like
+      // a hung save. Proceed with best effort instead; sendStop() right below is itself
+      // a real, authoritative check.
+      if (resynced && resynced.started === false) {
         toast.info('This timer session was already stopped or logged elsewhere - please refresh.');
         handleFormReset();
         return;
@@ -402,15 +411,20 @@ function TimeEntryForm(props) {
       // authoritative goal/time/startAt instead, the same way updateRemaining() derives the
       // live countdown, so a stale local clock can no longer log less than was actually
       // worked. stopTimer() itself can't be used for this - once stopped, goal/time become
-      // the *leftover*, not the elapsed amount.
-      const resyncedGoalMs = Number(resynced.goal);
-      const resyncedTimeMs = Number(resynced.time);
-      const trueRemainingMs = resynced.paused
-        ? resyncedTimeMs
-        : Math.max(0, resyncedTimeMs - (Date.now() - new Date(resynced.startAt).getTime()));
-      const elapsedMs = Math.max(0, resyncedGoalMs - trueRemainingMs);
-      const authoritativeHours = Math.floor(elapsedMs / 3600000);
-      const authoritativeMinutes = Math.floor((elapsedMs % 3600000) / 60000);
+      // the *leftover*, not the elapsed amount. Falls back to the form's own values if the
+      // resync didn't come back in time.
+      let authoritativeHours = formHours;
+      let authoritativeMinutes = formMinutes;
+      if (resynced) {
+        const resyncedGoalMs = Number(resynced.goal);
+        const resyncedTimeMs = Number(resynced.time);
+        const trueRemainingMs = resynced.paused
+          ? resyncedTimeMs
+          : Math.max(0, resyncedTimeMs - (Date.now() - new Date(resynced.startAt).getTime()));
+        const elapsedMs = Math.max(0, resyncedGoalMs - trueRemainingMs);
+        authoritativeHours = Math.floor(elapsedMs / 3600000);
+        authoritativeMinutes = Math.floor((elapsedMs % 3600000) / 60000);
+      }
       timeEntry.hours = authoritativeHours;
       timeEntry.minutes = authoritativeMinutes;
 
@@ -431,7 +445,10 @@ function TimeEntryForm(props) {
         return; // form stays open with hours/minutes intact for retry
       }
 
-      clearForm();
+      // Closes the modal (not just clearing its fields) - the save is done and the timer is
+      // stopped, so there's nothing left for the user to see here; leaving it open after a
+      // slow save looked exactly like the save had silently failed or hung.
+      clearForm(true);
       if (onTimeSubmitted) {
         onTimeSubmitted({
           hours: authoritativeHours,
