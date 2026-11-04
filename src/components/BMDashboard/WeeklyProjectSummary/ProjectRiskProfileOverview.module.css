@@ -477,3 +477,10 @@
   background: #2c2c2c;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
+/* Compact tooltip so it does not cover nearby bars and project names */
+.tooltip {
+  max-width: 240px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}

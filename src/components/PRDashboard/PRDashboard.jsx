@@ -2,6 +2,7 @@ import hasPermission from '~/utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './PRDashboard.module.css';
 
+import { permissions } from '../../utils/constants';
 /**
  * Dashboard sections configuration
  * These represent the future analytics graphs that will be implemented later.
@@ -67,7 +68,7 @@ function PRDashboard({ authUser }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dm = darkMode ? styles['dark-mode'] : '';
 
-  if (!hasPermission('accessPRTeamDashboard', authUser?.permissions)) {
+  if (!hasPermission(permissions.accessPRTeamDashboard, authUser?.permissions)) {
     return <p>You do not have access to this dashboard.</p>;
   }
 

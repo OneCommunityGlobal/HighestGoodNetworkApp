@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
 import isEqual from 'lodash/isEqual';
+import debounce from 'lodash/debounce';
 import { searchWithAccent } from '../../utils/search';
 import {
   getAllUserTeams,
@@ -61,11 +62,19 @@ class Teams extends React.PureComponent {
       membersFetching: false,
       selectedTeamMembers: [],
     };
+    this.onWildCardSearch = debounce(this.onWildCardSearch, 300, {
+      leading: true,
+      trailing: true,
+    });
   }
 
   componentDidMount() {
     this.props.getAllUserTeams(FILTER_ALL);
     this.props.getAllUserProfile();
+  }
+
+  componentWillUnmount() {
+    this.onWildCardSearch.cancel();
   }
 
   componentDidUpdate(prevProps, prevState) {

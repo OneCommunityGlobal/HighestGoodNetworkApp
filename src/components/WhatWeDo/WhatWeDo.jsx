@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styles from './WhatWeDo.module.css';
 
 const sections = [
@@ -62,6 +63,7 @@ const sections = [
 ];
 
 function WhatWeDoSection() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   return (
     <div className={styles.whatWeDoContainer}>
       <h2>What We Do</h2>
@@ -70,7 +72,7 @@ function WhatWeDoSection() {
           <a
             key={idx}
             href={section.link}
-            className={styles.whatWeDoItem}
+            className={`${styles.whatWeDoItem} ${darkMode ? styles.dark : ''}`}
             target="_blank"
             rel="noopener noreferrer"
           >
