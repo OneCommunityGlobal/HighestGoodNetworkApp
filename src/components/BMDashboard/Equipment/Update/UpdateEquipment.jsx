@@ -702,7 +702,7 @@ export default function UpdateEquipment() {
               }}
             >
               <i className="fas fa-info-circle me-2" />
-              Image uploaded and ready for preview
+              <span>Image uploaded and ready for preview</span>
             </Alert>
           )}
 

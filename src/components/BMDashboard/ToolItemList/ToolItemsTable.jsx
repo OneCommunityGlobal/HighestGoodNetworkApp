@@ -3,7 +3,6 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
 import ToolRecordsModal from './ToolRecordsModal';
 import styles from './ToolItemListView.module.css';
 
@@ -14,8 +13,6 @@ export default function ToolItemsTable({
   UpdateItemModal,
   dynamicColumns,
 }) {
-  const darkMode = useSelector(state => state.theme?.darkMode || false);
-
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
