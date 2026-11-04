@@ -112,23 +112,23 @@
 }
 
 .pr-grading-screen-th-name {
-  width: 24%;
-  text-align: center;
+  width: 22%;
 }
 
 .pr-grading-screen-th-reviewed {
-  width: 13%;
-  text-align: center;
+  width: 12%;
 }
 
 .pr-grading-screen-th-needed {
-  width: 13%;
-  text-align: center;
+  width: 12%;
 }
 
 .pr-grading-screen-th-numbers {
-  width: 50%;
-  text-align: center;
+  width: 44%;
+}
+
+.pr-grading-screen-th-actions {
+  width: 10%;
 }
 
 /* Table Body */
@@ -1095,6 +1095,7 @@
 }
 
 /* ---------------- INLINE PR SUMMARY ---------------- */
+
 /* Promotion Confirmation Modal Actions (From Your Branch) */
 .pr-promotion-no-history {
   margin-bottom: 16px;
