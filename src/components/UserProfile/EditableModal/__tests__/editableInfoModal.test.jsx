@@ -232,4 +232,128 @@ describe('EditableInfoModal', () => {
       });
     });
   });
+
+  describe('closing without saving', () => {
+    // an Owner opens the box, clicks the saved text to edit it and types, but does not save
+    const typeWithoutSaving = () => {
+      openInfo();
+      fireEvent.click(screen.getByText('Saved'));
+      fireEvent.change(screen.getByLabelText('Mock Editor'), { target: { value: 'test only' } });
+    };
+
+    // the box has closed; it is opened again and must show the saved text, not the typing
+    const expectSavedTextAfterReopening = () => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      openInfo();
+      expect(screen.getByText('Saved')).toBeInTheDocument();
+      expect(screen.queryByText('test only')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('Mock Editor')).not.toBeInTheDocument();
+    };
+
+    it('shows the saved text again after Close', () => {
+      renderInfoModal({ infoCollections: [savedRecord] });
+
+      typeWithoutSaving();
+      fireEvent.click(screen.getByText('Close'));
+
+      expectSavedTextAfterReopening();
+    });
+
+    it('shows the starting text again after Close when nothing is saved yet, as on a permission heading', () => {
+      renderInfoModal({ skipFetch: true, initialInfo: 'Default text' });
+
+      openInfo();
+      fireEvent.click(screen.getByText('Default text'));
+      fireEvent.change(screen.getByLabelText('Mock Editor'), { target: { value: 'test only' } });
+      fireEvent.click(screen.getByText('Close'));
+
+      openInfo();
+      expect(screen.getByText('Default text')).toBeInTheDocument();
+      expect(screen.queryByText('test only')).not.toBeInTheDocument();
+    });
+
+    it('keeps the unsaved typing in the editor after Esc, as before', () => {
+      renderInfoModal({ infoCollections: [savedRecord] });
+
+      typeWithoutSaving();
+      fireEvent.keyUp(screen.getByRole('dialog'), { key: 'Escape', keyCode: 27 });
+
+      // only Close throws the typing away; after Esc the box opens again in the editor
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      openInfo();
+      expect(screen.getByLabelText('Mock Editor')).toHaveValue('test only');
+    });
+
+    it('keeps the unsaved typing in the editor after a click outside the box, as before', () => {
+      renderInfoModal({ infoCollections: [savedRecord] });
+
+      typeWithoutSaving();
+      // reactstrap closes the box on a press and a click on the dark area around it
+      const areaAroundTheBox = screen.getByRole('dialog');
+      fireEvent.mouseDown(areaAroundTheBox);
+      fireEvent.click(areaAroundTheBox);
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      openInfo();
+      expect(screen.getByLabelText('Mock Editor')).toHaveValue('test only');
+    });
+
+    it("puts back the saved 'Who can view' choice after Close", () => {
+      renderInfoModal({ infoCollections: [savedRecord] });
+
+      openInfo();
+      fireEvent.click(screen.getByText('Saved'));
+      // picks another 'Who can view' option, but does not save
+      fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown', keyCode: 40 });
+      fireEvent.click(screen.getByText('Admin + Owner User Classes Only'));
+      fireEvent.click(screen.getByText('Close'));
+
+      openInfo();
+      fireEvent.click(screen.getByText('Saved'));
+      expect(screen.getByText('All (default)')).toBeInTheDocument();
+      expect(screen.queryByText('Admin + Owner User Classes Only')).not.toBeInTheDocument();
+    });
+
+    it('keeps showing the newly saved text after Save and Close, before the store answers', async () => {
+      const updateInfoCollection = vi.fn().mockResolvedValue(200);
+      renderInfoModal({ infoCollections: [savedRecord], updateInfoCollection });
+
+      typeWithoutSaving();
+      fireEvent.click(screen.getByText('Save'));
+      await waitFor(() => {
+        expect(updateInfoCollection).toHaveBeenCalledTimes(1);
+      });
+      // Close right after the save; the store still holds the old text
+      fireEvent.click(screen.getByText('Close'));
+
+      openInfo();
+      expect(screen.getByText('test only')).toBeInTheDocument();
+      expect(screen.queryByText('Saved')).not.toBeInTheDocument();
+    });
+
+    it('shows the newly saved text when the box is closed before the store answers', async () => {
+      const updateInfoCollection = vi.fn().mockResolvedValue(200);
+      const { getInfoCollections, updateProps } = renderInfoModal({
+        infoCollections: [savedRecord],
+        updateInfoCollection,
+      });
+
+      typeWithoutSaving();
+      fireEvent.click(screen.getByText('Save'));
+      await waitFor(() => {
+        expect(getInfoCollections).toHaveBeenCalledTimes(2);
+      });
+      fireEvent.click(screen.getByText('Close'));
+      // the store answers the request made after the save
+      updateProps({ infoCollections: [{ ...savedRecord, infoContent: '<p>test only</p>' }] });
+
+      openInfo();
+      expect(screen.getByText('test only')).toBeInTheDocument();
+      expect(updateInfoCollection).toHaveBeenCalledWith('1', {
+        infoName: 'Permission: seeBadges Info',
+        infoContent: 'test only',
+        visibility: '0',
+      });
+    });
+  });
 });

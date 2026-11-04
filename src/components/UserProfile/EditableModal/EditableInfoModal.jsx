@@ -251,9 +251,17 @@ export class EditableInfoModal extends Component {
     this.props.getInfoCollections();
   };
 
+  // Close = cancel: while editing, throw away unsaved typing and the unsaved 'Who can view' choice
   handleClose = () => {
-    this.toggleEditableModal();
-    this.handleEdit(false);
+    if (!this.state.editing) {
+      this.setState({ editableModalOpen: false });
+      return;
+    }
+    this.setState({
+      ...this.deriveFromCollections(this.props.infoCollections),
+      editableModalOpen: false,
+      editing: false,
+    });
   };
 
   handleSave = async event => {
