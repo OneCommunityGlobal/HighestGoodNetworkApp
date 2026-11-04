@@ -80,7 +80,7 @@ function WarningTrackerModal({
     rolesAllowedToTracking.includes(userRole) ||
     dispatch(hasPermission(permissions.deleteWarningTracker));
 
-  const fetchWarningDescriptions = async () => {
+  const fetchWarningDescriptions = () => {
     dispatch(getWarningDescriptions()).then(res => {
       if (res.error) {
         setError(res.error);
@@ -232,9 +232,7 @@ function WarningTrackerModal({
       if (res.error) {
         setError(res.error);
       }
-      fetchWarningDescriptions().catch(err => {
-        setError(err);
-      });
+      fetchWarningDescriptions();
     });
     setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
   };
@@ -274,9 +272,7 @@ function WarningTrackerModal({
             setError(res.error);
             setWarningEdited(false);
             setEditedWarning(null);
-            fetchWarningDescriptions().catch(err => {
-              setError(err);
-            });
+            fetchWarningDescriptions();
             return;
           }
           setRetrieveInfoCollections(true);
