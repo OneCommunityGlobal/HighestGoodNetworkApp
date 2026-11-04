@@ -507,7 +507,7 @@ function MaterialCostCorrelationChart() {
                 tick={yAxisProps.tick}
                 width={yAxisProps.width}
               />
-             <Tooltip
+              <Tooltip
                 allowEscapeViewBox={{ x: false, y: true }}
                 content={<CustomTooltip darkMode={darkMode} />}
               />
