@@ -193,7 +193,7 @@ describe('WeeklyProjectSummary Project Status request state', () => {
       };
       renderWithState(state);
 
-      const durationCard = screen.getByRole('group', {
+      const durationCard = screen.getByRole('region', {
         name: 'Avg Completed Project Duration (hours)',
       });
       expect(within(durationCard).getByText(`${value} hrs`)).toBeInTheDocument();
@@ -222,7 +222,7 @@ describe('WeeklyProjectSummary Project Status request state', () => {
     };
     renderWithState(state);
 
-    const durationCard = screen.getByRole('group', {
+    const durationCard = screen.getByRole('region', {
       name: 'Avg Completed Project Duration (hours)',
     });
     expect(within(durationCard).getByText('N/A')).toBeInTheDocument();

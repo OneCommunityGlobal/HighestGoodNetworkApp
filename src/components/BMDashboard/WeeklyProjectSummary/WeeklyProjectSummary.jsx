@@ -325,9 +325,8 @@ function WeeklyProjectSummary() {
               {projectStatusCards.map(button => {
                 const unavailableTooltipId = `project-status-unavailable-${button.metricKey}`;
                 return (
-                  <div
+                  <section
                     key={button.metricKey}
-                    role="group"
                     aria-label={button.title}
                     className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
                     style={{ backgroundColor: button.bgColor }}
@@ -387,7 +386,7 @@ function WeeklyProjectSummary() {
                         {button.change}
                       </div>
                     )}
-                  </div>
+                  </section>
                 );
               })}
             </div>

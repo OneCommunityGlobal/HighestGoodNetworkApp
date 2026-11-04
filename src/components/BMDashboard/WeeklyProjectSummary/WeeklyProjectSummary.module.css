@@ -695,13 +695,10 @@
 }
 
 /* Keep all Project Status text readable on the preserved pastel status cards in dark mode. */
+.darkMode .statusCard .projectDurationDescription,
 .darkMode .statusCard .weeklyCardTitle,
 .darkMode .statusCard .weeklyStatusValue {
   color: #000 !important;
-}
-
-.darkMode .statusCard .projectDurationDescription {
-  color: #333 !important;
 }
 
 .darkMode .statusCard .projectStatusUnavailableInfo {
