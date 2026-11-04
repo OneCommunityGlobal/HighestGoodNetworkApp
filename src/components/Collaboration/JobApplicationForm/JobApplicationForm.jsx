@@ -16,6 +16,8 @@ import {
   getUploadSizeError,
   isJobApplicationFileUploadQuestion,
 } from './jobApplicationQuestionUtils';
+import JobApplicationDynamicQuestion from './JobApplicationDynamicQuestion';
+import JobApplicationProfileFields from './JobApplicationProfileFields';
 import {
   getApplicantVisibleQuestions,
   getQuestionLabelText,
@@ -935,238 +937,6 @@ FileUploadField.defaultProps = {
   error: '',
 };
 
-function answerDisplayValue(answer) {
-  return Array.isArray(answer) ? '' : answer || '';
-}
-
-const KNOWN_QUESTION_TYPES = [
-  'textbox',
-  'text',
-  'textarea',
-  'date',
-  'checkbox',
-  'radio',
-  'dropdown',
-];
-
-/** One custom question block — extracted to keep JobApplicationForm cognitive complexity down. */
-function JobApplicationDynamicQuestion({
-  question: q,
-  index: idx,
-  formId,
-  answer,
-  fieldError,
-  questionFile,
-  questionFileError,
-  questionFileInputRefs,
-  onAnswerChange,
-  onToggleCheckbox,
-  onQuestionFileChange,
-  onClearQuestionFile,
-  isCheckboxOptionChecked,
-}) {
-  const qt = getQuestionType(q);
-  const label = getQuestionLabel(q, idx);
-  const labelLower = label.toLowerCase();
-  const isIndividualOrgQuestion = isIndividualOrgQuestionLabel(label);
-  const req = isQuestionRequired(q);
-  const hasFieldError = Boolean(fieldError);
-  const formKey = formId ? `${formId}-q-${idx}` : `q-${idx}-${label.slice(0, 24)}`;
-  const showTextbox =
-    ['textbox', 'text'].includes(qt) &&
-    !isJobApplicationFileUploadQuestion(q) &&
-    !isIndividualOrgQuestion;
-  const showDate = qt === 'date' || (labelLower.includes('start') && labelLower.includes('date'));
-  const showFallbackInput =
-    !KNOWN_QUESTION_TYPES.includes(qt) &&
-    !isJobApplicationFileUploadQuestion(q) &&
-    !isIndividualOrgQuestion;
-  const inputClassName = `${styles.inputField} ${hasFieldError ? styles.inputFieldError : ''}`;
-
-  return (
-    <div className={styles.formGroup}>
-      <h2 className={styles.formGroupTitle} id={`${formKey}-heading`}>
-        <span className={styles.questionNumber}>{idx + 1}.</span> {label}
-        {req ? (
-          <>
-            <span className={styles.requiredMark} aria-hidden="true">
-              {' '}
-              *
-            </span>
-            <span className={styles.visuallyHidden}> (required)</span>
-          </>
-        ) : null}
-      </h2>
-      {showTextbox ? (
-        <input
-          type="text"
-          placeholder={q.placeholder || 'Type your response here'}
-          value={answerDisplayValue(answer)}
-          onChange={e => onAnswerChange(idx, e.target.value, label)}
-          required={req}
-          aria-required={req}
-          aria-labelledby={`${formKey}-heading`}
-          className={inputClassName}
-        />
-      ) : null}
-      {qt === 'textarea' && !isIndividualOrgQuestion ? (
-        <textarea
-          placeholder={q.placeholder || 'Type your response here'}
-          value={answerDisplayValue(answer)}
-          onChange={e => onAnswerChange(idx, e.target.value, label)}
-          rows={5}
-          required={req}
-          aria-required={req}
-          aria-labelledby={`${formKey}-heading`}
-          className={inputClassName}
-        />
-      ) : null}
-      {showDate ? (
-        <input
-          type="date"
-          className={styles.dateInput}
-          value={answerDisplayValue(answer)}
-          onChange={e => onAnswerChange(idx, e.target.value, label)}
-          required={req}
-          aria-required={req}
-          aria-labelledby={`${formKey}-heading`}
-        />
-      ) : null}
-      {qt === 'checkbox' && q.options && q.options.length > 0 ? (
-        <fieldset className={styles.optionFieldset} aria-labelledby={`${formKey}-heading`}>
-          {q.options.map(opt => (
-            <label key={String(opt)}>
-              <input
-                type="checkbox"
-                name={`question-${formKey}-${String(opt)}`}
-                value={opt}
-                checked={isCheckboxOptionChecked(answer, opt)}
-                onChange={() => onToggleCheckbox(idx, opt)}
-              />{' '}
-              {opt}
-            </label>
-          ))}
-        </fieldset>
-      ) : null}
-      {qt === 'radio' && q.options && q.options.length > 0 && !isIndividualOrgQuestion ? (
-        <fieldset className={styles.optionFieldset} aria-labelledby={`${formKey}-heading`}>
-          {q.options.map(opt => (
-            <label key={String(opt)}>
-              <input
-                type="radio"
-                name={`question-${formKey}`}
-                value={opt}
-                checked={answer === opt}
-                onChange={() => onAnswerChange(idx, opt)}
-              />{' '}
-              {opt}
-            </label>
-          ))}
-        </fieldset>
-      ) : null}
-      {isIndividualOrgQuestion ? (
-        <fieldset
-          className={`${styles.optionFieldset} ${styles.optionFieldsetInline}`}
-          aria-labelledby={`${formKey}-heading`}
-        >
-          {(q.options?.length ? q.options : ['Individual', 'Organization']).map(opt => (
-            <label key={String(opt)}>
-              <input
-                type="radio"
-                name={`question-${formKey}`}
-                value={opt}
-                checked={answer === opt}
-                onChange={() => onAnswerChange(idx, opt, label)}
-                required={req}
-              />{' '}
-              {opt}
-            </label>
-          ))}
-        </fieldset>
-      ) : null}
-      {!isIndividualOrgQuestion && qt === 'dropdown' ? (
-        <select
-          className={styles.selectField}
-          value={answerDisplayValue(answer)}
-          onChange={e => onAnswerChange(idx, e.target.value, label)}
-          required={req}
-          aria-required={req}
-          aria-labelledby={`${formKey}-heading`}
-        >
-          <option value="">Select an option</option>
-          {(q.options || []).map(opt => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-      ) : null}
-      {isJobApplicationFileUploadQuestion(q) ? (
-        <FileUploadField
-          id={`${formKey}-file`}
-          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-          file={questionFile || null}
-          onChange={e => onQuestionFileChange(idx, e)}
-          onClear={() => onClearQuestionFile(idx)}
-          inputRef={el => {
-            questionFileInputRefs.current[idx] = el;
-          }}
-          required={req}
-          error={questionFileError || fieldError}
-        />
-      ) : null}
-      {showFallbackInput ? (
-        <input
-          type="text"
-          placeholder="Type your response here"
-          value={answerDisplayValue(answer)}
-          onChange={e => onAnswerChange(idx, e.target.value, label)}
-          required={req}
-          aria-required={req}
-          aria-labelledby={`${formKey}-heading`}
-          className={inputClassName}
-        />
-      ) : null}
-      {hasFieldError && !isJobApplicationFileUploadQuestion(q) ? (
-        <p className={styles.fieldError} role="alert">
-          {fieldError}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
-JobApplicationDynamicQuestion.propTypes = {
-  question: PropTypes.shape({
-    questionType: PropTypes.string,
-    type: PropTypes.string,
-    label: PropTypes.string,
-    questionText: PropTypes.string,
-    placeholder: PropTypes.string,
-    options: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
-  index: PropTypes.number.isRequired,
-  formId: PropTypes.string,
-  answer: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-  fieldError: PropTypes.string,
-  questionFile: PropTypes.oneOfType([PropTypes.object, PropTypes.oneOf([null])]),
-  questionFileError: PropTypes.string,
-  questionFileInputRefs: PropTypes.shape({ current: PropTypes.object }).isRequired,
-  onAnswerChange: PropTypes.func.isRequired,
-  onToggleCheckbox: PropTypes.func.isRequired,
-  onQuestionFileChange: PropTypes.func.isRequired,
-  onClearQuestionFile: PropTypes.func.isRequired,
-  isCheckboxOptionChecked: PropTypes.func.isRequired,
-};
-
-JobApplicationDynamicQuestion.defaultProps = {
-  formId: '',
-  answer: '',
-  fieldError: '',
-  questionFile: null,
-  questionFileError: '',
-};
-
 function JobPositionSelect({ value, options, onChange }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
@@ -2070,344 +1840,40 @@ function JobApplicationForm() {
               schedule a Zoom interview, please answer the pre-interview questions below.
             </div>
             <div className={styles.formContentGroup}>
-              <div className={styles.formProfileDetailGroup}>
-                {showPersonalInfo ? (
-                  <>
-                    <div className={styles.profileField}>
-                      <label htmlFor="jaf-applicant-first-name" className={styles.fieldLabel}>
-                        <span>First Name</span>
-                        <span className={styles.requiredMark} aria-hidden="true">
-                          *
-                        </span>
-                      </label>
-
-                      <input
-                        id="jaf-applicant-first-name"
-                        type="text"
-                        placeholder="First Name"
-                        className={`${styles.inputField} ${
-                          fieldErrors.firstName ? styles.inputFieldError : ''
-                        }`}
-                        value={firstName}
-                        onChange={e => {
-                          setFirstName(e.target.value);
-
-                          if (fieldErrors.firstName) {
-                            setFieldErrors(prev => {
-                              const next = { ...prev };
-                              delete next.firstName;
-                              return next;
-                            });
-                          }
-                        }}
-                        minLength={2}
-                        maxLength={100}
-                        required
-                        aria-required="true"
-                        aria-invalid={Boolean(fieldErrors.firstName)}
-                        autoComplete="given-name"
-                      />
-
-                      {fieldErrors.firstName && (
-                        <p className={styles.fieldError} role="alert">
-                          {fieldErrors.firstName}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className={styles.profileField}>
-                      <label htmlFor="jaf-applicant-last-name" className={styles.fieldLabel}>
-                        <span>Last Name</span>
-                        <span className={styles.requiredMark} aria-hidden="true">
-                          *
-                        </span>
-                      </label>
-
-                      <input
-                        id="jaf-applicant-last-name"
-                        type="text"
-                        placeholder="Last Name"
-                        className={`${styles.inputField} ${
-                          fieldErrors.lastName ? styles.inputFieldError : ''
-                        }`}
-                        value={lastName}
-                        onChange={e => {
-                          setLastName(e.target.value);
-
-                          if (fieldErrors.lastName) {
-                            setFieldErrors(prev => {
-                              const next = { ...prev };
-                              delete next.lastName;
-                              return next;
-                            });
-                          }
-                        }}
-                        minLength={2}
-                        maxLength={100}
-                        required
-                        aria-required="true"
-                        aria-invalid={Boolean(fieldErrors.lastName)}
-                        autoComplete="family-name"
-                      />
-
-                      {fieldErrors.lastName && (
-                        <p className={styles.fieldError} role="alert">
-                          {fieldErrors.lastName}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className={styles.profileField}>
-                      <label htmlFor="jaf-applicant-email" className={styles.fieldLabel}>
-                        <span>Email</span>
-                        <span className={styles.requiredMark} aria-hidden="true">
-                          *
-                        </span>
-                      </label>
-
-                      <input
-                        id="jaf-applicant-email"
-                        ref={emailInputRef}
-                        maxLength={254}
-                        type="email"
-                        placeholder="Email"
-                        className={`${styles.inputField} ${
-                          fieldErrors.applicantEmail ? styles.inputFieldError : ''
-                        }`}
-                        value={applicantEmail}
-                        onChange={e => {
-                          setApplicantEmail(e.target.value);
-                          setEmailSuggestion(null);
-
-                          if (fieldErrors.applicantEmail) {
-                            setFieldErrors(prev => {
-                              const next = { ...prev };
-                              delete next.applicantEmail;
-                              return next;
-                            });
-                          }
-                        }}
-                        onBlur={handleEmailBlur}
-                        required
-                        aria-required="true"
-                        aria-invalid={Boolean(fieldErrors.applicantEmail)}
-                        aria-describedby={
-                          [
-                            fieldErrors.applicantEmail && 'jaf-applicant-email-error',
-                            emailSuggestion && 'jaf-applicant-email-suggestion',
-                          ]
-                            .filter(Boolean)
-                            .join(' ') || undefined
-                        }
-                        autoComplete="email"
-                      />
-
-                      {fieldErrors.applicantEmail && (
-                        <p
-                          id="jaf-applicant-email-error"
-                          className={styles.fieldError}
-                          role="alert"
-                        >
-                          {fieldErrors.applicantEmail}
-                        </p>
-                      )}
-
-                      {emailSuggestion && (
-                        <p
-                          id="jaf-applicant-email-suggestion"
-                          className={styles.fieldHint}
-                          aria-live="polite"
-                        >
-                          <span>
-                            Did you mean <strong>{emailSuggestion}</strong>?
-                          </span>
-                          <button
-                            type="button"
-                            className={styles.clearFileBtn}
-                            onClick={applyEmailSuggestion}
-                            aria-label={`Use this email: ${emailSuggestion}`}
-                          >
-                            Use this
-                          </button>
-                        </p>
-                      )}
-                    </div>
-
-                    <div className={styles.profileField}>
-                      <label htmlFor="jaf-company" className={styles.fieldLabel}>
-                        Company &amp; position
-                      </label>
-                      <input
-                        id="jaf-company"
-                        type="text"
-                        placeholder="Company & Position"
-                        className={styles.inputField}
-                        value={companyPosition}
-                        onChange={e => setCompanyPosition(e.target.value)}
-                        autoComplete="organization-title"
-                      />
-                    </div>
-                  </>
-                ) : null}
-
-                {showBasicInfo ? (
-                  <>
-                    <div className={styles.profileField}>
-                      <label htmlFor="jaf-location" className={styles.fieldLabel}>
-                        <span>Location</span>
-                        <span className={styles.requiredMark} aria-hidden="true">
-                          *
-                        </span>
-                      </label>
-
-                      <input
-                        id="jaf-location"
-                        type="text"
-                        placeholder="Location (e.g., Charlotte, NC)"
-                        className={`${styles.inputField} ${
-                          fieldErrors.location ? styles.inputFieldError : ''
-                        }`}
-                        value={applicantLocation}
-                        onChange={e => {
-                          setApplicantLocation(e.target.value);
-
-                          if (fieldErrors.location) {
-                            setFieldErrors(prev => {
-                              const next = { ...prev };
-                              delete next.location;
-                              return next;
-                            });
-                          }
-                        }}
-                        maxLength={100}
-                        required
-                        aria-required="true"
-                        aria-invalid={Boolean(fieldErrors.location)}
-                        autoComplete="address-level2"
-                      />
-
-                      {fieldErrors.location && (
-                        <p className={styles.fieldError} role="alert">
-                          {fieldErrors.location}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className={styles.profileField}>
-                      <label htmlFor="jaf-timezone" className={styles.fieldLabel}>
-                        <span>Time Zone</span>
-                        <span className={styles.requiredMark} aria-hidden="true">
-                          *
-                        </span>
-                      </label>
-
-                      <select
-                        id="jaf-timezone"
-                        className={`${styles.inputField} ${
-                          fieldErrors.timeZone ? styles.inputFieldError : ''
-                        }`}
-                        value={timeZone}
-                        onChange={e => {
-                          setTimeZone(e.target.value);
-
-                          if (fieldErrors.timeZone) {
-                            setFieldErrors(prev => {
-                              const next = { ...prev };
-                              delete next.timeZone;
-                              return next;
-                            });
-                          }
-                        }}
-                        required
-                        aria-required="true"
-                        aria-invalid={Boolean(fieldErrors.timeZone)}
-                      >
-                        <option value="">Select Time Zone</option>
-
-                        {moment.tz.names().map(tz => (
-                          <option key={tz} value={tz}>
-                            {tz}
-                          </option>
-                        ))}
-                      </select>
-
-                      {fieldErrors.timeZone && (
-                        <p className={styles.fieldError} role="alert">
-                          {fieldErrors.timeZone}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className={styles.profileField}>
-                      <label htmlFor="jaf-phone" className={styles.fieldLabel}>
-                        <span>Phone number</span>
-                        <span className={styles.requiredMark} aria-hidden="true">
-                          *
-                        </span>
-                      </label>
-
-                      <input
-                        id="jaf-phone"
-                        type="tel"
-                        placeholder="+1 213-456-7890"
-                        className={`${styles.inputField} ${
-                          fieldErrors.phone ? styles.inputFieldError : ''
-                        }`}
-                        value={phone}
-                        onChange={e => {
-                          setPhone(e.target.value);
-
-                          if (fieldErrors.phone) {
-                            setFieldErrors(prev => {
-                              const next = { ...prev };
-                              delete next.phone;
-                              return next;
-                            });
-                          }
-                        }}
-                        required
-                        aria-required="true"
-                        aria-invalid={Boolean(fieldErrors.phone)}
-                        autoComplete="tel"
-                      />
-
-                      {fieldErrors.phone && (
-                        <p className={styles.fieldError} role="alert">
-                          {fieldErrors.phone}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className={styles.profileField}>
-                      <label htmlFor="jaf-social" className={styles.fieldLabel}>
-                        Primary website / social
-                      </label>
-                      <input
-                        id="jaf-social"
-                        type="text"
-                        placeholder="Primary Website/Social"
-                        className={styles.inputField}
-                        value={websiteSocial}
-                        onChange={e => setWebsiteSocial(e.target.value)}
-                        autoComplete="url"
-                      />
-                    </div>
-
-                    <FileUploadField
-                      id="jaf-resume-upload"
-                      label={resumeRequired ? 'Upload Resume' : 'Upload Resume (optional)'}
-                      accept=".pdf,.doc,.docx"
-                      file={resumeFile}
-                      onChange={handleResumeChange}
-                      onClear={clearResumeFile}
-                      inputRef={resumeInputRef}
-                      optional={!resumeRequired}
-                      required={resumeRequired}
-                      error={resumeFileError}
-                    />
-                  </>
-                ) : null}
-              </div>
+              <JobApplicationProfileFields
+                showPersonalInfo={showPersonalInfo}
+                showBasicInfo={showBasicInfo}
+                firstName={firstName}
+                setFirstName={setFirstName}
+                lastName={lastName}
+                setLastName={setLastName}
+                applicantEmail={applicantEmail}
+                setApplicantEmail={setApplicantEmail}
+                emailInputRef={emailInputRef}
+                emailSuggestion={emailSuggestion}
+                setEmailSuggestion={setEmailSuggestion}
+                fieldErrors={fieldErrors}
+                setFieldErrors={setFieldErrors}
+                handleEmailBlur={handleEmailBlur}
+                applyEmailSuggestion={applyEmailSuggestion}
+                companyPosition={companyPosition}
+                setCompanyPosition={setCompanyPosition}
+                applicantLocation={applicantLocation}
+                setApplicantLocation={setApplicantLocation}
+                timeZone={timeZone}
+                setTimeZone={setTimeZone}
+                phone={phone}
+                setPhone={setPhone}
+                websiteSocial={websiteSocial}
+                setWebsiteSocial={setWebsiteSocial}
+                resumeRequired={resumeRequired}
+                resumeFile={resumeFile}
+                resumeFileError={resumeFileError}
+                resumeInputRef={resumeInputRef}
+                handleResumeChange={handleResumeChange}
+                clearResumeFile={clearResumeFile}
+                FileUploadField={FileUploadField}
+              />
               {visibleQuestions.map((q, idx) => (
                 <JobApplicationDynamicQuestion
                   key={
@@ -2428,6 +1894,7 @@ function JobApplicationForm() {
                   onQuestionFileChange={handleQuestionFileChange}
                   onClearQuestionFile={clearQuestionFile}
                   isCheckboxOptionChecked={isCheckboxOptionChecked}
+                  FileUploadField={FileUploadField}
                 />
               ))}
               {/* Honeypot: off-screen, unreachable by keyboard and hidden from screen readers.

@@ -9,15 +9,11 @@ import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 import hasPermission from '~/utils/permissions';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
-import QuestionSetManager from './QuestionSetManager';
-import QuestionEditModal from './QuestionEditModal';
 import FormPreviewModal from './FormPreviewModal';
 import JobFormDialog from './JobFormDialog';
-import JobFormBuilderQuestionRow from './JobFormBuilderQuestionRow';
-import StandardApplicantFieldControl from './StandardApplicantFieldControl';
+import JobFormBuilderWorkspace from './JobFormBuilderWorkspace';
 import useJobFormDialog from './useJobFormDialog';
 import {
-  FIXED_FIELD_GROUP_OPTIONS,
   DEFAULT_FIXED_FIELDS,
   normalizeFixedFields,
   getVisibleStandardApplicantFields,
@@ -44,77 +40,6 @@ function JobFormBuilderAccessDenied() {
         <p>
           You do not have permission to manage job application forms. An Owner can grant
           &quot;Manage Job Forms&quot; or related job form permissions in Permissions Management.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function JobFormStandardFieldsSection({ fixedFields, visibleStandardFields, onFixedFieldToggle }) {
-  return (
-    <div className={styles.standardApplicantSection}>
-      <p className={styles.standardApplicantNote}>
-        Default profile sections are stored on the job form (<code>fixedFields</code>). Toggle which
-        sections applicants see, then Save Form. Custom questions below come from{' '}
-        <code>questions</code>. The &quot;I agree to terms and conditions&quot; checkbox on
-        /job-application is frontend-only (not saved to the backend or this form).
-      </p>
-      <div className={styles.fixedFieldsToggles}>
-        {FIXED_FIELD_GROUP_OPTIONS.map(group => {
-          const inputId = `jfb-fixed-${group.key}`;
-          return (
-            <div key={group.key} className={styles.fixedFieldsToggle}>
-              <input
-                id={inputId}
-                type="checkbox"
-                checked={Boolean(fixedFields[group.key])}
-                onChange={e => onFixedFieldToggle(group.key, e.target.checked)}
-              />
-              <label htmlFor={inputId}>
-                {group.label}
-                <span className={styles.fixedFieldsToggleHint}>{group.description}</span>
-              </label>
-            </div>
-          );
-        })}
-      </div>
-      {visibleStandardFields.length === 0 ? (
-        <p className={styles.standardApplicantNote}>
-          No default profile fields enabled. Applicants will only see custom questions below.
-        </p>
-      ) : (
-        <div className={styles.standardApplicantGrid}>
-          {visibleStandardFields.map(field => (
-            <div key={field.label} className={styles.standardApplicantField}>
-              <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                {field.label}
-                {field.required ? (
-                  <span className={styles.requiredMark} aria-hidden="true">
-                    {' '}
-                    *
-                  </span>
-                ) : null}
-              </label>
-              <StandardApplicantFieldControl
-                field={field}
-                className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-      <div className={styles.frontendOnlyTermsPreview} aria-hidden="true">
-        <label className={styles.frontendOnlyTermsLabel}>
-          <input type="checkbox" disabled tabIndex={-1} />
-          <span>
-            I agree to terms and conditions{' '}
-            <span className={styles.requiredMark} aria-hidden="true">
-              *
-            </span>
-          </span>
-        </label>
-        <p className={styles.fixedFieldsToggleHint}>
-          Frontend-only on /job-application. Not stored on this job form or in the API response.
         </p>
       </div>
     </div>
@@ -603,200 +528,38 @@ function JobFormBuilder() {
           </p>
         ) : null}
         {canManageJobForms ? (
-          <div className={styles.customForm}>
-            <p className={styles.jobformDesc}>
-              Load or create a Collaboration job form. Default profile sections are controlled by
-              this form&apos;s backend <code>fixedFields</code>; custom questions are stored in{' '}
-              <code>questions</code>. Save Form writes to /api/jobforms (not /api/templates).
-            </p>
-            <QuestionSetManager
-              jobForms={jobForms}
-              selectedFormId={currentFormId ? String(currentFormId) : ''}
-              onLoadJobForm={applyLoadedJobForm}
-              onCreateNewForm={handleCreateNewForm}
-              formFields={formFields}
-              setFormFields={setFormFields}
-              darkMode={darkMode}
-              showAlert={showAlert}
-              showConfirm={showConfirm}
-            />
-            <JobFormStandardFieldsSection
-              fixedFields={fixedFields}
-              visibleStandardFields={visibleStandardFields}
-              onFixedFieldToggle={handleFixedFieldToggle}
-            />
-            <form>
-              {formFields.map((field, index) => (
-                <JobFormBuilderQuestionRow
-                  key={`${index}-${field.questionText}`}
-                  field={field}
-                  index={index}
-                  totalFields={formFields.length}
-                  onMove={moveField}
-                  onDelete={deleteField}
-                  onEdit={editField}
-                  onVisibilityChange={event => changeVisiblity(event, field)}
-                  darkMode={darkMode}
-                />
-              ))}
-            </form>
-
-            <div className={styles.newFieldSection}>
-              <div>
-                <label className={styles.jbformLabel} htmlFor="jfb-new-field-label">
-                  Field Label:
-                </label>
-                <input
-                  id="jfb-new-field-label"
-                  type="text"
-                  value={newField.questionText}
-                  onChange={e => {
-                    const { value } = e.target;
-                    setNewField(prev => ({ ...prev, questionText: value }));
-                    if (newFieldErrors.questionText) {
-                      setNewFieldErrors(prev => ({ ...prev, questionText: '' }));
-                    }
-                  }}
-                  placeholder="Enter Field Label"
-                  className={`${styles.jobformInput} ${
-                    newFieldErrors.questionText ? styles.jobformInputError : ''
-                  }`}
-                  aria-invalid={Boolean(newFieldErrors.questionText)}
-                  aria-describedby={
-                    newFieldErrors.questionText ? 'jfb-new-field-label-error' : undefined
-                  }
-                />
-                {newFieldErrors.questionText ? (
-                  <p id="jfb-new-field-label-error" className={styles.fieldError} role="alert">
-                    {newFieldErrors.questionText}
-                  </p>
-                ) : null}
-              </div>
-              <div>
-                <label className={styles.jbformLabel} htmlFor="jfb-new-field-type">
-                  Input Type:
-                </label>
-                <select
-                  id="jfb-new-field-type"
-                  value={newField.questionType}
-                  className={styles.jobformSelect}
-                  onChange={e => {
-                    const { value } = e.target;
-                    setNewField(prev => ({
-                      ...prev,
-                      questionType: value,
-                      options: [],
-                    }));
-                    setNewFieldErrors(prev => ({ ...prev, options: '', newOption: '' }));
-                  }}
-                >
-                  <option value="textbox">Text Box</option>
-                  <option value="email">Email</option>
-                  <option value="textarea">Text Area</option>
-                  <option value="checkbox">Check Box</option>
-                  <option value="radio">Radio</option>
-                  <option value="dropdown">Dropdown</option>
-                  <option value="date">Date</option>
-                </select>
-              </div>
-
-              {/* Options Section */}
-              {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
-                <div className={styles.optionsSection}>
-                  <label className={styles.jbformLabel} htmlFor="jfb-new-option">
-                    Add Option:
-                  </label>
-                  <input
-                    id="jfb-new-option"
-                    type="text"
-                    value={newOption}
-                    onChange={e => {
-                      setNewOption(e.target.value);
-                      if (newFieldErrors.newOption) {
-                        setNewFieldErrors(prev => ({ ...prev, newOption: '' }));
-                      }
-                    }}
-                    className={`${styles.jobformInput} ${
-                      newFieldErrors.newOption ? styles.jobformInputError : ''
-                    }`}
-                    placeholder="Enter an option"
-                    aria-invalid={Boolean(newFieldErrors.newOption)}
-                    aria-describedby={
-                      newFieldErrors.newOption || newFieldErrors.options
-                        ? 'jfb-new-option-error'
-                        : undefined
-                    }
-                  />
-                  {newFieldErrors.newOption || newFieldErrors.options ? (
-                    <p id="jfb-new-option-error" className={styles.fieldError} role="alert">
-                      {newFieldErrors.newOption || newFieldErrors.options}
-                    </p>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={handleAddOption}
-                    className={styles.addOptionButton}
-                  >
-                    Add Option
-                  </button>
-                  <div className={styles.optionsList}>
-                    <h4>Options:</h4>
-                    {newField.options.map((option, optionIndex) => (
-                      <div key={`${option}-${optionIndex}`} className={styles.optionItem}>
-                        {option}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className={styles.jbformLabel}>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(newField.isRequired || newField.required)}
-                    onChange={e =>
-                      setNewField(prev => ({
-                        ...prev,
-                        isRequired: e.target.checked,
-                        required: e.target.checked,
-                      }))
-                    }
-                  />{' '}
-                  Required field
-                </label>
-              </div>
-
-              <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
-                Add Field
-              </button>
-            </div>
-
-            <div className={styles.previewSection}>
-              <button
-                type="button"
-                className={styles.previewTextButton}
-                onClick={() => setShowPreviewModal(true)}
-              >
-                Preview Form
-              </button>
-            </div>
-
-            <div className={styles.saveSection}>
-              <button type="button" className={styles.jobSubmitButton} onClick={handleSubmit}>
-                Save Form
-              </button>
-            </div>
-
-            {editModalOpen && editingQuestion ? (
-              <QuestionEditModal
-                question={editingQuestion}
-                onSave={handleSaveEditedQuestion}
-                onCancel={handleCancelEdit}
-                darkMode={darkMode}
-              />
-            ) : null}
-          </div>
+          <JobFormBuilderWorkspace
+            jobForms={jobForms}
+            currentFormId={currentFormId}
+            onLoadJobForm={applyLoadedJobForm}
+            onCreateNewForm={handleCreateNewForm}
+            formFields={formFields}
+            setFormFields={setFormFields}
+            darkMode={darkMode}
+            showAlert={showAlert}
+            showConfirm={showConfirm}
+            fixedFields={fixedFields}
+            visibleStandardFields={visibleStandardFields}
+            onFixedFieldToggle={handleFixedFieldToggle}
+            onMoveField={moveField}
+            onDeleteField={deleteField}
+            onEditField={editField}
+            onVisibilityChange={changeVisiblity}
+            newField={newField}
+            setNewField={setNewField}
+            newFieldErrors={newFieldErrors}
+            setNewFieldErrors={setNewFieldErrors}
+            newOption={newOption}
+            setNewOption={setNewOption}
+            onAddOption={handleAddOption}
+            onAddField={handleAddField}
+            onOpenPreview={() => setShowPreviewModal(true)}
+            onSubmit={handleSubmit}
+            editModalOpen={editModalOpen}
+            editingQuestion={editingQuestion}
+            onSaveEditedQuestion={handleSaveEditedQuestion}
+            onCancelEdit={handleCancelEdit}
+          />
         ) : (
           <JobFormBuilderAccessDenied />
         )}
