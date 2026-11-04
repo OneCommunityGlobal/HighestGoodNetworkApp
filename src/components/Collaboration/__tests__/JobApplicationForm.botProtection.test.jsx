@@ -37,7 +37,7 @@ const renderForm = () =>
     </Provider>,
   );
 
-const fillAndSubmit = async () => {
+const fillProfile = async () => {
   await screen.findByLabelText(/^First Name/i);
   fireEvent.change(screen.getByLabelText(/^First Name/i), { target: { value: 'Ada' } });
   fireEvent.change(screen.getByLabelText(/^Last Name/i), { target: { value: 'Lovelace' } });
@@ -45,6 +45,11 @@ const fillAndSubmit = async () => {
   fireEvent.change(document.getElementById('jaf-location'), { target: { value: 'London, UK' } });
   fireEvent.change(document.getElementById('jaf-timezone'), { target: { value: 'GMT' } });
   fireEvent.change(document.getElementById('jaf-phone'), { target: { value: '+442071838750' } });
+};
+
+const fillAndSubmit = async () => {
+  await fillProfile();
+  fireEvent.click(screen.getByRole('checkbox', { name: /I agree to terms and conditions/i }));
   fireEvent.click(screen.getByRole('button', { name: /submit your application/i }));
 };
 
@@ -145,6 +150,43 @@ describe('JobApplicationForm bot protection', () => {
       await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
 
       expect(submittedFormData().get('cf-turnstile-response')).toBe('token-abc');
+      await waitFor(() =>
+        expect(
+          screen.getByRole('checkbox', { name: /I agree to terms and conditions/i }),
+        ).not.toBeChecked(),
+      );
+      expect(screen.getByRole('button', { name: /submit your application/i })).toBeDisabled();
+    });
+
+    it('requires consent even after verification succeeds', async () => {
+      vi.stubEnv('VITE_TURNSTILE_SITE_KEY', 'test-site-key');
+      let options;
+      window.turnstile = {
+        render: vi.fn((el, opts) => {
+          options = opts;
+          return 'widget-1';
+        }),
+        reset: vi.fn(),
+        remove: vi.fn(),
+      };
+      renderForm();
+      await waitFor(() => expect(window.turnstile.render).toHaveBeenCalledTimes(1));
+      options.callback('token-abc');
+      await fillProfile();
+
+      const checkbox = screen.getByRole('checkbox', { name: /I agree to terms and conditions/i });
+      expect(screen.getByRole('button', { name: /submit your application/i })).toBeDisabled();
+      fireEvent.submit(screen.getByRole('form', { name: 'Job application' }));
+      expect(axios.post).not.toHaveBeenCalled();
+      expect(checkbox).toHaveFocus();
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Please agree to the terms and conditions',
+      );
+
+      fireEvent.click(checkbox);
+      fireEvent.click(screen.getByRole('button', { name: /submit your application/i }));
+      await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
+      expect(submittedFormData().get('cf-turnstile-response')).toBe('token-abc');
     });
 
     it('loads the script once when window.turnstile is not there yet', async () => {
@@ -162,8 +204,16 @@ describe('JobApplicationForm bot protection', () => {
 
     it('resets the widget after a failed verification and shows the server text', async () => {
       vi.stubEnv('VITE_TURNSTILE_SITE_KEY', 'test-site-key');
-      window.turnstile = { render: vi.fn(() => 'widget-1'), reset: vi.fn(), remove: vi.fn() };
-      axios.post.mockRejectedValue({
+      let options;
+      window.turnstile = {
+        render: vi.fn((el, opts) => {
+          options = opts;
+          return 'widget-1';
+        }),
+        reset: vi.fn(),
+        remove: vi.fn(),
+      };
+      axios.post.mockRejectedValueOnce({
         response: { status: 400, data: { error: 'Verification failed. Please try again.' } },
       });
       renderForm();
@@ -173,6 +223,16 @@ describe('JobApplicationForm bot protection', () => {
       const alert = await screen.findByRole('alert');
       expect(alert).toHaveTextContent('Verification failed. Please try again.');
       expect(window.turnstile.reset).toHaveBeenCalledWith('widget-1');
+      expect(
+        screen.getByRole('checkbox', { name: /I agree to terms and conditions/i }),
+      ).toBeChecked();
+      expect(screen.getByLabelText(/^First Name/i)).toHaveValue('Ada');
+
+      options.callback('retry-token');
+      fireEvent.click(screen.getByRole('button', { name: /submit your application/i }));
+      await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(2));
+      expect(axios.post.mock.calls[1][1].get('cf-turnstile-response')).toBe('retry-token');
+      await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument());
     });
   });
 
