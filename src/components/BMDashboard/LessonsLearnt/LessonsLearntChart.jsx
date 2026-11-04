@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../WeeklyProjectSummary/summaryProjectSelection';
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
@@ -22,13 +27,16 @@ const toYMD = d =>
     : '';
 
 const useLessonsData = (selectedProjects, startDate, endDate) => {
-  const [allProjects, setAllProjects] = useState([]);
+  const [localProjects, setAllProjects] = useState([]);
+  const allProjects = useSummaryProjects(localProjects);
+  const summaryScope = useSummaryScope();
   const [lessonsData, setLessonsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
+    if (summaryScope) return undefined;
     const fetchProjects = async () => {
       try {
         const response = await axios.get(ENDPOINTS.BM_PROJECTS);
@@ -127,7 +135,11 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
   const darkMode = propDarkMode === undefined ? reduxDarkMode : propDarkMode;
 
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useSummaryProjectSelection(
+    'lessons',
+    [],
+    'options',
+  );
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 

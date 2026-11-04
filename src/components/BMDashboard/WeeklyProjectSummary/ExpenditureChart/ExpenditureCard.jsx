@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../summaryProjectSelection';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
@@ -5,13 +10,19 @@ import ExpenditureChart from './ExpenditureChart';
 import styles from './ExpenditureCard.module.css';
 import PropTypes from 'prop-types';
 
-function useProjectList() {
-  const [projectList, setProjectList] = useState([]);
-  const [selectedProject, setSelectedProject] = useState('');
+function useProjectList(key) {
+  const [localProjects, setProjectList] = useState([]);
+  const projectList = useSummaryProjects(localProjects);
+  const summaryScope = useSummaryScope();
+  const [selectedProject, setSelectedProject] = useSummaryProjectSelection(key, '');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (summaryScope) {
+      setLoading(false);
+      return undefined;
+    }
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -54,7 +65,9 @@ function useProjectList() {
  *   pieType  ('actual' | 'planned')     — required when mode === 'stacked'
  */
 function ExpenditureCard({ mode = 'stacked', pieType }) {
-  const { projectList, selectedProject, setSelectedProject, loading, error } = useProjectList();
+  const { projectList, selectedProject, setSelectedProject, loading, error } = useProjectList(
+    `expenditure-${pieType || 'comparison'}`,
+  );
 
   const isStacked = mode === 'stacked';
   const cardClass = isStacked ? `${styles.card} ${styles.cardStacked}` : styles.card;
@@ -92,6 +105,7 @@ function ExpenditureCard({ mode = 'stacked', pieType }) {
             value={selectedProject}
             onChange={e => setSelectedProject(e.target.value)}
           >
+            <option value="all">All Projects</option>
             {projectList.map(project => (
               <option key={project.id} value={project.id}>
                 {project.name}

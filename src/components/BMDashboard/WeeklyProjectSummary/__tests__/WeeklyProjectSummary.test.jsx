@@ -132,7 +132,7 @@ describe('WeeklyProjectSummary regression tests', () => {
     });
   });
 
-  it('renders WeeklyProjectSummary without crashing', () => {
+  it('renders WeeklyProjectSummary without crashing', async () => {
     expect(() => {
       render(
         <Provider store={store}>
@@ -141,16 +141,17 @@ describe('WeeklyProjectSummary regression tests', () => {
       );
     }).not.toThrow();
 
-    expect(screen.getByTestId('weekly-project-summary-header')).toBeInTheDocument();
+    expect(await screen.findByTestId('weekly-project-summary-header')).toBeInTheDocument();
   });
 
-  it('dispatches initial data-loading actions when data is empty', () => {
+  it('dispatches initial data-loading actions when data is empty', async () => {
     render(
       <Provider store={store}>
         <WeeklyProjectSummary />
       </Provider>,
     );
 
+    await screen.findByTestId('weekly-project-summary-header');
     const actions = store.getActions();
 
     expect(actions).toEqual(

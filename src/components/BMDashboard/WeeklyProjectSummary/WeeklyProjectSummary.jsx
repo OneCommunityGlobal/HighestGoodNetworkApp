@@ -1,5 +1,3 @@
-// export default WeeklyProjectSummary;
-
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,6 +5,7 @@ import { UncontrolledTooltip } from 'reactstrap';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
+import { SummaryProjectProvider, useSummaryProjectSelection } from './summaryProjectSelection';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import CardSelector from './CardSelector';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
@@ -147,13 +146,14 @@ function getProjectStatusErrorMessage(error) {
   );
 }
 
-function WeeklyProjectSummary() {
+function WeeklyProjectSummaryContent() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
+  const savedProjectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
+  const [projectFilter] = useSummaryProjectSelection('header', savedProjectFilter);
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
   const comparisonPeriodFilter = useSelector(
     state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'No Comparison',
@@ -222,7 +222,9 @@ function WeeklyProjectSummary() {
   const bmProjects = useSelector(state => state.bmProjects || []);
 
   const selectedProjectId = useMemo(() => {
-    const selectedProject = bmProjects.find(project => project.name === projectFilter);
+    const selectedProject = bmProjects.find(
+      project => project._id === projectFilter || project.name === projectFilter,
+    );
     return selectedProject?._id;
   }, [bmProjects, projectFilter]);
 
@@ -268,10 +270,6 @@ function WeeklyProjectSummary() {
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
-    }
-
-    if (bmProjects.length === 0) {
-      dispatch(fetchBMProjects());
     }
   }, [dispatch, materials.length, bmProjects.length]);
 
@@ -641,6 +639,7 @@ function WeeklyProjectSummary() {
     ],
     [
       quantityOfMaterialsUsedData,
+      bmProjects,
       darkMode,
       comparisonPeriodFilter,
       projectStatusCards,
@@ -893,6 +892,28 @@ function WeeklyProjectSummary() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Fetch the project list once per page visit, even when Redux holds a cached
+// list. Do not freeze a default from stale metadata before that fetch completes.
+function WeeklyProjectSummary() {
+  const dispatch = useDispatch();
+  const projects = useSelector(state => state.bmProjects || []);
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let active = true;
+    Promise.resolve(dispatch(fetchBMProjects())).finally(() => {
+      if (active) setReady(true);
+    });
+    return () => {
+      active = false;
+    };
+  }, [dispatch]);
+  return (
+    <SummaryProjectProvider projects={ready ? projects : []}>
+      {ready ? <WeeklyProjectSummaryContent /> : <div role="status">Loading projects...</div>}
+    </SummaryProjectProvider>
   );
 }
 

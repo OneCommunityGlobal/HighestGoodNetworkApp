@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection, useSummaryProjects } from '../summaryProjectSelection';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -561,8 +562,14 @@ const DropdownIndicator = props => (
 function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const svgRef = useRef();
   const containerRef = useRef();
-  const [projects, setProjects] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const keywordRequest = useRef(0);
+  const [localProjects, setProjects] = useState([]);
+  const projects = useSummaryProjects(localProjects);
+  const [selectedOption, setSelectedOption] = useSummaryProjectSelection(
+    'keywords',
+    null,
+    'source',
+  );
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [tags, setTags] = useState([]);
@@ -597,12 +604,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   };
 
   const fetchProjectData = async projectId => {
+    const requestId = ++keywordRequest.current;
     try {
       setIsLoading(true);
       setError('');
 
       const params = new URLSearchParams();
-      params.append('projectId', projectId);
+      if (projectId) params.append('projectId', projectId);
       params.append('limit', 8);
 
       const token = localStorage.getItem('token');
@@ -612,11 +620,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
           headers: { Authorization: token },
         });
 
+        if (requestId !== keywordRequest.current) return;
         const responseData = response?.data?.data;
         if (responseData && responseData.length > 0) {
           const normalizedData = responseData.slice(0, 8).map(item => ({
             tag: item.tag,
-            count: item.count || 1,
+            count: item.count || item.frequency || 1,
             date: item.date || null,
           }));
           setAllTags(normalizedData);
@@ -626,32 +635,33 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
         // API returned empty — no keywords for this project
         setAllTags([]);
       } catch {
+        if (requestId !== keywordRequest.current) return;
         setError('Failed to load keywords. Please try again.');
         setAllTags([]);
       }
     } finally {
-      setIsLoading(false);
+      if (requestId === keywordRequest.current) setIsLoading(false);
     }
   };
 
-  const handleOptionChange = selected => {
-    setSelectedOption(selected);
+  const handleOptionChange = selected => setSelectedOption(selected);
 
-    if (!selected) {
+  useEffect(() => {
+    keywordRequest.current += 1;
+    setIsLoading(false);
+    setError('');
+    if (!selectedOption) {
       setAllTags([]);
       setTags([]);
-      return;
+    } else if (selectedOption.type === 'test') {
+      setAllTags(TEST_DATASETS[selectedOption.value].data);
+    } else {
+      fetchProjectData(selectedOption.type === 'all' ? '' : selectedOption.value);
     }
-
-    if (selected.type === 'test') {
-      setAllTags(TEST_DATASETS[selected.value].data);
-    } else if (selected.type === 'project') {
-      const project = projects.find(p => p._id === selected.value);
-      if (project) {
-        fetchProjectData(project._id);
-      }
-    }
-  };
+    return () => {
+      keywordRequest.current += 1;
+    };
+  }, [selectedOption]);
 
   // Check if mobile
   useEffect(() => {
@@ -1284,7 +1294,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   }, [drawChart]);
 
   const getDropdownOptions = useCallback(() => {
-    const options = [];
+    const options = [{ label: 'All Projects', value: 'all', type: 'all' }];
 
     options.push({
       label: '📊 TEST DATASETS',
@@ -1299,7 +1309,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       options.push({
         label: '🏢 REAL PROJECTS',
         options: projects.map(p => ({
-          label: p.projectName,
+          label: p.projectName || p.name,
           value: p._id,
           type: 'project',
         })),

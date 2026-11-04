@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../../summaryProjectSelection';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -153,8 +158,14 @@ const getChartOptions = darkMode => ({
 
 export default function ToolsStoppageHorizontalBarChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [localProjects, setProjects] = useState([]);
+  const projects = useSummaryProjects(localProjects);
+  const summaryScope = useSummaryScope();
+  const [selectedProject, setSelectedProject] = useSummaryProjectSelection(
+    'tool-stoppage',
+    null,
+    'option',
+  );
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
   const [loading, setLoading] = useState(false);
@@ -162,6 +173,7 @@ export default function ToolsStoppageHorizontalBarChart() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    if (summaryScope) return;
     const fetchProjects = async () => {
       setLoading(true);
       setError(null);
@@ -224,10 +236,13 @@ export default function ToolsStoppageHorizontalBarChart() {
     fetchToolsStoppageData();
   }, [selectedProject, startDate, endDate]);
 
-  const projectOptions = projects.map(project => ({
-    value: project.projectId,
-    label: project.projectName,
-  }));
+  const projectOptions = [
+    { value: 'all', label: 'All Projects' },
+    ...projects.map(project => ({
+      value: project.projectId,
+      label: project.projectName,
+    })),
+  ];
 
   const formatDate = date => date?.toISOString().split('T')[0];
   const dateRangeLabel =

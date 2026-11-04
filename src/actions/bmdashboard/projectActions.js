@@ -20,7 +20,7 @@ export const setErrors = payload => {
 
 export const fetchBMProjects = () => {
   return async dispatch => {
-    axios
+    return axios
       .get(ENDPOINTS.BM_PROJECTS)
       .then(res => {
         dispatch(setProjects(res.data));

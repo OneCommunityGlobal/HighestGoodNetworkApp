@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../../summaryProjectSelection';
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
@@ -122,8 +127,10 @@ export default function CostBreakDown() {
   );
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const [projects, setProjects] = useState([]);
-  const [projectId, setProjectId] = useState('');
+  const [localProjects, setProjects] = useState([]);
+  const projects = useSummaryProjects(localProjects);
+  const summaryScope = useSummaryScope();
+  const [projectId, setProjectId] = useSummaryProjectSelection('cost-breakdown', '', 'id');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [activeIndex, setActiveIndex] = useState(null);
@@ -134,6 +141,7 @@ export default function CostBreakDown() {
 
   // Load project list for dropdown
   useEffect(() => {
+    if (summaryScope) return undefined;
     let cancelled = false;
     const apiBase = (process.env.REACT_APP_APIENDPOINT || '').replace(/\/$/, '');
     axios

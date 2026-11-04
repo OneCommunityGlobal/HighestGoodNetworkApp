@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection, useSummaryScope } from './summaryProjectSelection';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -166,10 +167,18 @@ export default function ProjectRiskProfileOverview() {
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
   const [allProjects, setAllProjects] = useState([]);
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useSummaryProjectSelection('risk', [], 'names');
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const projectWrapperRef = useRef(null);
   const selectionInitialized = useRef(false);
+  const summaryScope = useSummaryScope();
+  const projectChoices = useMemo(
+    () =>
+      summaryScope
+        ? [...new Set([...summaryScope.projects.map(project => project.name), ...allProjects])]
+        : allProjects,
+    [summaryScope, allProjects],
+  );
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -224,7 +233,7 @@ export default function ProjectRiskProfileOverview() {
         setRawProjects(normalized);
         const names = normalized.map(p => p.projectName);
         setAllProjects(names);
-        if (selectionInitialized.current === false) {
+        if (!summaryScope && selectionInitialized.current === false) {
           setSelectedProjects(names);
           selectionInitialized.current = true;
         }
@@ -446,10 +455,17 @@ export default function ProjectRiskProfileOverview() {
                     <Select
                       menuIsOpen
                       isMulti
-                      options={allProjects.map(p => ({ label: p, value: p }))}
+                      options={[
+                        { label: 'All Projects', value: '__all_projects__' },
+                        ...projectChoices.map(p => ({ label: p, value: p })),
+                      ]}
                       value={selectedProjects.map(p => ({ label: p, value: p }))}
                       onChange={opts =>
-                        setSelectedProjects(opts?.length ? opts.map(o => o.value) : [])
+                        setSelectedProjects(
+                          opts?.some(option => option.value === '__all_projects__')
+                            ? projectChoices
+                            : (opts || []).map(option => option.value),
+                        )
                       }
                       onBlur={() => setShowProjectDropdown(false)}
                       closeMenuOnSelect={false}

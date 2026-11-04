@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection, useSummaryScope } from '../summaryProjectSelection';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import Select from 'react-select';
 import { Bar } from 'react-chartjs-2';
@@ -75,6 +76,7 @@ function QuantityOfMaterialsUsed({
   comparisonDateRange = {},
 }) {
   const dispatch = useDispatch();
+  const summaryScope = useSummaryScope();
   const [chartData, setChartData] = useState(null);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedDate, setSelectedDate] = useState('Last Week');
@@ -82,7 +84,11 @@ function QuantityOfMaterialsUsed({
   const [dateRangeTwo, setDateRangeTwo] = useState([null, null]);
   const darkMode = useSelector(state => state.theme.darkMode);
   const projects = useSelector(state => state.bmProjects);
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useSummaryProjectSelection(
+    'material-quantity',
+    [],
+    'ids',
+  );
   const [legendColors, setLegendColors] = useState([]);
   const chartContainerRef = useRef(null);
   const [visibleRange, setVisibleRange] = useState([0, 30]);
@@ -93,7 +99,7 @@ function QuantityOfMaterialsUsed({
   const comparisonEnabled = comparisonMode !== 'No Comparison';
 
   useEffect(() => {
-    dispatch(fetchBMProjects());
+    if (!summaryScope) dispatch(fetchBMProjects());
   }, [dispatch]);
 
   const selectStyles = useMemo(
@@ -294,6 +300,8 @@ function QuantityOfMaterialsUsed({
 
     data.forEach(material => {
       if (!material?.itemType?.name || !material?.updateRecord) return;
+      const materialProjectId = material.project?._id || material.project;
+      if (selectedProjects.length && !selectedProjects.includes(String(materialProjectId))) return;
       const materialName = material.itemType.name;
       let periodOneUsage = 0;
       let periodTwoUsage = 0;
@@ -796,8 +804,9 @@ function QuantityOfMaterialsUsed({
           options={projectOptions}
           isMulti
           isSearchable
-          value={projectOptions.find(option => option.value === selectedProjects)}
-          placeholder="Projects"
+          value={projectOptions.filter(option => selectedProjects.includes(option.value))}
+          onChange={options => setSelectedProjects((options || []).map(option => option.value))}
+          placeholder="All Projects"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}

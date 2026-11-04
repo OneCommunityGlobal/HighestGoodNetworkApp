@@ -138,7 +138,7 @@ const createState = weeklyProjectSummaryOverrides => ({
   },
 });
 
-const renderWithState = state => {
+const renderWithState = async state => {
   const store = mockStore(state);
   const view = render(
     <Provider store={store}>
@@ -146,7 +146,7 @@ const renderWithState = state => {
     </Provider>,
   );
 
-  fireEvent.click(screen.getAllByRole('button', { name: /Project Status/ })[0]);
+  fireEvent.click((await screen.findAllByRole('button', { name: /Project Status/ }))[0]);
   return { ...view, store };
 };
 
@@ -155,16 +155,16 @@ describe('WeeklyProjectSummary Project Status request state', () => {
     vi.clearAllMocks();
   });
 
-  it('renders API-backed comparison text only when the data matches the current filters', () => {
-    renderWithState(createState());
+  it('renders API-backed comparison text only when the data matches the current filters', async () => {
+    await renderWithState(createState());
 
     expect(screen.getByText('+16% month over month')).toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('shows loading and suppresses stale comparison text when filters change before useEffect dispatches', () => {
-    renderWithState(
+  it('shows loading and suppresses stale comparison text when filters change before useEffect dispatches', async () => {
+    await renderWithState(
       createState({
         projectStatusDataRequestKey: 'endDate=2026-08-19&startDate=2026-08-13',
       }),
@@ -174,8 +174,8 @@ describe('WeeklyProjectSummary Project Status request state', () => {
     expect(screen.queryByText('+16% month over month')).not.toBeInTheDocument();
   });
 
-  it('shows the latest request error and suppresses stale comparison text', () => {
-    renderWithState(
+  it('shows the latest request error and suppresses stale comparison text', async () => {
+    await renderWithState(
       createState({
         projectStatusData: null,
         projectStatusDataRequestKey: null,
@@ -189,7 +189,9 @@ describe('WeeklyProjectSummary Project Status request state', () => {
   });
 
   it('dispatches a new Project Status request when comparison filters change rapidly', async () => {
-    const { rerender } = renderWithState(createState({ comparisonPeriodFilter: 'Week Over Week' }));
+    const { rerender } = await renderWithState(
+      createState({ comparisonPeriodFilter: 'Week Over Week' }),
+    );
 
     await waitFor(() =>
       expect(fetchWeeklyProjectSummaryProjectStatus).toHaveBeenCalledWith({

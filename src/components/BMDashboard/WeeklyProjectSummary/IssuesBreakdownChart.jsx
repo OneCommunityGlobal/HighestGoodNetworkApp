@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from './summaryProjectSelection';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -130,13 +135,19 @@ export default function IssuesBreakdownChart() {
   const reduxProjects = useSelector(state => state.bmProjects || state.allProjects?.projects || []);
 
   // Filter states
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useSummaryProjectSelection(
+    'issues-breakdown',
+    [],
+    'ids',
+  );
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedIssueTypes, setSelectedIssueTypes] = useState([]);
 
   // Available options states
-  const [availableProjects, setAvailableProjects] = useState([]);
+  const summaryScope = useSummaryScope();
+  const [localProjects, setAvailableProjects] = useState([]);
+  const availableProjects = useSummaryProjects(localProjects);
 
   // Today's date in YYYY-MM-DD format (local time) — used as max for date pickers
   const today = useMemo(() => {
@@ -366,6 +377,7 @@ export default function IssuesBreakdownChart() {
         return;
       }
 
+      if (summaryScope) return;
       // Fetch from API if not in Redux - only fetch projects with issues
       try {
         const response = await httpService.get(

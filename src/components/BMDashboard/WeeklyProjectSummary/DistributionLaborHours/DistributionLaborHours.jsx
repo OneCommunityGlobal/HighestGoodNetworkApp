@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../summaryProjectSelection';
 import React, { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
@@ -41,7 +46,9 @@ export default function DistributionLaborHours() {
     to: '',
   });
 
-  const [projectFilter, setProjectFilter] = useState('');
+  const summaryScope = useSummaryScope();
+  const summaryProjects = useSummaryProjects();
+  const [projectFilter, setProjectFilter] = useSummaryProjectSelection('labor-hours', '', 'name');
   const [memberFilter, setMemberFilter] = useState('');
   const [filtersApplied, setFiltersApplied] = useState(false);
 
@@ -134,9 +141,15 @@ export default function DistributionLaborHours() {
 
   useEffect(() => {
     if (originalData.length > 0) {
-      setFilteredData(formatChartData(originalData));
+      setFilteredData(
+        formatChartData(
+          summaryScope && projectFilter
+            ? originalData.filter(item => item.project === projectFilter)
+            : originalData,
+        ),
+      );
     }
-  }, [originalData]);
+  }, [originalData, summaryScope, projectFilter]);
 
   const handleSubmit = () => {
     let result = [...originalData];
@@ -165,11 +178,21 @@ export default function DistributionLaborHours() {
     filteredData,
   ]);
 
-  const projectOptions = [
-    { value: '', label: 'ALL' },
-    { value: 'Project A', label: 'Project A' },
-    { value: 'Project B', label: 'Project B' },
-  ];
+  const projectOptions = summaryScope
+    ? [
+        { value: '', label: 'All Projects' },
+        ...[
+          ...new Set([
+            ...summaryProjects.map(project => project.name),
+            ...originalData.map(row => row.project),
+          ]),
+        ].map(name => ({ value: name, label: name })),
+      ]
+    : [
+        { value: '', label: 'ALL' },
+        { value: 'Project A', label: 'Project A' },
+        { value: 'Project B', label: 'Project B' },
+      ];
 
   const memberOptions = [
     { value: '', label: 'ALL' },
