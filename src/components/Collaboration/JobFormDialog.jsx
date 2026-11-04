@@ -4,7 +4,7 @@ import styles from './JobFormDialog.module.css';
 
 /**
  * In-app replacement for window.alert / confirm / prompt on the Job Form Builder.
- * Responsive and dark-mode aware.
+ * Uses the native <dialog> element; responsive and dark-mode aware.
  */
 function JobFormDialog({
   open = false,
@@ -22,6 +22,7 @@ function JobFormDialog({
 }) {
   const titleId = useId();
   const inputId = useId();
+  const dialogRef = useRef(null);
   const inputRef = useRef(null);
   const [value, setValue] = useState(defaultValue);
   const [inputError, setInputError] = useState('');
@@ -37,16 +38,17 @@ function JobFormDialog({
   }, [open, defaultValue, mode]);
 
   useEffect(() => {
-    if (!open) return undefined;
-    const onKeyDown = event => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        onCancel?.();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [open, onCancel]);
+    const dialog = dialogRef.current;
+    if (!dialog) return undefined;
+
+    if (open) {
+      if (!dialog.open) dialog.showModal();
+      return undefined;
+    }
+
+    if (dialog.open) dialog.close();
+    return undefined;
+  }, [open]);
 
   if (!open) return null;
 
@@ -65,20 +67,21 @@ function JobFormDialog({
   };
 
   return (
-    <div
-      className={`${styles.overlay} ${darkMode ? styles.darkMode : ''}`}
-      role="presentation"
-      onMouseDown={event => {
-        if (event.target === event.currentTarget) onCancel?.();
+    // Backdrop click dismiss: Escape is handled via onCancel; click is the common dialog pattern.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- native <dialog> backdrop dismiss
+    <dialog
+      ref={dialogRef}
+      className={`${styles.dialog} ${darkMode ? styles.darkMode : ''}`}
+      aria-labelledby={titleId}
+      onCancel={event => {
+        event.preventDefault();
+        onCancel?.();
+      }}
+      onClick={event => {
+        if (event.target === dialogRef.current) onCancel?.();
       }}
     >
-      <div
-        className={styles.dialog}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? titleId : undefined}
-        aria-describedby={!title ? titleId : undefined}
-      >
+      <div className={styles.dialogBody}>
         <h2 id={titleId} className={title ? styles.title : styles.visuallyHidden}>
           {title || 'Dialog'}
         </h2>
@@ -125,7 +128,7 @@ function JobFormDialog({
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
 

@@ -218,14 +218,14 @@
 
 .fieldError {
   margin: 4px 0 8px;
-  color: #c62828 !important;
+  color: #c62828;
   font-size: 0.85rem;
   line-height: 1.35;
   font-weight: 600;
 }
 
 .jobformInputError {
-  border-color: #ef5350 !important;
+  border-color: #ef5350;
 }
 
 .jobformInputError:focus {
@@ -578,14 +578,15 @@
   color: #ff8a80;
 }
 
+/* Overrides global body.dark-mode * { color: #fff !important } */
 .darkMode .fieldError,
 .darkMode .newFieldSection .fieldError,
 .darkMode .optionsSection .fieldError {
-  color: #ff8a80 !important;
+  color: #ff8a80 !important; /* NOSONAR */
 }
 
 .darkMode .jobformInputError {
-  border-color: #ef5350 !important;
+  border-color: #ef5350;
 }
 
 .darkMode .optionItem label {

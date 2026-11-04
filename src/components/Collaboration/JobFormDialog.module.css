@@ -10,26 +10,28 @@
   border: 0;
 }
 
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgb(0 0 0 / 55%);
-  box-sizing: border-box;
-}
-
 .dialog {
   width: min(100%, 440px);
   max-height: min(90vh, 560px);
+  margin: auto;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #1a1a1a;
+  box-sizing: border-box;
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 55%);
+}
+
+.dialogBody {
   overflow: auto;
+  max-height: min(90vh, 560px);
   padding: 20px;
   border-radius: 10px;
   background: #fff;
-  color: #1a1a1a;
   box-shadow: 0 12px 32px rgb(0 0 0 / 28%);
   box-sizing: border-box;
 }
@@ -67,12 +69,12 @@
 }
 
 .inputError {
-  border-color: #ef5350 !important;
+  border-color: #ef5350;
 }
 
 .fieldError {
   margin: 0 0 14px;
-  color: #c62828 !important;
+  color: #c62828;
   font-size: 0.85rem;
   font-weight: 600;
   line-height: 1.35;
@@ -116,61 +118,65 @@
   background: #2569c7;
 }
 
-.darkMode.overlay {
+.dialog.darkMode::backdrop {
   background: rgb(0 0 0 / 65%);
 }
 
-.darkMode .dialog {
-  background: #1c2541;
+.dialog.darkMode {
   color: #f1f1f1;
+}
+
+.dialog.darkMode .dialogBody {
+  background: #1c2541;
   box-shadow: 0 12px 32px rgb(0 0 0 / 55%);
 }
 
-.darkMode .message {
+.dialog.darkMode .message {
   color: #d7dee8;
 }
 
-.darkMode .input {
+.dialog.darkMode .input {
   background: #121a2b;
   border-color: #5a6a84;
   color: #f1f1f1;
 }
 
-.darkMode .input::placeholder {
+.dialog.darkMode .input::placeholder {
   color: #90a4ae;
 }
 
-.darkMode .fieldError {
-  color: #ff8a80 !important;
+.dialog.darkMode .fieldError {
+  /* Overrides global body.dark-mode * { color: #fff !important } */
+  color: #ff8a80 !important; /* NOSONAR */
 }
 
-.darkMode .cancelButton {
+.dialog.darkMode .cancelButton {
   background: #243044;
   color: #f1f1f1;
   border-color: #5a6a84;
 }
 
-.darkMode .cancelButton:hover {
+.dialog.darkMode .cancelButton:hover {
   background: #2d3d56;
 }
 
-.darkMode .confirmButton {
+.dialog.darkMode .confirmButton {
   background: #3d8bfd;
 }
 
-.darkMode .confirmButton:hover {
+.dialog.darkMode .confirmButton:hover {
   background: #2f80ed;
 }
 
 @media (width <= 576px) {
-  .overlay {
-    padding: 12px;
-    align-items: flex-end;
-  }
-
   .dialog {
     width: 100%;
     max-width: none;
+    margin: auto 0 0;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .dialogBody {
     border-radius: 12px 12px 0 0;
     padding: 16px;
   }

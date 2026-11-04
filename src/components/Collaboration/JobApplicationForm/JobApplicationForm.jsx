@@ -18,6 +18,7 @@ import {
 } from './jobApplicationQuestionUtils';
 import {
   getApplicantVisibleQuestions,
+  getQuestionLabelText,
   isResumeQuestion,
   normalizeFixedFields,
 } from '../jobFormQuestionUtils';
@@ -517,31 +518,6 @@ function formatFileSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-/**
- * Strip numbering often baked into saved template text (e.g. "1.) …") so the UI can show a single
- * running index from `{idx + 1}. …`.
- */
-function stripLeadingQuestionEnumeration(raw) {
-  let s = String(raw || '').trim();
-  if (!s) return s;
-  let prev;
-  do {
-    prev = s;
-    s = s
-      .replace(/^[Qq]uestion\s*\d+\s*[.:]\s*/, '')
-      .replace(/^\d+\.\)\s*/, '')
-      .replace(/^\d+\)\s*/, '')
-      .trim();
-  } while (s !== prev);
-  return s;
-}
-
-function getQuestionLabelText(q) {
-  const raw = (q?.label || q?.questionText || '').trim();
-  if (!raw) return '';
-  return stripLeadingQuestionEnumeration(raw) || raw;
 }
 
 function getQuestionLabel(q, idx) {

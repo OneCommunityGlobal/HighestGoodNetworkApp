@@ -62,74 +62,47 @@ export const FIXED_FIELD_GROUP_OPTIONS = [
   },
 ];
 
+/** Build one default profile field for STANDARD_APPLICANT_FIELDS. */
+function createStandardApplicantField(
+  label,
+  fixedFieldGroup,
+  { required = true, inputType = 'text', placeholder = label } = {},
+) {
+  return { label, required, inputType, placeholder, fixedFieldGroup };
+}
+
 /**
  * Default profile block on /job-application. UI is frontend; visibility is driven
  * by each form's backend fixedFields. Keep labels/types in sync with apply page.
  */
 export const STANDARD_APPLICANT_FIELDS = [
-  {
-    label: 'First Name',
-    required: true,
-    inputType: 'text',
-    placeholder: 'First Name',
-    fixedFieldGroup: 'includePersonalInfo',
-  },
-  {
-    label: 'Last Name',
-    required: true,
-    inputType: 'text',
-    placeholder: 'Last Name',
-    fixedFieldGroup: 'includePersonalInfo',
-  },
-  {
-    label: 'Email',
-    required: true,
-    inputType: 'email',
-    placeholder: 'Email',
-    fixedFieldGroup: 'includePersonalInfo',
-  },
-  {
-    label: 'Location',
-    required: true,
-    inputType: 'text',
+  createStandardApplicantField('First Name', 'includePersonalInfo'),
+  createStandardApplicantField('Last Name', 'includePersonalInfo'),
+  createStandardApplicantField('Email', 'includePersonalInfo', { inputType: 'email' }),
+  createStandardApplicantField('Location', 'includeBasicInfo', {
     placeholder: 'Location (e.g., Charlotte, NC)',
-    fixedFieldGroup: 'includeBasicInfo',
-  },
-  {
-    label: 'Time Zone',
-    required: true,
+  }),
+  createStandardApplicantField('Time Zone', 'includeBasicInfo', {
     inputType: 'select',
     placeholder: 'Select Time Zone',
-    fixedFieldGroup: 'includeBasicInfo',
-  },
-  {
-    label: 'Phone number',
-    required: true,
+  }),
+  createStandardApplicantField('Phone number', 'includeBasicInfo', {
     inputType: 'tel',
     placeholder: '+1 213-456-7890',
-    fixedFieldGroup: 'includeBasicInfo',
-  },
-  {
-    label: 'Company & position',
+  }),
+  createStandardApplicantField('Company & position', 'includePersonalInfo', {
     required: false,
-    inputType: 'text',
     placeholder: 'Company & Position',
-    fixedFieldGroup: 'includePersonalInfo',
-  },
-  {
-    label: 'Primary website / social',
+  }),
+  createStandardApplicantField('Primary website / social', 'includeBasicInfo', {
     required: false,
-    inputType: 'text',
     placeholder: 'Primary Website/Social',
-    fixedFieldGroup: 'includeBasicInfo',
-  },
-  {
-    label: 'Upload Resume (optional)',
+  }),
+  createStandardApplicantField('Upload Resume (optional)', 'includeBasicInfo', {
     required: false,
     inputType: 'file',
     placeholder: 'Choose file',
-    fixedFieldGroup: 'includeBasicInfo',
-  },
+  }),
 ];
 
 /** Profile fields visible for the given form.fixedFields flags. */
@@ -220,7 +193,7 @@ export function stripLeadingQuestionEnumeration(raw) {
   return s;
 }
 
-function getQuestionLabelText(q) {
+export function getQuestionLabelText(q) {
   const raw = (q?.label || q?.questionText || '').trim();
   if (!raw) return '';
   return stripLeadingQuestionEnumeration(raw) || raw;
