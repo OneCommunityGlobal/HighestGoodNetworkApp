@@ -10,14 +10,13 @@ import { ENDPOINTS } from '~/utils/URL';
 import hasPermission from '~/utils/permissions';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import QuestionSetManager from './QuestionSetManager';
-import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
 import FormPreviewModal from './FormPreviewModal';
 import JobFormDialog from './JobFormDialog';
+import JobFormBuilderQuestionRow from './JobFormBuilderQuestionRow';
+import StandardApplicantFieldControl from './StandardApplicantFieldControl';
 import useJobFormDialog from './useJobFormDialog';
 import {
-  normalizeQuestionType,
-  resolveInputType,
   FIXED_FIELD_GROUP_OPTIONS,
   DEFAULT_FIXED_FIELDS,
   normalizeFixedFields,
@@ -29,7 +28,6 @@ import {
   findDuplicateQuestions,
   applyDuplicateDecision,
   isDuplicateQuestion,
-  numberedQuestionLabel,
   stripLeadingQuestionNumber,
   isApplicantFacingJobForm,
   getApplicantVisibleQuestions,
@@ -37,6 +35,92 @@ import {
 import { hasUnsavedJobFormChanges } from './jobFormDirtyState';
 
 import { permissions } from '../../utils/constants';
+
+function JobFormBuilderAccessDenied() {
+  return (
+    <div className={styles.customForm}>
+      <div className="alert alert-warning" role="alert">
+        <h4 className="alert-heading">Access restricted</h4>
+        <p>
+          You do not have permission to manage job application forms. An Owner can grant
+          &quot;Manage Job Forms&quot; or related job form permissions in Permissions Management.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function JobFormStandardFieldsSection({ fixedFields, visibleStandardFields, onFixedFieldToggle }) {
+  return (
+    <div className={styles.standardApplicantSection}>
+      <p className={styles.standardApplicantNote}>
+        Default profile sections are stored on the job form (<code>fixedFields</code>). Toggle which
+        sections applicants see, then Save Form. Custom questions below come from{' '}
+        <code>questions</code>. The &quot;I agree to terms and conditions&quot; checkbox on
+        /job-application is frontend-only (not saved to the backend or this form).
+      </p>
+      <div className={styles.fixedFieldsToggles}>
+        {FIXED_FIELD_GROUP_OPTIONS.map(group => {
+          const inputId = `jfb-fixed-${group.key}`;
+          return (
+            <div key={group.key} className={styles.fixedFieldsToggle}>
+              <input
+                id={inputId}
+                type="checkbox"
+                checked={Boolean(fixedFields[group.key])}
+                onChange={e => onFixedFieldToggle(group.key, e.target.checked)}
+              />
+              <label htmlFor={inputId}>
+                {group.label}
+                <span className={styles.fixedFieldsToggleHint}>{group.description}</span>
+              </label>
+            </div>
+          );
+        })}
+      </div>
+      {visibleStandardFields.length === 0 ? (
+        <p className={styles.standardApplicantNote}>
+          No default profile fields enabled. Applicants will only see custom questions below.
+        </p>
+      ) : (
+        <div className={styles.standardApplicantGrid}>
+          {visibleStandardFields.map(field => (
+            <div key={field.label} className={styles.standardApplicantField}>
+              <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
+                {field.label}
+                {field.required ? (
+                  <span className={styles.requiredMark} aria-hidden="true">
+                    {' '}
+                    *
+                  </span>
+                ) : null}
+              </label>
+              <StandardApplicantFieldControl
+                field={field}
+                className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+      <div className={styles.frontendOnlyTermsPreview} aria-hidden="true">
+        <label className={styles.frontendOnlyTermsLabel}>
+          <input type="checkbox" disabled tabIndex={-1} />
+          <span>
+            I agree to terms and conditions{' '}
+            <span className={styles.requiredMark} aria-hidden="true">
+              *
+            </span>
+          </span>
+        </label>
+        <p className={styles.fixedFieldsToggleHint}>
+          Frontend-only on /job-application. Not stored on this job form or in the API response.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function JobFormBuilder() {
   const dispatch = useDispatch();
   const { auth } = useSelector(state => state);
@@ -536,181 +620,25 @@ function JobFormBuilder() {
               showAlert={showAlert}
               showConfirm={showConfirm}
             />
-            <div className={styles.standardApplicantSection}>
-              <p className={styles.standardApplicantNote}>
-                Default profile sections are stored on the job form (<code>fixedFields</code>).
-                Toggle which sections applicants see, then Save Form. Custom questions below come
-                from <code>questions</code>. The &quot;I agree to terms and conditions&quot;
-                checkbox on /job-application is frontend-only (not saved to the backend or this
-                form).
-              </p>
-              <div className={styles.fixedFieldsToggles}>
-                {FIXED_FIELD_GROUP_OPTIONS.map(group => {
-                  const inputId = `jfb-fixed-${group.key}`;
-                  return (
-                    <div key={group.key} className={styles.fixedFieldsToggle}>
-                      <input
-                        id={inputId}
-                        type="checkbox"
-                        checked={Boolean(fixedFields[group.key])}
-                        onChange={e => handleFixedFieldToggle(group.key, e.target.checked)}
-                      />
-                      <label htmlFor={inputId}>
-                        {group.label}
-                        <span className={styles.fixedFieldsToggleHint}>{group.description}</span>
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-              {visibleStandardFields.length === 0 ? (
-                <p className={styles.standardApplicantNote}>
-                  No default profile fields enabled. Applicants will only see custom questions
-                  below.
-                </p>
-              ) : (
-                <div className={styles.standardApplicantGrid}>
-                  {visibleStandardFields.map(field => (
-                    <div key={field.label} className={styles.standardApplicantField}>
-                      <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                        {field.label}
-                        {field.required && (
-                          <span className={styles.requiredMark} aria-hidden="true">
-                            {' '}
-                            *
-                          </span>
-                        )}
-                      </label>
-                      {field.inputType === 'select' ? (
-                        <select
-                          disabled
-                          tabIndex={-1}
-                          className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
-                          aria-label={`${field.label} preview`}
-                          defaultValue=""
-                        >
-                          <option value="">{field.placeholder}</option>
-                        </select>
-                      ) : field.inputType === 'file' ? (
-                        <input
-                          type="text"
-                          readOnly
-                          tabIndex={-1}
-                          placeholder={field.placeholder}
-                          className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
-                          aria-label={`${field.label} preview`}
-                        />
-                      ) : (
-                        <input
-                          type={field.inputType === 'tel' ? 'tel' : field.inputType}
-                          readOnly
-                          tabIndex={-1}
-                          placeholder={field.placeholder}
-                          className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
-                          aria-label={`${field.label} preview`}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className={styles.frontendOnlyTermsPreview} aria-hidden="true">
-                <label className={styles.frontendOnlyTermsLabel}>
-                  <input type="checkbox" disabled tabIndex={-1} />
-                  <span>
-                    I agree to terms and conditions{' '}
-                    <span className={styles.requiredMark} aria-hidden="true">
-                      *
-                    </span>
-                  </span>
-                </label>
-                <p className={styles.fixedFieldsToggleHint}>
-                  Frontend-only on /job-application. Not stored on this job form or in the API
-                  response.
-                </p>
-              </div>
-            </div>
+            <JobFormStandardFieldsSection
+              fixedFields={fixedFields}
+              visibleStandardFields={visibleStandardFields}
+              onFixedFieldToggle={handleFixedFieldToggle}
+            />
             <form>
-              {formFields.map((field, index) => {
-                const questionType = normalizeQuestionType(field);
-
-                return (
-                  <div className={styles.formDiv} key={`${index}-${field.questionText}`}>
-                    <QuestionFieldActions
-                      field={field}
-                      index={index}
-                      totalFields={formFields.length}
-                      onMove={moveField}
-                      onDelete={deleteField}
-                      onEdit={editField}
-                      visible={field.visible}
-                      onVisibilityChange={event => changeVisiblity(event, field)}
-                      darkMode={darkMode}
-                    />
-                    <div className={styles.formField}>
-                      <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                        {numberedQuestionLabel(field.questionText, index)}
-                        {isFieldRequired(field) && (
-                          <span className={styles.requiredMark} aria-hidden="true">
-                            {' '}
-                            *
-                          </span>
-                        )}
-                      </label>
-                      <div className={styles.fieldOptions}>
-                        {questionType === 'textbox' && (
-                          <input
-                            type={resolveInputType(field)}
-                            placeholder={
-                              resolveInputType(field) === 'email'
-                                ? 'Enter email address'
-                                : 'Enter text here'
-                            }
-                            className={styles.jobformInput}
-                          />
-                        )}
-                        {questionType === 'date' && (
-                          <input
-                            type="date"
-                            placeholder="Enter date"
-                            className={styles.jobformInput}
-                          />
-                        )}
-                        {questionType === 'textarea' && (
-                          <textarea
-                            className={styles.jobformTextarea}
-                            placeholder="Enter long-form response here"
-                            rows={4}
-                          />
-                        )}
-                        {questionType === 'file' && (
-                          <input type="file" disabled className={styles.jobformInput} />
-                        )}
-                        {['checkbox', 'radio'].includes(questionType) &&
-                          field.options.map(option => (
-                            <div key={`${index}-${option}`} className={styles.optionItem}>
-                              <input
-                                type={questionType}
-                                name={`field-${index}`}
-                                className={styles.jobformInput}
-                              />
-                              <label className={styles.jbformLabel}>{option}</label>
-                            </div>
-                          ))}
-                        {questionType === 'dropdown' && (
-                          <select className={styles.jobformSelect}>
-                            {field.options.map(option => (
-                              <option key={`${index}-${option}`} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {formFields.map((field, index) => (
+                <JobFormBuilderQuestionRow
+                  key={`${index}-${field.questionText}`}
+                  field={field}
+                  index={index}
+                  totalFields={formFields.length}
+                  onMove={moveField}
+                  onDelete={deleteField}
+                  onEdit={editField}
+                  onVisibilityChange={event => changeVisiblity(event, field)}
+                  darkMode={darkMode}
+                />
+              ))}
             </form>
 
             <div className={styles.newFieldSection}>
@@ -860,26 +788,17 @@ function JobFormBuilder() {
               </button>
             </div>
 
-            {editModalOpen && editingQuestion && (
+            {editModalOpen && editingQuestion ? (
               <QuestionEditModal
                 question={editingQuestion}
                 onSave={handleSaveEditedQuestion}
                 onCancel={handleCancelEdit}
                 darkMode={darkMode}
               />
-            )}
+            ) : null}
           </div>
         ) : (
-          <div className={styles.customForm}>
-            <div className="alert alert-warning" role="alert">
-              <h4 className="alert-heading">Access restricted</h4>
-              <p>
-                You do not have permission to manage job application forms. An Owner can grant
-                &quot;Manage Job Forms&quot; or related job form permissions in Permissions
-                Management.
-              </p>
-            </div>
-          </div>
+          <JobFormBuilderAccessDenied />
         )}
         <FormPreviewModal
           isOpen={showPreviewModal}

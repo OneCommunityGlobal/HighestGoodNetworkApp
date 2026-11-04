@@ -48,6 +48,7 @@ import {
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   DASHBOARD,
   JOB_ANALYTICS_REPORT,
+  JOB_FORM_BUILDER,
   LOGOUT,
   OTHER_LINKS,
   PERMISSIONS_MANAGEMENT,
@@ -219,6 +220,7 @@ export function Header(props) {
     permissions.resendBlueSquareAndSummaryEmails,
     !isAuthUser,
   );
+  const canAccessJobFormBuilder = props.hasPermission(permissions.manageJobForms, !isAuthUser);
   const canAccessPRDashboard = props.hasPermission(RoutePermissions.prDashboard, !isAuthUser);
 
   const userId = user.userid;
@@ -835,7 +837,7 @@ export function Header(props) {
                   </NavItem>
                 )}
 
-                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
+                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement || canAccessJobFormBuilder) && (
                   <UncontrolledDropdown
                     nav
                     inNavbar
@@ -845,6 +847,16 @@ export function Header(props) {
                     <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                       {canAccessUserManagement && <DropdownItem tag={Link} to="/usermanagement" className={fontColor} disabled={headerDisabled}>{USER_MANAGEMENT}</DropdownItem>}
                       {canAccessBadgeManagement && <DropdownItem tag={Link} to="/badgemanagement" className={fontColor} disabled={headerDisabled}>{BADGE_MANAGEMENT}</DropdownItem>}
+                      {canAccessJobFormBuilder && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/jobformbuilder"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {JOB_FORM_BUILDER}
+                        </DropdownItem>
+                      )}
                       {canAccessProjects && <DropdownItem tag={Link} to="/projects" className={fontColor} disabled={headerDisabled}>{PROJECTS}</DropdownItem>}
                       {(canAccessProjects || canUpdateTask) && (
                         <DropdownItem

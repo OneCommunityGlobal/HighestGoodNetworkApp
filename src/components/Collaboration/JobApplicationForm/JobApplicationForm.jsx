@@ -771,6 +771,60 @@ function getJobDescriptionForModal(form) {
   return `${GENERIC_ROLE_DESCRIPTION}\n\nAdditional details:\n${extra}`;
 }
 
+function getCategoryFromRole(roleTitle) {
+  const t = String(roleTitle || '').toLowerCase();
+  if (/(engineer|developer|software|frontend|back ?end|full ?stack|devops|qa|test)/.test(t)) {
+    return 'Engineering';
+  }
+  if (/(design|ux|ui|graphic|visual)/.test(t)) return 'Design';
+  if (/(marketing|social|seo|content|copywriter|communications)/.test(t)) return 'Marketing';
+  if (/(finance|account|bookkeep|budget)/.test(t)) return 'Finance';
+  return 'General';
+}
+
+function JobApplicationRoleDescriptionModal({ title, form, onClose }) {
+  return (
+    <div className={styles.popupOverlay}>
+      <div className={styles.popupContent}>
+        <button className={styles.popupCloseBtn} onClick={onClose} aria-label="Close" type="button">
+          &times;
+        </button>
+        <div className={styles.jobDescHeader}>
+          <div className={styles.jobDescTitle}>{title}</div>
+          <div className={styles.jobDescTags}>
+            <span className={`${styles.tagPill} ${styles.tagPillStrong}`}>
+              {getCategoryFromRole(title)}
+            </span>
+            <span className={styles.tagPill}>Remote</span>
+          </div>
+        </div>
+        <div className={styles.jobDescBody}>
+          <div className={styles.jobDescSectionTitle}>About the role</div>
+          <div className={styles.jobDescText}>{getJobDescriptionForModal(form)}</div>
+          <div className={styles.jobDescFooter}>
+            <button type="button" className={styles.gotItBtn} onClick={onClose}>
+              Got it
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+JobApplicationRoleDescriptionModal.propTypes = {
+  title: PropTypes.string,
+  form: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
+JobApplicationRoleDescriptionModal.defaultProps = {
+  title: '',
+};
+
 function isValidId(id) {
   if (!id || typeof id !== 'string') return false;
   return /^[a-zA-Z0-9_-]+$/.test(id) && id.length <= 100;
@@ -810,7 +864,7 @@ function FileUploadField({
       {label && (
         <span className={styles.fieldLabel}>
           {label}
-          {!optional && required && (
+          {!optional && required ? (
             <>
               <span className={styles.requiredMark} aria-hidden="true">
                 {' '}
@@ -818,7 +872,7 @@ function FileUploadField({
               </span>
               <span className={styles.visuallyHidden}> (required)</span>
             </>
-          )}
+          ) : null}
         </span>
       )}
       <div className={styles.fileUploadRow}>
@@ -879,6 +933,238 @@ FileUploadField.defaultProps = {
   optional: false,
   required: false,
   error: '',
+};
+
+function answerDisplayValue(answer) {
+  return Array.isArray(answer) ? '' : answer || '';
+}
+
+const KNOWN_QUESTION_TYPES = [
+  'textbox',
+  'text',
+  'textarea',
+  'date',
+  'checkbox',
+  'radio',
+  'dropdown',
+];
+
+/** One custom question block — extracted to keep JobApplicationForm cognitive complexity down. */
+function JobApplicationDynamicQuestion({
+  question: q,
+  index: idx,
+  formId,
+  answer,
+  fieldError,
+  questionFile,
+  questionFileError,
+  questionFileInputRefs,
+  onAnswerChange,
+  onToggleCheckbox,
+  onQuestionFileChange,
+  onClearQuestionFile,
+  isCheckboxOptionChecked,
+}) {
+  const qt = getQuestionType(q);
+  const label = getQuestionLabel(q, idx);
+  const labelLower = label.toLowerCase();
+  const isIndividualOrgQuestion = isIndividualOrgQuestionLabel(label);
+  const req = isQuestionRequired(q);
+  const hasFieldError = Boolean(fieldError);
+  const formKey = formId ? `${formId}-q-${idx}` : `q-${idx}-${label.slice(0, 24)}`;
+  const showTextbox =
+    ['textbox', 'text'].includes(qt) &&
+    !isJobApplicationFileUploadQuestion(q) &&
+    !isIndividualOrgQuestion;
+  const showDate = qt === 'date' || (labelLower.includes('start') && labelLower.includes('date'));
+  const showFallbackInput =
+    !KNOWN_QUESTION_TYPES.includes(qt) &&
+    !isJobApplicationFileUploadQuestion(q) &&
+    !isIndividualOrgQuestion;
+  const inputClassName = `${styles.inputField} ${hasFieldError ? styles.inputFieldError : ''}`;
+
+  return (
+    <div className={styles.formGroup}>
+      <h2 className={styles.formGroupTitle} id={`${formKey}-heading`}>
+        <span className={styles.questionNumber}>{idx + 1}.</span> {label}
+        {req ? (
+          <>
+            <span className={styles.requiredMark} aria-hidden="true">
+              {' '}
+              *
+            </span>
+            <span className={styles.visuallyHidden}> (required)</span>
+          </>
+        ) : null}
+      </h2>
+      {showTextbox ? (
+        <input
+          type="text"
+          placeholder={q.placeholder || 'Type your response here'}
+          value={answerDisplayValue(answer)}
+          onChange={e => onAnswerChange(idx, e.target.value, label)}
+          required={req}
+          aria-required={req}
+          aria-labelledby={`${formKey}-heading`}
+          className={inputClassName}
+        />
+      ) : null}
+      {qt === 'textarea' && !isIndividualOrgQuestion ? (
+        <textarea
+          placeholder={q.placeholder || 'Type your response here'}
+          value={answerDisplayValue(answer)}
+          onChange={e => onAnswerChange(idx, e.target.value, label)}
+          rows={5}
+          required={req}
+          aria-required={req}
+          aria-labelledby={`${formKey}-heading`}
+          className={inputClassName}
+        />
+      ) : null}
+      {showDate ? (
+        <input
+          type="date"
+          className={styles.dateInput}
+          value={answerDisplayValue(answer)}
+          onChange={e => onAnswerChange(idx, e.target.value, label)}
+          required={req}
+          aria-required={req}
+          aria-labelledby={`${formKey}-heading`}
+        />
+      ) : null}
+      {qt === 'checkbox' && q.options && q.options.length > 0 ? (
+        <fieldset className={styles.optionFieldset} aria-labelledby={`${formKey}-heading`}>
+          {q.options.map(opt => (
+            <label key={String(opt)}>
+              <input
+                type="checkbox"
+                name={`question-${formKey}-${String(opt)}`}
+                value={opt}
+                checked={isCheckboxOptionChecked(answer, opt)}
+                onChange={() => onToggleCheckbox(idx, opt)}
+              />{' '}
+              {opt}
+            </label>
+          ))}
+        </fieldset>
+      ) : null}
+      {qt === 'radio' && q.options && q.options.length > 0 && !isIndividualOrgQuestion ? (
+        <fieldset className={styles.optionFieldset} aria-labelledby={`${formKey}-heading`}>
+          {q.options.map(opt => (
+            <label key={String(opt)}>
+              <input
+                type="radio"
+                name={`question-${formKey}`}
+                value={opt}
+                checked={answer === opt}
+                onChange={() => onAnswerChange(idx, opt)}
+              />{' '}
+              {opt}
+            </label>
+          ))}
+        </fieldset>
+      ) : null}
+      {isIndividualOrgQuestion ? (
+        <fieldset
+          className={`${styles.optionFieldset} ${styles.optionFieldsetInline}`}
+          aria-labelledby={`${formKey}-heading`}
+        >
+          {(q.options?.length ? q.options : ['Individual', 'Organization']).map(opt => (
+            <label key={String(opt)}>
+              <input
+                type="radio"
+                name={`question-${formKey}`}
+                value={opt}
+                checked={answer === opt}
+                onChange={() => onAnswerChange(idx, opt, label)}
+                required={req}
+              />{' '}
+              {opt}
+            </label>
+          ))}
+        </fieldset>
+      ) : null}
+      {!isIndividualOrgQuestion && qt === 'dropdown' ? (
+        <select
+          className={styles.selectField}
+          value={answerDisplayValue(answer)}
+          onChange={e => onAnswerChange(idx, e.target.value, label)}
+          required={req}
+          aria-required={req}
+          aria-labelledby={`${formKey}-heading`}
+        >
+          <option value="">Select an option</option>
+          {(q.options || []).map(opt => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      ) : null}
+      {isJobApplicationFileUploadQuestion(q) ? (
+        <FileUploadField
+          id={`${formKey}-file`}
+          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+          file={questionFile || null}
+          onChange={e => onQuestionFileChange(idx, e)}
+          onClear={() => onClearQuestionFile(idx)}
+          inputRef={el => {
+            questionFileInputRefs.current[idx] = el;
+          }}
+          required={req}
+          error={questionFileError || fieldError}
+        />
+      ) : null}
+      {showFallbackInput ? (
+        <input
+          type="text"
+          placeholder="Type your response here"
+          value={answerDisplayValue(answer)}
+          onChange={e => onAnswerChange(idx, e.target.value, label)}
+          required={req}
+          aria-required={req}
+          aria-labelledby={`${formKey}-heading`}
+          className={inputClassName}
+        />
+      ) : null}
+      {hasFieldError && !isJobApplicationFileUploadQuestion(q) ? (
+        <p className={styles.fieldError} role="alert">
+          {fieldError}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+JobApplicationDynamicQuestion.propTypes = {
+  question: PropTypes.shape({
+    questionType: PropTypes.string,
+    type: PropTypes.string,
+    label: PropTypes.string,
+    questionText: PropTypes.string,
+    placeholder: PropTypes.string,
+    options: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+  formId: PropTypes.string,
+  answer: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+  fieldError: PropTypes.string,
+  questionFile: PropTypes.oneOfType([PropTypes.object, PropTypes.oneOf([null])]),
+  questionFileError: PropTypes.string,
+  questionFileInputRefs: PropTypes.shape({ current: PropTypes.object }).isRequired,
+  onAnswerChange: PropTypes.func.isRequired,
+  onToggleCheckbox: PropTypes.func.isRequired,
+  onQuestionFileChange: PropTypes.func.isRequired,
+  onClearQuestionFile: PropTypes.func.isRequired,
+  isCheckboxOptionChecked: PropTypes.func.isRequired,
+};
+
+JobApplicationDynamicQuestion.defaultProps = {
+  formId: '',
+  answer: '',
+  fieldError: '',
+  questionFile: null,
+  questionFileError: '',
 };
 
 function JobPositionSelect({ value, options, onChange }) {
@@ -1020,17 +1306,10 @@ function JobApplicationForm() {
   const locationTimezone = [applicantLocation.trim(), timeZone.trim()].filter(Boolean).join(' | ');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
-  const isAdmin = useSelector(state => {
-    try {
-      const role = state?.auth?.user?.role;
-      if (role == null || role === '') return false;
-      const r = String(role).toLowerCase();
-      return r === 'administrator' || r === 'owner' || r === 'admin';
-    } catch (err) {
-      console.error('Error checking admin status:', err);
-      return false;
-    }
-  });
+  const authRole = useSelector(state => state?.auth?.user?.role);
+  const isAdmin = ['administrator', 'owner', 'admin'].includes(
+    String(authRole || '').toLowerCase(),
+  );
 
   /*
    * Match html/body/#root to the page strip. Global #root is white; dark mode uses !important —
@@ -1332,16 +1611,6 @@ function JobApplicationForm() {
 
   const handleCloseDescription = () => {
     setShowDescription(false);
-  };
-
-  const getCategoryFromRole = roleTitle => {
-    const t = String(roleTitle || '').toLowerCase();
-    if (/(engineer|developer|software|frontend|back ?end|full ?stack|devops|qa|test)/.test(t))
-      return 'Engineering';
-    if (/(design|ux|ui|graphic|visual)/.test(t)) return 'Design';
-    if (/(marketing|social|seo|content|copywriter|communications)/.test(t)) return 'Marketing';
-    if (/(finance|account|bookkeep|budget)/.test(t)) return 'Finance';
-    return 'General';
   };
 
   const handleResumeChange = e => {
@@ -1768,45 +2037,13 @@ function JobApplicationForm() {
               Click to know more about this position
             </button>
           </p>
-          {showDescription && filteredForm && (
-            <div className={styles.popupOverlay}>
-              <div className={styles.popupContent}>
-                <button
-                  className={styles.popupCloseBtn}
-                  onClick={handleCloseDescription}
-                  aria-label="Close"
-                  type="button"
-                >
-                  &times;
-                </button>
-                <div className={styles.jobDescHeader}>
-                  <div className={styles.jobDescTitle}>{bannerJobTitle || filteredForm.title}</div>
-                  <div className={styles.jobDescTags}>
-                    <span className={`${styles.tagPill} ${styles.tagPillStrong}`}>
-                      {getCategoryFromRole(bannerJobTitle || filteredForm.title)}
-                    </span>
-                    <span className={styles.tagPill}>Remote</span>
-                  </div>
-                </div>
-
-                <div className={styles.jobDescBody}>
-                  <div className={styles.jobDescSectionTitle}>About the role</div>
-                  <div className={styles.jobDescText}>
-                    {getJobDescriptionForModal(filteredForm)}
-                  </div>
-                  <div className={styles.jobDescFooter}>
-                    <button
-                      type="button"
-                      className={styles.gotItBtn}
-                      onClick={handleCloseDescription}
-                    >
-                      Got it
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {showDescription && filteredForm ? (
+            <JobApplicationRoleDescriptionModal
+              title={bannerJobTitle || filteredForm.title}
+              form={filteredForm}
+              onClose={handleCloseDescription}
+            />
+          ) : null}
           <form className={styles.form} onSubmit={handleSubmit} aria-label="Job application">
             {isAdmin && (
               <>
@@ -2171,204 +2408,28 @@ function JobApplicationForm() {
                   </>
                 ) : null}
               </div>
-              {visibleQuestions.map((q, idx) => {
-                const qt = getQuestionType(q);
-                const label = getQuestionLabel(q, idx);
-                const labelLower = label.toLowerCase();
-                const isIndividualOrgQuestion = isIndividualOrgQuestionLabel(label);
-                const req = isQuestionRequired(q);
-                const hasFieldError = Boolean(fieldErrors[idx]);
-                const formKey = filteredForm?._id
-                  ? `${filteredForm._id}-q-${idx}`
-                  : `q-${idx}-${label.slice(0, 24)}`;
-
-                return (
-                  <div className={styles.formGroup} key={formKey}>
-                    <h2 className={styles.formGroupTitle} id={`${formKey}-heading`}>
-                      <span className={styles.questionNumber}>{idx + 1}.</span> {label}
-                      {req && (
-                        <>
-                          <span className={styles.requiredMark} aria-hidden="true">
-                            {' '}
-                            *
-                          </span>
-                          <span className={styles.visuallyHidden}> (required)</span>
-                        </>
-                      )}
-                    </h2>
-                    {['textbox', 'text'].includes(qt) &&
-                      !isJobApplicationFileUploadQuestion(q) &&
-                      !isIndividualOrgQuestion && (
-                        <>
-                          <input
-                            type="text"
-                            placeholder={q.placeholder || 'Type your response here'}
-                            value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                            onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                            required={req}
-                            aria-required={req}
-                            aria-labelledby={`${formKey}-heading`}
-                            className={`${styles.inputField} ${
-                              hasFieldError ? styles.inputFieldError : ''
-                            }`}
-                          />
-                        </>
-                      )}
-                    {qt === 'textarea' && !isIndividualOrgQuestion && (
-                      <>
-                        <textarea
-                          placeholder={q.placeholder || 'Type your response here'}
-                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                          rows={5}
-                          required={req}
-                          aria-required={req}
-                          aria-labelledby={`${formKey}-heading`}
-                          className={`${styles.inputField} ${
-                            hasFieldError ? styles.inputFieldError : ''
-                          }`}
-                        />
-                      </>
-                    )}
-                    {(qt === 'date' ||
-                      (labelLower.includes('start') && labelLower.includes('date'))) && (
-                      <input
-                        type="date"
-                        className={styles.dateInput}
-                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                        required={req}
-                        aria-required={req}
-                        aria-labelledby={`${formKey}-heading`}
-                      />
-                    )}
-                    {qt === 'checkbox' && q.options && q.options.length > 0 && (
-                      <fieldset
-                        className={styles.optionFieldset}
-                        aria-labelledby={`${formKey}-heading`}
-                      >
-                        {q.options.map(opt => (
-                          <label key={String(opt)}>
-                            <input
-                              type="checkbox"
-                              name={`question-${formKey}-${String(opt)}`}
-                              value={opt}
-                              checked={isCheckboxOptionChecked(answers[idx], opt)}
-                              onChange={() => toggleCheckboxOption(idx, opt)}
-                            />{' '}
-                            {opt}
-                          </label>
-                        ))}
-                      </fieldset>
-                    )}
-                    {qt === 'radio' &&
-                      q.options &&
-                      q.options.length > 0 &&
-                      !isIndividualOrgQuestion && (
-                        <fieldset
-                          className={styles.optionFieldset}
-                          aria-labelledby={`${formKey}-heading`}
-                        >
-                          {q.options.map(opt => (
-                            <label key={String(opt)}>
-                              <input
-                                type="radio"
-                                name={`question-${formKey}`}
-                                value={opt}
-                                checked={answers[idx] === opt}
-                                onChange={() => handleAnswerChange(idx, opt)}
-                              />{' '}
-                              {opt}
-                            </label>
-                          ))}
-                        </fieldset>
-                      )}
-                    {isIndividualOrgQuestion ? (
-                      <fieldset
-                        className={`${styles.optionFieldset} ${styles.optionFieldsetInline}`}
-                        aria-labelledby={`${formKey}-heading`}
-                      >
-                        {(q.options?.length ? q.options : ['Individual', 'Organization']).map(
-                          opt => (
-                            <label key={String(opt)}>
-                              <input
-                                type="radio"
-                                name={`question-${formKey}`}
-                                value={opt}
-                                checked={answers[idx] === opt}
-                                onChange={() => handleAnswerChange(idx, opt, label)}
-                                required={req}
-                              />{' '}
-                              {opt}
-                            </label>
-                          ),
-                        )}
-                      </fieldset>
-                    ) : (
-                      qt === 'dropdown' && (
-                        <select
-                          className={styles.selectField}
-                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                          required={req}
-                          aria-required={req}
-                          aria-labelledby={`${formKey}-heading`}
-                        >
-                          <option value="">Select an option</option>
-                          {(q.options || []).map(opt => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
-                      )
-                    )}
-                    {isJobApplicationFileUploadQuestion(q) && (
-                      <FileUploadField
-                        id={`${formKey}-file`}
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                        file={questionFiles[idx] || null}
-                        onChange={e => handleQuestionFileChange(idx, e)}
-                        onClear={() => clearQuestionFile(idx)}
-                        inputRef={el => {
-                          questionFileInputRefs.current[idx] = el;
-                        }}
-                        required={req}
-                        error={questionFileErrors[idx] || fieldErrors[idx]}
-                      />
-                    )}
-                    {![
-                      'textbox',
-                      'text',
-                      'textarea',
-                      'date',
-                      'checkbox',
-                      'radio',
-                      'dropdown',
-                    ].includes(qt) &&
-                      !isJobApplicationFileUploadQuestion(q) &&
-                      !isIndividualOrgQuestion && (
-                        <input
-                          type="text"
-                          placeholder="Type your response here"
-                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                          required={req}
-                          aria-required={req}
-                          aria-labelledby={`${formKey}-heading`}
-                          className={`${styles.inputField} ${
-                            hasFieldError ? styles.inputFieldError : ''
-                          }`}
-                        />
-                      )}
-                    {hasFieldError && !isJobApplicationFileUploadQuestion(q) ? (
-                      <p className={styles.fieldError} role="alert">
-                        {fieldErrors[idx]}
-                      </p>
-                    ) : null}
-                  </div>
-                );
-              })}
+              {visibleQuestions.map((q, idx) => (
+                <JobApplicationDynamicQuestion
+                  key={
+                    filteredForm?._id
+                      ? `${filteredForm._id}-q-${idx}`
+                      : `q-${idx}-${getQuestionLabel(q, idx).slice(0, 24)}`
+                  }
+                  question={q}
+                  index={idx}
+                  formId={filteredForm?._id ? String(filteredForm._id) : ''}
+                  answer={answers[idx]}
+                  fieldError={fieldErrors[idx] || ''}
+                  questionFile={questionFiles[idx] || null}
+                  questionFileError={questionFileErrors[idx] || ''}
+                  questionFileInputRefs={questionFileInputRefs}
+                  onAnswerChange={handleAnswerChange}
+                  onToggleCheckbox={toggleCheckboxOption}
+                  onQuestionFileChange={handleQuestionFileChange}
+                  onClearQuestionFile={clearQuestionFile}
+                  isCheckboxOptionChecked={isCheckboxOptionChecked}
+                />
+              ))}
               {/* Honeypot: off-screen, unreachable by keyboard and hidden from screen readers.
                   Real people never fill it; bots that fill every input give themselves away. */}
               <div className={styles.honeypot} aria-hidden="true">

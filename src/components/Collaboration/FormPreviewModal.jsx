@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './FormPreviewModal.module.css';
+import StandardApplicantFieldControl from './StandardApplicantFieldControl';
 import {
   normalizeQuestionType,
   resolveInputType,
@@ -261,32 +262,18 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, fixedFields, 
                     <div key={field.label} className={styles.previewField}>
                       <label className={styles.previewLabel}>
                         {field.label}
-                        {field.required && (
+                        {field.required ? (
                           <span className={styles.previewRequiredMark} aria-hidden="true">
                             {' '}
                             *
                           </span>
-                        )}
+                        ) : null}
                       </label>
-                      {field.inputType === 'select' ? (
-                        <select disabled className={styles.previewInput} defaultValue="">
-                          <option value="">{field.placeholder}</option>
-                        </select>
-                      ) : field.inputType === 'file' ? (
-                        <input
-                          type="text"
-                          placeholder={field.placeholder}
-                          disabled
-                          className={styles.previewInput}
-                        />
-                      ) : (
-                        <input
-                          type={field.inputType === 'tel' ? 'tel' : field.inputType}
-                          placeholder={field.placeholder}
-                          disabled
-                          className={styles.previewInput}
-                        />
-                      )}
+                      <StandardApplicantFieldControl
+                        field={field}
+                        className={styles.previewInput}
+                        lockMode="disabled"
+                      />
                     </div>
                   ))}
                 </div>

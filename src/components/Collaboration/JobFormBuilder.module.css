@@ -578,7 +578,6 @@
   color: #ff8a80;
 }
 
-/* Overrides global body.dark-mode * { color: #fff !important } */
 .darkMode .fieldError,
 .darkMode .newFieldSection .fieldError,
 .darkMode .optionsSection .fieldError {

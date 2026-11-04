@@ -109,13 +109,13 @@
 }
 
 .confirmButton {
-  background: #2f80ed;
+  background: #1557b0;
   color: #fff;
   border: none;
 }
 
 .confirmButton:hover {
-  background: #2569c7;
+  background: #0d47a1;
 }
 
 .dialog.darkMode::backdrop {
@@ -146,7 +146,6 @@
 }
 
 .dialog.darkMode .fieldError {
-  /* Overrides global body.dark-mode * { color: #fff !important } */
   color: #ff8a80 !important; /* NOSONAR */
 }
 
@@ -161,11 +160,11 @@
 }
 
 .dialog.darkMode .confirmButton {
-  background: #3d8bfd;
+  background: #1565c0;
 }
 
 .dialog.darkMode .confirmButton:hover {
-  background: #2f80ed;
+  background: #0d47a1;
 }
 
 @media (width <= 576px) {
