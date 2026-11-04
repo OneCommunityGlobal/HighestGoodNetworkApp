@@ -22,28 +22,15 @@ describe('getCurrentYearRange (default From / To dates)', () => {
 });
 
 describe('stripProjectPrefix (one naming style for tools)', () => {
-  it('drops the project name in front of the tool name', () => {
-    expect(stripProjectPrefix('Project 1 - Tool 2', 'Project 1')).toBe('Tool 2');
-  });
-
-  it('ignores case in the prefix', () => {
-    expect(stripProjectPrefix('project 1 - tool 6', 'Project 1')).toBe('tool 6');
-  });
-
-  it('leaves names that are already short alone', () => {
-    expect(stripProjectPrefix('Tool 4', 'Project 3')).toBe('Tool 4');
-  });
-
-  it('only drops the name of the project the tool belongs to', () => {
-    expect(stripProjectPrefix('Project 1 - Tool 2', 'Project 2')).toBe('Project 1 - Tool 2');
-  });
-
-  it('keeps the full name if nothing would be left', () => {
-    expect(stripProjectPrefix('Project 1 - ', 'Project 1')).toBe('Project 1 - ');
-  });
-
-  it('handles a missing tool or project name', () => {
-    expect(stripProjectPrefix(undefined, 'Project 1')).toBe('');
-    expect(stripProjectPrefix('Tool 4', '')).toBe('Tool 4');
+  it.each([
+    ['drops the project name in front', 'Project 1 - Tool 2', 'Project 1', 'Tool 2'],
+    ['ignores case in the prefix', 'project 1 - tool 6', 'Project 1', 'tool 6'],
+    ['leaves short names alone', 'Tool 4', 'Project 3', 'Tool 4'],
+    ['only drops its own project', 'Project 1 - Tool 2', 'Project 2', 'Project 1 - Tool 2'],
+    ['keeps the name if nothing is left', 'Project 1 - ', 'Project 1', 'Project 1 - '],
+    ['handles a missing tool name', undefined, 'Project 1', ''],
+    ['handles a missing project name', 'Tool 4', '', 'Tool 4'],
+  ])('%s', (_case, toolName, projectName, expected) => {
+    expect(stripProjectPrefix(toolName, projectName)).toBe(expected);
   });
 });
