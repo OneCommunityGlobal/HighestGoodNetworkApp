@@ -432,7 +432,7 @@ export default function RentalChart() {
           breakdownParams.projects = selectedProject;
         }
 
-        const [rentalResponse, breakdownResponse, projectsResponse] = await Promise.all([
+        const [rentalResult, breakdownResult, projectsResult] = await Promise.allSettled([
           axios.get(ENDPOINTS.BM_RENTAL_COST_OVER_TIME, {
             headers,
             params,
@@ -445,20 +445,39 @@ export default function RentalChart() {
             headers,
           }),
         ]);
+        if (rentalResult.status === 'rejected') {
+          toast.error('Error fetching rental cost chart data');
+          setError('Error loading rental cost chart data');
+          return;
+        }
 
-        const projects = projectsResponse.data?.data || [];
+        const rentalData =
+          rentalResult.status === 'fulfilled' && Array.isArray(rentalResult.value.data)
+            ? rentalResult.value.data
+            : [];
+
+        const breakdownData =
+          breakdownResult.status === 'fulfilled' && Array.isArray(breakdownResult.value.data)
+            ? breakdownResult.value.data
+            : [];
+
+        const projects =
+          projectsResult.status === 'fulfilled' && Array.isArray(projectsResult.value.data?.data)
+            ? projectsResult.value.data.data
+            : [];
 
         const projectNames = new Map(
           projects.map(project => [project.projectId, project.projectName]),
         );
 
-        const breakdownWithNames = breakdownResponse.data.map(item => ({
+        const breakdownWithNames = breakdownData.map(item => ({
           ...item,
           projectName: projectNames.get(item.projectId) || item.projectName || 'Unknown Project',
         }));
 
-        setRentalCostData(rentalResponse.data);
+        setRentalCostData(rentalData);
         setCostBreakdownData(breakdownWithNames);
+        setError(null);
       } catch {
         toast.error('Error fetching rental cost chart data');
         setError('Error loading rental cost chart data');
@@ -642,7 +661,7 @@ export default function RentalChart() {
       );
     }
 
-    if (chartData.datasets.length === 0) {
+    if (rentalCostData.length === 0) {
       return (
         <div className={`${styles['no-data']} ${darkMode ? styles['text-light'] : ''}`}>
           No data available for the selected filters
