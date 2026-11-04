@@ -212,8 +212,9 @@ function UserPermissionsPopUp({
             type="search"
             value={searchText}
             innerRef={refInput}
-            // eslint-disable-next-line no-unused-vars
-            onFocus={e => {
+            // Opens on a click (or typing, below), not on focus: the box gets the cursor by itself
+            // when the pop-up opens, and the list should not drop down until the person asks.
+            onClick={() => {
               setIsInputFocus(true);
               setIsOpen(true);
             }}

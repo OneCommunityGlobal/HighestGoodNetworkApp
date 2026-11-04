@@ -127,6 +127,60 @@ describe('UserPermissionsPopup component', () => {
     expect(screen.getByText('Test2 Manager')).toBeInTheDocument();
     expect(screen.queryByText('Test3 Owner')).not.toBeInTheDocument();
   });
+  it('puts the cursor in the search box but does not open the user list by itself', async () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    await flushAllPromises();
+    expect(screen.getByPlaceholderText('Shows only ACTIVE users')).toHaveFocus();
+    expect(screen.queryByText('Test1 Volunteer')).not.toBeInTheDocument();
+    expect(screen.queryByText('Test2 Manager')).not.toBeInTheDocument();
+  });
+  it('does not open the user list when the search box only gets focus', async () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    await flushAllPromises();
+    const searchBoxElement = screen.getByPlaceholderText('Shows only ACTIVE users');
+    fireEvent.blur(searchBoxElement);
+    fireEvent.focus(searchBoxElement);
+    expect(screen.queryByText('Test1 Volunteer')).not.toBeInTheDocument();
+  });
+  it('opens the user list with only the active users when the search box is clicked', async () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    await flushAllPromises();
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
+    expect(screen.getByRole('menu')).toHaveClass('show');
+    expect(screen.getByText('Test1 Volunteer')).toBeInTheDocument();
+    expect(screen.getByText('Test2 Manager')).toBeInTheDocument();
+    expect(screen.queryByText('Test3 Owner')).not.toBeInTheDocument();
+  });
   it('check if permissions is present', async () => {
     axios.get.mockResolvedValue({
       status: 200,
@@ -162,6 +216,7 @@ describe('UserPermissionsPopup component', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     const nameElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(nameElement);
     fireEvent.click(screen.getByText('Submit'));
@@ -196,6 +251,7 @@ describe('UserPermissionsPopup component', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     const nameElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(nameElement);
     await waitFor(() => {
@@ -229,6 +285,7 @@ describe('UserPermissionsPopup component', () => {
       </Provider>,
     );
     const mockObject = {};
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     const nameElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(nameElement);
 
