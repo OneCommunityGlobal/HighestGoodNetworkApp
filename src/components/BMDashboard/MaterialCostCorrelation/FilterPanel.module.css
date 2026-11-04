@@ -102,6 +102,22 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.filterPanel.darkMode :global(.react-datepicker__calendar-icon) {
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+.filterPanel.darkMode input.datePickerDark {
+  background-color: #1e293b;
+  color: #f7fafc;
+  border-color: #475569;
+}
+
+.filterPanel.darkMode input.datePickerDark::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
 /* Keep the react-datepicker calendar icon visible in dark mode. */
 .filterPanel.darkMode :global(.react-datepicker__calendar-icon) {
   filter: brightness(0) invert(1);
