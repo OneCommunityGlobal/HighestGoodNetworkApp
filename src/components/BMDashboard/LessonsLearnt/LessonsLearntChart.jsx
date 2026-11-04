@@ -233,7 +233,14 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
             // Shorten long project names (tooltip shows the full name). On a category
             // axis `value` is the bar index, so the name comes from the data.
             callback: value => {
-              const name = lessonsData[value]?.projectName || 'Unknown';
+              const project = lessonsData[value];
+              const name = project?.projectName || 'Unknown';
+
+              if (name.startsWith('Missing Project (')) {
+                const id = String(project?.projectId || '');
+                const shortId = id.length === 24 ? id.slice(-6) : id;
+                return `Missing: ${shortId}`;
+              }
               return name.length > MAX_TICK_LABEL ? `${name.slice(0, MAX_TICK_LABEL - 1)}…` : name;
             },
           },

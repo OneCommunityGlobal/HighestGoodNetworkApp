@@ -569,7 +569,18 @@ export default function IssuesBreakdownChart() {
           <ResponsiveContainer>
             <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-              <XAxis dataKey="projectName" tick={{ fill: textColor }} />
+              <XAxis
+                dataKey="projectName"
+                tick={{ fill: textColor }}
+                tickFormatter={name => {
+                  if (name?.startsWith('Missing Project (')) {
+                    const id = name.replace('Missing Project (', '').replace(')', '');
+                    return `Missing: ${id.slice(-6)}`;
+                  }
+
+                  return name;
+                }}
+              />
               <YAxis allowDecimals={false} tick={{ fill: textColor }} />
               <Tooltip
                 contentStyle={{
