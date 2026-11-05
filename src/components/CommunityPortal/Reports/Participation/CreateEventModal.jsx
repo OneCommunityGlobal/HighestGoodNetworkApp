@@ -1,12 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import moment from 'moment-timezone';
-import { createEvent } from '../../../../actions/communityPortal/eventActions';
-import styles from './CreateEventModal.module.css';
+import { toast } from 'react-toastify';
+import '../../../Header/DarkMode.module.css';
 
-function CreateEventModal({ isOpen, toggle }) {
-  const dispatch = useDispatch();
+function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -17,19 +16,24 @@ function CreateEventModal({ isOpen, toggle }) {
     location: 'Virtual',
     startTime: moment()
       .tz('America/Los_Angeles')
-      .add(1, 'hour')
       .format('HH:mm'),
     endTime: moment()
       .tz('America/Los_Angeles')
-      .add(2, 'hour')
+      .add(1, 'hour')
       .format('HH:mm'),
     date: moment()
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD'),
     description: '',
-    maxAttendees: '',
+    maxAttendees: 10,
     coverImage: '',
   });
+
+  useEffect(() => {
+    if (isOpen && !loading) {
+      resetForm();
+    }
+  }, [isOpen]);
 
   const resetForm = () => {
     setFormData({
@@ -38,17 +42,16 @@ function CreateEventModal({ isOpen, toggle }) {
       location: 'Virtual',
       startTime: moment()
         .tz('America/Los_Angeles')
-        .add(1, 'hour')
         .format('HH:mm'),
       endTime: moment()
         .tz('America/Los_Angeles')
-        .add(2, 'hour')
+        .add(1, 'hour')
         .format('HH:mm'),
       date: moment()
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
       description: '',
-      maxAttendees: '',
+      maxAttendees: 10,
       coverImage: '',
     });
     setErrors({});
@@ -58,24 +61,12 @@ function CreateEventModal({ isOpen, toggle }) {
   const handleToggle = () => {
     if (!loading) {
       toggle();
-      if (isOpen) {
-        resetForm();
-      }
     }
   };
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setFormData(prev => {
-      const next = { ...prev, [name]: value };
-      if (name === 'startTime') {
-        const newEnd = moment(`${prev.date} ${value}`, 'YYYY-MM-DD HH:mm')
-          .add(1, 'hour')
-          .format('HH:mm');
-        next.endTime = newEnd;
-      }
-      return next;
-    });
+    setFormData(prev => ({ ...prev, [name]: value }));
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => {
@@ -86,12 +77,13 @@ function CreateEventModal({ isOpen, toggle }) {
     }
   };
 
-  const minEndTime = moment(`${formData.date} ${formData.startTime}`, 'YYYY-MM-DD HH:mm')
-    .add(1, 'hour')
-    .format('HH:mm');
-
   const validateForm = () => {
     const newErrors = {};
+    const maxAttendees = Number(formData.maxAttendees);
+
+    if (!Number.isInteger(maxAttendees) || maxAttendees < 1) {
+      newErrors.maxAttendees = 'Max Attendees must be a positive integer';
+    }
 
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
@@ -105,16 +97,22 @@ function CreateEventModal({ isOpen, toggle }) {
       newErrors.date = 'Date is required';
     }
 
+    if (formData.date) {
+      const selectedDate = moment(formData.date, 'YYYY-MM-DD').startOf('day');
+      const today = moment()
+        .tz('America/Los_Angeles')
+        .startOf('day');
+      if (selectedDate.isBefore(today)) {
+        newErrors.date = 'Event Date Cannot be in the past';
+      }
+    }
+
     if (!formData.startTime) {
       newErrors.startTime = 'Start time is required';
     }
 
     if (!formData.endTime) {
       newErrors.endTime = 'End time is required';
-    }
-
-    if (formData.maxAttendees < 1) {
-      newErrors.maxAttendees = 'Max attendees must be at least 1';
     }
 
     // Validate that end time is after start time
@@ -126,29 +124,11 @@ function CreateEventModal({ isOpen, toggle }) {
       }
     }
 
-    // Validate that start time is at least 1 hour from now (for today)
-    if (
-      formData.date ===
-      moment()
-        .tz('America/Los_Angeles')
-        .format('YYYY-MM-DD')
-    ) {
-      const now = moment().tz('America/Los_Angeles');
-      const start = moment.tz(
-        `${formData.date} ${formData.startTime}`,
-        'YYYY-MM-DD HH:mm',
-        'America/Los_Angeles',
-      );
-      if (start.diff(now, 'minutes') < 60) {
-        newErrors.startTime = 'Event must be at least 1 hour from now';
-      }
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = e => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -159,6 +139,7 @@ function CreateEventModal({ isOpen, toggle }) {
 
     // Format the event data according to the Event model
     const eventData = {
+      id: `local-${Date.now()}`,
       title: formData.title.trim(),
       type: formData.type,
       location: formData.location,
@@ -181,50 +162,39 @@ function CreateEventModal({ isOpen, toggle }) {
       eventData.coverImage = formData.coverImage.trim();
     }
 
-    try {
-      const result = await dispatch(createEvent(eventData));
-      if (result?.success) {
-        resetForm();
-        handleToggle();
-        // The events list will be refreshed when the component re-renders
-      }
-    } catch (error) {
-      // Error handling is done in the action
-    } finally {
-      setLoading(false);
-    }
+    toast.success(
+      'Event created! Note: this preview event is not saved and will be lost on reload.',
+    );
+    onEventCreated(eventData);
+    resetForm();
+    toggle();
   };
 
   return (
     <Modal
       isOpen={isOpen}
       toggle={handleToggle}
-      className={`${styles.modalDialog} ${darkMode ? styles.modalDialogDark : ''}`}
+      className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}
     >
       <ModalHeader
         toggle={handleToggle}
-        className={`${styles.modalHeader} ${darkMode ? styles.modalHeaderDark : ''}`}
-        cssModule={{
-          'modal-title': `${styles.modalTitle} ${darkMode ? styles.modalTitleDark : ''}`,
-        }}
+        className={darkMode ? 'bg-space-cadet' : ''}
+        cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
       >
         Create New Event
       </ModalHeader>
-      <ModalBody className={`${styles.modalBody} ${darkMode ? styles.modalBodyDark : ''}`}>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label
-              htmlFor="title"
-              className={`${styles.label} ${darkMode ? styles.labelDark : ''}`}
-            >
+          <div className="form-group">
+            <label htmlFor="title" className={darkMode ? 'text-light' : ''}>
               Event Title
             </label>
-            <span className={styles.redAsterisk}>* </span>
+            <span className="red-asterisk">* </span>
             <input
               type="text"
-              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
-                errors.title ? styles.inputInvalid : ''
-              }`}
+              className={`form-control ${
+                darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+              } ${errors.title ? 'is-invalid' : ''}`}
               id="title"
               name="title"
               placeholder="Enter event title"
@@ -232,21 +202,33 @@ function CreateEventModal({ isOpen, toggle }) {
               onChange={handleChange}
               disabled={loading}
             />
-            {errors.title && <div className={styles.errorText}>{errors.title}</div>}
+            {errors.title && <div className="text-danger small">{errors.title}</div>}
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="type" className={`${styles.label} ${darkMode ? styles.labelDark : ''}`}>
+          <div className="form-group">
+            <label htmlFor="type" className={darkMode ? 'text-light' : ''}>
               Event Type
             </label>
-            <span className={styles.redAsterisk}>* </span>
+            <span className="red-asterisk">* </span>
             <select
-              className={`${styles.select} ${darkMode ? styles.selectDark : ''}`}
+              className={`form-control ${
+                darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+              }`}
               id="type"
               name="type"
               value={formData.type}
               onChange={handleChange}
               disabled={loading}
+              style={
+                darkMode
+                  ? {
+                      colorScheme: 'dark',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                    }
+                  : {}
+              }
             >
               <option value="Workshop">Workshop</option>
               <option value="Meeting">Meeting</option>
@@ -255,121 +237,110 @@ function CreateEventModal({ isOpen, toggle }) {
             </select>
           </div>
 
-          <div className={styles.formGroup}>
-            <label
-              htmlFor="location"
-              className={`${styles.label} ${darkMode ? styles.labelDark : ''}`}
-            >
+          <div className="form-group">
+            <label htmlFor="location" className={darkMode ? 'text-light' : ''}>
               Location
             </label>
-            <span className={styles.redAsterisk}>* </span>
+            <span className="red-asterisk">* </span>
             <select
-              className={`${styles.select} ${darkMode ? styles.selectDark : ''}`}
+              className={`form-control ${
+                darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+              }`}
               id="location"
               name="location"
               value={formData.location}
               onChange={handleChange}
               disabled={loading}
+              style={
+                darkMode
+                  ? {
+                      colorScheme: 'dark',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                    }
+                  : {}
+              }
             >
               <option value="Virtual">Virtual</option>
               <option value="In person">In person</option>
             </select>
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="date" className={`${styles.label} ${darkMode ? styles.labelDark : ''}`}>
+          <div className="form-group">
+            <label htmlFor="date" className={darkMode ? 'text-light' : ''}>
               Event Date
             </label>
-            <span className={styles.redAsterisk}>* </span>
+            <span className="red-asterisk">* </span>
             <input
               type="date"
-              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
-                errors.date ? styles.inputInvalid : ''
-              }`}
+              className={`form-control ${
+                darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+              } ${errors.date ? 'is-invalid' : ''}`}
               id="date"
               name="date"
-              min={moment()
-                .tz('America/Los_Angeles')
-                .format('YYYY-MM-DD')}
               value={formData.date}
               onChange={handleChange}
               disabled={loading}
+              min={moment()
+                .tz('America/Los_Angeles')
+                .format('YYYY-MM-DD')}
+              style={darkMode ? { colorScheme: 'dark' } : {}}
             />
-            {errors.date && <div className={styles.errorText}>{errors.date}</div>}
+            {errors.date && <div className="text-danger small">{errors.date}</div>}
           </div>
 
-          <div className={styles.formRow}>
-            <div className={`${styles.formGroup} ${styles.formCol}`}>
-              <label
-                htmlFor="startTime"
-                className={`${styles.label} ${darkMode ? styles.labelDark : ''}`}
-              >
+          <div className="form-row">
+            <div className="form-group col-md-6">
+              <label htmlFor="startTime" className={darkMode ? 'text-light' : ''}>
                 Start Time
               </label>
-              <span className={styles.redAsterisk}>* </span>
+              <span className="red-asterisk">* </span>
               <input
                 type="time"
-                className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
-                  errors.startTime ? styles.inputInvalid : ''
-                }`}
+                className={`form-control ${
+                  darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+                } ${errors.startTime ? 'is-invalid' : ''}`}
                 id="startTime"
                 name="startTime"
-                min={
-                  formData.date ===
-                  moment()
-                    .tz('America/Los_Angeles')
-                    .format('YYYY-MM-DD')
-                    ? moment()
-                        .tz('America/Los_Angeles')
-                        .add(1, 'hour')
-                        .format('HH:mm')
-                    : '00:00'
-                }
-                max="23:59"
                 value={formData.startTime}
                 onChange={handleChange}
                 disabled={loading}
+                style={darkMode ? { colorScheme: 'dark' } : {}}
               />
-              {errors.startTime && <div className={styles.errorText}>{errors.startTime}</div>}
+              {errors.startTime && <div className="text-danger small">{errors.startTime}</div>}
             </div>
 
-            <div className={`${styles.formGroup} ${styles.formCol}`}>
-              <label
-                htmlFor="endTime"
-                className={`${styles.label} ${darkMode ? styles.labelDark : ''}`}
-              >
+            <div className="form-group col-md-6">
+              <label htmlFor="endTime" className={darkMode ? 'text-light' : ''}>
                 End Time
               </label>
-              <span className={styles.redAsterisk}>* </span>
+              <span className="red-asterisk">* </span>
               <input
                 type="time"
-                className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
-                  errors.endTime ? styles.inputInvalid : ''
-                }`}
+                className={`form-control ${
+                  darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+                } ${errors.endTime ? 'is-invalid' : ''}`}
                 id="endTime"
                 name="endTime"
-                min={minEndTime}
-                max="23:59"
                 value={formData.endTime}
                 onChange={handleChange}
                 disabled={loading}
+                style={darkMode ? { colorScheme: 'dark' } : {}}
               />
-              {errors.endTime && <div className={styles.errorText}>{errors.endTime}</div>}
+              {errors.endTime && <div className="text-danger small">{errors.endTime}</div>}
             </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <label
-              htmlFor="description"
-              className={`${styles.label} ${darkMode ? styles.labelDark : ''}`}
-            >
+          <div className="form-group">
+            <label htmlFor="description" className={darkMode ? 'text-light' : ''}>
               Description
             </label>
-            <span className={styles.redAsterisk}>* </span>
+            <span className="red-asterisk">* </span>
             <textarea
-              className={`${styles.textarea} ${darkMode ? styles.textareaDark : ''} ${
-                errors.description ? styles.inputInvalid : ''
-              }`}
+              className={`form-control ${
+                darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+              } ${errors.description ? 'is-invalid' : ''}`}
               id="description"
               name="description"
               rows="4"
@@ -378,22 +349,19 @@ function CreateEventModal({ isOpen, toggle }) {
               onChange={handleChange}
               disabled={loading}
             />
-            {errors.description && <div className={styles.errorText}>{errors.description}</div>}
+            {errors.description && <div className="text-danger small">{errors.description}</div>}
           </div>
 
-          <div className={styles.formGroup}>
-            <label
-              htmlFor="maxAttendees"
-              className={`${styles.label} ${darkMode ? styles.labelDark : ''}`}
-            >
+          <div className="form-group">
+            <label htmlFor="maxAttendees" className={darkMode ? 'text-light' : ''}>
               Max Attendees
             </label>
-            <span className={styles.redAsterisk}>* </span>
+            <span className="red-asterisk">* </span>
             <input
               type="number"
-              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
-                errors.maxAttendees ? styles.inputInvalid : ''
-              }`}
+              className={`form-control ${
+                darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+              } ${errors.maxAttendees ? 'is-invalid' : ''}`}
               id="maxAttendees"
               name="maxAttendees"
               min="1"
@@ -402,19 +370,18 @@ function CreateEventModal({ isOpen, toggle }) {
               onChange={handleChange}
               disabled={loading}
             />
-            {errors.maxAttendees && <div className={styles.errorText}>{errors.maxAttendees}</div>}
+            {errors.maxAttendees && <div className="text-danger small">{errors.maxAttendees}</div>}
           </div>
 
-          <div className={styles.formGroup}>
-            <label
-              htmlFor="coverImage"
-              className={`${styles.label} ${darkMode ? styles.labelDark : ''}`}
-            >
+          <div className="form-group">
+            <label htmlFor="coverImage" className={darkMode ? 'text-light' : ''}>
               Cover Image URL (Optional)
             </label>
             <input
               type="url"
-              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+              className={`form-control ${
+                darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+              }`}
               id="coverImage"
               name="coverImage"
               placeholder="Enter cover image URL"
@@ -425,12 +392,12 @@ function CreateEventModal({ isOpen, toggle }) {
           </div>
         </form>
       </ModalBody>
-      <ModalFooter className={`${styles.modalFooter} ${darkMode ? styles.modalFooterDark : ''}`}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button
           color="secondary"
           onClick={handleToggle}
           disabled={loading}
-          className={`${styles.button} ${styles.buttonSecondary}`}
+          style={darkMode ? { backgroundColor: '#6c757d', borderColor: '#6c757d' } : {}}
         >
           Cancel
         </Button>
@@ -438,7 +405,7 @@ function CreateEventModal({ isOpen, toggle }) {
           color="primary"
           onClick={handleSubmit}
           disabled={loading}
-          className={`${styles.button} ${styles.buttonPrimary}`}
+          style={darkMode ? { backgroundColor: '#007bff', borderColor: '#007bff' } : {}}
         >
           {loading ? 'Creating...' : 'Create Event'}
         </Button>

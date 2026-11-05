@@ -57,14 +57,23 @@ describe('DropOffTracking', () => {
     // (Using selector to ensure we only look inside the table body)
     const yogaRow = screen.getByText('Yoga Class', { selector: 'td' });
     expect(yogaRow).toBeInTheDocument();
+
+    const buttons = screen.getAllByRole('button', { name: /get no-show list/i });
+    expect(buttons.length).toBe(1);
   });
 
   it('opens and closes the modal correctly', () => {
     renderWithStore(<DropOffTracking />);
 
-    // Component currently has no button/modal - verify table renders
-    const table = screen.getByRole('table');
-    expect(table).toBeInTheDocument();
+    // Open Modal
+    const button = screen.getByRole('button', { name: /get no-show list/i });
+    fireEvent.click(button);
+    expect(screen.getByText(/No-show list/i)).toBeInTheDocument();
+
+    // Close Modal
+    const closeBtn = screen.getByRole('button', { name: /✕/i });
+    fireEvent.click(closeBtn);
+    expect(screen.queryByText(/No-show list/i)).not.toBeInTheDocument();
   });
 
   it('updates selection when filtering by Event Type', () => {

@@ -84,7 +84,10 @@
 }
 
 .old_badges {
-  height: 220px;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  height: 70px;
 }
 
 .badge_featured_container {

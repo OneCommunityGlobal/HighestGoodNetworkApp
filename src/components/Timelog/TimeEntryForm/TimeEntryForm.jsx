@@ -40,6 +40,7 @@ import styles from '../Timelog.module.css';
 
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
+import { permissions } from '../../../utils/constants';
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
   new Promise((_, reject) => {
@@ -181,13 +182,13 @@ function TimeEntryForm(props) {
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
-  const canEditTimeEntryTime = props.hasPermission('editTimeEntryTime');
-  const canEditTimeEntryDescription = props.hasPermission('editTimeEntryDescription');
+  const canEditTimeEntryTime = props.hasPermission(permissions.editTimeEntryTime);
+  const canEditTimeEntryDescription = props.hasPermission(permissions.editTimeEntryDescription);
   const canEditTimeEntryToggleTangible = isForAuthUser
-    ? props.hasPermission('toggleTangibleTime')
-    : props.hasPermission('editTimeEntryToggleTangible');
-  const canEditTimeEntryDate = props.hasPermission('editTimeEntryDate');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+    ? props.hasPermission(permissions.toggleTangibleTime)
+    : props.hasPermission(permissions.editTimeEntryToggleTangible);
+  const canEditTimeEntryDate = props.hasPermission(permissions.editTimeEntryDate);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
 
   // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
   const canChangeTime =
@@ -384,8 +385,13 @@ function TimeEntryForm(props) {
 
     const handlePostSubmitActions = async () => {
       switch (from) {
-        case 'Timer':
-          sendStop();
+        case 'Timer': {
+          const timerStopped = await sendStop();
+          if (!timerStopped) {
+            toast.warning(
+              'Time was logged, but the timer stop could not be confirmed. Refresh the timer before continuing.',
+            );
+          }
           clearForm();
           // Enhanced callback with additional data
           if (onTimeSubmitted) {
@@ -405,6 +411,7 @@ function TimeEntryForm(props) {
             }),
           );
           break;
+        }
         case 'WeekEnd':
           // Handle week-end time log completion
           if (props.onComplete) {
