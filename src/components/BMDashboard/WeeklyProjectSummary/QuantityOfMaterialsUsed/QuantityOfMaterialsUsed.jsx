@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Select from 'react-select';
 import { Bar } from 'react-chartjs-2';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
@@ -33,6 +34,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   LineController,
+  ChartDataLabels,
 );
 
 const colorPalette = [
@@ -83,9 +85,6 @@ function QuantityOfMaterialsUsed({
   const darkMode = useSelector(state => state.theme.darkMode);
   const projects = useSelector(state => state.bmProjects);
   const [selectedProjects, setSelectedProjects] = useState([]);
-  const [legendColors, setLegendColors] = useState([]);
-  const chartContainerRef = useRef(null);
-  const [visibleRange, setVisibleRange] = useState([0, 30]);
   const [selectedMaterialName, setSelectedMaterialName] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -441,7 +440,6 @@ function QuantityOfMaterialsUsed({
     const assignedColors = displayMaterials.map(
       (_, index) => colorPalette[index % colorPalette.length] || getRandomColor(),
     );
-    setLegendColors(assignedColors);
     const comparisonColors = previousUsageData.map((prev, index) => {
       if (prev < usageData[index]) return 'green';
       if (prev > usageData[index]) return 'red';
@@ -463,7 +461,6 @@ function QuantityOfMaterialsUsed({
       const assignedDotColors = sortedLabels.map(
         (_, index) => colorPalette[index % colorPalette.length] || getRandomColor(),
       );
-      setLegendColors(assignedDotColors);
       const comparisonColorsPrev = sortedLabels.map(name => {
         const prevUsage = periodTwoUsageMap.get(name) || 0;
         const currentUsage = periodOneUsageMap.get(name) || 0;
@@ -541,27 +538,7 @@ function QuantityOfMaterialsUsed({
     comparisonEnabled,
   ]);
 
-  const barWidth = 12;
-  // Subtract the 40-px y-axis offset
-  const axisOffset = 35;
-
-  const handleScroll = () => {
-    if (!chartData || !chartData.labels?.length) return;
-    const container = chartContainerRef.current;
-    const { scrollLeft } = container;
-    const containerWidth = container.clientWidth;
-    const totalBars = chartData.labels.length;
-
-    const effectiveScrollLeft = Math.max(0, scrollLeft - axisOffset);
-
-    const startIndex = Math.floor(effectiveScrollLeft / barWidth);
-    const endIndex = Math.min(
-      Math.ceil((effectiveScrollLeft + containerWidth) / barWidth),
-      totalBars,
-    );
-
-    setVisibleRange([startIndex, endIndex]);
-  };
+  const barWidth = 50;
 
   const getMaterialUsageDetails = materialName => {
     // First find all materials with the matching name
@@ -753,21 +730,6 @@ function QuantityOfMaterialsUsed({
           <li>
             Use the horizontal scroll bar to view more materials if the chart exceeds visible width.
           </li>
-          <li>The legend below shows the top 10 visible materials in the current scroll range.</li>
-          <li>
-            Legend colors match chart bars. Dots are color-coded based on change:
-            <ul style={{ paddingLeft: '16px' }}>
-              <li>
-                <strong className={darkMode ? 'text-light' : ''}>Red</strong> – Increase in usage
-              </li>
-              <li>
-                <strong className={darkMode ? 'text-light' : ''}>Green</strong> – Decrease in usage
-              </li>
-              <li>
-                <strong className={darkMode ? 'text-light' : ''}>Gray</strong> – No change
-              </li>
-            </ul>
-          </li>
           <li>Scrollbars only appear when content overflows, maintaining a clean layout.</li>
         </ul>
       </ReactTooltip>
@@ -904,18 +866,13 @@ function QuantityOfMaterialsUsed({
         </div>
       )}
 
-      <div
-        className={`${styles.quantityOfMaterialsUsedChartContainer}`}
-        ref={chartContainerRef}
-        onScroll={handleScroll}
-      >
+      <div className={`${styles.quantityOfMaterialsUsedChartContainer}`}>
         {chartData ? (
           <div
             className={`${styles.quantityOfMaterialsUsedChartInnerScrollable}`}
             style={{
               minWidth: `${chartData.labels.length * barWidth}px`,
             }}
-            onScroll={handleScroll}
           >
             <Bar
               data={chartData}
@@ -923,6 +880,17 @@ function QuantityOfMaterialsUsed({
               options={{
                 maintainAspectRatio: false,
                 responsive: true,
+                interaction: {
+                  mode: 'index',
+                  intersect: false,
+                  axis: 'x',
+                },
+                layout: {
+                  padding: {
+                    top: 20,
+                    bottom: 15,
+                  },
+                },
                 onClick: (event, elements) => {
                   if (!elements.length) return;
                   const { index } = elements[0];
@@ -931,6 +899,15 @@ function QuantityOfMaterialsUsed({
                   setShowModal(true);
                 },
                 plugins: {
+                  datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    offset: 2,
+                    color: darkMode ? '#fff' : '#333',
+                    font: {
+                      size: 10,
+                    },
+                  },
                   legend: {
                     display: false,
                     labels: {
@@ -940,12 +917,25 @@ function QuantityOfMaterialsUsed({
                   tooltip: {
                     bodyColor: '#fff',
                     titleColor: '#fff',
+                    position: 'nearest',
+                    yAlign: 'bottom',
                   },
                 },
                 scales: {
                   x: {
                     ticks: {
-                      display: false,
+                      display: true,
+                      color: darkMode ? '#ccc' : '#333',
+                      maxRotation: 45,
+                      minRotation: 45,
+                      autoSkip: false,
+                      font: {
+                        size: 10,
+                      },
+                      callback(value) {
+                        const label = chartData.labels[value];
+                        return label.length > 15 ? `${label.slice(0, 15)}...` : label;
+                      },
                     },
                     grid: {
                       color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
@@ -1003,50 +993,6 @@ function QuantityOfMaterialsUsed({
         )}
       </div>
 
-      {/* Fixed legend below label */}
-      {chartData && chartData.labels && visibleRange && (
-        <div
-          className={`${styles.quantityOfMaterialsUsedCustomLegendContainer}`}
-          style={{
-            color: 'var(--text-color)',
-          }}
-        >
-          <strong className={darkMode ? 'text-light' : ''}>
-            Visible Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
-          </strong>
-          {chartData.datasets[0].data
-            .slice(visibleRange[0], visibleRange[1])
-            .map((usage, index) => ({
-              name: chartData.labels[visibleRange[0] + index],
-              usage,
-              color:
-                legendColors[visibleRange[0] + index] ||
-                chartData.datasets[0].backgroundColor?.[visibleRange[0] + index] ||
-                chartData.datasets[0].pointBackgroundColor?.[visibleRange[0] + index],
-              actualIndex: visibleRange[0] + index,
-            }))
-            .filter(item => item.name != null && item.usage != null)
-            .sort((a, b) => b.usage - a.usage)
-            .slice(0, 10)
-            .map(({ name, color }, index) => (
-              <span key={uuidv4()} className={`${styles.quantityOfMaterialsUsedLegendItem}`}>
-                <span
-                  className={`${styles.quantityOfMaterialsUsedLegendDot}`}
-                  style={{
-                    backgroundColor: color,
-                    display: 'inline-block',
-                    width: '10px',
-                    height: '10px',
-                    borderRadius: '50%',
-                    marginRight: '5px',
-                  }}
-                />
-                {name}
-                {index < 9 ? ', ' : ''}
-              </span>
-            ))}
-        </div>
-      )}
       {showModal && selectedMaterialName && (
         <div className={`${styles.quantityModalOverlay}`}>
           <div className={`${styles.quantityModalContent}`}>
