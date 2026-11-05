@@ -1,6 +1,13 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEquipmentById, updateEquipment } from '~/actions/bmdashboard/equipmentActions';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCheckCircle,
+  faExclamationCircle,
+  faInfoCircle,
+  faSyncAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import { Button, Form, FormGroup, Label, Container, Row, Col, Input, Alert } from 'reactstrap';
 import CheckTypesModal from '~/components/BMDashboard/shared/CheckTypesModal';
 import { useHistory, useParams } from 'react-router-dom';
@@ -11,6 +18,65 @@ import FilePreview from '~/components/common/FilePreview/FilePreview'; // Import
 import styles from './UpdateEquipment.module.css';
 import styles1 from '../../BMDashboard.module.css';
 
+// Display labels are kept for users; the stored value must match the backend condition enum.
+const STATUS_OPTIONS = [
+  { label: 'Working well', value: 'Good' },
+  { label: 'Broken/Needs repair', value: 'Needs Repair' },
+  { label: 'Stolen/Lost', value: 'Out of Order' },
+  { label: 'End of life', value: 'Out of Order' },
+  { label: 'Returned', value: 'Good' },
+];
+
+// Saved records hold either a legacy label or a canonical value; return the matching dropdown label.
+const toStatusLabel = condition =>
+  (
+    STATUS_OPTIONS.find(o => o.label === condition) ||
+    STATUS_OPTIONS.find(o => o.value === condition)
+  )?.label || '';
+
+const toStoredStatus = label => STATUS_OPTIONS.find(o => o.label === label)?.value || label;
+
+const getLatestRecord = (records, predicate = () => true) =>
+  (Array.isArray(records) ? records : []).reduce((latest, record) => {
+    if (!predicate(record)) return latest;
+    const timestamp = Date.parse(record?.date);
+    if (!Number.isFinite(timestamp)) return latest;
+    return !latest || timestamp >= Date.parse(latest.date) ? record : latest;
+  }, null);
+
+const getDisplayName = user => {
+  if (typeof user === 'string') return /^[a-f\d]{24}$/i.test(user) ? '' : user;
+  if (!user || typeof user !== 'object') return '';
+  return [user.firstName, user.lastName]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+};
+
+const formatHistoryDate = date => {
+  const parsedDate = new Date(date);
+  return Number.isNaN(parsedDate.getTime())
+    ? 'Unknown'
+    : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(parsedDate);
+};
+
+// Most recent known user: a populated Check Out log entry or a saved status update's lastUsedBy.
+const getLatestKnownUser = equipment => {
+  const checkOut = getLatestRecord(
+    equipment?.logRecord,
+    record => record?.type === 'Check Out' && Boolean(getDisplayName(record.responsibleUser)),
+  );
+  const savedUpdate = getLatestRecord(equipment?.updateRecord, record =>
+    Boolean(getDisplayName(record?.lastUsedBy).trim()),
+  );
+  const checkOutName = getDisplayName(checkOut?.responsibleUser);
+  const savedName = getDisplayName(savedUpdate?.lastUsedBy).trim();
+  if (checkOutName && savedName) {
+    return Date.parse(savedUpdate.date) > Date.parse(checkOut.date) ? savedName : checkOutName;
+  }
+  return checkOutName || savedName;
+};
+
 export default function UpdateEquipment() {
   const history = useHistory();
   const { equipmentId } = useParams();
@@ -20,6 +86,7 @@ export default function UpdateEquipment() {
   const [lastUsedFor, setLastUsedFor] = useState('');
   const [lastUsedForOther, setLastUsedForOther] = useState('');
   const [replacementRequired, setReplacementRequired] = useState('');
+  const [replacementReason, setReplacementReason] = useState('');
   const [description, setDescription] = useState('');
   const [sendNote, setSendNote] = useState('');
   const [status, setStatus] = useState('');
@@ -28,10 +95,27 @@ export default function UpdateEquipment() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
+  const [imageError, setImageError] = useState('');
   const [uploadedFilesPreview, setUploadedFilesPreview] = useState([]);
   const [isUpdated, setIsUpdated] = useState(false);
+  const [historyState, setHistoryState] = useState({
+    equipmentId: null,
+    status: 'loading',
+    equipment: null,
+  });
+  const previewFilesRef = useRef([]);
+  const historyRequestIdRef = useRef(0);
+  const isSubmittingRef = useRef(false);
+  const feedbackRef = useRef(null);
+  const editedHistoryFieldsRef = useRef({
+    equipmentId: null,
+    lastUsedBy: false,
+    lastUsedFor: false,
+  });
 
-  const equipmentDetails = useSelector(state => state.bmEquipments.singleEquipment);
+  const storedEquipmentDetails = useSelector(state => state.bmEquipments.singleEquipment);
+  const equipmentDetails =
+    storedEquipmentDetails?._id === equipmentId ? storedEquipmentDetails : null;
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
 
@@ -45,43 +129,85 @@ export default function UpdateEquipment() {
   }, []);
 
   useEffect(() => {
-    if (equipmentId) {
-      dispatch(fetchEquipmentById(equipmentId));
+    const requestId = ++historyRequestIdRef.current;
+    let active = true;
+    editedHistoryFieldsRef.current = {
+      equipmentId,
+      lastUsedBy: false,
+      lastUsedFor: false,
+    };
+    setLastUsedBy('');
+    setLastUsedByOther('');
+    setLastUsedFor('');
+    setLastUsedForOther('');
+    setStatus('');
+    setReplacementRequired('');
+    setReplacementReason('');
+    setDescription('');
+    setNotes('');
+    setSendNote('');
+    setUploadedFiles([]);
+    setUploadedFilesPreview([]);
+    previewFilesRef.current = [];
+    setSubmitError('');
+    setSubmitSuccess('');
+    setImageError('');
+    setIsUpdated(false);
+    setHistoryState({ equipmentId, status: 'loading', equipment: null });
+
+    if (!equipmentId) {
+      setHistoryState({ equipmentId, status: 'error', equipment: null });
+      return undefined;
     }
 
-    return () => {
-      cleanupFilePreviews(uploadedFilesPreview);
-    };
-  }, [dispatch, equipmentId, uploadedFilesPreview, cleanupFilePreviews]);
-
-  useEffect(() => {
-    return () => {
-      cleanupFilePreviews(uploadedFilesPreview);
-    };
-  }, [uploadedFilesPreview, cleanupFilePreviews]);
-
-  // Reset form when equipment details are updated
-  useEffect(() => {
-    if (equipmentDetails && isUpdated) {
-      const lastUpdate = equipmentDetails?.updateRecord?.[equipmentDetails.updateRecord.length - 1];
-      if (lastUpdate) {
-        setStatus(lastUpdate.condition || '');
-        setLastUsedBy(lastUpdate.lastUsedBy || '');
-        setLastUsedFor(lastUpdate.lastUsedFor || '');
-        setReplacementRequired(lastUpdate.replacementRequired || '');
-        setDescription(lastUpdate.description || '');
-        setNotes(lastUpdate.notes || '');
-        setSendNote(lastUpdate.notes ? 'yes' : 'no');
+    dispatch(fetchEquipmentById(equipmentId)).then(result => {
+      if (!active || requestId !== historyRequestIdRef.current) return;
+      if (result?.error || result?._id !== equipmentId) {
+        setHistoryState({ equipmentId, status: 'error', equipment: null });
+        return;
       }
 
-      const timer = setTimeout(() => {
-        setSubmitSuccess('');
-        setIsUpdated(false);
-      }, 5000);
+      setHistoryState({ equipmentId, status: 'loaded', equipment: result });
+      const latestStatus = getLatestRecord(result.updateRecord);
+      const latestPurpose = getLatestRecord(
+        result.updateRecord,
+        record => typeof record?.lastUsedFor === 'string' && record.lastUsedFor.trim().length > 0,
+      );
 
-      return () => clearTimeout(timer);
+      if (!editedHistoryFieldsRef.current.lastUsedBy) {
+        setLastUsedBy(getLatestKnownUser(result));
+      }
+      if (!editedHistoryFieldsRef.current.lastUsedFor) {
+        setLastUsedFor(latestPurpose?.lastUsedFor || '');
+      }
+      if (latestStatus) {
+        setStatus(toStatusLabel(latestStatus.condition));
+        setReplacementRequired(latestStatus.replacementRequired || '');
+        setReplacementReason(latestStatus.replacementReason || '');
+        setDescription(latestStatus.description || '');
+        setNotes(latestStatus.notes || '');
+        setSendNote(latestStatus.notes ? 'yes' : 'no');
+      }
+    });
+
+    return () => {
+      active = false;
+      cleanupFilePreviews(previewFilesRef.current);
+      previewFilesRef.current = [];
+    };
+  }, [dispatch, equipmentId, cleanupFilePreviews]);
+
+  useEffect(() => {
+    if (!isUpdated) return undefined;
+    const timer = setTimeout(() => setIsUpdated(false), 5000);
+    return () => clearTimeout(timer);
+  }, [isUpdated]);
+
+  useEffect(() => {
+    if ((submitError || submitSuccess) && feedbackRef.current?.scrollIntoView) {
+      feedbackRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
-  }, [equipmentDetails, isUpdated]);
+  }, [submitError, submitSuccess]);
 
   const handleCancel = useCallback(() => history.goBack(), [history]);
 
@@ -100,24 +226,20 @@ export default function UpdateEquipment() {
   }, []);
 
   const validateForm = useCallback(() => {
-    const validations = [
-      [!status, 'Status/Condition is required'],
-      [!lastUsedBy, 'Please specify who used the tool/equipment last time'],
-      [
-        lastUsedBy === 'other' && !lastUsedByOther.trim(),
-        'Please specify the name of who used the tool/equipment',
-      ],
-      [!lastUsedFor, 'Please specify what the tool/equipment was used for'],
-      [
-        lastUsedFor === 'other' && !lastUsedForOther.trim(),
-        'Please specify what the tool/equipment was used for',
-      ],
-      [!replacementRequired, 'Please indicate if replacement is required'],
-      [sendNote === 'yes' && !notes.trim(), 'Please add a note if you selected to send one'],
+    const checks = [
+      [!status, 'Status/Condition'],
+      [!lastUsedBy, 'Who used the tool/equipment last time'],
+      [lastUsedBy === 'other' && !lastUsedByOther.trim(), 'Name of the last user'],
+      [!lastUsedFor, 'What it was used for last time'],
+      [lastUsedFor === 'other' && !lastUsedForOther.trim(), 'Description of the last use'],
+      [!replacementRequired, 'Replacement required'],
+      [replacementRequired === 'yes' && !replacementReason.trim(), 'Replacement reason'],
+      [sendNote === 'yes' && !notes.trim(), 'Note'],
     ];
-
-    const failedValidation = validations.find(([condition]) => condition);
-    return failedValidation ? failedValidation[1] : null;
+    const missing = checks.filter(([isMissing]) => isMissing).map(([, label]) => label);
+    return missing.length > 0
+      ? `Please complete the following required fields: ${missing.join(', ')}.`
+      : null;
   }, [
     status,
     lastUsedBy,
@@ -125,81 +247,90 @@ export default function UpdateEquipment() {
     lastUsedFor,
     lastUsedForOther,
     replacementRequired,
+    replacementReason,
     sendNote,
     notes,
   ]);
 
   const handleFileUpload = useCallback(
     files => {
-      cleanupFilePreviews(uploadedFilesPreview);
-
       const validFiles = files.filter(file => {
         const fileType = file.type || '';
         const fileName = file.name || '';
-        const isValidType = fileType.startsWith('image/');
+        const isValidType = /^image\/(jpeg|jpg|png|gif|webp)$/i.test(fileType);
         const isValidExtension = fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
         return isValidType || isValidExtension;
       });
 
       if (validFiles.length === 0) {
-        console.warn('No valid image files found');
+        setImageError('Please select a PNG, JPG, JPEG, GIF, or WEBP image.');
         return;
       }
 
-      const newPreviews = validFiles.map(file => ({
-        name: file.name || 'Image',
-        preview: URL.createObjectURL(file),
-        size: file.size || 0,
-        type: file.type || 'image/*',
-        file: file,
-        status: 'uploaded',
-        uploadedAt: new Date().toISOString(),
-      }));
+      setImageError('');
+      cleanupFilePreviews(previewFilesRef.current);
+      const file = validFiles[0];
+      const newPreviews = [
+        {
+          name: file.name || 'Image',
+          preview: URL.createObjectURL(file),
+          size: file.size || 0,
+          type: file.type || 'image/*',
+          file,
+          status: 'not-saved',
+          message: 'Preview only; this image is not saved with the status update.',
+          uploadedAt: new Date().toISOString(),
+        },
+      ];
 
-      setUploadedFiles(prev => [...prev, ...validFiles]);
-      setUploadedFilesPreview(prev => [...prev, ...newPreviews]);
+      previewFilesRef.current = newPreviews;
+      setUploadedFiles([file]);
+      setUploadedFilesPreview(newPreviews);
     },
-    [uploadedFilesPreview, cleanupFilePreviews],
+    [cleanupFilePreviews],
   );
 
   const handleSubmit = useCallback(
     async e => {
       e.preventDefault();
+      if (isSubmittingRef.current) return;
 
       const validationError = validateForm();
       if (validationError) {
+        setSubmitSuccess('');
         setSubmitError(validationError);
         return;
       }
 
+      isSubmittingRef.current = true;
       setIsSubmitting(true);
       setSubmitError('');
       setSubmitSuccess('');
 
       try {
         const updateData = {
-          condition: status,
+          condition: toStoredStatus(status),
           lastUsedBy: lastUsedBy === 'other' ? lastUsedByOther : lastUsedBy,
           lastUsedFor: lastUsedFor === 'other' ? lastUsedForOther : lastUsedFor,
           replacementRequired,
+          replacementReason: replacementRequired === 'yes' ? replacementReason.trim() : '',
           description,
           notes: sendNote === 'yes' ? notes : '',
         };
 
-        await dispatch(updateEquipment(equipmentId, updateData));
-        dispatch(fetchEquipmentById(equipmentId));
+        const savedEquipment = await dispatch(updateEquipment(equipmentId, updateData));
+        setHistoryState({ equipmentId, status: 'loaded', equipment: savedEquipment });
         setIsUpdated(true);
 
-        let successMessage = 'Equipment status updated successfully!';
-
-        if (uploadedFiles.length > 0) {
-          successMessage += ' The form has been updated.';
-          cleanupFilePreviews(uploadedFilesPreview);
-          setUploadedFiles([]);
-          setUploadedFilesPreview([]);
-        }
-
-        setSubmitSuccess(successMessage);
+        const savedStatus = getLatestRecord(savedEquipment?.updateRecord);
+        const toolName = savedEquipment?.itemType?.name || 'Equipment';
+        const replacementText =
+          savedStatus?.replacementRequired === 'yes'
+            ? `Replacement required. Reason: ${savedStatus.replacementReason}`
+            : 'Replacement not required.';
+        setSubmitSuccess(
+          `${toolName} status saved as ${savedStatus?.condition || 'Unknown'}. ${replacementText}`,
+        );
 
         if (lastUsedBy === 'other') setLastUsedByOther('');
         if (lastUsedFor === 'other') setLastUsedForOther('');
@@ -207,12 +338,18 @@ export default function UpdateEquipment() {
         console.error('Update failed:', error);
 
         let errorMessage = 'Failed to update equipment. Please try again.';
+        const serverMessage = error.response?.data?.error;
 
-        if (error.message?.includes('User not authenticated')) {
+        if (error.message?.includes('User not authenticated') || error.response?.status === 401) {
           errorMessage = 'Authentication error. Please check if you are logged in.';
-        } else if (error.response?.data?.error?.includes('Invalid user ID format')) {
+        } else if (serverMessage?.includes('Invalid user ID format')) {
           errorMessage = 'User ID format error. Please contact support.';
+        } else if (typeof serverMessage === 'string' && serverMessage) {
+          errorMessage = `Failed to update equipment: ${serverMessage}`;
+        } else if (error.request && !error.response) {
+          errorMessage = 'Failed to update equipment: no response from server. Please try again.';
         }
+        errorMessage += ' Your entries have been kept and nothing was saved.';
 
         if (uploadedFiles.length > 0) {
           errorMessage += ' Note: Images were selected and previewed but not saved to database.';
@@ -227,6 +364,7 @@ export default function UpdateEquipment() {
 
         setSubmitError(errorMessage);
       } finally {
+        isSubmittingRef.current = false;
         setIsSubmitting(false);
       }
     },
@@ -238,6 +376,7 @@ export default function UpdateEquipment() {
       lastUsedFor,
       lastUsedForOther,
       replacementRequired,
+      replacementReason,
       description,
       sendNote,
       notes,
@@ -249,18 +388,17 @@ export default function UpdateEquipment() {
     ],
   );
 
-  const handleRemoveFile = useCallback(
-    index => {
-      const fileToRemove = uploadedFilesPreview[index];
-      if (fileToRemove?.preview?.startsWith?.('blob:')) {
-        URL.revokeObjectURL(fileToRemove.preview);
-      }
+  const handleRemoveFile = useCallback(index => {
+    const fileToRemove = previewFilesRef.current[index];
+    if (fileToRemove?.preview?.startsWith?.('blob:')) {
+      URL.revokeObjectURL(fileToRemove.preview);
+    }
 
-      setUploadedFilesPreview(prev => prev.filter((_, i) => i !== index));
-      setUploadedFiles(prev => prev.filter((_, i) => i !== index));
-    },
-    [uploadedFilesPreview],
-  );
+    const remainingPreviews = previewFilesRef.current.filter((_, i) => i !== index);
+    previewFilesRef.current = remainingPreviews;
+    setUploadedFilesPreview(remainingPreviews);
+    setUploadedFiles(remainingPreviews.map(file => file.file));
+  }, []);
 
   // Memoized styles
   const formLabelStyle = useMemo(
@@ -366,15 +504,25 @@ export default function UpdateEquipment() {
 
   // Derived values
   const currentStatus = useMemo(
-    () =>
-      equipmentDetails?.updateRecord?.[equipmentDetails.updateRecord.length - 1]?.condition ||
-      'Unknown',
+    () => getLatestRecord(equipmentDetails?.updateRecord)?.condition || 'Unknown',
     [equipmentDetails],
   );
 
   const rentalDueDate = useMemo(() => equipmentDetails?.rentalDueDate?.split('T')[0] || 'Unknown', [
     equipmentDetails,
   ]);
+  const summaryEquipment =
+    historyState.status === 'loaded' && historyState.equipmentId === equipmentId
+      ? historyState.equipment
+      : null;
+  const latestSummaryUpdate = getLatestRecord(summaryEquipment?.updateRecord);
+  const latestSummaryUser = getLatestKnownUser(summaryEquipment);
+  const hasStatusHistory = Array.isArray(summaryEquipment?.updateRecord)
+    ? summaryEquipment.updateRecord.length > 0
+    : false;
+  const hasUsageHistory = Array.isArray(summaryEquipment?.logRecord)
+    ? summaryEquipment.logRecord.length > 0
+    : false;
 
   const hasUploadedFiles = uploadedFiles.length > 0;
   const hasFilePreviews = uploadedFilesPreview.length > 0;
@@ -392,62 +540,13 @@ export default function UpdateEquipment() {
             </h1>
             {isUpdated && (
               <output className="text-success mt-2 d-block" style={{ fontSize: '0.9rem' }}>
-                <i className="fas fa-sync-alt me-2" />
+                <FontAwesomeIcon icon={faSyncAlt} className="mr-2" aria-hidden="true" />
                 Showing updated data for Equipment ID: {equipmentId}
               </output>
             )}
           </header>
         </Col>
       </Row>
-
-      {submitError && (
-        <Row>
-          <Col md={12}>
-            <Alert
-              color="danger"
-              className="mt-3"
-              style={{
-                backgroundColor: darkMode ? '#5c1a1a' : '#f8d7da',
-                borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
-                color: darkMode ? '#f8d7da' : '#842029',
-              }}
-            >
-              <i className="fas fa-exclamation-circle me-2" />
-              {submitError}
-            </Alert>
-          </Col>
-        </Row>
-      )}
-
-      {submitSuccess && (
-        <Row>
-          <Col md={12}>
-            <Alert
-              color="success"
-              className="mt-3"
-              style={{
-                backgroundColor: darkMode ? '#0a3a27' : '#d1e7dd',
-                borderColor: darkMode ? '#badbcc' : '#a3cfbb',
-                color: darkMode ? '#d1e7dd' : '#0f5132',
-              }}
-            >
-              <i className="fas fa-check-circle me-2" />
-              {submitSuccess}
-              <div className="mt-2 small">
-                You can continue editing or{' '}
-                <Button
-                  color="link"
-                  className="p-0"
-                  onClick={() => history.push(`/bmdashboard/tools/${equipmentId}`)}
-                  style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
-                >
-                  view the equipment details
-                </Button>
-              </div>
-            </Alert>
-          </Col>
-        </Row>
-      )}
 
       {equipmentDetails && (
         <Row className="mb-4">
@@ -466,7 +565,38 @@ export default function UpdateEquipment() {
         </Row>
       )}
 
-      <Form className={`${styles1.invForm}`} onSubmit={handleSubmit}>
+      <Row>
+        <Col md={12}>
+          <Alert color="info" className={`mb-4 ${styles.lastUpdateSummary}`} aria-live="polite">
+            <h2 className={`h5 ${styles.lastUpdateSummaryTitle}`}>Last Update Summary</h2>
+            {historyState.status === 'loading' && (
+              <p className="mb-0">Loading equipment history…</p>
+            )}
+            {historyState.status === 'error' && (
+              <p className="mb-0">Equipment history could not be loaded.</p>
+            )}
+            {historyState.status === 'loaded' && !hasStatusHistory && !hasUsageHistory && (
+              <p className="mb-0">No previous status or usage history.</p>
+            )}
+            {historyState.status === 'loaded' && (hasStatusHistory || hasUsageHistory) && (
+              <dl className="mb-0">
+                <dt>Last update date</dt>
+                <dd>
+                  {latestSummaryUpdate?.date
+                    ? formatHistoryDate(latestSummaryUpdate.date)
+                    : 'Unknown'}
+                </dd>
+                <dt>Previous status/condition</dt>
+                <dd>{latestSummaryUpdate?.condition || 'Unknown'}</dd>
+                <dt>Last known user</dt>
+                <dd>{latestSummaryUser || 'Unknown'}</dd>
+              </dl>
+            )}
+          </Alert>
+        </Col>
+      </Row>
+
+      <Form className={`${styles1.invForm}`} onSubmit={handleSubmit} noValidate>
         <FormGroup className="background-from-db">
           <Row form>
             <Col md={4}>
@@ -549,11 +679,11 @@ export default function UpdateEquipment() {
                 className={styles['custom-select']}
               >
                 <option value="">Select status</option>
-                <option value="Working well">Working well</option>
-                <option value="Broken/Needs repair">Broken/Needs repair</option>
-                <option value="Stolen/Lost">Stolen/Lost</option>
-                <option value="End of life">End of life</option>
-                <option value="Returned">Returned</option>
+                {STATUS_OPTIONS.map(option => (
+                  <option key={option.label} value={option.label}>
+                    {option.label}
+                  </option>
+                ))}
               </Input>
             </FormGroup>
           </Col>
@@ -568,7 +698,10 @@ export default function UpdateEquipment() {
                 name="lastUsedBy"
                 id="lastUsedBy"
                 value={lastUsedBy}
-                onChange={e => setLastUsedBy(e.target.value)}
+                onChange={e => {
+                  editedHistoryFieldsRef.current.lastUsedBy = true;
+                  setLastUsedBy(e.target.value);
+                }}
                 required
                 style={selectInputStyle}
                 className={styles['custom-select']}
@@ -578,6 +711,14 @@ export default function UpdateEquipment() {
                 <option value="Jane Doe (Volunteer #2)">Jane Doe (Volunteer #2)</option>
                 <option value="Jane Doe (Volunteer #3)">Jane Doe (Volunteer #3)</option>
                 <option value="Jane Doe (Volunteer #4)">Jane Doe (Volunteer #4)</option>
+                {lastUsedBy &&
+                  ![
+                    'Jane Doe (Volunteer #1)',
+                    'Jane Doe (Volunteer #2)',
+                    'Jane Doe (Volunteer #3)',
+                    'Jane Doe (Volunteer #4)',
+                    'other',
+                  ].includes(lastUsedBy) && <option value={lastUsedBy}>{lastUsedBy}</option>}
                 <option value="other">Other (Please specify below)</option>
               </Input>
               {lastUsedBy === 'other' && (
@@ -608,7 +749,10 @@ export default function UpdateEquipment() {
                 name="lastUsedFor"
                 id="lastUsedFor"
                 value={lastUsedFor}
-                onChange={e => setLastUsedFor(e.target.value)}
+                onChange={e => {
+                  editedHistoryFieldsRef.current.lastUsedFor = true;
+                  setLastUsedFor(e.target.value);
+                }}
                 required
                 style={selectInputStyle}
                 className={styles['custom-select']}
@@ -618,6 +762,14 @@ export default function UpdateEquipment() {
                 <option value="Bathroom - plumbing">Bathroom - plumbing</option>
                 <option value="Living room - painting">Living room - painting</option>
                 <option value="Garden - landscaping">Garden - landscaping</option>
+                {lastUsedFor &&
+                  ![
+                    'Kitchen - tiling',
+                    'Bathroom - plumbing',
+                    'Living room - painting',
+                    'Garden - landscaping',
+                    'other',
+                  ].includes(lastUsedFor) && <option value={lastUsedFor}>{lastUsedFor}</option>}
                 <option value="other">Other (Please specify below)</option>
               </Input>
               {lastUsedFor === 'other' && (
@@ -652,15 +804,35 @@ export default function UpdateEquipment() {
               { label: 'No', value: 'no', id: 'replacementRequired-no' },
             ]}
             value={replacementRequired}
-            onChange={e => setReplacementRequired(e.target.value)}
+            onChange={e => {
+              setReplacementRequired(e.target.value);
+              if (e.target.value !== 'yes') setReplacementReason('');
+            }}
             required
             darkMode={darkMode}
           />
         </FormGroup>
 
+        {replacementRequired === 'yes' && (
+          <FormGroup>
+            <Label for="replacementReason" style={formLabelStyle}>
+              Replacement reason *
+            </Label>
+            <Input
+              type="textarea"
+              name="replacementReason"
+              id="replacementReason"
+              value={replacementReason}
+              onChange={e => setReplacementReason(e.target.value)}
+              required
+              style={textInputStyle}
+            />
+          </FormGroup>
+        )}
+
         <FormGroup>
           <Label for="file-upload-input" style={formLabelStyle}>
-            Upload latest picture of this tool or equipment. (optional)
+            Select one picture for preview (optional; not saved)
             <small className="text-muted ms-2" style={{ color: darkMode ? '#b0b7c0' : '#6c757d' }}>
               Accepted: PNG, JPG, JPEG, GIF, WEBP
             </small>
@@ -676,13 +848,18 @@ export default function UpdateEquipment() {
                 color: darkMode ? '#d1ecf1' : '#0c5460',
               }}
             >
-              <i className="fas fa-info-circle me-2" />
-              {uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} uploaded and ready
-              for preview
+              <FontAwesomeIcon icon={faInfoCircle} className="mr-2" aria-hidden="true" />
+              {uploadedFiles.length} image selected for preview only; it will not be saved with this
+              update.
             </Alert>
           )}
 
-          <DragAndDrop updateUploadedFiles={handleFileUpload} />
+          <DragAndDrop updateUploadedFiles={handleFileUpload} multiple={false} />
+          {imageError && (
+            <Alert color="danger" className="mt-2" role="alert">
+              {imageError}
+            </Alert>
+          )}
 
           {hasFilePreviews && (
             <div className="mt-3">
@@ -717,7 +894,7 @@ export default function UpdateEquipment() {
                   }
                 >
                   <small>
-                    <i className="fas fa-info-circle me-1" />
+                    <FontAwesomeIcon icon={faInfoCircle} className="mr-1" aria-hidden="true" />
                     {hasNotSavedFiles
                       ? 'Images are shown for preview purposes only and are not saved to the database.'
                       : 'Images are uploaded for preview. Form data will be saved to database.'}
@@ -779,6 +956,50 @@ export default function UpdateEquipment() {
           </FormGroup>
         )}
 
+        <div ref={feedbackRef} aria-live="polite" data-testid="submit-feedback">
+          {submitError && (
+            <Alert
+              color="danger"
+              role="alert"
+              className="mt-3"
+              style={{
+                backgroundColor: darkMode ? '#5c1a1a' : '#f8d7da',
+                borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
+                color: darkMode ? '#f8d7da' : '#842029',
+              }}
+            >
+              <FontAwesomeIcon icon={faExclamationCircle} className="mr-2" aria-hidden="true" />
+              {submitError}
+            </Alert>
+          )}
+          {submitSuccess && (
+            <Alert
+              color="success"
+              className="mt-3"
+              style={{
+                backgroundColor: darkMode ? '#0a3a27' : '#d1e7dd',
+                borderColor: darkMode ? '#badbcc' : '#a3cfbb',
+                color: darkMode ? '#d1e7dd' : '#0f5132',
+              }}
+            >
+              <FontAwesomeIcon icon={faCheckCircle} className="mr-2" aria-hidden="true" />
+              {submitSuccess}
+              <div className="mt-2 small">
+                You can continue editing or{' '}
+                <Button
+                  color="link"
+                  className="p-0"
+                  onClick={() => history.push(`/bmdashboard/equipment/${equipmentId}`)}
+                  style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
+                >
+                  view the equipment details
+                </Button>
+                .
+              </div>
+            </Alert>
+          )}
+        </div>
+
         <FormGroup>
           <div className={`${styles1.invFormBtnGroup}`}>
             <Button
@@ -790,39 +1011,18 @@ export default function UpdateEquipment() {
             >
               Cancel
             </Button>
-            <Button
-              color="primary"
-              type="submit"
-              disabled={isSubmitting}
-              className="position-relative"
-              style={buttonStyle}
-            >
+            <Button color="primary" type="submit" disabled={isSubmitting} style={buttonStyle}>
               {isSubmitting ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                    className="spinner-border spinner-border-sm mr-2"
                     role="status"
                     aria-hidden="true"
                   />
-                  Updating...
+                  Saving...
                 </>
               ) : (
-                <>
-                  <i className="fas fa-save me-2" />
-                  Update Status
-                  {hasUploadedFiles && (
-                    <span
-                      className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                      style={{
-                        backgroundColor: darkMode ? '#0dcaf0' : '#0d6efd',
-                        color: darkMode ? '#000' : '#fff',
-                      }}
-                    >
-                      <i className="fas fa-image me-1" />
-                      {uploadedFiles.length}
-                    </span>
-                  )}
-                </>
+                'Update Status'
               )}
             </Button>
           </div>

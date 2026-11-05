@@ -34,14 +34,14 @@ export const setErrors = payload => {
 export const fetchEquipmentById = equipmentId => {
   const url = `${ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId)}`;
   return async dispatch => {
-    axios
-      .get(url)
-      .then(res => {
-        dispatch(setEquipment(res.data));
-      })
-      .catch(error => {
-        dispatch(setErrors(error));
-      });
+    try {
+      const response = await axios.get(url);
+      dispatch(setEquipment(response.data));
+      return response.data;
+    } catch (error) {
+      dispatch(setErrors(error));
+      return { error };
+    }
   };
 };
 
@@ -119,9 +119,7 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
     }
 
     if (!currentUserId) {
-      const errorMsg = 'User not authenticated. Please log in.';
-      toast.error(errorMsg);
-      throw new Error(errorMsg);
+      throw new Error('User not authenticated. Please log in.');
     }
 
     const statusUpdateData = {
@@ -129,6 +127,7 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
       lastUsedBy: updateData.lastUsedBy,
       lastUsedFor: updateData.lastUsedFor,
       replacementRequired: updateData.replacementRequired,
+      replacementReason: updateData.replacementReason || '',
       description: updateData.description || '',
       notes: updateData.notes || '',
       createdBy: currentUserId,
@@ -137,7 +136,6 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
     const res = await axios.put(url, statusUpdateData);
 
     dispatch(setEquipment(res.data));
-    toast.success('Equipment status updated successfully!');
     dispatch(fetchEquipmentById(equipmentId));
 
     return res.data;
@@ -157,7 +155,7 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
       errorMessage = err.message;
     }
 
-    toast.error(errorMessage);
+    err.message = errorMessage;
     throw err;
   }
 };

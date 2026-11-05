@@ -236,3 +236,21 @@
 :global(.dark-mode) .form-control::placeholder {
   color: #b0b7c0 !important;
 }
+
+/* Last Update Summary: light-blue panel with dark navy text (about 13:1) in light and dark mode */
+.lastUpdateSummary,
+.lastUpdateSummary dt,
+.lastUpdateSummary dd,
+.lastUpdateSummary p {
+  color: #0a2540 !important;
+}
+
+:global(.dark-mode) .lastUpdateSummary .lastUpdateSummaryTitle,
+.lastUpdateSummaryTitle {
+  color: #0a2540 !important;
+}
+
+.lastUpdateSummary {
+  background-color: #d1ecf1 !important;
+  border-color: #bee5eb !important;
+}

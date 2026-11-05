@@ -1,6 +1,13 @@
 // FilePreview.jsx
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCheckCircle,
+  faExclamationTriangle,
+  faFileImage,
+  faSave,
+} from '@fortawesome/free-solid-svg-icons';
 
 const FilePreview = ({ file, index, darkMode, onRemove }) => {
   const handleRemove = useCallback(() => {
@@ -33,19 +40,19 @@ const FilePreview = ({ file, index, darkMode, onRemove }) => {
         return {
           text: 'Ready for preview',
           color: darkMode ? '#75b798' : '#198754',
-          icon: 'fa-check-circle',
+          icon: faCheckCircle,
         };
       case 'local-only':
         return {
           text: 'Stored locally',
           color: darkMode ? '#6ea8fe' : '#0dcaf0',
-          icon: 'fa-save',
+          icon: faSave,
         };
       case 'not-saved':
         return {
           text: 'Preview only',
           color: darkMode ? '#ffda6a' : '#ffc107',
-          icon: 'fa-exclamation-triangle',
+          icon: faExclamationTriangle,
         };
       default:
         return null;
@@ -97,8 +104,10 @@ const FilePreview = ({ file, index, darkMode, onRemove }) => {
             }}
           >
             <div>
-              <i
-                className="fas fa-file-image fa-2x"
+              <FontAwesomeIcon
+                icon={faFileImage}
+                size="2x"
+                aria-hidden="true"
                 style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
               />
               <div className="small mt-1" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
@@ -117,8 +126,10 @@ const FilePreview = ({ file, index, darkMode, onRemove }) => {
           }}
         >
           <div>
-            <i
-              className="fas fa-file-image fa-2x"
+            <FontAwesomeIcon
+              icon={faFileImage}
+              size="2x"
+              aria-hidden="true"
               style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
             />
             <div className="small mt-1" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
@@ -141,7 +152,7 @@ const FilePreview = ({ file, index, darkMode, onRemove }) => {
       {statusInfo && (
         <div className="small">
           <span style={{ color: statusInfo.color }}>
-            <i className={`fas ${statusInfo.icon} me-1`} />
+            <FontAwesomeIcon icon={statusInfo.icon} className="mr-1" aria-hidden="true" />
             {statusInfo.text}
           </span>
         </div>
