@@ -47,9 +47,9 @@
 
 .subtab.active {
   background: #d7ecff;
-  color: #0d6efd;
+  color: #084298;
   border-color: #99c8ff;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 60%);
+  box-shadow: 0 2px 4px #99c8ff;
 }
 
 .dark .subtab {
@@ -199,8 +199,8 @@
 }
 
 .dark .chip {
-  background: rgb(13 110 253 / 22%);
-  color: #cfe0ff;
+  background: #174a85;
+  color: #fff;
 }
 
 .chipClear {
