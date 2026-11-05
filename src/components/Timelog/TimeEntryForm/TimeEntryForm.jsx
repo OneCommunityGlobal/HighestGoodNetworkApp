@@ -28,9 +28,12 @@ import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import hasPermission from '~/utils/permissions';
+import { fetchTeamMembersTask } from '~/actions/task';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
+import SplitTimeEntryForm from './SplitTimeEntryForm';
+import { readSplitDraft } from './splitTimeEntryUtils';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
@@ -67,7 +70,7 @@ const customImageUploadHandler = () =>
  * @returns
  */
 
-function TimeEntryForm(props) {
+export function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
   const {
@@ -175,6 +178,36 @@ function TimeEntryForm(props) {
   const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const splitAvailable = from === 'Timer' && !edit && formValues.personId === authUser.userid;
+  const hasPendingSplit = () => splitAvailable && Boolean(readSplitDraft(authUser.userid)?.attempted);
+  const [splitMode, setSplitMode] = useState(hasPendingSplit);
+  const [splitLocked, setSplitLocked] = useState(hasPendingSplit);
+  const toggleForm = () => {
+    if (!splitLocked) toggle();
+  };
+  const finishSplit = async (receipt, payload) => {
+    // A recovered save may belong to a timer that was reset in another tab.
+    if (props.timerSessionId === payload.batchId) {
+      const stopped = await sendStop(payload.batchId);
+      if (!stopped) return false;
+      if (onTimeSubmitted) {
+        onTimeSubmitted({
+          hours: Math.floor(receipt.totalMinutes / 60),
+          minutes: receipt.totalMinutes % 60,
+          sessionId,
+        });
+      }
+    } else {
+      toast.info('The earlier split is saved. Your current timer was left running.');
+    }
+    await Promise.allSettled([
+      Promise.resolve().then(() => props.getUserProfile(payload.personId)),
+      Promise.resolve().then(() => props.getTimeEntriesForWeek(payload.personId, 0)),
+      Promise.resolve().then(() => dispatch(fetchTeamMembersTask(payload.personId))),
+    ]);
+    toggle();
+    return true;
+  };
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
@@ -691,11 +724,11 @@ function TimeEntryForm(props) {
       <Modal
         className={darkMode ? `${fontColor} dark-mode` : ''}
         isOpen={isOpen}
-        toggle={toggle}
+        toggle={toggleForm}
         data-testid="timeEntryFormModal"
         style={darkMode ? boxStyleDark : {}}
       >
-        <ModalHeader toggle={toggle} className={`${headerBg}`}>
+        <ModalHeader toggle={toggleForm} className={`${headerBg}`}>
           <div>
             {edit ? 'Edit ' : 'Add '}
             {formValues.isTangible ? (
@@ -732,7 +765,7 @@ function TimeEntryForm(props) {
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
                 // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]}
-                disabled={!canEditTimeEntryDate}
+                disabled={splitMode || !canEditTimeEntryDate}
                 className={
                   darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''
                 }
@@ -757,7 +790,7 @@ function TimeEntryForm(props) {
                   placeholder="Hours"
                   value={formValues.hours}
                   onChange={handleInputChange}
-                  disabled={!canChangeTime}
+                  disabled={splitMode || !canChangeTime}
                   className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                 />
                 </Col>
@@ -777,7 +810,7 @@ function TimeEntryForm(props) {
                       }
                     }}
                     onKeyDown={allowOnlyNumbersKeyDown}
-                    disabled={!canChangeTime}
+                    disabled={splitMode || !canChangeTime}
                     className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                 </Col>
@@ -788,6 +821,33 @@ function TimeEntryForm(props) {
                 </div>
               )}
             </FormGroup>
+            {splitAvailable && (
+              <FormGroup check>
+                <Label check className={fontColor}>
+                  <Input
+                    type="checkbox"
+                    checked={splitMode}
+                    disabled={splitLocked || !props.timerSessionId}
+                    onChange={event => setSplitMode(event.target.checked)}
+                  />
+                  Worked on multiple tasks?
+                </Label>
+              </FormGroup>
+            )}
+            {splitMode ? (
+              <SplitTimeEntryForm
+                personId={authUser.userid}
+                batchId={props.timerSessionId || ''}
+                dateOfWork={formValues.dateOfWork}
+                totalMinutes={Number(formValues.hours) * 60 + Number(formValues.minutes)}
+                tasks={timeEntryFormUserTasks}
+                loading={!isAsyncDataLoaded}
+                connected={timerConnected !== false}
+                darkMode={darkMode}
+                onComplete={finishSplit}
+                onLockChange={setSplitLocked}
+              />
+            ) : <>
             <FormGroup>
               <Label for="projectOrTask" className={fontColor}>
                 Project/Task
@@ -877,10 +937,13 @@ function TimeEntryForm(props) {
                 </ReactTooltip>
               </Label>
             </FormGroup>
+            </>}
           </Form>
         </ModalBody>
         <ModalFooter className={bodyBg}>
           <small className="mr-auto">* All the fields are required</small>
+          {!splitMode && (
+            <>
           <Button onClick={clearForm} color="danger" style={darkMode ? boxStyleDark : boxStyle}>
             Clear Form
           </Button>
@@ -897,6 +960,8 @@ function TimeEntryForm(props) {
               return submitting ? 'Submitting...' : 'Submit';
             })()}
           </Button>
+            </>
+          )}
         </ModalFooter>
       </Modal>
       <TangibleInfoModal
@@ -948,6 +1013,7 @@ TimeEntryForm.propTypes = {
   userProjects: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
   onTimeSubmitted: PropTypes.func,
   sessionId: PropTypes.string,
+  timerSessionId: PropTypes.string,
   timerStats: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   timerConnected: PropTypes.bool,
   maxHoursPerEntry: PropTypes.number,
