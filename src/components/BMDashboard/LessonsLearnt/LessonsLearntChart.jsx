@@ -77,10 +77,7 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
           projectName: item.project || 'Unknown Project',
           projectId: item.projectId,
           lessonsCount: item.lessonsCount || 0,
-          percentage:
-            Number.parseFloat((item.changePercentage || '0%').replace('%', '').replace('+', '')) ||
-            0,
-          changePercentage: item.changePercentage || '0%',
+          changePercentage: item.changePercentage ?? 'N/A',
         }));
 
         // When multiple projects selected, filter to only the chosen ones
@@ -201,7 +198,7 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
               align: 'end',
               offset: 2,
               font: { weight: 'bold', size: 11 },
-              formatter: (_value, ctx) => lessonsData[ctx.dataIndex]?.changePercentage || '0%',
+              formatter: (_value, ctx) => lessonsData[ctx.dataIndex]?.changePercentage ?? 'N/A',
               color: ctx => changeColor(lessonsData[ctx.dataIndex]?.changePercentage, darkMode),
             },
           },
@@ -362,6 +359,12 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
             <div className={styles.barContainer}>
               <Bar data={chartData} options={chartOptions} plugins={[ChartDataLabels]} />
             </div>
+
+            <p className={styles.statusText}>
+              Bars show the number of lessons in the selected date range. MoM Change shows the
+              percentage change compared with the previous month. N/A means the previous month had
+              zero lessons, so a percentage increase cannot be calculated.
+            </p>
           </>
         )}
       </div>
