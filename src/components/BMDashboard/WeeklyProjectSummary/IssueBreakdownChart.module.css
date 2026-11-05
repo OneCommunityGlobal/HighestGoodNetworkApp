@@ -618,7 +618,7 @@
   }
 }
 
-:global(.recharts-cartesian-axis-tick-value) {
+.container :global(.recharts-cartesian-axis-tick-value) {
   fill: var(--chart-axis-color, #374151); /* strong contrast */
   font-weight: 600;
   font-size: 12px;
