@@ -97,7 +97,7 @@ export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
     });
 }
 
-export const updateEquipment = (equipmentId, updateData) => async (dispatch, getState) => {
+export const updateEquipment = (equipmentId, updateData, options = {}) => async (dispatch, getState) => {
   const url = `${ENDPOINTS.BM_EQUIPMENT_STATUS_UPDATE(equipmentId)}`;
 
   try {
@@ -132,13 +132,14 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
       description: updateData.description || '',
       notes: updateData.notes || '',
       createdBy: currentUserId,
+      sendNote: updateData.sendNote,
     };
 
     const res = await axios.put(url, statusUpdateData);
 
-    dispatch(setEquipment(res.data));
+    if (options.publish !== false) dispatch(setEquipment(res.data));
     toast.success('Equipment status updated successfully!');
-    dispatch(fetchEquipmentById(equipmentId));
+    if (options.refresh !== false) dispatch(fetchEquipmentById(equipmentId));
 
     return res.data;
   } catch (err) {

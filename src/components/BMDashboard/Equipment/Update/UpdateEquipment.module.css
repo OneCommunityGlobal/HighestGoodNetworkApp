@@ -236,3 +236,39 @@
 :global(.dark-mode) .form-control::placeholder {
   color: #b0b7c0 !important;
 }
+
+/* stylelint-enable */
+.fields {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.metadataMessage {
+  padding: 1rem;
+}
+
+.statusForm {
+  overflow-wrap: anywhere;
+}
+
+.statusForm small {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.statusForm :global(.invalid-feedback) {
+  font-weight: 600;
+}
+
+.dark :global(.invalid-feedback) {
+  color: #ffb4b4;
+}
+
+@media screen and (width <= 600px) {
+  .largeSquareImage {
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+}
