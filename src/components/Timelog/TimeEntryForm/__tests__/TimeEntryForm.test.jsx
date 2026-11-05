@@ -152,4 +152,33 @@ it('should change Project with user input', async () => {
   expect(select).toHaveValue(toSelect.projectId);
   expect(select).toHaveDisplayValue(toSelect.projectName);
 });
+it('pauses on timer submit and clears after successful logging', async () => {
+  const sendPause = vi.fn();
+  const sendClear = vi.fn();
+
+  renderWithProvider(
+    <TimeEntryForm
+      from="Timer"
+      data={data}
+      edit={false}
+      toggle={toggle}
+      isOpen
+      sendPause={sendPause}
+      sendClear={sendClear}
+      timerConnected
+    />,
+    { store },
+  );
+
+  await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+  await waitFor(() => {
+    expect(sendPause).toHaveBeenCalledTimes(1);
+    expect(sendClear).toHaveBeenCalledTimes(1);
+  });
+
+  expect(sendPause.mock.invocationCallOrder[0]).toBeLessThan(
+    sendClear.mock.invocationCallOrder[0],
+  );
+});
 });

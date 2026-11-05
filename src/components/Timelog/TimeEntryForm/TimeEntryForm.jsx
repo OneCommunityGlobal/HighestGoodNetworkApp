@@ -72,7 +72,8 @@ function TimeEntryForm(props) {
   // props from parent
   const {
     from,
-    sendStop,
+    sendPause,
+    sendClear,
     edit,
     data,
     toggle,
@@ -370,6 +371,9 @@ function TimeEntryForm(props) {
       setSubmitting(false);
       return;
     }
+    if (from === 'Timer') {
+      sendPause();
+    }
 
     const handleFormReset = () => {
       setFormValues(initialFormValues);
@@ -386,12 +390,7 @@ function TimeEntryForm(props) {
     const handlePostSubmitActions = async () => {
       switch (from) {
         case 'Timer': {
-          const timerStopped = await sendStop();
-          if (!timerStopped) {
-            toast.warning(
-              'Time was logged, but the timer stop could not be confirmed. Refresh the timer before continuing.',
-            );
-          }
+          sendClear();
           clearForm();
           // Enhanced callback with additional data
           if (onTimeSubmitted) {
@@ -933,7 +932,8 @@ function TimeEntryForm(props) {
 
 TimeEntryForm.propTypes = {
   from: PropTypes.string,
-  sendStop: PropTypes.func,
+  sendPause: PropTypes.func,
+  sendClear: PropTypes.func,
   edit: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,

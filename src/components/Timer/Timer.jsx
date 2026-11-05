@@ -816,7 +816,8 @@ function Timer({ authUser, darkMode, isPopout }) {
         toggle={toggleLogTimeModal}
         isOpen={logTimeEntryModal}
         data={logTimer}
-        sendStop={sendStop}
+        sendPause={sendPause}
+        sendClear={sendClear}
         timerConnected={customReadyState === ReadyState.OPEN}
         onTimeSubmitted={handleTimeSubmitted}
         sessionId={sessionId}
