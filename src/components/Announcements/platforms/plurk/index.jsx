@@ -7,6 +7,26 @@ import styles from './PlurkAutoPoster.module.css';
 const PLURK_MAX = 360;
 const STORAGE_KEY = 'plurk-auto-poster-schedules';
 
+const PLURK_QUALIFIERS = [
+  'says',
+  'thinks',
+  'feels',
+  'shares',
+  'likes',
+  'loves',
+  'asks',
+  'wonders',
+  'hopes',
+  'wishes',
+  'needs',
+  'wants',
+  'will',
+  'was',
+  'has',
+  'gives',
+  'hates',
+];
+
 const pad = value => String(value).padStart(2, '0');
 
 const formatDate = date =>
@@ -406,23 +426,11 @@ function PlurkAutoPoster() {
                 onChange={event => setQualifier(event.target.value)}
                 className={styles.input}
               >
-                <option value="says">says</option>
-                <option value="thinks">thinks</option>
-                <option value="feels">feels</option>
-                <option value="shares">shares</option>
-                <option value="likes">likes</option>
-                <option value="loves">loves</option>
-                <option value="asks">asks</option>
-                <option value="wonders">wonders</option>
-                <option value="hopes">hopes</option>
-                <option value="wishes">wishes</option>
-                <option value="needs">needs</option>
-                <option value="wants">wants</option>
-                <option value="will">will</option>
-                <option value="was">was</option>
-                <option value="has">has</option>
-                <option value="gives">gives</option>
-                <option value="hates">hates</option>
+                {PLURK_QUALIFIERS.map(option => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
               </select>
 
               <p className={styles.hint}>
@@ -538,23 +546,11 @@ function PlurkAutoPoster() {
               onChange={event => setScheduledQualifier(event.target.value)}
               className={styles.input}
             >
-              <option value="says">says</option>
-              <option value="thinks">thinks</option>
-              <option value="feels">feels</option>
-              <option value="shares">shares</option>
-              <option value="likes">likes</option>
-              <option value="loves">loves</option>
-              <option value="asks">asks</option>
-              <option value="wonders">wonders</option>
-              <option value="hopes">hopes</option>
-              <option value="wishes">wishes</option>
-              <option value="needs">needs</option>
-              <option value="wants">wants</option>
-              <option value="will">will</option>
-              <option value="was">was</option>
-              <option value="has">has</option>
-              <option value="gives">gives</option>
-              <option value="hates">hates</option>
+              {PLURK_QUALIFIERS.map(option => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
             </select>
 
             <label htmlFor="plurk-schedule-draft">Scheduled post</label>
