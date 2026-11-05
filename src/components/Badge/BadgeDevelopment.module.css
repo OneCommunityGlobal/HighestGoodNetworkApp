@@ -1,0 +1,78 @@
+.btn {
+  margin: 20px;
+  box-shadow: 2px 2px 4px 1px #d3d3d3;
+}
+
+.btnDark {
+  margin: 20px;
+  box-shadow: 0.5px 0.5px 5px #000;
+}
+
+.filtersContainer {
+  margin-top: 20px;
+  padding-left: 20px;
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.filterRowLast {
+  display: flex;
+  align-items: center;
+}
+
+.filterLabel {
+  margin: 0;
+  margin-right: 8px;
+}
+
+.filterLabelMid {
+  margin: 0;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.filterInput {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.rankInput {
+  width: 80px;
+  text-align: center;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.filtersContainer input::placeholder,
+.filtersContainer select::placeholder {
+  color: inherit;
+  opacity: 1;
+}
+
+.filterInputDark {
+  background-color: #1c1c1c;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+.filterInputDark::placeholder {
+  color: #bbb;
+}
+
+.filterInputDark option {
+  background-color: #1c1c1c;
+  color: #fff;
+}
+
+.rangeInputDark {
+  accent-color: #90caf9;
+  filter: brightness(0.8);
+}

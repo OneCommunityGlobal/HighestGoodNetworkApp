@@ -16,6 +16,7 @@ import styles from './wbs.module.css';
 import { useFetchWbsTasks } from './hook';
 import { FilterBar } from './FilterBar';
 
+import { permissions } from '../../../../utils/constants';
 const filterTasks = (tasks, filterState) => {
   switch (filterState) {
     case 'all':
@@ -95,7 +96,7 @@ function WBSTasks(props) {
   }, [tasks, filterState]);
 
   // permissions
-  const canPostTask = props.hasPermission('postTask');
+  const canPostTask = props.hasPermission(permissions.postTask);
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
@@ -194,6 +195,7 @@ function WBSTasks(props) {
       
       <Button
         color="light"
+        outline={darkMode}
         size="sm"
         className="ml-2"
         onClick={() => setOpenAll(!openAll)}
@@ -202,8 +204,13 @@ function WBSTasks(props) {
       >
         {openAll ? 'Fold All' : 'Unfold All'}
       </Button>
-      
-      <FilterBar currentFilter={filterState} onChange={setFilterState} isLoading={isLoading} />
+
+      <FilterBar
+        currentFilter={filterState}
+        onChange={setFilterState}
+        isLoading={isLoading}
+        darkMode={darkMode}
+      />
     </div>
   );
 

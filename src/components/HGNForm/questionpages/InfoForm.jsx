@@ -28,6 +28,9 @@ function InfoForm() {
   const [touched, setTouched] = useState(false);
   const [isSlackNameWarning, setIsSlackNameWarning] = useState(false);
 
+  // Lock the name field only when it was prefilled from the profile,
+  // not whenever the user has typed something.
+  const [nameFromProfile, setNameFromProfile] = useState(false);
   const isValid = newVolunteer.name.length >= 2;
   const showError = touched && !isValid;
 
@@ -48,10 +51,14 @@ function InfoForm() {
     if (user && formData) {
       const firstName = userProfile?.firstName || user?.firstName || '';
       const lastName = userProfile?.lastName || user?.lastName || '';
+      setNameFromProfile(Boolean(firstName && lastName));
       setNewVolunteer(prevState => ({
         ...formData,
         ...prevState, // This preserves any user input
-        name: firstName && lastName ? `${firstName} ${lastName}` : '',
+        name:
+          firstName && lastName
+            ? `${firstName} ${lastName}`
+            : prevState.name || formData.name || '',
         email: user.email,
         github: prevState.github || formData.github || '', // Preserve GitHub value
         slack: prevState.slack || formData.slack || '', // Preserve
@@ -170,6 +177,7 @@ function InfoForm() {
             pattern=".{2,}"
             title="Name must be at least 2 characters long"
             placeholder="Your First and Last Name"
+            disabled={nameFromProfile}
           />
           {showError && (
             <span className={`${styles.errorMessage}`}>
@@ -189,7 +197,7 @@ function InfoForm() {
             onChange={e => setNewVolunteer({ ...newVolunteer, email: e.target.value })}
             required
             placeholder="Your Email"
-            disabled={!!(user.email !== undefined || user.email !== null)}
+            disabled={!!user.email}
           />
         </div>
         <div className={`${styles.formInputs}`}>

@@ -119,6 +119,52 @@
   color: #fff;
 }
 
+.searchButton {
+  padding: 8px 14px;
+  background-color: #0056b3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.searchButton:hover {
+  background-color: #0056b3;
+}
+
+.clearButton {
+  padding: 8px 14px;
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.clearButton:hover {
+  background-color: #545b62;
+}
+
+.darkModeSearchBarContainer .searchButton {
+  background-color: #1a6fc4;
+}
+
+.darkModeSearchBarContainer .searchButton:hover {
+  background-color: #155da0;
+}
+
+.darkModeSearchBarContainer .clearButton {
+  background-color: #555e68;
+}
+
+.darkModeSearchBarContainer .clearButton:hover {
+  background-color: #434a52;
+}
+
 /* --- Table & Column Alignment --- */
 .resourceList {
   background-color: #fff;

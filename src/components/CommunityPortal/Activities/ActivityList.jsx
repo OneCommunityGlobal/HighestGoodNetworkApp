@@ -1,9 +1,18 @@
 // Activity List Component
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
-// import { useHistory } from 'react-router-dom';
+import {
+  FaTag,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaDumbbell,
+  FaUsers,
+  FaGraduationCap,
+  FaPalette,
+} from 'react-icons/fa';
 import { fuzzySearch } from '../../../utils/fuzzySearch';
 import { mockActivities } from './mockActivities';
 
@@ -15,6 +24,7 @@ function ActivityList() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
 
   const [filter, setFilter] = useState({
     type: '',
@@ -126,23 +136,40 @@ function ActivityList() {
     setModalOpen(false);
   };
 
+  const goToReschedule = useCallback(
+    (event, activity) => {
+      event.stopPropagation();
+
+      const activityId = activity._id || activity.id;
+
+      history.push({
+        pathname: `/communityportal/activities/${activityId}/manage`,
+        state: { activity },
+      });
+    },
+    [history],
+  );
+
+  const getTypeIcon = type => {
+    switch (type) {
+      case 'Fitness':
+        return <FaDumbbell className={styles.activityIcon} />;
+      case 'Social':
+        return <FaUsers className={styles.activityIcon} />;
+      case 'Educational':
+        return <FaGraduationCap className={styles.activityIcon} />;
+      case 'Art':
+        return <FaPalette className={styles.activityIcon} />;
+      default:
+        return <FaTag className={styles.activityIcon} />;
+    }
+  };
+
   const startOfToday = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-
-  const activityTypes = useMemo(() => {
-    const typeOrder = new Map();
-
-    activities.forEach(activity => {
-      if (activity.type && !typeOrder.has(activity.type)) {
-        typeOrder.set(activity.type, typeOrder.size);
-      }
-    });
-
-    return [...typeOrder.keys()].sort((a, b) => typeOrder.get(a) - typeOrder.get(b));
-  }, [activities]);
 
   const filteredActivities = activities
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
@@ -308,9 +335,34 @@ function ActivityList() {
               >
                 <li className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}>
                   <strong>{activity.name}</strong>
-                  <span>
-                    {activity.type} – {activity.date} – {activity.location}
-                  </span>
+
+                  {/* Type */}
+                  <div className={styles.altypeRow}>
+                    {getTypeIcon(activity.type)}
+                    <span className={styles.altypeText}>{activity.type}</span>
+                  </div>
+
+                  {/* Location + Date */}
+                  <div className={styles.allocationDateRow}>
+                    <div className={styles.allocation}>
+                      <FaMapMarkerAlt className={styles.alactivityIcon} />
+                      <span>{activity.location}</span>
+                    </div>
+
+                    <div className={styles.aldate}>
+                      <FaCalendarAlt className={styles.alactivityIcon} />
+                      <span>{activity.date}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={event => goToReschedule(event, activity)}
+                    className="btn btn-primary btn-sm mt-2"
+                    aria-label={`Reschedule ${activity.name}`}
+                  >
+                    Reschedule
+                  </button>
                 </li>
               </div>
             ))}

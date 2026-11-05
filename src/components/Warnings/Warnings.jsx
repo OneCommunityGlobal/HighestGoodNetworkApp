@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import hasPermission from '~/utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
+import { enqueueTask } from '~/utils/requestQueue';
 import {
   deleteWarningsById,
   getWarningsByUserId,
@@ -16,6 +17,7 @@ import WarningModal from './modals/WarningModal';
 import WarningTrackerModal from './modals/WarningTrackerModal';
 import WarningIcons from './WarningIcons';
 import styles from './Warnings.module.css';
+import { permissions } from '../../utils/constants';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
 // Log Time as You Go (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
@@ -39,16 +41,17 @@ export default function Warning({
   const [error, setError] = useState(null);
   const rolesAllowedToTracking = ['Administrator', 'Owner'];
   const canViewTrackerButton =
-    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('viewTrackingOverview'));
+    rolesAllowedToTracking.includes(userRole) ||
+    dispatch(hasPermission(permissions.viewTrackingOverview));
   const canEditWarning =
     rolesAllowedToTracking.includes(userRole) ||
-    dispatch(hasPermission('addWarningTracker')) ||
-    dispatch(hasPermission('deactivateWarningTracker')) ||
-    dispatch(hasPermission('reactivateWarningTracker')) ||
-    dispatch(hasPermission('deleteWarningTracker'));
+    dispatch(hasPermission(permissions.addWarningTracker)) ||
+    dispatch(hasPermission(permissions.deactivateWarningTracker)) ||
+    dispatch(hasPermission(permissions.reactivateWarningTracker)) ||
+    dispatch(hasPermission(permissions.deleteWarningTracker));
 
   const fetchUsersWarningsById = async () => {
-    dispatch(getWarningsByUserId(personId))
+    return dispatch(getWarningsByUserId(personId))
       .then(res => {
         if (!res || res.error) {
           setUsersWarnings([]);
@@ -70,15 +73,11 @@ export default function Warning({
     if (showTrackers) {
       setToggle(true);
       if (usersWarnings.length === 0) {
-        const index = Array.from(personId ?? '').reduce(
-          (acc, c) => acc + (c.codePointAt(0) ?? 0),
-          0,
-        );
-        const delay = index % 5000;
-        const timer = setTimeout(() => {
-          fetchUsersWarningsById();
-        }, delay);
-        return () => clearTimeout(timer);
+        let cancelled = false;
+        enqueueTask(() => (cancelled ? Promise.resolve() : fetchUsersWarningsById()));
+        return () => {
+          cancelled = true;
+        };
       }
     } else {
       setToggle(false);

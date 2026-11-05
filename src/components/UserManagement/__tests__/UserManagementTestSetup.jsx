@@ -71,10 +71,11 @@ vi.mock('../UserTableFooter', () => ({
   default: () => <div data-testid="user-table-footer" />,
 }));
 
+// ✅ Corrected:
 vi.mock('../UserSearchPanel', () => ({
-  default: ({ onActiveFiter, onNewUserClick }) => (
+  default: ({ onActiveFilter, onNewUserClick }) => (
     <>
-      <button data-testid="active-filter-button" onClick={() => onActiveFiter('active')} />
+      <button data-testid="active-filter-button" onClick={() => onActiveFilter('active')} />
       <button data-testid="new-user-button" onClick={onNewUserClick} />
     </>
   ),

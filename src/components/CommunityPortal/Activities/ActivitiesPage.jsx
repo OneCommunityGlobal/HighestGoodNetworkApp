@@ -1,35 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import RegistrationForm from './RegistrationForm';
 import ResourceMonitoring from './ResourceMonitoring';
 import LatestRegistration from './LatestRegistration';
 import MyEvent from './MyEvent';
-import ActivityFeedbackModal from '../ActivityFeedbackForm';
-import styles from './styles.module.css';
-
+import styles from './Activitiesstyles.module.css';
+import { useSelector } from 'react-redux';
 function ActivitiesPage() {
-  const [showFeedback, setShowFeedback] = useState(false);
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   return (
-    <div className={`${styles.activitiesPage}`}>
-      <header className={`${styles.header}`}>
-        <h1 className={styles.headerTitle}>Event Registrations</h1>
+    <div className={`${darkMode ? styles.darkmode : ''}`}>
+      <div className={`${styles.activitiesPage}`}>
+        <header className={`${styles.header}`}>
+          <h1>Event Registrations</h1>
+        </header>
 
-        <button className={styles.feedbackBtn} onClick={() => setShowFeedback(true)}>
-          Give Feedback
-        </button>
-      </header>
+        <ResourceMonitoring />
 
-      <ResourceMonitoring />
+        <div className={`${styles.middleSection}`}>
+          <RegistrationForm />
+        </div>
 
-      <div className="middle-section">
-        <RegistrationForm />
+        <div className={`${styles.mainContent}`}>
+          <LatestRegistration />
+          <MyEvent />
+        </div>
       </div>
-
-      <div className="main-content">
-        <LatestRegistration />
-        <MyEvent />
-      </div>
-      {showFeedback && <ActivityFeedbackModal onClose={() => setShowFeedback(false)} />}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ActualVsPlannedCost from '../ActualVsPlannedCost/ActualVsPlannedCost';
+import CostPredictionChart from '../CostPredictionChart';
 import FinancialsTrackingCard from './FinancialsTrackingCard';
 import SingleExpenditureCard from './SingleExpenditureCard';
 import styles from './FinancialsTrackingSection.module.css';
@@ -87,8 +88,8 @@ function FinancialsTrackingSection() {
           <div className={styles.chartCard}>
             <ActualVsPlannedCost />
           </div>
-          <div className={styles.placeholderCard}>
-            <p className={styles.placeholderText}>Coming Soon</p>
+          <div className={styles.chartCard}>
+            <CostPredictionChart projectId={1} />
           </div>
         </div>
       ) : (
@@ -99,8 +100,8 @@ function FinancialsTrackingSection() {
             <div className={styles.chartCard}>
               <ActualVsPlannedCost />
             </div>
-            <div className={styles.placeholderCard}>
-              <p className={styles.placeholderText}>Coming Soon</p>
+            <div className={styles.chartCard}>
+              <CostPredictionChart projectId={1} />
             </div>
           </div>
         </div>
