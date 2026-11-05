@@ -480,9 +480,13 @@ export default function ProjectRiskProfileOverview() {
                   <XAxis
                     dataKey="projectName"
                     tick={{ fontSize: 13, fill: chartColors.text, fontWeight: 500 }}
+                    tickFormatter={name =>
+                      name && name.length > 20 ? `${name.slice(0, 19)}…` : name
+                    }
                     angle={-45}
                     textAnchor="end"
-                    height={100}
+                    height={120}
+                    interval={0}
                     axisLine={{ stroke: chartColors.axisLine, strokeWidth: 1.5 }}
                     tickLine={{ stroke: chartColors.axisLine }}
                   />
