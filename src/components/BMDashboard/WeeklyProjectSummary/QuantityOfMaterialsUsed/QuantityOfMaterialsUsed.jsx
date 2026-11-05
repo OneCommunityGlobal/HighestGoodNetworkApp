@@ -933,7 +933,7 @@ function QuantityOfMaterialsUsed({
                         size: 10,
                       },
                       callback(value) {
-                        const label = this.getLabelForValue(value);
+                        const label = chartData.labels[value];
                         return label.length > 15 ? `${label.slice(0, 15)}...` : label;
                       },
                     },
