@@ -19,9 +19,10 @@ function CurrentPromptModal(props) {
 
   const dispatch = useDispatch();
   const [prompt, setPrompt] = useState('');
-  // const [promptModifiedDate, setPromptModifiedDate] = useState('');
-  const [updatedPromptDate, setUpdatedPromptDate] = useState('');
+  const [lastEditedDatetime, setLastEditedDatetime] = useState(null);
   const [updatedCopiedDate, setUpdatedCopiedDate] = useState('');
+  const [promptDateLoaded, setPromptDateLoaded] = useState(false);
+  const [copiedDateLoaded, setCopiedDateLoaded] = useState(false);
   const [isPromptUpdated, setIsPromptUpdated] = useState(false);
   const [isPromptCopied, setIsPromptCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -57,30 +58,40 @@ function CurrentPromptModal(props) {
     }
   }, [modal]);
   // =================================================================
-  // This useEffect will fetch the modified date and time of AI prompt - Sucheta
+  // Fetch the last actual prompt edit, excluding initial default creation.
   useEffect(() => {
+    let active = true;
+    setPromptDateLoaded(false);
     setIsPromptUpdated(false);
     dispatch(getDashboardDataAI())
       .then(response => {
-        if (response) {
-          setUpdatedPromptDate(response.modifiedDatetime);
-        }
+        if (!active) return;
+        setLastEditedDatetime(response?.lastEditedDatetime ?? null);
+        setPromptDateLoaded(response != null);
       })
       .catch(() => {});
+    return () => {
+      active = false;
+    };
   }, [isPromptUpdated]);
 
   // This useEffect will fetch the copied prompt date and time from userProfile - Sucheta
   useEffect(() => {
+    let active = true;
+    setCopiedDateLoaded(false);
     setIsPromptCopied(false);
     dispatch(getCopiedDateOfPrompt(userId))
       .then(response => {
-        if (response) {
-          setUpdatedCopiedDate(response);
-        }
+        if (!active) return;
+        setUpdatedCopiedDate(response ?? null);
+        setCopiedDateLoaded(response !== undefined);
       })
       .catch(() => {
         toast.error('There was an error');
       });
+    return () => {
+      active = false;
+    };
   }, [isPromptCopied]);
   // =================================================================
 
@@ -123,9 +134,18 @@ function CurrentPromptModal(props) {
     return <div>{prompt}</div>;
   };
 
+  // API dates are timestamp strings. Missing/invalid copies are not evidence of a copy.
+  const editedTime = typeof lastEditedDatetime === 'string' ? Date.parse(lastEditedDatetime) : NaN;
+  const copiedTime = typeof updatedCopiedDate === 'string' ? Date.parse(updatedCopiedDate) : NaN;
+  const showNew =
+    promptDateLoaded &&
+    copiedDateLoaded &&
+    Number.isFinite(editedTime) &&
+    (!Number.isFinite(copiedTime) || editedTime > copiedTime);
+
   return (
     <div>
-      {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
+      {showNew ? (
         <Button
           className="p-1 mb-1 responsive-font-size"
           color="info"

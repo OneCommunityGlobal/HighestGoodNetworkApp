@@ -41,7 +41,8 @@ export const getCopiedDateOfPrompt = userId => {
   return async dispatch => {
     return CopiedPromptDate.then(res => {
       dispatch(getCopiedPromptDate(res.data.message));
-      return res.data.message;
+      // Keep successful missing copies distinct from failed requests (undefined).
+      return res.data.message ?? null;
     }).catch(() => {
       dispatch(getCopiedPromptDate(undefined));
     });

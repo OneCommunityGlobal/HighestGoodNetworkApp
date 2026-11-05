@@ -51,6 +51,13 @@ export function Dashboard(props) {
     }, 150);
   };
 
+  const handleToggleKeyDown = event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggle();
+    }
+  };
+
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
     setViewingUser(sessionStorageData || false);
@@ -102,7 +109,7 @@ export function Dashboard(props) {
               role="button"
               className="mt-3 mb-5 text-center"
               onClick={toggle}
-              onKeyDown={toggle}
+              onKeyDown={handleToggleKeyDown}
               tabIndex="0"
             >
               <WeeklySummary
