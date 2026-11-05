@@ -92,7 +92,14 @@ VarianceCard.propTypes = {
   }).isRequired,
 };
 
-function buildChartContent({ loading, isFiltering, hasData, chartDataWithVariance, darkMode }) {
+function buildChartContent({
+  loading,
+  isFiltering,
+  error,
+  hasData,
+  chartDataWithVariance,
+  darkMode,
+}) {
   if (loading || isFiltering) {
     return (
       <div
@@ -106,6 +113,13 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
       >
         <Spinner color="primary" size="sm" />
         <span style={{ marginLeft: '10px' }}>Updating chart...</span>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div role="alert" style={{ padding: 20, color: 'var(--text-color)' }}>
+        {error}
       </div>
     );
   }
@@ -188,7 +202,7 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
   );
 }
 
-function ActualVsPlannedCost() {
+function ActualVsPlannedCost({ onProjectChange, onCategoryChange }) {
   const dispatch = useDispatch();
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -205,6 +219,7 @@ function ActualVsPlannedCost() {
   const [breakdown, setBreakdown] = useState([]);
   const [totals, setTotals] = useState({ actual: 0, planned: 0 });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isFiltering, setIsFiltering] = useState(false);
 
   const selectedProjectName = useMemo(
@@ -227,9 +242,12 @@ function ActualVsPlannedCost() {
   // Default to first project if none selected
   useEffect(() => {
     if (!selectedProject && projects.length > 0) {
-      setSelectedProject(projects[0]._id);
+      const defaultProjectId = projects[0]._id;
+      setSelectedProject(defaultProjectId);
+      onProjectChange(defaultProjectId);
+      onCategoryChange('Overall');
     }
-  }, [projects, selectedProject]);
+  }, [projects, selectedProject, onProjectChange, onCategoryChange]);
 
   // Filter transition effect
   useEffect(() => {
@@ -243,27 +261,40 @@ function ActualVsPlannedCost() {
   // Fetch project expenses
   useEffect(() => {
     if (selectedProject) {
+      let cancelled = false;
       setLoading(true);
+      setError(null);
       axios
         .get(ENDPOINTS.BM_PROJECT_EXPENSE_BY_ID(selectedProject))
         .then(({ data }) => {
-          setTotals({
-            actual: Math.round(data.totalActualCost),
-            planned: Math.round(data.totalPlannedCost),
-          });
-          setBreakdown(
-            data.breakdown.map(item => ({
-              category: item.category,
-              actualCost: Math.round(item.actualCost),
-              plannedCost: Math.round(item.plannedCost),
-            })),
-          );
+          if (!cancelled) {
+            setTotals({
+              actual: Math.round(data.totalActualCost),
+              planned: Math.round(data.totalPlannedCost),
+            });
+            setBreakdown(
+              data.breakdown.map(item => ({
+                category: item.category,
+                actualCost: Math.round(item.actualCost),
+                plannedCost: Math.round(item.plannedCost),
+              })),
+            );
+          }
         })
-        .catch(() => {
-          setTotals({ actual: 0, planned: 0 });
-          setBreakdown([]);
+        .catch(fetchError => {
+          if (!cancelled) {
+            setTotals({ actual: 0, planned: 0 });
+            setBreakdown([]);
+            setError(fetchError?.response?.data?.message || 'Failed to load project expense data.');
+          }
         })
-        .finally(() => setLoading(false));
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+
+      return () => {
+        cancelled = true;
+      };
     }
   }, [selectedProject]);
 
@@ -305,6 +336,7 @@ function ActualVsPlannedCost() {
   const chartContent = buildChartContent({
     loading,
     isFiltering,
+    error,
     hasData,
     chartDataWithVariance,
     darkMode,
@@ -329,7 +361,9 @@ function ActualVsPlannedCost() {
             value={selectedProject}
             onChange={e => {
               setSelectedProject(e.target.value);
+              onProjectChange(e.target.value);
               setSelectedCategory('Overall');
+              onCategoryChange('Overall');
             }}
           >
             {projects.map(p => (
@@ -345,7 +379,10 @@ function ActualVsPlannedCost() {
           <select
             id="ActualVsPlannedCost-category-select"
             value={selectedCategory}
-            onChange={e => setSelectedCategory(e.target.value)}
+            onChange={e => {
+              setSelectedCategory(e.target.value);
+              onCategoryChange(e.target.value);
+            }}
           >
             {categories.map(cat => (
               <option key={cat} value={cat}>
@@ -381,5 +418,10 @@ function ActualVsPlannedCost() {
     </div>
   );
 }
+
+ActualVsPlannedCost.propTypes = {
+  onProjectChange: PropTypes.func.isRequired,
+  onCategoryChange: PropTypes.func.isRequired,
+};
 
 export default ActualVsPlannedCost;

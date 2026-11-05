@@ -101,11 +101,13 @@ function ExpenditureCard({ mode = 'stacked', pieType }) {
         </div>
       </div>
 
-      {selectedProject && (
+      {selectedProject ? (
         <ExpenditureChart
           projectId={selectedProject}
           {...(isStacked ? { pieType } : { viewMode: 'comparison' })}
         />
+      ) : (
+        <p className={styles.stateMessage}>No expenditure projects found.</p>
       )}
     </div>
   );

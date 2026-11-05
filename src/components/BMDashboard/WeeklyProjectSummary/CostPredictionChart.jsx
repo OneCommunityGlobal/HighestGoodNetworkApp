@@ -13,7 +13,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import styles from './CostPredictionChart.module.css';
-import projectCostService from '../../../services/projectCostService';
+import { getProjectCosts } from '../../../services/projectCostTrackingService';
 
 const THEME = {
   light: {
@@ -43,53 +43,23 @@ function getTheme(darkMode) {
 }
 
 const SERIES_COLORS = {
-  planned: '#82ca9d',
   actual: '#8884d8',
   predicted: '#ff7300',
 };
 
-// Simple hardcoded project list for testing the filter — swap this out for a real API/Redux-backed list later.
-const PROJECTS = [
-  { id: 'building-1', name: 'Building 1' },
-  { id: 'building-2', name: 'Building 2' },
-  { id: 'building-3', name: 'Building 3' },
-];
-
 const DEFAULT_WINDOW_MONTHS = 6;
 const TODAY_STR = new Date().toISOString().slice(0, 10);
 
-const SAMPLE_DATA_BASE = {
-  'building-1': { plannedStart: 400, plannedGrowth: 5.6, actualStart: 380, actualGrowth: 5.4 },
-  'building-2': { plannedStart: 700, plannedGrowth: 9.2, actualStart: 660, actualGrowth: 9.0 },
-  'building-3': { plannedStart: 250, plannedGrowth: 3.1, actualStart: 240, actualGrowth: 3.0 },
-};
+function toMonthKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
 
-// Fallback sample data so the chart always renders, even when the backend has
-// no cost/prediction records for this project (e.g. on a reviewer's machine).
-function buildSampleData(projectId) {
-  const now = new Date();
-  const start = new Date(2012, 0, 1);
-  const totalMonths =
-    (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()) + 1;
-
-  const base = SAMPLE_DATA_BASE[projectId] ?? SAMPLE_DATA_BASE['building-1'];
-
-  const data = [];
-  for (let i = 0; i < totalMonths; i += 1) {
-    const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
-    const planned = Math.round(base.plannedStart + i * base.plannedGrowth);
-    const actual = Math.round(base.actualStart + i * base.actualGrowth);
-    const isRecent = i >= totalMonths - 3; // only the last 3 months have a "prediction"
-    const predicted = isRecent ? Math.round(planned * 1.02) : null;
-
-    data.push({
-      month: d.toLocaleString('default', { month: 'long', year: 'numeric' }),
-      plannedCost: planned,
-      actualCost: actual,
-      predictedCost: predicted,
-    });
-  }
-  return data;
+function formatMonthLabel(monthKey) {
+  const [year, month] = monthKey.split('-').map(Number);
+  return new Date(year, month - 1, 1).toLocaleString('default', {
+    month: 'short',
+    year: '2-digit',
+  });
 }
 
 function renderDotTopOrBottom(lineKey, color, dataLength) {
@@ -101,10 +71,9 @@ function renderDotTopOrBottom(lineKey, color, dataLength) {
     const isLast = dataLength != null && index === dataLength - 1;
     if (!isFirst && !isLast) return null;
 
-    const planned = payload.plannedCost;
     const actual = payload.actualCost;
     const predicted = payload.predictedCost;
-    const values = [planned, actual, predicted].filter(v => v != null);
+    const values = [actual, predicted].filter(v => v != null);
     if (values.length === 0) return null;
 
     const max = Math.max(...values);
@@ -223,17 +192,6 @@ function CustomTooltip({ active, payload, label, theme }) {
         <TooltipSwatch color={SERIES_COLORS.predicted} />
         Predicted: <strong style={{ marginLeft: 4 }}>{point.predictedCost ?? 'N/A'}</strong>
       </p>
-      <p
-        style={{
-          margin: '2px 0',
-          color: SERIES_COLORS.planned,
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
-        <TooltipSwatch color={SERIES_COLORS.planned} />
-        Planned: <strong style={{ marginLeft: 4 }}>{point.plannedCost ?? 'N/A'}</strong>
-      </p>
       {variance != null && (
         <p
           style={{
@@ -258,7 +216,6 @@ CustomTooltip.propTypes = {
       payload: PropTypes.shape({
         actualCost: PropTypes.number,
         predictedCost: PropTypes.number,
-        plannedCost: PropTypes.number,
       }),
     }),
   ),
@@ -275,69 +232,129 @@ CustomTooltip.defaultProps = {
   payload: [],
 };
 
-function CostPredictionChart({ projectId }) {
+function CostPredictionChart({ projectId, category }) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
   const theme = getTheme(darkMode);
 
-  // filter state
-  const [selectedProjectId, setSelectedProjectId] = useState('');
   const [dateRange, setDateRange] = useState({ start: '', end: '' }); // 'YYYY-MM-DD'
 
   const legendItems = [
-    { label: 'Planned Cost', color: SERIES_COLORS.planned, type: 'circle' },
     { label: 'Actual Cost', color: SERIES_COLORS.actual, type: 'circle' },
     { label: 'Predicted Cost', color: SERIES_COLORS.predicted, type: 'dash' },
   ];
 
-  // Falls back to the projectId prop whenever nothing is explicitly selected, so the chart still loads data by default
-  const effectiveProjectId = selectedProjectId || projectId;
-
   useEffect(() => {
+    let cancelled = false;
+
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [costsResponse, predictionsResponse] = await Promise.all([
-          projectCostService.getProjectCosts(effectiveProjectId),
-          projectCostService.getProjectPredictions(effectiveProjectId),
-        ]);
-
-        const costsData = costsResponse.data.costs;
-        const predictionsData = predictionsResponse.data.predictions;
-
-        const predictionsMap = predictionsData.reduce((acc, pred) => {
-          acc[pred.month] = pred.predictedCost;
-          return acc;
-        }, {});
-
-        const combinedData = costsData.map(cost => ({
-          ...cost,
-          predictedCost: predictionsMap[cost.month] || null,
-        }));
-
-        setChartData(combinedData.length ? combinedData : buildSampleData(effectiveProjectId));
         setError(null);
-      } catch {
-        // Backend has no data for this project (common on reviewer machines):
-        // show sample data so the chart is still visible to everyone. Data is fixed per-project so switching the filter still moves the chart.
-        setChartData(buildSampleData(effectiveProjectId));
-        setError(null);
+        const costData = await getProjectCosts(projectId);
+        if (!costData?.actual || typeof costData.actual !== 'object') {
+          throw new Error('Cost tracking data is unavailable for this project.');
+        }
+
+        const selectedCategories =
+          category === 'Overall' ? null : [category === 'Labour' ? 'Labor' : category];
+        const months = new Set();
+        const dataCategories = Object.keys(costData.actual);
+        const predictedDataCategories = Object.keys(costData.predicted || {});
+        const matchesSelectedCategory = key =>
+          !selectedCategories ||
+          selectedCategories.some(selected => selected.toLowerCase() === key.toLowerCase());
+        const actualCategories = dataCategories.filter(matchesSelectedCategory);
+        const predictedCategories = predictedDataCategories.filter(matchesSelectedCategory);
+
+        [
+          ...actualCategories.map(key => costData.actual[key]),
+          ...predictedCategories.map(key => costData.predicted[key]),
+        ].forEach(items => {
+          items.forEach(item => {
+            const date = new Date(item.date);
+            if (!Number.isNaN(date.getTime())) {
+              months.add(toMonthKey(date));
+            }
+          });
+        });
+
+        const sortedMonths = [...months].sort();
+        const monthKeys = [];
+        if (sortedMonths.length > 0) {
+          const [firstYear, firstMonth] = sortedMonths[0].split('-').map(Number);
+          const [lastYear, lastMonth] = sortedMonths[sortedMonths.length - 1]
+            .split('-')
+            .map(Number);
+          const currentMonth = new Date(firstYear, firstMonth - 1, 1);
+          const lastMonthDate = new Date(lastYear, lastMonth - 1, 1);
+
+          while (currentMonth <= lastMonthDate) {
+            monthKeys.push(toMonthKey(currentMonth));
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+          }
+        }
+
+        const getMonthlyTotal = (categoryData, categories, year, month) => {
+          let hasRecords = false;
+          const total = categories.reduce(
+            (sum, categoryName) =>
+              sum +
+              (categoryData[categoryName] || []).reduce((categoryTotal, item) => {
+                const date = new Date(item.date);
+                if (date.getFullYear() !== year || date.getMonth() !== month) {
+                  return categoryTotal;
+                }
+                hasRecords = true;
+                return categoryTotal + (Number(item.cost) || 0);
+              }, 0),
+            0,
+          );
+          return hasRecords ? total : null;
+        };
+
+        const combinedData = monthKeys.map(monthKey => {
+          const [year, month] = monthKey.split('-').map(Number);
+          return {
+            month: monthKey,
+            actualCost: getMonthlyTotal(costData.actual, actualCategories, year, month - 1),
+            predictedCost: costData.predicted
+              ? getMonthlyTotal(costData.predicted, predictedCategories, year, month - 1)
+              : null,
+          };
+        });
+
+        if (!cancelled) setChartData(combinedData);
+      } catch (fetchError) {
+        if (!cancelled) {
+          setChartData([]);
+          setError(
+            fetchError?.response?.data?.message ||
+              fetchError.message ||
+              'Failed to load cost tracking data.',
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
-    if (effectiveProjectId) fetchData();
-  }, [effectiveProjectId]);
+    if (projectId) fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId, category]);
 
   const filteredData = useMemo(() => {
     if (!dateRange.start && !dateRange.end) {
       return chartData.slice(-DEFAULT_WINDOW_MONTHS);
     }
     return chartData.filter(d => {
-      const pointDate = new Date(d.month);
+      const [year, month] = d.month.split('-').map(Number);
+      const pointDate = new Date(year, month - 1, 1);
 
       if (dateRange.start) {
         const s = new Date(dateRange.start);
@@ -355,12 +372,10 @@ function CostPredictionChart({ projectId }) {
 
   // Reset handler
   const handleReset = () => {
-    setSelectedProjectId('');
     setDateRange({ start: '', end: '' });
   };
 
-  const hasActiveFilters =
-    selectedProjectId !== '' || dateRange.start !== '' || dateRange.end !== '';
+  const hasActiveFilters = dateRange.start !== '' || dateRange.end !== '';
 
   const filterStyles = {
     bar: {
@@ -405,38 +420,19 @@ function CostPredictionChart({ projectId }) {
     );
   }
 
-  const currentMonth = new Date().toLocaleString('default', {
-    month: 'long',
-    year: 'numeric',
-  });
+  const currentMonthKey = toMonthKey(new Date());
 
   return (
     <div className={styles.titleContainer} style={{ background: theme.pageBg, color: theme.text }}>
       <h2 className={styles.title} style={{ color: theme.text }}>
-        Planned Vs Actual costs tracking
+        {category} Actual vs Predicted Costs Tracking
       </h2>
+      <p style={{ color: theme.mutedText, textAlign: 'center' }}>
+        Monthly actual and predicted costs for this project and category. The chart at left shows
+        project expense totals, so its values are not directly comparable to an individual month.
+      </p>
 
       <div className={styles.filterBar} style={filterStyles.bar}>
-        <div className={styles.filterGroup}>
-          <label htmlFor="project-filter" style={filterStyles.label}>
-            Project
-          </label>
-          <select
-            id="project-filter"
-            className={styles.control}
-            style={filterStyles.control}
-            value={selectedProjectId}
-            onChange={e => setSelectedProjectId(e.target.value)}
-          >
-            <option value="">Select a project</option>
-            {PROJECTS.map(p => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
         <div className={styles.filterGroup}>
           <label htmlFor="start-date" style={filterStyles.label}>
             Start Date
@@ -489,117 +485,125 @@ function CostPredictionChart({ projectId }) {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={filteredData} margin={{ top: 40, right: 50, left: 20, bottom: 40 }}>
-          {/* Grid */}
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke={theme.border}
-            vertical
-            horizontal
-            verticalFill={[]}
-            horizontalFill={[]}
-          />
-          {/* Axes: tick text, tick marks, baseline lines */}
-          <XAxis
-            dataKey="month"
-            tick={({ x, y, payload }) => (
-              <text x={x} y={y + 15} textAnchor="middle" fill={theme.axisText} fontSize={13}>
-                {payload.value}
-              </text>
-            )}
-            tickMargin={0} // apply margin at XAxis level, not inside <text>
-          />
-          <YAxis
-            domain={[0, dataMax => Math.ceil(dataMax * 1.15)]}
-            tick={({ x, y, payload }) => (
-              <text x={x} y={y} textAnchor="end" fill={theme.axisText} fontSize={13}>
-                {payload.value}
-              </text>
-            )}
-          />
-          {/* Tooltip & Legend */}
-          <Tooltip content={<CustomTooltip theme={theme} />} cursor={{ stroke: theme.accent }} />
-          <Legend
-            verticalAlign="bottom"
-            height={48}
-            wrapperStyle={{ paddingTop: 10 }}
-            content={() => (
-              <ul
-                className={styles.legendList}
-                style={{ background: theme.itemBg, borderRadius: 6 }}
-              >
-                {legendItems.map(item => (
-                  <li key={item.label} className={styles.legendListItem}>
-                    {/* icon */}
-                    {item.type === 'circle' ? (
-                      <span className={styles.legendItem} style={{ backgroundColor: item.color }} />
-                    ) : (
-                      <svg width="18" height="12">
-                        <line
-                          x1="0"
-                          y1="6"
-                          x2="18"
-                          y2="6"
-                          stroke={item.color}
-                          strokeWidth="3"
-                          strokeDasharray="4 4"
+      {filteredData.length === 0 ? (
+        <p role="status" style={{ color: theme.mutedText, textAlign: 'center' }}>
+          No cost tracking data is available for the selected project and date range.
+        </p>
+      ) : (
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart data={filteredData} margin={{ top: 40, right: 50, left: 20, bottom: 40 }}>
+            {/* Grid */}
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke={theme.border}
+              vertical
+              horizontal
+              verticalFill={[]}
+              horizontalFill={[]}
+            />
+            {/* Axes: tick text, tick marks, baseline lines */}
+            <XAxis
+              dataKey="month"
+              interval={0}
+              minTickGap={0}
+              angle={-35}
+              height={60}
+              textAnchor="end"
+              tick={{ fill: theme.axisText, fontSize: 11 }}
+              tickFormatter={formatMonthLabel}
+              tickMargin={8}
+            />
+            <YAxis
+              domain={[0, dataMax => Math.ceil(dataMax * 1.15)]}
+              tick={({ x, y, payload }) => (
+                <text x={x} y={y} textAnchor="end" fill={theme.axisText} fontSize={13}>
+                  {payload.value}
+                </text>
+              )}
+            />
+            {/* Tooltip & Legend */}
+            <Tooltip
+              content={<CustomTooltip theme={theme} />}
+              labelFormatter={formatMonthLabel}
+              cursor={{ stroke: theme.accent }}
+            />
+            <Legend
+              verticalAlign="bottom"
+              height={48}
+              wrapperStyle={{ paddingTop: 10 }}
+              content={() => (
+                <ul
+                  className={styles.legendList}
+                  style={{ background: theme.itemBg, borderRadius: 6 }}
+                >
+                  {legendItems.map(item => (
+                    <li key={item.label} className={styles.legendListItem}>
+                      {/* icon */}
+                      {item.type === 'circle' ? (
+                        <span
+                          className={styles.legendItem}
+                          style={{ backgroundColor: item.color }}
                         />
-                      </svg>
-                    )}
-                    {/* label */}
-                    <span style={{ color: theme.text }}>{item.label}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          />
-          {/* Reference line marking the current month. Label sits near the bottom
+                      ) : (
+                        <svg width="18" height="12">
+                          <line
+                            x1="0"
+                            y1="6"
+                            x2="18"
+                            y2="6"
+                            stroke={item.color}
+                            strokeWidth="3"
+                            strokeDasharray="4 4"
+                          />
+                        </svg>
+                      )}
+                      {/* label */}
+                      <span style={{ color: theme.text }}>{item.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            />
+            {/* Reference line marking the current month. Label sits near the bottom
               of the line so it never overlaps the data value labels.*/}
-          <ReferenceLine
-            x={currentMonth}
-            stroke="#ff0000"
-            strokeDasharray="3 3"
-            label={<CurrentMonthLabel />}
-          />
-          {/* Series (kept fixed colors) */}
-          <Line
-            type="monotone"
-            dataKey="plannedCost"
-            stroke={SERIES_COLORS.planned}
-            strokeWidth={2}
-            name="Planned Cost"
-            dot={renderDotTopOrBottom('plannedCost', SERIES_COLORS.planned, filteredData.length)}
-          />
-          <Line
-            type="monotone"
-            dataKey="actualCost"
-            stroke={SERIES_COLORS.actual}
-            strokeWidth={2}
-            name="Actual Cost"
-            dot={renderDotTopOrBottom('actualCost', SERIES_COLORS.actual, filteredData.length)}
-          />
-          <Line
-            type="monotone"
-            dataKey="predictedCost"
-            stroke={SERIES_COLORS.predicted}
-            strokeWidth={2}
-            strokeDasharray="5 5"
-            name="Predicted Cost"
-            dot={renderDotTopOrBottom(
-              'predictedCost',
-              SERIES_COLORS.predicted,
-              filteredData.length,
-            )}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+            <ReferenceLine
+              x={currentMonthKey}
+              stroke="#ff0000"
+              strokeDasharray="3 3"
+              label={<CurrentMonthLabel />}
+            />
+            {/* Series (kept fixed colors) */}
+            <Line
+              type="monotone"
+              dataKey="actualCost"
+              stroke={SERIES_COLORS.actual}
+              strokeWidth={2}
+              name="Actual Cost"
+              dot={renderDotTopOrBottom('actualCost', SERIES_COLORS.actual, filteredData.length)}
+            />
+            <Line
+              type="monotone"
+              dataKey="predictedCost"
+              stroke={SERIES_COLORS.predicted}
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              name="Predicted Cost"
+              dot={renderDotTopOrBottom(
+                'predictedCost',
+                SERIES_COLORS.predicted,
+                filteredData.length,
+              )}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 }
 
 CostPredictionChart.propTypes = {
-  projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  projectId: PropTypes.string.isRequired,
+  category: PropTypes.string.isRequired,
 };
 
 export default CostPredictionChart;
