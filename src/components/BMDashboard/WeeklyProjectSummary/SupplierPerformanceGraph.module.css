@@ -178,6 +178,29 @@
 .supplier-performance-error {
   color: #f44336;
 }
+/* Label span styling for react-select labels */
+.supplier-performance-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--label-color, #555);
+}
+
+.supplier-performance-dark-mode .supplier-performance-label {
+  color: #e0e0e0;
+}/* Label span styling for react-select labels */
+.supplier-performance-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--label-color, #555);
+}
+
+.supplier-performance-dark-mode .supplier-performance-label {
+  color: #e0e0e0;
+}
 
 @media (width <= 768px) {
   .supplier-performance-filters {

@@ -253,7 +253,7 @@ export default function CostVarianceTrendGraph() {
 
   const containerClass = `${styles.varianceContainer} ${darkMode ? styles.darkMode : ''}`;
   const dateInputClass = `${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`;
-  const calendarClass = darkMode ? 'paid-labor-cost-dark-calendar' : '';
+  const calendarClass = darkMode ? 'cost-variance-dark-calendar' : '';
   const tooltipCursorFill = darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
 
   if (initialLoading) {

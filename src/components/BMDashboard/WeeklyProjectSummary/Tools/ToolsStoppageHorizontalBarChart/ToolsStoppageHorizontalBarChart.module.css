@@ -8,8 +8,8 @@
 
 /* Base styles define size - dark mode only changes colors */
 :global(.datePickerInput),
-:global(.react-datepicker-wrapper input),
-:global(.react-datepicker-wrapper .datePickerInput) {
+:global(.tools-availability-page .react-datepicker-wrapper input),
+:global(.tools-availability-page .react-datepicker-wrapper .datePickerInput) {
   font-size: 13px !important;
   padding: 8px 12px !important;
   height: 38px !important;

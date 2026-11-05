@@ -6,20 +6,22 @@ import styles from './DistributionLaborHours.module.css';
 
 const COLORS = ['#4f8fa8', '#3fa4b8', '#ffab91', '#ffccbb', '#c7c7c7', '#f9f3e3'];
 
+const SWATCH_CLASSES = [
+  styles.swatch0,
+  styles.swatch1,
+  styles.swatch2,
+  styles.swatch3,
+  styles.swatch4,
+  styles.swatch5,
+];
+
 const CustomTooltip = ({ active, payload, total, darkMode }) => {
   if (active && payload && payload.length) {
     const { name, value } = payload[0];
     const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
 
     return (
-      <div
-        className={styles.tooltip}
-        style={{
-          backgroundColor: darkMode ? '#2e3e5a' : '#fff',
-          color: darkMode ? '#fff' : '#000',
-          border: darkMode ? '1px solid #64748b' : '1px solid #ccc',
-        }}
-      >
+      <div className={`${styles.tooltip} ${darkMode ? styles.tooltipDark : styles.tooltipLight}`}>
         <p>{name}</p>
         <p>{`Hours: ${value} hrs`}</p>
         <p>{`Percentage: ${percent}%`}</p>
@@ -298,17 +300,13 @@ export default function DistributionLaborHours() {
                 {filteredData.map((entry, index) => (
                   <div key={entry.name} className={styles.legendItem}>
                     <span
-                      className={styles.colorBox}
-                      style={{
-                        backgroundColor: COLORS[index % COLORS.length],
-                      }}
+                      className={`${styles.colorBox} ${
+                        SWATCH_CLASSES[index % SWATCH_CLASSES.length]
+                      }`}
                     />
 
                     <span
-                      className={styles.legendText}
-                      style={{
-                        color: darkMode ? '#f5f5f5' : '#000',
-                      }}
+                      className={`${styles.legendText} ${darkMode ? styles.legendTextDark : ''}`}
                     >
                       {entry.name}: {entry.value} hrs
                     </span>

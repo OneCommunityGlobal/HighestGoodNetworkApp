@@ -1,7 +1,6 @@
 import { Card, CardTitle, CardBody, UncontrolledTooltip } from 'reactstrap';
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
-import styles from './Badge.module.css';
 
 function NewBadges(props) {
   const filterBadges = allBadges => {
@@ -51,7 +50,7 @@ function NewBadges(props) {
             New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
 
-          <div className={`${styles.new_badges} ${props.darkMode ? 'text-light' : ''}`}>
+          <div className={`new_badges ${props.darkMode ? 'text-light' : ''}`}>
             {filteredBadges.length === 0 ? (
               <strong
                 style={{ opacity: 0.7 }}
