@@ -12,7 +12,6 @@ function EquipmentListModal({ modal, setModal, record, recordType }) {
     {
       UpdatesView: 'Update History',
       PurchasesView: 'Purchase History',
-      UpdatesEdit: 'Edit Record',
     }[recordType] || '';
 
   return (
@@ -122,7 +121,7 @@ EquipmentListModal.propTypes = {
       }),
     ),
   }),
-  recordType: PropTypes.oneOf(['UpdatesView', 'PurchasesView', 'UpdatesEdit']),
+  recordType: PropTypes.oneOf(['UpdatesView', 'PurchasesView']),
 };
 
 EquipmentListModal.defaultProps = {
