@@ -1,26 +1,40 @@
 import React, { useMemo, useState } from 'react';
+
 import classNames from 'classnames';
+
 import { useSelector } from 'react-redux';
+
 import { toast } from 'react-toastify';
+
 import styles from './MediumAutoPoster.module.css';
 
 const TITLE_MIN = 10;
+
 const TITLE_MAX = 100;
+
 const CONTENT_MIN = 50;
 
 const sanitizeTags = text =>
   [
     ...new Set(
       text
+
         .split(',')
+
         .map(tag =>
           tag
+
             .trim()
+
             .replace(/^#/, '')
+
             .toLowerCase(),
         )
+
         .filter(Boolean)
+
         .map(tag => tag.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))
+
         .filter(Boolean),
     ),
   ].slice(0, 5);
@@ -41,22 +55,25 @@ const formatDateTime = (date, time) => {
     ? date
     : parsed.toLocaleString(undefined, {
         dateStyle: 'medium',
+
         timeStyle: time ? 'short' : undefined,
       });
 };
 
-const makeId = () =>
-  `medium-${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
+const makeId = () => `medium-${crypto.randomUUID()}`;
 
 const buttonStyle = (variant, darkMode) => {
   const base = {
     borderRadius: '999px',
+
     border: 'none',
+
     cursor: 'pointer',
+
     fontWeight: 600,
+
     padding: '10px 18px',
+
     transition: 'filter 0.2s ease',
   };
 
@@ -67,40 +84,98 @@ const buttonStyle = (variant, darkMode) => {
   if (variant === 'outline') {
     return {
       ...base,
+
       backgroundColor: 'transparent',
+
       color: darkMode ? '#9bb5ff' : '#0d6efd',
+
       border: `1px solid ${darkMode ? '#3d4d6d' : '#0d6efd'}`,
     };
   }
 
   return {
     ...base,
+
     backgroundColor: darkMode ? '#1c2b44' : '#e9efff',
+
     color: darkMode ? '#cfd9f8' : '#1c3f82',
   };
+};
+
+const validateArticle = ({
+  trimmedTitle,
+  titleValid,
+  trimmedContent,
+  contentValid,
+  tags,
+  urlValid,
+}) => {
+  if (!trimmedTitle) {
+    toast.error('Please enter an article title.');
+    return false;
+  }
+
+  if (!titleValid) {
+    toast.error(`Title must contain ${TITLE_MIN}-${TITLE_MAX} characters.`);
+    return false;
+  }
+
+  if (!trimmedContent) {
+    toast.error('Please enter article content.');
+    return false;
+  }
+
+  if (!contentValid) {
+    toast.error(`Article content must contain at least ${CONTENT_MIN} characters.`);
+    return false;
+  }
+
+  if (!tags.length) {
+    toast.error('Please add at least one tag.');
+    return false;
+  }
+
+  if (!urlValid) {
+    toast.error('Enter a valid HTTP(S) canonical URL or leave it empty.');
+    return false;
+  }
+
+  return true;
 };
 
 function MediumAutoPoster() {
   const darkMode = useSelector(state => state.theme?.darkMode);
 
   const [activeTab, setActiveTab] = useState('make');
+
   const [title, setTitle] = useState('');
+
   const [content, setContent] = useState('');
+
   const [tagsText, setTagsText] = useState('');
+
   const [canonicalUrl, setCanonicalUrl] = useState('');
+
   const [visibility, setVisibility] = useState('draft');
 
   const [scheduledDraft, setScheduledDraft] = useState('');
+
   const [scheduledDate, setScheduledDate] = useState(() => formatDate(new Date()));
+
   const [scheduledTime, setScheduledTime] = useState(() => formatTime(new Date()));
+
   const [savedSchedules, setSavedSchedules] = useState([]);
+
   const [editingId, setEditingId] = useState(null);
+
   const [scheduleAttemptedSave, setScheduleAttemptedSave] = useState(false);
 
   const tags = useMemo(() => sanitizeTags(tagsText), [tagsText]);
 
   const trimmedTitle = title.trim();
+
   const trimmedContent = content.trim();
+
   const trimmedUrl = canonicalUrl.trim();
 
   const titleValid = trimmedTitle.length >= TITLE_MIN && trimmedTitle.length <= TITLE_MAX;
@@ -112,7 +187,9 @@ function MediumAutoPoster() {
   const readyToCopy = titleValid && contentValid && tags.length > 0 && urlValid;
 
   const titleInvalid = trimmedTitle.length > 0 && !titleValid;
+
   const contentInvalid = trimmedContent.length > 0 && !contentValid;
+
   const urlInvalid = !urlValid;
 
   const hasInput = Boolean(trimmedTitle || trimmedContent || tagsText.trim() || trimmedUrl);
@@ -122,22 +199,30 @@ function MediumAutoPoster() {
 
     return [
       `Title\n${trimmedTitle || '—'}`,
+
       `Content\n${trimmedContent || '—'}`,
+
       `Tags\n${tagList}`,
+
       `Canonical URL\n${trimmedUrl || '—'}`,
+
       `Visibility\n${visibility}`,
     ].join('\n\n');
   };
 
   const preview = useMemo(
     () => (hasInput ? buildDraft() : ''),
+
     // The preview should update whenever the editor fields change.
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [title, content, tagsText, canonicalUrl, visibility, hasInput],
   );
 
   const editingSchedule = useMemo(
     () => savedSchedules.find(item => item.id === editingId) || null,
+
     [savedSchedules, editingId],
   );
 
@@ -146,11 +231,13 @@ function MediumAutoPoster() {
   const copyText = async (text, label) => {
     if (!text?.trim()) {
       toast.warn(`Nothing to copy for ${label}.`);
+
       return;
     }
 
     try {
       await navigator.clipboard.writeText(text);
+
       toast.success(`${label} copied to clipboard.`);
     } catch {
       toast.error(`Could not copy ${label.toLowerCase()}.`);
@@ -159,61 +246,46 @@ function MediumAutoPoster() {
 
   const resetEditor = () => {
     setTitle('');
+
     setContent('');
+
     setTagsText('');
+
     setCanonicalUrl('');
+
     setVisibility('draft');
-  };
-
-  const validateArticle = () => {
-    if (!trimmedTitle) {
-      toast.error('Please enter an article title.');
-      return false;
-    }
-
-    if (!titleValid) {
-      toast.error(`Title must contain ${TITLE_MIN}-${TITLE_MAX} characters.`);
-      return false;
-    }
-
-    if (!trimmedContent) {
-      toast.error('Please enter article content.');
-      return false;
-    }
-
-    if (!contentValid) {
-      toast.error(`Article content must contain at least ${CONTENT_MIN} characters.`);
-      return false;
-    }
-
-    if (!tags.length) {
-      toast.error('Please add at least one tag.');
-      return false;
-    }
-
-    if (!urlValid) {
-      toast.error('Enter a valid HTTP(S) canonical URL or leave it empty.');
-      return false;
-    }
-
-    return true;
   };
 
   const handleReset = () => {
     resetEditor();
+
     toast.info('Editor fields cleared.');
   };
 
   const handleScheduleClick = () => {
-    if (!validateArticle()) return;
+    const isValid = validateArticle({
+      trimmedTitle,
+      titleValid,
+      trimmedContent,
+      contentValid,
+      tags,
+      urlValid,
+    });
+
+    if (!isValid) return;
 
     const now = new Date();
 
     setScheduledDate(formatDate(now));
+
     setScheduledTime(formatTime(now));
+
     setScheduledDraft(preview);
+
     setScheduleAttemptedSave(false);
+
     setEditingId(null);
+
     setActiveTab('schedule');
 
     toast.success('Draft moved to the Schedule tab.');
@@ -221,26 +293,32 @@ function MediumAutoPoster() {
 
   const handleScheduleDateChange = event => {
     const nextDate = event.target.value;
+
     if (!nextDate) return;
 
     const today = formatDate(new Date());
+
     const safeDate = nextDate < today ? today : nextDate;
 
     setScheduledDate(safeDate);
+
     setScheduleAttemptedSave(false);
 
     if (safeDate === today) {
       const currentTime = formatTime(new Date());
+
       setScheduledTime(previous => (!previous || previous < currentTime ? currentTime : previous));
     }
   };
 
   const handleScheduleTimeChange = event => {
     const nextTime = event.target.value;
+
     if (!nextTime) return;
 
     if (scheduledDate === formatDate(new Date())) {
       const currentTime = formatTime(new Date());
+
       setScheduledTime(nextTime < currentTime ? currentTime : nextTime);
     } else {
       setScheduledTime(nextTime);
@@ -254,11 +332,13 @@ function MediumAutoPoster() {
 
     if (!scheduleHasDraft) {
       toast.warn('Add an article to the schedule first.');
+
       return;
     }
 
     if (!scheduledDate || !scheduledTime) {
       toast.error('Choose a schedule date and time.');
+
       return;
     }
 
@@ -266,6 +346,7 @@ function MediumAutoPoster() {
 
     if (Number.isNaN(scheduledAt.getTime()) || scheduledAt <= new Date()) {
       toast.error('Choose a future date and time.');
+
       return;
     }
 
@@ -273,15 +354,25 @@ function MediumAutoPoster() {
 
     const record = {
       id,
+
       title: trimmedTitle,
+
       content: trimmedContent,
+
       tags: [...tags],
+
       tagsText,
+
       canonicalUrl: trimmedUrl,
+
       visibility,
+
       scheduledDraft: scheduledDraft.trim(),
+
       scheduledDate,
+
       scheduledTime,
+
       updatedAt: new Date().toISOString(),
     };
 
@@ -294,17 +385,25 @@ function MediumAutoPoster() {
     );
 
     resetEditor();
+
     setScheduledDraft('');
+
     setScheduledDate(formatDate(new Date()));
+
     setScheduledTime(formatTime(new Date()));
+
     setScheduleAttemptedSave(false);
+
     setEditingId(null);
+
     setActiveTab('make');
   };
 
   const handleEditSchedule = item => {
     const today = formatDate(new Date());
+
     let date = item.scheduledDate || today;
+
     let time = item.scheduledTime || formatTime(new Date());
 
     if (date < today) date = today;
@@ -314,16 +413,25 @@ function MediumAutoPoster() {
     }
 
     setTitle(item.title || '');
+
     setContent(item.content || '');
+
     setTagsText(item.tagsText || '');
+
     setCanonicalUrl(item.canonicalUrl || '');
+
     setVisibility(item.visibility || 'draft');
 
     setScheduledDraft(item.scheduledDraft || '');
+
     setScheduledDate(date);
+
     setScheduledTime(time);
+
     setEditingId(item.id);
+
     setScheduleAttemptedSave(false);
+
     setActiveTab('schedule');
 
     toast.info('Loaded scheduled draft for editing.');
@@ -334,6 +442,7 @@ function MediumAutoPoster() {
 
     if (editingId === id) {
       setEditingId(null);
+
       setScheduledDraft('');
     }
 
@@ -349,6 +458,7 @@ function MediumAutoPoster() {
   };
 
   const today = formatDate(new Date());
+
   const scheduleTimeMin = scheduledDate === today ? formatTime(new Date()) : undefined;
 
   return (
@@ -361,6 +471,7 @@ function MediumAutoPoster() {
       <div className={styles.subtabs}>
         {[
           { id: 'make', label: '📝 Make Post' },
+
           { id: 'schedule', label: '⏰ Scheduled Post' },
         ].map(tab => (
           <button
@@ -380,6 +491,7 @@ function MediumAutoPoster() {
         <>
           <section className={styles.card}>
             <h3>Medium Auto-Poster</h3>
+
             <p>
               Create and format a Medium article draft. Add a title, article content, relevant tags,
               and optional canonical URL. Preview your draft, copy the content, or open Medium to
@@ -401,6 +513,7 @@ function MediumAutoPoster() {
             >
               <div className={styles.fieldHeader}>
                 <label htmlFor="medium-title">Article title *</label>
+
                 <span
                   className={classNames(styles.fieldMeta, {
                     [styles.invalidText]: titleInvalid,
@@ -435,6 +548,7 @@ function MediumAutoPoster() {
                 >
                   Copy title
                 </button>
+
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
@@ -452,6 +566,7 @@ function MediumAutoPoster() {
             >
               <div className={styles.fieldHeader}>
                 <label htmlFor="medium-canonical">Canonical URL</label>
+
                 <span className={styles.fieldMeta}>optional</span>
               </div>
 
@@ -478,6 +593,7 @@ function MediumAutoPoster() {
                 >
                   Copy URL
                 </button>
+
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
@@ -495,6 +611,7 @@ function MediumAutoPoster() {
             >
               <div className={styles.fieldHeader}>
                 <label htmlFor="medium-content">Article content *</label>
+
                 <span
                   className={classNames(styles.fieldMeta, {
                     [styles.invalidText]: contentInvalid,
@@ -529,6 +646,7 @@ function MediumAutoPoster() {
                 >
                   Copy content
                 </button>
+
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
@@ -546,6 +664,7 @@ function MediumAutoPoster() {
             >
               <div className={styles.fieldHeader}>
                 <label htmlFor="medium-tags">Tags *</label>
+
                 <span className={styles.fieldMeta}>up to 5 tags</span>
               </div>
 
@@ -562,6 +681,7 @@ function MediumAutoPoster() {
                 {tags.map(tag => (
                   <span className={styles.chip} key={tag}>
                     <span>{tag}</span>
+
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
@@ -586,6 +706,7 @@ function MediumAutoPoster() {
                 >
                   Copy tags
                 </button>
+
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
@@ -608,7 +729,9 @@ function MediumAutoPoster() {
                 className={styles.input}
               >
                 <option value="draft">Draft</option>
+
                 <option value="public">Public</option>
+
                 <option value="unlisted">Unlisted</option>
               </select>
 
@@ -622,6 +745,7 @@ function MediumAutoPoster() {
           <section className={styles.card}>
             <div className={styles.previewHeader}>
               <h4>Article preview</h4>
+
               <div className={styles.previewActions}>
                 <button
                   type="button"
@@ -643,6 +767,7 @@ function MediumAutoPoster() {
                   type="button"
                   style={{
                     ...buttonStyle('primary', darkMode),
+
                     opacity: readyToCopy ? 1 : 0.5,
                   }}
                   onClick={() => copyText(preview, 'Medium draft')}
@@ -669,6 +794,7 @@ function MediumAutoPoster() {
         <div className={styles.schedulerGrid}>
           <section className={classNames(styles.card, styles.schedulerCard)}>
             <h3>Schedule Medium Post</h3>
+
             <p>
               Save a local schedule entry for your article. This demo does not publish automatically
               at the selected time.
@@ -684,6 +810,7 @@ function MediumAutoPoster() {
             <div className={styles.scheduleControls}>
               <div className={styles.scheduleField}>
                 <label htmlFor="medium-schedule-date">Scheduled date *</label>
+
                 <input
                   id="medium-schedule-date"
                   type="date"
@@ -693,6 +820,7 @@ function MediumAutoPoster() {
                   className={styles.input}
                   aria-invalid={scheduleAttemptedSave && !scheduledDate}
                 />
+
                 {scheduleAttemptedSave && !scheduledDate && (
                   <p className={styles.error}>Select a date.</p>
                 )}
@@ -700,6 +828,7 @@ function MediumAutoPoster() {
 
               <div className={styles.scheduleField}>
                 <label htmlFor="medium-schedule-time">Scheduled time *</label>
+
                 <input
                   id="medium-schedule-time"
                   type="time"
@@ -709,6 +838,7 @@ function MediumAutoPoster() {
                   className={styles.input}
                   aria-invalid={scheduleAttemptedSave && !scheduledTime}
                 />
+
                 {scheduleAttemptedSave && !scheduledTime && (
                   <p className={styles.error}>Select a time.</p>
                 )}
@@ -716,6 +846,7 @@ function MediumAutoPoster() {
             </div>
 
             <label htmlFor="medium-schedule-draft">Scheduled draft</label>
+
             <textarea
               id="medium-schedule-draft"
               value={scheduledDraft}
@@ -756,6 +887,7 @@ function MediumAutoPoster() {
 
           <section className={classNames(styles.card, styles.savedCard)}>
             <h3>Saved scheduled posts</h3>
+
             <p className={styles.hint}>
               Edit a saved draft, copy it, or open Medium to submit it manually.
             </p>
@@ -775,6 +907,7 @@ function MediumAutoPoster() {
                   >
                     <div className={styles.savedHeader}>
                       <h4 className={styles.savedTitle}>{item.title || 'Untitled article'}</h4>
+
                       <span className={styles.savedMeta}>
                         {formatDateTime(item.scheduledDate, item.scheduledTime)}
                       </span>
