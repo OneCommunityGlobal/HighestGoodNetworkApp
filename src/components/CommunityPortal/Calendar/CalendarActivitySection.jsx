@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faLocationDot, faTag } from '@fortawesome/free-solid-svg-icons';
 import styles from './CommunityCalendar.module.css';
+import { formatRelativeTime } from './relativeTime';
 
 const STATUS_CLASS = {
   New: 'statusNew',
@@ -24,29 +25,44 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const calendarActivities = [
+  // Mock news items. Timestamps are fixed once when the section mounts,
+  // so the relative labels age correctly instead of resetting each render.
+  const [calendarActivities] = useState(() => [
     {
       id: 1,
       author: 'Jiaqi',
       message: 'Published event 1 approved',
-      time: '2 min ago',
       timestamp: Date.now() - 120000,
     },
     {
       id: 2,
       author: 'Alex',
       message: 'Event 2 needs attendees',
-      time: '1 hour ago',
       timestamp: Date.now() - 3600000,
     },
     {
       id: 3,
       author: 'Taylor',
       message: 'Updated workshop details',
-      time: '3 hours ago',
       timestamp: Date.now() - 10800000,
     },
-  ];
+  ]);
+
+  // Re-render the relative time labels every minute, and right away when the
+  // tab becomes visible again (timers are throttled in background tabs).
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const tick = () => setNow(Date.now());
+    const intervalId = setInterval(tick, 60 * 1000);
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') tick();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
 
   // Defensive filter: even if the parent passes a stale list, only show events matching selectedDate
   const eventsForDate = selectedDate
@@ -119,7 +135,7 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
             <small
               className={`${styles.activityTime} ${darkMode ? styles.activityTimeDarkMode : ''}`}
             >
-              {activity.time}
+              {formatRelativeTime(activity.timestamp, now)}
             </small>
           </li>
         ))}
