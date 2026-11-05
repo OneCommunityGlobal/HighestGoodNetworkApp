@@ -1,0 +1,40 @@
+/* Drop-off and no-show tracking: filter icons inside each dropdown */
+.trackingFilterField {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.trackingFilterIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.trackingFilterIconDark {
+  color: #cbd5e1;
+}
+
+.trackingFilterField .trackingFilterDropdownWithIcon {
+  margin-left: 0 !important;
+  padding-left: 1.9rem !important;
+}
+
+/* Keep the title and the filters from overlapping: the filters sit side by
+   side, and move below the title when the card is too narrow. */
+.trackingHeaderWrap {
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.trackingFiltersRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
