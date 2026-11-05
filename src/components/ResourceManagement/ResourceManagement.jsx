@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { ChevronLeft, ChevronRight, Calendar, X } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -8,7 +8,14 @@ import * as XLSX from 'xlsx';
 import styles from './ResourceManagement.module.css';
 import { MOCK_RESOURCES } from './MockData';
 
-function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange, onClearSearch }) {
+function SearchBar({
+  onSortToggle,
+  darkMode,
+  searchTerm,
+  onSearchTermChange,
+  onClearSearch,
+  searchInputRef,
+}) {
   return (
     <div
       className={`${styles.searchBarContainer} ${
@@ -33,6 +40,8 @@ function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange, onC
           type="text"
           className={styles.searchInput}
           placeholder="Search ..."
+          aria-label="Search resources"
+          ref={searchInputRef}
           value={searchTerm}
           onChange={onSearchTermChange}
         />
@@ -182,16 +191,33 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
 const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
   const getPaginationGroup = () => {
     if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
-    if (currentPage <= 3) return [1, 2, 3, 4, 5, '...', totalPages];
+    if (currentPage <= 3) return [1, 2, 3, 4, 5, 'end-ellipsis', totalPages];
     if (currentPage > totalPages - 3) {
-      return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+      return [
+        1,
+        'start-ellipsis',
+        totalPages - 4,
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
     }
 
-    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+    return [
+      1,
+      'start-ellipsis',
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      'end-ellipsis',
+      totalPages,
+    ];
   };
 
   return (
-    <div
+    <nav
+      aria-label="Resource pagination"
       className={`${styles.paginationContainer} ${
         darkMode ? styles.darkModePaginationContainer : ''
       }`}
@@ -199,48 +225,58 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
       <button
         type="button"
         disabled={currentPage === 1}
-        onClick={() => setCurrentPage(prev => prev - 1)}
+        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
         className={styles.paginationLeft}
+        aria-label="Previous page"
       >
         <ChevronLeft size={20} />
       </button>
 
-      {getPaginationGroup().map((value, index) => (
-        <button
-          key={`page-${value}-${index}`}
-          type="button"
-          className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
-          onClick={() => {
-            if (typeof value === 'number') setCurrentPage(value);
-            else toast.info('Navigate using numbers or arrows.');
-          }}
-        >
-          {value}
-        </button>
-      ))}
+      {getPaginationGroup().map(value =>
+        typeof value === 'number' ? (
+          <button
+            key={`page-${value}`}
+            type="button"
+            className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
+            onClick={() => setCurrentPage(value)}
+            disabled={value === currentPage}
+            aria-label={`Go to page ${value}`}
+            aria-current={value === currentPage ? 'page' : undefined}
+          >
+            {value}
+          </button>
+        ) : (
+          <span key={value} className={styles.paginationEllipsis} aria-hidden="true">
+            ...
+          </span>
+        ),
+      )}
 
       <button
         type="button"
         disabled={currentPage === totalPages}
-        onClick={() => setCurrentPage(prev => prev + 1)}
+        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
         className={styles.paginationRight}
+        aria-label="Next page"
       >
         <ChevronRight size={20} />
       </button>
-    </div>
+    </nav>
   );
 };
 
 function ResourceManagement() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const searchInputRef = useRef(null);
+  const selectAllRef = useRef(null);
   const [resources, setResources] = useState(MOCK_RESOURCES);
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const itemsPerPage = 5;
 
   const columns = [
     { key: 'user', label: 'User' },
@@ -258,6 +294,7 @@ function ResourceManagement() {
   const handleClearSearch = () => {
     setSearchTerm('');
     setCurrentPage(1);
+    searchInputRef.current?.focus();
   };
 
   const filteredResources = useMemo(() => {
@@ -290,7 +327,19 @@ function ResourceManagement() {
     return sortableItems;
   }, [filteredResources, sortConfig]);
 
-  const totalPages = Math.ceil(sortedResources.length / itemsPerPage);
+  const totalItems = sortedResources.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentResources = sortedResources.slice(startIndex, endIndex);
+  const selectedMatchingCount = sortedResources.filter(resource => selectedIds.has(resource.id))
+    .length;
+  const allMatchingSelected = totalItems > 0 && selectedMatchingCount === totalItems;
+  const someMatchingSelected = selectedMatchingCount > 0 && !allMatchingSelected;
+
+  useEffect(() => {
+    selectAllRef.current.indeterminate = someMatchingSelected;
+  }, [someMatchingSelected]);
 
   const toggleSelect = id => {
     setSelectedIds(prev => {
@@ -374,6 +423,7 @@ function ResourceManagement() {
     }
 
     setSortConfig({ key, direction });
+    setCurrentPage(1);
   };
 
   const toggleGlobalDirection = () => {
@@ -381,6 +431,7 @@ function ResourceManagement() {
       ...prev,
       direction: prev.direction === 'asc' ? 'desc' : 'asc',
     }));
+    setCurrentPage(1);
   };
 
   const handleAddLog = newLog => {
@@ -392,6 +443,7 @@ function ResourceManagement() {
     };
 
     setResources(prev => [newResource, ...prev]);
+    setCurrentPage(1);
     setShowToast(true);
   };
 
@@ -429,7 +481,25 @@ function ResourceManagement() {
         searchTerm={searchTerm}
         onSearchTermChange={onSearchTermChange}
         onClearSearch={handleClearSearch}
+        searchInputRef={searchInputRef}
       />
+
+      <div className={styles.itemsPerPage}>
+        <label htmlFor="rowsPerPage">Rows per page:</label>
+        <select
+          id="rowsPerPage"
+          value={itemsPerPage}
+          onChange={e => {
+            setItemsPerPage(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+        >
+          <option value={10}>10</option>
+          <option value={25}>25</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+        </select>
+      </div>
 
       <div className={styles.resourceList}>
         <div className={styles.resourceTable}>
@@ -437,8 +507,10 @@ function ResourceManagement() {
             <div className={styles.colCheck}>
               <input
                 type="checkbox"
-                aria-label="Select all"
-                checked={selectedIds.size === sortedResources.length && sortedResources.length > 0}
+                aria-label="Select all matching resources"
+                ref={selectAllRef}
+                checked={allMatchingSelected}
+                disabled={totalItems === 0}
                 onChange={toggleSelectAll}
               />
               <span className={styles.checkboxLabel}>Select</span>
@@ -480,36 +552,43 @@ function ResourceManagement() {
             </div>
           </div>
 
-          {sortedResources
-            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-            .map(resource => (
-              <div key={resource.id} className={styles.resourceItem}>
-                <div className={styles.colCheck}>
-                  <input
-                    type="checkbox"
-                    aria-label={`Select ${resource.user}`}
-                    checked={selectedIds.has(resource.id)}
-                    onChange={() => toggleSelect(resource.id)}
-                  />
-                </div>
-
-                <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>
-                  {resource.user}
-                </div>
-                <div className={`${styles.resourceItemDetail} ${styles.colDuration}`}>
-                  {resource.timeDuration}
-                </div>
-                <div className={`${styles.resourceItemDetail} ${styles.colFacilities}`}>
-                  {resource.facilities}
-                </div>
-                <div className={`${styles.resourceItemDetail} ${styles.colMaterials}`}>
-                  {resource.materials}
-                </div>
-                <div className={`${styles.resourceItemDetail} ${styles.colDate}`}>
-                  <Calendar size={14} className={styles.calendarIcon} /> {resource.date}
-                </div>
+          {totalItems === 0 && (
+            <div className={styles.emptyState}>
+              <p>{searchTerm.trim() ? 'No matching resources' : 'No resources available'}</p>
+              {searchTerm.trim() && (
+                <button type="button" className={styles.clearButton} onClick={handleClearSearch}>
+                  Clear search
+                </button>
+              )}
+            </div>
+          )}
+          {currentResources.map(resource => (
+            <div key={resource.id} className={styles.resourceItem}>
+              <div className={styles.colCheck}>
+                <input
+                  type="checkbox"
+                  aria-label={`Select ${resource.user}`}
+                  checked={selectedIds.has(resource.id)}
+                  onChange={() => toggleSelect(resource.id)}
+                />
               </div>
-            ))}
+              <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>
+                {resource.user}
+              </div>
+              <div className={`${styles.resourceItemDetail} ${styles.colDuration}`}>
+                {resource.timeDuration}
+              </div>
+              <div className={`${styles.resourceItemDetail} ${styles.colFacilities}`}>
+                {resource.facilities}
+              </div>
+              <div className={`${styles.resourceItemDetail} ${styles.colMaterials}`}>
+                {resource.materials}
+              </div>
+              <div className={`${styles.resourceItemDetail} ${styles.colDate}`}>
+                <Calendar size={14} className={styles.calendarIcon} /> {resource.date}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -519,6 +598,11 @@ function ResourceManagement() {
         setCurrentPage={setCurrentPage}
         darkMode={darkMode}
       />
+
+      <div className={styles.recordCount} role="status" aria-live="polite" aria-atomic="true">
+        Showing {totalItems === 0 ? 0 : startIndex + 1}-{Math.min(endIndex, totalItems)} of{' '}
+        {totalItems}
+      </div>
 
       <AddLogModal isOpen={showModal} onClose={() => setShowModal(false)} onAdd={handleAddLog} />
 
@@ -545,6 +629,7 @@ SearchBar.propTypes = {
   searchTerm: PropTypes.string.isRequired,
   onSearchTermChange: PropTypes.func.isRequired,
   onClearSearch: PropTypes.func.isRequired,
+  searchInputRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
 };
 
 SearchBar.defaultProps = {
@@ -556,7 +641,6 @@ AddLogModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
 };
-
 Pagination.propTypes = {
   totalPages: PropTypes.number.isRequired,
   currentPage: PropTypes.number.isRequired,
