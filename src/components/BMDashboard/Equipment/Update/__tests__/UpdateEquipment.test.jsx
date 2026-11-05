@@ -591,10 +591,12 @@ describe('UpdateEquipment smart default sources', () => {
 
   it('applies the scoped navy-on-light-blue summary class regardless of theme', async () => {
     renderForm();
-    await screen.findByText('Last Update Summary');
+    const heading = await screen.findByRole('heading', { name: 'Last Update Summary' });
     const panel = screen
       .getAllByRole('alert')
       .find(el => within(el).queryByText('Last Update Summary'));
+    expect(heading.tagName).toBe('H2');
+    expect(heading.className).toMatch(/lastUpdateSummaryTitle/);
     expect(panel.className).toMatch(/lastUpdateSummary/);
   });
 });

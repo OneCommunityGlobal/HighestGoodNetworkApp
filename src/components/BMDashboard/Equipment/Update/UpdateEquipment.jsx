@@ -568,7 +568,7 @@ export default function UpdateEquipment() {
       <Row>
         <Col md={12}>
           <Alert color="info" className={`mb-4 ${styles.lastUpdateSummary}`} aria-live="polite">
-            <h2 className="h5">Last Update Summary</h2>
+            <h2 className={`h5 ${styles.lastUpdateSummaryTitle}`}>Last Update Summary</h2>
             {historyState.status === 'loading' && (
               <p className="mb-0">Loading equipment history…</p>
             )}

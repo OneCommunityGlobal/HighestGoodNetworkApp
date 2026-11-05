@@ -239,14 +239,14 @@
 
 /* Last Update Summary: light-blue panel with dark navy text (about 13:1) in light and dark mode */
 .lastUpdateSummary,
-.lastUpdateSummary h2,
 .lastUpdateSummary dt,
 .lastUpdateSummary dd,
 .lastUpdateSummary p {
   color: #0a2540 !important;
 }
 
-:global(.dark-mode) .lastUpdateSummary h2 {
+:global(.dark-mode) .lastUpdateSummary .lastUpdateSummaryTitle,
+.lastUpdateSummaryTitle {
   color: #0a2540 !important;
 }
 
