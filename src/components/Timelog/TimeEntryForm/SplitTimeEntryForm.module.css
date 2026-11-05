@@ -3,6 +3,11 @@
   min-width: 0;
 }
 
+.status {
+  display: block;
+  margin-bottom: 16px;
+}
+
 .totals {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

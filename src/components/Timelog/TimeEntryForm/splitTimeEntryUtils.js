@@ -25,10 +25,10 @@ export function readSplitDraft(personId) {
 }
 
 export function allocationMinutes(row) {
-  if (!/^\d+$/.test(String(row.hours)) || !/^\d+$/.test(String(row.minutes))) return NaN;
+  if (!/^\d+$/.test(String(row.hours)) || !/^\d+$/.test(String(row.minutes))) return Number.NaN;
   const hours = Number(row.hours);
   const minutes = Number(row.minutes);
-  return hours <= 1000 && minutes <= 59 ? hours * 60 + minutes : NaN;
+  return hours <= 1000 && minutes <= 59 ? hours * 60 + minutes : Number.NaN;
 }
 
 export const formatSplitMinutes = total =>

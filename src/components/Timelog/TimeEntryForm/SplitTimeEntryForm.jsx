@@ -22,11 +22,18 @@ const emptyRow = () => ({
 async function requestReceipt(payload) {
   try {
     return await axios.post(ENDPOINTS.TIME_ENTRY_SPLIT(), payload);
-  } catch (failure) {
-    if (failure.response?.status !== 409) throw failure;
+  } catch (error_) {
+    if (error_.response?.status !== 409) throw error_;
     // Another tab may already have saved this server-issued timer session.
     return axios.get(ENDPOINTS.TIME_ENTRY_SPLIT_RECEIPT(payload.batchId));
   }
+}
+
+function submitLabel(busy, saved, locked, count) {
+  if (busy) return 'Saving…';
+  if (saved) return 'Finish timer';
+  if (locked) return 'Retry split save';
+  return `Submit ${count} time entries`;
 }
 
 export default function SplitTimeEntryForm({
@@ -144,8 +151,8 @@ export default function SplitTimeEntryForm({
         /* The server receipt still prevents duplicates. */
       }
       onLockChange(false);
-    } catch (failure) {
-      if (!current.saved && [400, 403, 404].includes(failure.response?.status)) {
+    } catch (error_) {
+      if (!current.saved && [400, 403, 404].includes(error_.response?.status)) {
         current = { ...current, attempted: false };
         try {
           persist(current);
@@ -155,8 +162,8 @@ export default function SplitTimeEntryForm({
         onLockChange(false);
       }
       setError(
-        failure.response?.data?.error ||
-          failure.message ||
+        error_.response?.data?.error ||
+          error_.message ||
           'Could not confirm the save. Your allocations are kept; retry this split.',
       );
     } finally {
@@ -192,11 +199,11 @@ export default function SplitTimeEntryForm({
         </div>
       </dl>
       {locked && (
-        <p role="status">
+        <output className={styles.status}>
           {draft.saved
             ? 'These entries are already saved. Finish the timer to complete.'
             : 'Confirming this split. Your original allocations are kept for a safe retry.'}
-        </p>
+        </output>
       )}
       <fieldset disabled={busy || locked || loading} className={styles.rows}>
         <legend className={styles.legend}>Task allocations</legend>
@@ -226,7 +233,7 @@ export default function SplitTimeEntryForm({
             </select>
             <div className={styles.time}>
               <label htmlFor={`split-hours-${row.id}`}>
-                Hours
+                Hours{' '}
                 <input
                   id={`split-hours-${row.id}`}
                   type="number"
@@ -238,7 +245,7 @@ export default function SplitTimeEntryForm({
                 />
               </label>
               <label htmlFor={`split-minutes-${row.id}`}>
-                Minutes
+                Minutes{' '}
                 <input
                   id={`split-minutes-${row.id}`}
                   type="number"
@@ -278,7 +285,7 @@ export default function SplitTimeEntryForm({
           Add another task
         </button>
       </fieldset>
-      {loading && <p role="status">Loading assigned tasks…</p>}
+      {loading && <output className={styles.status}>Loading assigned tasks…</output>}
       {!locked && validation && <p>{validation}</p>}
       {error && (
         <p role="alert" className={styles.error}>
@@ -292,13 +299,7 @@ export default function SplitTimeEntryForm({
         disabled={busy || !connected || (!locked && (loading || Boolean(validation)))}
         onClick={submit}
       >
-        {busy
-          ? 'Saving…'
-          : draft.saved
-          ? 'Finish timer'
-          : locked
-          ? 'Retry split save'
-          : `Submit ${draft.rows.length} time entries`}
+        {submitLabel(busy, draft.saved, locked, draft.rows.length)}
       </button>
     </section>
   );
