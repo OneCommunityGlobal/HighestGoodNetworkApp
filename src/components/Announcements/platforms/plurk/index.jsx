@@ -167,7 +167,9 @@ function PlurkAutoPoster() {
     if (!nextDate) return;
 
     const today = formatDate(new Date());
-    const safeDate = nextDate < today ? today : nextDate;
+    const safeDate = new Date(Math.max(new Date(nextDate).getTime(), new Date(today).getTime()))
+      .toISOString()
+      .split('T')[0];
 
     setScheduledDate(safeDate);
     setScheduleAttemptedSave(false);
@@ -184,7 +186,17 @@ function PlurkAutoPoster() {
 
     if (scheduledDate === formatDate(new Date())) {
       const currentTime = formatTime(new Date());
-      setScheduledTime(nextTime < currentTime ? currentTime : nextTime);
+
+      const toMinutes = time => {
+        const [hours, minutes] = time.split(':').map(Number);
+        return hours * 60 + minutes;
+      };
+
+      const safeTime = Math.max(toMinutes(nextTime), toMinutes(currentTime));
+      const hours = Math.floor(safeTime / 60);
+      const minutes = safeTime % 60;
+
+      setScheduledTime(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`);
     } else {
       setScheduledTime(nextTime);
     }
