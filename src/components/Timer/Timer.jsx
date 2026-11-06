@@ -89,16 +89,15 @@ function Timer({ authUser, darkMode, isPopout }) {
   const isStoredTokenUsable = useCallback(() => {
     const token = localStorage.getItem(config.tokenKey);
     if (!token) return false;
+    // prettier-ignore
     try {
       const decoded = jwtDecode(token);
       const expirySec = new Date(decoded.expiryTimestamp).getTime() / 1000;
       return expirySec > Date.now() / 1000;
-      // eslint-disable-next-line prettier/prettier
-    } catch (_error) {
-      // NOSONAR - handled below, not swallowed
-      // A malformed/undecodable token is just as unusable as an expired one -
-      // treat it the same way (not usable) instead of letting the decode error
-      // bubble up and break the reconnect check.
+    } catch (_error) { // NOSONAR - a malformed/undecodable token is just as
+      // unusable as an expired one; treating it the same way (not usable)
+      // instead of letting the decode error bubble up and break the reconnect
+      // check is intentional, not a swallowed error.
       return false;
     }
   }, []);
