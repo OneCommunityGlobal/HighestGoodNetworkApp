@@ -5,6 +5,7 @@ import slackIcon from './style/slack_icon.png';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { formatSkillName } from './FilerData.js';
+import WeeklySummaryStatusBadge from './WeeklySummaryStatusBadge';
 
 const getNormalizedSkills = ({ displaySkills, topSkills, skills }) => {
   if (Array.isArray(displaySkills)) return displaySkills;
@@ -22,7 +23,17 @@ const getNormalizedSkills = ({ displaySkills, topSkills, skills }) => {
 };
 
 function UserCard({ user }) {
-  const { userId, name, email, slack, score, topSkills, displaySkills, skills } = user;
+  const {
+    userId,
+    name,
+    email,
+    slack,
+    score,
+    topSkills,
+    displaySkills,
+    skills,
+    weeklySummaryStatus,
+  } = user;
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const normalizedSkills = getNormalizedSkills({ displaySkills, topSkills, skills });
@@ -41,6 +52,7 @@ function UserCard({ user }) {
         ) : (
           <div className={`${styles.userName}`}>{name}</div>
         )}
+        <WeeklySummaryStatusBadge status={weeklySummaryStatus} />
         {email && (
           <div className={`${styles.contactLine}`}>
             <MdEmail className={`${styles.contactIcon}`} aria-label="Email" />
