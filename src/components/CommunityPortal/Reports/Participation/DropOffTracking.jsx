@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
+import iconStyles from './DropOffTracking.module.css';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import mockEvents from './mockData';
 import { filterEventsByDate } from './FilterByDate';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarCheck, faClock } from '@fortawesome/free-solid-svg-icons';
 
 function DropOffTracking() {
   const [selectedEvent, setSelectedEvent] = useState('All Events');
@@ -55,30 +58,52 @@ function DropOffTracking() {
         darkMode ? styles.trackingContainerDark : ''
       }`}
     >
-      <div className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''}`}>
+      <div
+        className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''} ${
+          iconStyles.trackingHeaderWrap
+        }`}
+      >
         <h3>Drop-off and no-show rate tracking</h3>
-        <div className={styles.trackingFilters}>
-          <select
-            className={styles.filterDropdown}
-            value={selectedEvent}
-            onChange={e => setSelectedEvent(e.target.value)}
-          >
-            <option value="All Events">All Events</option>
-            <option value="Yoga Class">Yoga Class</option>
-            <option value="Cooking Workshop">Cooking Workshop</option>
-            <option value="Dance Class">Dance Class</option>
-            <option value="Fitness Bootcamp">Fitness Bootcamp</option>
-          </select>
-          <select
-            className={styles.filterDropdown}
-            value={selectedTime}
-            onChange={e => setSelectedTime(e.target.value)}
-          >
-            <option value="All Time">All Time</option>
-            <option value="Today">Today</option>
-            <option value="This Week">This Week</option>
-            <option value="This Month">This Month</option>
-          </select>
+        <div className={`${styles.trackingFilters} ${iconStyles.trackingFiltersRow}`}>
+          <div className={iconStyles.trackingFilterField}>
+            <FontAwesomeIcon
+              icon={faCalendarCheck}
+              className={`${iconStyles.trackingFilterIcon} ${
+                darkMode ? iconStyles.trackingFilterIconDark : ''
+              }`}
+            />
+            <select
+              className={`${styles.filterDropdown} ${iconStyles.trackingFilterDropdownWithIcon}`}
+              aria-label="Filter by event"
+              value={selectedEvent}
+              onChange={e => setSelectedEvent(e.target.value)}
+            >
+              <option value="All Events">All Events</option>
+              <option value="Yoga Class">Yoga Class</option>
+              <option value="Cooking Workshop">Cooking Workshop</option>
+              <option value="Dance Class">Dance Class</option>
+              <option value="Fitness Bootcamp">Fitness Bootcamp</option>
+            </select>
+          </div>
+          <div className={iconStyles.trackingFilterField}>
+            <FontAwesomeIcon
+              icon={faClock}
+              className={`${iconStyles.trackingFilterIcon} ${
+                darkMode ? iconStyles.trackingFilterIconDark : ''
+              }`}
+            />
+            <select
+              className={`${styles.filterDropdown} ${iconStyles.trackingFilterDropdownWithIcon}`}
+              aria-label="Filter by time"
+              value={selectedTime}
+              onChange={e => setSelectedTime(e.target.value)}
+            >
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
+            </select>
+          </div>
         </div>
       </div>
 
