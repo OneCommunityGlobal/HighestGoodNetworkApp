@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import CustomTooltip from '../../CustomTooltip';
 import Loading from '~/components/common/Loading';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
@@ -37,6 +38,19 @@ function CustomizedLabel(props) {
   );
 }
 
+CustomizedLabel.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  value: PropTypes.number,
+  sum: PropTypes.number,
+  width: PropTypes.number,
+  darkMode: PropTypes.bool,
+};
+
+CustomizedLabel.defaultProps = {
+  darkMode: false,
+};
+
 export default function WorkDistributionBarChart({ isLoading, workDistributionStats, darkMode }) {
   if (isLoading) {
     return (
@@ -61,7 +75,6 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
   const totalValues = data.map(item => item.totalHours);
   const sum = totalValues.reduce((acc, val) => acc + val, 0);
 
-  //const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   const isDarkMode = Boolean(darkMode);
 
   if (!data.length || !Number.isFinite(sum) || sum === 0) {
@@ -98,13 +111,17 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
                 fontSize: 14,
               }}
             />
-            <Tooltip content={<CustomTooltip yAxisLabel="totalHours" darkMode={isDarkMode} />} />
+            <Tooltip
+              content={<CustomTooltip yAxisLabel="totalHours" darkMode={isDarkMode} />}
+              // Default hover band is #ccc, which glares on the dark card.
+              cursor={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)' }}
+            />
             <Legend />
             <Bar
               dataKey="totalHours"
               fill="#8884d8"
               legendType="none"
-              label={<CustomizedLabel sum={sum} />}
+              label={<CustomizedLabel sum={sum} darkMode={isDarkMode} />}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${entry._id}`} fill={COLORS[index % COLORS.length]} />
@@ -116,3 +133,15 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
     </div>
   );
 }
+
+WorkDistributionBarChart.propTypes = {
+  isLoading: PropTypes.bool,
+  workDistributionStats: PropTypes.arrayOf(PropTypes.object),
+  darkMode: PropTypes.bool,
+};
+
+WorkDistributionBarChart.defaultProps = {
+  isLoading: false,
+  workDistributionStats: [],
+  darkMode: false,
+};

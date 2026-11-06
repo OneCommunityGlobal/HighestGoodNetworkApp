@@ -27,8 +27,10 @@ yarn-error.log*
 /.idea
 
 .vscode/launch.json
-.vscode/settings.json
 
 **\ **
 
-/public/tinymce/
+/public/tinymce/Community/
+Community/
+public/tinymce/
+.claude/

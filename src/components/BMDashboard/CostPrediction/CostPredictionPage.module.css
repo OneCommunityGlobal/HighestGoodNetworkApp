@@ -200,6 +200,38 @@
   fill: #e0e0e0 !important;
 }
 
+/* Confidence Badge */
+.confidenceBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+/* Over-budget Alert Container */
+.alertContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 10px;
+  margin-bottom: 10px;
+}
+
+.alertBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 :global(.dark-mode-body) :global(.recharts-default-legend) {
   background-color: #1e2736 !important;
 }
@@ -210,6 +242,74 @@
 
 :global(.dark-mode-body) :global(.recharts-tooltip-wrapper) {
   background-color: transparent !important;
+}
+
+/* ============================================================
+   Dropdown selection colours — neutralise the green styling
+   that leaks in from CountryOfApplicationMapChart's global
+   :global(.custom-select__*) rules. Use neutral grey for the
+   selected chip, focused control and selected option in BOTH
+   light and dark mode. Scoped to this page only.
+   ============================================================ */
+
+/* Selected multi-value chip → grey (light) */
+.dropdownContainer :global(.custom-select__multi-value) {
+  background-color: #e5e7eb !important;
+}
+
+.dropdownContainer :global(.custom-select__multi-value__label) {
+  color: #1f2937 !important;
+}
+
+.dropdownContainer :global(.custom-select__multi-value__remove) {
+  color: #1f2937 !important;
+}
+
+.dropdownContainer :global(.custom-select__multi-value__remove:hover) {
+  background-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+/* Focused control → grey border + soft grey ring (no green) */
+.dropdownContainer :global(.custom-select__control--is-focused) {
+  border-color: #9ca3af !important;
+  box-shadow: 0 0 0 3px rgb(156 163 175 / 25%) !important;
+}
+
+/* Selected option in the menu → grey (no green) */
+.dropdownContainer :global(.custom-select__option--is-selected) {
+  background-color: #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+/* ---- Dark mode equivalents ---- */
+:global(.dark-mode) .dropdownContainer :global(.custom-select__multi-value) {
+  background-color: #4a5568 !important;
+}
+
+:global(.dark-mode) .dropdownContainer :global(.custom-select__multi-value__label),
+:global(.dark-mode) .dropdownContainer :global(.custom-select__multi-value__remove) {
+  color: #e5e7eb !important;
+}
+
+:global(.dark-mode) .dropdownContainer :global(.custom-select__multi-value__remove:hover) {
+  background-color: #6b7280 !important;
+  color: #fff !important;
+}
+
+:global(.dark-mode) .dropdownContainer :global(.custom-select__control--is-focused) {
+  border-color: #6b7280 !important;
+  box-shadow: 0 0 0 3px rgb(107 114 128 / 30%) !important;
+}
+
+:global(.dark-mode) .dropdownContainer :global(.custom-select__option--is-selected) {
+  background-color: #4a5568 !important;
+  color: #e5e7eb !important;
+}
+
+/* Bottom legend ("Actual Costs vs Predicted Costs") — keep readable in dark mode */
+:global(.dark-mode) .chartLegend {
+  color: #e0e0e0;
 }
 
 /* Responsive adjustments */

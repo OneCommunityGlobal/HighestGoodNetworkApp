@@ -126,27 +126,12 @@ const fetchTasksFromPrimaryEndpoint = async () => {
 };
 
 /**
- * Handle API error and try fallback options
- * @param {Error} apiError - The API error
+ * Handle API error and fall back to demo data
+ * @param {Error} apiError - The caught API error
  * @param {Function} dispatch - Redux dispatch function
- * @returns {Promise<Array>} Array of tasks (from fallback or mock data)
+ * @returns {Array} Mock tasks for demo purposes
  */
-const handleApiError = async (apiError, dispatch) => {
-  console.error('Error response:', apiError.response?.data);
-  console.error('Error status:', apiError.response?.status);
-  console.error('Error config:', apiError.config);
-
-  // Try alternative endpoint if the first one fails
-  if (apiError.response?.status === 404) {
-    try {
-      const altResponse = await httpService.post(`${ENDPOINTS.APIEndpoint()}/student-tasks`);
-      return altResponse.data.tasks || [];
-    } catch (altError) {
-      // Alternative endpoint failed
-    }
-  }
-
-  toast.info('Using demo data. Student tasks API is not yet available.');
+const handleApiError = (apiError, dispatch) => {
   return mockTasks;
 };
 
@@ -158,20 +143,19 @@ export const fetchStudentTasks = () => {
     dispatch(setStudentTasksStart());
 
     try {
-      const state = getState();
-      const userId = state.auth.user.userid;
-
-      if (!userId) {
-        dispatch(setStudentTasksError('User not authenticated'));
-        return;
+      let tasks = [];
+      try {
+        tasks = await fetchTasksFromPrimaryEndpoint();
+      } catch (apiError) {
+        tasks = handleApiError(apiError, dispatch);
       }
 
-      try {
-        const tasks = await fetchTasksFromPrimaryEndpoint();
+      // Fall back to mock data if API returned nothing
+      if (!tasks || tasks.length === 0) {
+        toast.info('Using demo data. Student tasks API is not yet available.');
+        dispatch(setStudentTasks(mockTasks));
+      } else {
         dispatch(setStudentTasks(tasks));
-      } catch (apiError) {
-        const fallbackTasks = await handleApiError(apiError, dispatch);
-        dispatch(setStudentTasks(fallbackTasks));
       }
     } catch (err) {
       dispatch(setStudentTasksError(err.message || 'Failed to fetch student tasks'));
@@ -259,6 +243,41 @@ export const markStudentTaskAsDone = (taskId) => {
       }
     } catch (err) {
       toast.error('Failed to mark task as done. Please try again.');
+    }
+  };
+};
+
+/**
+ * Log hours against a student task.
+ * @param {string} taskId - The task ID
+ * @param {number} hours  - Hours to add (positive number)
+ */
+export const logStudentTaskHours = (taskId, hours) => {
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const userId = state.auth.user.userid;
+
+      const response = await httpService.post(ENDPOINTS.STUDENT_TASK_LOG_HOURS(taskId), {
+        hours,
+        requestor: { requestorId: userId },
+      });
+
+      const { loggedHours, suggestedTotalHours, status, canMarkDone } = response.data;
+
+      dispatch({
+        type: types.LOG_STUDENT_TASK_HOURS,
+        taskId,
+        loggedHours,
+        suggestedTotalHours,
+        status,
+        canMarkDone,
+      });
+
+      toast.success(`${hours} hour(s) logged successfully!`);
+    } catch (error) {
+      const msg = error.response?.data?.error || 'Failed to log hours. Please try again.';
+      toast.error(msg);
     }
   };
 };

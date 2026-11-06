@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { ModalProvider } from '~/context/ModalContext';
 import axios from 'axios';
 import CreateNewRolePopup from '../NewRolePopUp';
@@ -26,7 +26,7 @@ const mockAuth = {
 };
 const themeMock = { primaryColor: '#000000' };
 const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
+const mockStore = configureMockStore(middlewares);
 let store;
 
 // Helper to render the component with our mocked store & context

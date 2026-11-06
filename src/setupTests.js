@@ -155,6 +155,11 @@ vi.mock('html2canvas', () => ({
   })),
 }));
 
+// Mock AutoUpdate component to prevent intervals in tests
+vi.mock('../components/AutoUpdate', () => ({
+  default: () => null,
+}));
+
 // Mock jspdf
 vi.mock('jspdf', () => ({
   jsPDF: vi.fn().mockImplementation(() => ({
@@ -234,3 +239,7 @@ class ResizeObserver {
 }
 
 global.ResizeObserver = ResizeObserver;
+
+HTMLCanvasElement.prototype.getContext = () => {
+  return {};
+};

@@ -20,12 +20,19 @@ function EPLogin(props) {
 
   // push to dashboard if user is authenticated
   useEffect(() => {
-    if (auth.user.access && auth.user.access.canAccessGEPortal) {
+    if (auth.user.access) {
+      const access = auth.user.access;
+      const hasGEFlag = Object.hasOwn(access, 'canAccessGEPortal');
+      const canAccessEP = hasGEFlag ? access.canAccessGEPortal : access.canAccessBMPortal;
+      if (!canAccessEP) return;
+
+      sessionStorage.removeItem('gePortalLoggedOut');
       history.push(prevLocation.pathname);
     }
-  }, []);
+  }, [auth.user.access, history, prevLocation.pathname]);
   useEffect(() => {
     if (hasAccess) {
+      sessionStorage.removeItem('gePortalLoggedOut');
       history.push(prevLocation.pathname);
     }
   }, [hasAccess, history, prevLocation.pathname]);
@@ -64,19 +71,20 @@ function EPLogin(props) {
     }
     const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
     // server side error validation
-    if (!res || res.status !== 200) {
-      if (res && res.status === 422) {
+    if (res.statusText !== 'OK') {
+      if (res.status === 422) {
         return setValidationError({
           label: res.data.label,
           message: res.data.message,
         });
       }
       return setValidationError({
-        label: 'form',
-        message: 'Login failed. Please check your credentials and try again.',
+        label: '',
+        message: '',
       });
     }
     // initiate push to EP if validated (ie received token)
+    sessionStorage.removeItem('gePortalLoggedOut');
     return setHasAccess(!!res.data.token);
   };
 
@@ -117,9 +125,6 @@ function EPLogin(props) {
             <FormFeedback>{validationError.message}</FormFeedback>
           )}
         </FormGroup>
-        {validationError && validationError.label === 'form' && (
-          <p style={{ color: 'red', marginTop: '0.5rem' }}>{validationError.message}</p>
-        )}
         <Button disabled={!enteredEmail || !enterPassword}>Submit</Button>
       </Form>
     </div>

@@ -1,21 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Alert,
-  Spinner,
-} from 'reactstrap';
-import AddTeamsAutoComplete from './AddTeamsAutoComplete';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+  Alert,
+  Button,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Spinner,
+} from 'reactstrap';
+import { getAllUserTeams, postNewTeam } from '../../../actions/allTeamsAction';
 import darkModeStyles from '../../Header/DarkMode.module.css';
-import { postNewTeam, getAllUserTeams } from '../../../actions/allTeamsAction';
-import axios, { CancelToken } from 'axios';
+import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 
 function generateValidTeamCode(name) {
   if (!name?.trim()) return 'TEAM-1';
@@ -183,25 +182,26 @@ const AddTeamPopup = React.memo((props) => {
     }
   };
 
-  const axiosResponseExceededTimeout = (source) => {
-    setIsLoading(false);
-    source.cancel();
-  };
+ const axiosResponseExceededTimeout = controller => {
+  controller.abort();
+  setIsLoading(false);
+};
 
 
 
-  const refreshTeams = async () => {
-    try {
-      setTeamsLoading(true);
-      const resp = await dispatch(getAllUserTeams());
-      const list = extractTeams(resp);
-      if (list.length) setTeams(list);
-    } finally {
-      setTeamsLoading(false);
-    }
-  };
+const refreshTeams = async () => {
+  try {
+    setTeamsLoading(true);
+    const resp = await dispatch(getAllUserTeams());
+    const list = extractTeams(resp);
+    setTeams(list);
+    return list;
+  } finally {
+    setTeamsLoading(false);
+  }
+};  
 
-  const handleCreateTeamError = (response) => {
+const handleCreateTeamError = (response) => {
     const messageToastError =
       response?.status === 500
         ? 'No response received from the server'
@@ -214,42 +214,69 @@ const AddTeamPopup = React.memo((props) => {
   };
 
   const onCreateTeam = async () => {
-    if (!searchText?.trim()) {
-      onNewTeamValidation(false);
-      return;
-    }
 
-    const source = CancelToken.source();
-    const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
-    try {
-      setIsLoading(true);
-      const newTeamName = searchText.trim();
-      const response = await dispatch(postNewTeam(newTeamName, true, source));
-      clearTimeout(timeout);
+  if (isLoading) {
+    return;
+  }
 
-      if (response?.status === 200) {
-        setDuplicateTeam(false);
-        if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
-        await refreshTeams();
-        toast.success('Team created successfully');
-        const list = extractTeams(response);
-        const created =
-          list?.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
-          allTeams.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
-          response?.data;
-        setIsLoading(false);
-        onAssignTeam(created);
-      } else {
-        setIsLoading(false);
-        handleCreateTeamError(response);
-      }
-    } catch (error) {
-      clearTimeout(timeout);
-      console.error('Error creating team:', error);
+  if (!searchText?.trim()) {
+
+    onNewTeamValidation(false);
+    return;
+  }
+  const newTeamName = searchText.trim();
+   const normalizedNewTeamName = newTeamName.toLowerCase();
+
+  const duplicateTeam = allTeams.some(
+    team =>
+      team?.teamName?.trim().toLowerCase() === normalizedNewTeamName
+  );
+
+  if (duplicateTeam) {
+    setDuplicateTeam(true);
+    return;
+  }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => axiosResponseExceededTimeout(controller),20000);
+
+  try {
+    setIsLoading(true);
+
+    
+
+    const response = await dispatch(postNewTeam(newTeamName, true, controller.signal));
+
+
+    clearTimeout(timeout);
+
+    if (response?.status === 200) {
+
+      setDuplicateTeam(false);
+      if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
+
+      const refreshedTeams = await refreshTeams();
+
+
+      toast.success('Team created successfully');
+
+      const created =
+        refreshedTeams.find(
+          team => normalize(team.teamName) === normalize(newTeamName)
+        ) || response?.data;
+
+
       setIsLoading(false);
-      toast.error('Error occurred while creating team');
+      onAssignTeam(created);
+    } else {
+      setIsLoading(false);
+      handleCreateTeamError(response);
     }
-  };
+  } catch (error) {
+    clearTimeout(timeout);
+    setIsLoading(false);
+    toast.error(error?.message || 'Error occurred while creating team');
+  }
+};
 
   const onConfirm = () => {
     runConfirmStrategy({
@@ -336,9 +363,8 @@ const AddTeamPopup = React.memo((props) => {
       setIsLoading(false);
       applyEditResult(result);
     } catch (error) {
-      console.error('Error updating team:', error);
       setIsLoading(false);
-      toast.error('An unexpected error occurred while updating the team');
+      toast.error(error?.message || 'An unexpected error occurred while updating the team');
     }
   };
 
@@ -442,7 +468,7 @@ const AddTeamPopup = React.memo((props) => {
                   teamsData={{ allTeams }}
                   onCreateNewTeam={onCreateTeam}
                   searchText={searchText}
-                  setInputs={onSelectTeam}
+                  onDropDownSelect={onSelectTeam}
                   setSearchText={handleSearchTextChange}
                 />
               )}
@@ -504,7 +530,7 @@ const AddTeamPopup = React.memo((props) => {
                   flexWrap: 'wrap',
                 }}
               >
-                <Button color="info" onClick={onCreateTeam}>
+                <Button color="info" onClick={onCreateTeam} disabled={isLoading}>
                   <b>Create Team</b>
                 </Button>
                 <Button color="danger" onClick={closePopup}>

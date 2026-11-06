@@ -16,6 +16,7 @@ import WarningIcons from '../WarningIcons';
 import getOrdinal from '../../../utils/getOrdinal';
 import styles from '../Warnings.module.css';
 
+import { permissions } from '../../../utils/constants';
 function WarningModal({
   setToggleModal,
   visible,
@@ -35,9 +36,9 @@ function WarningModal({
 
   const dispatch = useDispatch();
 
-  const canIssueTrackingWarnings = dispatch(hasPermission('issueTrackingWarnings'));
-  const canIssueBlueSquare = dispatch(hasPermission('issueBlueSquare'));
-  const canDeleteWarning = dispatch(hasPermission('deleteWarning'));
+  const canIssueTrackingWarnings = dispatch(hasPermission(permissions.issueTrackingWarnings));
+  const canIssueBlueSquare = dispatch(hasPermission(permissions.issueBlueSquare));
+  const canDeleteWarning = dispatch(hasPermission(permissions.deleteWarning));
 
   const isFormComplete = () => {
     return warning.specialWarnings.every(warn => warningSelections[warn.title]);
@@ -93,7 +94,7 @@ function WarningModal({
           <p>
             The {numberOfWarnings >= 3 ? 'blue square' : 'warning'} will be because they didn&apos;t
             meet the criteria for the following area:{' '}
-            <span className="warning__body--bold">
+            <span className={styles['warning__body--bold']}>
               {times}x {warningText}
             </span>
           </p>
@@ -321,7 +322,7 @@ function WarningModal({
                   setToggleModal(false);
                 }}
                 color="warning"
-                className="warning__modal__footer__btn"
+                className={styles.warning__modal__footer__btn}
               >
                 Issue Warning
               </Button>
@@ -333,7 +334,7 @@ function WarningModal({
                   setToggleModal(false);
                 }}
                 color="primary"
-                className="warning__modal__footer__btn"
+                className={styles.warning__modal__footer__btn}
               >
                 Issue Blue Square
               </Button>

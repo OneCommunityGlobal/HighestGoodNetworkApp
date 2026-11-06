@@ -2,7 +2,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { ENDPOINTS } from '~/utils/URL';
 
 // Mock the action creators
@@ -17,7 +17,7 @@ vi.mock('../../../actions/weeklySummaries', () => ({
 
 // Create mock store
 const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
+const mockStore = configureMockStore(middlewares);
 const store = mockStore({
   weeklySummaries: {
     loading: false,

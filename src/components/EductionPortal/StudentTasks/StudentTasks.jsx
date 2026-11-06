@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import Sidebar from './StudentSidebar';
 import TaskCard from './TaskCard';
 import RubricModal from './RubricModal';
 import styles from './StudentTasks.module.css';
@@ -140,8 +139,6 @@ const StudentTasks = () => {
       {darkMode && <div className={styles.darkBackdrop} aria-hidden="true" />}
 
       <div className={`${styles.pageLayout} ${darkMode ? styles.pageLayoutDark : ''}`}>
-        <Sidebar />
-
         <div
           className={`${styles.content} ${darkMode ? styles.contentDark : ''}`}
           style={{ paddingBottom: '4.5rem' }}

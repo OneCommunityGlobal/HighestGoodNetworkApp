@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './TeamTable.css';
+import './TeamTable.module.css';
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
@@ -12,10 +12,11 @@ import {
 } from '~/actions/weeklySummariesFilterAction';
 import { boxStyle, boxStyleDark } from '~/styles';
 
+import { permissions } from '../../utils/constants';
 function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   // Display project lists
   let TeamsList = [];
-  const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role === 'Owner';
+  const canEditTeamCode = hasPermission(permissions.editTeamCode) || auth.user.role === 'Owner';
 
   // Refresh team data when component mounts
   useEffect(() => {

@@ -50,9 +50,6 @@ function ProfileDetails() {
         </span>
         <span>
           <strong>Years of Experience:</strong>{' '}
-          <span className={styles.value}>
-            {profileData.skillInfo?.general?.yearsOfExperience || 'N/A'}
-          </span>
           {isEditing ? (
             <input
               type="number"
@@ -71,11 +68,11 @@ function ProfileDetails() {
         </span>
         {loggedInUserId === String(profileData?.userId) && (
           <div className={`${styles.editButtons}`}>
-            <button type="button" className="edit-button" onClick={handleEditSave}>
+            <button type="button" className={styles.editButton} onClick={handleEditSave}>
               {isEditing ? 'Save' : 'Edit'}
             </button>
             {isEditing && (
-              <button type="button" className="edit-button" onClick={handleCancel}>
+              <button type="button" className={styles.editButton} onClick={handleCancel}>
                 Cancel
               </button>
             )}

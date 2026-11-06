@@ -362,17 +362,17 @@
 /* Responsive Design */
 @media (width <= 768px) {
   .taskCard {
-    padding: 1.25rem;
-    min-height: 260px;
+    padding: 1rem;
+    min-height: unset;
   }
 
   .actionButtons {
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 0.5rem;
   }
 
   .clockButton {
-    width: 100%;
+    width: 40px;
   }
 
   .intermediateTaskItem {
@@ -380,6 +380,25 @@
   }
 
   .markIntermediateDoneButton {
+    width: 100%;
+  }
+}
+
+@media (width <= 480px) {
+  .taskCard {
+    padding: 0.875rem;
+    border-radius: 8px;
+  }
+
+  .taskTitle {
+    font-size: 1rem;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .clockButton {
     width: 100%;
   }
 }
@@ -456,6 +475,7 @@
   color: #d1d5db;
 }
 
+/* stylelint-disable-next-line no-descending-specificity */
 :global(.dark-mode) .markDoneButton {
   background-color: #2563eb;
   color: #fff;
@@ -544,6 +564,7 @@
   color: #fbbf24;
 }
 
+/* stylelint-disable-next-line no-descending-specificity */
 :global(.dark-mode) .markIntermediateDoneButton {
   background-color: #2d2d2d;
   border-color: #404040;

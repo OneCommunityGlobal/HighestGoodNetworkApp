@@ -18,11 +18,15 @@ export const MARK_INTERMEDIATE_TASK_DONE = 'MARK_INTERMEDIATE_TASK_DONE';
  * Fetch intermediate tasks for a parent task
  */
 export const fetchIntermediateTasks = taskId => {
-  return async dispatch => {
+  return async () => {
     try {
       const response = await httpService.get(ENDPOINTS.INTERMEDIATE_TASKS_BY_PARENT(taskId));
       return response.data;
     } catch (error) {
+      // 404 means the parent task doesn't exist in the education system (e.g. mock/demo tasks) - not an error
+      if (error.response?.status === 404) {
+        return [];
+      }
       toast.error('Failed to fetch sub-tasks');
       throw error;
     }

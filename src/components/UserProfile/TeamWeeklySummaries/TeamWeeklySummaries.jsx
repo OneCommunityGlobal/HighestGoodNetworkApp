@@ -1,4 +1,4 @@
-import './TeamWeeklySummaries.css';
+import './TeamWeeklySummaries.module.css';
 import moment from 'moment';
 import parse from 'html-react-parser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

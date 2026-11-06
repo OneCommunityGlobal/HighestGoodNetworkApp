@@ -4,8 +4,6 @@
    PAGE LAYOUT
 =========================== */
 .pageLayout {
-  display: flex;
-  flex-direction: row;
   width: 100%;
   min-height: calc(100vh - 72px);
   background-color: #f9fafb;
@@ -286,6 +284,32 @@
 
 .rubricButton:hover {
   background: #1e40af;
+}
+
+.logHoursButton {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #2563eb;
+  background: transparent;
+  border: 1px solid #2563eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.logHoursButton:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+.loadingMsg,
+.emptyMsg {
+  color: #6b7280;
+  font-size: 0.95rem;
+  padding: 1rem 0;
 }
 
 /* ===========================

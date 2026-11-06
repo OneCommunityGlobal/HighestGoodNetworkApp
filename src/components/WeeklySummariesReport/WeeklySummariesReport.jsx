@@ -6,12 +6,11 @@ import axios from 'axios';
 import moment from 'moment';
 import 'moment-timezone';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
 import { connect } from 'react-redux';
 import Select, { components } from 'react-select';
 import { toast } from 'react-toastify';
-import ReactTooltip from 'react-tooltip';
 import {
   Alert,
   Button,
@@ -41,8 +40,10 @@ import {
   updateSummaryReportFromServerAction,
 } from '../../actions/weeklySummaries';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import SkeletonLoading from '../common/SkeletonLoading';
 import TeamChart from './TeamChart';
+import TeamCodeWarningButton from './TeamCodeWarningButton';
 
 import {
   createSavedFilter,
@@ -68,13 +69,16 @@ import PasswordInputModal from './PasswordInputModal';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import styles from './WeeklySummariesReport.module.css';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import { permissions } from '../../utils/constants';
 // Keeping this block commented intentionally for future reference
 // import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
 import { setField } from '~/utils/stateHelper';
+import { shouldShowSummaryOnTab } from '~/utils/weeklySummariesFinalWeek';
 import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
 // Keeping this block commented intentionally for future reference —
 import cn from 'classnames';
 import { getCustomStyles } from '~/utils/reactSelectStyles';
+import { isQualifiedForBio } from '~/utils/bioQualification';
 import {
   useDeleteWeeklySummariesFilterMutation,
   useGetWeeklySummariesFiltersQuery,
@@ -128,6 +132,7 @@ const initialState = {
   auth: [],
   selectedLoggedHoursRange: '',
   selectedOverTime: false,
+  // Bio Status filter: false = show everyone, true = only bio-eligible users.
   selectedBioStatus: false,
   selectedTrophies: false,
   chartShow: false,
@@ -136,6 +141,7 @@ const initialState = {
   replaceCodeLoading: false,
   allRoleInfo: [],
   teamCodeWarningUsers: [],
+  showOnlyMismatched: false,
   loadedTabs: [navItems[1]],
   summariesByTab: {},
   tabsLoading: { [navItems[1]]: false },
@@ -285,6 +291,7 @@ const WeeklySummariesReport = props => {
   const { loading, getInfoCollections } = props;
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
+  const reportResultsRef = useRef(null);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
   const [isTeamCodeFocused, setIsTeamCodeFocused] = useState(false);
 
@@ -352,7 +359,7 @@ const WeeklySummariesReport = props => {
           promisedHoursByWeek,
         };
       })
-      .filter(summary => shouldIncludeSummaryForWeek(summary, weekIndex))
+      .filter(summary => shouldShowSummaryOnTab(summary, weekIndex))
       .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
 
     const teamCodeGroup = {};
@@ -404,40 +411,6 @@ const WeeklySummariesReport = props => {
       colorOptions: newColorOptions,
       tableData: teamCodeGroup,
     };
-  };
-
-  const shouldIncludeSummaryForWeek = (summary, weekIndex) => {
-    if (
-      summary?.isActive === false &&
-      !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
-    ) {
-      return false;
-    }
-
-    if (summary.endDate && summary.finalWeekIndex !== weekIndex) {
-      return false;
-    }
-
-    return true;
-  };
-
-  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
-    const weekStartLA = moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const weekEndLA = moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const summaryStart = new Date(startDateStr);
-    const summaryEnd = new Date(endDateStr);
-
-    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   const getAllRoles = summaries => {
@@ -518,18 +491,36 @@ const WeeklySummariesReport = props => {
       const badgeStatusCode = await fetchAllBadges();
       setPermissionState(prev => ({
         ...prev,
-        bioEditPermission: hasPermission('putUserProfileImportantInfo'),
-        canEditSummaryCount: hasPermission('putUserProfileImportantInfo'),
+        // One of two places that write permissionState; fetchInitialPermissions below
+        // is the other, and both run on mount. Keep the two in step — whichever
+        // resolves last wins.
+        //
+        // Permission keys come from the `permissions` constant rather than string
+        // literals. The Owner/Administrator fallbacks grant the right without an
+        // explicit permission record, matching codeEditPermission and canManageFilter
+        // below.
+        bioEditPermission:
+          hasPermission(permissions.putUserProfileImportantInfo) ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
+        // NOTE: the other effect gates this on `editSummaryHoursCount` instead. Both
+        // spellings predate this merge, so the winner depends on effect ordering.
+        // Left as-is rather than silently picking one — needs a product decision.
+        canEditSummaryCount: hasPermission(permissions.putUserProfileImportantInfo),
         codeEditPermission:
-          hasPermission('editTeamCode') ||
+          hasPermission(permissions.editTeamCode) ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
-        canSeeBioHighlight: hasPermission('highlightEligibleBios'),
+        // Same fallback for the yellow highlight bar and the Bio Status filter.
+        canSeeBioHighlight:
+          hasPermission(permissions.highlightEligibleBios) ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
         canManageFilter:
-          hasPermission('manageSummariesFilters') ||
+          hasPermission(permissions.manageSummariesFilters) ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
-        hasSeeBadgePermission: hasPermission('seeBadges') && badgeStatusCode === 200,
+        hasSeeBadgePermission: hasPermission(permissions.seeBadges) && badgeStatusCode === 200,
       }));
 
       const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
@@ -612,7 +603,7 @@ const WeeklySummariesReport = props => {
         COLORS,
         colorOptions,
         teamCodes,
-        teamCodeWarningUsers: summariesCopy.filter(s => s.teamCodeWarning),
+        teamCodeWarningUsers: summariesCopy.filter(s => s.isActive && s.teamCodeWarning),
         auth,
         tabsLoading: {
           [activeTab]: false,
@@ -738,7 +729,7 @@ const WeeklySummariesReport = props => {
         selectedLoggedHoursRange,
         summaries,
         selectedOverTime,
-        selectedBioStatus,
+        selectedBioStatus, // boolean: false = no filter, true = show only qualified users
         selectedTrophies,
         COLORS,
         selectedSpecialColors,
@@ -764,16 +755,14 @@ const WeeklySummariesReport = props => {
           const { activeTab } = state;
           const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
 
-          if (!shouldIncludeSummaryForWeek(summary, weekIndex)) {
+          if (!shouldShowSummaryOnTab(summary, weekIndex)) {
             return false;
           }
 
-          const isMeetCriteria =
-            summary.totalTangibleHrs > 80 &&
-            summary.daysInTeam > 60 &&
-            summary.bioPosted !== 'posted';
-
-          const isBio = !selectedBioStatus || isMeetCriteria;
+          // Qualification only — no canSeeBioHighlight gate here, matching the pre-2026-05
+          // behaviour. That permission decides who sees the yellow bar, not who the filter
+          // is allowed to return; gating here would hand a filter-manager an empty list.
+          const isBio = !selectedBioStatus || isQualifiedForBio(summary);
 
           const isOverHours =
             !selectedOverTime ||
@@ -978,6 +967,9 @@ const WeeklySummariesReport = props => {
       ...prevState,
       summaries: summariesCopy,
       filteredSummaries: summariesCopy,
+      teamCodeWarningUsers: summariesCopy.filter(
+        summary => summary.isActive && summary.teamCodeWarning,
+      ),
       teamCodes,
       colorOptions,
       tableData,
@@ -993,6 +985,7 @@ const WeeklySummariesReport = props => {
     ...prevState,
     summaries: [],
     filteredSummaries: [],
+    teamCodeWarningUsers: [],
     teamCodes: [],
     colorOptions: [],
     tableData: {},
@@ -1042,6 +1035,7 @@ const WeeklySummariesReport = props => {
     setState(prevState => ({
       ...prevState,
       activeTab: tab,
+      showOnlyMismatched: false,
       tabsLoading: {
         ...prevState.tabsLoading,
         [tab]: true,
@@ -1090,11 +1084,11 @@ const WeeklySummariesReport = props => {
     }));
   };
 
-  const handleTeamCodeChange = (userId, newTeamCode) => {
+  const handleTeamCodeChange = (userId, newTeamCode, teamCodeWarning) => {
     setState(prevState => {
       const summaries = prevState.summaries.map(summary => {
         if (summary._id === userId) {
-          return { ...summary, teamCode: newTeamCode };
+          return { ...summary, teamCode: newTeamCode, teamCodeWarning: !!teamCodeWarning };
         }
         return summary;
       });
@@ -1102,7 +1096,7 @@ const WeeklySummariesReport = props => {
       const weekIndex = navItems.indexOf(prevState.activeTab);
 
       const validSummariesForWeek = summaries.filter(summary =>
-        shouldIncludeSummaryForWeek(summary, weekIndex),
+        shouldShowSummaryOnTab(summary, weekIndex),
       );
 
       const teamCodeCounts = {};
@@ -1154,6 +1148,9 @@ const WeeklySummariesReport = props => {
       return {
         ...prevState,
         summaries,
+        teamCodeWarningUsers: summaries.filter(
+          summary => summary.isActive && summary.teamCodeWarning,
+        ),
         summariesByTab: {
           ...prevState.summariesByTab,
           [prevState.activeTab]: summaries,
@@ -1161,6 +1158,27 @@ const WeeklySummariesReport = props => {
         tableData: updatedTableData,
         teamCodes,
         selectedCodes: updatedSelectedCodes,
+      };
+    });
+  };
+
+  // `state.summaries` is local component state, so the Redux update dispatched by
+  // toggleUserBio never reaches this list. Patch the row here instead: `state.summaries`
+  // is a dependency of the filtering effect, so the yellow bar hides and the user drops
+  // out of the Bio Status filter in the same render, with no refetch round-trip.
+  const handleBioStatusChange = (userId, newBioStatus) => {
+    setState(prevState => {
+      const summaries = prevState.summaries.map(summary =>
+        summary._id === userId ? { ...summary, bioPosted: newBioStatus } : summary,
+      );
+
+      return {
+        ...prevState,
+        summaries,
+        summariesByTab: {
+          ...prevState.summariesByTab,
+          [prevState.activeTab]: summaries,
+        },
       };
     });
   };
@@ -1256,26 +1274,11 @@ const WeeklySummariesReport = props => {
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
-        const updatedWarningUsers = [...teamCodeWarningUsers];
-        updatedUsers.forEach(({ userId, teamCodeWarning }) => {
-          const existingIndex = updatedWarningUsers.findIndex(user => user._id === userId);
+        const updatedWarningUsers = updatedSummaries.filter(
+          summary => summary.isActive && summary.teamCodeWarning,
+        );
 
-          if (teamCodeWarning) {
-            if (existingIndex !== -1) {
-              updatedWarningUsers[existingIndex].teamCodeWarning = true;
-            } else {
-              const userProfile = summaries.find(summary => summary._id === userId);
-              if (userProfile) {
-                userProfile.teamCodeWarning = true;
-                updatedWarningUsers.push({ ...userProfile });
-              }
-            }
-          } else if (existingIndex !== -1) {
-            updatedWarningUsers.splice(existingIndex, 1);
-          }
-        });
-
-        const updatedTableData = tableData;
+        const updatedTableData = { ...tableData };
         updatedTableData[replaceCode] = updatedSummaries.filter(s => s.teamCode === replaceCode);
         oldTeamCodes.forEach(code => {
           updatedTableData[code] = updatedSummaries.filter(s => s.teamCode === code);
@@ -1306,8 +1309,6 @@ const WeeklySummariesReport = props => {
           teamCodeWarningUsers: updatedWarningUsers,
           tableData: updatedTableData,
         }));
-
-        filterWeeklySummaries();
       } else {
         setState(prev => ({
           ...prev,
@@ -1690,18 +1691,30 @@ const WeeklySummariesReport = props => {
     const fetchInitialPermissions = async () => {
       try {
         await props.fetchAllBadges();
+        props.getAllTimeOffRequests();
         setPermissionState(prev => ({
           ...prev,
-          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
-          codeEditPermission:
-            props.hasPermission('editTeamCode') ||
+          // Keep the Owner/Administrator fallbacks identical to the other place that
+          // writes permissionState — both effects run on mount and either may land
+          // last. Keys come from the `permissions` constant, not string literals.
+          bioEditPermission:
+            props.hasPermission(permissions.putUserProfileImportantInfo) ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
-          canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
-          canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
-          hasSeeBadgePermission: props.hasPermission('seeBadges'),
+          codeEditPermission:
+            props.hasPermission(permissions.editTeamCode) ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
+          // NOTE: the effect above gates this on `putUserProfileImportantInfo`. See
+          // the note there — the divergence predates this merge and is unresolved.
+          canEditSummaryCount: props.hasPermission(permissions.editSummaryHoursCount),
+          canSeeBioHighlight:
+            props.hasPermission(permissions.highlightEligibleBios) ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
+          hasSeeBadgePermission: props.hasPermission(permissions.seeBadges),
           canManageFilter:
-            props.hasPermission('manageSummariesFilters') ||
+            props.hasPermission(permissions.manageSummariesFilters) ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
         }));
@@ -1723,6 +1736,16 @@ const WeeklySummariesReport = props => {
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const { authEmailWeeklySummaryRecipient } = props;
+  const warningUsers = state.summaries.filter(
+    summary => summary.isActive && summary.teamCodeWarning,
+  );
+  const showOnlyMismatched = state.showOnlyMismatched && warningUsers.length > 0;
+  const displayedSummaries = showOnlyMismatched ? warningUsers : state.filteredSummaries;
+
+  const handleToggleMismatchedUsers = () => {
+    setState(prev => ({ ...prev, showOnlyMismatched: !prev.showOnlyMismatched }));
+    requestAnimationFrame(() => reportResultsRef.current?.scrollIntoView({ behavior: 'smooth' }));
+  };
 
   if (error) {
     return (
@@ -1925,25 +1948,11 @@ const WeeklySummariesReport = props => {
 
           <div>
             <div className={styles.teamCodeSelectRow}>
-              {state.teamCodeWarningUsers.length > 0 && (
-                <>
-                  <i
-                    className="fa fa-info-circle text-danger"
-                    data-tip
-                    data-placement="top"
-                    data-for="teamCodeWarningTooltip"
-                    style={{
-                      fontSize: '20px',
-                      cursor: 'pointer',
-                      marginRight: '8px',
-                      alignSelf: 'center',
-                    }}
-                  />
-                  <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                    {state.teamCodeWarningUsers.length} users have mismatched team codes!
-                  </ReactTooltip>
-                </>
-              )}
+              <TeamCodeWarningButton
+                count={warningUsers.length}
+                active={showOnlyMismatched}
+                onClick={handleToggleMismatchedUsers}
+              />
 
               <div className={styles.teamCodeSelect}>
                 <Select
@@ -1977,7 +1986,7 @@ const WeeklySummariesReport = props => {
                   onBlur={() => setIsTeamCodeFocused(false)}
                   classNamePrefix="custom-select"
                   className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
-                    state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+                    warningUsers.length > 0 ? 'warning-border' : ''
                   }`}
                   styles={customStyles}
                 />
@@ -2236,6 +2245,7 @@ const WeeklySummariesReport = props => {
       )}
       <Row className={styles['mx-max-sm-0']}>
         <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
+          <div ref={reportResultsRef} />
           <Nav tabs>
             {navItems.map(item => (
               <NavItem key={item}>
@@ -2275,7 +2285,7 @@ const WeeklySummariesReport = props => {
                         style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
                       >
                         <GeneratePdfReport
-                          summaries={state.filteredSummaries}
+                          summaries={displayedSummaries}
                           weekIndex={index}
                           weekDates={weekDates[index]}
                           darkMode={darkMode}
@@ -2312,17 +2322,27 @@ const WeeklySummariesReport = props => {
                         </Button>
                       </Col>
                     </Row>
-                    {state.filteredSummaries && state.filteredSummaries.length > 0 ? (
+                    {showOnlyMismatched && (
+                      <Row className={styles['mx-max-sm-0']}>
+                        <Col>
+                          <output className={styles.mismatchFilterStatus}>
+                            Showing {displayedSummaries.length} users with mismatched team codes.{' '}
+                            Click the red i again to show all users.
+                          </output>
+                        </Col>
+                      </Row>
+                    )}
+                    {displayedSummaries.length > 0 ? (
                       <>
                         <Row>
                           <Col>
-                            <b>Total Team Members:</b> {state.filteredSummaries.length}
+                            <b>Total Team Members:</b> {displayedSummaries.length}
                           </Col>
                         </Row>
                         <Row>
                           <Col>
                             <FormattedReport
-                              summaries={state.filteredSummaries}
+                              summaries={displayedSummaries}
                               weekIndex={index}
                               bioCanEdit={permissionState.bioEditPermission}
                               canEditSummaryCount={permissionState.canEditSummaryCount}
@@ -2334,9 +2354,10 @@ const WeeklySummariesReport = props => {
                               canSeeBioHighlight={permissionState.canSeeBioHighlight}
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}
+                              handleBioStatusChange={handleBioStatusChange}
                               loadTrophies={state.loadTrophies}
-                              getWeeklySummariesReport={getWeeklySummariesReport}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
+                              timeOffRequests={props.timeOffRequests}
                             />
                           </Col>
                         </Row>
@@ -2402,6 +2423,7 @@ const mapStateToProps = state => {
     auth: state?.auth || {},
     darkMode: state?.theme?.darkMode || false,
     authEmailWeeklySummaryRecipient: state?.auth?.user?.email || '',
+    timeOffRequests: state.timeOffRequests?.requests || {},
   };
 };
 
@@ -2425,6 +2447,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(updateOneSummaryReport(userId, updatedField)),
   updateSummaryReport: payload => dispatch(updateSummaryReport(payload)),
   updateSummaryReportFromServerAction: user => dispatch(updateSummaryReportFromServerAction(user)),
+  getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {

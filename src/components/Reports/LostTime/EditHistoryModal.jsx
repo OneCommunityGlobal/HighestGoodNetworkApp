@@ -6,8 +6,8 @@ import { getUserProfile } from '~/actions/userProfile';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { deleteTimeEntry, editTimeEntry } from '~/actions/timeEntries';
-import './EditHistoryModal.css';
-import '../../Header/index.css'
+import './EditHistoryModal.module.css';
+import '../../Header/index.module.css'
 import { toast } from 'react-toastify';
 
 function EditHistoryModal(props) {

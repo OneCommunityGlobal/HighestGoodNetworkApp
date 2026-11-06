@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { FaEdit, FaRegSave } from 'react-icons/fa';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { FaEdit, FaRegSave } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
+import { setformData } from '~/actions/hgnFormAction';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from '../styles/GeneralQuestions.module.css';
 
@@ -18,7 +18,7 @@ function GeneralQuestions() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [newVolunteer, setNewVolunteer] = useState(formData);
 
-  const { isOwner } = location.state; // Set to `true` if the user is the owner
+  const { isOwner } = location.state || {}; // Set to `true` if the user is the owner
 
   const [preferenceWarning, setPreferenceWarning] = useState('');
   const [availabilityWarning, setAvailabilityWarning] = useState('');

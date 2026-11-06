@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
+import { useEffect, useMemo, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
+import { Card, CardBody, CardImg, CardText, CustomInput, Popover } from 'reactstrap';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 function AssignTableRow(props) {
@@ -31,18 +31,16 @@ function AssignTableRow(props) {
   const badgeId = props.badge?._id;
   const domId = `assign-badge-${badgeId}`;
 
-  // Initialize selection from props (badges that user already has)
-  useEffect(() => {
-    if (props.propExistBadges?.includes(badgeId)) {
-      dispatch(addSelectBadge(badgeId));
-    }
-  }, [badgeId, dispatch, props.propExistBadges]);
-
-  const isSelected = selectedBadges.includes(badgeId);
+  const isExisting = props.propExistBadges?.includes(badgeId);
+  const isSelected =
+    isExisting ||
+    selectedBadges.includes(badgeId) ||
+    selectedBadges.includes(`assign-badge-${badgeId}`);
   // eslint-disable-next-line no-console
   console.log(selectedBadges, 'sele', badgeId, props);
 
   const handleCheckBoxChange = e => {
+    if (props.propExistBadges?.includes(badgeId)) return; // existing badges not re-assignable
     if (e.target.checked) {
       dispatch(addSelectBadge(badgeId));
       setSelect(true);

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 
 /**
  * Modal popup to show the user profile in create mode

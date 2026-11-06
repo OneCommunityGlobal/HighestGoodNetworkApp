@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import TotalMaterialCostPerProject from '../TotalMaterialCostPerProject';
 
 // Mocks
@@ -25,7 +25,7 @@ vi.mock('react-chartjs-2', () => ({
   ),
 }));
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 const store = mockStore({
   theme: { darkMode: false }, // Mock dark mode value
   // Include other necessary mock slices if needed

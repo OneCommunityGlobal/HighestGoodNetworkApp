@@ -1,27 +1,25 @@
-import { React, useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Col, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
-// import styles from './UserTeamsTable.css';
-import { boxStyle, boxStyleDark } from '~/styles';
+import './TeamsAndProjects.module.css';
+import styles from './UserTeamsTable.module.css';
 import { connect } from 'react-redux';
-import Switch from './Switch';
-
-import './UserTeamsTable.css';
+import { boxStyle } from '~/styles';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
-import './../../Teams/Team.module.css';
-import { TeamMember } from './TeamMember';
 import axios from 'axios';
-import { ENDPOINTS } from '~/utils/URL.js';
 import { toast } from 'react-toastify';
 import {
   useUpdateFiltersWithIndividualCodesChangeMutation
 } from '~/actions/weeklySummariesFilterAction';
+import { ENDPOINTS } from '~/utils/URL.js';
+import './../../Teams/Team.module.css';
+import { TeamMember } from './TeamMember';
 
+import { permissions } from '../../../utils/constants';
 const UserTeamsTable = props => {
   const { darkMode } = props;
 
@@ -53,7 +51,7 @@ const UserTeamsTable = props => {
 
   const refInput = useRef(null);
 
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+  const canAssignTeamToUsers = props.hasPermission(permissions.assignTeamToUsers);
   const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
 
   useEffect(() => {
@@ -80,7 +78,7 @@ const UserTeamsTable = props => {
               newTeamCode: refInput.current,
               userId: props.userProfile._id,
             })
-            toast.success('Team code updated!');
+            // toast.success('Team code updated!');
           } catch {
             toast.error('It is not possible to save the team code.');
           }
@@ -164,7 +162,7 @@ const UserTeamsTable = props => {
       />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {props.canEditVisibility && (
-          <div className="row">
+          <div className="row" style={{ alignItems: 'center' }}>
             <Col
               md="7"
               xs="12"
@@ -172,9 +170,13 @@ const UserTeamsTable = props => {
                 backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 border: '1px solid #ced4da',
                 marginBottom: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px 15px',
+                minHeight: '45px',
               }}
             >
-              <span className="teams-span">Visibility</span>
+              <span className="teams-span" style={{fontWeight: 'bold'}}>Visibility</span>
             </Col>
             <Col
               md="5"
@@ -196,25 +198,28 @@ const UserTeamsTable = props => {
             </Col>
           </div>
         )}
-        <div className="row">
+        <div className="row" style={{ alignItems: 'center' }}>
           <Col
             md="9"
             xs="12"
             style={{
-              backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
-              border: '1px solid #ced4da',
-              marginBottom: '10px',
-              height: '10%',
+                backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
+                border: '1px solid #ced4da',
+                marginBottom: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px 15px',
+                minHeight: '45px',
             }}
           >
-            <span className="teams-span">Teams</span>
+            <span className="teams-span" style={{fontWeight: 'bold'}}>Teams</span>
           </Col>
-          <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
+          <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px', border: '1px solid #ced4da', minHeight: '45px', display: 'flex', alignItems: 'center' }}>
             <Input
               id="teamCode"
               value={teamCode}
               onChange={handleCodeChange}
-              style={darkMode ? colordark : styleDefault}
+              style={darkMode ? {...colordark, border: 'none', height: '100%'} : {...styleDefault, border: 'none', height: '100%'}}
               placeholder="X-XXX"
               onFocus={() => !showDropdown && setShowDropdown(true)}
               disabled={!props.canEditTeamCode}
@@ -267,21 +272,42 @@ const UserTeamsTable = props => {
           </Col>
         )}
       </div>
-      <div style={{ maxHeight: '300px', overflow: 'auto' }}>
-        <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
+      <div>
+        <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
           <thead className="user-team-head">
             {props.role && (
-              <tr>
-                <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
-                <th className={darkMode ? 'bg-space-cadet' : ''}>Team Name</th>
-                {canAssignTeamToUsers ? (
-                  <>
-                    <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
-                    <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
-                      {}
-                    </th>
-                  </>
-                ) : null}
+              <tr>                 
+              <th
+                className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                style={{ textAlign: 'center' }}
+              >
+                #
+              </th>
+              <th
+                className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                style={{ textAlign: 'center' }}
+              >
+                Team Name
+              </th>
+
+              {canAssignTeamToUsers ? (
+                <>
+                  <th
+                    className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                    style={{ textAlign: 'center' }}
+                  >
+                    Members
+                  </th>
+
+                  <th
+                    style={{ flex: 2, textAlign: 'center' }}
+                    className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                  >
+                    {/* Keep the existing header content here */}
+                  </th>
+                </>
+              ) : null}
+
               </tr>
             )}
           </thead>
@@ -289,13 +315,11 @@ const UserTeamsTable = props => {
             {teams.length > 0 ? (
               teams.map((team, index) => (
                 <tr key={index} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
-                  <td style={{ alignContent: 'center' }}>{index + 1}</td>
-                  <td style={{ alignContent: 'center' }}>{`${team.teamName}`}</td>
+                  <td style={{ alignContent: 'center', textAlign: 'center' }}>{index + 1}</td>
+                  <td style={{ alignContent: 'center', textAlign: 'center' }}>{`${team.teamName}`}</td>
                   {props.edit && props.role && (
                     <>
-                      <td
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                      >
+                      <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
                         <button
                           style={darkMode ? { boxShadow: 'none' } : { boxShadow: 'none', ...boxStyle}}
                           disabled={!canAssignTeamToUsers}
@@ -314,6 +338,7 @@ const UserTeamsTable = props => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            textAlign: 'center',
                           }}
                         >
                           <Button
@@ -342,3 +367,5 @@ const UserTeamsTable = props => {
 };
 
 export default connect(null, { hasPermission })(UserTeamsTable);
+
+

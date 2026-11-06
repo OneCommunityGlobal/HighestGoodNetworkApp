@@ -54,7 +54,7 @@ function TestEventRegistration() {
   const [dateFilter, setDateFilter] = useState('');
 
   // Email regex: local@domain.tld — requires at least one dot in domain and a 2+ char alpha TLD
-  const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,}$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/;
 
   function normalizeDigits(v = '') {
     return v.replace(/\D/g, '');

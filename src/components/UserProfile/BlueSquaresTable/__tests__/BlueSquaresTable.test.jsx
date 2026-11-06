@@ -1,6 +1,6 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { render, screen, fireEvent } from "@testing-library/react";
 import '@testing-library/jest-dom';
 import BlueSquaresTable from "../BlueSquaresTable";
@@ -13,7 +13,7 @@ vi.mock('axios');
 
 const mockHandleUserProfile = vi.fn();
 const mockHandleBlueSquare = vi.fn();
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const initialState = {
   auth: {
@@ -75,7 +75,7 @@ describe("BlueSquaresTable component unit tests", () => {
   it('applies darkmode styling when darkmode is true', () => {
     const { container } = renderComponent(true, false, true, true);
     // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
-    expect(container.querySelector('.user-profile-blue-square-div-header')).toHaveClass('bg-space-cadet');
+    expect(container.querySelector('[data-testid="blue-square-div-header"]')).toHaveClass('bg-space-cadet');
   });
 
   it('calls handleUserProfile when toggleClass is clicked', () => {

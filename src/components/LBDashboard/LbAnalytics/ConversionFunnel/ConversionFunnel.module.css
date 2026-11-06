@@ -41,7 +41,7 @@
 }
 
 .darkFiltersContainer .filterLabel {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Date Range Picker */
@@ -73,19 +73,19 @@
   border-radius: 4px;
   font-size: 14px;
   width: 150px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
 .datePicker:focus {
   outline: none;
   border-color: #5DBEAF;
-  box-shadow: 0 0 0 2px rgba(93, 190, 175, 0.2);
+  box-shadow: 0 0 0 2px rgb(93 190 175 / 20%);
 }
 
 .darkDatePicker {
   background-color: #1c2541;
-  color: #ffffff;
+  color: #fff;
   border-color: #2e3f5c;
 }
 
@@ -103,7 +103,7 @@
   padding: 8px 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
   font-size: 14px;
   font-weight: 500;
@@ -118,7 +118,7 @@
 
 .categoryButtonActive {
   background-color: #5DBEAF;
-  color: #ffffff;
+  color: #fff;
   border-color: #5DBEAF;
 }
 
@@ -128,7 +128,7 @@
 
 .darkCategoryButton {
   background-color: #1c2541;
-  color: #ffffff;
+  color: #fff;
   border-color: #2e3f5c;
 }
 
@@ -161,16 +161,16 @@
 .darkMultiSelect :global(.dropdown-container) {
   background-color: #1c2541 !important;
   border-color: #2e3f5c !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMultiSelect :global(.dropdown-heading) {
   background-color: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMultiSelect :global(.dropdown-heading-value span) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Dark mode: dropdown panel */
@@ -187,7 +187,7 @@
 /* Dark mode: search input */
 .darkMultiSelect :global(.search input) {
   background-color: #162032 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #2e3f5c !important;
 }
 
@@ -202,7 +202,7 @@
 
 .darkMultiSelect :global(.option) {
   background-color: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMultiSelect :global(.option:hover),
@@ -213,7 +213,7 @@
 /* Dark mode: select-all item */
 .darkMultiSelect :global(.select-item) {
   background-color: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMultiSelect :global(.select-item:hover) {
@@ -273,7 +273,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .filtersContainer {
     flex-direction: column;
   }
@@ -309,7 +309,7 @@
 .darkContainer :global(.react-datepicker__current-month),
 .darkContainer :global(.react-datepicker__day-name),
 .darkContainer :global(.react-datepicker__day) {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkContainer :global(.react-datepicker__day:hover) {

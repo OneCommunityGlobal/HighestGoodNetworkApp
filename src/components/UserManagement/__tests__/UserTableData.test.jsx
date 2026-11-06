@@ -2,7 +2,7 @@ import axios from 'axios';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import  configureMockStore  from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 
 import UserTableData from '../UserTableData';
@@ -11,7 +11,7 @@ import { renderWithProvider } from '../../../__tests__/utils';
 
 vi.mock('axios');
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const jaeAccountMock = {
   _id: '1',

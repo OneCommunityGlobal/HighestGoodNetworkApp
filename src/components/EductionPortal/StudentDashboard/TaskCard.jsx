@@ -1,12 +1,15 @@
 import React from 'react';
+
 import styles from './TaskCard.module.css';
 import { useTaskLogic } from './useTaskLogic';
 import MarkAsDoneButton from './MarkAsDoneButton';
 import IntermediateTasksList from './IntermediateTasksList';
+import { taskItemPropTypes, taskItemDefaultProps } from './taskPropTypes';
 
 const TaskCard = ({
   task,
   onMarkAsDone,
+  onLogTime,
   intermediateTasks = [],
   isExpanded = false,
   onToggleIntermediateTasks,
@@ -77,7 +80,7 @@ const TaskCard = ({
 
         {/* Action Buttons */}
         <div className={styles.actionButtons}>
-          <button className={styles.clockButton} title="Log Time">
+          <button className={styles.clockButton} title="Log Time" onClick={() => onLogTime?.(task)}>
             <svg
               width="16"
               height="16"
@@ -141,5 +144,8 @@ const TaskCard = ({
     </div>
   );
 };
+
+TaskCard.propTypes = taskItemPropTypes;
+TaskCard.defaultProps = taskItemDefaultProps;
 
 export default TaskCard;

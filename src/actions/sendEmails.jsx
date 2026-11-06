@@ -5,52 +5,94 @@ import { toast } from 'react-toastify'; // Import the toast library
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './ToastStyles.module.css'; // Import the CSS module
 
-export const sendEmail = (to, subject, html) => {
+export const sendEmail = (
+  to,
+  subject,
+  html,
+  fromName = 'One Community',
+  fromEmail = 'updates@onecommunityglobal.org',
+) => {
   const url = ENDPOINTS.POST_EMAILS;
 
-  return async () => {
+  return async (dispatch, getState) => {
     try {
-      const response = await axios.post(url, { to, subject, html });
-      toast.info('Email sent successfully:', response);
+      // Get current user from Redux state
+      const currentUser = getState().auth.user;
+      const requestor = {
+        requestorId: currentUser?.userid, // Backend expects requestorId, not userid
+        email: currentUser?.email || fromEmail,
+        role: currentUser?.role,
+      };
 
-      // Display a success toast
-      toast.success('Email successfully sent', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      const response = await axios.post(url, {
+        to,
+        subject,
+        html,
+        fromName,
+        fromEmail,
+        requestor, // Required for permission checking
+      });
+
+      // Backend returns: { success: true, message: '...' }
+      const successMessage = response.data.message || 'Email created successfully. Processing started.';
+      toast.success(successMessage, {
+        position: 'top-right',
+        autoClose: 3000,
       });
     } catch (error) {
-      toast.error('Error sending email:', error);
-
       // Display an error toast
-      toast.error('Error sending email', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      const errorMessage = error.response?.data?.message || error.message || 'Error sending email';
+      toast.error(errorMessage, {
+        position: 'top-right',
+        autoClose: 5000,
       });
+      // eslint-disable-next-line no-console
+      console.error('Email sending error:', error);
     }
   };
 };
 
-export const broadcastEmailsToAll = (subject, html) => {
+export const broadcastEmailsToAll = (
+  subject,
+  html,
+  fromName = 'One Community',
+  fromEmail = 'updates@onecommunityglobal.org',
+) => {
   const url = ENDPOINTS.BROADCAST_EMAILS;
 
-  return async () => {
+  return async (dispatch, getState) => {
     try {
-      const response = await axios.post(url, { subject, html });
-      toast.info('Email sent successfully:', response);
+      // Get current user from Redux state
+      const currentUser = getState().auth.user;
+      const requestor = {
+        requestorId: currentUser?.userid, // Backend expects requestorId, not userid
+        email: currentUser?.email || fromEmail,
+        role: currentUser?.role,
+      };
 
-      // Display a success toast
-      toast.success('Email successfully sent', {
-        position: 'top-center', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      const response = await axios.post(url, {
+        subject,
+        html,
+        fromName,
+        fromEmail,
+        requestor, // Required for permission checking
+      });
+
+      // Backend returns: { success: true, message: '...' }
+      const successMessage = response.data.message || 'Broadcast email created successfully. Processing started.';
+      toast.success(successMessage, {
+        position: 'top-right',
+        autoClose: 3000,
       });
     } catch (error) {
-      toast.error('Error sending email:', error);
-
       // Display an error toast
-      toast.error('Error sending email', {
-        position: 'top-center', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      const errorMessage = error.response?.data?.message || error.message || 'Error sending email';
+      toast.error(errorMessage, {
+        position: 'top-right',
+        autoClose: 5000,
       });
+      // eslint-disable-next-line no-console
+      console.error('Email sending error:', error);
     }
   };
 };
@@ -61,7 +103,6 @@ export const updateEmailSubscription = (subscription = true) => {
   return async () => {
     try {
       const response = await axios.post(url, { subscription });
-      toast.info('Email sent successfully:', response);
 
       // Display a success toast
       toast.success('Successfully changed email subcription', {
@@ -107,22 +148,20 @@ export const addNonHgnUserEmailSubscription = (email, triggerConfetti) => {
         </div>,
         {
           position: 'top-center',
-          autoClose: false, 
-          closeOnClick: false, 
-          closeButton: false, 
-        }
+          autoClose: false,
+          closeOnClick: false,
+          closeButton: false,
+        },
       );
     } catch (error) {
       toast.error(
         <div>
-          <p>
-            Email already exists or is invalid. Please try again.
-          </p>
+          <p>Email already exists or is invalid. Please try again.</p>
         </div>,
         {
           position: 'top-center',
           autoClose: 3000, // Auto-close after 3 seconds
-        }
+        },
       );
     }
   };

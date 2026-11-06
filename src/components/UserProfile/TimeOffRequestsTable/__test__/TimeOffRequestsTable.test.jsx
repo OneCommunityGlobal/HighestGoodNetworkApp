@@ -1,8 +1,7 @@
-import React from 'react'; 
-import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import TimeOffRequestsTable from '../TimeOffRequestsTable'; 
+import { fireEvent, render, screen } from '@testing-library/react';
 import moment from 'moment';
+import TimeOffRequestsTable from '../TimeOffRequestsTable';
 
 describe('TimeOffRequestsTable Component', () => {
   const mockRequests = [
@@ -59,9 +58,8 @@ describe('TimeOffRequestsTable Component', () => {
   it('should open modal when clicking on the icon', () => {
     render(<TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const icon = document.querySelector('.user-profile-time-off-div-table-entry-icon svg');
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    fireEvent.click(icon.closest('div'));
+    const icons = screen.getAllByTestId('time-off-entry-icon');
+    fireEvent.click(icons[0]);
     expect(mockOpenModal).toHaveBeenCalled();
   });
 });

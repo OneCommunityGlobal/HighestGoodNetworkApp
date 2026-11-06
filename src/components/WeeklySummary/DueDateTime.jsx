@@ -1,9 +1,10 @@
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarCheck } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import { boxStyle, boxStyleDark } from '~/styles';
 import CountdownTimer from './CountdownTimer';
+import styles from './WeeklySummary.module.css';
 
 function DueDateTime({ dueDate, isShow, darkMode }) {
   // The display time should add 1 sec so it displays Sunday at 00:00 and not Saturday at 23:59:59.
@@ -17,8 +18,11 @@ function DueDateTime({ dueDate, isShow, darkMode }) {
       ) : (
         <div className="mb-1">Weekly Summary Due Date (click to add)</div>
       )}
-      <div className="mx-auto due-section" style={darkMode ? boxStyleDark : boxStyle}>
-        <div className="text-light due-section__date">
+      <div
+        className={`mx-auto ${styles['due-section']}`}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        <div className={`text-light ${styles['due-section__date']}`}>
           <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />{' '}
           {displayTime.format('MMM-DD-YY')} at {displayTime.format('HH:mm')} PST
         </div>

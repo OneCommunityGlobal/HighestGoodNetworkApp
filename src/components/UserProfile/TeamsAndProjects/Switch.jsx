@@ -1,4 +1,4 @@
-import "./Switch.css"
+import './Switch.module.css'
 const Switch = ({ isOn, handleToggle}) => {
   return (
     <div className='switch-container'>

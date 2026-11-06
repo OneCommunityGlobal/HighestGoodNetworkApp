@@ -191,7 +191,7 @@
   }
 }
 
-/* Dark theme support */
+/* Dark theme support - module class */
 .dark {
   background: #1f1f1f;
   border-color: #2a2a2a;
@@ -210,6 +210,7 @@
   color: #e2e8f0;
 }
 
+/* Dark mode - parent selector */
 :global(.dark-mode) .radarChart {
   background: linear-gradient(145deg, #2a2f3e 0%, #1e2330 100%);
   border-color: rgb(62 160 203 / 30%);
@@ -239,4 +240,23 @@
 
 :global(.dark-mode) .errorState p {
   color: #a0aec0;
+}
+
+/* Dark mode - same element selector */
+.radarChart:global(.dark-mode) {
+  background: linear-gradient(145deg, #1c2541 0%, #1a202c 100%);
+  border-color: rgb(62 160 203 / 30%);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
+}
+
+.radarChart:global(.dark-mode) .chartTitle h4 {
+  color: #63b3ed;
+}
+
+.radarChart:global(.dark-mode) .chartTitle p {
+  color: #a0aec0;
+}
+
+.radarChart:global(.dark-mode) .legendItem {
+  color: #e2e8f0;
 }

@@ -13,10 +13,10 @@ import * as reactRedux from 'react-redux';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AssignTableRow from '~/components/Badge/AssignTableRow';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 function renderComponent(props, initialState = {}) {
   const store = mockStore(initialState);
