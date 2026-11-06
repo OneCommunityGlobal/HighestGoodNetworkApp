@@ -91,7 +91,7 @@ function Login() {
                 aria-label="email input field"
                 invalid={!!errors.email}
                 aria-invalid={!!errors.email}
-                aria-describedby={!!errors.email ? 'email-error' : undefined}
+                aria-describedby={errors.email ? 'email-error' : undefined}
               />
             </div>
             {errors.email && (
@@ -124,7 +124,7 @@ function Login() {
                 invalid={!!errors.password}
                 aria-label="Password"
                 aria-invalid={!!errors.password}
-                aria-describedby={!!errors.password ? 'password-error' : undefined}
+                aria-describedby={errors.password ? 'password-error' : undefined}
               />
               {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
               <span
