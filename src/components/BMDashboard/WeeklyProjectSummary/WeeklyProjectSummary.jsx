@@ -512,14 +512,7 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '15px',
-              width: '100%',
-            }}
-          >
+          <div className={styles.financialsChartsLayout}>
             {/* Top Left: Planned vs Actual Cost */}
             <div
               className="weekly-project-summary-card financial-small financial-chart"
@@ -549,7 +542,7 @@ function WeeklyProjectSummary() {
             {/* Bottom: Cost Breakdown Pie Chart (Spans across both columns) */}
             <div
               className="weekly-project-summary-card financial-big"
-              style={{ gridColumn: 'span 2', width: '100%', minHeight: '400px' }}
+              style={{ gridColumn: '1 / -1', width: '100%', minHeight: '400px' }}
             >
               <CostBreakDown />
             </div>
@@ -884,7 +877,11 @@ function WeeklyProjectSummary() {
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                <div
+                  className={`${styles.weeklyProjectSummaryDashboardCategoryContent} ${
+                    key === 'Financials' ? styles.financialsSectionContent : ''
+                  }`}
+                >
                   {content}
                 </div>
               )}

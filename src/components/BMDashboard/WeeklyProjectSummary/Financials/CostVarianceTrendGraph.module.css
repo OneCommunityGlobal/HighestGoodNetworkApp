@@ -1,8 +1,11 @@
+
 .varianceContainer {
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   height: 100%;
+  box-sizing: border-box;
 }
 
 .varianceTitle {
@@ -20,31 +23,31 @@
   text-align: center;
   padding: 40px;
   font-weight: 500;
-  color: #64748b;
+  color: #475569;
 }
 
 .darkMode .varianceLoading {
-  color: #94a3b8;
+  color: #e2e8f0;
 }
 
 .filtersGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr 2.5fr; 
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 24px;
   width: 100%;
-}
-
-@media (max-width: 900px) {
-  .filtersGrid {
-    grid-template-columns: 1fr; 
-  }
+  min-width: 0;
 }
 
 .filterGroup {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
+}
+
+.filterGroup:last-child {
+  grid-column: 1 / -1;
 }
 
 .filterLabel {
@@ -54,67 +57,98 @@
 }
 
 .darkMode .filterLabel {
-  color: #cbd5e1;
+  color: #f8fafc;
 }
 
 .dateRangeFlex {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 12px;
   width: 100%;
+  min-width: 0;
 }
 
 .datePickerWrapper {
-  flex: 1;
+  flex: 1 1 0;
   width: 100%;
   min-width: 0;
 }
 
 .datePickerWrapper > div {
   width: 100%;
+  min-width: 0;
 }
 
 .dateInput {
   width: 100%;
+  min-width: 0;
   padding: 8px 30px 8px 12px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #94a3b8;
   font-size: 13px;
   box-sizing: border-box;
   height: 38px;
   outline: none;
+  background-color: #fff;
+  color: #0f172a;
 }
 
-.dateInput:focus {
-  border-color: #4285F4;
+.dateInput:focus-visible {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 25%);
 }
 
 .darkDateInput {
   background-color: #253342;
-  color: #fff;
-  border-color: #2d4059;
+  color: #f8fafc;
+  border-color: #94a3b8;
   color-scheme: dark;
 }
 
-.darkDateInput:focus {
-  border-color: #3a506b;
+/* Override library input styles only inside the dark financial chart. */
+.darkMode .datePickerWrapper input.dateInput {
+  background-color: #253342;
+  color: #f8fafc;
+  border-color: #94a3b8;
+  color-scheme: dark;
+  -webkit-text-fill-color: #f8fafc;
+}
+
+.darkMode .datePickerWrapper input.dateInput::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+.darkMode .datePickerWrapper input.dateInput:focus-visible {
+  border-color: #e8a71c;
+  box-shadow: 0 0 0 2px rgb(232 167 28 / 30%);
+}
+
+.darkDateInput::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+.darkDateInput:focus-visible {
+  border-color: #e8a71c;
+  box-shadow: 0 0 0 2px rgb(232 167 28 / 30%);
 }
 
 .dateSeparator {
   flex: 0 0 auto;
   font-size: 13px;
   font-weight: 500;
-  color: #64748b;
+  color: #475569;
   text-align: center;
 }
 
 .darkMode .dateSeparator {
-  color: #94a3b8;
+  color: #e2e8f0;
 }
 
 .chartWrapper {
   width: 100%;
+  min-width: 0;
   min-height: 350px;
   margin-bottom: 12px;
   flex-grow: 1;
@@ -123,6 +157,7 @@
 .chartContainer {
   height: 100%;
   width: 100%;
+  min-width: 0;
   position: relative;
 }
 
@@ -131,24 +166,24 @@
   justify-content: center;
   align-items: center;
   height: 100%;
-  color: #64748b;
+  color: #475569;
   font-style: italic;
   font-size: 14px;
   background-color: #f8f9fa;
   border-radius: 8px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed #94a3b8;
 }
 
 .darkMode .emptyState {
-  color: #94a3b8;
+  color: #e2e8f0;
   background-color: #1e293b;
-  border-color: #334155;
+  border-color: #94a3b8;
 }
 
 .legendContainer {
   display: flex;
   justify-content: center;
-  gap: 24px;
+  gap: 16px;
   font-size: 13px;
   font-weight: 500;
   margin-bottom: 16px;
@@ -157,13 +192,14 @@
 }
 
 .darkMode .legendContainer {
-  color: #cbd5e1;
+  color: #f8fafc;
 }
 
 .legendItem {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .legendDot {
@@ -171,10 +207,58 @@
   height: 12px;
   border-radius: 50%;
   display: inline-block;
+  flex-shrink: 0;
 }
 
-.varianceOverLight { color: #e74c3c !important; }
-.varianceOverDark { color: #ff4444 !important; }
+.varianceOverLight {
+  color: #b91c1c !important;
+}
 
-.varianceUnderLight { color: #2ecc71 !important; }
-.varianceUnderDark { color: #4ade80 !important; }
+.varianceOverDark {
+  color: #fca5a5 !important;
+}
+
+.varianceUnderLight {
+  color: #15803d !important;
+}
+
+.varianceUnderDark {
+  color: #86efac !important;
+}
+
+@media (width <= 600px) {
+  .filtersGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .filterGroup:last-child {
+    grid-column: auto;
+  }
+
+  .dateRangeFlex {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .datePickerWrapper {
+    flex: 1 1 100%;
+  }
+
+  .dateSeparator {
+    width: 100%;
+    text-align: center;
+  }
+
+  .varianceTitle {
+    margin-bottom: 16px;
+  }
+
+  .chartWrapper {
+    min-height: 320px;
+  }
+
+  .legendContainer {
+    gap: 12px;
+  }
+}

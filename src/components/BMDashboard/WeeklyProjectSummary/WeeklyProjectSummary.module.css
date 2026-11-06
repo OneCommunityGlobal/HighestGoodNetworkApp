@@ -1064,6 +1064,41 @@
   }
 }
 
+  /* Financials: desktop and mobile layout */
+  .financialsChartsLayout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .financialsChartsLayout > * {
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+@media (width <= 768px) {
+  .financialsChartsLayout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .financialsChartsLayout > * {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.financialsSectionContent {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.financialsSectionContent > * {
+  min-width: 0;
+  width: 100%;
+}
+
 /* Customize Cards control */
 .cardSelectorBar {
   display: flex;
