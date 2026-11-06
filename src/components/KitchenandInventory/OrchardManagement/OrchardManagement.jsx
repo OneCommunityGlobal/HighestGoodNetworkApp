@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import styles from './OrchardManagement.module.css';
 import { GiFruitTree } from 'react-icons/gi';
 import { HiOutlineShoppingCart } from 'react-icons/hi';
@@ -100,6 +101,7 @@ function calculateAgeInYears(plantedDate) {
   const diffTime = today - planted;
   const diffDays = diffTime / (1000 * 60 * 60 * 24);
   const years = diffDays / 365.25;
+
   return `${years.toFixed(1)} years`;
 }
 
@@ -111,13 +113,54 @@ function OrchardManagement() {
   const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState(null);
 
+  const detailsTriggerRef = useRef(null);
+
+  const openDetails = (type, item, event) => {
+    detailsTriggerRef.current = event.currentTarget;
+    setSelectedDetails({ type, item });
+  };
+
+  const closeDetails = () => {
+    setSelectedDetails(null);
+  };
+
+  // Explicitly handle Escape so the modal also closes reliably in tests.
+  useEffect(() => {
+    if (!selectedDetails) return undefined;
+
+    const handleEscape = event => {
+      if (event.key === 'Escape' || event.keyCode === 27) {
+        event.preventDefault();
+        closeDetails();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [selectedDetails]);
+
+  const restoreDetailsFocus = () => {
+    detailsTriggerRef.current?.focus();
+    detailsTriggerRef.current = null;
+  };
+
   // Status progression: ordered -> shipped -> delivered
   const handleStatusChange = orderId => {
     setOrders(prevOrders =>
       prevOrders.map(order => {
         if (order.id !== orderId) return order;
-        if (order.status === 'ordered') return { ...order, status: 'shipped' };
-        if (order.status === 'shipped') return { ...order, status: 'delivered' };
+
+        if (order.status === 'ordered') {
+          return { ...order, status: 'shipped' };
+        }
+
+        if (order.status === 'shipped') {
+          return { ...order, status: 'delivered' };
+        }
+
         return order;
       }),
     );
@@ -125,6 +168,7 @@ function OrchardManagement() {
 
   const handleAddPlantingTask = event => {
     event.preventDefault();
+
     const formData = new FormData(event.currentTarget);
     const quantity = Number(formData.get('quantity'));
     const plantName = String(formData.get('plantName') || '').trim();
@@ -133,7 +177,9 @@ function OrchardManagement() {
     const notes = String(formData.get('notes') || '').trim();
     const scheduledDate = String(formData.get('scheduledDate') || '');
 
-    if (!plantName || !quantity || quantity < 1 || !row || !position || !scheduledDate) return;
+    if (!plantName || !quantity || quantity < 1 || !row || !position || !scheduledDate) {
+      return;
+    }
 
     setPlantingTasks(prev => [
       ...prev,
@@ -145,21 +191,25 @@ function OrchardManagement() {
         scheduledDate,
       },
     ]);
+
     setIsPlantingFormOpen(false);
   };
 
   const handleAddOrder = event => {
     event.preventDefault();
+
     const formData = new FormData(event.currentTarget);
     const supplier = String(formData.get('supplier') || '').trim();
     const items = String(formData.get('items') || '').trim();
     const orderedDate = String(formData.get('orderedDate') || '');
     const expectedDate = String(formData.get('expectedDate') || '');
+
     if (!supplier || !items || !orderedDate || !expectedDate) return;
 
     setOrders(prev => {
       const nextNumber =
         Math.max(0, ...prev.map(order => Number(order.id.replace('OR-', '')) || 0)) + 1;
+
       return [
         ...prev,
         {
@@ -172,11 +222,12 @@ function OrchardManagement() {
         },
       ];
     });
+
     setIsOrderFormOpen(false);
   };
 
-  // Pending orders exclude delivered items
-  const pendingOrdersCount = orders.filter(o => o.status !== 'delivered').length;
+  // Pending orders exclude delivered items.
+  const pendingOrdersCount = orders.filter(order => order.status !== 'delivered').length;
 
   const summaryCards = [
     {
@@ -191,8 +242,18 @@ function OrchardManagement() {
       icon: HiOutlineShoppingCart,
       iconClass: styles.blueIcon,
     },
-    { title: 'Trimming Tasks', value: 4, icon: PiScissorsLight, iconClass: styles.purpleIcon },
-    { title: 'Expected Harvests', value: 6, icon: PiLeafLight, iconClass: styles.orangeIcon },
+    {
+      title: 'Trimming Tasks',
+      value: 4,
+      icon: PiScissorsLight,
+      iconClass: styles.purpleIcon,
+    },
+    {
+      title: 'Expected Harvests',
+      value: 6,
+      icon: PiLeafLight,
+      iconClass: styles.orangeIcon,
+    },
   ];
 
   return (
@@ -233,6 +294,7 @@ function OrchardManagement() {
         ))}
       </div>
 
+      {/* TREES & BUSHES SECTION */}
       {activeSection === 'Trees & Bushes' && (
         <div className={styles.inventorySection}>
           <div className={styles.inventoryHeader}>
@@ -285,7 +347,7 @@ function OrchardManagement() {
                 <button
                   type="button"
                   className={styles.detailsButton}
-                  onClick={() => setSelectedDetails({ type: 'tree', item })}
+                  onClick={event => openDetails('tree', item, event)}
                 >
                   View Details
                 </button>
@@ -319,18 +381,22 @@ function OrchardManagement() {
                 Supplier
                 <input name="supplier" required />
               </label>
+
               <label className={styles.formField}>
                 Items
                 <input name="items" required placeholder="2x Apple Trees" />
               </label>
+
               <label className={styles.formField}>
                 Ordered date
                 <input name="orderedDate" type="date" required />
               </label>
+
               <label className={styles.formField}>
                 Expected delivery
                 <input name="expectedDate" type="date" required />
               </label>
+
               <button type="submit" className={styles.addButton}>
                 Save Order
               </button>
@@ -341,6 +407,7 @@ function OrchardManagement() {
             {orders.every(order => order.status === 'delivered') && (
               <p className={styles.placeholderText}>No pending orders.</p>
             )}
+
             {orders
               .filter(order => order.status !== 'delivered')
               .map(order => (
@@ -376,7 +443,7 @@ function OrchardManagement() {
                     <button
                       type="button"
                       className={styles.detailsButton}
-                      onClick={() => setSelectedDetails({ type: 'order', item: order })}
+                      onClick={event => openDetails('order', order, event)}
                     >
                       View Details
                     </button>
@@ -453,26 +520,32 @@ function OrchardManagement() {
                 Plant name
                 <input name="plantName" required placeholder="Apple Tree" />
               </label>
+
               <label className={styles.formField}>
                 Quantity
                 <input name="quantity" type="number" min="1" defaultValue="1" required />
               </label>
+
               <label className={styles.formField}>
                 Row
                 <input name="row" type="number" min="1" required />
               </label>
+
               <label className={styles.formField}>
                 Position
                 <input name="position" type="number" min="1" required />
               </label>
+
               <label className={styles.formField}>
                 Notes
                 <input name="notes" placeholder="Planting notes" />
               </label>
+
               <label className={styles.formField}>
                 Scheduled date
                 <input name="scheduledDate" type="date" required />
               </label>
+
               <button type="submit" className={styles.addButton}>
                 Save Planting Task
               </button>
@@ -481,6 +554,7 @@ function OrchardManagement() {
         </div>
       )}
 
+      {/* PLACEHOLDER SECTIONS */}
       {activeSection !== 'Trees & Bushes' &&
         activeSection !== 'Orders' &&
         activeSection !== 'Planting Schedule' && (
@@ -489,43 +563,68 @@ function OrchardManagement() {
           </div>
         )}
 
-      {selectedDetails && (
-        <div
-          className={styles.inventorySection}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="details-panel-title"
-        >
-          <h3 id="details-panel-title" className={styles.inventoryTitle}>
-            Details
-          </h3>
-          {selectedDetails.type === 'tree' ? (
+      {/* REUSABLE DETAILS MODAL */}
+      <Modal
+        isOpen={Boolean(selectedDetails)}
+        toggle={closeDetails}
+        centered
+        keyboard
+        backdrop
+        trapFocus
+        labelledBy="orchard-details-title"
+        onClosed={restoreDetailsFocus}
+      >
+        <ModalHeader toggle={closeDetails}>
+          <span id="orchard-details-title">
+            {selectedDetails?.type === 'tree' ? 'Tree & Bush Details' : 'Order Details'}
+          </span>
+        </ModalHeader>
+
+        <ModalBody>
+          {selectedDetails?.type === 'tree' && (
             <>
-              <p>{selectedDetails.item.name}</p>
-              <p>Location: {selectedDetails.item.location}</p>
-              <p>Planted: {selectedDetails.item.plantedDate}</p>
-              <p>Age: {calculateAgeInYears(selectedDetails.item.plantedDate)}</p>
-              <p>Condition: {selectedDetails.item.condition}</p>
-            </>
-          ) : (
-            <>
-              <p>Order: {selectedDetails.item.id}</p>
-              <p>Supplier: {selectedDetails.item.supplier}</p>
-              <p>Items: {selectedDetails.item.items}</p>
-              <p>Status: {selectedDetails.item.status}</p>
-              <p>Ordered: {selectedDetails.item.orderedDate}</p>
-              <p>Expected: {selectedDetails.item.expectedDate}</p>
+              <p>
+                <strong>Name:</strong> {selectedDetails.item.name}
+              </p>
+              <p>
+                <strong>Location:</strong> {selectedDetails.item.location}
+              </p>
+              <p>
+                <strong>Planted:</strong> {selectedDetails.item.plantedDate}
+              </p>
+              <p>
+                <strong>Age:</strong> {calculateAgeInYears(selectedDetails.item.plantedDate)}
+              </p>
+              <p>
+                <strong>Condition:</strong> {selectedDetails.item.condition}
+              </p>
             </>
           )}
-          <button
-            type="button"
-            className={styles.detailsButton}
-            onClick={() => setSelectedDetails(null)}
-          >
-            Close Details
-          </button>
-        </div>
-      )}
+
+          {selectedDetails?.type === 'order' && (
+            <>
+              <p>
+                <strong>Order:</strong> {selectedDetails.item.id}
+              </p>
+              <p>
+                <strong>Supplier:</strong> {selectedDetails.item.supplier}
+              </p>
+              <p>
+                <strong>Items:</strong> {selectedDetails.item.items}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedDetails.item.status}
+              </p>
+              <p>
+                <strong>Ordered:</strong> {selectedDetails.item.orderedDate}
+              </p>
+              <p>
+                <strong>Expected:</strong> {selectedDetails.item.expectedDate}
+              </p>
+            </>
+          )}
+        </ModalBody>
+      </Modal>
     </div>
   );
 }
