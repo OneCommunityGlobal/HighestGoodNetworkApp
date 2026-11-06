@@ -97,15 +97,20 @@ function ListOverview() {
         return;
       }
 
-      const listingsData = await fetchListings(1, 1);
-      const defaultId = listingsData?.items?.[0]?.id;
-      if (isMounted && defaultId) {
-        dispatch(fetchListingById(defaultId));
-        dispatch(fetchListingAvailability(defaultId));
+      try {
+        const listingsData = await fetchListings(1, 1);
+        const defaultId = listingsData?.items?.[0]?.id;
+        if (isMounted && defaultId) {
+          dispatch(fetchListingById(defaultId));
+          dispatch(fetchListingAvailability(defaultId));
+        }
+      } catch (err) {
+        // Handle fetch fallback error gracefully
       }
     };
 
-    loadListing();
+    void loadListing();
+
     return () => {
       isMounted = false;
     };
@@ -123,9 +128,13 @@ function ListOverview() {
         </div>
         <LBNavHeader />
         <LBBackButton />
-        {loading && <div>Loading...</div>}
-        {!loading && error && <div className="error-message">{error}</div>}
-        {!loading && !error && !listing && <div>No listing found.</div>}
+        {loading && <div style={{ padding: '20px' }}>Loading...</div>}
+        {!loading && error && (
+          <div className="error-message" style={{ padding: '20px' }}>
+            {error}
+          </div>
+        )}
+        {!loading && !error && !listing && <div style={{ padding: '20px' }}>No listing found.</div>}
       </div>
     );
   }
