@@ -7,7 +7,7 @@ import {
   setDateRangeFilter,
   setComparisonPeriodFilter,
 } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
-import { COMPARISON_OPTIONS } from './comparisonDateUtils';
+import { COMPARISON_OPTIONS, DEFAULT_COMPARISON } from './comparisonDateUtils';
 import styles from './WeeklyProjectSummary.module.css';
 
 export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGeneratingPDF = false }) {
@@ -50,7 +50,7 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
   useEffect(() => {
     const { lastWeek } = getLastTwoCompletedWeeks();
     dispatch(setDateRangeFilter(lastWeek));
-    dispatch(setComparisonPeriodFilter('No Comparison'));
+    dispatch(setComparisonPeriodFilter(DEFAULT_COMPARISON));
   }, [dispatch]);
 
   const projectOptions = useMemo(() => ['One Community'], []);
@@ -94,7 +94,7 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
             isOpen={comparisonDropdownOpen}
             toggle={() => setComparisonDropdownOpen(prev => !prev)}
           >
-            <DropdownToggle caret>{comparisonPeriodFilter || 'No Comparison'}</DropdownToggle>
+            <DropdownToggle caret>{comparisonPeriodFilter || DEFAULT_COMPARISON}</DropdownToggle>
             <DropdownMenu>
               {comparisonOptions.map(option => (
                 <DropdownItem
