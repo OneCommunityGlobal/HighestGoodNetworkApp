@@ -1,10 +1,14 @@
 // src/components/SupportPortal/SupportDashboard.jsx
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styles from './SupportDashboard.module.css';
-import axios from 'axios';
+import httpService from '../../services/httpService';
+import { ENDPOINTS } from '../../utils/URL';
 
 export default function SupportDashboard() {
+  // Keep the dashboard in sync with the shared HGN theme preference.
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [search, setSearch] = useState('');
@@ -17,16 +21,12 @@ export default function SupportDashboard() {
       setError('');
 
       try {
-        const token = localStorage.getItem('supportAuthToken');
-
-        const res = await axios.get('/api/support/students', {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        });
+        const res = await httpService.get(`${ENDPOINTS.APIEndpoint()}/support/students`);
 
         const raw = res.data;
 
         // Make sure we always end up with an array
-        const list = Array.isArray(raw) ? raw : Array.isArray(raw?.students) ? raw.students : [];
+        const list = Array.isArray(raw) ? raw : [];
 
         console.log('Support students:', list);
         setStudents(list);
@@ -56,8 +56,31 @@ export default function SupportDashboard() {
     setFilteredStudents((students || []).filter(s => (s.name || '').toLowerCase().includes(query)));
   }, [search, students]);
 
+  const renderContent = () => {
+    if (isLoading) {
+      return <div className={styles.emptyState}>Loading students…</div>;
+    }
+    if (error) {
+      return <div className={styles.emptyState}>{error}</div>;
+    }
+    if (filteredStudents.length === 0) {
+      return <div className={styles.emptyState}>No students found for your assignment.</div>;
+    }
+    return (
+      <ul className={styles.list}>
+        {filteredStudents.map(s => (
+          <li key={s.id} className={styles.listItem}>
+            <Link to={`/support/log/${s.id}`} className={styles.studentName}>
+              {s.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <header className={styles.header}>
         <h1 className={styles.title}>Support Dashboard</h1>
         <input
@@ -69,25 +92,7 @@ export default function SupportDashboard() {
         />
       </header>
 
-      {error && <div className={styles.emptyState}>{error}</div>}
-
-      {isLoading ? (
-        <div className={styles.emptyState}>Loading students…</div>
-      ) : filteredStudents.length === 0 ? (
-        <div className={styles.emptyState}>No students found for your assignment.</div>
-      ) : (
-        <ul className={styles.list}>
-          {filteredStudents.map(s => (
-            <li key={s.id} className={styles.listItem}>
-              <Link to={`/support/log/${s.id}`} className={styles.studentName}>
-                {s.name}
-              </Link>
-              {s.team && <div className={styles.studentInfo}>Team: {s.team}</div>}
-              {s.status && <div className={styles.studentInfo}>Status: {s.status}</div>}
-            </li>
-          ))}
-        </ul>
-      )}
+      {renderContent()}
     </div>
   );
 }
