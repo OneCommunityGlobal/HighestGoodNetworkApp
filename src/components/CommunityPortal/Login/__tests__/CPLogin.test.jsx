@@ -1,4 +1,4 @@
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { act, screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import CPLogin from '../CPLogin';
 import { renderWithStoreRouter } from './renderWithStoreRouter';
@@ -171,6 +171,24 @@ describe('CPLogin component', () => {
     await waitFor(() => {
       expect(screen.getByText('User not found')).toBeInTheDocument();
     });
+  });
+
+  it('does not navigate again after the login form unmounts', async () => {
+    vi.useFakeTimers();
+    try {
+      axios.post.mockResolvedValue({ status: 200, data: { token: '1234' } });
+      const view = renderCPLogin(makeAuthState(true));
+      await act(async () => {
+        fillAndSubmit({ emailValue: VALID_EMAIL, passwordValue: getValidSecretValue() });
+      });
+      expect(history.push).toHaveBeenCalled();
+      view.unmount();
+      history.push.mockClear();
+      act(() => vi.advanceTimersByTime(150));
+      expect(history.push).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it.each([401, 403])('shows the account denial returned with status %s', async status => {

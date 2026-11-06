@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
@@ -13,6 +13,9 @@ function CPLogin(props) {
   const [enterPassword, setEnteredPassword] = useState('');
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
+  const redirectTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(redirectTimer.current), []);
 
   // get the previous location from the state if available
   // If access login page from URL directly, redirect to CP Dashboard
@@ -94,7 +97,7 @@ function CPLogin(props) {
     if (res?.data && res.data?.token) {
       setHasAccess(true);
       // Small delay to ensure auth state is updated
-      setTimeout(() => {
+      redirectTimer.current = setTimeout(() => {
         history.push(prevLocation.pathname);
       }, 100);
     }
