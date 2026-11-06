@@ -78,7 +78,7 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     });
     postTimeEntry.mockImplementation((...args) => () => {
       callOrder.push('save');
-      return Promise.resolve();
+      return Promise.resolve(200);
     });
     store = mockStore({
       auth: authMock,
@@ -140,7 +140,7 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     postTimeEntry.mockImplementation((payload) => () => {
       callOrder.push('save');
       savedPayload = payload;
-      return Promise.resolve();
+      return Promise.resolve(200);
     });
 
     renderForm();
@@ -166,7 +166,7 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     postTimeEntry.mockImplementation((payload) => () => {
       callOrder.push('save');
       savedPayload = payload;
-      return Promise.resolve();
+      return Promise.resolve(200);
     });
 
     renderForm();
@@ -237,5 +237,56 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     expect(callOrder).toEqual(['resync', 'stop', 'save']);
     expect(onTimeSubmitted).not.toHaveBeenCalled();
     expect(toggle).not.toHaveBeenCalled(); // form stays open, not closed - hours/minutes intact
+  });
+
+  it('treats a resolved postTimeEntry carrying an HTTP error status as a failed save, not a success', async () => {
+    // postTimeEntry's real action never throws on an HTTP error - it catches it and
+    // resolves with the response status instead (see actions/timeEntries.js). A save that
+    // resolves with 500 must still be treated as failed, not fall through to the success path.
+    postTimeEntry.mockImplementation(() => () => {
+      callOrder.push('save');
+      return Promise.resolve(500);
+    });
+    renderForm();
+    await clickSubmit();
+
+    await waitFor(() => expect(postTimeEntry).toHaveBeenCalled());
+    expect(onTimeSubmitted).not.toHaveBeenCalled();
+    expect(toggle).not.toHaveBeenCalled(); // form stays open - the save didn't actually succeed
+  });
+
+  it('retries only the save (not GET_TIMER/STOP_TIMER) after a confirmed stop whose save failed, so the worked time is not discarded on retry', async () => {
+    // Reproduces the reviewer's repro on #5788: a fake server that remembers its state.
+    // sendStop really stops the session server-side on the first attempt; if the retry
+    // re-ran GET_TIMER, it would read back started:false and be mistaken for "stopped
+    // elsewhere", discarding the time that only failed to save.
+    let started = true;
+    sendGetTimerAndConfirm.mockImplementation(async () => {
+      callOrder.push('resync');
+      return { started, paused: true, time: 0, goal: 6180000, startAt: null };
+    });
+    sendStop.mockImplementation(async () => {
+      callOrder.push('stop');
+      started = false;
+      return true;
+    });
+    let saveAttempts = 0;
+    postTimeEntry.mockImplementation(() => () => {
+      callOrder.push('save');
+      saveAttempts += 1;
+      return saveAttempts === 1 ? Promise.reject(new Error('network error')) : Promise.resolve(200);
+    });
+
+    renderForm();
+    await clickSubmit();
+    await waitFor(() => expect(postTimeEntry).toHaveBeenCalledTimes(1));
+    expect(toggle).not.toHaveBeenCalled(); // first save failed - form stays open for retry
+
+    await clickSubmit();
+    await waitFor(() => expect(postTimeEntry).toHaveBeenCalledTimes(2));
+    expect(sendGetTimerAndConfirm).toHaveBeenCalledTimes(1); // not re-run on retry
+    expect(sendStop).toHaveBeenCalledTimes(1); // not re-run on retry
+    expect(onTimeSubmitted).toHaveBeenCalled(); // retry's save succeeded
+    expect(toggle).toHaveBeenCalled(); // form finally closes
   });
 });
