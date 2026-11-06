@@ -1,118 +1,124 @@
 .loginContainer {
-    background-color: #353A3F;
-    padding: 2em;
-    margin-top: -1.5em;
-    font-family: Inter, sans-serif;
-    min-height: 100vh;
+  background-color: #353a3f;
+  padding: 2em;
+  margin-top: -1.5em;
+  font-family: Inter, sans-serif;
+  min-height: 100vh;
 }
 
 .pageTitle {
-    font-size: x-large;
-    text-align: center;
-    color: #F7F7F7;
-    font-weight: 400;
+  font-size: x-large;
+  text-align: center;
+  color: #f7f7f7;
+  font-weight: 400;
 }
 
 .formContainer {
-    background-color: #E8F4F9;
-    text-align: center;
-    padding: 4em;
-    width: 100%;
-    max-width: 400px;
-    margin: 1em auto;
-    border-radius: 3%;
+  background-color: #e8f4f9;
+  text-align: center;
+  padding: 4em;
+  width: 100%;
+  max-width: 400px;
+  margin: 1em auto;
+  border-radius: 3%;
 }
 
 .heading2 {
-    color: #DF7801;
-    font-size: large;
-    font-weight: 600;
-    padding: 1em;
+  color: #df7801;
+  font-size: large;
+  font-weight: 600;
+  padding: 1em;
 }
 
 .inputBox {
-    border: none !important;
-    background: none !important;
-    border-radius: 0 !important;
-    text-align: center;
-    width: auto;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  text-align: center;
+  width: auto;
 }
 
 .inputWrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    border-bottom: 1px solid !important;
-    margin: 1em 0 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid;
+  margin: 1em 0 0;
 }
 
 .inputIcon {
-    padding-left: 1em;
+  padding-left: 1em;
 }
 
 .forgetPswd {
-    text-align: right;
-    font-size: small;
-    padding: 0.5em 0;
+  text-align: right;
+  font-size: small;
+  padding: 0.5em 0;
 }
 
 .forgetPswd a {
-    color: #000 !important;
+  color: #000;
 }
 
 .logInBtn {
-    display: block;
-    margin: 1em;
-    background-color: #2E5061 !important;
-    color: #F7F7F7;
-    padding: 0.5em 2em !important;
-    font-weight: 100;
-    font-size: medium;
+  display: block;
+  margin: 1em;
+  background-color: #2e5061;
+  color: #f7f7f7;
+  padding: 0.5em 2em;
+  font-weight: 100;
+  font-size: medium;
 }
 
 .infoSec {
-    color: #DF7801 !important;
-    text-align: center;
-    font-weight: 400;
-    font-size: small;
-    margin: 0 !important;
+  color: #df7801;
+  text-align: center;
+  font-weight: 400;
+  font-size: small;
+  margin: 0;
 }
 
 .formContainer .inputWrapper:focus-within {
-    outline: none;
-    box-shadow: 0 0 0 2px #cfd5e2;
+  outline: none;
+  box-shadow: 0 0 0 2px #cfd5e2;
 }
 
-.formContainer .inputBox:focus {
-    box-shadow: none !important
+.formContainer .inputWrapper .inputBox:focus {
+  box-shadow: none;
 }
 
 .darkBg {
-    background-color: #121517c9;
+  background-color: #121517c9;
 }
 
-span {
-    padding: 0.5em
+.passwordToggle {
+  background: none;
+  border: none;
+  padding: 0.5em;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
 }
 
 :global(body.dark-mode) .infoSec,
 :global(body.bm-dashboard-dark) .infoSec {
-    color: #DF7801 !important;
+  color: #df7801;
 }
 
 .darkMail:-webkit-autofill,
 .darkMail:-webkit-autofill:hover,
 .darkMail:-webkit-autofill:focus,
 .darkMail:-webkit-autofill:active {
-    /* stylelint-disable-next-line property-no-vendor-prefix */
-    -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
-    -webkit-text-fill-color: #fff !important;
-    caret-color: #fff;
-    transition: background-color 5000s ease-in-out 0s;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset;
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .capsMsg {
-    color: #ff7b00;
-    font-size: 12px;
-    float: right;
+  color: #ff7b00;
+  font-size: 12px;
+  float: right;
 }

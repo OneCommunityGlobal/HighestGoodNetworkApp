@@ -126,6 +126,7 @@ function Login() {
                 aria-invalid={!!errors.password}
                 aria-describedby={!!errors.password ? 'password-error' : undefined}
               />
+              {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
               <span
                 role="button"
                 tabIndex={0}
