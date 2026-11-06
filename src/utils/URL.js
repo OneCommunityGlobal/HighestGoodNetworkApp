@@ -105,6 +105,8 @@ export const ENDPOINTS = {
   TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
+  TIME_ENTRY_SPLIT: () => `${APIEndpoint}/TimeEntry/split`,
+  TIME_ENTRY_SPLIT_RECEIPT: batchId => `${APIEndpoint}/TimeEntry/split/${encodeURIComponent(batchId)}`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   TIMELOG_TRACKING: userId => `${APIEndpoint}/timelogTracking/${userId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,

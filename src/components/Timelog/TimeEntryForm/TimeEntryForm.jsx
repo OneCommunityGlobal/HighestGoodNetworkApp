@@ -28,9 +28,12 @@ import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import hasPermission from '~/utils/permissions';
+import { fetchTeamMembersTask } from '~/actions/task';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
+import SplitTimeEntryForm from './SplitTimeEntryForm';
+import { readSplitDraft } from './splitTimeEntryUtils';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
@@ -67,7 +70,93 @@ const customImageUploadHandler = () =>
  * @returns
  */
 
-function TimeEntryForm(props) {
+function renderTimeEntryHeading({ edit, isTangible, darkMode, viewingUser, onAbout, loading }) {
+  return (
+    <>
+      <div>
+        {edit ? 'Edit ' : 'Add '}
+        {isTangible ? (
+          <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
+        ) : (
+          <span style={{ color: 'orange' }}>Intangible </span>
+        )}
+        Time Entry
+        {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
+        <i
+          className={`fa fa-info-circle ${styles.customStyle}`}
+          data-tip
+          data-for="registerTip"
+          aria-hidden="true"
+          title="timeEntryTip"
+          onClick={onAbout}
+        />
+        {loading && <span> Loading Data...</span>}
+      </div>
+      <ReactTooltip id="registerTip" place="bottom" effect="solid">
+        Click this icon to learn about this time entry form
+      </ReactTooltip>
+    </>
+  );
+}
+
+function initialProjectSelection(edit, projectId, wbsId, taskId) {
+  if (!edit) return 'defaultProject';
+  return projectId + (wbsId ? `/${wbsId}` : '') + (taskId ? `/${taskId}` : '');
+}
+
+function entryUserId(from, viewingUser, authUser, data) {
+  return from === 'Timer' ? viewingUser.userId ?? authUser.userid : data.personId;
+}
+
+function allowsTimeChange(from, canEditTimeEntryTime, isSameDayAuthUserEdit) {
+  return from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntryTime || isSameDayAuthUserEdit);
+}
+
+function timeEntryEditorOptions(darkMode) {
+  return {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: 'Description (10-word minimum) and reference link',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 250,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style:
+      'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
+    images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
+}
+
+function timeEntryTheme(darkMode) {
+  if (darkMode)
+    return {
+      fontColor: 'text-light',
+      headerBg: 'bg-space-cadet',
+      bodyBg: 'bg-yinmn-blue',
+      modalClass: 'text-light dark-mode',
+      modalStyle: boxStyleDark,
+      buttonStyle: boxStyleDark,
+    };
+  return {
+    fontColor: '',
+    headerBg: '',
+    bodyBg: '',
+    modalClass: '',
+    modalStyle: {},
+    buttonStyle: boxStyle,
+  };
+}
+
+export function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
   const {
@@ -111,28 +200,9 @@ function TimeEntryForm(props) {
     ...data,
   };
 
-  const TINY_MCE_INIT_OPTIONS = {
-    license_key: 'gpl',
-    menubar: false,
-    placeholder: 'Description (10-word minimum) and reference link',
-    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
-    toolbar:
-      // eslint-disable-next-line no-multi-str
-      'bold italic underline link removeformat | bullist numlist outdent indent |\
-                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                      subscript superscript charmap  | help',
-    branding: false,
-    toolbar_mode: 'sliding',
-    min_height: 250,
-    max_height: 300,
-    autoresize_bottom_margin: 1,
-    content_style: 'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
-    images_upload_handler: customImageUploadHandler,
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
+  const TINY_MCE_INIT_OPTIONS = timeEntryEditorOptions(darkMode);
 
-  const timeEntryUserId = from === 'Timer' ? viewingUser.userId ?? authUser.userid : data.personId;
+  const timeEntryUserId = entryUserId(from, viewingUser, authUser, data);
 
   const {
     dateOfWork: initialDateOfWork,
@@ -145,11 +215,7 @@ function TimeEntryForm(props) {
     isTangible: initialIsTangible,
   } = initialFormValues;
 
-  const timeEntryInitialProjectOrTaskId = edit
-    ? initialProjectId +
-      (initialwbsId ? `/${initialwbsId}` : '') +
-      (initialTaskId ? `/${initialTaskId}` : '')
-    : 'defaultProject';
+  const timeEntryInitialProjectOrTaskId = initialProjectSelection(edit, initialProjectId, initialwbsId, initialTaskId);
 
   const initialReminder = {
     openModal: false,
@@ -175,6 +241,36 @@ function TimeEntryForm(props) {
   const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const splitAvailable = from === 'Timer' && !edit && formValues.personId === authUser.userid;
+  const hasPendingSplit = () => splitAvailable && Boolean(readSplitDraft(authUser.userid)?.attempted);
+  const [splitMode, setSplitMode] = useState(hasPendingSplit);
+  const [splitLocked, setSplitLocked] = useState(hasPendingSplit);
+  const toggleForm = () => {
+    if (!splitLocked) toggle();
+  };
+  const finishSplit = async (receipt, payload) => {
+    // A recovered save may belong to a timer that was reset in another tab.
+    if (props.timerSessionId === payload.batchId) {
+      const stopped = await sendStop(payload.batchId);
+      if (!stopped) return false;
+      if (onTimeSubmitted) {
+        onTimeSubmitted({
+          hours: Math.floor(receipt.totalMinutes / 60),
+          minutes: receipt.totalMinutes % 60,
+          sessionId,
+        });
+      }
+    } else {
+      toast.info('The earlier split is saved. Your current timer was left running.');
+    }
+    await Promise.allSettled([
+      Promise.resolve().then(() => props.getUserProfile(payload.personId)),
+      Promise.resolve().then(() => props.getTimeEntriesForWeek(payload.personId, 0)),
+      Promise.resolve().then(() => dispatch(fetchTeamMembersTask(payload.personId))),
+    ]);
+    toggle();
+    return true;
+  };
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
@@ -191,8 +287,7 @@ function TimeEntryForm(props) {
   const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
 
   // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-  const canChangeTime =
-    from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntryTime || isSameDayAuthUserEdit);
+  const canChangeTime = allowsTimeChange(from, canEditTimeEntryTime, isSameDayAuthUserEdit);
 
   /* ---------------- methods -------------- */
   const toggleRemainder = () =>
@@ -682,42 +777,19 @@ function TimeEntryForm(props) {
     setFormValues(prev => ({ ...prev, ...data }));
   }, [data]);
 
-  const fontColor = darkMode ? 'text-light' : '';
-  const headerBg = darkMode ? 'bg-space-cadet' : '';
-  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+  const { fontColor, headerBg, bodyBg, modalClass, modalStyle, buttonStyle } = timeEntryTheme(darkMode);
 
   return (
     <>
       <Modal
-        className={darkMode ? `${fontColor} dark-mode` : ''}
+        className={modalClass}
         isOpen={isOpen}
-        toggle={toggle}
+        toggle={toggleForm}
         data-testid="timeEntryFormModal"
-        style={darkMode ? boxStyleDark : {}}
+        style={modalStyle}
       >
-        <ModalHeader toggle={toggle} className={`${headerBg}`}>
-          <div>
-            {edit ? 'Edit ' : 'Add '}
-            {formValues.isTangible ? (
-              <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
-            ) : (
-              <span style={{ color: 'orange' }}>Intangible </span>
-            )}
-            Time Entry
-            {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
-            <i
-              className={`fa fa-info-circle ${styles.customStyle}`}
-              data-tip
-              data-for="registerTip"
-              aria-hidden="true"
-              title="timeEntryTip"
-              onClick={aboutModalToggle}
-            />
-            {!isAsyncDataLoaded && <span> Loading Data...</span>}
-          </div>
-          <ReactTooltip id="registerTip" place="bottom" effect="solid">
-            Click this icon to learn about this time entry form
-          </ReactTooltip>
+        <ModalHeader toggle={toggleForm} className={`${headerBg}`}>
+          {renderTimeEntryHeading({ edit, isTangible: formValues.isTangible, darkMode, viewingUser, onAbout: aboutModalToggle, loading: !isAsyncDataLoaded })}
         </ModalHeader>
         <ModalBody className={bodyBg}>
           <Form>
@@ -732,7 +804,7 @@ function TimeEntryForm(props) {
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
                 // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]}
-                disabled={!canEditTimeEntryDate}
+                disabled={splitMode || !canEditTimeEntryDate}
                 className={
                   darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''
                 }
@@ -757,7 +829,7 @@ function TimeEntryForm(props) {
                   placeholder="Hours"
                   value={formValues.hours}
                   onChange={handleInputChange}
-                  disabled={!canChangeTime}
+                  disabled={splitMode || !canChangeTime}
                   className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                 />
                 </Col>
@@ -777,7 +849,7 @@ function TimeEntryForm(props) {
                       }
                     }}
                     onKeyDown={allowOnlyNumbersKeyDown}
-                    disabled={!canChangeTime}
+                    disabled={splitMode || !canChangeTime}
                     className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                 </Col>
@@ -788,6 +860,33 @@ function TimeEntryForm(props) {
                 </div>
               )}
             </FormGroup>
+            {splitAvailable && (
+              <FormGroup check>
+                <Label check className={fontColor}>
+                  <Input
+                    type="checkbox"
+                    checked={splitMode}
+                    disabled={splitLocked || !props.timerSessionId}
+                    onChange={event => setSplitMode(event.target.checked)}
+                  />
+                  Worked on multiple tasks?
+                </Label>
+              </FormGroup>
+            )}
+            {splitMode ? (
+              <SplitTimeEntryForm
+                personId={authUser.userid}
+                batchId={props.timerSessionId || ''}
+                dateOfWork={formValues.dateOfWork}
+                totalMinutes={Number(formValues.hours) * 60 + Number(formValues.minutes)}
+                tasks={timeEntryFormUserTasks}
+                loading={!isAsyncDataLoaded}
+                connected={timerConnected !== false}
+                darkMode={darkMode}
+                onComplete={finishSplit}
+                onLockChange={setSplitLocked}
+              />
+            ) : <>
             <FormGroup>
               <Label for="projectOrTask" className={fontColor}>
                 Project/Task
@@ -877,17 +976,20 @@ function TimeEntryForm(props) {
                 </ReactTooltip>
               </Label>
             </FormGroup>
+            </>}
           </Form>
         </ModalBody>
         <ModalFooter className={bodyBg}>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger" style={darkMode ? boxStyleDark : boxStyle}>
+          {!splitMode && (
+            <>
+          <Button onClick={clearForm} color="danger" style={buttonStyle}>
             Clear Form
           </Button>
           <Button
             color="primary"
             onClick={handleSubmit}
-            style={darkMode ? boxStyleDark : boxStyle}
+            style={buttonStyle}
             disabled={!actualDate || submitting}
           >
             {(() => {
@@ -897,6 +999,8 @@ function TimeEntryForm(props) {
               return submitting ? 'Submitting...' : 'Submit';
             })()}
           </Button>
+            </>
+          )}
         </ModalFooter>
       </Modal>
       <TangibleInfoModal
@@ -948,6 +1052,7 @@ TimeEntryForm.propTypes = {
   userProjects: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
   onTimeSubmitted: PropTypes.func,
   sessionId: PropTypes.string,
+  timerSessionId: PropTypes.string,
   timerStats: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   timerConnected: PropTypes.bool,
   maxHoursPerEntry: PropTypes.number,
