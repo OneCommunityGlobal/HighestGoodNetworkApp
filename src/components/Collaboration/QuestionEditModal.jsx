@@ -1,4 +1,3 @@
-/* eslint-disable no-alert */
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -27,6 +26,7 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
     options: question.options || [],
   });
   const [optionRows, setOptionRows] = useState(() => toOptionRows(question.options));
+  const [fieldErrors, setFieldErrors] = useState({ label: '', options: '' });
 
   useEffect(() => {
     console.log('Current editedQuestion state:', editedQuestion);
@@ -40,6 +40,7 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
       options: question.options || [],
     });
     setOptionRows(toOptionRows(question.options));
+    setFieldErrors({ label: '', options: '' });
   }, [question]);
 
   const handleInputChange = e => {
@@ -67,11 +68,15 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
         [name]: value,
         options: newOptions,
       });
+      setFieldErrors(prev => ({ ...prev, options: '' }));
     } else {
       setEditedQuestion({
         ...editedQuestion,
         [name]: value,
       });
+      if (name === 'label' && fieldErrors.label) {
+        setFieldErrors(prev => ({ ...prev, label: '' }));
+      }
     }
   };
 
@@ -97,19 +102,20 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
   };
 
   const handleSave = () => {
-    // Basic validation
+    const nextErrors = { label: '', options: '' };
     if (!editedQuestion.label || editedQuestion.label.trim() === '') {
-      alert('Question label is required');
-      return;
+      nextErrors.label = 'Question label is required.';
     }
 
     if (
       ['dropdown', 'radio', 'checkbox'].includes(editedQuestion.type) &&
       (!editedQuestion.options || editedQuestion.options.length === 0)
     ) {
-      alert('This question type requires at least one option');
-      return;
+      nextErrors.options = 'This question type requires at least one option.';
     }
+
+    setFieldErrors(nextErrors);
+    if (nextErrors.label || nextErrors.options) return;
 
     onSave({
       ...editedQuestion,
@@ -132,8 +138,15 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
               name="label"
               value={editedQuestion.label || ''}
               onChange={handleInputChange}
+              className={fieldErrors.label ? styles.inputError : ''}
+              aria-invalid={Boolean(fieldErrors.label)}
               required
             />
+            {fieldErrors.label ? (
+              <p className={styles.fieldError} role="alert">
+                {fieldErrors.label}
+              </p>
+            ) : null}
           </div>
 
           <div className={`${styles.formGroup}`}>
@@ -186,6 +199,11 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
           {['dropdown', 'radio', 'checkbox'].includes(editedQuestion.type) && (
             <div className={styles.optionsGroup}>
               <p className={styles.optionsLabel}>Options:</p>
+              {fieldErrors.options ? (
+                <p className={styles.fieldError} role="alert">
+                  {fieldErrors.options}
+                </p>
+              ) : null}
               {optionRows.map((row, index) => (
                 <div key={row.id} className={styles.optionRow}>
                   <input

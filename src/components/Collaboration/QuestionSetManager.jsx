@@ -1,526 +1,228 @@
-/* eslint-disable no-alert */
-/* eslint-disable no-console */
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { UncontrolledTooltip } from 'reactstrap';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { ENDPOINTS } from '../../utils/URL';
-import QuestionEditModal from './QuestionEditModal';
 import styles from './QuestionSetManager.module.css';
-import {
-  buildJobFormRequestor,
-  isFieldRequired,
-  findDuplicateQuestions,
-} from './jobFormQuestionUtils';
+import { findDuplicateQuestions, normalizeLoadedQuestions } from './jobFormQuestionUtils';
 
-function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode = false }) {
-  const { auth } = useSelector(state => state);
-  const getRequestor = () => buildJobFormRequestor(auth?.user);
-
-  const mapFieldForTemplate = field => ({
-    questionText: field.questionText || field.label,
-    questionType: field.questionType || field.type,
-    visible: field.visible !== undefined ? field.visible : true,
-    isRequired: isFieldRequired(field),
-    options: field.options || [],
-    placeholder: field.placeholder || '',
-  });
-  const [templates, setTemplates] = useState([]);
-  const [templateName, setTemplateName] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('');
+/**
+ * Loads live job application forms (Collaboration /job-application questions)
+ * into the builder. This is intentionally wired to job forms, not /api/templates.
+ */
+function QuestionSetManager({
+  jobForms = [],
+  selectedFormId = '',
+  onLoadJobForm,
+  onCreateNewForm,
+  formFields,
+  setFormFields,
+  darkMode = false,
+  showAlert,
+  showConfirm,
+}) {
+  const [selectedId, setSelectedId] = useState(selectedFormId || '');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState(null);
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
-  const api = {
-    // Get all templates
-    getTemplates: async () => {
-      const response = await axios.get(ENDPOINTS.GET_ALL_TEMPLATES);
-      return response.data.templates;
-    },
-
-    // Create a new template
-    createTemplate: async data => {
-      const response = await axios.post(ENDPOINTS.CREATE_TEMPLATE, data);
-      return response.data.template;
-    },
-
-    // Update an existing template
-    updateTemplate: async (id, data) => {
-      const response = await axios.put(ENDPOINTS.UPDATE_TEMPLATE(id), data);
-      return response.data.template;
-    },
-
-    // Delete a template
-    deleteTemplate: async (id, requestor) => {
-      const response = await axios.delete(ENDPOINTS.DELETE_TEMPLATE(id), {
-        data: { requestor },
-      });
-      return response.data;
-    },
-
-    // Get template by ID
-    getTemplateById: async id => {
-      const response = await axios.get(ENDPOINTS.GET_TEMPLATE_BY_ID(id));
-      return response.data.template;
-    },
-  };
-
-  // Load templates from API on component mount
   useEffect(() => {
-    const fetchTemplates = async () => {
-      setIsLoading(true);
-      setError(null);
+    if (selectedFormId) setSelectedId(selectedFormId);
+    else setSelectedId('');
+  }, [selectedFormId]);
 
-      try {
-        const data = await api.getTemplates();
-        setTemplates(data);
-      } catch (err) {
-        console.error('Failed to fetch templates:', err);
+  const selectedForm =
+    jobForms.find(form => String(form._id || form.id) === String(selectedId)) || null;
 
-        // Fallback to localStorage if API fails
-        try {
-          const savedTemplates = localStorage.getItem('jobFormTemplates');
-          if (savedTemplates) {
-            setTemplates(JSON.parse(savedTemplates));
-            // setError('Using locally saved templates.');
-          }
-        } catch (localError) {
-          console.error('Failed to load local templates:', localError);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTemplates();
-  }, []);
-
-  const saveTemplate = async () => {
-    if (templateName.trim() === '') {
-      alert('Please enter a template name');
+  const loadSelectedForm = async ({ append = false } = {}) => {
+    if (!selectedForm) {
+      await showAlert?.('Please select a job form to load.', {
+        title: 'No form selected',
+      });
       return;
     }
 
-    if (formFields.length === 0) {
-      alert('Your form is empty. Please add questions before saving as a template.');
-      return;
+    if (!append && formFields.length > 0) {
+      const confirmLoad = await showConfirm?.(
+        `Load questions for "${selectedForm.title}"? This will replace the questions currently on screen.`,
+        { title: 'Load job form', confirmLabel: 'Load form' },
+      );
+      if (!confirmLoad) return;
     }
 
     setIsLoading(true);
-    setError(null);
-
     try {
-      const templateExists = templates.some(t => t.name === templateName);
+      const incoming = normalizeLoadedQuestions(selectedForm.questions || []);
 
-      if (templateExists) {
-        const confirmOverwrite = window.confirm(
-          `Template "${templateName}" already exists. Do you want to overwrite it?`,
-        );
-        if (!confirmOverwrite) {
-          setIsLoading(false);
-          return;
-        }
-
-        // Find the existing template to get its ID
-        const existingTemplate = templates.find(t => t.name === templateName);
-
-        // Update the template
-        const updatedTemplate = await api.updateTemplate(existingTemplate._id, {
-          name: templateName,
-          fields: formFields.map(mapFieldForTemplate),
-          requestor: getRequestor(),
-        });
-
-        // Update local state
-        setTemplates(templates.map(t => (t._id === updatedTemplate._id ? updatedTemplate : t)));
-
-        alert(`Template "${templateName}" updated successfully!`);
-      } else {
-        const newTemplate = await api.createTemplate({
-          name: templateName,
-          fields: formFields.map(mapFieldForTemplate),
-          requestor: getRequestor(),
-        });
-
-        // Update local state
-        const updatedTemplates = [...templates, newTemplate];
-        setTemplates(updatedTemplates);
-
-        // Also saved to localStorage as backup
-        localStorage.setItem('jobFormTemplates', JSON.stringify(updatedTemplates));
-
-        alert(`Template "${templateName}" created successfully!`);
-      }
-
-      setTemplateName('');
-    } catch (err) {
-      console.error('Failed to save template:', err);
-
-      // Save to localStorage as fallback
-      try {
-        const templateExists = templates.some(t => t.name === templateName);
-        if (templateExists) {
-          const newTemplates = templates.map(t =>
-            t.name === templateName ? { ...t, fields: formFields } : t,
-          );
-          setTemplates(newTemplates);
-          localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
-        } else {
-          const newTemplates = [
-            ...templates,
-            {
-              id: Date.now(), // Add a temporary ID for local templates
-              name: templateName,
-              fields: formFields,
-            },
-          ];
-
-          setTemplates(newTemplates);
-          localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
-        }
-        alert(`Template "${templateName}" saved locally.`);
-      } catch (localError) {
-        console.error('Failed to save local template:', localError);
-        alert('Failed to save template. Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Load template
-  const loadTemplate = async () => {
-    if (selectedTemplate === '') {
-      alert('Please select a template to load');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const template = templates.find(t => t.name === selectedTemplate);
-
-      if (template) {
-        // Confirm if user wants to replace current form fields
-        if (formFields.length > 0) {
-          const confirmLoad = window.confirm('This will replace your current form. Continue?');
-          if (!confirmLoad) {
-            setIsLoading(false);
-            return;
-          }
-        }
-
-        // Check if template has _id (server template) or not (local template)
-        if (template._id) {
-          // Get the full template data from the server
-          const fullTemplate = await api.getTemplateById(template._id);
-          onImportQuestions(fullTemplate.fields);
-        } else {
-          // Use the local template directly
-          onImportQuestions(template.fields);
-        }
-
-        alert(`Template "${selectedTemplate}" loaded successfully!`);
-      }
-    } catch (err) {
-      console.error('Failed to load template:', err);
-      setError('Failed to load template. Please try again later.');
-      alert('Failed to load template. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Add template to existing fields
-  const appendTemplate = async () => {
-    if (selectedTemplate === '') {
-      alert('Please select a template to append');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const template = templates.find(t => t.name === selectedTemplate);
-
-      if (template) {
-        // Check if template has _id (server template) or not (local template)
-        let newQuestions;
-        if (template._id) {
-          // Get template fields for appending from the server
-          const templateData = await api.getTemplateById(template._id);
-          newQuestions = templateData.fields;
-        } else {
-          // Use the local template directly
-          newQuestions = template.fields;
-        }
-
-        const duplicates = findDuplicateQuestions(newQuestions, formFields);
-        let questionsToAppend = newQuestions;
-
+      if (append) {
+        const duplicates = findDuplicateQuestions(incoming, formFields);
+        let questionsToAppend = incoming;
         if (duplicates.length > 0) {
-          const confirmAdd = window.confirm(
-            `${duplicates.length} question(s) in this template appear similar to questions you already have. Add Anyway?`,
+          const confirmAdd = await showConfirm?.(
+            `${duplicates.length} question(s) in this form appear similar to questions you already have. Add anyway?`,
+            { title: 'Similar questions', confirmLabel: 'Add anyway' },
           );
           if (!confirmAdd) {
-            questionsToAppend = newQuestions.filter(q => !duplicates.includes(q));
+            questionsToAppend = incoming.filter(q => !duplicates.includes(q));
           }
         }
-
-        onImportQuestions([...formFields, ...questionsToAppend]);
-
-        alert(`Template "${selectedTemplate}" appended successfully!`);
+        setFormFields([...formFields, ...questionsToAppend]);
+      } else {
+        await onLoadJobForm(selectedForm);
       }
-    } catch (err) {
-      console.error('Failed to append template:', err);
-      setError('Failed to append template. Please try again later.');
-      alert('Failed to append template. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Delete a template
-  const deleteTemplate = async () => {
-    if (selectedTemplate === '') {
-      alert('Please select a template to delete');
-      return;
-    }
-
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete template "${selectedTemplate}"?`,
+  const handleClear = async () => {
+    if (formFields.length === 0) return;
+    const confirmClear = await showConfirm?.(
+      'Clear all questions on screen? This does not delete the saved job form until you click Save Form.',
+      { title: 'Clear questions', confirmLabel: 'Clear' },
     );
-    if (!confirmDelete) return;
+    if (confirmClear) setFormFields([]);
+  };
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const template = templates.find(t => t.name === selectedTemplate);
-
-      if (template) {
-        // Check if template has _id (server template) or not (local template)
-        if (template._id) {
-          // Delete from server
-          await api.deleteTemplate(template._id, getRequestor());
-        }
-
-        // Always remove from local state
-        const filteredTemplates = templates.filter(t => t.name !== selectedTemplate);
-        setTemplates(filteredTemplates);
-        localStorage.setItem('jobFormTemplates', JSON.stringify(filteredTemplates));
-
-        setSelectedTemplate('');
-        alert(`Template "${selectedTemplate}" deleted successfully!`);
-      }
-    } catch (err) {
-      console.error('Failed to delete template:', err);
-      setError('Failed to delete template. Please try again later.');
-
-      // Still delete from local state
-      const filteredTemplates = templates.filter(t => t.name !== selectedTemplate);
-      setTemplates(filteredTemplates);
-      localStorage.setItem('jobFormTemplates', JSON.stringify(filteredTemplates));
-      setSelectedTemplate('');
-      alert(`Template deleted from local storage only.`);
-    } finally {
-      setIsLoading(false);
+  const handleCreateNew = async () => {
+    if (typeof onCreateNewForm !== 'function') return;
+    if (formFields.length > 0) {
+      const confirmCreate = await showConfirm?.(
+        'Start a new job form? Unsaved question edits on screen will be cleared.',
+        { title: 'Create new form', confirmLabel: 'Continue' },
+      );
+      if (!confirmCreate) return;
     }
-  };
-
-  const handleClearTemplate = () => {
-    setFormFields([]);
-  };
-
-  const handleSaveEditedQuestion = editedQuestion => {
-    if (editingIndex !== null) {
-      const isRequired = Boolean(editedQuestion.required || editedQuestion.isRequired);
-      const updatedQuestion = {
-        ...formFields[editingIndex],
-        questionText: editedQuestion.label,
-        questionType: editedQuestion.type,
-        options: editedQuestion.options || [],
-        isRequired,
-        required: isRequired,
-        placeholder: editedQuestion.placeholder,
-      };
-
-      const updatedFields = [...formFields];
-      updatedFields[editingIndex] = updatedQuestion;
-      setFormFields(updatedFields);
-    }
-
-    setEditModalOpen(false);
-    setEditingQuestion(null);
-    setEditingIndex(null);
-  };
-
-  const handleCancelEdit = () => {
-    setEditModalOpen(false);
-    setEditingQuestion(null);
-    setEditingIndex(null);
+    await onCreateNewForm();
   };
 
   return (
     <div className={`${styles.questionSetManager} ${darkMode ? styles.darkMode : ''}`}>
-      <h3>Question Set Templates</h3>
-      {error && <div className={`${styles.errorMessage}`}>{error}</div>}
+      <h3>Load job form</h3>
+      <p className={styles.templateRowLabel}>
+        Choose a Collaboration job title to load its live application questions (same forms used on
+        /job-application). Use Create New Form with the exact job title so applicants can match it.
+        Edit below, then use Save Form. Templates (/api/templates) are not used on apply.
+      </p>
       <div className={styles.templateActions}>
         <div className={styles.templateRow}>
-          <p className={styles.templateRowLabel}>Save a template</p>
-          <div className={styles.saveTemplate}>
-            <input
-              type="text"
-              placeholder="Template Name"
-              value={templateName}
-              onChange={e => setTemplateName(e.target.value)}
-              disabled={isLoading}
-              aria-label="Template name"
-            />
-            <button
-              type="button"
-              onClick={saveTemplate}
-              className={styles.saveTemplateButton}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Saving...' : 'Save Current Set'}
-            </button>
-          </div>
-        </div>
-        <div className={styles.templateRow}>
-          <p className={styles.templateRowLabel}>Load or manage templates</p>
           <div className={styles.loadTemplate}>
             <select
-              value={selectedTemplate}
-              onChange={e => setSelectedTemplate(e.target.value)}
-              disabled={isLoading || templates.length === 0}
-              aria-label="Select a template"
+              value={selectedId}
+              onChange={e => setSelectedId(e.target.value)}
+              disabled={isLoading}
+              aria-label="Select a job form"
             >
-              <option value="">Select a template</option>
-              {templates.map((template, i) => (
-                <option key={template._id || i} value={template.name}>
-                  {template.name}
-                </option>
-              ))}
+              <option value="">Select a job form</option>
+              {jobForms.map(form => {
+                const id = String(form._id || form.id);
+                return (
+                  <option key={id} value={id}>
+                    {form.title}
+                  </option>
+                );
+              })}
             </select>
             <div className={styles.loadTemplateButtons}>
               <button
-                id="clone-template-button"
+                id="create-job-form-button"
                 type="button"
-                onClick={loadTemplate}
-                className={`${styles.loadTemplateButton}`}
-                disabled={isLoading || !selectedTemplate}
+                onClick={handleCreateNew}
+                className={styles.saveTemplateButton}
+                disabled={isLoading || typeof onCreateNewForm !== 'function'}
               >
-                {isLoading ? 'Loading...' : 'Clone with Template'}
+                Create New Form
               </button>
               <UncontrolledTooltip
                 autohide={false}
                 placement="top"
-                target="clone-template-button"
+                target="create-job-form-button"
                 trigger="hover focus"
               >
-                Create a copy of this template to modify without changing the original.
+                Start a new job form. Use the exact Collaboration job title, then Save Form to POST
+                /api/jobforms so it appears on /job-application.
               </UncontrolledTooltip>
               <button
-                id="clear-template-button"
+                id="load-job-form-button"
                 type="button"
-                onClick={() => {
-                  if (formFields.length > 0) {
-                    const confirmClear = window.confirm(
-                      'Are you sure you want to clear all the fields in this template? This action cannot be undone.',
-                    );
-                    if (confirmClear) {
-                      handleClearTemplate();
-                    }
-                  }
-                }}
+                onClick={() => loadSelectedForm({ append: false })}
+                className={styles.loadTemplateButton}
+                disabled={isLoading || !selectedForm}
+              >
+                {isLoading ? 'Loading...' : 'Load Form'}
+              </button>
+              <UncontrolledTooltip
+                autohide={false}
+                placement="top"
+                target="load-job-form-button"
+                trigger="hover focus"
+              >
+                Load this job&apos;s live application questions into the builder.
+              </UncontrolledTooltip>
+              <button
+                id="clear-job-form-button"
+                type="button"
+                onClick={handleClear}
                 className={styles.clearTemplateButton}
                 disabled={formFields.length === 0}
               >
-                Clear Template
+                Clear Questions
               </button>
               <UncontrolledTooltip
                 autohide={false}
                 placement="top"
-                target="clear-template-button"
+                target="clear-job-form-button"
                 trigger="hover focus"
               >
-                Remove all fields and reset the template to a clean state
+                Remove questions from the editor only. Save Form to persist changes.
               </UncontrolledTooltip>
               <button
-                id="append-template-button"
+                id="append-job-form-button"
                 type="button"
-                onClick={appendTemplate}
-                className={`${styles.appendTemplateButton}`}
-                disabled={isLoading || !selectedTemplate}
+                onClick={() => loadSelectedForm({ append: true })}
+                className={styles.appendTemplateButton}
+                disabled={isLoading || !selectedForm}
               >
-                {isLoading ? 'Appending...' : 'Append Template'}
+                {isLoading ? 'Appending...' : 'Append Questions'}
               </button>
               <UncontrolledTooltip
                 autohide={false}
                 placement="top"
-                target="append-template-button"
+                target="append-job-form-button"
                 trigger="hover focus"
               >
-                Add additional fields to this existing template.
-              </UncontrolledTooltip>
-              <button
-                id="delete-template-button"
-                type="button"
-                onClick={deleteTemplate}
-                className={`${styles.deleteTemplateButton}`}
-                disabled={isLoading || !selectedTemplate}
-              >
-                {isLoading ? 'Deleting...' : 'Delete Template'}
-              </button>
-              <UncontrolledTooltip
-                autohide={false}
-                placement="top"
-                target="delete-template-button"
-                trigger="hover focus"
-              >
-                Permanently remove this template.
+                Add another job form&apos;s questions onto the current list without switching forms.
               </UncontrolledTooltip>
             </div>
           </div>
         </div>
       </div>
-      {editModalOpen && editingQuestion && (
-        <QuestionEditModal
-          question={editingQuestion}
-          onSave={handleSaveEditedQuestion}
-          onCancel={handleCancelEdit}
-          darkMode={darkMode}
-        />
-      )}
     </div>
   );
 }
 
 QuestionSetManager.propTypes = {
-  formFields: PropTypes.arrayOf(
+  jobForms: PropTypes.arrayOf(
     PropTypes.shape({
-      questionText: PropTypes.string,
-      questionType: PropTypes.string,
-      visible: PropTypes.bool,
-      isRequired: PropTypes.bool,
-      required: PropTypes.bool,
-      options: PropTypes.arrayOf(PropTypes.string),
-      placeholder: PropTypes.string,
-      label: PropTypes.string,
-      type: PropTypes.string,
+      _id: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+      title: PropTypes.string,
+      questions: PropTypes.arrayOf(PropTypes.shape({})),
     }),
-  ).isRequired,
+  ),
+  selectedFormId: PropTypes.string,
+  onLoadJobForm: PropTypes.func.isRequired,
+  onCreateNewForm: PropTypes.func,
+  formFields: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setFormFields: PropTypes.func.isRequired,
-  onImportQuestions: PropTypes.func.isRequired,
   darkMode: PropTypes.bool,
+  showAlert: PropTypes.func,
+  showConfirm: PropTypes.func,
+};
+
+QuestionSetManager.defaultProps = {
+  jobForms: [],
+  selectedFormId: '',
+  onCreateNewForm: undefined,
+  darkMode: false,
+  showAlert: undefined,
+  showConfirm: undefined,
 };
 
 export default QuestionSetManager;

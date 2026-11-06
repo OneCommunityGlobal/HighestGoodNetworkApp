@@ -2,6 +2,7 @@ import {
   normalizeQuestionText,
   isDuplicateQuestion,
   findDuplicateQuestions,
+  applyDuplicateDecision,
 } from '../jobFormQuestionUtils';
 
 describe('normalizeQuestionText', () => {
@@ -105,5 +106,20 @@ describe('findDuplicateQuestions', () => {
   it('returns an empty array when existingFields is empty and no internal duplicates', () => {
     const candidates = [{ questionText: 'A' }, { questionText: 'B' }];
     expect(findDuplicateQuestions(candidates, [])).toEqual([]);
+  });
+});
+describe('applyDuplicateDecision', () => {
+  const first = { questionText: 'What is your experience in MERN stack?' };
+  const repeated = { questionText: ' what is your experience in MERN stack?? ' };
+  const unique = { questionText: 'What is your favorite color?' };
+
+  it('keeps all questions when duplicates are intentionally retained', () => {
+    const questions = [first, repeated, unique];
+
+    expect(applyDuplicateDecision(questions, false)).toEqual(questions);
+  });
+
+  it('removes later duplicate questions when removal is approved', () => {
+    expect(applyDuplicateDecision([first, repeated, unique], true)).toEqual([first, unique]);
   });
 });

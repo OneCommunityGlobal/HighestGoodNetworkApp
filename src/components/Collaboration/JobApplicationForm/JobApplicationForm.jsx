@@ -16,6 +16,14 @@ import {
   getUploadSizeError,
   isJobApplicationFileUploadQuestion,
 } from './jobApplicationQuestionUtils';
+import JobApplicationDynamicQuestion from './JobApplicationDynamicQuestion';
+import JobApplicationProfileFields from './JobApplicationProfileFields';
+import {
+  getApplicantVisibleQuestions,
+  getQuestionLabelText,
+  isResumeQuestion,
+  normalizeFixedFields,
+} from '../jobFormQuestionUtils';
 import { checkEmail } from '../../../utils/emailValidation';
 import {
   ensurePositionOption,
@@ -500,19 +508,6 @@ function getQuestionType(q) {
   return String(q.questionType || q.type || '').toLowerCase();
 }
 
-function isResumeQuestion(q) {
-  const label = (q.label || q.questionText || '').toLowerCase();
-  return /\b(resume|résumé|curriculum\s*vitae|cv)\b/.test(label);
-}
-
-/** Resume/CV and built-in profile prompts are collected above — skip duplicates in the list. */
-function shouldHideQuestionFromApplicantList(q) {
-  if (isResumeQuestion(q)) return true;
-  if (isStandardProfileFieldQuestion(q)) return true;
-  const raw = (q.label || q.questionText || '').trim();
-  return /^(19|20)[.)\s]/.test(raw) || /^question\s*(19|20)\b/i.test(raw);
-}
-
 function formRequiresResumeUpload(form) {
   if (!form?.questions) return false;
   return form.questions.some(
@@ -527,69 +522,10 @@ function formatFileSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-/**
- * Strip numbering often baked into saved template text (e.g. "1.) …") so the UI can show a single
- * running index from `{idx + 1}. …`.
- */
-function stripLeadingQuestionEnumeration(raw) {
-  let s = String(raw || '').trim();
-  if (!s) return s;
-  let prev;
-  do {
-    prev = s;
-    s = s
-      .replace(/^[Qq]uestion\s*\d+\s*[.:]\s*/, '')
-      .replace(/^\d+\.\)\s*/, '')
-      .replace(/^\d+\)\s*/, '')
-      .trim();
-  } while (s !== prev);
-  return s;
-}
-
-function getQuestionLabelText(q) {
-  const raw = (q?.label || q?.questionText || '').trim();
-  if (!raw) return '';
-  return stripLeadingQuestionEnumeration(raw) || raw;
-}
-
 function getQuestionLabel(q, idx) {
   const cleaned = getQuestionLabelText(q);
   if (!cleaned) return `Question ${idx + 1}`;
   return cleaned;
-}
-
-/** Profile fields rendered once at the top of the application form. */
-const STANDARD_PROFILE_LABEL_KEYS = new Set([
-  'name',
-  'your name',
-  'full name',
-  'applicant name',
-  'email',
-  'your email',
-  'email address',
-  'your email address',
-  'phone',
-  'phone number',
-  'your phone',
-  'your phone number',
-  'mobile',
-  'mobile number',
-  'location timezone',
-  'location and timezone',
-  'your location timezone',
-  'company position',
-  'company and position',
-  'your company position',
-  'primary website social',
-  'primary website and social',
-  'website social',
-  'website or social',
-]);
-
-function isStandardProfileFieldQuestion(q) {
-  const normalized = normalizeTitleKey(getQuestionLabelText(q));
-  if (!normalized || normalized.length > 48) return false;
-  return STANDARD_PROFILE_LABEL_KEYS.has(normalized);
 }
 
 function isQuestionRequired(q) {
@@ -603,47 +539,9 @@ function isQuestionRequired(q) {
   );
 }
 
-/** True if two question objects carry nearly the same prompt (long repeated copy, minor edits). */
-function questionLabelsNearlyDuplicate(q1, q2) {
-  const raw1 = (q1?.label || q1?.questionText || '').trim();
-  const raw2 = (q2?.label || q2?.questionText || '').trim();
-  const c1 = stripLeadingQuestionEnumeration(raw1) || raw1;
-  const c2 = stripLeadingQuestionEnumeration(raw2) || raw2;
-  const a = normalizeTitleKey(c1);
-  const b = normalizeTitleKey(c2);
-  if (!a || !b) return false;
-  if (a === b) return true;
-  if (a.length < 45 || b.length < 45) return false;
-  return a.includes(b) || b.includes(a);
-}
-
-/** Drop exact and near-duplicate prompts (templates pasted twice, etc.). */
-function dedupeVisibleQuestions(questions) {
-  const kept = [];
-  for (const q of questions ?? []) {
-    const raw = (q.label || q.questionText || '').trim();
-    const cleaned = stripLeadingQuestionEnumeration(raw) || raw;
-    const key = normalizeTitleKey(cleaned);
-    const dupExact =
-      key &&
-      kept.some(k => {
-        const kr = (k.label || k.questionText || '').trim();
-        const kc = stripLeadingQuestionEnumeration(kr) || kr;
-        return normalizeTitleKey(kc) === key;
-      });
-    if (dupExact) continue;
-    if (kept.some(k => questionLabelsNearlyDuplicate(q, k))) continue;
-    kept.push(q);
-  }
-  return kept;
-}
-
 function getVisibleQuestionsForForm(form) {
   if (!form?.questions) return [];
-  const filtered = form.questions.filter(
-    q => q.visible !== false && !shouldHideQuestionFromApplicantList(q),
-  );
-  return dedupeVisibleQuestions(filtered);
+  return getApplicantVisibleQuestions(form.questions);
 }
 
 function initialAnswersForQuestions(questions) {
@@ -779,47 +677,63 @@ function getProfileValidationErrors({
   phone,
   location,
   timeZone,
+  fixedFields,
 }) {
+  const flags = normalizeFixedFields(fixedFields);
   const errors = {};
 
-  const firstNameError = validateName(firstName, 'First name');
-  const lastNameError = validateName(lastName, 'Last name');
-  const emailError = validateEmail(applicantEmail);
-  const phoneError = validatePhone(phone);
-  const locationError = validateLocation(location);
-  const timeZoneError = validateTimeZone(timeZone);
+  if (flags.includePersonalInfo) {
+    const firstNameError = validateName(firstName, 'First name');
+    const lastNameError = validateName(lastName, 'Last name');
+    const emailError = validateEmail(applicantEmail);
+    if (firstNameError) errors.firstName = firstNameError;
+    if (lastNameError) errors.lastName = lastNameError;
+    if (emailError) errors.applicantEmail = emailError;
+  }
 
-  if (firstNameError) errors.firstName = firstNameError;
-  if (lastNameError) errors.lastName = lastNameError;
-  if (emailError) errors.applicantEmail = emailError;
-  if (phoneError) errors.phone = phoneError;
-  if (locationError) errors.location = locationError;
-  if (timeZoneError) errors.timeZone = timeZoneError;
+  if (flags.includeBasicInfo) {
+    const phoneError = validatePhone(phone);
+    const locationError = validateLocation(location);
+    const timeZoneError = validateTimeZone(timeZone);
+    if (phoneError) errors.phone = phoneError;
+    if (locationError) errors.location = locationError;
+    if (timeZoneError) errors.timeZone = timeZoneError;
+  }
 
   return errors;
 }
 
-function collectMissingRequiredFields({
-  profileErrors,
-  visibleQuestions,
-  answers,
-  questionFiles,
-  resumeFile,
-  resumeRequired,
-}) {
-  const missing = Object.values(profileErrors);
-
-  if (resumeRequired && !resumeFile) missing.push('Resume');
+/** Build per-question inline errors (shown under each field in red). */
+function collectQuestionFieldErrors({ visibleQuestions, answers, questionFiles }) {
+  const errors = {};
   for (const [idx, q] of visibleQuestions.entries()) {
     const label = getQuestionLabel(q, idx);
-    const requiredLabel = missingRequiredQuestionLabel(q, idx, answers, questionFiles);
-    if (requiredLabel) missing.push(requiredLabel);
+    if (missingRequiredQuestionLabel(q, idx, answers, questionFiles)) {
+      errors[idx] = 'This field is required.';
+    }
     if (isHoursPerWeekQuestion(label)) {
       const hoursError = validateHoursPerWeekAnswer(label, answers[idx]);
-      if (hoursError) missing.push(hoursError);
+      if (hoursError) {
+        const trimmed = String(answers[idx] ?? '').trim();
+        if (!trimmed) {
+          errors[idx] = errors[idx] || 'This field is required.';
+        } else if (!/^\d+$/.test(trimmed)) {
+          errors[idx] = 'Must be a number.';
+        } else {
+          errors[idx] = 'Must be between 1 and 168.';
+        }
+      }
     }
   }
-  return missing;
+  return errors;
+}
+
+function hasAnyValidationErrors({ profileErrors, questionErrors, resumeError }) {
+  return (
+    Object.keys(profileErrors || {}).length > 0 ||
+    Object.keys(questionErrors || {}).length > 0 ||
+    Boolean(resumeError)
+  );
 }
 
 function serializeAnswerForSubmit(q, idx, answers, questionFiles) {
@@ -858,6 +772,60 @@ function getJobDescriptionForModal(form) {
   if (!extra) return GENERIC_ROLE_DESCRIPTION;
   return `${GENERIC_ROLE_DESCRIPTION}\n\nAdditional details:\n${extra}`;
 }
+
+function getCategoryFromRole(roleTitle) {
+  const t = String(roleTitle || '').toLowerCase();
+  if (/(engineer|developer|software|frontend|back ?end|full ?stack|devops|qa|test)/.test(t)) {
+    return 'Engineering';
+  }
+  if (/(design|ux|ui|graphic|visual)/.test(t)) return 'Design';
+  if (/(marketing|social|seo|content|copywriter|communications)/.test(t)) return 'Marketing';
+  if (/(finance|account|bookkeep|budget)/.test(t)) return 'Finance';
+  return 'General';
+}
+
+function JobApplicationRoleDescriptionModal({ title, form, onClose }) {
+  return (
+    <div className={styles.popupOverlay}>
+      <div className={styles.popupContent}>
+        <button className={styles.popupCloseBtn} onClick={onClose} aria-label="Close" type="button">
+          &times;
+        </button>
+        <div className={styles.jobDescHeader}>
+          <div className={styles.jobDescTitle}>{title}</div>
+          <div className={styles.jobDescTags}>
+            <span className={`${styles.tagPill} ${styles.tagPillStrong}`}>
+              {getCategoryFromRole(title)}
+            </span>
+            <span className={styles.tagPill}>Remote</span>
+          </div>
+        </div>
+        <div className={styles.jobDescBody}>
+          <div className={styles.jobDescSectionTitle}>About the role</div>
+          <div className={styles.jobDescText}>{getJobDescriptionForModal(form)}</div>
+          <div className={styles.jobDescFooter}>
+            <button type="button" className={styles.gotItBtn} onClick={onClose}>
+              Got it
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+JobApplicationRoleDescriptionModal.propTypes = {
+  title: PropTypes.string,
+  form: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
+JobApplicationRoleDescriptionModal.defaultProps = {
+  title: '',
+};
 
 function isValidId(id) {
   if (!id || typeof id !== 'string') return false;
@@ -898,7 +866,7 @@ function FileUploadField({
       {label && (
         <span className={styles.fieldLabel}>
           {label}
-          {!optional && required && (
+          {!optional && required ? (
             <>
               <span className={styles.requiredMark} aria-hidden="true">
                 {' '}
@@ -906,7 +874,7 @@ function FileUploadField({
               </span>
               <span className={styles.visuallyHidden}> (required)</span>
             </>
-          )}
+          ) : null}
         </span>
       )}
       <div className={styles.fileUploadRow}>
@@ -1108,17 +1076,10 @@ function JobApplicationForm() {
   const locationTimezone = [applicantLocation.trim(), timeZone.trim()].filter(Boolean).join(' | ');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
-  const isAdmin = useSelector(state => {
-    try {
-      const role = state?.auth?.user?.role;
-      if (role == null || role === '') return false;
-      const r = String(role).toLowerCase();
-      return r === 'administrator' || r === 'owner' || r === 'admin';
-    } catch (err) {
-      console.error('Error checking admin status:', err);
-      return false;
-    }
-  });
+  const authRole = useSelector(state => state?.auth?.user?.role);
+  const isAdmin = ['administrator', 'owner', 'admin'].includes(
+    String(authRole || '').toLowerCase(),
+  );
 
   /*
    * Match html/body/#root to the page strip. Global #root is white; dark mode uses !important —
@@ -1139,6 +1100,11 @@ function JobApplicationForm() {
 
   const visibleQuestions = useMemo(() => getVisibleQuestionsForForm(filteredForm), [filteredForm]);
   const resumeRequired = useMemo(() => formRequiresResumeUpload(filteredForm), [filteredForm]);
+  const profileFixedFields = useMemo(() => normalizeFixedFields(filteredForm?.fixedFields), [
+    filteredForm,
+  ]);
+  const showPersonalInfo = profileFixedFields.includePersonalInfo;
+  const showBasicInfo = profileFixedFields.includeBasicInfo;
 
   const applyQuestionnairePreFill = data => {
     if (!data) return;
@@ -1417,16 +1383,6 @@ function JobApplicationForm() {
     setShowDescription(false);
   };
 
-  const getCategoryFromRole = roleTitle => {
-    const t = String(roleTitle || '').toLowerCase();
-    if (/(engineer|developer|software|frontend|back ?end|full ?stack|devops|qa|test)/.test(t))
-      return 'Engineering';
-    if (/(design|ux|ui|graphic|visual)/.test(t)) return 'Design';
-    if (/(marketing|social|seo|content|copywriter|communications)/.test(t)) return 'Marketing';
-    if (/(finance|account|bookkeep|budget)/.test(t)) return 'Finance';
-    return 'General';
-  };
-
   const handleResumeChange = e => {
     const f = e.target.files?.[0] || null;
 
@@ -1572,18 +1528,61 @@ function JobApplicationForm() {
       phone,
       location: applicantLocation,
       timeZone,
+      fixedFields: profileFixedFields,
     });
 
-    const missing = collectMissingRequiredFields({
-      profileErrors,
+    const questionErrors = collectQuestionFieldErrors({
       visibleQuestions,
       answers,
       questionFiles,
-      resumeFile,
-      resumeRequired,
     });
 
-    return { missing, profileErrors };
+    const resumeError = showBasicInfo && resumeRequired && !resumeFile ? 'Resume is required.' : '';
+
+    return { profileErrors, questionErrors, resumeError };
+  };
+
+  const focusFirstValidationError = ({ profileErrors, questionErrors, resumeError }) => {
+    if (profileErrors.firstName) {
+      document.getElementById('jaf-applicant-first-name')?.focus();
+      return;
+    }
+    if (profileErrors.lastName) {
+      document.getElementById('jaf-applicant-last-name')?.focus();
+      return;
+    }
+    if (profileErrors.applicantEmail) {
+      emailInputRef.current?.focus();
+      return;
+    }
+    if (profileErrors.location) {
+      document.getElementById('jaf-location')?.focus();
+      return;
+    }
+    if (profileErrors.timeZone) {
+      document.getElementById('jaf-timezone')?.focus();
+      return;
+    }
+    if (profileErrors.phone) {
+      document.getElementById('jaf-phone')?.focus();
+      return;
+    }
+    if (resumeError) {
+      resumeInputRef.current?.focus();
+      return;
+    }
+    const firstQuestionIdx = Object.keys(questionErrors)
+      .map(Number)
+      .sort((a, b) => a - b)[0];
+    if (firstQuestionIdx != null && !Number.isNaN(firstQuestionIdx)) {
+      const formKey = filteredForm?._id
+        ? `${filteredForm._id}-q-${firstQuestionIdx}`
+        : `q-${firstQuestionIdx}`;
+      document.getElementById(`${formKey}-heading`)?.scrollIntoView?.({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
   };
 
   const resetFormAfterSubmit = () => {
@@ -1652,35 +1651,18 @@ function JobApplicationForm() {
       return;
     }
 
-    const { missing, profileErrors } = validateBeforeSubmit();
+    const { profileErrors, questionErrors, resumeError } = validateBeforeSubmit();
     setEmailSuggestion(checkEmail(applicantEmail).suggestion);
 
-    setFieldErrors(prev => {
-      const next = { ...prev };
-
-      delete next.firstName;
-      delete next.lastName;
-      delete next.applicantEmail;
-      delete next.location;
-      delete next.timeZone;
-      delete next.phone;
-
-      return {
-        ...next,
-        ...profileErrors,
-      };
+    // Clear prior profile + question errors, then apply fresh inline validation messages.
+    setFieldErrors({
+      ...profileErrors,
+      ...questionErrors,
     });
+    setResumeFileError(resumeError || '');
 
-    if (missing.length > 0) {
-      toast.error(
-        <div>
-          <div>Please complete required fields:</div>
-          {missing.map(field => (
-            <div key={field}>• {field}</div>
-          ))}
-        </div>,
-        { autoClose: 7000 },
-      );
+    if (hasAnyValidationErrors({ profileErrors, questionErrors, resumeError })) {
+      focusFirstValidationError({ profileErrors, questionErrors, resumeError });
       return;
     }
 
@@ -1745,27 +1727,31 @@ function JobApplicationForm() {
       toast.success('Application submitted successfully. A confirmation email will be sent.');
       resetFormAfterSubmit();
     } catch (err) {
-      const apiMessage = err.response?.data?.message || err.response?.data?.error;
+      const apiMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        'Failed to submit application.';
       const status = err.response?.status;
       if (turnstileSiteKey) {
         // A Turnstile token is single use, so every failed submit needs a fresh one
         turnstileRef.current?.reset();
       }
       if (status === 429) {
-        setSubmitError(
+        const rateLimitMessage =
           err.response?.data?.error ||
-            'Too many applications from this connection. Please try again later.',
-        );
+          'Too many applications from this connection. Please try again later.';
+        setSubmitError(rateLimitMessage);
+        toast.error(rateLimitMessage, { autoClose: 7000 });
       } else if (status === 400 && err.response?.data?.error === VERIFICATION_FAILED_MESSAGE) {
         setSubmitError(err.response.data.error);
+        toast.error(err.response.data.error, { autoClose: 7000 });
       } else if (status === 409) {
         toast.error(apiMessage || 'You already applied for this position.', {
           autoClose: 7000,
         });
       } else {
-        toast.error(apiMessage || err.message || 'Failed to submit application.', {
-          autoClose: 7000,
-        });
+        toast.error(apiMessage, { autoClose: 7000 });
       }
     } finally {
       setIsSubmitting(false);
@@ -1821,45 +1807,13 @@ function JobApplicationForm() {
               Click to know more about this position
             </button>
           </p>
-          {showDescription && filteredForm && (
-            <div className={styles.popupOverlay}>
-              <div className={styles.popupContent}>
-                <button
-                  className={styles.popupCloseBtn}
-                  onClick={handleCloseDescription}
-                  aria-label="Close"
-                  type="button"
-                >
-                  &times;
-                </button>
-                <div className={styles.jobDescHeader}>
-                  <div className={styles.jobDescTitle}>{bannerJobTitle || filteredForm.title}</div>
-                  <div className={styles.jobDescTags}>
-                    <span className={`${styles.tagPill} ${styles.tagPillStrong}`}>
-                      {getCategoryFromRole(bannerJobTitle || filteredForm.title)}
-                    </span>
-                    <span className={styles.tagPill}>Remote</span>
-                  </div>
-                </div>
-
-                <div className={styles.jobDescBody}>
-                  <div className={styles.jobDescSectionTitle}>About the role</div>
-                  <div className={styles.jobDescText}>
-                    {getJobDescriptionForModal(filteredForm)}
-                  </div>
-                  <div className={styles.jobDescFooter}>
-                    <button
-                      type="button"
-                      className={styles.gotItBtn}
-                      onClick={handleCloseDescription}
-                    >
-                      Got it
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {showDescription && filteredForm ? (
+            <JobApplicationRoleDescriptionModal
+              title={bannerJobTitle || filteredForm.title}
+              form={filteredForm}
+              onClose={handleCloseDescription}
+            />
+          ) : null}
           <form className={styles.form} onSubmit={handleSubmit} aria-label="Job application">
             {isAdmin && (
               <>
@@ -1886,531 +1840,63 @@ function JobApplicationForm() {
               schedule a Zoom interview, please answer the pre-interview questions below.
             </div>
             <div className={styles.formContentGroup}>
-              <div className={styles.formProfileDetailGroup}>
-                <div className={styles.profileField}>
-                  <label htmlFor="jaf-applicant-first-name" className={styles.fieldLabel}>
-                    <span>First Name</span>
-                    <span className={styles.requiredMark} aria-hidden="true">
-                      *
-                    </span>
-                  </label>
-
-                  <input
-                    id="jaf-applicant-first-name"
-                    type="text"
-                    placeholder="First Name"
-                    className={`${styles.inputField} ${
-                      fieldErrors.firstName ? styles.inputFieldError : ''
-                    }`}
-                    value={firstName}
-                    onChange={e => {
-                      setFirstName(e.target.value);
-
-                      if (fieldErrors.firstName) {
-                        setFieldErrors(prev => {
-                          const next = { ...prev };
-                          delete next.firstName;
-                          return next;
-                        });
-                      }
-                    }}
-                    minLength={2}
-                    maxLength={100}
-                    required
-                    aria-required="true"
-                    aria-invalid={Boolean(fieldErrors.firstName)}
-                    autoComplete="given-name"
-                  />
-
-                  {fieldErrors.firstName && (
-                    <p className={styles.fieldError} role="alert">
-                      {fieldErrors.firstName}
-                    </p>
-                  )}
-                </div>
-
-                <div className={styles.profileField}>
-                  <label htmlFor="jaf-applicant-last-name" className={styles.fieldLabel}>
-                    <span>Last Name</span>
-                    <span className={styles.requiredMark} aria-hidden="true">
-                      *
-                    </span>
-                  </label>
-
-                  <input
-                    id="jaf-applicant-last-name"
-                    type="text"
-                    placeholder="Last Name"
-                    className={`${styles.inputField} ${
-                      fieldErrors.lastName ? styles.inputFieldError : ''
-                    }`}
-                    value={lastName}
-                    onChange={e => {
-                      setLastName(e.target.value);
-
-                      if (fieldErrors.lastName) {
-                        setFieldErrors(prev => {
-                          const next = { ...prev };
-                          delete next.lastName;
-                          return next;
-                        });
-                      }
-                    }}
-                    minLength={2}
-                    maxLength={100}
-                    required
-                    aria-required="true"
-                    aria-invalid={Boolean(fieldErrors.lastName)}
-                    autoComplete="family-name"
-                  />
-
-                  {fieldErrors.lastName && (
-                    <p className={styles.fieldError} role="alert">
-                      {fieldErrors.lastName}
-                    </p>
-                  )}
-                </div>
-
-                <div className={styles.profileField}>
-                  <label htmlFor="jaf-applicant-email" className={styles.fieldLabel}>
-                    <span>Email</span>
-                    <span className={styles.requiredMark} aria-hidden="true">
-                      *
-                    </span>
-                  </label>
-
-                  <input
-                    id="jaf-applicant-email"
-                    ref={emailInputRef}
-                    maxLength={254}
-                    type="email"
-                    placeholder="Email"
-                    className={`${styles.inputField} ${
-                      fieldErrors.applicantEmail ? styles.inputFieldError : ''
-                    }`}
-                    value={applicantEmail}
-                    onChange={e => {
-                      setApplicantEmail(e.target.value);
-                      setEmailSuggestion(null);
-
-                      if (fieldErrors.applicantEmail) {
-                        setFieldErrors(prev => {
-                          const next = { ...prev };
-                          delete next.applicantEmail;
-                          return next;
-                        });
-                      }
-                    }}
-                    onBlur={handleEmailBlur}
-                    required
-                    aria-required="true"
-                    aria-invalid={Boolean(fieldErrors.applicantEmail)}
-                    aria-describedby={
-                      [
-                        fieldErrors.applicantEmail && 'jaf-applicant-email-error',
-                        emailSuggestion && 'jaf-applicant-email-suggestion',
-                      ]
-                        .filter(Boolean)
-                        .join(' ') || undefined
-                    }
-                    autoComplete="email"
-                  />
-
-                  {fieldErrors.applicantEmail && (
-                    <p id="jaf-applicant-email-error" className={styles.fieldError} role="alert">
-                      {fieldErrors.applicantEmail}
-                    </p>
-                  )}
-
-                  {emailSuggestion && (
-                    <p
-                      id="jaf-applicant-email-suggestion"
-                      className={styles.fieldHint}
-                      aria-live="polite"
-                    >
-                      <span>
-                        Did you mean <strong>{emailSuggestion}</strong>?
-                      </span>
-                      {/* Same small action button as the resume "Remove" */}
-                      <button
-                        type="button"
-                        className={styles.clearFileBtn}
-                        onClick={applyEmailSuggestion}
-                        aria-label={`Use this email: ${emailSuggestion}`}
-                      >
-                        Use this
-                      </button>
-                    </p>
-                  )}
-                </div>
-
-                <div className={styles.profileField}>
-                  <label htmlFor="jaf-location" className={styles.fieldLabel}>
-                    <span>Location</span>
-                    <span className={styles.requiredMark} aria-hidden="true">
-                      *
-                    </span>
-                  </label>
-
-                  <input
-                    id="jaf-location"
-                    type="text"
-                    placeholder="Location (e.g., Charlotte, NC)"
-                    className={`${styles.inputField} ${
-                      fieldErrors.location ? styles.inputFieldError : ''
-                    }`}
-                    value={applicantLocation}
-                    onChange={e => {
-                      setApplicantLocation(e.target.value);
-
-                      if (fieldErrors.location) {
-                        setFieldErrors(prev => {
-                          const next = { ...prev };
-                          delete next.location;
-                          return next;
-                        });
-                      }
-                    }}
-                    maxLength={100}
-                    required
-                    aria-required="true"
-                    aria-invalid={Boolean(fieldErrors.location)}
-                    autoComplete="address-level2"
-                  />
-
-                  {fieldErrors.location && (
-                    <p className={styles.fieldError} role="alert">
-                      {fieldErrors.location}
-                    </p>
-                  )}
-                </div>
-
-                <div className={styles.profileField}>
-                  <label htmlFor="jaf-timezone" className={styles.fieldLabel}>
-                    <span>Time Zone</span>
-                    <span className={styles.requiredMark} aria-hidden="true">
-                      *
-                    </span>
-                  </label>
-
-                  <select
-                    id="jaf-timezone"
-                    className={`${styles.inputField} ${
-                      fieldErrors.timeZone ? styles.inputFieldError : ''
-                    }`}
-                    value={timeZone}
-                    onChange={e => {
-                      setTimeZone(e.target.value);
-
-                      if (fieldErrors.timeZone) {
-                        setFieldErrors(prev => {
-                          const next = { ...prev };
-                          delete next.timeZone;
-                          return next;
-                        });
-                      }
-                    }}
-                    required
-                    aria-required="true"
-                    aria-invalid={Boolean(fieldErrors.timeZone)}
-                  >
-                    <option value="">Select Time Zone</option>
-
-                    {moment.tz.names().map(tz => (
-                      <option key={tz} value={tz}>
-                        {tz}
-                      </option>
-                    ))}
-                  </select>
-
-                  {fieldErrors.timeZone && (
-                    <p className={styles.fieldError} role="alert">
-                      {fieldErrors.timeZone}
-                    </p>
-                  )}
-                </div>
-
-                <div className={styles.profileField}>
-                  <label htmlFor="jaf-phone" className={styles.fieldLabel}>
-                    <span>Phone number</span>
-                    <span className={styles.requiredMark} aria-hidden="true">
-                      *
-                    </span>
-                  </label>
-
-                  <input
-                    id="jaf-phone"
-                    type="tel"
-                    placeholder="+1 213-456-7890"
-                    className={`${styles.inputField} ${
-                      fieldErrors.phone ? styles.inputFieldError : ''
-                    }`}
-                    value={phone}
-                    onChange={e => {
-                      setPhone(e.target.value);
-
-                      if (fieldErrors.phone) {
-                        setFieldErrors(prev => {
-                          const next = { ...prev };
-                          delete next.phone;
-                          return next;
-                        });
-                      }
-                    }}
-                    required
-                    aria-required="true"
-                    aria-invalid={Boolean(fieldErrors.phone)}
-                    autoComplete="tel"
-                  />
-
-                  {fieldErrors.phone && (
-                    <p className={styles.fieldError} role="alert">
-                      {fieldErrors.phone}
-                    </p>
-                  )}
-                </div>
-                <div className={styles.profileField}>
-                  <label htmlFor="jaf-company" className={styles.fieldLabel}>
-                    Company &amp; position
-                  </label>
-                  <input
-                    id="jaf-company"
-                    type="text"
-                    placeholder="Company & Position"
-                    className={styles.inputField}
-                    value={companyPosition}
-                    onChange={e => setCompanyPosition(e.target.value)}
-                    autoComplete="organization-title"
-                  />
-                </div>
-                <div className={styles.profileField}>
-                  <label htmlFor="jaf-social" className={styles.fieldLabel}>
-                    Primary website / social
-                  </label>
-                  <input
-                    id="jaf-social"
-                    type="text"
-                    placeholder="Primary Website/Social"
-                    className={styles.inputField}
-                    value={websiteSocial}
-                    onChange={e => setWebsiteSocial(e.target.value)}
-                    autoComplete="url"
-                  />
-                </div>
-                <FileUploadField
-                  id="jaf-resume-upload"
-                  label={resumeRequired ? 'Upload Resume' : 'Upload Resume (optional)'}
-                  accept=".pdf,.doc,.docx"
-                  file={resumeFile}
-                  onChange={handleResumeChange}
-                  onClear={clearResumeFile}
-                  inputRef={resumeInputRef}
-                  optional={!resumeRequired}
-                  required={resumeRequired}
-                  error={resumeFileError}
+              <JobApplicationProfileFields
+                showPersonalInfo={showPersonalInfo}
+                showBasicInfo={showBasicInfo}
+                firstName={firstName}
+                setFirstName={setFirstName}
+                lastName={lastName}
+                setLastName={setLastName}
+                applicantEmail={applicantEmail}
+                setApplicantEmail={setApplicantEmail}
+                emailInputRef={emailInputRef}
+                emailSuggestion={emailSuggestion}
+                setEmailSuggestion={setEmailSuggestion}
+                fieldErrors={fieldErrors}
+                setFieldErrors={setFieldErrors}
+                handleEmailBlur={handleEmailBlur}
+                applyEmailSuggestion={applyEmailSuggestion}
+                companyPosition={companyPosition}
+                setCompanyPosition={setCompanyPosition}
+                applicantLocation={applicantLocation}
+                setApplicantLocation={setApplicantLocation}
+                timeZone={timeZone}
+                setTimeZone={setTimeZone}
+                phone={phone}
+                setPhone={setPhone}
+                websiteSocial={websiteSocial}
+                setWebsiteSocial={setWebsiteSocial}
+                resumeRequired={resumeRequired}
+                resumeFile={resumeFile}
+                resumeFileError={resumeFileError}
+                resumeInputRef={resumeInputRef}
+                handleResumeChange={handleResumeChange}
+                clearResumeFile={clearResumeFile}
+                FileUploadField={FileUploadField}
+              />
+              {visibleQuestions.map((q, idx) => (
+                <JobApplicationDynamicQuestion
+                  key={
+                    filteredForm?._id
+                      ? `${filteredForm._id}-q-${idx}`
+                      : `q-${idx}-${getQuestionLabel(q, idx).slice(0, 24)}`
+                  }
+                  question={q}
+                  index={idx}
+                  formId={filteredForm?._id ? String(filteredForm._id) : ''}
+                  answer={answers[idx]}
+                  fieldError={fieldErrors[idx] || ''}
+                  questionFile={questionFiles[idx] || null}
+                  questionFileError={questionFileErrors[idx] || ''}
+                  questionFileInputRefs={questionFileInputRefs}
+                  onAnswerChange={handleAnswerChange}
+                  onToggleCheckbox={toggleCheckboxOption}
+                  onQuestionFileChange={handleQuestionFileChange}
+                  onClearQuestionFile={clearQuestionFile}
+                  isCheckboxOptionChecked={isCheckboxOptionChecked}
+                  FileUploadField={FileUploadField}
                 />
-              </div>
-              {visibleQuestions.map((q, idx) => {
-                const qt = getQuestionType(q);
-                const label = getQuestionLabel(q, idx);
-                const labelLower = label.toLowerCase();
-                const isIndividualOrgQuestion = isIndividualOrgQuestionLabel(label);
-                const req = isQuestionRequired(q);
-                const hasFieldError = Boolean(fieldErrors[idx]);
-                const formKey = filteredForm?._id
-                  ? `${filteredForm._id}-q-${idx}`
-                  : `q-${idx}-${label.slice(0, 24)}`;
-
-                return (
-                  <div className={styles.formGroup} key={formKey}>
-                    <h2 className={styles.formGroupTitle} id={`${formKey}-heading`}>
-                      <span className={styles.questionNumber}>{idx + 1}.</span> {label}
-                      {req && (
-                        <>
-                          <span className={styles.requiredMark} aria-hidden="true">
-                            {' '}
-                            *
-                          </span>
-                          <span className={styles.visuallyHidden}> (required)</span>
-                        </>
-                      )}
-                    </h2>
-                    {['textbox', 'text'].includes(qt) &&
-                      !isJobApplicationFileUploadQuestion(q) &&
-                      !isIndividualOrgQuestion && (
-                        <>
-                          <input
-                            type="text"
-                            placeholder={q.placeholder || 'Type your response here'}
-                            value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                            onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                            required={req}
-                            aria-required={req}
-                            aria-labelledby={`${formKey}-heading`}
-                            className={`${styles.inputField} ${
-                              hasFieldError ? styles.inputFieldError : ''
-                            }`}
-                          />
-                          {hasFieldError && (
-                            <p className={styles.fieldError} role="alert">
-                              {fieldErrors[idx]}
-                            </p>
-                          )}
-                        </>
-                      )}
-                    {qt === 'textarea' && !isIndividualOrgQuestion && (
-                      <>
-                        <textarea
-                          placeholder={q.placeholder || 'Type your response here'}
-                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                          rows={5}
-                          required={req}
-                          aria-required={req}
-                          aria-labelledby={`${formKey}-heading`}
-                          className={`${styles.inputField} ${
-                            hasFieldError ? styles.inputFieldError : ''
-                          }`}
-                        />
-                        {hasFieldError && (
-                          <p className={styles.fieldError} role="alert">
-                            {fieldErrors[idx]}
-                          </p>
-                        )}
-                      </>
-                    )}
-                    {(qt === 'date' ||
-                      (labelLower.includes('start') && labelLower.includes('date'))) && (
-                      <input
-                        type="date"
-                        className={styles.dateInput}
-                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                        required={req}
-                        aria-required={req}
-                        aria-labelledby={`${formKey}-heading`}
-                      />
-                    )}
-                    {qt === 'checkbox' && q.options && q.options.length > 0 && (
-                      <fieldset
-                        className={styles.optionFieldset}
-                        aria-labelledby={`${formKey}-heading`}
-                      >
-                        {q.options.map(opt => (
-                          <label key={String(opt)}>
-                            <input
-                              type="checkbox"
-                              name={`question-${formKey}-${String(opt)}`}
-                              value={opt}
-                              checked={isCheckboxOptionChecked(answers[idx], opt)}
-                              onChange={() => toggleCheckboxOption(idx, opt)}
-                            />{' '}
-                            {opt}
-                          </label>
-                        ))}
-                      </fieldset>
-                    )}
-                    {qt === 'radio' &&
-                      q.options &&
-                      q.options.length > 0 &&
-                      !isIndividualOrgQuestion && (
-                        <fieldset
-                          className={styles.optionFieldset}
-                          aria-labelledby={`${formKey}-heading`}
-                        >
-                          {q.options.map(opt => (
-                            <label key={String(opt)}>
-                              <input
-                                type="radio"
-                                name={`question-${formKey}`}
-                                value={opt}
-                                checked={answers[idx] === opt}
-                                onChange={() => handleAnswerChange(idx, opt)}
-                              />{' '}
-                              {opt}
-                            </label>
-                          ))}
-                        </fieldset>
-                      )}
-                    {isIndividualOrgQuestion ? (
-                      <fieldset
-                        className={`${styles.optionFieldset} ${styles.optionFieldsetInline}`}
-                        aria-labelledby={`${formKey}-heading`}
-                      >
-                        {(q.options?.length ? q.options : ['Individual', 'Organization']).map(
-                          opt => (
-                            <label key={String(opt)}>
-                              <input
-                                type="radio"
-                                name={`question-${formKey}`}
-                                value={opt}
-                                checked={answers[idx] === opt}
-                                onChange={() => handleAnswerChange(idx, opt, label)}
-                                required={req}
-                              />{' '}
-                              {opt}
-                            </label>
-                          ),
-                        )}
-                      </fieldset>
-                    ) : (
-                      qt === 'dropdown' && (
-                        <select
-                          className={styles.selectField}
-                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                          required={req}
-                          aria-required={req}
-                          aria-labelledby={`${formKey}-heading`}
-                        >
-                          <option value="">Select an option</option>
-                          {(q.options || []).map(opt => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
-                      )
-                    )}
-                    {isJobApplicationFileUploadQuestion(q) && (
-                      <FileUploadField
-                        id={`${formKey}-file`}
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                        file={questionFiles[idx] || null}
-                        onChange={e => handleQuestionFileChange(idx, e)}
-                        onClear={() => clearQuestionFile(idx)}
-                        inputRef={el => {
-                          questionFileInputRefs.current[idx] = el;
-                        }}
-                        required={req}
-                        error={questionFileErrors[idx]}
-                      />
-                    )}
-                    {![
-                      'textbox',
-                      'text',
-                      'textarea',
-                      'date',
-                      'checkbox',
-                      'radio',
-                      'dropdown',
-                    ].includes(qt) &&
-                      !isJobApplicationFileUploadQuestion(q) &&
-                      !isIndividualOrgQuestion && (
-                        <input
-                          type="text"
-                          placeholder="Type your response here"
-                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                          required={req}
-                          aria-required={req}
-                          aria-labelledby={`${formKey}-heading`}
-                          className={styles.inputField}
-                        />
-                      )}
-                  </div>
-                );
-              })}
+              ))}
               {/* Honeypot: off-screen, unreachable by keyboard and hidden from screen readers.
                   Real people never fill it; bots that fill every input give themselves away. */}
               <div className={styles.honeypot} aria-hidden="true">

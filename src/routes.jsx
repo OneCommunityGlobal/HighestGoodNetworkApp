@@ -1147,7 +1147,12 @@ export default (
         <Route path="/collaboration" component={Collaboration} />
         <ProtectedRoute path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
-        <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
+        <ProtectedRoute
+          path="/jobformbuilder"
+          fallback
+          component={JobFormBuilder}
+          routePermissions={[permissions.manageJobForms]}
+        />
         <ProtectedRoute path="/materials/mostwastedmaterials" component={MostWastedMaterials} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
