@@ -29,22 +29,22 @@ vi.mock('../../../../actions/timeEntries', async () => {
 
 const { postTimeEntry } = await import('../../../../actions/timeEntries');
 
+// URL -> response data, checked in order (first match wins) - same responses as
+// the other TimeEntryForm test suites' axios mock, just expressed as a lookup
+// table instead of a repeated if/else chain.
+const AXIOS_GET_RESPONSES = [
+  [/\/userProjects/, () => userProjectMock.projects],
+  [/\/tasks/, () => []],
+  [/\/userProfile/, () => userProfileMock],
+];
 vi.mock('axios', async () => {
   const actual = await vi.importActual('axios');
   return {
     __esModule: true,
     ...actual,
     get: vi.fn(url => {
-      if (url.includes('/userProjects')) {
-        return Promise.resolve({ data: userProjectMock.projects });
-      }
-      if (url.includes('/tasks')) {
-        return Promise.resolve({ data: [] });
-      }
-      if (url.includes('/userProfile')) {
-        return Promise.resolve({ data: userProfileMock });
-      }
-      return Promise.resolve({ data: [] });
+      const match = AXIOS_GET_RESPONSES.find(([pattern]) => pattern.test(url));
+      return Promise.resolve({ data: match ? match[1]() : [] });
     }),
   };
 });
