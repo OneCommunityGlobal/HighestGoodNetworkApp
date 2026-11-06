@@ -17,13 +17,13 @@ const formId = '507f1f77bcf86cd799439011';
 const form = { _id: formId, title: 'Software Engineer', questions: [] };
 
 async function mountApplication(darkMode = false) {
-  // 更新 store 中的 auth 状态，赋予管理员角色及相关权限，确保受权限控制的按钮能够正确渲染
+  // Update the auth state in the store, setting the role to 'Volunteer' to prevent triggering the Admin-exclusive preview panel.
   const store = {
     getState: () => ({
       theme: { darkMode },
       auth: {
         user: {
-          role: 'Admin',
+          role: 'Volunteer',
           permissions: ['listingAndBiddingAdvancedAccess'],
         },
       },
