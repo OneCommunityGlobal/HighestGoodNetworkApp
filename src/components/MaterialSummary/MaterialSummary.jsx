@@ -136,7 +136,7 @@ export default function MaterialUsageDashboard() {
       }
     };
 
-    fetchMaterialData();
+    void fetchMaterialData();
 
     return () => {
       active = false;
