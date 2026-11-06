@@ -19,6 +19,7 @@ import { FaFilter, FaMapMarkerAlt, FaChevronLeft, FaChevronRight } from 'react-i
 import styles from './BiddingHomepage.module.css';
 import logo from '../../Collaboration/One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import Header from '../Header';
+import { LBNavHeader, LBBackButton } from '../LBNavHeader';
 
 const propertyListings = [
   {
@@ -351,6 +352,8 @@ function BiddingHomepage() {
         />
       </div>
       <Container fluid className={styles.biddingHomepageContainer}>
+        <LBNavHeader />
+        <LBBackButton />
         <Header />
         <div className={styles.navigationTabs}>
           <div className="filter-by-date d-flex align-items-center gap-3">

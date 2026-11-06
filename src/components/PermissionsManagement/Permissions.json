@@ -517,6 +517,11 @@
     "description": "Category for all permissions not related to other categories",
     "subperms": [
       {
+        "label": "Listing and Bidding Advanced Access",
+        "key": "listingAndBiddingAdvancedAccess",
+        "description": "Gives the user access to the advanced management header on the Listing and Bidding Platform Dashboard."
+      },
+      {
         "label": "Edit Team 4-Digit Codes",
         "key": "editTeamCode",
         "description": "Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page."

@@ -45,6 +45,10 @@ const fillProfile = async () => {
   fireEvent.change(document.getElementById('jaf-location'), { target: { value: 'London, UK' } });
   fireEvent.change(document.getElementById('jaf-timezone'), { target: { value: 'GMT' } });
   fireEvent.change(document.getElementById('jaf-phone'), { target: { value: '+442071838750' } });
+  const resumeFile = new File(['resume content'], 'resume.pdf', { type: 'application/pdf' });
+  fireEvent.change(document.getElementById('jaf-resume-upload'), {
+    target: { files: [resumeFile] },
+  });
 };
 
 const fillAndSubmit = async () => {

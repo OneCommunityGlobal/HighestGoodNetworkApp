@@ -28,6 +28,7 @@ import styles from './LBDashboard.module.css';
 import UserManagementSection from './UserManagement/UserManagement';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 import { randomInt } from './lbUtils';
+import { LBNavHeader } from './LBNavHeader';
 
 const METRIC_OPTIONS = {
   DEMAND: [
@@ -581,6 +582,7 @@ export function LBDashboard() {
       fluid
       className={getClassNames(styles.dashboardContainer, styles.darkContainer, darkMode)}
     >
+      <LBNavHeader />
       <DashboardHeader darkMode={darkMode} onBack={goBack} />
 
       <FilterSection
