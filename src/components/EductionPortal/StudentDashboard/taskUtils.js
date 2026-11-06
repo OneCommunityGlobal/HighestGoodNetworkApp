@@ -31,6 +31,12 @@ export const calculateProgressPercentage = (task, intermediateTasks = []) => {
  */
 export const canMarkTaskAsDone = (task, intermediateTasks = []) => {
   if (task.is_completed) return false;
+  if (
+    !task.task_type ||
+    !Number.isFinite(task.suggested_total_hours) ||
+    task.suggested_total_hours < 0
+  )
+    return false;
 
   // If there are intermediate tasks, ONLY check if all sub-tasks are completed
   if (intermediateTasks && intermediateTasks.length > 0) {
@@ -69,7 +75,13 @@ export const getTaskStatusBadge = (task, styles, intermediateTasks = []) => {
     return { text: 'Hours Met', className: styles.hoursMetBadge };
   }
 
-  if (task.logged_hours >= task.suggested_total_hours) {
+  if (
+    task.task_type === 'read' &&
+    Number.isFinite(task.suggested_total_hours) &&
+    task.suggested_total_hours > 0 &&
+    Number.isFinite(task.logged_hours) &&
+    task.logged_hours >= task.suggested_total_hours
+  ) {
     return { text: 'Hours Met', className: styles.hoursMetBadge };
   }
 
@@ -79,6 +91,14 @@ export const getTaskStatusBadge = (task, styles, intermediateTasks = []) => {
 
   if (task.status === 'assigned') {
     return { text: 'Assigned', className: styles.pendingBadge };
+  }
+
+  if (task.status === 'in_progress') {
+    return { text: 'In Progress', className: styles.inProgressBadge };
+  }
+
+  if (task.status === 'submitted' || task.status === 'pending_review') {
+    return { text: 'Pending Review', className: styles.pendingBadge };
   }
 
   return { text: 'Pending Review', className: styles.pendingBadge };
@@ -93,6 +113,13 @@ export const getTaskStatusBadge = (task, styles, intermediateTasks = []) => {
 export const getMarkAsDoneTooltip = (task, intermediateTasks = []) => {
   if (task.is_completed) {
     return 'Task is already completed';
+  }
+  if (
+    !task.task_type ||
+    !Number.isFinite(task.suggested_total_hours) ||
+    task.suggested_total_hours < 0
+  ) {
+    return 'Cannot mark as done: Task type or suggested hours are missing or invalid';
   }
 
   // If there are intermediate tasks, ONLY consider sub-task completion

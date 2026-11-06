@@ -7,6 +7,7 @@ const TaskListView = ({
   tasks,
   onMarkAsDone,
   onLogTime,
+  onUploadComplete,
   intermediateTasks,
   expandedTasks,
   onToggleIntermediateTasks,
@@ -29,6 +30,7 @@ const TaskListView = ({
           task={task}
           onMarkAsDone={onMarkAsDone}
           onLogTime={onLogTime}
+          onUploadComplete={onUploadComplete}
           intermediateTasks={intermediateTasks[task.id] || []}
           isExpanded={expandedTasks[task.id] || false}
           onToggleIntermediateTasks={onToggleIntermediateTasks}
