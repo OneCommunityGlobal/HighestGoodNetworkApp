@@ -1,8 +1,8 @@
-import { LBNavHeader, LBBackButton } from '../LBNavHeader';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Carousel from 'react-bootstrap/Carousel';
 import { useDispatch, useSelector } from 'react-redux';
+import { LBNavHeader, LBBackButton } from '../LBNavHeader';
 import { getUserProfileBasicInfo } from '../../../actions/userManagement';
 import ListingAvailability from './ListingAvailability';
 import {
@@ -11,12 +11,13 @@ import {
   fetchListingById,
   resetBooking,
 } from '../../../actions/lbdashboard/listOverviewAction';
+import { fetchListings } from '../Home/data';
 import logo from '../../../assets/images/logo2.png';
 import mapIcon from '../../../assets/images/mapIcon.png';
+import styles from './Listoverview.module.css';
 
 const STOCK_IMAGE = 'https://www.caspianpolicy.org/no-image.png';
 const today = new Date().toISOString().split('T')[0];
-import styles from './Listoverview.module.css';
 
 function ListOverview() {
   const [showAvailability, setShowAvailability] = useState(false);
@@ -87,19 +88,47 @@ function ListOverview() {
   };
 
   useEffect(() => {
-    if (listingId) {
-      dispatch(fetchListingById(listingId));
-      dispatch(fetchListingAvailability(listingId));
-    }
+    let isMounted = true;
+
+    const loadListing = async () => {
+      if (listingId) {
+        dispatch(fetchListingById(listingId));
+        dispatch(fetchListingAvailability(listingId));
+        return;
+      }
+
+      const listingsData = await fetchListings(1, 1);
+      const defaultId = listingsData?.items?.[0]?.id;
+      if (isMounted && defaultId) {
+        dispatch(fetchListingById(defaultId));
+        dispatch(fetchListingAvailability(defaultId));
+      }
+    };
+
+    loadListing();
+    return () => {
+      isMounted = false;
+    };
   }, [listingId, dispatch]);
 
   useEffect(() => {
     dispatch(getUserProfileBasicInfo());
   }, [dispatch]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="error-message">{error}</div>;
-  if (!listing) return <div>No listing found.</div>;
+  if (loading || error || !listing) {
+    return (
+      <div className={`${styles.mainContainer}`}>
+        <div className={`${styles.logoContainer}`}>
+          <img src={logo} alt="One Community Logo" />
+        </div>
+        <LBNavHeader />
+        <LBBackButton />
+        {loading && <div>Loading...</div>}
+        {!loading && error && <div className="error-message">{error}</div>}
+        {!loading && !error && !listing && <div>No listing found.</div>}
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.mainContainer}`}>

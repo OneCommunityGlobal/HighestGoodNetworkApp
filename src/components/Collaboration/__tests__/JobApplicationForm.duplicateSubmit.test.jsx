@@ -41,6 +41,9 @@ const fillValidApplication = async () => {
   fireEvent.change(screen.getByLabelText(/^Location/), { target: { value: 'Charlotte, NC' } });
   fireEvent.change(screen.getByLabelText(/^Time Zone/), { target: { value: 'America/New_York' } });
   fireEvent.change(screen.getByLabelText(/^Phone/), { target: { value: '+1 213-456-7890' } });
+  const resumeFile = new File(['resume content'], 'resume.pdf', { type: 'application/pdf' });
+  fireEvent.change(screen.getByLabelText(/Choose file/i), { target: { files: [resumeFile] } });
+  toast.success.mockClear();
   fireEvent.click(screen.getByRole('checkbox', { name: /I agree to terms and conditions/i }));
 };
 

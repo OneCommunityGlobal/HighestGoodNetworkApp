@@ -17,17 +17,8 @@ const formId = '507f1f77bcf86cd799439011';
 const form = { _id: formId, title: 'Software Engineer', questions: [] };
 
 async function mountApplication(darkMode = false) {
-  // Update the auth state in the store, setting the role to 'Volunteer' to prevent triggering the Admin-exclusive preview panel.
   const store = {
-    getState: () => ({
-      theme: { darkMode },
-      auth: {
-        user: {
-          role: 'Volunteer',
-          permissions: ['listingAndBiddingAdvancedAccess'],
-        },
-      },
-    }),
+    getState: () => ({ theme: { darkMode }, auth: { user: null } }),
     subscribe: () => () => {},
     dispatch: vi.fn(),
   };
@@ -69,6 +60,8 @@ function fillProfile() {
   fireEvent.change(screen.getByRole('textbox', { name: /^Phone/i }), {
     target: { value: '+12133734253' },
   });
+  const resumeFile = new File(['resume content'], 'resume.pdf', { type: 'application/pdf' });
+  fireEvent.change(screen.getByLabelText(/Choose file/i), { target: { files: [resumeFile] } });
 }
 
 beforeEach(() => {
@@ -213,13 +206,8 @@ describe('job application terms acknowledgement', () => {
     const checkbox = screen.getByRole('checkbox', { name: /I agree to terms and conditions/i });
     fillProfile();
     fireEvent.click(checkbox);
-
     fireEvent.submit(screen.getByRole('form', { name: 'Job application' }));
-
-    // Get the submit button directly by its submit type and assert that it is disabled
-    const submitButton = screen.getByRole('button', { type: 'submit' });
-    expect(submitButton).toBeDisabled();
-
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Submitting…' })).toBeDisabled());
     resolve({ data: {} });
     await waitFor(() => expect(checkbox).not.toBeChecked());
   });
