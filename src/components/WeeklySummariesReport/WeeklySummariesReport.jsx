@@ -1172,11 +1172,55 @@ const WeeklySummariesReport = props => {
         summary._id === userId ? { ...summary, bioPosted: newBioStatus } : summary,
       );
 
+      const summariesByTab = Object.fromEntries(
+        Object.entries(prevState.summariesByTab || {}).map(([tab, tabSummaries]) => [
+          tab,
+          Array.isArray(tabSummaries)
+            ? tabSummaries.map(summary =>
+                summary._id === userId ? { ...summary, bioPosted: newBioStatus } : summary,
+              )
+            : tabSummaries,
+        ]),
+      );
+
       return {
         ...prevState,
         summaries,
         summariesByTab: {
-          ...prevState.summariesByTab,
+          ...summariesByTab,
+          [prevState.activeTab]: summaries,
+        },
+      };
+    });
+  };
+
+  const handleWeeklySummariesCountChange = (userId, newWeeklySummariesCount) => {
+    const parsedCount = Number(newWeeklySummariesCount);
+    const normalizedCount = Number.isNaN(parsedCount) ? 0 : parsedCount;
+
+    setState(prevState => {
+      const summaries = prevState.summaries.map(summary =>
+        summary._id === userId ? { ...summary, weeklySummariesCount: normalizedCount } : summary,
+      );
+
+      const summariesByTab = Object.fromEntries(
+        Object.entries(prevState.summariesByTab || {}).map(([tab, tabSummaries]) => [
+          tab,
+          Array.isArray(tabSummaries)
+            ? tabSummaries.map(summary =>
+                summary._id === userId
+                  ? { ...summary, weeklySummariesCount: normalizedCount }
+                  : summary,
+              )
+            : tabSummaries,
+        ]),
+      );
+
+      return {
+        ...prevState,
+        summaries,
+        summariesByTab: {
+          ...summariesByTab,
           [prevState.activeTab]: summaries,
         },
       };
@@ -2355,6 +2399,7 @@ const WeeklySummariesReport = props => {
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}
                               handleBioStatusChange={handleBioStatusChange}
+                              handleWeeklySummariesCountChange={handleWeeklySummariesCountChange}
                               loadTrophies={state.loadTrophies}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
                               timeOffRequests={props.timeOffRequests}

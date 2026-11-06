@@ -95,6 +95,7 @@ function FormattedReport({
   darkMode,
   handleTeamCodeChange,
   handleBioStatusChange,
+  handleWeeklySummariesCountChange,
   handleSpecialColorDotClick,
   timeOffRequests,
 }) {
@@ -179,6 +180,7 @@ function FormattedReport({
               darkMode={darkMode}
               handleTeamCodeChange={handleTeamCodeChange}
               handleBioStatusChange={handleBioStatusChange}
+              handleWeeklySummariesCountChange={handleWeeklySummariesCountChange}
               auth={auth}
               handleSpecialColorDotClick={handleSpecialColorDotClick}
               isFinalWeek={isFinalWeek}
@@ -300,6 +302,7 @@ function ReportDetails({
   darkMode,
   handleTeamCodeChange,
   handleBioStatusChange,
+  handleWeeklySummariesCountChange,
   auth,
   handleSpecialColorDotClick,
   isFinalWeek,
@@ -321,8 +324,8 @@ function ReportDetails({
   const hoursLogged = ((totalSecondsArray[weekIndex] || 0) / 3600).toFixed(2);
   const promisedHours = promisedHoursArray[weekIndex] ?? 0;
 
-  // No bar for anyone unqualified, whatever the toggle says. 'default' and 'requested'
-  // both count as "still to do"; only 'posted' ends the workflow and clears the bar.
+  // Toggling 'requested' overrides the hours/summaries thresholds and forces the yellow bar;
+  // when toggled off ('default'), standard qualification rules apply, and 'posted' clears the bar.
   const activeTimeOffRequest = getActiveTimeOffRequest(timeOffRequests, summary._id, weekIndex);
   const isMeetCriteria = canSeeBioHighlight && isQualifiedForBio(summary);
 
@@ -347,6 +350,7 @@ function ReportDetails({
         </ListGroupItem>
         <ListGroupItem darkMode={darkMode}>
           <div
+            data-testid="bio-highlight-banner"
             className={isMeetCriteria && darkMode ? styles.bioHighlightDark : undefined}
             style={{
               backgroundColor: isMeetCriteria ? '#FFF200' : 'transparent',
@@ -398,6 +402,7 @@ function ReportDetails({
                 summary={summary}
                 canEditSummaryCount={canEditSummaryCount && !cantEditJaeRelatedRecord}
                 darkMode={darkMode}
+                onWeeklySummariesCountChange={handleWeeklySummariesCountChange}
               />
             </ListGroupItem>
 
@@ -704,20 +709,38 @@ function MediaUrlLink({ summary }) {
   return <span style={{ paddingLeft: '5px' }}>Not provided!</span>;
 }
 
-function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
+function TotalValidWeeklySummaries({
+  summary,
+  canEditSummaryCount,
+  darkMode,
+  onWeeklySummariesCountChange,
+}) {
   const style = {
     color: textColors[summary?.weeklySummaryOption] || (darkMode ? '#ffffff' : '#000000'),
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    parseInt(summary.weeklySummariesCount, 10) || 0,
+    Number.parseInt(summary.weeklySummariesCount, 10) || 0,
   );
+
+  useEffect(() => {
+    setWeeklySummariesCount(Number.parseInt(summary.weeklySummariesCount, 10) || 0);
+  }, [summary.weeklySummariesCount]);
 
   const handleOnChange = async (userProfileSummary, count) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
+    const previousCount = weeklySummariesCount;
+    const parsedCount = Number.parseInt(count, 10);
+    const normalizedCount = Number.isNaN(parsedCount) ? 0 : parsedCount;
     try {
       await axios.patch(url, { key: 'weeklySummariesCount', value: count });
+      if (onWeeklySummariesCountChange) {
+        onWeeklySummariesCountChange(userProfileSummary._id, normalizedCount);
+      }
     } catch (err) {
+      setWeeklySummariesCount(previousCount);
+      // eslint-disable-next-line no-console
+      console.error('Failed to update weekly summaries count:', err);
       // eslint-disable-next-line no-alert
       alert(
         'An error occurred while attempting to save the new weekly summaries count change to the profile.',
@@ -735,7 +758,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
       className={styles.totalValidWrapper}
       style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap' }}
     >
-      {weeklySummariesCount === 8 ? (
+      {Number(weeklySummariesCount) === 8 ? (
         <div className="total-valid-text" style={{ ...style, whiteSpace: 'nowrap', flexShrink: 0 }}>
           <b>Total Valid Weekly Summaries:</b>{' '}
         </div>

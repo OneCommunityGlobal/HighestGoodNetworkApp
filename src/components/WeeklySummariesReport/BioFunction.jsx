@@ -19,7 +19,11 @@ function BioFunction(props) {
 
   const [bioStatus, setBioStatus] = useState(bioPosted);
 
-  const isMeetCriteria = isQualifiedForBio({ totalTangibleHrs, weeklySummariesCount, bioPosted });
+  const isMeetCriteria = isQualifiedForBio({
+    totalTangibleHrs,
+    weeklySummariesCount,
+    bioPosted: bioStatus,
+  });
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
