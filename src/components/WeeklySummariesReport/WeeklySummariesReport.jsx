@@ -60,7 +60,7 @@ import { getInfoCollections } from '../../actions/information';
 import { setTeamCodes } from '../../actions/teamCodes';
 import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import hasPermission from '../../utils/permissions';
-import { fetchCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
+import { subscribeToCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 import CreateFilterModal from './components/CreateFilterModal';
 import SelectFilterModal from './components/SelectFilterModal';
 import UpdateFilterModal from './components/UpdateFilterModal';
@@ -319,20 +319,7 @@ const WeeklySummariesReport = props => {
   ] = useUpdateFiltersWithIndividualCodesChangeMutation();
   const [updateFilterWithReplacedTeamCodes] = useUpdateFiltersWithReplacedTeamCodesMutation();
 
-  useEffect(() => {
-    let cancelled = false;
-    fetchCompletedQuestionnaireUserIds()
-      .then(userIds => {
-        if (!cancelled) setCompletedQuestionnaireUserIds(userIds);
-      })
-      .catch(error => {
-        // eslint-disable-next-line no-console
-        console.error('Failed to load questionnaire completion status', error);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  useEffect(() => subscribeToCompletedQuestionnaireUserIds(setCompletedQuestionnaireUserIds), []);
 
   useEffect(() => {
     if (props.allBadgeData && props.allBadgeData.length > 0) {
