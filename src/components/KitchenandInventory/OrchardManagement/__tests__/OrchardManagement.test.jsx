@@ -69,6 +69,16 @@ const openForm = async buttonName => {
   await userEvent.click(screen.getByRole('button', { name: buttonName }));
 };
 
+const fillTextField = async (label, value) => {
+  await userEvent.type(screen.getByRole('textbox', { name: label }), value);
+};
+
+const fillNumberField = async (label, value) => {
+  const field = screen.getByRole('spinbutton', { name: label });
+  await userEvent.clear(field);
+  await userEvent.type(field, value);
+};
+
 const changeDate = (label, value) => {
   fireEvent.change(screen.getByLabelText(label), {
     target: { value },
@@ -191,8 +201,8 @@ describe('OrchardManagement', () => {
 
     await openForm('+ New Order');
 
-    await userEvent.type(screen.getByRole('textbox', { name: 'Supplier' }), 'Green Valley Nursery');
-    await userEvent.type(screen.getByRole('textbox', { name: 'Items' }), '3x Lemon Trees');
+    await fillTextField('Supplier', 'Green Valley Nursery');
+    await fillTextField('Items', '3x Lemon Trees');
 
     changeDate('Ordered date', '2026-11-01');
     changeDate('Expected delivery', '2026-12-01');
@@ -293,14 +303,11 @@ describe('OrchardManagement', () => {
 
     await openForm('+ Add Planting Task');
 
-    await userEvent.type(screen.getByRole('textbox', { name: 'Plant name' }), 'Orange Trees');
-
-    await userEvent.clear(screen.getByRole('spinbutton', { name: 'Quantity' }));
-    await userEvent.type(screen.getByRole('spinbutton', { name: 'Quantity' }), '3');
-
-    await userEvent.type(screen.getByRole('spinbutton', { name: 'Row' }), '5');
-    await userEvent.type(screen.getByRole('spinbutton', { name: 'Position' }), '2');
-    await userEvent.type(screen.getByRole('textbox', { name: 'Notes' }), 'Water regularly');
+    await fillTextField('Plant name', 'Orange Trees');
+    await fillNumberField('Quantity', '3');
+    await fillNumberField('Row', '5');
+    await fillNumberField('Position', '2');
+    await fillTextField('Notes', 'Water regularly');
 
     changeDate('Scheduled date', '2026-12-15');
 
@@ -318,9 +325,9 @@ describe('OrchardManagement', () => {
 
     await openForm('+ Add Planting Task');
 
-    await userEvent.type(screen.getByRole('textbox', { name: 'Plant name' }), 'Fig Tree');
-    await userEvent.type(screen.getByRole('spinbutton', { name: 'Row' }), '6');
-    await userEvent.type(screen.getByRole('spinbutton', { name: 'Position' }), '1');
+    await fillTextField('Plant name', 'Fig Tree');
+    await fillNumberField('Row', '6');
+    await fillNumberField('Position', '1');
 
     changeDate('Scheduled date', '2026-12-20');
 
