@@ -529,32 +529,32 @@ function OrchardManagement() {
           {isPlantingFormOpen && (
             <form className={styles.entryForm} onSubmit={handleAddPlantingTask}>
               <label className={styles.formField}>
-                Plant name
+                <span>Plant name</span>
                 <input name="plantName" required placeholder="Apple Tree" />
               </label>
 
               <label className={styles.formField}>
-                Quantity
+                <span>Quantity</span>
                 <input name="quantity" type="number" min="1" defaultValue="1" required />
               </label>
 
               <label className={styles.formField}>
-                Row
+                <span>Row</span>
                 <input name="row" type="number" min="1" required />
               </label>
 
               <label className={styles.formField}>
-                Position
+                <span>Position</span>
                 <input name="position" type="number" min="1" required />
               </label>
 
               <label className={styles.formField}>
-                Notes
+                <span>Notes</span>
                 <input name="notes" placeholder="Planting notes" />
               </label>
 
               <label className={styles.formField}>
-                Scheduled date
+                <span>Scheduled date</span>
                 <input name="scheduledDate" type="date" required />
               </label>
 
