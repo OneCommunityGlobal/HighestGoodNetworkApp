@@ -6,8 +6,6 @@ import appStyles from '~/App.module.css';
 import styles from './PermissionsManagement.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { FaInfoCircle } from 'react-icons/fa'; // Importing react-icons for the info icon
-import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip functionality
 // eslint-disable-next-line import/named
 import { updateUserProfile, getUserProfile } from '../../actions/userProfile';
 import { boxStyle, boxStyleDark } from '../../styles';
@@ -22,6 +20,30 @@ import CreateNewRolePopup from './NewRolePopUp';
 import PermissionChangeLogTable from './PermissionChangeLogTable';
 
 import { permissions } from '../../utils/constants';
+
+// Starting text of the blue icon on the title; once an Owner saves a text, the saved one is shown
+const USER_ROLES_INFO = `<p>This page gives access to all the One Community Roles, and the ability to create and delete Roles. Each Role has various permissions within the system, categorized by functionality. These permissions relate to:</p>
+<ul>
+<li>General: 🌐 Seeing all users on the Dashboard and editing the header message.</li>
+<li>Reports: 📊 Viewing and editing analytics and summaries.</li>
+<li>User Management: 👤 Managing user accounts, statuses, and blue squares.</li>
+<li>Tracking Management: 🕵️‍♂️ Managing user activity, warnings, and tracking settings.</li>
+<li>Badge Management: 🏅 Creating, editing, and assigning badges.</li>
+<li>Project Management: 🛠️ Adding, editing, and assigning projects.</li>
+<li>Work Breakdown Structures: 🗂️ Adding and deleting WBS.</li>
+<li>Tasks: 📋 Managing tasks and interactions.</li>
+<li>Teams Management: 👥 Creating, editing, and assigning teams.</li>
+<li>Timelog Management: 🕒 Managing time entries and logs.</li>
+<li>Announcements: 📣 Sending emails.</li>
+<li>Permissions Management: 🔑 Editing roles and user permissions.</li>
+<li>Popup Management: 💬 Editing popups.</li>
+<li>Quick Setup Functions: ⚡ Adding, assigning, and editing titles.</li>
+<li>Misc/Unsorted: 🧩 The Skills and PM Resource dashboards, Blue Square emails, and the user state indicator.</li>
+<li>FAQs: ❓ Managing FAQs.</li>
+<li>Job Form Management: 📝 Creating, editing, and deleting form questions, and managing job forms.</li>
+<li>Activity Log Management: 📖 Viewing student daily logs and marking them as assisted.</li>
+</ul>`;
+
 function PermissionsManagement({
   roles,
   auth,
@@ -83,7 +105,7 @@ function PermissionsManagement({
   useEffect(() => {
     getAllRoles();
 
-    getInfoCollections();
+    dispatch(getInfoCollections());
     getUserRole(auth?.user.userid);
     const fetchChangeLogs = async () => {
       try {
@@ -124,35 +146,19 @@ function PermissionsManagement({
           darkMode ? styles['bg-yinmn-blue'] : ''
         } ${darkMode ? styles['dark-box-shadow'] : ''}`}
       >
-        <h1 className={styles['permissions-management__title']}>
-          User Roles
-          {/* Added description for the i icon of permissions management page */}
-          <FaInfoCircle
-            data-tip="<div style='text-align: left;'>
-                      <p>Welcome to the Permissions Management Page!</p>
-                      <p>This page gives access to all the One Community Roles, and the ability to create and delete Roles. Each Role has various permissions within the system, categorized by functionality. These permissions relate to:</p>
-                      <ul>
-                        <li>Reports: 📊 Viewing and editing analytics and summaries.</li>
-                        <li>User Management: 👤 Managing user accounts, statuses, and blue squares.</li>
-                        <li>Tracking Management: 🕵️‍♂️  Managing user activity, warnings, and tracking settings.</li>
-                        <li>Badge Management: 🏅 Creating, editing, and assigning badges.</li>
-                        <li>Project Management: 🛠️ Adding, editing, and assigning projects.</li>
-                        <li>Work Breakdown Structures: 🗂️ Adding and deleting WBS.</li>
-                        <li>Tasks: 📋 Managing tasks and interactions.</li>
-                        <li>Teams Management: 👥 Creating, editing, and assigning teams.</li>
-                        <li>Timelog Management: 🕒 Managing time entries and logs.</li>
-                        <li>Permissions Management: 🔑 Editing roles and user permissions.</li>
-                      </ul>
-                    </div>"
-            style={{
-              fontSize: '24px',
-              cursor: 'pointer',
-              color: 'rgb(0, 204, 255)',
-              marginLeft: '10px',
-            }}
+        {/* The wrapper takes over the h1's bottom margin, so the icon centers on the words */}
+        <div className="d-flex align-items-center mb-2">
+          <h1 className={`${styles['permissions-management__title']} mb-0 mr-2`}>User Roles</h1>
+          <EditableInfoModal
+            role={auth?.user?.role}
+            areaName="Permission Page: user roles Info"
+            areaTitle="Permissions Management"
+            initialInfoHtml={USER_ROLES_INFO}
+            skipFetch
+            fontSize={24}
+            darkMode={darkMode}
           />
-          <ReactTooltip place="right" type="dark" effect="solid" html />
-        </h1>
+        </div>
         <div key={`${role}_header`} className={styles['permissions-management__header']}>
           {canPutRole && (
             <div key={`${role}_name`} className={styles['role-name-container']}>
@@ -176,6 +182,7 @@ function PermissionsManagement({
                         role={role}
                         areaName={`${roleName} Info`}
                         areaTitle={`${roleName} User Role`}
+                        skipFetch
                         fontSize={18}
                         darkMode={darkMode}
                         isPermissionPage
