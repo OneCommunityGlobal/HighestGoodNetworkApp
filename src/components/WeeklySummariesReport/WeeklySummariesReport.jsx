@@ -60,6 +60,7 @@ import { getInfoCollections } from '../../actions/information';
 import { setTeamCodes } from '../../actions/teamCodes';
 import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import hasPermission from '../../utils/permissions';
+import { subscribeToCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 import CreateFilterModal from './components/CreateFilterModal';
 import SelectFilterModal from './components/SelectFilterModal';
 import UpdateFilterModal from './components/UpdateFilterModal';
@@ -299,6 +300,8 @@ const WeeklySummariesReport = props => {
   const [updateFilterModalOpen, setUpdateFilterModalOpen] = useState(false);
   const [selectFilterModalOpen, setSelectFilterModalOpen] = useState(false);
   const [saveFilterDropdownOpen, setSaveFilterDropdownOpen] = useState(false);
+  // null until loaded (or if the request fails), so nobody is flagged by mistake
+  const [completedQuestionnaireUserIds, setCompletedQuestionnaireUserIds] = useState(null);
 
   const toggleSaveFilterDropdown = () => setSaveFilterDropdownOpen(prev => !prev);
   const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
@@ -315,6 +318,8 @@ const WeeklySummariesReport = props => {
     updateFilterWithIndividualCodesChange,
   ] = useUpdateFiltersWithIndividualCodesChangeMutation();
   const [updateFilterWithReplacedTeamCodes] = useUpdateFiltersWithReplacedTeamCodesMutation();
+
+  useEffect(() => subscribeToCompletedQuestionnaireUserIds(setCompletedQuestionnaireUserIds), []);
 
   useEffect(() => {
     if (props.allBadgeData && props.allBadgeData.length > 0) {
@@ -2358,6 +2363,7 @@ const WeeklySummariesReport = props => {
                               loadTrophies={state.loadTrophies}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
                               timeOffRequests={props.timeOffRequests}
+                              completedQuestionnaireUserIds={completedQuestionnaireUserIds}
                             />
                           </Col>
                         </Row>

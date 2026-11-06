@@ -43,6 +43,7 @@ import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
+import { subscribeToCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 
 export const matchesNameSearch = (name, searchText) => {
   // Ignore leading spaces, but preserve trailing spaces because a trailing space changes the search behavior.
@@ -121,6 +122,8 @@ class UserManagement extends React.PureComponent {
       activeInactivePopupOpen: false,
       finalDayPopupOpen: false,
       selectedUser: null,
+      // null until loaded (or if the request fails), so no indicator is shown by mistake
+      completedQuestionnaireUserIds: null,
     };
     this.onPauseResumeClick = this.onPauseResumeClick.bind(this);
     this.onLogTimeOffClick = this.onLogTimeOffClick.bind(this);
@@ -141,6 +144,9 @@ class UserManagement extends React.PureComponent {
     document.body.classList.add('no-global-theme');
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
+    this.unsubscribeFromQuestionnaireCompletion = subscribeToCompletedQuestionnaireUserIds(
+      completedQuestionnaireUserIds => this.setState({ completedQuestionnaireUserIds }),
+    );
     const { darkMode } = this.props.state.theme;
     const { userProfiles } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
@@ -161,6 +167,7 @@ class UserManagement extends React.PureComponent {
     document.body.classList.remove('no-global-theme');
     window.removeEventListener('resize', this.handleResize);
     this.debouncedApplyWildCardSearch.cancel();
+    this.unsubscribeFromQuestionnaireCompletion?.();
   }
 
   handleResize = () => {
@@ -198,13 +205,16 @@ class UserManagement extends React.PureComponent {
     const userProfilesChanged =
       prevProps.state.allUserProfiles.userProfiles !==
       this.props.state.allUserProfiles.userProfiles;
+    const questionnaireCompletionChanged =
+      prevState.completedQuestionnaireUserIds !== this.state.completedQuestionnaireUserIds;
 
     if (
       prevState.selectedPage !== this.state.selectedPage ||
       prevState.wildCardSearchText !== this.state.wildCardSearchText ||
       searchStateChanged ||
       pageSizeChanged ||
-      userProfilesChanged
+      userProfilesChanged ||
+      questionnaireCompletionChanged
     ) {
       const { darkMode } = this.props.state.theme;
       const { userProfiles } = this.props.state.allUserProfiles;
@@ -372,6 +382,10 @@ class UserManagement extends React.PureComponent {
             isMobile={isMobile}
             mobileFontSize={mobileFontSize}
             onUserUpdate={this.onUserUpdate}
+            questionnaireIncomplete={
+              !!this.state.completedQuestionnaireUserIds &&
+              !this.state.completedQuestionnaireUserIds.has(user._id)
+            }
           />
         ));
     }
