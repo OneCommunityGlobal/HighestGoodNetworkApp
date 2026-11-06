@@ -7,15 +7,17 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import debounce from 'lodash/debounce';
 import { connect } from 'react-redux';
 import { Container, Spinner } from 'reactstrap';
 import { Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { getAllRoles } from '../../actions/role';
 import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+  permissions,
 } from '../../utils/constants';
 import {
   getAllUserProfile,
@@ -42,6 +44,44 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
 
+export const matchesNameSearch = (name, searchText) => {
+  // Ignore leading spaces, but preserve trailing spaces because a trailing space changes the search behavior.
+  const trimmedSearch = searchText.trimStart();
+
+  // An empty search should match all names.
+  if (!trimmedSearch) {
+    return true;
+  }
+  
+  const normalizedSearch = trimmedSearch.toLowerCase().replace(/\s+/g, ' ');
+  const normalizedName = name.toLowerCase().replace(/\s+/g, ' ').trim();
+
+  // Without a trailing space, perform the normal substring search. 
+  // For example, "li" matches "Liam", "Olivia", and "Li"
+  if (!/\s$/.test(searchText)) {
+    return normalizedName.includes(normalizedSearch);
+  }
+
+  // A trailing space indicates that the search text should be treated as a complete word or phrase rather than a partial match.
+  // Remove the trailing space so it can be used to check word boundaries.
+  const searchWithoutTrailingSpace = normalizedSearch.trimEnd();
+
+  return (
+
+    // The entire name is an exact match.
+    normalizedName === searchWithoutTrailingSpace ||
+
+    // The search term appears at the beginning of a multi-word name.
+    normalizedName.startsWith(`${searchWithoutTrailingSpace} `) ||
+
+    // The search term appears as a complete word in the middle of the name.
+    normalizedName.includes(` ${searchWithoutTrailingSpace} `) ||
+
+    // The search term appears as a complete word at the end of the name.
+    normalizedName.endsWith(` ${searchWithoutTrailingSpace}`)
+  );
+};
+
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
 
@@ -55,6 +95,7 @@ class UserManagement extends React.PureComponent {
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
+      rawSearchText: '',
       selectedPage: props.state.userPagination.pagestats.selectedPage,
       pageSize: props.state.userPagination.pagestats.pageSize,
       allSelected: undefined,
@@ -86,6 +127,14 @@ class UserManagement extends React.PureComponent {
     this.onDeleteButtonClick = this.onDeleteButtonClick.bind(this);
     this.onFinalDayClick = this.onFinalDayClick.bind(this);
     this.onActiveInactiveClick = this.onActiveInactiveClick.bind(this);
+    // Debounce committing the wildcard search text to state, since that state
+    // drives the (expensive) full user-list filter/re-render in componentDidUpdate.
+    // The input itself stays responsive via rawSearchText, updated on every keystroke.
+    this.debouncedApplyWildCardSearch = debounce(
+      searchText => this.setState({ wildCardSearchText: searchText, selectedPage: 1 }),
+      300,
+      { leading: true, trailing: true },
+    );
   }
 
   componentDidMount() {
@@ -111,6 +160,7 @@ class UserManagement extends React.PureComponent {
   componentWillUnmount() {
     document.body.classList.remove('no-global-theme');
     window.removeEventListener('resize', this.handleResize);
+    this.debouncedApplyWildCardSearch.cancel();
   }
 
   handleResize = () => {
@@ -367,30 +417,8 @@ class UserManagement extends React.PureComponent {
       const lastName = user.lastName.toLowerCase();
       const email = user.email ? user.email.toLowerCase() : '';
 
-      const trimmedFirstNameSearch = firstNameSearch.trim();
-      const trimmedLastNameSearch = lastNameSearch.trim();
-
-      const isFirstNameExactMatch =
-        firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
-      const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
-
-      let firstNameMatches = true;
-      if (trimmedFirstNameSearch) {
-        if (isFirstNameExactMatch) {
-          firstNameMatches = firstName === trimmedFirstNameSearch.toLowerCase();
-        } else {
-          firstNameMatches = firstName.includes(trimmedFirstNameSearch.toLowerCase());
-        }
-      }
-
-      let lastNameMatches = true;
-      if (trimmedLastNameSearch) {
-        if (isLastNameExactMatch) {
-          lastNameMatches = lastName === trimmedLastNameSearch.toLowerCase();
-        } else {
-          lastNameMatches = lastName.includes(trimmedLastNameSearch.toLowerCase());
-        }
-      }
+      const firstNameMatches = matchesNameSearch(user.firstName, firstNameSearch);
+      const lastNameMatches = matchesNameSearch(user.lastName, lastNameSearch);
 
       let wildcardMatches = true;
       if (wildCardSearch) {
@@ -485,8 +513,7 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
-
+const canManageTimeOffRequests = this.props.hasPermission(permissions.manageTimeOffRequests);
     const hasRolePermission =
       this.props.state.auth.user.role === 'Administrator' || this.props.state.auth.user.role === 'Owner';
     if (canManageTimeOffRequests || hasRolePermission) {
@@ -648,13 +675,12 @@ class UserManagement extends React.PureComponent {
   };
 
   onWildCardSearch = (searchText) => {
-    this.setState(
-      {
-        wildCardSearchText: searchText,
-        selectedPage: 1,
-      },
-      () => this.updateGetFilteredData(),
-    );
+    // Update the visible input immediately; debounce the state change that
+    // actually re-filters/re-renders the (potentially large) user list.
+    // componentDidUpdate already re-runs getFilteredData when wildCardSearchText
+    // changes, so the debounced update below doesn't need its own explicit call.
+    this.setState({ rawSearchText: searchText });
+    this.debouncedApplyWildCardSearch(searchText);
   };
 
   onActiveFilter = (value) => {
@@ -798,7 +824,7 @@ class UserManagement extends React.PureComponent {
       <>
         <UserSearchPanel
           onSearch={this.onWildCardSearch}
-          searchText={this.state.wildCardSearchText}
+          searchText={this.state.rawSearchText}
           onActiveFilter={this.onActiveFilter}
           onNewUserClick={this.onNewUserClick}
           handleNewUserSetupPopup={this.handleNewUserSetupPopup}
