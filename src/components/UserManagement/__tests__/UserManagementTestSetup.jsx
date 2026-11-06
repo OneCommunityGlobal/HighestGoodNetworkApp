@@ -32,8 +32,12 @@ vi.mock('../UserTableHeader', () => ({
 }));
 
 vi.mock('../UserTableData', () => ({
-  default: ({ onPauseResumeClick, onFinalDayClick, onActiveInactiveClick, user, index }) => (
-    <div data-testid={`user-table-data-${index}`}>
+  default: ({ onPauseResumeClick, onFinalDayClick, onActiveInactiveClick, user, index, isMobile, mobileFontSize }) => (
+    <div
+      data-testid={`user-table-data-${index}`}
+      data-mobile={String(isMobile)}
+      data-mobile-font-size={mobileFontSize}
+    >
       <button
         data-testid={`pause-resume-button-${index}`}
         onClick={() => onPauseResumeClick(user, MOCK_ACTIVE)}
