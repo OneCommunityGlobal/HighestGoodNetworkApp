@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Redirect } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -75,16 +75,52 @@ describe('QuestionnaireAccessGate', () => {
     expect(screen.queryByText('Questionnaire content')).not.toBeInTheDocument();
   });
 
-  it('does not re-check access once a user is known to be eligible', async () => {
-    axios.get.mockResolvedValue({ data: { eligible: true } });
+  describe('when the user already passed a check', () => {
+    const passCheckThenLeavePage = async () => {
+      axios.get.mockResolvedValueOnce({ data: { eligible: true } });
+      const { unmount } = renderGate();
+      await screen.findByText('Questionnaire content');
+      unmount();
+    };
 
-    const { unmount } = renderGate();
-    await screen.findByText('Questionnaire content');
-    unmount();
-    renderGate();
+    it('keeps the form on screen while re-checking access', async () => {
+      await passCheckThenLeavePage();
+      axios.get.mockResolvedValueOnce({ data: { eligible: true } });
 
-    expect(screen.getByText('Questionnaire content')).toBeInTheDocument();
-    expect(axios.get).toHaveBeenCalledTimes(1);
+      renderGate();
+
+      expect(screen.getByText('Questionnaire content')).toBeInTheDocument();
+      await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2));
+      expect(screen.getByText('Questionnaire content')).toBeInTheDocument();
+    });
+
+    it('blocks the questionnaire once Dropbox access has been revoked', async () => {
+      await passCheckThenLeavePage();
+      axios.get.mockResolvedValue({ data: { eligible: false, reason: 'ACCESS_REVOKED' } });
+
+      const { unmount } = renderGate();
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(/has been revoked/);
+      expect(screen.queryByText('Questionnaire content')).not.toBeInTheDocument();
+
+      // The revocation also clears the remembered result, so the form never flashes again.
+      unmount();
+      renderGate();
+
+      expect(screen.queryByText('Questionnaire content')).not.toBeInTheDocument();
+      expect(await screen.findByRole('alert')).toHaveTextContent(/has been revoked/);
+    });
+
+    it('keeps the form on screen when the re-check fails', async () => {
+      await passCheckThenLeavePage();
+      axios.get.mockRejectedValueOnce(new Error('network'));
+
+      renderGate();
+
+      await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2));
+      expect(await screen.findByText('Questionnaire content')).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
   });
 
   it('sends eligible people from the permanent link to the first questionnaire page', async () => {

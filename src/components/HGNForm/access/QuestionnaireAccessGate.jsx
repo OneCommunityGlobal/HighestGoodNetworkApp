@@ -15,7 +15,9 @@ const DENIED_MESSAGES = {
 const DEFAULT_DENIED_MESSAGE =
   'This questionnaire becomes available after you have been set up and invited through the Highest Good Network Dropbox process.';
 
-// Remember a successful check so moving between questionnaire pages does not refetch.
+// Remember a successful check so moving between questionnaire pages does not flash the spinner.
+// It only decides what to show while the check runs: access is re-checked on every mount, so
+// revoked access takes effect on the next page or link opened.
 const eligibleUserIds = new Set();
 
 export const resetQuestionnaireAccessCache = () => eligibleUserIds.clear();
@@ -28,17 +30,20 @@ function QuestionnaireAccessGate({ children }) {
   );
 
   useEffect(() => {
-    if (!userId || eligibleUserIds.has(userId)) return undefined;
+    if (!userId) return undefined;
     let cancelled = false;
 
     axios
       .get(ENDPOINTS.HGN_FORM_ACCESS)
       .then(({ data }) => {
         if (data?.eligible) eligibleUserIds.add(userId);
+        else eligibleUserIds.delete(userId);
         if (!cancelled) setStatus({ eligible: !!data?.eligible, reason: data?.reason });
       })
       .catch(() => {
-        if (!cancelled) setStatus({ eligible: false, error: true });
+        // A failed re-check is not a revocation, so don't take the form away from someone who
+        // is mid-way through it. Submitting is still checked by the server.
+        if (!cancelled && !eligibleUserIds.has(userId)) setStatus({ eligible: false, error: true });
       });
 
     return () => {
