@@ -1,3 +1,4 @@
+import { LBNavHeader, LBBackButton } from '../LBNavHeader';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Carousel from 'react-bootstrap/Carousel';
@@ -105,6 +106,8 @@ function ListOverview() {
       <div className={`${styles.logoContainer}`}>
         <img src={logo} alt="One Community Logo" />
       </div>
+      <LBNavHeader />
+      <LBBackButton />
       <div className={`${styles.contentContainer}`}>
         <div className={`${styles.containerTop}`} />
         <div className={`${styles.containerMain}`}>
