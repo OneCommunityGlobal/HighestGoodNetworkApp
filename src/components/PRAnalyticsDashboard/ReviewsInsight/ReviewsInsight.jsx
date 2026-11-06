@@ -166,6 +166,13 @@ function ReviewsInsight() {
                 color: darkMode ? '#f1f1f1' : '#000',
                 cursor: 'pointer',
               }),
+
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#23304d' : '#e6e6e6',
+                borderRadius: '2px',
+                margin: '2px',
+              }),
             }}
           />
         </div>
