@@ -1,220 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, CardBody, Table } from 'reactstrap';
+import { Row, Col, Card, CardBody, Alert } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ClassPerformanceView.module.css';
 import MetricCard from '../MetricCard/MetricCard';
 import ReportChart from '../ReportChart/ReportChart';
-import { getStatusClass, getStatusIcon, getStatusText } from '../../utils/statusUtils';
-
-const getClassMockData = classId => {
-  const classDataMap = {
-    '1': {
-      class: { id: '1', name: 'Grade 5A - Mathematics', studentCount: 25, teacher: 'Ms. Johnson' },
-      metrics: { classAverage: 78, completionRate: 85, engagementRate: 82, activeLearners: 23 },
-      changes: { classAverage: 3.5, completionRate: 7.2, engagementRate: -1.8, activeLearners: 2 },
-      subjectPerformance: [
-        { subject: 'Arts/Trades', performance: 69, color: '#8b5cf6' },
-        { subject: 'Mathematics', performance: 83, color: '#4f46e5' },
-        { subject: 'English', performance: 74, color: '#10b981' },
-        { subject: 'Science', performance: 68, color: '#f59e0b' },
-        { subject: 'Health', performance: 62, color: '#ef4444' },
-        { subject: 'Social Studies', performance: 71, color: '#06b6d4' },
-        { subject: 'Tech & Innovation', performance: 79, color: '#06b6d4' },
-        { subject: 'Values', performance: 87, color: '#84cc16' },
-      ],
-      teachingStrategies: {
-        labels: [
-          'Game Lesson',
-          'Power Play',
-          'Book Smart Exploration',
-          'Core Creative Centered Composition',
-          'Exercised Smart Generation',
-          'Curious Dropout',
-        ],
-        datasets: [
-          {
-            label: 'Effectiveness',
-            data: [92, 85, 85, 67, 78, 65],
-            backgroundColor: ['#10b981', '#10b981', '#10b981', '#3b82f6', '#3b82f6', '#ef4444'],
-          },
-        ],
-      },
-      lifeStrategies: {
-        labels: [
-          'Everything you do Should Increase Choices',
-          'Ask "what would Jesus do?"',
-          'Choose to trust with observation',
-          'Practice nurturing your emotional intelligence',
-        ],
-        datasets: [
-          {
-            label: 'Impact',
-            data: [91, 89, 82, 78],
-            backgroundColor: ['#10b981', '#10b981', '#fbbf24', '#fbbf24'],
-          },
-        ],
-      },
-      insights: [
-        {
-          type: 'success',
-          title: 'Game Lesson Strategy',
-          message:
-            'The Game Lesson Strategy has been effective. Students respond well to interactive gameplay.',
-          action: 'Analyze Micro Lesson Strategies',
-        },
-        {
-          type: 'warning',
-          title: 'Conversation Practice',
-          message:
-            'Conversing practice showed room for improvement. Consider focusing more on practical applications.',
-          action: 'Learn about application strategies',
-        },
-      ],
-    },
-    '2': {
-      class: { id: '2', name: 'Grade 6B - Science', studentCount: 28, teacher: 'Mr. Smith' },
-      metrics: { classAverage: 85, completionRate: 92, engagementRate: 88, activeLearners: 26 },
-      changes: { classAverage: 5.2, completionRate: 8.5, engagementRate: 3.1, activeLearners: 4 },
-      subjectPerformance: [
-        { subject: 'Arts/Trades', performance: 77, color: '#8b5cf6' },
-        { subject: 'Science', performance: 89, color: '#f59e0b' },
-        { subject: 'Mathematics', performance: 82, color: '#4f46e5' },
-        { subject: 'English', performance: 76, color: '#10b981' },
-        { subject: 'Tech & Innovation', performance: 85, color: '#06b6d4' },
-        { subject: 'Social Studies', performance: 71, color: '#8b5cf6' },
-        { subject: 'Health', performance: 67, color: '#ef4444' },
-        { subject: 'Values', performance: 84, color: '#84cc16' },
-      ],
-      teachingStrategies: {
-        labels: [
-          'Power Play',
-          'Experiment Lab',
-          'Nature Walk Discovery',
-          'Tech Exploration',
-          'Group Discussion',
-          'Video Analysis',
-        ],
-        datasets: [
-          {
-            label: 'Effectiveness',
-            data: [95, 90, 88, 82, 76, 70],
-            backgroundColor: ['#10b981', '#10b981', '#10b981', '#10b981', '#3b82f6', '#3b82f6'],
-          },
-        ],
-      },
-      lifeStrategies: {
-        labels: [
-          'Everything you do Should Increase Choices',
-          'Ask "what would Jesus do?"',
-          'Practice observation skills',
-          'Collaborative learning',
-        ],
-        datasets: [
-          {
-            label: 'Impact',
-            data: [94, 91, 86, 82],
-            backgroundColor: ['#10b981', '#10b981', '#10b981', '#fbbf24'],
-          },
-        ],
-      },
-      insights: [
-        {
-          type: 'success',
-          title: 'Excellent Performance',
-          message:
-            'Grade 6B is performing above average. The Experiment Lab strategy is highly effective.',
-          action: 'Review lesson plans',
-        },
-        {
-          type: 'info',
-          title: 'Growing Engagement',
-          message: 'Video Analysis is improving. Continue integrating multimedia into lessons.',
-          action: 'Explore more videos',
-        },
-      ],
-    },
-    '3': {
-      class: { id: '3', name: 'Grade 4C - English', studentCount: 22, teacher: 'Mrs. Davis' },
-      metrics: { classAverage: 72, completionRate: 78, engagementRate: 68, activeLearners: 18 },
-      changes: {
-        classAverage: -2.1,
-        completionRate: 1.5,
-        engagementRate: -5.3,
-        activeLearners: -1,
-      },
-      subjectPerformance: [
-        { subject: 'Arts/Trades', performance: 60, color: '#8b5cf6' },
-        { subject: 'English', performance: 73, color: '#10b981' },
-        { subject: 'Mathematics', performance: 66, color: '#4f46e5' },
-        { subject: 'Science', performance: 61, color: '#f59e0b' },
-        { subject: 'Social Studies', performance: 58, color: '#8b5cf6' },
-        { subject: 'Health', performance: 54, color: '#ef4444' },
-        { subject: 'Tech & Innovation', performance: 64, color: '#06b6d4' },
-        { subject: 'Values', performance: 77, color: '#84cc16' },
-      ],
-      teachingStrategies: {
-        labels: [
-          'Story Time',
-          'Reading Circle',
-          'Creative Writing',
-          'Peer Review',
-          'Grammar Games',
-          'Silent Reading',
-        ],
-        datasets: [
-          {
-            label: 'Effectiveness',
-            data: [88, 85, 78, 72, 65, 58],
-            backgroundColor: ['#10b981', '#10b981', '#3b82f6', '#3b82f6', '#f59e0b', '#ef4444'],
-          },
-        ],
-      },
-      lifeStrategies: {
-        labels: [
-          'Everything you do Should Increase Choices',
-          'Ask "what would Jesus do?"',
-          'Practice patience while reading',
-          'Empathy in storytelling',
-        ],
-        datasets: [
-          {
-            label: 'Impact',
-            data: [85, 80, 72, 68],
-            backgroundColor: ['#10b981', '#10b981', '#fbbf24', '#ef4444'],
-          },
-        ],
-      },
-      insights: [
-        {
-          type: 'warning',
-          title: 'Below Average Performance',
-          message:
-            'Grade 4C needs additional support in English. Consider differentiated instruction.',
-          action: 'Review student assessments',
-        },
-        {
-          type: 'info',
-          title: 'Strength: Story Time',
-          message:
-            'Story Time is highly effective. Increase frequency of narrative-based activities.',
-          action: 'Plan story sessions',
-        },
-      ],
-    },
-  };
-  return classDataMap[classId] || classDataMap['1'];
-};
 
 const ClassPerformanceView = ({ filters }) => {
   const [loading, setLoading] = useState(true);
   const [classData, setClassData] = useState(null);
   const darkMode = useSelector(state => state.theme?.darkMode || false);
 
+  // Mock data based on the design
+  const mockClassData = {
+    class: {
+      id: '1',
+      name: 'Grade 5A - Mathematics',
+      studentCount: 25,
+      teacher: 'Ms. Johnson',
+    },
+    metrics: {
+      classAverage: 78,
+      completionRate: 85,
+      engagementRate: 82,
+      activeLearners: 23,
+    },
+    changes: {
+      classAverage: 3.5,
+      completionRate: 7.2,
+      engagementRate: -1.8,
+      activeLearners: 2,
+    },
+    teachingStrategies: {
+      labels: [
+        'Game Lesson',
+        'Power Play',
+        'Book Smart Exploration',
+        'Core Creative Centered Composition',
+        'Exercised Smart Generation',
+        'Curious Dropout',
+      ],
+      datasets: [
+        {
+          label: 'Effectiveness',
+          data: [92, 85, 85, 67, 78, 65],
+          backgroundColor: ['#10b981', '#10b981', '#10b981', '#3b82f6', '#3b82f6', '#ef4444'],
+        },
+      ],
+    },
+    lifeStrategies: {
+      labels: [
+        'Everything you do Should Increase Choices',
+        'Ask "what would Jesus do?"',
+        'Choose to trust with observation',
+        'Practice nurturing your emotional intelligence to connect your current state during and nurturing',
+      ],
+      datasets: [
+        {
+          label: 'Impact',
+          data: [91, 89, 82, 78],
+          backgroundColor: ['#10b981', '#10b981', '#fbbf24', '#fbbf24'],
+        },
+      ],
+    },
+    insights: [
+      {
+        type: 'success',
+        title: 'Game Lesson Strategy',
+        message:
+          'The Game Lesson Strategy has been effective to align with your teaching style. Strategies that work align with your teaching style.',
+        action: 'Analyze Micro Lesson Strategies',
+      },
+      {
+        type: 'warning',
+        title: 'Conversation practice',
+        message:
+          'Conversing practice and mindset practices showed relevant increase choice to remediate with practice learning experience for you. Consider focusing more on practical applications and make learning tangible.',
+        action: 'Learn about application strategies',
+      },
+    ],
+  };
+
   useEffect(() => {
+    // Simulate API call
     const fetchClassData = async () => {
       setLoading(true);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setClassData(getClassMockData(filters.classId));
+      setClassData(mockClassData);
       setLoading(false);
     };
 
@@ -225,6 +96,12 @@ const ClassPerformanceView = ({ filters }) => {
       setLoading(false);
     }
   }, [filters.classId, filters.subject, filters.dateRange]);
+
+  const getStrategyLabel = value => {
+    if (value >= 85) return 'Highly Effective (85%)';
+    if (value >= 70) return 'Effective (70%)';
+    return 'Needs Improvement (65%)';
+  };
 
   if (!filters.classId) {
     return (
@@ -295,76 +172,10 @@ const ClassPerformanceView = ({ filters }) => {
       </Row>
 
       <Row>
-        {/* Strengths & Gaps by Subject */}
-        <Col lg={12} className={styles.chartCol}>
-          <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody className={styles.cardBody}>
-              <div className={styles.cardHeader}>
-                <h4 className={styles.cardTitle}>Strengths & Gaps by Subject</h4>
-              </div>
-
-              {loading && (
-                <div className={styles.loading}>
-                  <i className="fa fa-spinner fa-spin" aria-hidden="true" />
-                  <p>Loading subject performance...</p>
-                </div>
-              )}
-
-              {!loading && (
-                <div className={styles.tableContainer}>
-                  <Table responsive className={styles.performanceTable}>
-                    <thead>
-                      <tr>
-                        <th>Subject</th>
-                        <th>Performance</th>
-                        <th>Status</th>
-                        <th>Visual Indicator</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {classData?.subjectPerformance?.map(item => (
-                        <tr key={item.subject}>
-                          <td className={styles.subjectCell}>{item.subject}</td>
-                          <td className={styles.performanceCell}>
-                            <div className={styles.performanceBar}>
-                              <div
-                                className={styles.performanceFill}
-                                style={{
-                                  width: `${item.performance}%`,
-                                  backgroundColor: item.color,
-                                }}
-                              />
-                              <span className={styles.performanceText}>{item.performance}%</span>
-                            </div>
-                          </td>
-                          <td>
-                            <span
-                              className={`${styles.statusBadge} ${
-                                styles[getStatusClass(item.performance)]
-                              }`}
-                            >
-                              {getStatusText(item.performance)}
-                            </span>
-                          </td>
-                          <td className={styles.visualCell}>
-                            <span className={styles.visualIndicator}>
-                              {getStatusIcon(item.performance)}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              )}
-            </CardBody>
-          </Card>
-        </Col>
-
         {/* Teaching Strategies Effectiveness */}
         <Col lg={6} className={styles.chartCol}>
           <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody className={styles.cardBody}>
+            <CardBody>
               <div className={styles.cardHeader}>
                 <h4 className={styles.cardTitle}>Effectiveness of Teaching Strategies</h4>
               </div>
@@ -405,7 +216,7 @@ const ClassPerformanceView = ({ filters }) => {
         {/* Impact of Life Strategies */}
         <Col lg={6} className={styles.chartCol}>
           <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody className={styles.cardBody}>
+            <CardBody>
               <div className={styles.cardHeader}>
                 <h4 className={styles.cardTitle}>Impact of Life Strategies</h4>
               </div>
@@ -452,7 +263,7 @@ const ClassPerformanceView = ({ filters }) => {
       <Row>
         <Col>
           <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody className={styles.cardBody}>
+            <CardBody>
               <h4 className={styles.cardTitle}>Actionable Insight</h4>
               <div className={styles.insightsContainer}>
                 {loading ? (
@@ -461,16 +272,11 @@ const ClassPerformanceView = ({ filters }) => {
                     <p>Generating insights...</p>
                   </div>
                 ) : (
-                  classData?.insights.map(insight => (
-                    <div
-                      key={insight.title}
-                      role="alert"
-                      className={`${styles.insightAlert} ${
-                        styles[
-                          `insightAlert${insight.type.charAt(0).toUpperCase() +
-                            insight.type.slice(1)}`
-                        ]
-                      }`}
+                  classData?.insights.map((insight, index) => (
+                    <Alert
+                      key={index}
+                      color={insight.type === 'success' ? 'success' : 'warning'}
+                      className={styles.insightAlert}
                     >
                       <div className={styles.insightContent}>
                         <div className={styles.insightHeader}>
@@ -485,7 +291,7 @@ const ClassPerformanceView = ({ filters }) => {
                           </div>
                         )}
                       </div>
-                    </div>
+                    </Alert>
                   ))
                 )}
               </div>
