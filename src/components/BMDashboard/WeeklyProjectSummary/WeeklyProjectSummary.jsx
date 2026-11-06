@@ -633,6 +633,9 @@ function WeeklyProjectSummary() {
         key: 'Financials Tracking',
         className: 'full',
         content: (
+          // FinancialsTrackingSection already renders its own CostPredictionChart and
+          // ActualVsPlannedCost internally; rendering them again here duplicated both
+          // charts on the page.
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection />
           </div>
