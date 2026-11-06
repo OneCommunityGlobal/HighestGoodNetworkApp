@@ -1,10 +1,99 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import {
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import CompletedTasksPieChart, {
   ColorSwatchCell,
+  MAX_VISIBLE_TASKS,
   PieTooltip,
   TotalHoursLabel,
 } from '../CompletedTasksPieChart';
+
+const mockUseSelector = vi.fn();
+
+vi.mock('react-redux', async () => {
+  const actual = await vi.importActual('react-redux');
+  return {
+    ...actual,
+    useSelector: selector => mockUseSelector(selector),
+  };
+});
+
+const makeTasks = count =>
+  Array.from({ length: count }, (unused, i) => ({
+    projectId: `proj-${i}`,
+    projectName: `Task ${i}`,
+    totalTime: 1,
+  }));
+
+const renderChart = taskCount => {
+  mockUseSelector.mockReturnValue({ tasksWithLoggedHoursById: makeTasks(taskCount) });
+  return render(<CompletedTasksPieChart darkMode={false} />);
+};
+
+const countTaskRows = () =>
+  screen.getAllByTestId('color-swatch').length;
+
+describe('CompletedTasksPieChart task list cap', () => {
+  beforeEach(() => {
+    mockUseSelector.mockReset();
+  });
+
+  // Pinned to the literal on purpose: the other tests reference MAX_VISIBLE_TASKS
+  // symbolically, so they stay green if the cap is lowered for local debugging.
+  // This one fails if a temporary value gets committed.
+  it('caps the collapsed list at 20, the agreed product limit', () => {
+    expect(MAX_VISIBLE_TASKS).toBe(20);
+  });
+
+  it('caps the collapsed list at the limit', () => {
+    renderChart(MAX_VISIBLE_TASKS + 13);
+
+    expect(countTaskRows()).toBe(MAX_VISIBLE_TASKS);
+  });
+
+  it('renders every task without a toggle when at or under the cap', () => {
+    renderChart(MAX_VISIBLE_TASKS);
+
+    expect(countTaskRows()).toBe(MAX_VISIBLE_TASKS);
+    expect(screen.queryByTestId('toggle-more-tasks')).not.toBeInTheDocument();
+  });
+
+  it('labels the toggle with the number of hidden tasks', () => {
+    renderChart(MAX_VISIBLE_TASKS + 13);
+
+    expect(screen.getByTestId('toggle-more-tasks')).toHaveTextContent('+ 13 more tasks');
+  });
+
+  it('singularizes the label when exactly one task is hidden', () => {
+    renderChart(MAX_VISIBLE_TASKS + 1);
+
+    expect(screen.getByTestId('toggle-more-tasks')).toHaveTextContent('+ 1 more task');
+  });
+
+  it('expands to every task and collapses back to the cap', () => {
+    renderChart(MAX_VISIBLE_TASKS + 13);
+    const toggle = screen.getByTestId('toggle-more-tasks');
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(toggle);
+    expect(countTaskRows()).toBe(MAX_VISIBLE_TASKS + 13);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(toggle).toHaveTextContent('Show less');
+
+    fireEvent.click(toggle);
+    expect(countTaskRows()).toBe(MAX_VISIBLE_TASKS);
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle).toHaveTextContent('+ 13 more tasks');
+  });
+
+  it('keeps the total hours row rendered after the list in both states', () => {
+    renderChart(MAX_VISIBLE_TASKS + 5);
+
+    expect(screen.getByText('Total Hours:')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('toggle-more-tasks'));
+    expect(screen.getByText('Total Hours:')).toBeInTheDocument();
+  });
+});
 
 describe('ColorSwatchCell', () => {
   const colorScale = { proj1: '#ff00aa', proj2: '#00aaff' };
