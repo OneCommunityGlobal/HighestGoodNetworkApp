@@ -170,12 +170,18 @@ function OrchardManagement() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
+
+    const getStringValue = name => {
+      const value = formData.get(name);
+      return typeof value === 'string' ? value.trim() : '';
+    };
+
     const quantity = Number(formData.get('quantity'));
-    const plantName = String(formData.get('plantName') || '').trim();
-    const row = String(formData.get('row') || '').trim();
-    const position = String(formData.get('position') || '').trim();
-    const notes = String(formData.get('notes') || '').trim();
-    const scheduledDate = String(formData.get('scheduledDate') || '');
+    const plantName = getStringValue('plantName');
+    const row = getStringValue('row');
+    const position = getStringValue('position');
+    const notes = getStringValue('notes');
+    const scheduledDate = getStringValue('scheduledDate');
 
     if (!plantName || !quantity || quantity < 1 || !row || !position || !scheduledDate) {
       return;
@@ -199,10 +205,16 @@ function OrchardManagement() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const supplier = String(formData.get('supplier') || '').trim();
-    const items = String(formData.get('items') || '').trim();
-    const orderedDate = String(formData.get('orderedDate') || '');
-    const expectedDate = String(formData.get('expectedDate') || '');
+
+    const getStringValue = name => {
+      const value = formData.get(name);
+      return typeof value === 'string' ? value.trim() : '';
+    };
+
+    const supplier = getStringValue('supplier');
+    const items = getStringValue('items');
+    const orderedDate = getStringValue('orderedDate');
+    const expectedDate = getStringValue('expectedDate');
 
     if (!supplier || !items || !orderedDate || !expectedDate) return;
 
@@ -378,22 +390,22 @@ function OrchardManagement() {
           {isOrderFormOpen && (
             <form className={styles.entryForm} onSubmit={handleAddOrder}>
               <label className={styles.formField}>
-                Supplier
+                <span>Supplier</span>
                 <input name="supplier" required />
               </label>
 
               <label className={styles.formField}>
-                Items
+                <span>Items</span>
                 <input name="items" required placeholder="2x Apple Trees" />
               </label>
 
               <label className={styles.formField}>
-                Ordered date
+                <span>Ordered date</span>
                 <input name="orderedDate" type="date" required />
               </label>
 
               <label className={styles.formField}>
-                Expected delivery
+                <span>Expected delivery</span>
                 <input name="expectedDate" type="date" required />
               </label>
 
