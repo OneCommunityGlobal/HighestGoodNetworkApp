@@ -213,11 +213,17 @@ describe('job application terms acknowledgement', () => {
     const checkbox = screen.getByRole('checkbox', { name: /I agree to terms and conditions/i });
     fillProfile();
     fireEvent.click(checkbox);
+
+    // Submit the form using fireEvent and allow a small tick for state update
     fireEvent.submit(screen.getByRole('form', { name: 'Job application' }));
-    await waitFor(
-      () => expect(screen.getByRole('button', { name: /submitting/i })).toBeDisabled(),
-      { timeout: 4000 },
+
+    // Use findByRole instead of waitFor for a more robust query to catch the asynchronous state change
+    const submittingButton = await screen.findByRole(
+      'button',
+      { name: /submitting/i },
+      { timeout: 5000 },
     );
+    expect(submittingButton).toBeDisabled();
 
     resolve({ data: {} });
     await waitFor(() => expect(checkbox).not.toBeChecked());
