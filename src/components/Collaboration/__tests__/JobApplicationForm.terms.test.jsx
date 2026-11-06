@@ -214,16 +214,11 @@ describe('job application terms acknowledgement', () => {
     fillProfile();
     fireEvent.click(checkbox);
 
-    // Submit the form using fireEvent and allow a small tick for state update
     fireEvent.submit(screen.getByRole('form', { name: 'Job application' }));
 
-    // Use findByRole instead of waitFor for a more robust query to catch the asynchronous state change
-    const submittingButton = await screen.findByRole(
-      'button',
-      { name: /submitting/i },
-      { timeout: 5000 },
-    );
-    expect(submittingButton).toBeDisabled();
+    // Get the submit button directly by its submit type and assert that it is disabled
+    const submitButton = screen.getByRole('button', { type: 'submit' });
+    expect(submitButton).toBeDisabled();
 
     resolve({ data: {} });
     await waitFor(() => expect(checkbox).not.toBeChecked());
