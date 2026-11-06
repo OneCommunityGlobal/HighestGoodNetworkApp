@@ -356,6 +356,43 @@
   visibility: visible;
 }
 
+.Schedule-Reason-div {
+  cursor: default;
+}
+
+.Schedule-Reason-div:has(button:disabled) {
+  cursor: not-allowed;
+}
+
+.Schedule-Reason-tooltip {
+  visibility: hidden;
+  background-color: white;
+  color: black;
+  text-align: center;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  position: relative;
+  z-index: 1;
+  font-size: 0.8rem;
+  top: 10px;
+}
+
+.Schedule-Reason-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent black;
+}
+
+.Schedule-Reason-div:hover .Schedule-Reason-tooltip {
+  visibility: visible;
+}
+
 @media only screen and (width <= 1024px) {
   .profileContainer {
     justify-content: space-around;
