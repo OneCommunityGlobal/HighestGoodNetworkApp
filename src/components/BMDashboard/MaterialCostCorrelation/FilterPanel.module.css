@@ -1,0 +1,458 @@
+.filterPanel {
+  --filter-panel-bg: #f8f9fa;
+  --filter-text: #1a202c;
+  --filter-border: #e2e8f0;
+  --input-bg: #fff;
+  --input-border: #ced4da;
+  --input-text: #1a202c;
+  --button-bg: #007bff;
+  --button-hover-bg: #0056b3;
+  --button-text: #fff;
+  --preset-button-bg: #f8f9fa;
+  --preset-button-hover-bg: #e9ecef;
+  --preset-button-text: #1a202c;
+  --reset-button-bg: #dc3545;
+  --reset-button-hover-bg: #c82333;
+
+  padding: 16px;
+  background-color: var(--filter-panel-bg);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid var(--filter-border);
+  color: var(--filter-text);
+}
+
+.darkMode {
+  --filter-panel-bg: #1b2a41;
+  --filter-text: #f7fafc;
+  --filter-border: #334155;
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --input-text: #f7fafc;
+  --button-bg: #3b82f6;
+  --button-hover-bg: #2563eb;
+  --button-text: #fff;
+  --preset-button-bg: #1e293b;
+  --preset-button-hover-bg: #334155;
+  --preset-button-text: #f7fafc;
+  --reset-button-bg: #ef4444;
+  --reset-button-hover-bg: #dc2626;
+}
+
+/* react-datepicker renders its popup calendar via a portal appended to
+   document.body, outside .filterPanel/.darkMode's DOM subtree, so it can't
+   see the CSS variables scoped above. Redeclare the dark-mode values here,
+   keyed off the body-level dark mode class, so the portaled calendar
+   picks them up too. */
+:global(body.dark-mode) {
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --input-text: #f7fafc;
+  --button-bg: #3b82f6;
+  --button-hover-bg: #2563eb;
+  --button-text: #fff;
+  --filter-panel-bg: #1b2a41;
+  --preset-button-hover-bg: #334155;
+}
+
+.filterGrid {
+  display: grid;
+
+  /* 160 px minimum lets the grid fit 2 columns in a ~380 px card column,
+     while still expanding to 4 columns in full-width contexts. */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterLabel {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--filter-text);
+}
+
+.dateRangeContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dateSeparator {
+  margin: 0 4px;
+  color: var(--filter-text);
+  font-size: 14px;
+}
+
+.datePickerLight,
+.datePickerDark {
+  padding: 8px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  width: 100%;
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filterPanel.darkMode input.datePickerDark {
+  background-color: #1e293b;
+  color: #f7fafc;
+  border-color: #475569;
+}
+
+.filterPanel.darkMode input.datePickerDark::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+/* Keep the react-datepicker calendar icon visible in dark mode. */
+.filterPanel.darkMode :global(.react-datepicker__calendar-icon) {
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+/* Leave space for the calendar icon so it does not overlap the date text. */
+.filterPanel :global(.react-datepicker__view-calendar-icon input) {
+  padding-left: 40px;
+}
+
+.datePickerLight:focus,
+.datePickerDark:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+}
+
+.presetButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  /* Sits below the filter grid as a full-width row */
+  margin-top: 12px;
+}
+
+.presetButtonLight,
+.presetButtonDark {
+  padding: 8px 14px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--preset-button-bg);
+  color: var(--preset-button-text);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.presetButtonLight:hover,
+.presetButtonDark:hover {
+  background: var(--preset-button-hover-bg);
+  border-color: var(--button-bg);
+  transform: translateY(-1px);
+}
+
+.presetButtonLight:active,
+.presetButtonDark:active {
+  transform: translateY(0);
+}
+
+.presetButtonLight:focus-visible,
+.presetButtonDark:focus-visible {
+  outline: 2px solid var(--button-bg);
+  outline-offset: 2px;
+}
+
+.resetButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    box-shadow 0.2s ease, transform 0.2s ease;
+  width: 100%;
+}
+
+.resetButtonLight {
+  background: var(--reset-button-bg);
+  color: var(--button-text);
+}
+
+.resetButtonLight:hover {
+  background: var(--reset-button-hover-bg);
+  transform: translateY(-1px);
+}
+
+.resetButtonLight:active {
+  transform: translateY(0);
+}
+
+.resetButtonLight:focus-visible {
+  outline: 2px solid var(--reset-button-bg);
+  outline-offset: 2px;
+}
+
+.resetButtonDark {
+  background: var(--reset-button-bg);
+  color: var(--button-text);
+}
+
+.resetButtonDark:hover {
+  background: var(--reset-button-hover-bg);
+  transform: translateY(-1px);
+}
+
+.resetButtonDark:active {
+  transform: translateY(0);
+}
+
+.resetButtonDark:focus-visible {
+  outline: 2px solid var(--reset-button-bg);
+  outline-offset: 2px;
+}
+
+/* React-Select Styling */
+.filterPanel :global(.select__control) {
+  min-height: 42px;
+}
+
+.filterPanel .controlLight {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-text);
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.filterPanel .controlLight:hover {
+  border-color: var(--button-bg);
+}
+
+.filterPanel .controlLight:focus-within {
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+}
+
+.filterPanel .controlDark {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-text);
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.filterPanel .controlDark:hover {
+  border-color: var(--button-bg);
+}
+
+.filterPanel .controlDark:focus-within {
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
+}
+
+.filterPanel .menuLight {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+}
+
+.filterPanel .menuDark {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+}
+
+.filterPanel .optionLight {
+  background-color: transparent;
+  color: var(--input-text);
+  padding: 10px 12px;
+}
+
+.filterPanel .optionLight:hover {
+  background-color: #e9ecef;
+}
+
+.filterPanel .optionLight:active {
+  background-color: #dee2e6;
+}
+
+.filterPanel .optionDark {
+  background-color: transparent;
+  color: var(--input-text);
+  padding: 10px 12px;
+}
+
+.filterPanel .optionDark:hover {
+  background-color: #334155;
+}
+
+.filterPanel .optionDark:active {
+  background-color: #475569;
+}
+
+.filterPanel .multiValueLight {
+  background-color: #dceeff;
+  border-radius: 4px;
+}
+
+.filterPanel .multiValueDark {
+  background-color: #334155;
+  border-radius: 4px;
+}
+
+.filterPanel .multiValueLabelLight {
+  color: #1a202c;
+  font-size: 13px;
+  padding: 4px 8px;
+}
+
+.filterPanel .multiValueLabelDark {
+  color: #f7fafc;
+  font-size: 13px;
+  padding: 4px 8px;
+}
+
+/* React-DatePicker Styling */
+.filterPanel :global(.react-datepicker) {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  font-family: inherit;
+}
+
+.filterPanel :global(.react-datepicker__header) {
+  background-color: var(--filter-panel-bg);
+  border-bottom: 1px solid var(--input-border);
+  border-radius: 8px 8px 0 0;
+}
+
+.filterPanel :global(.react-datepicker__current-month),
+.filterPanel :global(.react-datepicker__day-name),
+.filterPanel :global(.react-datepicker__day),
+.filterPanel :global(.react-datepicker__month-text),
+.filterPanel :global(.react-datepicker__year-text) {
+  color: var(--input-text);
+}
+
+.filterPanel :global(.react-datepicker__day:hover),
+.filterPanel :global(.react-datepicker__month-text:hover),
+.filterPanel :global(.react-datepicker__year-text:hover) {
+  background-color: var(--preset-button-hover-bg);
+  border-radius: 4px;
+}
+
+.filterPanel :global(.react-datepicker__day--selected),
+.filterPanel :global(.react-datepicker__day--in-selecting-range),
+.filterPanel :global(.react-datepicker__day--in-range) {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-radius: 4px;
+}
+
+.filterPanel :global(.react-datepicker__day--selected:hover) {
+  background-color: var(--button-hover-bg);
+}
+
+.filterPanel :global(.react-datepicker__day--today) {
+  font-weight: 700;
+  border: 1px solid var(--button-bg);
+  border-radius: 4px;
+}
+
+.filterPanel :global(.react-datepicker__day--keyboard-selected) {
+  background-color: var(--preset-button-hover-bg);
+  color: var(--input-text);
+  border-radius: 4px;
+}
+
+.filterPanel :global(.select__input-container),
+.filterPanel :global(.select__input-container input),
+.filterPanel :global(.select__input) {
+  color: var(--input-text);
+}
+
+.filterPanel :global(.react-datepicker__close-icon::after) {
+  background-color: transparent;
+  color: var(--input-text);
+  opacity: 0.6;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.filterPanel :global(.react-datepicker-popper) {
+  z-index: 999;
+  max-width: 100vw;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .datePickerLight,
+  .datePickerDark,
+  .presetButtonLight,
+  .presetButtonDark,
+  .resetButtonLight,
+  .resetButtonDark {
+    transition: none;
+  }
+
+  .presetButtonLight:hover,
+  .presetButtonLight:active,
+  .presetButtonDark:hover,
+  .presetButtonDark:active,
+  .resetButtonLight:hover,
+  .resetButtonLight:active,
+  .resetButtonDark:hover,
+  .resetButtonDark:active {
+    transform: none;
+  }
+}
+
+/* Responsive Media Queries */
+@media (width <= 1024px) {
+  .filterPanel {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+}
+
+@media (width <= 768px) {
+  .filterPanel {
+    padding: 10px;
+    margin-bottom: 6px;
+  }
+
+  .dateRangeContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dateSeparator {
+    display: none;
+  }
+}
+
+@media (width <= 480px) {
+  .filterPanel {
+    padding: 8px;
+    margin-bottom: 4px;
+  }
+
+  .filterGrid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+}

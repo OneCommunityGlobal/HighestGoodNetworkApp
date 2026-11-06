@@ -424,7 +424,7 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
-        // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
+        // Shared with /bmdashboard/issuechart so the PR-required four-card grouping stays in sync.
         content: (
           <MaterialConsumptionCards
             quantityOfMaterialsUsedData={quantityOfMaterialsUsedData}
