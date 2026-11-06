@@ -214,7 +214,7 @@ describe('job application terms acknowledgement', () => {
     fillProfile();
     fireEvent.click(checkbox);
     fireEvent.submit(screen.getByRole('form', { name: 'Job application' }));
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Submitting…' })).toBeDisabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: /submitting/i })).toBeDisabled());
     resolve({ data: {} });
     await waitFor(() => expect(checkbox).not.toBeChecked());
   });
