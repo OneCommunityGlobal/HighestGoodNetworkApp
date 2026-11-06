@@ -35,78 +35,6 @@
   margin-bottom: 0.25rem;
 }
 
-/* Header Styles */
-.biddingHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #9bcc3f;
-  padding: 0.75rem 2rem;
-}
-
-.headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.villageSelect {
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  width: 250px;
-}
-
-.goButton {
-  background-color: #e5e5e5;
-  border: 1px solid #ccc;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-/* Right side of header */
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.welcomeText {
-  font-weight: bold;
-}
-
-.iconContainer {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.iconBadge {
-  position: relative;
-}
-
-.messageIcon,
-.notificationIcon,
-.userIcon {
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-}
 
 /* Main Container */
 .biddingContainer {
@@ -290,6 +218,7 @@
 .biddingForm {
   display: flex;
   flex-direction: column;
+  gap: 1.25rem;
   margin-bottom: 11.5rem;
 }
 
@@ -309,7 +238,7 @@
 }
 
 .formGroup label {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
   font-size: 0.9rem;
 }
 
@@ -342,6 +271,10 @@ input[type='date'] {
   border-radius: 2px;
 }
 
+.submitButtonContainer {
+  margin-top: 0.5rem;
+}
+
 .submitButton1 {
   background-color: #4caf50;
   color: white;
@@ -349,6 +282,13 @@ input[type='date'] {
   white-space: nowrap;
   min-width: 300px;
   padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submitButton1:hover {
+  background-color: #43a047;
 }
 
 /* Bidding Actions (Buttons) */
@@ -392,3 +332,95 @@ input[type='date'] {
     flex-direction: column;
   }
 }
+/* Image zoom */
+.zoomTrigger {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+}
+
+.zoomHint {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgb(0 0 0 / 55%);
+  color: #fff;
+}
+
+.zoomBody {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  background-color: #000;
+}
+
+.zoomImage {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+/* Dark mode: biddingPageDark is added to the page root when darkMode is on */
+.biddingPageDark,
+.biddingPageDark .topLogoContainer {
+  background-color: #0f1629;
+}
+
+.biddingPageDark .boxContainer {
+  background-color: #1b2a41;
+}
+
+.biddingPageDark .biddingCard {
+  background-color: #2b3e59;
+  color: #fff;
+}
+
+.biddingPageDark .unitTitle,
+.biddingPageDark .unitSubtitle {
+  color: #fff;
+}
+
+.biddingPageDark .mapLink {
+  color: #60a5fa;
+}
+
+.biddingPageDark .biddingForm input {
+  background-color: #3a506b;
+  border-color: #4a5a77;
+  color: #fff;
+}
+
+.biddingPageDark .biddingForm input::placeholder {
+  color: #b0b8c4;
+}
+
+.biddingPageDark .biddingForm input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.biddingPageDark .actionButton {
+  background-color: #3a506b;
+  border-color: #4a5a77;
+  color: #fff;
+}
+.zoomModalDark {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.zoomModalDark :global(.close) {
+  color: #fff;
+  text-shadow: none;
+}
+
