@@ -413,7 +413,6 @@
   min-height: 500px;
   border-radius: 8px;
   overflow: hidden;
-  grid-column: span 4;
 }
 
 /* Stacks cards in one column across every column of the section grid, so the
@@ -1079,4 +1078,20 @@
 
 .darkMode .noCardsMessage {
   color: #cfd7e3;
+}
+
+.projectStatusChartCard {
+  width: 100%;
+  min-width: 0;
+  padding: 20px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--card-shadow);
+  box-sizing: border-box;
+}
+
+.projectStatusChartCard :global(.recharts-responsive-container) {
+  max-width: 450px;
+  max-height: 450px;
 }

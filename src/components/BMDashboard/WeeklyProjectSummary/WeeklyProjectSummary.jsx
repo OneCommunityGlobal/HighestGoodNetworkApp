@@ -40,6 +40,9 @@ import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
+import ProjectStatusDonutChart from '../ProjectStatus/ProjectStatusDonutChart';
+import UtilizationChart from '../UtilizationChart/UtilizationChart';
+import MaterialUsageDashboard from '../../MaterialSummary/MaterialSummary';
 
 const projectStatusButtonData = [
   ['Total Projects', 'totalProjects', '#F0FFEE', '#BAF0B6', '#328D1B'],
@@ -424,14 +427,38 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
-        // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
         content: (
-          <MaterialConsumptionCards
-            quantityOfMaterialsUsedData={quantityOfMaterialsUsedData}
-            comparisonMode={comparisonPeriodFilter}
-            currentDateRange={currentDateRange}
-            comparisonDateRange={comparisonDateRange}
-          />
+          <div
+            style={{
+              gridColumn: '1 / -1',
+              width: '100%',
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+            }}
+          >
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gap: '20px',
+                width: '100%',
+                minWidth: 0,
+              }}
+            >
+              <MaterialConsumptionCards
+                quantityOfMaterialsUsedData={quantityOfMaterialsUsedData}
+                comparisonMode={comparisonPeriodFilter}
+                currentDateRange={currentDateRange}
+                comparisonDateRange={comparisonDateRange}
+              />
+            </div>
+
+            <div className={styles.projectStatusChartCard}>
+              <MaterialUsageDashboard />
+            </div>
+          </div>
         ),
       },
       {
@@ -477,6 +504,12 @@ function WeeklyProjectSummary() {
               style={{ width: '100%' }}
             >
               <ToolsStoppageHorizontalBarChart />
+            </div>
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ width: '100%', minHeight: '600px', height: 'auto' }}
+            >
+              <UtilizationChart />
             </div>
           </div>
         ),
@@ -571,11 +604,14 @@ function WeeklyProjectSummary() {
         key: 'Global Distribution and Project Status',
         className: 'full',
         content: (
-          <div
-            className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
-            style={{ padding: '0' }}
-          >
-            <InteractiveMap />
+          <div className={styles.fullWidthStack}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}>
+              <InteractiveMap />
+            </div>
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.projectStatusChartCard}`}>
+              <ProjectStatusDonutChart />
+            </div>
           </div>
         ),
       },

@@ -143,3 +143,22 @@
   border-radius: 4px;
   padding: 4px 8px;
 }
+
+@media (max-width: 1100px) {
+  .chartWrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .chartWrapper :global(.recharts-responsive-container) {
+    width: 100% !important;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .summaryBox {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
