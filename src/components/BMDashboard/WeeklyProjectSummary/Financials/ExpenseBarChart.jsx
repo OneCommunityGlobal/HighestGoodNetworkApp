@@ -346,10 +346,24 @@ CustomTooltip.propTypes = {
   label: PropTypes.string,
   darkMode: PropTypes.bool,
 };
+const getExpenseResponsiveSettings = isNarrowChart => ({
+  margin: {
+    top: isNarrowChart ? 38 : 25,
+    right: isNarrowChart ? 2 : 10,
+    left: isNarrowChart ? 0 : 52,
+    bottom: 0,
+  },
+  barGap: isNarrowChart ? 3 : 18,
+  barCategoryGap: isNarrowChart ? '8%' : '28%',
+  tickFontSize: isNarrowChart ? 10 : 12,
+  yAxisWidth: isNarrowChart ? 52 : 78,
+  yAxisLabelOffset: isNarrowChart ? -12 : -34,
+  formatProject: value => (isNarrowChart ? value.replace(/^Project\s+/, '') : value),
+});
 const ExpenseChartDisplay = ({ data, errorMessage, theme, darkMode }) => {
   const [chartWidth, setChartWidth] = useState(0);
   const isNarrowChart = chartWidth > 0 && chartWidth < 500;
-
+  const responsive = getExpenseResponsiveSettings(isNarrowChart);
   return (
     <div style={{ width: '100%', height: '300px' }}>
       {data.length === 0 && !errorMessage ? (
@@ -378,40 +392,35 @@ const ExpenseChartDisplay = ({ data, errorMessage, theme, darkMode }) => {
           <ResponsiveContainer width="100%" height="100%" onResize={width => setChartWidth(width)}>
             <BarChart
               data={data}
-              margin={{
-                top: isNarrowChart ? 38 : 25,
-                right: isNarrowChart ? 2 : 10,
-                left: isNarrowChart ? 0 : 52,
-                bottom: 0,
-              }}
-              barGap={isNarrowChart ? 3 : 18}
-              barCategoryGap={isNarrowChart ? '8%' : '28%'}
+              margin={responsive.margin}
+              barGap={responsive.barGap}
+              barCategoryGap={responsive.barCategoryGap}
             >
               <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} vertical={false} />
               <XAxis
                 dataKey="project"
                 stroke={theme.axisStroke}
                 tick={{
-                  fontSize: isNarrowChart ? 10 : 12,
+                  fontSize: responsive.tickFontSize,
                   fill: theme.axisTick,
                   fontWeight: 500,
                 }}
-                tickFormatter={value => (isNarrowChart ? value.replace(/^Project\s+/, '') : value)}
+                tickFormatter={responsive.formatProject}
                 interval={0}
                 tickMargin={8}
               />
               <YAxis
                 stroke={theme.axisStroke}
-                tick={{ fontSize: isNarrowChart ? 10 : 12, fill: theme.axisTick }}
+                tick={{ fontSize: responsive.tickFontSize, fill: theme.axisTick }}
                 axisLine
                 tickLine
-                width={isNarrowChart ? 52 : 78}
+                width={responsive.yAxisWidth}
                 tickFormatter={value => `$${value.toLocaleString()}`}
                 label={{
                   value: 'Cost ($)',
                   angle: -90,
                   position: 'insideLeft',
-                  offset: isNarrowChart ? -12 : -34,
+                  offset: responsive.yAxisLabelOffset,
                   fill: theme.axisTick,
                   fontSize: 12,
                   fontWeight: 600,

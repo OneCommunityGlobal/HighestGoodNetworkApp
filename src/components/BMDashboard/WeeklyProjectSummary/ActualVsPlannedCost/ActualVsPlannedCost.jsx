@@ -289,7 +289,18 @@ ActualVarianceLabel.defaultProps = {
   width: 0,
   item: null,
 };
-
+function formatLegendValue(value) {
+  return <span style={{ fontWeight: 600 }}>{value}</span>;
+}
+function ActualVarianceLabelContent({ index, chartDataWithVariance, ...labelProps }) {
+  return <ActualVarianceLabel {...labelProps} item={chartDataWithVariance[index]} />;
+}
+ActualVarianceLabelContent.propTypes = {
+  index: PropTypes.number,
+  chartDataWithVariance: PropTypes.arrayOf(PropTypes.object).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
+ActualVarianceLabelContent.defaultProps = { index: 0 };
 function ChartVisualization({ chartDataWithVariance, darkMode }) {
   const [chartWidth, setChartWidth] = useState(0);
   const compact = chartWidth > 0 && chartWidth < 420;
@@ -348,13 +359,9 @@ function ChartVisualization({ chartDataWithVariance, darkMode }) {
             verticalAlign="top"
             height={36}
             iconSize={8}
-            formatter={value => (
-              <span style={{ color: darkMode ? '#f8fafc' : '#334155', fontWeight: 600 }}>
-                {value}
-              </span>
-            )}
+            formatter={formatLegendValue}
+            wrapperStyle={{ color: darkMode ? '#f8fafc' : '#334155' }}
           />
-
           <Bar dataKey="plannedCost" name="Planned" fill={PLANNED_BAR_COLOR} maxBarSize={30}>
             {!compact && (
               <LabelList
@@ -371,13 +378,12 @@ function ChartVisualization({ chartDataWithVariance, darkMode }) {
             {!compact && (
               <LabelList
                 dataKey="actualCost"
-                content={labelProps => (
-                  <ActualVarianceLabel
-                    {...labelProps}
-                    item={chartDataWithVariance[labelProps.index]}
+                content={
+                  <ActualVarianceLabelContent
+                    chartDataWithVariance={chartDataWithVariance}
                     darkMode={darkMode}
                   />
-                )}
+                }
               />
             )}
           </Bar>
