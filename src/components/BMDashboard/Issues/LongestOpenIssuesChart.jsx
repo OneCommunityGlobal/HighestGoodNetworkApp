@@ -44,7 +44,7 @@ function IssuesCharts({ bmProjects = [] }) {
   const chartData = graphType === 'Longest Open' ? longestOpenIssues : mostExpensiveIssues;
 
   const data = {
-    labels: chartData.map(issue => truncateLabel(issue.title || String(issue.issueId))),
+    labels: chartData.map(issue => truncateLabel(issue.title?.trim() || 'Untitled')),
     datasets: [
       {
         label: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
@@ -89,7 +89,39 @@ function IssuesCharts({ bmProjects = [] }) {
           callbacks: {
             title: items => {
               const issue = chartData[items[0]?.dataIndex];
-              return issue ? issue.title || String(issue.issueId) : '';
+              if (!issue) return '';
+
+              const title = issue.title?.trim() || 'Untitled';
+              const words = title.split(' ');
+              const lines = [];
+              let line = '';
+
+              words.forEach(word => {
+                if ((line + ' ' + word).trim().length > 45 && line) {
+                  lines.push(line);
+                  line = word;
+                } else {
+                  line = (line + ' ' + word).trim();
+                }
+              });
+
+              if (line) lines.push(line);
+
+              return lines;
+            },
+            label: context => {
+              const issue = chartData[context.dataIndex];
+              if (!issue) return '';
+
+              const project = bmProjects.find(p => String(p._id) === String(issue.projectId));
+              const projectName = project?.name || 'Unknown Project';
+
+              return [
+                `Project: ${projectName}`,
+                graphType === 'Longest Open'
+                  ? `Days Open: ${issue.daysOpen}`
+                  : `Total Cost: $${issue.totalCost}`,
+              ];
             },
           },
         },
@@ -155,7 +187,7 @@ function IssuesCharts({ bmProjects = [] }) {
         bar: { borderRadius: 4, borderSkipped: false },
       },
     };
-  }, [graphType, darkMode, chartData]);
+  }, [graphType, darkMode, chartData, bmProjects]);
 
   const projectOptions = bmProjects.map(p => ({ value: p._id, label: p.name }));
   const selectedProjectOptions = projectOptions.filter(opt => selectedProjects.includes(opt.value));
