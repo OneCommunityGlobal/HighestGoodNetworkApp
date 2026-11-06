@@ -4,7 +4,7 @@ import hasPermission from '../../utils/permissions';
 import { permissions } from '../../utils/permissionKeys';
 import styles from './LBNavHeader.module.css';
 
-const PRIVILEGED_ROLES = ['Owner', 'Administrator', 'Core Team'];
+const PRIVILEGED_ROLES = new Set(['Owner', 'Administrator', 'Core Team']);
 
 const NAV_ITEMS = [
   { to: '/lbdashboard', label: 'Dashboard', exact: true },
@@ -19,7 +19,7 @@ export function useCanSeeLBHeader() {
   useSelector(state => state.role.roles);
   if (!auth?.isAuthenticated) return false;
   return (
-    PRIVILEGED_ROLES.includes(auth.user?.role) ||
+    PRIVILEGED_ROLES.has(auth.user?.role) ||
     !!dispatch(hasPermission(permissions.listingAndBiddingAdvancedAccess))
   );
 }
