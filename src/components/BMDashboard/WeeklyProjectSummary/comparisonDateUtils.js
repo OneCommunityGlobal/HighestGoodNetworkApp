@@ -7,6 +7,9 @@ export const COMPARISON_OPTIONS = [
   'Year Over Year',
 ];
 
+// Default: compare the last full Sun–Sat week with the full week before it.
+export const DEFAULT_COMPARISON = 'Week Over Week';
+
 export function shiftComparisonDate(date, diffDays, type) {
   if (type === 'Week Over Week') return new Date(date.setUTCDate(date.getUTCDate() - diffDays));
   if (type === 'Month Over Month')

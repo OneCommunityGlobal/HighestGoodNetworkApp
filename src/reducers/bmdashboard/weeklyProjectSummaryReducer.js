@@ -6,11 +6,12 @@ import {
   FETCH_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS_SUCCESS,
   FETCH_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS_ERROR,
 } from '../../constants/bmdashboard/weeklyProjectSummaryConstants';
+import { DEFAULT_COMPARISON } from '../../components/BMDashboard/WeeklyProjectSummary/comparisonDateUtils';
 
 const initialState = {
   projectFilter: 'One Community',
   dateRangeFilter: '',
-  comparisonPeriodFilter: 'No Comparison',
+  comparisonPeriodFilter: DEFAULT_COMPARISON,
   projectStatusData: null,
   projectStatusLoading: false,
   projectStatusError: null,

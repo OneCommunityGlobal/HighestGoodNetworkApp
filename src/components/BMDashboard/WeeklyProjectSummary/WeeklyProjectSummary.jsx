@@ -39,7 +39,11 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
+import {
+  calculateComparisonDates,
+  DEFAULT_COMPARISON,
+  parseWeeklySummaryDateRange,
+} from './comparisonDateUtils';
 
 const projectStatusButtonData = [
   ['Total Projects', 'totalProjects', '#F0FFEE', '#BAF0B6', '#328D1B'],
@@ -156,7 +160,7 @@ function WeeklyProjectSummary() {
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
   const comparisonPeriodFilter = useSelector(
-    state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'No Comparison',
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter || DEFAULT_COMPARISON,
   );
   const projectStatusData = useSelector(state => state.weeklyProjectSummary?.projectStatusData);
   const projectStatusLoading = useSelector(
