@@ -14,6 +14,7 @@ import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
 import FormPreviewModal from './FormPreviewModal';
 import useJobFormSelection from './useJobFormSelection';
+import questionnaireLabel from './jobFormSelectionLabels';
 import {
   normalizeQuestionType,
   resolveInputType,
@@ -448,6 +449,10 @@ function JobFormBuilder() {
   else if (selection.status === 'loading') {
     const target = selection.selectedTitle ? ` for: ${selection.selectedTitle}` : ' roles';
     roleStatusText = `Loading questionnaire${target}…`;
+  } else if (selection.selectedTitle) {
+    roleStatusText = selection.selectedFormId
+      ? `Questionnaire unavailable for: ${selection.selectedTitle}`
+      : `Choose a saved questionnaire for: ${selection.selectedTitle}`;
   }
 
   return (
@@ -526,20 +531,19 @@ function JobFormBuilder() {
                   </option>
                   {selection.matchingForms.map(form => (
                     <option key={form._id || form.id} value={form._id || form.id}>
-                      {form.category || 'No category'} —{' '}
-                      {form.updatedAt || 'Update date unavailable'} — {form._id || form.id}
+                      {questionnaireLabel(form, selection.matchingForms)}
                     </option>
                   ))}
                 </select>
               </div>
             )}
             {selection.status === 'error' && selection.selectedFormId && (
-              <button type="button" onClick={selection.retryForm}>
+              <button type="button" className={styles.retryButton} onClick={selection.retryForm}>
                 Retry questionnaire
               </button>
             )}
             {selection.error && !selection.selectedTitle && (
-              <button type="button" onClick={selection.retryCatalog}>
+              <button type="button" className={styles.retryButton} onClick={selection.retryCatalog}>
                 Retry loading roles
               </button>
             )}
@@ -802,7 +806,12 @@ function JobFormBuilder() {
             </div>
 
             <div className={styles.saveSection}>
-              <button type="button" className={styles.jobSubmitButton} onClick={handleSubmit}>
+              <button
+                type="button"
+                className={styles.jobSubmitButton}
+                onClick={handleSubmit}
+                disabled={!canEdit || isSaving}
+              >
                 Save Form
               </button>
             </div>

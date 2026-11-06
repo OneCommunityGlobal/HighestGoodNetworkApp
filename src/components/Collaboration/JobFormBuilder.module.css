@@ -106,6 +106,40 @@
   background: #e8f4fc;
 }
 
+.retryButton {
+  margin: 8px 0;
+  padding: 10px 16px;
+  border: 1px solid #245b86;
+  border-radius: 5px;
+  background: #245b86;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.retryButton:hover {
+  background: #194463;
+}
+
+.retryButton:focus-visible {
+  outline: 3px solid #245b86;
+  outline-offset: 3px;
+}
+
+.darkMode .retryButton {
+  background: #b5d9f5;
+  color: #153a50;
+  border-color: #b5d9f5;
+}
+
+.darkMode .retryButton:hover {
+  background: #d5eaff;
+}
+
+.darkMode .retryButton:focus-visible {
+  outline-color: #b5d9f5;
+}
+
 .roleError,
 .overwriteWarning {
   color: #513400;
@@ -438,6 +472,12 @@
   background-color: var(--jfb-lime-hover);
 }
 
+.jobSubmitButton:disabled {
+  background-color: #52616b;
+  color: #fff;
+  cursor: not-allowed;
+}
+
 .saveSection {
   display: flex;
   justify-content: center;
@@ -562,6 +602,12 @@
 
 .darkMode .goButton:hover {
   background-color: #6a7a8a;
+}
+
+.darkMode .jobSubmitButton:disabled {
+  background-color: #52616b;
+  color: #fff;
+  cursor: not-allowed;
 }
 
 .darkMode .optionsList h4 {

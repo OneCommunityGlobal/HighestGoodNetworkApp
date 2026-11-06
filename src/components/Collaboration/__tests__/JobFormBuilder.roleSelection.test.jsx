@@ -306,13 +306,24 @@ describe('job role and questionnaire binding', () => {
     details.set(ENDPOINTS.GET_JOB_FORM(copy._id), copy);
     mount();
     const picker = await screen.findByRole('combobox', { name: 'Saved questionnaire' });
+    expect(screen.getByRole('button', { name: 'Save Form' })).toHaveAttribute('disabled');
+    expect(
+      screen.queryByText('Select a role to load its saved questionnaire.'),
+    ).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save Form' })).toBeDisabled();
     expect(
-      screen.getByRole('option', { name: /General.*2026-10-13.*electrical-copy/ }),
+      screen.getByRole('option', { name: /General.*Oct 13, 2026.*l-copy/ }),
     ).toBeInTheDocument();
     axios.get.mockRejectedValueOnce(new Error('offline'));
     fireEvent.change(picker, { target: { value: copy._id } });
-    fireEvent.click(await screen.findByRole('button', { name: 'Retry questionnaire' }));
+    const retry = await screen.findByRole('button', { name: 'Retry questionnaire' });
+    expect(
+      screen.queryByText('Select a role to load its saved questionnaire.'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(`Questionnaire unavailable for: ${electrical.title}`),
+    ).toBeInTheDocument();
+    fireEvent.click(retry);
     await ready(electrical.title);
     expect(screen.getByText(/Duplicate-specific question/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Save Form' }));
@@ -323,6 +334,24 @@ describe('job role and questionnaire binding', () => {
       ),
     );
     expect(axios.get).not.toHaveBeenCalledWith(ENDPOINTS.GET_JOB_FORM(electrical._id));
+  });
+
+  it('keeps duplicate choices distinct when their shortened IDs match', async () => {
+    catalog = [
+      { ...electrical, _id: 'first-123456', updatedAt: '2026-11-04T23:49:54Z' },
+      { ...electrical, _id: 'second-123456', updatedAt: '2026-11-04T23:49:54Z' },
+    ];
+    mount();
+    await screen.findByRole('combobox', { name: 'Saved questionnaire' });
+    expect(screen.getByRole('option', { name: /Nov 4, 2026.*first-123456/ })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /Nov 4, 2026.*second-123456/ })).toBeInTheDocument();
+  });
+
+  it('keeps the picker usable with missing or invalid update dates', async () => {
+    catalog = [electrical, { ...electrical, _id: 'copy-123456', updatedAt: 'invalid' }];
+    mount();
+    await screen.findByRole('combobox', { name: 'Saved questionnaire' });
+    expect(screen.getAllByRole('option', { name: /Update date unavailable/ })).toHaveLength(2);
   });
 
   it('supports an explicitly empty saved question set', async () => {
