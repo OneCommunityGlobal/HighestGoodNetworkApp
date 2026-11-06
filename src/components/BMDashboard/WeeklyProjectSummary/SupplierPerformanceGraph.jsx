@@ -13,6 +13,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Input } from 'reactstrap';
 import { fetchSupplierProjects, fetchSupplierPerformance } from '../../../actions/summaryDashboard';
+import SupplierAnalyticsPanel from './SupplierAnalyticsPanel';
 import styles from './SupplierPerformanceGraph.module.css';
 
 const getDateRangeOptions = () => {
@@ -172,6 +173,11 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
         </div>
       </div>
 
+      <SupplierAnalyticsPanel
+        projectId={selectedProject}
+        startDate={getDateRangeOptions().find(o => o.value === selectedDateRange).start}
+        endDate={getDateRangeOptions().find(o => o.value === selectedDateRange).end}
+      />
       {/* Chart Content */}
       <div className={styles['supplier-performance-content']}>
         {loading && <div className={styles['supplier-performance-loading']}>Loading...</div>}

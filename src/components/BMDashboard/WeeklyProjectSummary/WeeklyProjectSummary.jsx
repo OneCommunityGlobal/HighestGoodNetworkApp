@@ -470,12 +470,6 @@ function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ width: '100%' }}
             >
-              <SupplierPerformanceGraph />
-            </div>
-            <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{ width: '100%' }}
-            >
               <ToolsStoppageHorizontalBarChart />
             </div>
           </div>
@@ -552,6 +546,12 @@ function WeeklyProjectSummary() {
               style={{ gridColumn: 'span 2', width: '100%', minHeight: '400px' }}
             >
               <CostBreakDown />
+            </div>
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ gridColumn: '1 / -1', width: '100%', height: 'auto', overflow: 'visible' }}
+            >
+              <SupplierPerformanceGraph />
             </div>
           </div>
         ),
