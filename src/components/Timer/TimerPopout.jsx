@@ -6,6 +6,7 @@ import cs from 'classnames';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import DOMPurify from 'dompurify';
+import { toast } from 'react-toastify';
 import styles from './Timer.module.css';
 import './Countdown.module.css';
 import { store } from '../../store';
@@ -227,8 +228,9 @@ function TimerPopout({ authUser, darkMode, TimerComponent, history }) {
       window.addEventListener('beforeunload', closePopoutOnOpenerUnload, { once: true });
       removeOpenerUnloadListener = () =>
         window.removeEventListener('beforeunload', closePopoutOnOpenerUnload);
-    } catch (_error) {
-      if (activePopup && activePopup.closed) clearActivePopup(activePopup);
+    } catch (error) {
+      toast.error(`Unable to open timer popout: ${error}`);
+      if (activePopup?.closed) clearActivePopup(activePopup);
     }
   };
 

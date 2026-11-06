@@ -470,28 +470,33 @@ function TimeEntryForm(props) {
       }
     };
 
+    const postNewTimeEntry = async () => {
+      const payload = allowDuplicate ? { ...timeEntry, allowDuplicate: true } : timeEntry;
+      const result = await props.postTimeEntry(payload, {
+        displayedUserId: props.displayedUserId,
+        detailed: true,
+      });
+      const { status, code } = result || {};
+
+      if (!allowDuplicate && status === 409 && code === 'DUPLICATE_TIME_ENTRY') {
+        pendingDuplicatePayloadRef.current = { ...timeEntry };
+        setDuplicateModalVisible(true);
+        setSubmitting(false);
+        return false;
+      }
+
+      if (!Number.isInteger(status) || status < 200 || status >= 300) {
+        handleError(`request failed with status ${status}`);
+        return false;
+      }
+      return true;
+    };
+
     try {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
-      } else {
-        const payload = allowDuplicate ? { ...timeEntry, allowDuplicate: true } : timeEntry;
-        const result = await props.postTimeEntry(payload, {
-          displayedUserId: props.displayedUserId,
-          detailed: true,
-        });
-        const { status, code } = result || {};
-
-        if (!allowDuplicate && status === 409 && code === 'DUPLICATE_TIME_ENTRY') {
-          pendingDuplicatePayloadRef.current = { ...timeEntry };
-          setDuplicateModalVisible(true);
-          setSubmitting(false);
-          return;
-        }
-
-        if (!Number.isInteger(status) || status < 200 || status >= 300) {
-          handleError(`request failed with status ${status}`);
-          return;
-        }
+      } else if (!(await postNewTimeEntry())) {
+        return;
       }
 
       await handlePostSubmitActions();

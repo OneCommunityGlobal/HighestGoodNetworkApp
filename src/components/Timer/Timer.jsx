@@ -972,6 +972,112 @@ function Timer({ authUser, darkMode, isPopout, history }) {
     </Modal>
   );
 
+  const renderTimerControls = () => {
+    const controlIconClass = isButtonDisabled ? css.btnDisabled : css.transitionColor;
+    return (
+      customReadyState === ReadyState.OPEN && (
+        <div className={css.btns}>
+          <button
+            type="button"
+            disabled={isButtonDisabled}
+            onClick={() => {
+              handleAddButton(15);
+            }}
+            title="Add 15min"
+            aria-label="Add 15min"
+            style={{ background: 'none', border: 'none' }}
+          >
+            <div className={cs(css.iconWrapper, controlIconClass)}>
+              <FaPlusCircle
+                className={checkBtnAvail(15) ? css.btn : css.btnDisabled}
+                fontSize="1.5rem"
+              />
+            </div>
+          </button>
+          <button
+            type="button"
+            disabled={isButtonDisabled}
+            onClick={() => handleSubtractButton(15)}
+            title="Subtract 15min"
+            aria-label="Subtract 15min"
+            style={{ background: 'none', border: 'none' }}
+          >
+            <div className={cs(css.iconWrapper, controlIconClass)}>
+              <FaMinusCircle
+                className={checkBtnAvail(-15) ? css.btn : css.btnDisabled}
+                fontSize="1.5rem"
+              />
+            </div>
+          </button>
+          {isCurrentlyPaused ? (
+            <button
+              type="button"
+              disabled={isButtonDisabled}
+              onClick={handleStartButton}
+              aria-label="Start timer"
+              style={{ background: 'none', border: 'none' }}
+            >
+              <div className={cs(css.iconWrapper, controlIconClass)}>
+                <FaPlayCircle
+                  className={remaining !== 0 ? css.btn : css.btnDisabled}
+                  fontSize="1.5rem"
+                  title="Start timer"
+                />
+              </div>
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={isButtonDisabled}
+              onClick={handlePauseButton}
+              aria-label="Pause timer"
+              style={{ background: 'none', border: 'none' }}
+            >
+              <div className={cs(css.iconWrapper, controlIconClass)}>
+                <FaPauseCircle className={css.btn} fontSize="1.5rem" title="Pause timer" />
+              </div>
+            </button>
+          )}
+          <button
+            type="button"
+            disabled={!started || isButtonDisabled}
+            onClick={handleStopButton}
+            title="Stop timer and log time"
+            aria-label="Stop timer and log time"
+            style={{ background: 'none', border: 'none' }}
+          >
+            <div className={cs(css.iconWrapper, controlIconClass)}>
+              <FaStopCircle
+                className={started && goal - remaining >= 60000 ? css.btn : css.btnDisabled}
+                fontSize="1.5rem"
+              />
+            </div>
+          </button>
+          <button
+            type="button"
+            disabled={isButtonDisabled}
+            onClick={() => setConfirmationResetModal(true)}
+            title="Reset timer"
+            aria-label="Reset timer"
+            style={{ background: 'none', border: 'none' }}
+          >
+            <div className={cs(css.iconWrapper, controlIconClass)}>
+              <FaUndoAlt className={css.btn} fontSize="1.3rem" />
+            </div>
+          </button>
+          {!realIsPopout && (
+            <TimerPopout
+              authUser={authUser}
+              darkMode={darkMode}
+              history={history}
+              TimerComponent={RoutedTimer}
+            />
+          )}
+        </div>
+      )
+    );
+  };
+
   if (realIsPopout) {
     return (
       <div className={cs(css.timer, darkMode ? 'dark-mode' : '')}>
@@ -1055,136 +1161,7 @@ function Timer({ authUser, darkMode, isPopout, history }) {
           </div>
         )}
       </div>
-      {customReadyState === ReadyState.OPEN && (
-        <div className={css.btns}>
-          <button
-            type="button"
-            disabled={isButtonDisabled}
-            onClick={() => {
-              handleAddButton(15);
-            }}
-            title="Add 15min"
-            aria-label="Add 15min"
-            style={{ background: 'none', border: 'none' }}
-          >
-            <div
-              className={cs(
-                css.iconWrapper,
-                isButtonDisabled ? css.btnDisabled : css.transitionColor,
-              )}
-            >
-              <FaPlusCircle
-                className={checkBtnAvail(15) ? css.btn : css.btnDisabled}
-                fontSize="1.5rem"
-              />
-            </div>
-          </button>
-          <button
-            type="button"
-            disabled={isButtonDisabled}
-            onClick={() => handleSubtractButton(15)}
-            title="Subtract 15min"
-            aria-label="Subtract 15min"
-            style={{ background: 'none', border: 'none' }}
-          >
-            <div
-              className={cs(
-                css.iconWrapper,
-                isButtonDisabled ? css.btnDisabled : css.transitionColor,
-              )}
-            >
-              <FaMinusCircle
-                className={checkBtnAvail(-15) ? css.btn : css.btnDisabled}
-                fontSize="1.5rem"
-              />
-            </div>
-          </button>
-          {isCurrentlyPaused ? (
-            <button
-              type="button"
-              disabled={isButtonDisabled}
-              onClick={handleStartButton}
-              aria-label="Start timer"
-              style={{ background: 'none', border: 'none' }}
-            >
-              <div
-                className={cs(
-                  css.iconWrapper,
-                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                )}
-              >
-                <FaPlayCircle
-                  className={remaining !== 0 ? css.btn : css.btnDisabled}
-                  fontSize="1.5rem"
-                  title="Start timer"
-                />
-              </div>
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled={isButtonDisabled}
-              onClick={handlePauseButton}
-              aria-label="Pause timer"
-              style={{ background: 'none', border: 'none' }}
-            >
-              <div
-                className={cs(
-                  css.iconWrapper,
-                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                )}
-              >
-                <FaPauseCircle className={css.btn} fontSize="1.5rem" title="Pause timer" />
-              </div>
-            </button>
-          )}
-          <button
-            type="button"
-            disabled={!started || isButtonDisabled}
-            onClick={handleStopButton}
-            title="Stop timer and log time"
-            aria-label="Stop timer and log time"
-            style={{ background: 'none', border: 'none' }}
-          >
-            <div
-              className={cs(
-                css.iconWrapper,
-                isButtonDisabled ? css.btnDisabled : css.transitionColor,
-              )}
-            >
-              <FaStopCircle
-                className={started && goal - remaining >= 60000 ? css.btn : css.btnDisabled}
-                fontSize="1.5rem"
-              />
-            </div>
-          </button>
-          <button
-            type="button"
-            disabled={isButtonDisabled}
-            onClick={() => setConfirmationResetModal(true)}
-            title="Reset timer"
-            aria-label="Reset timer"
-            style={{ background: 'none', border: 'none' }}
-          >
-            <div
-              className={cs(
-                css.iconWrapper,
-                isButtonDisabled ? css.btnDisabled : css.transitionColor,
-              )}
-            >
-              <FaUndoAlt className={css.btn} fontSize="1.3rem" />
-            </div>
-          </button>
-          {!realIsPopout && (
-            <TimerPopout
-              authUser={authUser}
-              darkMode={darkMode}
-              history={history}
-              TimerComponent={RoutedTimer}
-            />
-          )}
-        </div>
-      )}
+      {renderTimerControls()}
 
       {showTimer && (
         <div className={`${css.timer} ${css.smallTimer}`}>

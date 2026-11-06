@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Router, useHistory, useLocation } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
+import { toast } from 'react-toastify';
 import TimerPopout from '../TimerPopout';
 import DuplicateTimeLogModal from '../../Timelog/TimeEntryForm/DuplicateTimeLogModal';
 
@@ -104,6 +105,31 @@ describe('TimerPopout shared navigation history', () => {
     unmount();
 
     await waitFor(() => expect(popupWindow.close).toHaveBeenCalled());
+  });
+
+  it('reports a popup opening error and allows a subsequent attempt', async () => {
+    const error = new Error('Popup unavailable');
+    const showError = vi.spyOn(toast, 'error').mockImplementation(() => {});
+    window.open.mockImplementationOnce(() => {
+      throw error;
+    });
+
+    render(
+      <Router history={history}>
+        <HeaderWithTimer history={history} />
+      </Router>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /open timer in new window/i }));
+    expect(showError).toHaveBeenCalledWith(`Unable to open timer popout: ${error}`);
+
+    fireEvent.click(screen.getByRole('button', { name: /open timer in new window/i }));
+    await waitFor(() =>
+      expect(within(popupWindow.document).getByTestId('popup-elapsed')).toHaveTextContent(
+        '00:12:34',
+      ),
+    );
+    expect(window.open).toHaveBeenCalledTimes(2);
   });
 
   async function userEventOpenPopup() {
