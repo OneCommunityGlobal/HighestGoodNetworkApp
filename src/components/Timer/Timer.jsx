@@ -93,7 +93,9 @@ function Timer({ authUser, darkMode, isPopout }) {
       const decoded = jwtDecode(token);
       const expirySec = new Date(decoded.expiryTimestamp).getTime() / 1000;
       return expirySec > Date.now() / 1000;
+      // eslint-disable-next-line prettier/prettier
     } catch (_error) {
+      // NOSONAR - handled below, not swallowed
       // A malformed/undecodable token is just as unusable as an expired one -
       // treat it the same way (not usable) instead of letting the decode error
       // bubble up and break the reconnect check.
@@ -152,6 +154,12 @@ function Timer({ authUser, darkMode, isPopout }) {
       !offlineChimeFiredRef.current
     ) {
       offlineChimeFiredRef.current = true;
+      // Reflect the pause locally (button/goal display) too, not just the modal -
+      // we can't tell the server while offline, so this is a local-only guess that
+      // a genuine reconnect resync (the sendGetTimer effect below, once
+      // customReadyState goes back to OPEN) always overwrites with the server's
+      // real paused state, whether or not the server itself ever learns we dropped.
+      setMessage(prev => ({ ...prev, paused: true }));
       setInacModal(true);
     }
 
@@ -774,18 +782,30 @@ function Timer({ authUser, darkMode, isPopout }) {
    * at the same time.
    */
   useEffect(() => {
+    // react-use-websocket resets lastJsonMessage to null/undefined every time it
+    // creates a fresh socket instance - which a reconnect attempt does on every
+    // retry (see scheduleReconnect's wsKey bump), not just on first mount. Without
+    // this guard, each retry re-ran this effect with no real message, fell through
+    // to `lastJsonMessage || defaultMessage` below, and wiped message.started/paused
+    // back to the (false/false) defaults - erasing the very "was a session running
+    // when we dropped" state handleConnectionLost's chime threshold depends on, so
+    // the chime could never fire no matter how long the outage lasted. There is
+    // nothing to apply on a null message - the component's initial state is already
+    // defaultMessage, so this effect only ever needs to react to a genuine message.
+    if (!lastJsonMessage) return;
+
     // Exclude heartbeat message and timelog event messages
-    if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
+    if (lastJsonMessage.heartbeat === 'pong') {
       isWSOpenRef.current = 0;
       return;
     }
 
     // Ignore TIMELOG_EVENT messages - they're for the timestamps tab, not the timer
-    if (lastJsonMessage && lastJsonMessage.type === 'TIMELOG_EVENT') {
+    if (lastJsonMessage.type === 'TIMELOG_EVENT') {
       return;
     }
     if (
-      lastJsonMessage?.requestId &&
+      lastJsonMessage.requestId &&
       pendingStopRef.current?.requestId === lastJsonMessage.requestId
     ) {
       const { timeoutId, resolve } = pendingStopRef.current;
@@ -794,22 +814,14 @@ function Timer({ authUser, darkMode, isPopout }) {
       resolve(lastJsonMessage.started === false);
     }
     // Handle explicit week close pause action messages
-    if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
+    if (lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
       handleWeekEndPause();
       return; // Exit early to prevent other modal logic
     }
 
-    const { paused: pausedLJM, forcedPause: forcedPauseLJM, started: startedLJM } =
-      lastJsonMessage || defaultMessage;
+    const { paused: pausedLJM, forcedPause: forcedPauseLJM, started: startedLJM } = lastJsonMessage;
 
-    // console.log('DEBUG WS TIMER RECEIVED', {
-    //   time: lastJsonMessage?.time,
-    //   started: lastJsonMessage?.started,
-    //   paused: lastJsonMessage?.paused,
-    //   receivedAt: Date.now(),
-    // });
-
-    setMessage(lastJsonMessage || defaultMessage);
+    setMessage(lastJsonMessage);
     setRunning(startedLJM && !pausedLJM);
     if (!startedLJM || pausedLJM) {
       setRemaining(lastJsonMessage?.time ?? defaultMessage.time);
@@ -842,15 +854,26 @@ function Timer({ authUser, darkMode, isPopout }) {
     setTimeIsOverModalIsOpen(chimingLJM && (customReadyState === ReadyState.OPEN || !weekEndModal));
   }, [lastJsonMessage, customReadyState, weekEndModal]);
 
-  // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
+  // Keeps the WS connection alive AND is the fast, independent detector for "the
+  // server is gone but our socket never got a close/error event" - e.g. an abruptly
+  // killed backend process doesn't always deliver a prompt TCP close to an already-
+  // established connection (confirmed empirically: ~20-30s before onClose/onError
+  // fired in this environment, well past a short reviewer test window). A 60s
+  // heartbeat needing >3 misses took 4+ minutes to notice - far too slow for Jae's
+  // requirement that a dropped connection pause+chime promptly (verified against a
+  // real 25s/80s+ backend outage). HEARTBEAT_INTERVAL_MS/HEARTBEAT_TIMEOUT_MS/
+  // MISSES_BEFORE_LOST together land detection around 3 * 5s = 15s - fast enough for
+  // a short outage, but still a few consecutive misses (not one blip) before acting.
   useEffect(() => {
+    const HEARTBEAT_INTERVAL_MS = 5000;
+    const HEARTBEAT_TIMEOUT_MS = 4000;
+    const MISSES_BEFORE_LOST = 3;
     const interval = setInterval(() => {
       if (running) {
         isWSOpenRef.current += 1;
         sendHeartbeat();
         setTimeout(() => {
-          // make sure to notify the user if the heartbeat is not responded for 3 times
-          if (isWSOpenRef.current > 3) {
+          if (isWSOpenRef.current >= MISSES_BEFORE_LOST) {
             // Don't decide locally that this is a genuine forced pause - a background/
             // throttled tab can miss heartbeats for a long time and then "wake up" with
             // a wildly stale assumption. Route through the same handling as a real
@@ -860,9 +883,9 @@ function Timer({ authUser, darkMode, isPopout }) {
             getWebSocket()?.close(); // best-effort; may not fire a close event if truly offline
             isWSOpenRef.current = 0;
           }
-        }, 10000); // close the WS if no response after 10 seconds
+        }, HEARTBEAT_TIMEOUT_MS);
       }
-    }, 60000);
+    }, HEARTBEAT_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, [running]);

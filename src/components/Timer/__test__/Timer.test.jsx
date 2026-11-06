@@ -337,6 +337,75 @@ describe('Timer connection loss and recovery', () => {
     expect(screen.getByText('Timer Paused')).toBeInTheDocument();
   });
 
+  it('does not flash the 00:15:00 default goal/time right after reconnecting, before the fresh resync reply lands', () => {
+    renderTimer();
+    pushRunningMessage(30 * 60 * 1000); // 30-minute goal
+    expect(screen.getByText('Goal: 00:30:00')).toBeInTheDocument();
+
+    act(() => {
+      mocks.latestOptions.onClose({ code: 1006, reason: 'mock drop' });
+    });
+
+    // A real reconnect (the library opening a fresh socket on every retry, not
+    // just the first) resets the underlying lastJsonMessage to null until a new
+    // reply arrives - simulate that here, same as the real library would.
+    act(() => {
+      mocks.setLastJsonMessage(null);
+    });
+    act(() => {
+      vi.advanceTimersByTime(1000); // first backoff step - mock reconnect succeeds
+    });
+
+    // Reconnected (customReadyState is OPEN again, Countdown is back on screen),
+    // but no fresh GET_TIMER reply has arrived yet - exactly the moment the old
+    // code read the still-null lastJsonMessage as "nothing yet, apply
+    // defaultMessage" and flashed the goal/time display to the hardcoded
+    // 15-minute default for a moment on every reconnect.
+    expect(screen.queryByText('Goal: 00:15:00')).not.toBeInTheDocument();
+    expect(screen.getByText('Goal: 00:30:00')).toBeInTheDocument();
+  });
+
+  it('does not lose track of "a session was running" across repeated reconnect attempts, so the offline chime still fires after enough of them', () => {
+    // Every attempt in this window fails, so the chime threshold is reached
+    // through genuine repeated drops, not a lucky early reconnect.
+    mocks.failNextAttempts = 3;
+
+    renderTimer();
+    pushRunningMessage(60000);
+
+    // Attempt 1 (the initial drop).
+    act(() => {
+      mocks.latestOptions.onClose({ code: 1006, reason: 'mock drop' });
+    });
+    expect(screen.queryByText('Timer Paused')).not.toBeInTheDocument();
+
+    // Each retry's own fresh socket resets lastJsonMessage to null before it
+    // fails again - exactly the transient state that used to wipe
+    // started/paused back to the (false/false) defaults and permanently block
+    // the chime, no matter how many attempts followed or how long the outage
+    // lasted (confirmed against a real 25s/80s+ backend outage: the chime
+    // never fired at all before this fix).
+    act(() => {
+      mocks.setLastJsonMessage(null);
+    });
+    act(() => {
+      vi.advanceTimersByTime(1000); // 1st backoff step -> attempt 2 (fails)
+    });
+    expect(screen.queryByText('Timer Paused')).not.toBeInTheDocument();
+
+    act(() => {
+      mocks.setLastJsonMessage(null);
+    });
+    act(() => {
+      vi.advanceTimersByTime(2000); // 2nd backoff step -> attempt 3 (fails)
+    });
+
+    // Attempt 3 crosses the chime threshold - and only gets there because the
+    // null resets above did not erase "this session was running and not
+    // paused" in between.
+    expect(screen.getByText('Timer Paused')).toBeInTheDocument();
+  });
+
   it('stops retrying and shows Disconnected + a manual refresh button once the stored token is unusable', () => {
     localStorage.removeItem(config.tokenKey); // simulate an expired/cleared token
 
@@ -406,19 +475,22 @@ describe('Timer connection loss and recovery', () => {
 
   it('eventually stops the countdown via the heartbeat-miss path when pongs stop arriving', () => {
     renderTimer();
-    // Goal must outlast the ~250s heartbeat-miss window, otherwise the countdown
-    // would legitimately reach 0 on its own well before heartbeat-miss matters.
+    // Goal must outlast the heartbeat-miss window, otherwise the countdown would
+    // legitimately reach 0 on its own well before heartbeat-miss matters.
     pushRunningMessage(3600000); // 1 hour
 
     expect(screen.getByLabelText('Stop timer and log timer')).toBeInTheDocument();
 
-    // 4 heartbeat cycles (60s interval + 10s miss-check each) with no pong ever
+    // 3 heartbeat cycles (5s interval + 4s miss-check each) with no pong ever
     // arriving - the same background-tab-throttling scenario that used to chime
-    // hours later based on a stale assumption. Stop just past the 4th miss-check
-    // (4*60000 + 10000 = 250000ms) but before the first reconnect retry (+1000ms)
-    // fires, so this specifically catches the moment disconnection is detected.
+    // hours later (with the old 60s/10s/4-miss timing) based on a stale
+    // assumption, and which a reviewer found never chimed at all within a real
+    // 25s/80s+ backend outage because of the message-reset bug fixed alongside
+    // this. Stop just past the 3rd miss-check (3*5000 + 4000 = 19000ms) but
+    // before the first reconnect retry (+1000ms) fires, so this specifically
+    // catches the moment disconnection is detected.
     act(() => {
-      vi.advanceTimersByTime(250100);
+      vi.advanceTimersByTime(19100);
     });
 
     expect(screen.queryByText('Time Complete!')).not.toBeInTheDocument();
