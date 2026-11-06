@@ -444,7 +444,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     sendStart,
     sendPause,
     sendClear,
-    sendStop,
     sendAckForced,
     sendGetTimer,
     sendStartChime,
