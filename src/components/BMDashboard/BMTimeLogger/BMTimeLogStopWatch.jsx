@@ -44,6 +44,13 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
   // Sync time with backend time log
   useEffect(() => {
     if (currentTimeLog) {
+      // A bulk check-in starts this timer without the START button, so drop any earlier
+      // stopped time and allow STOP
+      if (currentTimeLog.status === 'ongoing') {
+        justStoppedTimeRef.current = null;
+        setEnableStop(false);
+      }
+
       // If we just started a new log, ignore old elapsed time and keep it at 0
       if (isStartingNewLogRef.current && currentTimeLog.status === 'ongoing') {
         isStartingNewLogRef.current = false;
