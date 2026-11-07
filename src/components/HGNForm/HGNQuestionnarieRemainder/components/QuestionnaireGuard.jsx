@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuestionnaire } from '../../context/QuestionnaireContext';
+import { useQuestionnaire } from '../context/QuestionnaireContext';
 import QuestionnaireReminder from './QuestionnaireReminder';
 
 const QuestionnaireGuard = ({ children }) => {
