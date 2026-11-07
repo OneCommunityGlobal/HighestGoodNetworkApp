@@ -36,7 +36,7 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
+import { parseWeeklySummaryDateRange } from './comparisonDateUtils';
 
 import styles from './WeeklyProjectSummary.module.css';
 
