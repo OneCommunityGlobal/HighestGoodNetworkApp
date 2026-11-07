@@ -42,7 +42,7 @@ const fillValidApplication = async () => {
   fireEvent.change(screen.getByLabelText(/^Time Zone/), { target: { value: 'America/New_York' } });
   fireEvent.change(screen.getByLabelText(/^Phone/), { target: { value: '+1 213-456-7890' } });
   fireEvent.change(screen.getByLabelText('Choose file'), {
-    target: { files: [new File(['synthetic resume'], 'resume.pdf', { type: 'application/pdf' })] },
+    target: { files: [new File(['resume'], 'resume.pdf', { type: 'application/pdf' })] },
   });
   fireEvent.click(screen.getByRole('checkbox', { name: /I agree to terms and conditions/i }));
 };
@@ -105,7 +105,6 @@ describe('JobApplicationForm duplicate application handling', () => {
       .map(call => String(call[0]))
       .join('\n');
     expect(shown).not.toContain('You already applied for this position.');
-    // Selecting a resume has its own success toast; only application success must be absent.
     expect(toast.success).not.toHaveBeenCalledWith(
       'Application submitted successfully. A confirmation email will be sent.',
     );

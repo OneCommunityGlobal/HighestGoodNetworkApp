@@ -46,7 +46,7 @@ const fillProfile = async () => {
   fireEvent.change(document.getElementById('jaf-timezone'), { target: { value: 'GMT' } });
   fireEvent.change(document.getElementById('jaf-phone'), { target: { value: '+442071838750' } });
   fireEvent.change(screen.getByLabelText('Choose file'), {
-    target: { files: [new File(['synthetic resume'], 'resume.pdf', { type: 'application/pdf' })] },
+    target: { files: [new File(['resume'], 'resume.pdf', { type: 'application/pdf' })] },
   });
 };
 
