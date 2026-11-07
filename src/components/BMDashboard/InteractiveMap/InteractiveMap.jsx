@@ -58,10 +58,12 @@ function FloatingLegend({ darkMode, mapAreaRef }) {
     const div = legendRef.current;
     if (!div || !mapAreaRef.current) return;
 
+    // Start in the bottom-left corner (open ocean at the default view) so the legend
+    // doesn't cover project markers; users can still drag it anywhere.
     if (pos.left === null && pos.top === null) {
       const mapRect = mapAreaRef.current.getBoundingClientRect();
       setPos({
-        left: mapRect.width - div.offsetWidth - 20,
+        left: 20,
         top: mapRect.height - div.offsetHeight - 20,
       });
     }
@@ -74,8 +76,8 @@ function FloatingLegend({ darkMode, mapAreaRef }) {
       let newLeft = origRef.current.x + (e.clientX - startRef.current.x);
       let newTop = origRef.current.y + (e.clientY - startRef.current.y);
 
-      newLeft = Math.max(0, Math.min(newLeft, mapRect.width - 160));
-      newTop = Math.max(0, Math.min(newTop, mapRect.height - 180));
+      newLeft = Math.max(0, Math.min(newLeft, mapRect.width - div.offsetWidth));
+      newTop = Math.max(0, Math.min(newTop, mapRect.height - div.offsetHeight));
 
       setPos({ left: newLeft, top: newTop });
     };
@@ -101,14 +103,6 @@ function FloatingLegend({ darkMode, mapAreaRef }) {
 
   const statuses = ['active', 'delayed', 'completed'];
   const colors = ['#DE6A6A', '#E3D270', '#6ACFDE'];
-
-  if (pos.left === null && pos.top === null && mapAreaRef.current) {
-    const mapRect = mapAreaRef.current.getBoundingClientRect();
-    setPos({
-      left: mapRect.width - 160 - 20,
-      top: mapRect.height - 180 - 20,
-    });
-  }
 
   return (
     <div
@@ -545,7 +539,6 @@ export default function InteractiveMap() {
               maxBoundsViscosity={1.0}
               worldCopyJump={false}
               scrollWheelZoom
-              zoomControl={false}
               className={styles.mapContainer}
               keyboard={false}
             >

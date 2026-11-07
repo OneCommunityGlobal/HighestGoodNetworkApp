@@ -305,16 +305,31 @@ export const updateRehireableStatus = (user, isRehireable, notRehireableReason =
     const reason = typeof notRehireableReason === 'string' ? notRehireableReason.trim() : '';
     const requestData = { isRehireable };
 
-    if (!isRehireable && reason) {
+    if (!isRehireable && !reason) {
+      throw new Error('A reason is required when a user is not rehireable.');
+    }
+
+    if (!isRehireable) {
       userProfile.notRehireableReason = reason;
       requestData.notRehireableReason = reason;
     } else {
       delete userProfile.notRehireableReason;
-      if (!isRehireable) requestData.notRehireableReason = '';
     }
 
-    await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
+    const response = await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
+    const responseData = response?.data || {};
+    if (Array.isArray(responseData.notRehireableReasonHistory)) {
+      userProfile.notRehireableReasonHistory = responseData.notRehireableReasonHistory;
+    }
+    if (typeof responseData.notRehireableReason === 'string') {
+      if (responseData.notRehireableReason) {
+        userProfile.notRehireableReason = responseData.notRehireableReason;
+      } else {
+        delete userProfile.notRehireableReason;
+      }
+    }
     dispatch(userProfileUpdateAction(userProfile));
+    return userProfile;
   };
 };
 

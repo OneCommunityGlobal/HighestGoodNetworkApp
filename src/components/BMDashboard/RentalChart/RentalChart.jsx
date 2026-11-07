@@ -7,6 +7,7 @@ import DatePicker from 'react-datepicker';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import styles from './RentalChart.module.css';
 import datePickerStyles from './RentalDatePicker.module.css';
+import { getCurrentYearRange } from './rentalChartUtils';
 import { toast } from 'react-toastify';
 import {
   Chart as ChartJS,
@@ -205,10 +206,7 @@ export default function RentalChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const bmProjects = useSelector(state => state.bmProjects);
 
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(2024, 0, 1),
-    endDate: new Date(2024, 11, 31),
-  });
+  const [dateRange, setDateRange] = useState(getCurrentYearRange);
 
   const [fallbackProjectNames, setFallbackProjectNames] = useState(new Map());
   const [rawData, setRawData] = useState([]);
