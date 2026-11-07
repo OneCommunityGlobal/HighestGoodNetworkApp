@@ -35,7 +35,7 @@
   width: 100%;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .filtersGrid {
     grid-template-columns: 1fr; 
   }
@@ -75,7 +75,7 @@
   width: 100%;
 }
 
-.dateInput {
+.datePickerWrapper .dateInput {
   width: 100%;
   padding: 8px 30px 8px 12px;
   border-radius: 6px;
@@ -86,18 +86,18 @@
   outline: none;
 }
 
-.dateInput:focus {
+.datePickerWrapper .dateInput:focus {
   border-color: #4285F4;
 }
 
-.darkDateInput {
+.dateInput.darkDateInput {
   background-color: #253342;
   color: #fff;
   border-color: #2d4059;
   color-scheme: dark;
 }
 
-.darkDateInput:focus {
+.dateInput.darkDateInput:focus {
   border-color: #3a506b;
 }
 
@@ -174,7 +174,7 @@
 }
 
 .varianceOverLight { color: #e74c3c !important; }
-.varianceOverDark { color: #ff4444 !important; }
+.varianceOverDark { color: #f44 !important; }
 
 .varianceUnderLight { color: #2ecc71 !important; }
 .varianceUnderDark { color: #4ade80 !important; }
