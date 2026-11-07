@@ -4,6 +4,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import { GET_ERRORS } from '../../constants/errors';
 import {
   START_TIME_LOG,
+  BULK_START_TIME_LOGS,
   PAUSE_TIME_LOG,
   STOP_TIME_LOG,
   GET_CURRENT_TIME_LOG,
@@ -28,6 +29,29 @@ export const startTimeLog = (projectId, memberId, task) => {
         payload: error.response ? error.response.data : { message: 'Error starting time log' },
       });
     }
+  };
+};
+
+// Bulk Start Time Logs Action
+// Resolves with { started, resumed, alreadyCheckedIn, failed } and rejects if the request fails,
+// so the caller can report the outcome next to the bulk controls
+export const bulkStartTimeLogs = (projectId, memberIds) => {
+  return async dispatch => {
+    const response = await axios.post(ENDPOINTS.TIME_LOGGER_BULK_START(projectId), { memberIds });
+    const { started, resumed, alreadyCheckedIn } = response.data;
+
+    dispatch({
+      type: BULK_START_TIME_LOGS,
+      payload: {
+        timeLogs: [...started, ...resumed, ...alreadyCheckedIn].map(({ memberId, timeLog }) => ({
+          ...timeLog,
+          memberId,
+          projectId,
+        })),
+      },
+    });
+
+    return response.data;
   };
 };
 
