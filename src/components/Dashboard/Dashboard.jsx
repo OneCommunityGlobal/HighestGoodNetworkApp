@@ -116,9 +116,9 @@ export function Dashboard(props) {
     });
   }, [history, location]);
 
-  if (questionnaireLoading) {
-    return <Container fluid>Loading dashboard...</Container>;
-  }
+  // if (questionnaireLoading) {
+  //   return <Container fluid>Loading dashboard...</Container>;
+  // }
 
   if (questionnaireError) {
     return (
