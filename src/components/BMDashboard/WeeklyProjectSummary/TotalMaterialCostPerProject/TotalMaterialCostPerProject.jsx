@@ -197,9 +197,9 @@ function TotalMaterialCostPerProject() {
         color: darkMode ? '#fff' : '#333',
         fontSize: 12,
         padding: '2px 6px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
+        // Wrap long project names inside the chip instead of truncating them.
+        whiteSpace: 'normal',
+        overflowWrap: 'anywhere',
       }),
       multiValueRemove: base => ({
         ...base,
@@ -211,15 +211,14 @@ function TotalMaterialCostPerProject() {
         borderRadius: 4,
         padding: 2,
       }),
-      // Chips wrap onto up to two rows, then scroll vertically, so every selected
-      // project stays visible instead of being cut off on one hidden-scrollbar row.
+      // Chips wrap onto as many rows as needed and the box grows with them, so
+      // every selected project stays fully visible.
       valueContainer: provided => ({
         ...provided,
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        maxHeight: 64,
-        overflowY: 'auto',
+        minWidth: 0,
         maxWidth: '100%',
         position: 'relative',
       }),
