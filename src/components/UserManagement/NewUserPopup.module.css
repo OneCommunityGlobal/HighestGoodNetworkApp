@@ -1,0 +1,9 @@
+/* Dark mode for the Create New User modal. The form inside it is wrapped in
+   UserProfile.scss's `.emp-profile`, which hardcodes `background: #fff`, so the
+   modal showed a white box with white labels (forced by public/index.css) and
+   dark inputs. The JSX's `bg-yinmn-blue` never applied: it is defined in the
+   CSS-module App.module.css, so the plain string matches nothing. Scoped to
+   this modal (class on .modal-dialog) so the profile page is untouched. */
+.newUserModalDark :global(.emp-profile) {
+  background: transparent;
+}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './reports.module.css';
 import moment from 'moment';
 import { boxStyle, boxStyleDark } from '~/styles';
+import styles from './reportsPage.module.css';
 
 function PeopleTable({ userProfiles, darkMode }) {
   let PeopleList = [];
@@ -53,7 +54,7 @@ function PeopleTable({ userProfiles, darkMode }) {
   return (
     <div className="custom-scrollbar">
       <table
-        className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
+        className={`table ${darkMode ? styles['reports-table-dark'] : 'table-bordered'}`}
         style={darkMode ? boxStyleDark : boxStyle}
       >
         <thead>

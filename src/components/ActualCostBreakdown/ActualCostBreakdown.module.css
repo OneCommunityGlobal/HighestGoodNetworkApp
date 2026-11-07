@@ -577,3 +577,56 @@
   color: #333;
   font-weight: 500;
 }
+/* Dark mode. Everything is nested under .dark (set on the page root when
+   darkMode is on) so none of it can leak to other pages. Text colour is
+   already forced white by public/index.css; only surfaces and borders are
+   set here, plus the placeholder/selected states that need their own tone. */
+.dark .chart-header h2 {
+  color: #fff;
+}
+
+.dark .filters-bar {
+  background: #1c2541;
+}
+
+.dark .custom-dropdown-trigger,
+.dark .form-control {
+  background: #1e293b;
+  border-color: #3a506b;
+  color-scheme: dark; /* dark native date-picker icon and calendar */
+}
+
+.dark .custom-dropdown-trigger:hover,
+.dark .form-control:hover {
+  border-color: #64748b;
+}
+
+.dark .custom-dropdown-trigger .placeholder,
+.dark .date-placeholder {
+  color: #94a3b8 !important;
+}
+
+.dark .custom-dropdown-menu {
+  background: #1e293b;
+  border-color: #3a506b;
+}
+
+.dark .custom-dropdown-menu::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .custom-dropdown-menu::-webkit-scrollbar-thumb {
+  background: #3a506b;
+}
+
+.dark .custom-dropdown-option {
+  border-bottom-color: #2c3e57;
+}
+
+.dark .custom-dropdown-option:hover {
+  background-color: #3a506b;
+}
+
+.dark .custom-dropdown-option.selected {
+  background-color: #2b4a73;
+}

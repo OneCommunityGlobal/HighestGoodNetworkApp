@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 /* stylelint-disable  */
 :global(*) {
   box-sizing: border-box;
@@ -58,6 +59,7 @@
    instead of being squeezed into a small fixed column */
 .table-mobile {
   width: 100%;
+  max-width: 100vw;
   overflow-x: auto;
 }
 
@@ -68,6 +70,19 @@
 
 .table-row {
   background: white;
+}
+
+/* Dark-mode row/header backgrounds. These have to live here rather than come
+   from the shared `bg-yinmn-blue` / `bg-space-cadet` helpers: those are defined
+   in src/App.module.css, which Vite scopes as a CSS module, so passing them as
+   plain strings from JSX is a no-op. Without a background the rows stay white
+   and `body.dark-mode * { color: #fff }` renders the text invisible. */
+.table-row-dark {
+  background: #2f4157;
+}
+
+.table-head-dark {
+  background: #1c2541;
 }
 
 .table-hover-dark:hover {

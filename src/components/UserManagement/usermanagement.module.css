@@ -17,7 +17,7 @@
 
 .userManagementActiveCell {
   position: relative;
-  width: 60px; /* fixed width prevents shifting */
+  width: 60px;
   min-width: 60px;
   text-align: center;
   vertical-align: middle;
@@ -254,6 +254,13 @@
   cursor: pointer;
 }
 
+.dark-mode input,
+.dark-mode select {
+  background-color: #1c2541;
+  color: #fff;
+  border-color: #3a506b;
+}
+
 .usermanagementNameInput input {
   border: 1px solid white;
 }
@@ -267,8 +274,10 @@
   padding-left: 10px;
 }
 
-.userManagementTable tbody tr:hover {
-  background: #e9f6ff;
+.tooltipContainer::after {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .pageNoLink {
@@ -497,14 +506,14 @@
 .tooltipContainer {
   position: relative;
   display: inline-block;
-  max-width: 150px; /* Set max width for text overflow */
+  max-width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .tooltipContainer:hover::after {
-  content: attr(data-title); /* Show full text when hovered */
+  content: attr(data-title);
   position: absolute;
   background-color: rgb(0 0 0 / 80%);
   color: white;
@@ -515,7 +524,7 @@
   transform: translateX(-50%);
   bottom: 120%;
   z-index: 10;
-  max-width: 300px; /* Prevent excessive width */
+  max-width: 300px;
   text-align: center;
   visibility: visible;
   opacity: 1;
@@ -626,4 +635,28 @@
 #user-profiles-wild-card-search.text-light::placeholder {
   color: #b0b0b0 !important;
   opacity: 1;
+}
+
+/* Dark background for the "Search"/"Show" `.input-group-text` labels. This has to live
+   here rather than come from the shared `bg-yinmn-blue` helper: that class is defined in
+   src/App.module.css, which Vite scopes as a CSS module, so passing it as a plain string
+   from JSX is a no-op. Without it the labels keep Bootstrap's light-grey background while
+   `body.dark-mode * { color: #fff }` renders their text invisible. */
+.dark-input-label {
+  background-color: #3a506b !important;
+  border-color: #334155 !important;
+}
+
+/* Same problem, same fix, for the inline-edit text inputs in UserTableData.jsx:
+   they used to pass `bg-darkmode-liblack text-light` (dead — see the comment
+   above), leaving the inputs on a white background while the global dark-mode
+   rule forced the text white too. */
+.editInputDark {
+  background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+  color: #fff !important;
+}
+
+.editInputDark::placeholder {
+  color: #94a3b8;
 }

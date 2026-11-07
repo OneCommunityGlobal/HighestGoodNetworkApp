@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 /* eslint-disable react/button-has-type */
 import styles from './PermissionsManagement.module.css';
 import { ModalContext } from '~/context/ModalContext';
@@ -19,7 +20,7 @@ function ReminderModal({
       }`}
     >
       <div className={styles['ReminderTitle']}>
-        <h2>Remember to Save Your Changes!</h2>
+        <h2 style={darkMode ? { color: '#ffffff' } : {}}>Remember to Save Your Changes!</h2>
       </div>
       <div className={`${styles['ReminderBody']} ${darkMode ? 'text-light' : ''}`}>
         <span>
@@ -28,6 +29,7 @@ function ReminderModal({
       </div>
       <div className={styles['ReminderButton']}>
         <button
+          style={darkMode ? { backgroundColor: '#1a6fc4', color: '#fff' } : {}}
           onClick={e => {
             updateProfileOnSubmit(e);
             setReminderModal(!reminderModal);
@@ -37,7 +39,12 @@ function ReminderModal({
           Save Changes
         </button>
 
-        <button onClick={() => updateModalStatus(!modalStatus)}>Close</button>
+        <button
+          style={darkMode ? { backgroundColor: '#c0392b', color: '#fff' } : {}}
+          onClick={() => updateModalStatus(!modalStatus)}
+        >
+          Close
+        </button>
       </div>
     </div>
   );
