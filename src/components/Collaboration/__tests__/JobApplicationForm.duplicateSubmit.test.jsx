@@ -31,6 +31,12 @@ const renderForm = () =>
     </Provider>,
   );
 
+// Resume upload is mandatory for every role since #5660.
+const attachResume = () => {
+  const resume = new File(['%PDF-1.4'], 'resume.pdf', { type: 'application/pdf' });
+  fireEvent.change(screen.getByLabelText('Choose file'), { target: { files: [resume] } });
+};
+
 const fillValidApplication = async () => {
   // Wait for the form list to load and the role to be selected.
   await screen.findByLabelText(/^Email/);
@@ -41,6 +47,9 @@ const fillValidApplication = async () => {
   fireEvent.change(screen.getByLabelText(/^Location/), { target: { value: 'Charlotte, NC' } });
   fireEvent.change(screen.getByLabelText(/^Time Zone/), { target: { value: 'America/New_York' } });
   fireEvent.change(screen.getByLabelText(/^Phone/), { target: { value: '+1 213-456-7890' } });
+  attachResume();
+  // Picking a file shows a "Resume selected" toast; only submit outcomes matter below.
+  toast.success.mockClear();
   fireEvent.click(screen.getByRole('checkbox', { name: /I agree to terms and conditions/i }));
 };
 
