@@ -23,6 +23,32 @@ const colors = {
   '2024-Glass': '#ff8c00',
 };
 
+// Custom tooltip: line colors shown as swatches, text in the theme's text color so every
+// row is readable in light and dark mode; rows sorted from highest to lowest loss.
+function LossTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  const rows = payload
+    .filter(item => Number.isFinite(item.value))
+    .sort((a, b) => b.value - a.value);
+
+  return (
+    <div className={styles.tooltip}>
+      <div className={styles.tooltipTitle}>{label}</div>
+      {rows.map(item => (
+        <div key={item.dataKey} className={styles.tooltipRow}>
+          <span
+            className={styles.tooltipSwatch}
+            style={{ backgroundColor: item.color }}
+            aria-hidden="true"
+          />
+          <span className={styles.tooltipLabel}>{item.name}</span>
+          <span className={styles.tooltipValue}>{item.value}%</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const rawData = [
   {
     year: 2022,
@@ -323,7 +349,6 @@ export default function LossTrackingLineChart() {
               />
             </div>
           </label>
-          ...
           <button className={styles.resetBtn} onClick={handleReset} disabled={isDefaultFilters}>
             Reset Filters
           </button>
@@ -339,8 +364,7 @@ export default function LossTrackingLineChart() {
             <div className={styles.noDataMessage}>No data available for the selected filters.</div>
           ) : (
             <>
-              {}
-              <div className={styles.responsiveChartBox}>
+              <div className={styles.chartArea}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 44 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -369,11 +393,8 @@ export default function LossTrackingLineChart() {
                       }}
                     />
                     <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'var(--tooltip-bg)',
-                        color: 'var(--text-color)',
-                        border: `1px solid var(--border-color)`,
-                      }}
+                      content={<LossTooltip />}
+                      cursor={{ stroke: gridColor, strokeWidth: 2 }}
                     />
                     {filteredLines.map(line => (
                       <Line
@@ -390,8 +411,6 @@ export default function LossTrackingLineChart() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-
-              {}
               <div className={styles.customLegend}>
                 {legendItems.map(item => (
                   <span key={item.key} className={styles.legendItem}>

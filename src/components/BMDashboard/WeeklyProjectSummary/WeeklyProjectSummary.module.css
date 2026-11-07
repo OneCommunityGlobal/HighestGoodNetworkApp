@@ -647,12 +647,13 @@
 }
 
 .weeklyStatusValue {
-  color: #000;
-  font-size: clamp(28px, 3vw, 40px);
+  /* Pills are always pastel, so the value stays dark in both themes */
+  color: #1a1a1a;
+  font-size: clamp(26px, 2.2vw, 36px);
   font-weight: 600;
+  white-space: nowrap;
   transition: color 0.3s ease;
   line-height: 1.1;
-  white-space: nowrap;
 }
 
 .projectStatusUnavailableInfo {
@@ -833,7 +834,7 @@
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-  /* Keep the original pill size for short values while letting longer values fit. */
+  /* Keep the original pill size for short values while letting longer values like "$27.6K" fit. */
   width: auto;
   min-width: 130px;
   max-width: 100%;
@@ -934,8 +935,8 @@
   }
 
   .darkMode .weeklySummaryShareBtn {
-    background: #e8a71c;
-    color: #000; /* readable in dark mode */
+    background: #e8a71c !important;
+    color: #000 !important; /* readable in dark mode */
   }
 
   /* Tools and Equipment Tracking - 2 column layout on tablet */
@@ -1370,4 +1371,21 @@
   .weeklySummaryHeaderControls select {
     display: none;
   }
+}
+
+/* Customize Cards control */
+.cardSelectorBar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.noCardsMessage {
+  padding: 24px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.darkMode .noCardsMessage {
+  color: #cfd7e3;
 }

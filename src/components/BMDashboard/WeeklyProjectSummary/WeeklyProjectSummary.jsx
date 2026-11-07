@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import CardSelector from './CardSelector';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
@@ -35,7 +36,7 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import { parseWeeklySummaryDateRange } from './comparisonDateUtils';
+import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
 
 import styles from './WeeklyProjectSummary.module.css';
 
@@ -168,6 +169,19 @@ function WeeklyProjectSummary() {
   const projectStatusErrorRequestKey = useSelector(
     state => state.weeklyProjectSummary?.projectStatusErrorRequestKey,
   );
+  const userId = useSelector(state => state.auth?.user?.userid);
+  const cardPrefsKey = `weeklyProjectSummaryCards:${userId || 'guest'}`;
+  // Saved card selection per user: { visibleKeys, cardLimit }. null = show all.
+  const [cardPrefs, setCardPrefs] = useState(null);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(cardPrefsKey) || 'null');
+      setCardPrefs(saved && Array.isArray(saved.visibleKeys) ? saved : null);
+    } catch {
+      setCardPrefs(null);
+    }
+  }, [cardPrefsKey]);
 
   const [openSections, setOpenSections] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -616,7 +630,7 @@ function WeeklyProjectSummary() {
         content: (
           <div
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
-            style={{ height: '500px', padding: '0' }}
+            style={{ padding: '0' }}
           >
             <InteractiveMap />
           </div>
@@ -712,10 +726,26 @@ function WeeklyProjectSummary() {
     ],
   );
 
+  const visibleKeys = cardPrefs?.visibleKeys ?? sections.map(section => section.key);
+  const cardLimit = cardPrefs?.cardLimit ?? 'all';
+  const selectedSections = sections.filter(section => visibleKeys.includes(section.key));
+  const visibleSections =
+    cardLimit === 'all' ? selectedSections : selectedSections.slice(0, Number(cardLimit));
+
+  const handleCardsChange = (keys, limit) => {
+    const next = { visibleKeys: keys, cardLimit: limit };
+    setCardPrefs(next);
+    try {
+      localStorage.setItem(cardPrefsKey, JSON.stringify(next));
+    } catch {
+      // Storage unavailable (e.g. private browsing); keep the in-memory choice.
+    }
+  };
+
   const expandAllSections = () => {
     const allSectionsOpen = {};
 
-    sections.forEach(section => {
+    visibleSections.forEach(section => {
       allSectionsOpen[section.key] = true;
     });
 
@@ -726,8 +756,8 @@ function WeeklyProjectSummary() {
     setOpenSections({});
   };
 
-  const areAllSectionsOpen = sections.every(section => openSections[section.key]);
-  const areAllSectionsClosed = sections.every(section => !openSections[section.key]);
+  const areAllSectionsOpen = visibleSections.every(section => openSections[section.key]);
+  const areAllSectionsClosed = visibleSections.every(section => !openSections[section.key]);
 
   const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) {
@@ -1089,8 +1119,25 @@ function WeeklyProjectSummary() {
       </div>
 
       <div className={styles.weeklyProjectSummaryDashboardContainer}>
+        {isGeneratingPDF === false && (
+          <div className={styles.cardSelectorBar}>
+            <CardSelector
+              cards={sections.map(({ key, title }) => ({ key, title }))}
+              visibleKeys={visibleKeys}
+              cardLimit={cardLimit}
+              shownCount={visibleSections.length}
+              onChange={handleCardsChange}
+              darkMode={darkMode}
+            />
+          </div>
+        )}
+        {visibleSections.length === 0 && (
+          <p className={styles.noCardsMessage}>
+            No cards selected. Use Customize Cards to choose which cards to show.
+          </p>
+        )}
         <div className={styles.weeklyProjectSummaryDashboardGrid}>
-          {sections.map(
+          {visibleSections.map(
             ({
               title,
               key,
