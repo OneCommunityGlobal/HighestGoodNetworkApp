@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import AnnouncementModal from './AnnouncementModal';
 import AnnouncementsPageMainPanel from './AnnouncementsPageMainPanel';
+import { permissions } from '../../../utils/constants';
 
 const EDUCATOR_ROLES = new Set(['Owner', 'Administrator', 'Mentor', 'Core Team']);
 
 const getUserRole = authUser => {
   if (!authUser) return 'student';
-  if (authUser.permissions?.frontPermissions?.includes('announcements_manage')) {
+  if (authUser.permissions?.frontPermissions?.includes(permissions.announcements_manage)) {
     return 'educator';
   }
   return EDUCATOR_ROLES.has(authUser.role) ? 'educator' : 'student';

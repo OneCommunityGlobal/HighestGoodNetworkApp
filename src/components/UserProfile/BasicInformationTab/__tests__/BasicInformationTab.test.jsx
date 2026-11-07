@@ -6,7 +6,7 @@ import BasicInformationTab, { Name, Title, Email, formatPhoneNumber, Phone, Time
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import mockAdminState from '__tests__/mockAdminState';
 
@@ -371,7 +371,7 @@ let testProps= {
    };
   
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 const initialState = {
   auth: {
     user: {
@@ -504,7 +504,7 @@ it('Test case 9: Renders the role  component with a combo box  when canEditRole 
     </Provider>,
   );
   expect(screen.getByText("Role")).toBeInTheDocument(); // Label
-  expect(screen.getByRole('button', { name: 'Manage Role & Permissions' })).toBeInTheDocument(); // Role Modal button
+  expect(screen.getByRole('combobox')).toBeInTheDocument(); // combo box
 });
 it('Test case 10 : Does not render a combo box for role component   when canEditRole is false', () => {
   testProps.canEditRole=false;

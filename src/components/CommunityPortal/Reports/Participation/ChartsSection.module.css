@@ -19,6 +19,10 @@
   color: #333;
 }
 
+.chartsSectionDark .sectionTitle {
+  color: #fff;
+}
+
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -54,4 +58,18 @@
 .chartsSectionDark .chartBoxFull {
   background: #3a506b;
   border: 1px solid #555;
+}
+
+.chartsSectionDark :global(.recharts-cartesian-axis-tick-value) {
+  fill: #fff !important;
+}
+
+@media (width <= 768px) {
+  .chartsSection {
+    padding: 15px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
 }

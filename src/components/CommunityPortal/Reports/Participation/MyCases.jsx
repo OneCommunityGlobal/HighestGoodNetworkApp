@@ -1,194 +1,397 @@
-import { useState, useMemo } from 'react';
-import Calendar from 'react-calendar';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import ReactCalendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import styles from './MyCases.module.css';
-import mockEvents from './mockData';
+import { getEvents } from '../../../../actions/eventActions';
 import CreateEventModal from './CreateEventModal';
+import { filterEventsByDate } from './FilterByDate';
 
-function MyCases({ darkMode }) {
+function MyCases() {
+  const [events, setEvents] = useState([]);
   const [view, setView] = useState('card');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [calendarDate, setCalendarDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
 
-  const filterEvents = events => {
-    const now = new Date();
+  const now = new Date();
 
-    const nowTime = now.getTime();
-
-    const upcomingEvents = events.filter(event => {
-      const eventTime = new Date(event.eventDate).getTime();
-      return eventTime >= nowTime;
-    });
-
-    if (filter === 'today') {
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventDate);
-        return (
-          eventDate.getDate() === now.getDate() &&
-          eventDate.getMonth() === now.getMonth() &&
-          eventDate.getFullYear() === now.getFullYear()
-        );
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const loadEvents = useCallback(async () => {
+    try {
+      const response = await getEvents({
+        page: 1,
+        limit: 200,
+        sortBy: 'date',
+        sortOrder: 'desc',
       });
+
+      if (response?.status && response.status >= 400) {
+        throw new Error(response.message || 'Failed to fetch events');
+      }
+
+      const backendEvents = response?.data?.events || [];
+
+      const formattedEvents = backendEvents.map(event => ({
+        id: event._id,
+        eventName: event.title,
+        eventType: event.type,
+        eventDate: event.date,
+        startTime: event.startTime,
+        eventTime: new Date(event.startTime).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        attendees: event.currentAttendees || 0,
+        image: event.coverImage,
+      }));
+
+      setEvents(formattedEvents);
+    } catch (error) {
+      console.error('loadEvents error:', error);
     }
-    if (filter === 'thisWeek') {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(endOfWeek.getDate() + 6);
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfWeek && eventDate <= endOfWeek;
-      });
-    }
-    if (filter === 'thisMonth') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfMonth && eventDate <= endOfMonth;
-      });
-    }
-    return upcomingEvents;
+  }, []);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
+
+  const filteredEvents = filterEventsByDate(events, filter).filter(
+    event => new Date(event.startTime).getTime() >= now.getTime(),
+  );
+
+  const handleEventCreated = createdEvent => {
+    if (!createdEvent) return;
+
+    const eventDate = createdEvent.startTime || createdEvent.date || Date.now();
+
+    setEvents(prev => [
+      {
+        id: createdEvent._id || createdEvent.id || `local-${Date.now()}`,
+        isNew: true,
+        eventType: createdEvent.type || 'all',
+        eventDate: new Date(eventDate).toISOString(),
+        startTime: eventDate,
+        eventTime: new Date(eventDate).toLocaleString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+        eventName: createdEvent.title,
+        attendees: 0,
+        location: createdEvent.location,
+      },
+      ...prev,
+    ]);
   };
 
-  const filteredEvents = filterEvents(mockEvents);
-
-  filteredEvents.sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
-
-  // Sonar: extract nested ternary into independent statement
   let visibleEvents = filteredEvents;
+
   if (!isExporting) {
-    visibleEvents = expanded ? filteredEvents.slice(0, 40) : filteredEvents.slice(0, 10);
+    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, 10);
   }
 
-  const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+  const FALLBACK_IMG =
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
 
-  const renderCardView = () => (
-    <div className={`${styles.caseCards} ${expanded || isExporting ? styles.expanded : ''}`}>
-      {visibleEvents.map(event => (
-        <div className={styles.caseCard} key={event.id}>
-          <span className={styles.eventBadge} data-type={event.eventType}>
-            {event.eventType}
-          </span>
-          <span className={styles.eventTime}>{event.eventTime}</span>
-          <div className={styles.eventName}>{event.eventName}</div>
-          <div className={styles.attendeesInfo}>
-            <div className={styles.avatars}>
-              <img
-                alt="profile img"
-                src={placeholderAvatar}
-                width="24"
-                height="24"
-                crossOrigin="anonymous"
-                loading="lazy"
-              />
-            </div>
-            <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
-  const renderListView = () => (
-    <ul className={`${styles.caseList} ${expanded || isExporting ? styles.expanded : ''}`}>
-      {visibleEvents.map(event => (
-        <li className={styles.caseListItem} key={event.id}>
-          <span className={styles.eventType}>{event.eventType}</span>
-          <span className={styles.eventTime}>{event.eventTime}</span>
-          <span className={styles.eventName}>{event.eventName}</span>
-          <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
-        </li>
-      ))}
-    </ul>
-  );
-
-  const eventsByDate = useMemo(() => {
-    const map = {};
-    filteredEvents.forEach(event => {
-      const baseDate = new Date(event.eventDate || event.eventTime);
-      const key = baseDate.toISOString().slice(0, 10);
-      if (!map[key]) map[key] = [];
-      map[key].push(event);
+  // Memoized event cache by date for calendar
+  const eventCacheByDate = useMemo(() => {
+    const cache = new Map();
+    events.forEach(event => {
+      const eventDate = new Date(event.startTime || event.eventDate);
+      if (Number.isNaN(eventDate.getTime())) return;
+      const dateKey = eventDate.toDateString();
+      if (!cache.has(dateKey)) {
+        cache.set(dateKey, []);
+      }
+      cache.get(dateKey).push(event);
     });
-    return map;
-  }, [filteredEvents]);
+    return cache;
+  }, [events]);
 
-  const renderCalendarTileContent = ({ date, view: tileView }) => {
-    if (tileView !== 'month') return null;
+  // Get events for selected date
+  const selectedDateEvents = useMemo(() => {
+    const dateKey = selectedDate.toDateString();
+    return eventCacheByDate.get(dateKey) || [];
+  }, [selectedDate, eventCacheByDate]);
 
-    const tileKey = date.toISOString().slice(0, 10);
-    const dayEvents = eventsByDate[tileKey];
+  // Handle date selection in calendar
+  const handleDateSelect = useCallback(date => {
+    setSelectedDate(date);
+  }, []);
 
-    if (!dayEvents || dayEvents.length === 0) return null;
+  // Handle Create New button
+  // Get event image or fallback
+  const getEventImage = useCallback(event => {
+    // Check if event has image property, otherwise use fallback
+    return event.image || event.imageUrl || FALLBACK_IMG;
+  }, []);
 
-    return <div className={styles.calendarBubble}>{dayEvents.length}</div>;
-  };
-
-  const renderCalendarView = () => {
-    const selectedKey = calendarDate.toISOString().slice(0, 10);
-    const selectedEvents = eventsByDate[selectedKey] || [];
-
-    const formattedSelectedDate = calendarDate.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
+  const isEventToday = dateString => {
+    const eventDate = new Date(dateString);
+    const now = new Date();
 
     return (
-      <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
-        <div className={styles.calendarHeaderRow}>
-          <span className={styles.calendarMonthLabel}>
-            {calendarDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
-          </span>
-        </div>
+      eventDate.getDate() === now.getDate() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getFullYear() === now.getFullYear()
+    );
+  };
 
-        <Calendar
-          onChange={setCalendarDate}
-          value={calendarDate}
-          tileContent={renderCalendarTileContent}
-          className={styles.reactCalendar}
-        />
+  const renderCardView = () => {
+    if (visibleEvents.length === 0) {
+      return <div className={styles.noEventsMessage}>No upcoming events.</div>;
+    }
 
-        <div className={styles.calendarEventsList}>
-          <h3 className={styles.calendarEventsTitle}>Events on {formattedSelectedDate}</h3>
+    return (
+      <div
+        className={`case-cards-global ${styles.caseCards} ${
+          expanded || isExporting ? styles.expanded : ''
+        }`}
+      >
+        {visibleEvents.map(event => (
+          <div
+            className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
+            key={event.id}
+          >
+            <span className={styles.eventBadge} data-type={event.eventType}>
+              {event.eventType}
+            </span>
 
-          {selectedEvents.length === 0 && (
-            <p className={styles.calendarEventsEmpty}>No events scheduled for this day.</p>
-          )}
+            <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
+              {event.eventTime}
+            </span>
 
-          {selectedEvents.map(event => (
-            <div
-              key={event.id}
-              className={`${styles.calendarEventItem} ${
-                darkMode ? styles.calendarEventItemDark : ''
-              }`}
-            >
-              <div className={styles.calendarEventItemHeader}>
-                <span className={styles.calendarEventName}>{event.eventName}</span>
-                <span className={styles.calendarEventType}>{event.eventType}</span>
-              </div>
-              <div className={styles.calendarEventMeta}>
-                <span>{event.eventTime}</span>
-                <span>{event.location}</span>
-                <span>{`+${event.attendees} attendees`}</span>
-              </div>
+            <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+              {isEventToday(event.eventDate) ? "Today's " : ''}
+              {event.eventName}
+            </span>
+
+            <div className={styles.eventImageContainer}>
+              <img
+                src={getEventImage(event)}
+                alt={event.eventName}
+                className={styles.eventImage}
+                onError={e => {
+                  if (e.currentTarget.src !== FALLBACK_IMG) {
+                    e.currentTarget.src = FALLBACK_IMG;
+                  }
+                }}
+              />
             </div>
-          ))}
-        </div>
+            <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
+              <div className={styles.avatars}>
+                <img
+                  alt="profile img"
+                  src="/pfp-default-header.png"
+                  width="24"
+                  height="24"
+                  crossOrigin="anonymous"
+                  loading="lazy"
+                  onError={e => {
+                    e.currentTarget.src = FALLBACK_IMG;
+                  }}
+                />
+              </div>
+
+              <span
+                className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
+                title="Number of members who attended this event"
+                data-tooltip="Members Attended"
+              >
+                <FontAwesomeIcon icon={faUsers} className="me-2" />
+                {`+${event.attendees}`} Attendees
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     );
   };
 
+  const renderListView = () => {
+    if (visibleEvents.length === 0) {
+      return <div className={styles.noEventsMessage}>No upcoming events.</div>;
+    }
+
+    return (
+      <ul
+        className={`case-list-global ${styles.caseList} ${
+          expanded || isExporting ? styles.expanded : ''
+        }`}
+      >
+        {visibleEvents.map(event => (
+          <li
+            className={`case-list-item-global ${styles.caseListItem} ${
+              darkMode ? styles.caseListItemDark : ''
+            }`}
+            key={event.id}
+          >
+            <span className={`${styles.eventType} ${darkMode ? styles.eventTypeDark : ''}`}>
+              {event.eventType}
+            </span>
+            <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
+              {event.eventTime}
+            </span>
+            <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+              {event.eventName}
+            </span>
+
+            <span
+              className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
+              title="Number of members who attended this event"
+              data-tooltip="Members Attended"
+            >
+              <FontAwesomeIcon icon={faUsers} className="me-2" />
+              {`+${event.attendees}`} Attendees
+            </span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  // Memoized tile content for calendar
+  const tileContent = useCallback(
+    ({ date, view }) => {
+      if (view === 'month') {
+        const dateKey = date.toDateString();
+        const eventsForDate = eventCacheByDate.get(dateKey) || [];
+        if (eventsForDate.length > 0) {
+          return (
+            <div className={styles.calendarEventIndicator}>
+              {eventsForDate.length > 3 ? (
+                <span className={styles.eventCountBadge}>+{eventsForDate.length}</span>
+              ) : (
+                eventsForDate.slice(0, 3).map((event, idx) => {
+                  const eventTypeClass = styles[`eventType${idx}`];
+                  return (
+                    <div
+                      key={event.id}
+                      className={`${styles.calendarEventDot} ${eventTypeClass}`}
+                      title={event.eventName}
+                    />
+                  );
+                })
+              )}
+            </div>
+          );
+        }
+      }
+      return null;
+    },
+    [eventCacheByDate],
+  );
+
+  // Memoized tile class name
+  const tileClassName = useCallback(
+    ({ date, view }) => {
+      if (view === 'month') {
+        const dateKey = date.toDateString();
+        const classes = [];
+        if (eventCacheByDate.has(dateKey)) {
+          classes.push(styles.hasEvents);
+        }
+        if (date.toDateString() === selectedDate.toDateString()) {
+          classes.push(styles.selectedDate);
+        }
+        return classes.join(' ');
+      }
+      return null;
+    },
+    [eventCacheByDate, selectedDate],
+  );
+
+  const renderCalendarView = () => (
+    <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
+      <div className={styles.calendarContainer}>
+        <ReactCalendar
+          onChange={handleDateSelect}
+          value={selectedDate}
+          tileContent={tileContent}
+          tileClassName={tileClassName}
+          className={darkMode ? styles.calendarDark : styles.calendar}
+        />
+      </div>
+      {selectedDateEvents.length > 0 && (
+        <div className={styles.selectedDateEvents}>
+          <h3
+            className={`${styles.selectedDateTitle} ${
+              darkMode ? styles.selectedDateTitleDark : ''
+            }`}
+          >
+            Events on{' '}
+            {selectedDate.toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            })}
+          </h3>
+          <div className={styles.selectedEventsList}>
+            {selectedDateEvents.map(event => (
+              <div
+                key={event.id}
+                className={`${styles.selectedEventCard} ${
+                  darkMode ? styles.selectedEventCardDark : ''
+                }`}
+              >
+                <span className={styles.eventBadge} data-type={event.eventType}>
+                  {event.eventType}
+                </span>
+                <h4
+                  className={`${styles.selectedEventName} ${
+                    darkMode ? styles.selectedEventNameDark : ''
+                  }`}
+                >
+                  {event.eventName}
+                </h4>
+                <p
+                  className={`${styles.selectedEventTime} ${
+                    darkMode ? styles.selectedEventTimeDark : ''
+                  }`}
+                >
+                  {event.eventTime}
+                </p>
+                <p
+                  className={`${styles.selectedEventAttendees} ${
+                    darkMode ? styles.selectedEventAttendeesDark : ''
+                  }`}
+                >
+                  {event.attendees} attendees
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {selectedDateEvents.length === 0 && (
+        <div className={styles.noEventsMessage}>
+          <p>No events scheduled for this date.</p>
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div className={`${styles.myCasesPage} ${darkMode ? styles.darkMode : ''}`}>
+    <div
+      className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
+    >
       <header className={styles.header}>
-        <h2 className={styles.sectionTitle}>Upcoming Events</h2>
+        <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
+          Upcoming Events
+        </h2>
+
         <div className={styles.headerActions}>
-          <div className={styles.viewSwitcher}>
+          <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
             <button
               type="button"
               className={view === 'calendar' ? styles.active : ''}
@@ -196,6 +399,7 @@ function MyCases({ darkMode }) {
             >
               Calendar
             </button>
+
             <button
               type="button"
               className={view === 'card' ? styles.active : ''}
@@ -203,6 +407,7 @@ function MyCases({ darkMode }) {
             >
               Card
             </button>
+
             <button
               type="button"
               className={view === 'list' ? styles.active : ''}
@@ -212,40 +417,51 @@ function MyCases({ darkMode }) {
             </button>
           </div>
 
-          <div className={styles.filterWrapper}>
+          <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
             <select
-              className={styles.filterDropdown}
+              className={`${styles.filterDropdown} ${
+                darkMode ? styles.filterDropdownDarkMode : ''
+              }`}
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="thisWeek">This Week</option>
-              <option value="thisMonth">This Month</option>
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
             </select>
           </div>
+
           <button
             type="button"
-            className={styles.createNew}
+            className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
             onClick={() => setIsCreateModalOpen(true)}
           >
             + Create New
           </button>
+
           {filteredEvents.length > 10 && !isExporting && (
-            <button type="button" className={styles.moreBtn} onClick={() => setExpanded(!expanded)}>
+            <button
+              type="button"
+              className={`more-btn-global ${styles.moreBtn}`}
+              onClick={() => setExpanded(!expanded)}
+            >
               {expanded ? 'Show Less' : 'More'}
             </button>
           )}
         </div>
       </header>
+
       <main className={styles.content}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
       </main>
+
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+        onEventCreated={handleEventCreated}
       />
     </div>
   );

@@ -116,6 +116,11 @@ export const getAllUserProfile = () => {
     }
     return userProfilesPromise
       .then(res => {
+        // API must return an array; error payloads are objects and crash UserManagement.map
+        if (!Array.isArray(res.data)) {
+          dispatch(userProfilesFetchErrorAction());
+          return [];
+        }
         dispatch(userProfilesFetchCompleteACtion(res.data));
         return res.data;
       })
@@ -294,13 +299,37 @@ export const updateUserPauseStatus = (user, status, reactivationDate) => {
  * @param{*} user - the user whose rehireable status is to be updated
  * @param{boolean} isRehireable - the new rehireable status
  */
-export const updateRehireableStatus = (user, isRehireable) => {
+export const updateRehireableStatus = (user, isRehireable, notRehireableReason = '') => {
   return async dispatch => {
     const userProfile = { ...user, isRehireable };
+    const reason = typeof notRehireableReason === 'string' ? notRehireableReason.trim() : '';
     const requestData = { isRehireable };
 
-    await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
+    if (!isRehireable && !reason) {
+      throw new Error('A reason is required when a user is not rehireable.');
+    }
+
+    if (!isRehireable) {
+      userProfile.notRehireableReason = reason;
+      requestData.notRehireableReason = reason;
+    } else {
+      delete userProfile.notRehireableReason;
+    }
+
+    const response = await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
+    const responseData = response?.data || {};
+    if (Array.isArray(responseData.notRehireableReasonHistory)) {
+      userProfile.notRehireableReasonHistory = responseData.notRehireableReasonHistory;
+    }
+    if (typeof responseData.notRehireableReason === 'string') {
+      if (responseData.notRehireableReason) {
+        userProfile.notRehireableReason = responseData.notRehireableReason;
+      } else {
+        delete userProfile.notRehireableReason;
+      }
+    }
     dispatch(userProfileUpdateAction(userProfile));
+    return userProfile;
   };
 };
 
@@ -409,7 +438,7 @@ export const getUserProfileBasicInfo = ({ userId, source } = {}) => {
   // API request to fetch basic user profile information
   let userProfileBasicInfoPromise;
   if (userId)
-    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE(userId));
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO_BY_ID(userId));
   else if (source)
     userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
   else

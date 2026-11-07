@@ -1,86 +1,61 @@
 /* eslint-disable testing-library/no-node-access */
 import { useSelector } from 'react-redux';
-import { useRef, useState, useCallback } from 'react';
+import { useRef } from 'react';
 import { useHistory } from 'react-router-dom';
+import EventParticipationHeader from './EventParticipationHeader';
+import EngagementSummaryCards from './EngagementSummaryCards';
+import EventTypePieChart from './EventTypePieChart';
+import EngagementBarChart from './EngagementBarChart';
 import AnalyticsNavigation from './AnalyticsNavigation';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
-import styles from './Participation.module.css';
+import EventPopularityBreakdown from './EventPopularityBreakdown';
+import EngagementVisuals from './EngagementVisuals';
 import ChartsSection from './ChartsSection';
+import styles from './Participation.module.css';
 
 function EventParticipation() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const history = useHistory();
   const exportRef = useRef(null);
-  const [exporting, setExporting] = useState(false);
-
-  const handleSaveAsPDF = useCallback(() => {
-    if (globalThis.window === undefined || globalThis.document === undefined) return;
-    if (exporting) return;
-    setExporting(true);
-
-    document.documentElement.dataset.exporting = 'true';
-
-    // Expand "More" so all visible items are included
-    const moreBtn = document.querySelector('.more-btn-global');
-    const toggled = moreBtn?.textContent?.toLowerCase().includes('more') ?? false;
-    if (toggled) moreBtn.click();
-
-    const prevTitle = document.title;
-    document.title = 'event_participation';
-
-    setTimeout(() => {
-      globalThis.print();
-
-      setTimeout(() => {
-        if (toggled) moreBtn.click();
-
-        delete document.documentElement.dataset.exporting;
-        document.title = prevTitle;
-        setExporting(false);
-      }, 100);
-    }, 500);
-  }, [exporting]);
 
   return (
     <div
       ref={exportRef}
-      className={`${styles.participationLandingPage} ${darkMode ? styles.darkMode : ''}`}
+      className={`participation-landing-page-global ${styles.participationLandingPage} ${
+        darkMode ? styles.participationLandingPageDark : ''
+      }`}
     >
-      {/* Print-only page title header */}
-      <header
-        className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
-      >
-        <h1 className={styles.landingPageHeader}>Social And Recreational Management</h1>
-        <button
-          className={`${styles.savePdfBtn} ${darkMode ? '' : styles.savePdfBtnLight} ${
-            styles.noPrint
-          }`}
-          onClick={handleSaveAsPDF}
-          disabled={exporting}
-          aria-busy={exporting}
-        >
-          {exporting ? 'Preparing…' : '📄 Save as PDF'}
-        </button>
-      </header>
-
-      <div>
-        <MyCases darkMode={darkMode} />
-        <div className={styles.analyticsSection}>
-          <DropOffTracking darkMode={darkMode} />
-          <NoShowInsights darkMode={darkMode} />
+      <EventParticipationHeader />
+      <EngagementSummaryCards />
+      <div className={styles.chartsSection}>
+        <div className={styles.chartsRow}>
+          <EventTypePieChart />
+          <EngagementBarChart />
         </div>
       </div>
 
+      <MyCases />
+      <div className={`${styles.analyticsSection}`}>
+        <DropOffTracking />
+        <NoShowInsights />
+      </div>
+
+      <EventPopularityBreakdown />
+
+      <EngagementVisuals />
+
       <div className={styles.subPageNav}>
         <button
+          type="button"
           className={`${styles.subPageBtn} ${darkMode ? styles.subPageBtnDark : ''}`}
           onClick={() => history.push('/communityportal/reports/participation/demographics')}
         >
           Demographics
         </button>
         <button
+          type="button"
           className={`${styles.subPageBtn} ${darkMode ? styles.subPageBtnDark : ''}`}
           onClick={() => history.push('/communityportal/reports/participation/personalization')}
         >
@@ -90,7 +65,6 @@ function EventParticipation() {
 
       <ChartsSection />
 
-      {/* ACTIONABLE INSIGHTS SECTION */}
       <div
         className={`${styles.actionableSection} ${darkMode ? styles.actionableSectionDark : ''}`}
       >
@@ -112,20 +86,18 @@ function EventParticipation() {
             </p>
             <span className={styles.actionTrendUp}>↑ 8%</span>
           </div>
-          <AnalyticsNavigation />
 
-          <div className={`${styles.printOnly} ${styles.printFooter}`}>
-            Generated from Event Participation
-            <div className={styles.actionCard}>
-              <h4 className={styles.actionTitle}>Drop-off rate reduction opportunity</h4>
-              <p className={styles.actionDescription}>
-                Average event drop-off decreases when host reminders are sent earlier.
-              </p>
-              <span className={styles.actionTrendDown}>↓ 5%</span>
-            </div>
+          <div className={styles.actionCard}>
+            <h4 className={styles.actionTitle}>Drop-off rate reduction opportunity</h4>
+            <p className={styles.actionDescription}>
+              Average event drop-off decreases when host reminders are sent earlier.
+            </p>
+            <span className={styles.actionTrendDown}>↓ 5%</span>
           </div>
         </div>
       </div>
+
+      <AnalyticsNavigation />
     </div>
   );
 }

@@ -165,7 +165,7 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
             <option value="all">ALL Projects</option>
             {projects.map(project => (
               <option key={project._id} value={project._id}>
-                {project._id}
+                {project.projectName}
               </option>
             ))}
           </Input>

@@ -32,8 +32,9 @@
 }
 
 .filterRow {
-  display: flex;
-  flex-wrap: wrap;
+  /* Project, From and To on one even row */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
   margin-bottom: 1rem;
   align-items: flex-end;
@@ -43,8 +44,17 @@
 .filter {
   display: flex;
   flex-direction: column;
-  flex: 1 1 140px;
-  min-width: 120px;
+  min-width: 0;
+}
+
+.filter :global(.react-datepicker-wrapper) {
+  width: 100%;
+}
+
+.filter :global(.react-datepicker__input-container input) {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 38px;
 }
 
 .filterLabel {
@@ -69,10 +79,105 @@
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
+.filter input::placeholder {
+  color: #64748b;
+}
+
+.filter :global(.react-datepicker__input-container input) {
+  cursor: pointer;
+}
+
 .darkMode .filter input {
   background: #334155;
-  color: #f1f5f9;
+  color: #f8fafc;
   border-color: #475569;
+}
+
+.darkMode .filter input::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+.darkMode .filter input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 1px #60a5fa;
+  outline: none;
+}
+
+.darkMode .filter :global(.react-datepicker__input-container input) {
+  background: #334155 !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+.darkMode .filter :global(.react-datepicker__input-container input::placeholder) {
+  color: #cbd5e1 !important;
+  opacity: 1;
+}
+
+.darkMode .filter :global(.react-datepicker__input-container input:focus) {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 1px #60a5fa !important;
+  outline: none;
+}
+
+/* Dark-mode popup styles for Lessons Learnt date pickers. */
+:global(.lessons-dark-popper) {
+  z-index: 6;
+}
+
+:global(.lessons-dark-popper .react-datepicker),
+:global(.lessons-dark-calendar) {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+:global(.lessons-dark-popper .react-datepicker__month-container),
+:global(.lessons-dark-calendar .react-datepicker__month-container),
+:global(.lessons-dark-popper .react-datepicker__month),
+:global(.lessons-dark-calendar .react-datepicker__month) {
+  background-color: #0f172a !important;
+}
+
+:global(.lessons-dark-popper .react-datepicker__header),
+:global(.lessons-dark-calendar .react-datepicker__header) {
+  background-color: #1e293b !important;
+  border-bottom-color: #334155 !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__current-month),
+:global(.lessons-dark-calendar .react-datepicker__day-name),
+:global(.lessons-dark-calendar .react-datepicker__day),
+:global(.lessons-dark-popper .react-datepicker__current-month),
+:global(.lessons-dark-popper .react-datepicker__day-name),
+:global(.lessons-dark-popper .react-datepicker__day) {
+  color: #f8fafc !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__day:hover),
+:global(.lessons-dark-popper .react-datepicker__day:hover),
+:global(.lessons-dark-calendar .react-datepicker__day--keyboard-selected),
+:global(.lessons-dark-popper .react-datepicker__day--keyboard-selected) {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__day--selected),
+:global(.lessons-dark-popper .react-datepicker__day--selected) {
+  background-color: #3b82f6 !important;
+  color: #fff !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__day--outside-month),
+:global(.lessons-dark-popper .react-datepicker__day--outside-month),
+:global(.lessons-dark-calendar .react-datepicker__day--disabled),
+:global(.lessons-dark-popper .react-datepicker__day--disabled) {
+  color: #64748b !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__navigation-icon::before),
+:global(.lessons-dark-popper .react-datepicker__navigation-icon::before) {
+  border-color: #cbd5e1 !important;
 }
 
 .chartWrapper {
@@ -80,10 +185,13 @@
   flex: 1;
   min-height: 0;
   margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .barContainer {
-  height: 300px;
+  flex: 1;
+  min-height: 300px;
   width: 100%;
 }
 
@@ -92,28 +200,6 @@
   font-size: 0.875rem;
   text-align: center;
   padding: 2rem 0;
-}
-
-.percentageLabels {
-  position: absolute;
-  top: -1.25rem;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  pointer-events: none;
-}
-
-.percentageLabel {
-  position: absolute;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--accent-color, #10b981);
-  transition: color 0.3s ease;
-}
-
-.darkMode .percentageLabel {
-  color: #34d399;
 }
 
 /* Responsive */
@@ -126,9 +212,8 @@
     gap: 0.5rem;
   }
 
-  .filter {
-    min-width: 100px;
-    flex: 1 1 100%;
+  .filterRow {
+    grid-template-columns: 1fr;
   }
 
   .barContainer {

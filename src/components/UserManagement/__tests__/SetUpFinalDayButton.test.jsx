@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { configureStore } from 'redux-mock-store';
+import  configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { vi } from 'vitest';
 
@@ -18,7 +18,7 @@ vi.mock('../../../actions/userLifecycleActions', () => ({
   scheduleDeactivationAction: vi.fn(),
 }));
 
-const mockStore = configureStore();
+const mockStore = configureMockStore();
 
 describe('SetUpFinalDayButton', () => {
   let store;

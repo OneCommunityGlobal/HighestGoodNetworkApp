@@ -75,7 +75,7 @@ export const VOLUNTEER_ACTIVITIES_TAB = [
     tabBackgroundColor: '#E8E8FF',
   },
   {
-    title: 'Total Active Teams',
+    title: 'Active Teams (2+ Members)',
     type: 'totalActiveTeams',
     number: 77,
     percentageChange: 1,
