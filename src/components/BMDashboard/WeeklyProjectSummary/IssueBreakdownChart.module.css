@@ -624,6 +624,11 @@
   font-size: 12px;
 }
 
+.container:global(.dark-mode) {
+  --chart-axis-color: #e5e7eb;
+  --chart-label-color: #f9fafb;
+}
+
 :global(.filter label) {
   margin-bottom: 4px;
 }

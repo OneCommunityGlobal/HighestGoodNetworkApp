@@ -955,7 +955,12 @@ function QuantityOfMaterialsUsed({
                 scales: {
                   x: {
                     ticks: {
-                      display: false,
+                      display: true,
+                      color: darkMode ? '#e5e7eb' : '#333',
+                      font: { size: 11 },
+                      autoSkip: false,
+                      maxRotation: 60,
+                      minRotation: 45,
                     },
                     grid: {
                       color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
@@ -964,7 +969,7 @@ function QuantityOfMaterialsUsed({
                   y: {
                     beginAtZero: true,
                     ticks: {
-                      color: darkMode ? '#ccc' : '#333',
+                      color: darkMode ? '#e5e7eb' : '#333',
                     },
                     grid: {
                       color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',

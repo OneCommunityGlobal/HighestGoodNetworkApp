@@ -47,6 +47,8 @@ const barValueLabelPlugin = {
     ctx.font = `600 ${fontSize}px Arial`;
     ctx.fillStyle = darkMode ? '#f5f5f5' : '#333333';
 
+    const drawn = [];
+
     chart.data.datasets.forEach((dataset, datasetIndex) => {
       if (!chart.isDatasetVisible(datasetIndex)) return;
 
@@ -58,12 +60,32 @@ const barValueLabelPlugin = {
         const { x, y, width } = bar.getProps(['x', 'y', 'width'], true);
         const textWidth = ctx.measureText(label).width;
 
-        if (textWidth <= width + LABEL_GAP) {
+        const fitsHorizontally = textWidth <= width + LABEL_GAP;
+        if (!fitsHorizontally && fontSize > width + 2) return;
+
+        const box = fitsHorizontally
+          ? {
+              l: x - textWidth / 2,
+              r: x + textWidth / 2,
+              t: y - LABEL_GAP - fontSize,
+              b: y - LABEL_GAP,
+            }
+          : {
+              l: x - fontSize / 2,
+              r: x + fontSize / 2,
+              t: y - LABEL_GAP - textWidth,
+              b: y - LABEL_GAP,
+            };
+        const collides = drawn.some(d => box.l < d.r && box.r > d.l && box.t < d.b && box.b > d.t);
+        if (collides) return;
+        drawn.push(box);
+
+        if (fitsHorizontally) {
           // Wide bar: horizontal label centered above it
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom';
           ctx.fillText(label, x, y - LABEL_GAP);
-        } else if (fontSize <= width + 2) {
+        } else {
           // Narrow bar: rotate the label upward so it never spills onto neighbouring bars
           ctx.save();
           ctx.translate(x, y - LABEL_GAP);
@@ -73,7 +95,6 @@ const barValueLabelPlugin = {
           ctx.fillText(label, 0, 0);
           ctx.restore();
         }
-        // Bars too thin for even a rotated label rely on the tooltip instead
       });
     });
 
