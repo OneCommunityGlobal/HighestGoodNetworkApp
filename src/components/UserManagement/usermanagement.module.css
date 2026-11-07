@@ -593,12 +593,12 @@
 .darkSearchBox .btn,
 .darkSearchRow button,
 .darkSearchRow .btn,
-.darkUsermanagementData button,
+/* .darkUsermanagementData button,
 .darkUsermanagementData .btn {
-  background-color: #1d62f0 ; /* Standout blue background color */
-  color: #fff ;            /* Pure white visible text */
+  background-color: #1d62f0 ;
+  color: #fff ;            
   border: 1px solid #0056b3 ;
-}
+} */
 
 /* Ensures crisp visibility when hovering over those specific buttons */
 .darkSearchBox .btn:hover,
@@ -606,6 +606,81 @@
 .darkUsermanagementData .btn:hover {
   background-color: #0b49c4 ;
   color: #fff ;
+}
+
+/* Dark-mode User Management action buttons */
+
+.darkUsermanagementData .btn-outline-warning {
+  color: #ffc107;
+  background-color: transparent;
+  border-color: #ffc107;
+}
+
+.darkUsermanagementData .btn-outline-warning:hover,
+.darkUsermanagementData .btn-outline-warning:focus {
+  color: #212529;
+  background-color: #ffc107;
+}
+
+.darkUsermanagementData .btn-outline-success {
+  color: #4ade80;
+  background-color: transparent;
+  border-color: #4ade80;
+}
+
+.darkUsermanagementData .btn-outline-success {
+  color: #4ade80;
+  background-color: transparent;
+  border-color: #4ade80;
+}
+
+.darkUsermanagementData .btn-outline-success {
+  color: #4ade80;
+  background-color:transparent ;
+  border-color: #4ade80 ;
+}
+
+.darkUsermanagementData .btn-outline-success:focus {
+  color: #212529;
+  background-color: #4ade80;
+}
+
+.darkUsermanagementData .btn-outline-success:hover,
+
+
+.darkUsermanagementData .btn-outline-primary {
+  color: #80bdff;
+  background-color: transparent;
+  border-color: #80bdff;
+}
+
+.darkUsermanagementData .btn-outline-primary:hover,
+.darkUsermanagementData .btn-outline-primary:focus {
+  color: #212529;
+  background-color: #80bdff;
+}
+
+.darkUsermanagementData .btn-outline-danger {
+  color: #ff6b6b;
+  background-color: transparent;
+  border-color: #ff6b6b;
+}
+
+.darkUsermanagementData .btn-outline-danger:hover,
+
+
+.darkUsermanagementData .btn-outline-danger:focus {
+  color: #212529;
+  background-color: #ff6b6b;
+}
+
+.darkUsermanagementData .btn-outline-success:hover,
+.darkUsermanagementData .btn-outline-success:focus,
+.darkUsermanagementData .btn-outline-success:active {
+  color: #fff ;
+  background-color: #198754 ;
+  border-color: #198754 ;
+  box-shadow: none ;
 }
 
 /* ===================================================

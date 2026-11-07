@@ -43,30 +43,34 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
-        const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
+        const response = await axios.patch(
+          ENDPOINTS.USER_PROFILE_UPDATE,
+          updatedData
+        );
+
         if (response.status >= 200 && response.status < 300) {
-          const toastId = toast.success(' Saving Data...', { autoClose: false });
-          // Clear the pending edit queue now that it has been saved successfully.
-          // Without this, these edits would remain queued and get resubmitted
-          // (replayed) the next time any user's info is saved, silently
-          // overwriting that user's data with stale values.
+          const toastId = toast.success('Saving Data...', { autoClose: false });
+
+          // Clear pending edits only after a successful save.
           dispatch(finishUserInfoUpdate());
+
           await dispatch(getAllUserProfile());
+
           toast.update(toastId, {
             render: 'Data Updated successfully !',
             type: toast.TYPE.SUCCESS,
             isLoading: false,
             autoClose: 3000,
           });
-          // setTimeout(() => {
-          // globalThis.location.reload();
-          // }, 1000);
-        } else {
-          toast.error('Error Updating Data!');
+
+          return true;
         }
-        
+
+        toast.error('Error Updating Data!');
+        return false;
       } catch (error) {
         toast.error('Error Updating Data ! ');
+        return false;
       }
     };
     const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#364456' } : { backgroundColor: "#f0f8ff",color:"black"};
@@ -75,14 +79,18 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
       enableEditUserInfo(value);
     };
     
-    const disableEdit = value => {
-      setEditFlag(value);
-      disableEditUserInfo(value);
+    const disableEdit = async value => {
+        if (updatedUserData.length > 0) {
+          const saved = await saveUserInformation(updatedUserData);
 
-      if (updatedUserData.length > 0) {
-        saveUserInformation(updatedUserData);
-      }
-    };
+          if (!saved) {
+            return;
+          }
+        }
+
+        setEditFlag(value);
+        dispatch(disableEditUserInfo(value));
+      };
 
 
     return (

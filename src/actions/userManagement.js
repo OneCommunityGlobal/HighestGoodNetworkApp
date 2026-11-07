@@ -14,7 +14,9 @@ import {
   DISABLE_USER_PROFILE_EDIT,
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
-  FINISH_USER_INFO_UPDATE
+  FINISH_USER_INFO_UPDATE,
+  RESET_USER_PROFILE_EDIT,
+  CLEAR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
@@ -476,4 +478,8 @@ export const clearUserInformation = () => dispatch => {
  */
 export const finishUserInfoUpdate = () => dispatch => {
   dispatch({ type: FINISH_USER_INFO_UPDATE });
+};
+
+export const resetUserProfileEdit = () => dispatch => {
+  dispatch({ type: RESET_USER_PROFILE_EDIT });
 };
