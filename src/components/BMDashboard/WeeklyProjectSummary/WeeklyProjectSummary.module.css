@@ -514,6 +514,13 @@
   min-height: 300px;
 }
 
+.toolsStoppageCard {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
 /* ---------------- FINANCIALS GRID ---------------- */
 .financialsGrid {
   display: grid;

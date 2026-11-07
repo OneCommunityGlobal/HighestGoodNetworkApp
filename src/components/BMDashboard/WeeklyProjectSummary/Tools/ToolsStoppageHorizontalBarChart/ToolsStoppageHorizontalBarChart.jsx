@@ -96,7 +96,14 @@ const getChartOptions = darkMode => ({
   plugins: {
     legend: {
       position: 'top',
-      labels: { color: darkMode ? '#e0e0e0' : '#000' },
+      labels: {
+        color: darkMode ? '#F1F5F9' : '#222222',
+        font: {
+          size: 13,
+          weight: '500',
+        },
+        padding: 16,
+      },
     },
     tooltip: {
       enabled: true,
@@ -128,25 +135,64 @@ const getChartOptions = darkMode => ({
   scales: {
     x: {
       stacked: true,
-      grid: { color: darkMode ? '#364156' : '#e0e0e0' },
+      min: 0,
+      suggestedMax: 100,
+      grid: {
+        color: darkMode ? 'rgba(226, 232, 240, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+      },
+      border: {
+        color: darkMode ? '#CBD5E1' : '#555555',
+      },
       ticks: {
-        color: darkMode ? '#e0e0e0' : '#000',
+        color: darkMode ? '#F1F5F9' : '#222222',
+        font: {
+          size: 12,
+          weight: '500',
+        },
         callback: value => formatPercentageValue(value),
         maxTicksLimit: 6,
       },
       title: {
         display: true,
         text: 'Percentage of Tools (%)',
-        color: darkMode ? '#FFFFFF' : '#000000',
+        color: darkMode ? '#FFFFFF' : '#222222',
+        font: {
+          size: 14,
+          weight: 'bold',
+        },
+        padding: {
+          top: 10,
+        },
       },
-      min: 0,
-      suggestedMax: 100,
     },
     y: {
-      title: { display: true, text: 'Tools Name', color: darkMode ? '#FFFFFF' : '#000000' },
       stacked: true,
-      grid: { display: false },
-      ticks: { color: darkMode ? '#e0e0e0' : '#000' },
+      grid: {
+        display: false,
+      },
+      border: {
+        color: darkMode ? '#CBD5E1' : '#555555',
+      },
+      ticks: {
+        color: darkMode ? '#F1F5F9' : '#222222',
+        font: {
+          size: 12,
+          weight: '500',
+        },
+        padding: 8,
+      },
+      title: {
+        display: true,
+        text: 'Tools Name',
+        color: darkMode ? '#FFFFFF' : '#222222',
+        font: {
+          size: 14,
+          weight: 'bold',
+        },
+        padding: {
+          bottom: 10,
+        },
+      },
     },
   },
 });
