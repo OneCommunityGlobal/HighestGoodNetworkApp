@@ -55,6 +55,12 @@ const aggregateTrendData = (data, projectFilter, categoryFilter, dateRange) => {
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 };
 
+const getVarianceText = variance => {
+  if (variance === null) return 'Variance: no planned budget data available';
+  const sign = variance > 0 ? '+' : '';
+  return `Variance: ${sign}$${variance.toLocaleString()}`;
+};
+
 const getOptionBackgroundColor = (darkMode, isSelected, isFocused) => {
   if (isSelected && darkMode) return '#e8a71c';
   if (isSelected && !darkMode) return '#0d55b3';
@@ -164,9 +170,7 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
         Actual: <strong>${chartData.actual.toLocaleString()}</strong>
       </div>
       <div className={varianceClass} style={{ margin: '8px 0 0 0', fontWeight: 'bold' }}>
-        {chartData.variance === null
-          ? 'Variance: no planned budget data available'
-          : `Variance: ${chartData.variance > 0 ? '+' : ''}$${chartData.variance.toLocaleString()}`}
+        {getVarianceText(chartData.variance)}
       </div>
     </div>
   );
@@ -195,6 +199,56 @@ const getCellColor = (variance, darkMode) => {
   if (variance === null) return darkMode ? '#64748b' : '#94a3b8';
   if (variance > 0) return darkMode ? '#ff4444' : '#e74c3c';
   return darkMode ? '#4ade80' : '#2ecc71';
+};
+
+const ChartBody = ({ chartData, darkMode, textColor, tooltipCursorFill }) => {
+  if (chartData.length === 0) {
+    return <div className={styles.emptyState}>No data available for the selected filters.</div>;
+  }
+  if (chartData.every(entry => entry.variance === null)) {
+    return (
+      <div className={styles.emptyState}>
+        No planned budget data has been recorded yet, so variance can&apos;t be calculated. Actual
+        costs are being tracked — variance will appear once planned costs are added.
+      </div>
+    );
+  }
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart data={chartData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
+        <XAxis
+          dataKey="date"
+          stroke={darkMode ? '#475569' : '#94a3b8'}
+          tick={{ fontSize: 11, fill: textColor }}
+          tickFormatter={formatTickDate}
+        />
+        <YAxis
+          stroke={darkMode ? '#475569' : '#94a3b8'}
+          tick={{ fontSize: 11, fill: textColor }}
+          tickFormatter={formatTickValue}
+        />
+        <Tooltip
+          content={<CustomTooltip darkMode={darkMode} />}
+          cursor={{ fill: tooltipCursorFill }}
+        />
+        <ReferenceLine y={0} stroke={darkMode ? '#64748b' : '#94a3b8'} />
+        <Bar dataKey="variance" radius={[4, 4, 4, 4]}>
+          {chartData.map(entry => (
+            <Cell key={`cell-${entry.date}`} fill={getCellColor(entry.variance, darkMode)} />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+};
+
+ChartBody.propTypes = {
+  chartData: PropTypes.arrayOf(
+    PropTypes.shape({ date: PropTypes.string, variance: PropTypes.number }),
+  ).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  textColor: PropTypes.string.isRequired,
+  tooltipCursorFill: PropTypes.string.isRequired,
 };
 
 export default function CostVarianceTrendGraph() {
@@ -350,43 +404,12 @@ export default function CostVarianceTrendGraph() {
 
       <div className={styles.chartWrapper}>
         <div className={styles.chartContainer}>
-          {chartData.length === 0 ? (
-            <div className={styles.emptyState}>No data available for the selected filters.</div>
-          ) : chartData.every(entry => entry.variance === null) ? (
-            <div className={styles.emptyState}>
-              No planned budget data has been recorded yet, so variance can&apos;t be calculated.
-              Actual costs are being tracked — variance will appear once planned costs are added.
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
-                <XAxis
-                  dataKey="date"
-                  stroke={darkMode ? '#475569' : '#94a3b8'}
-                  tick={{ fontSize: 11, fill: textColor }}
-                  tickFormatter={formatTickDate}
-                />
-                <YAxis
-                  stroke={darkMode ? '#475569' : '#94a3b8'}
-                  tick={{ fontSize: 11, fill: textColor }}
-                  tickFormatter={formatTickValue}
-                />
-                <Tooltip
-                  content={<CustomTooltip darkMode={darkMode} />}
-                  cursor={{ fill: tooltipCursorFill }}
-                />
-                <ReferenceLine y={0} stroke={darkMode ? '#64748b' : '#94a3b8'} />
-                <Bar dataKey="variance" radius={[4, 4, 4, 4]}>
-                  {chartData.map(entry => (
-                    <Cell
-                      key={`cell-${entry.date}`}
-                      fill={getCellColor(entry.variance, darkMode)}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
+          <ChartBody
+            chartData={chartData}
+            darkMode={darkMode}
+            textColor={textColor}
+            tooltipCursorFill={tooltipCursorFill}
+          />
         </div>
       </div>
     </div>

@@ -23,6 +23,12 @@ const isProjectMatch = (entryProject, projectId) => projectId === '' || entryPro
 const isCategoryMatch = (entryCategory, categoryFilter) =>
   categoryFilter === 'ALL' || entryCategory === categoryFilter;
 
+const getVarianceText = (variance, variancePercent) => {
+  if (variance === null) return 'Variance: no planned budget data available';
+  const sign = variance > 0 ? '+' : '';
+  return `Variance: ${sign}$${variance.toLocaleString()} (${variancePercent})`;
+};
+
 const getFilteredAndAggregatedData = (rawData, startDate, endDate, projectId, categoryFilter) => {
   const filtered = rawData.filter(
     entry =>
@@ -170,11 +176,7 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
         Actual: <strong>${chartData.actual.toLocaleString()}</strong>
       </div>
       <div className="recharts-tooltip-variance-expense">
-        {chartData.variance === null
-          ? 'Variance: no planned budget data available'
-          : `Variance: ${
-              chartData.variance > 0 ? '+' : ''
-            }$${chartData.variance.toLocaleString()} (${chartData.variancePercent})`}
+        {getVarianceText(chartData.variance, chartData.variancePercent)}
       </div>
     </div>
   );
@@ -226,12 +228,14 @@ export default function ExpenseBarChart({ darkMode }) {
     };
   }, []);
 
-  const projects = useMemo(() => [...new Set(rawEntries.map(entry => entry.projectId))].sort(), [
-    rawEntries,
-  ]);
-  const categories = useMemo(() => [...new Set(rawEntries.map(entry => entry.category))].sort(), [
-    rawEntries,
-  ]);
+  const projects = useMemo(
+    () => [...new Set(rawEntries.map(entry => entry.projectId))].sort((a, b) => a.localeCompare(b)),
+    [rawEntries],
+  );
+  const categories = useMemo(
+    () => [...new Set(rawEntries.map(entry => entry.category))].sort((a, b) => a.localeCompare(b)),
+    [rawEntries],
+  );
 
   const theme = getTheme(darkMode);
 
@@ -287,6 +291,81 @@ export default function ExpenseBarChart({ darkMode }) {
       setErrorMessage('Something went wrong while loading chart data.');
     }
   }, [rawEntries, isLoadingEntries, projectId, categoryFilter, startDate, endDate]);
+
+  const renderChartBody = () => {
+    const placeholderStyle = {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%',
+      color: theme.emptyTextColor,
+      fontStyle: 'italic',
+    };
+
+    if (isLoadingEntries) {
+      return <div style={placeholderStyle}>Loading cost data...</div>;
+    }
+    if (data.length === 0 && !errorMessage) {
+      return <div style={placeholderStyle}>No data available for the selected filters.</div>;
+    }
+    return (
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 25, right: 10, left: 20, bottom: 40 }}>
+          <XAxis
+            dataKey="project"
+            stroke={theme.axisStroke}
+            tick={{ fontSize: 12, fill: theme.axisTick, fontWeight: 500 }}
+            interval={0}
+            tickMargin={8}
+            angle={-20}
+            textAnchor="end"
+            height={70}
+          />
+          <YAxis
+            stroke={theme.axisStroke}
+            tick={{ fontSize: 12, fill: theme.axisTick }}
+            axisLine
+            tickLine
+            tickFormatter={value => `$${value.toLocaleString()}`}
+          />
+          <Tooltip
+            content={<CustomTooltip darkMode={darkMode} />}
+            cursor={{ fill: theme.cursorFill }}
+            wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
+            contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
+          />
+          <Bar dataKey="planned" fill="#4285F4" name="Planned" radius={[3, 3, 0, 0]}>
+            <LabelList
+              dataKey="planned"
+              position="top"
+              style={{ fontSize: 11, fill: '#8ab4f8', fontWeight: 'bold' }}
+              formatter={val =>
+                val === null || val === undefined ? 'N/A' : `$${val.toLocaleString()}`
+              }
+            />
+          </Bar>
+          <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]}>
+            <LabelList dataKey="varianceLabel" content={<VarianceLabel darkMode={darkMode} />} />
+            <LabelList
+              dataKey="actual"
+              position="insideTop"
+              style={{ fontSize: 12, fontWeight: 'bold', fill: '#fff' }}
+              formatter={val => `Actual: $${val.toLocaleString()}`}
+            />
+            {data.map(entry => {
+              let fill;
+              if (entry.variance === null) {
+                fill = theme.emptyTextColor;
+              } else {
+                fill = entry.variance > 0 ? theme.overBudget : theme.underBudget;
+              }
+              return <Cell key={`cell-${entry.project}`} fill={fill} />;
+            })}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    );
+  };
 
   return (
     <div style={{ width: '100%', padding: '0.5rem' }}>
@@ -456,94 +535,7 @@ export default function ExpenseBarChart({ darkMode }) {
         </span>
       </div>
 
-      <div style={{ width: '100%', height: '300px' }}>
-        {isLoadingEntries ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-              color: theme.emptyTextColor,
-              fontStyle: 'italic',
-            }}
-          >
-            Loading cost data...
-          </div>
-        ) : data.length === 0 && !errorMessage ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-              color: theme.emptyTextColor,
-              fontStyle: 'italic',
-            }}
-          >
-            No data available for the selected filters.
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 25, right: 10, left: 20, bottom: 40 }}>
-              <XAxis
-                dataKey="project"
-                stroke={theme.axisStroke}
-                tick={{ fontSize: 12, fill: theme.axisTick, fontWeight: 500 }}
-                interval={0}
-                tickMargin={8}
-                angle={-20}
-                textAnchor="end"
-                height={70}
-              />
-              <YAxis
-                stroke={theme.axisStroke}
-                tick={{ fontSize: 12, fill: theme.axisTick }}
-                axisLine
-                tickLine
-                tickFormatter={value => `$${value.toLocaleString()}`}
-              />
-              <Tooltip
-                content={<CustomTooltip darkMode={darkMode} />}
-                cursor={{ fill: theme.cursorFill }}
-                wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
-                contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
-              />
-              <Bar dataKey="planned" fill="#4285F4" name="Planned" radius={[3, 3, 0, 0]}>
-                <LabelList
-                  dataKey="planned"
-                  position="top"
-                  style={{ fontSize: 11, fill: '#8ab4f8', fontWeight: 'bold' }}
-                  formatter={val =>
-                    val === null || val === undefined ? 'N/A' : `$${val.toLocaleString()}`
-                  }
-                />
-              </Bar>
-              <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]}>
-                <LabelList
-                  dataKey="varianceLabel"
-                  content={<VarianceLabel darkMode={darkMode} />}
-                />
-                <LabelList
-                  dataKey="actual"
-                  position="insideTop"
-                  style={{ fontSize: 12, fontWeight: 'bold', fill: '#fff' }}
-                  formatter={val => `Actual: $${val.toLocaleString()}`}
-                />
-                {data.map(entry => {
-                  let fill;
-                  if (entry.variance === null) {
-                    fill = theme.emptyTextColor;
-                  } else {
-                    fill = entry.variance > 0 ? theme.overBudget : theme.underBudget;
-                  }
-                  return <Cell key={`cell-${entry.project}`} fill={fill} />;
-                })}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+      <div style={{ width: '100%', height: '300px' }}>{renderChartBody()}</div>
     </div>
   );
 }
