@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Button, Col, Container, Modal, ModalBody, Row } from 'reactstrap';
+import { Button, Col, Container, Row } from 'reactstrap';
 import { updateSummaryBarData } from '~/actions/dashboardActions';
 import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
@@ -23,14 +23,16 @@ export function Dashboard(props) {
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { match, authUser, location, history } = props;
+
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
     match.params.userId || viewingUser?.userId || authUser.userid,
   );
+
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
-
   const dispatch = useDispatch();
 
   const toggle = () => {
@@ -39,6 +41,7 @@ export function Dashboard(props) {
         viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
           ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
           : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
+
       toast.warn(warningMessage);
       return;
     }
@@ -70,8 +73,7 @@ export function Dashboard(props) {
     try {
       const data = await getQuestionnaireStatus();
       setQuestionnaireCompleted(data.completed);
-    } catch (error) {
-      console.error('Error checking questionnaire status:', error);
+    } catch {
       setQuestionnaireError(true);
     } finally {
       setQuestionnaireLoading(false);
@@ -80,12 +82,13 @@ export function Dashboard(props) {
 
   useEffect(() => {
     if (authUser?.userid) {
-      checkQuestionnaireStatus();
+      void checkQuestionnaireStatus();
     }
   }, [authUser?.userid]);
 
   useEffect(() => {
     window.addEventListener('storage', handleStorageEvent);
+
     return () => {
       window.removeEventListener('storage', handleStorageEvent);
     };
@@ -106,6 +109,7 @@ export function Dashboard(props) {
 
     const remainingState = { ...location.state };
     delete remainingState.permissionDeniedMessage;
+
     history?.replace({
       ...location,
       state: Object.keys(remainingState).length ? remainingState : undefined,
@@ -141,6 +145,7 @@ export function Dashboard(props) {
         summaryBarData={summaryBarData}
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
+
       <Row className="w-100 ml-1">
         <Col lg={5} className="order-lg-2 order-2">
           <div className="row justify-content-center">
@@ -162,6 +167,7 @@ export function Dashboard(props) {
               />
             </div>
           </div>
+
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
@@ -169,6 +175,7 @@ export function Dashboard(props) {
             setFilteredUserTeamIds={setFilteredUserTeamIds}
           />
         </Col>
+
         <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
           {popup && (
             <div className="my-2" id="weeklySum">
@@ -181,6 +188,7 @@ export function Dashboard(props) {
               />
             </div>
           )}
+
           <div className="my-2" id="wsummary">
             <Timelog
               isDashboard
@@ -191,6 +199,7 @@ export function Dashboard(props) {
           </div>
         </Col>
       </Row>
+
       <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />
     </Container>
   );

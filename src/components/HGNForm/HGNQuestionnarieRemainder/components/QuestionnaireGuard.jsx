@@ -1,5 +1,4 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
 import { useQuestionnaire } from '../../context/QuestionnaireContext';
 import QuestionnaireReminder from './QuestionnaireReminder';
 
