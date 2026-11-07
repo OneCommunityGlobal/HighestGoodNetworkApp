@@ -37,6 +37,12 @@ const renderForm = () =>
     </Provider>,
   );
 
+// Resume upload is mandatory for every role since #5660.
+const attachResume = () => {
+  const resume = new File(['%PDF-1.4'], 'resume.pdf', { type: 'application/pdf' });
+  fireEvent.change(screen.getByLabelText('Choose file'), { target: { files: [resume] } });
+};
+
 const fillProfile = async () => {
   await screen.findByLabelText(/^First Name/i);
   fireEvent.change(screen.getByLabelText(/^First Name/i), { target: { value: 'Ada' } });
@@ -45,6 +51,7 @@ const fillProfile = async () => {
   fireEvent.change(document.getElementById('jaf-location'), { target: { value: 'London, UK' } });
   fireEvent.change(document.getElementById('jaf-timezone'), { target: { value: 'GMT' } });
   fireEvent.change(document.getElementById('jaf-phone'), { target: { value: '+442071838750' } });
+  attachResume();
 };
 
 const fillAndSubmit = async () => {
