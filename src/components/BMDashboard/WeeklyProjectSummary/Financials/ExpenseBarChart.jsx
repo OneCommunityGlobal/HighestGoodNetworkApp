@@ -8,154 +8,10 @@ import {
   Tooltip,
   Cell,
 } from 'recharts';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-
-const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
-const projects = ['Project A', 'Project B', 'Project C'];
-
-const rawData = [
-  {
-    projectId: 'Project A',
-    category: 'Plumbing',
-    plannedCost: 1000,
-    actualCost: 1200,
-    date: '2026-05-01',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Electrical',
-    plannedCost: 1500,
-    actualCost: 1300,
-    date: '2026-05-02',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Plumbing',
-    plannedCost: 1100,
-    actualCost: 1050,
-    date: '2026-05-03',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Structural',
-    plannedCost: 2200,
-    actualCost: 2150,
-    date: '2026-05-04',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Mechanical',
-    plannedCost: 1300,
-    actualCost: 1800,
-    date: '2026-05-05',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Structural',
-    plannedCost: 900,
-    actualCost: 1400,
-    date: '2026-05-08',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Electrical',
-    plannedCost: 2000,
-    actualCost: 1600,
-    date: '2026-05-09',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Plumbing',
-    plannedCost: 800,
-    actualCost: 750,
-    date: '2026-05-10',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Mechanical',
-    plannedCost: 2500,
-    actualCost: 2400,
-    date: '2026-05-11',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Electrical',
-    plannedCost: 1800,
-    actualCost: 2100,
-    date: '2026-05-12',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Structural',
-    plannedCost: 3000,
-    actualCost: 3500,
-    date: '2026-05-15',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Mechanical',
-    plannedCost: 1500,
-    actualCost: 1400,
-    date: '2026-05-16',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Plumbing',
-    plannedCost: 1200,
-    actualCost: 1100,
-    date: '2026-05-17',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Structural',
-    plannedCost: 4000,
-    actualCost: 4200,
-    date: '2026-05-18',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Electrical',
-    plannedCost: 1700,
-    actualCost: 1650,
-    date: '2026-05-19',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Plumbing',
-    plannedCost: 1300,
-    actualCost: 1100,
-    date: '2026-05-22',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Mechanical',
-    plannedCost: 2100,
-    actualCost: 2500,
-    date: '2026-05-23',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Structural',
-    plannedCost: 2800,
-    actualCost: 2800,
-    date: '2026-05-24',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Electrical',
-    plannedCost: 1900,
-    actualCost: 1750,
-    date: '2026-05-25',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Plumbing',
-    plannedCost: 1500,
-    actualCost: 1600,
-    date: '2026-05-26',
-  },
-];
+import axios from 'axios';
+import { ENDPOINTS } from '../../../../utils/URL';
 
 const isDateMatch = (entryDate, startDate, endDate) => {
   if (startDate && entryDate < startDate) return false;
@@ -167,7 +23,7 @@ const isProjectMatch = (entryProject, projectId) => projectId === '' || entryPro
 const isCategoryMatch = (entryCategory, categoryFilter) =>
   categoryFilter === 'ALL' || entryCategory === categoryFilter;
 
-const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFilter) => {
+const getFilteredAndAggregatedData = (rawData, startDate, endDate, projectId, categoryFilter) => {
   const filtered = rawData.filter(
     entry =>
       isDateMatch(entry.date, startDate, endDate) &&
@@ -179,17 +35,28 @@ const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFil
   filtered.forEach(entry => {
     const key = entry.projectId;
     if (!aggregated[key]) {
-      aggregated[key] = { project: key, planned: 0, actual: 0 };
+      // planned stays null until a real (non-null) plannedCost entry is seen, so a
+      // project with no real budget data doesn't silently display as "$0 planned".
+      aggregated[key] = { project: key, planned: null, actual: 0 };
     }
-    aggregated[key].planned += entry.plannedCost;
+    if (entry.plannedCost !== null && entry.plannedCost !== undefined) {
+      aggregated[key].planned = (aggregated[key].planned || 0) + entry.plannedCost;
+    }
     aggregated[key].actual += entry.actualCost;
   });
 
   return Object.values(aggregated).map(item => {
-    item.variance = item.actual - item.planned;
-    const percent = item.planned === 0 ? 0 : ((item.variance / item.planned) * 100).toFixed(1);
-    item.variancePercent = percent > 0 ? `+${percent}%` : `${percent}%`;
-    item.varianceLabel = item.variance > 0 ? `+$${item.variance}` : `-$${Math.abs(item.variance)}`;
+    const hasPlanned = item.planned !== null;
+    item.variance = hasPlanned ? item.actual - item.planned : null;
+    if (!hasPlanned) {
+      item.variancePercent = null;
+      item.varianceLabel = 'Planned: N/A';
+    } else {
+      const percent = item.planned === 0 ? 0 : ((item.variance / item.planned) * 100).toFixed(1);
+      item.variancePercent = percent > 0 ? `+${percent}%` : `${percent}%`;
+      item.varianceLabel =
+        item.variance > 0 ? `+$${item.variance}` : `-$${Math.abs(item.variance)}`;
+    }
     return item;
   });
 };
@@ -223,14 +90,20 @@ const getTheme = darkMode => {
 
 const VarianceLabel = props => {
   const { x, y, width, value, darkMode } = props;
-  const isOver = value?.toString().startsWith('+');
   const theme = getTheme(darkMode);
+
+  let fill;
+  if (value === 'Planned: N/A') {
+    fill = theme.emptyTextColor;
+  } else {
+    fill = value?.toString().startsWith('+') ? theme.overBudget : theme.underBudget;
+  }
 
   return (
     <text
       x={x + width / 2}
       y={y - 8}
-      fill={isOver ? theme.overBudget : theme.underBudget}
+      fill={fill}
       fontSize="11"
       fontWeight="bold"
       textAnchor="middle"
@@ -288,14 +161,20 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
         {label}
       </div>
       <div style={{ margin: '0 0 4px 0' }}>
-        Planned: <strong>${chartData.planned.toLocaleString()}</strong>
+        Planned:{' '}
+        <strong>
+          {chartData.planned === null ? 'N/A' : `$${chartData.planned.toLocaleString()}`}
+        </strong>
       </div>
       <div style={{ margin: '0 0 4px 0' }}>
         Actual: <strong>${chartData.actual.toLocaleString()}</strong>
       </div>
       <div className="recharts-tooltip-variance-expense">
-        Variance: {chartData.variance > 0 ? '+' : ''}${chartData.variance.toLocaleString()} (
-        {chartData.variancePercent})
+        {chartData.variance === null
+          ? 'Variance: no planned budget data available'
+          : `Variance: ${
+              chartData.variance > 0 ? '+' : ''
+            }$${chartData.variance.toLocaleString()} (${chartData.variancePercent})`}
       </div>
     </div>
   );
@@ -324,6 +203,35 @@ export default function ExpenseBarChart({ darkMode }) {
   const [endDate, setEndDate] = useState('');
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [rawEntries, setRawEntries] = useState([]);
+  const [isLoadingEntries, setIsLoadingEntries] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingEntries(true);
+    axios
+      .get(ENDPOINTS.BM_PROJECT_COST_ENTRIES())
+      .then(({ data: entries }) => {
+        if (!cancelled) setRawEntries(entries);
+      })
+      .catch(() => {
+        if (!cancelled) setErrorMessage('Unable to load cost data from the server.');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingEntries(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const projects = useMemo(() => [...new Set(rawEntries.map(entry => entry.projectId))].sort(), [
+    rawEntries,
+  ]);
+  const categories = useMemo(() => [...new Set(rawEntries.map(entry => entry.category))].sort(), [
+    rawEntries,
+  ]);
 
   const theme = getTheme(darkMode);
 
@@ -365,8 +273,10 @@ export default function ExpenseBarChart({ darkMode }) {
   };
 
   useEffect(() => {
+    if (isLoadingEntries) return;
     try {
       const processedData = getFilteredAndAggregatedData(
+        rawEntries,
         startDate,
         endDate,
         projectId,
@@ -376,7 +286,7 @@ export default function ExpenseBarChart({ darkMode }) {
     } catch (error) {
       setErrorMessage('Something went wrong while loading chart data.');
     }
-  }, [projectId, categoryFilter, startDate, endDate]);
+  }, [rawEntries, isLoadingEntries, projectId, categoryFilter, startDate, endDate]);
 
   return (
     <div style={{ width: '100%', padding: '0.5rem' }}>
@@ -532,10 +442,35 @@ export default function ExpenseBarChart({ darkMode }) {
           />{' '}
           Actual (Under Budget)
         </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <span
+            style={{
+              width: 14,
+              height: 14,
+              backgroundColor: theme.emptyTextColor,
+              display: 'inline-block',
+              borderRadius: '2px',
+            }}
+          />{' '}
+          Actual (No Planned Data Yet)
+        </span>
       </div>
 
       <div style={{ width: '100%', height: '300px' }}>
-        {data.length === 0 && !errorMessage ? (
+        {isLoadingEntries ? (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              color: theme.emptyTextColor,
+              fontStyle: 'italic',
+            }}
+          >
+            Loading cost data...
+          </div>
+        ) : data.length === 0 && !errorMessage ? (
           <div
             style={{
               display: 'flex',
@@ -550,13 +485,16 @@ export default function ExpenseBarChart({ darkMode }) {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 25, right: 10, left: 20, bottom: 0 }}>
+            <BarChart data={data} margin={{ top: 25, right: 10, left: 20, bottom: 40 }}>
               <XAxis
                 dataKey="project"
                 stroke={theme.axisStroke}
                 tick={{ fontSize: 12, fill: theme.axisTick, fontWeight: 500 }}
                 interval={0}
                 tickMargin={8}
+                angle={-20}
+                textAnchor="end"
+                height={70}
               />
               <YAxis
                 stroke={theme.axisStroke}
@@ -576,7 +514,9 @@ export default function ExpenseBarChart({ darkMode }) {
                   dataKey="planned"
                   position="top"
                   style={{ fontSize: 11, fill: '#8ab4f8', fontWeight: 'bold' }}
-                  formatter={val => `$${val.toLocaleString()}`}
+                  formatter={val =>
+                    val === null || val === undefined ? 'N/A' : `$${val.toLocaleString()}`
+                  }
                 />
               </Bar>
               <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]}>
@@ -584,12 +524,21 @@ export default function ExpenseBarChart({ darkMode }) {
                   dataKey="varianceLabel"
                   content={<VarianceLabel darkMode={darkMode} />}
                 />
-                {data.map(entry => (
-                  <Cell
-                    key={`cell-${entry.project}`}
-                    fill={entry.variance > 0 ? theme.overBudget : theme.underBudget}
-                  />
-                ))}
+                <LabelList
+                  dataKey="actual"
+                  position="insideTop"
+                  style={{ fontSize: 12, fontWeight: 'bold', fill: '#fff' }}
+                  formatter={val => `Actual: $${val.toLocaleString()}`}
+                />
+                {data.map(entry => {
+                  let fill;
+                  if (entry.variance === null) {
+                    fill = theme.emptyTextColor;
+                  } else {
+                    fill = entry.variance > 0 ? theme.overBudget : theme.underBudget;
+                  }
+                  return <Cell key={`cell-${entry.project}`} fill={fill} />;
+                })}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
