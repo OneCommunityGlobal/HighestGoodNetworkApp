@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection } from '../WeeklyProjectSummary/summaryProjectSelection';
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -19,7 +20,11 @@ function IssuesCharts({ bmProjects = [] }) {
   const dispatch = useDispatch();
 
   const [graphType, setGraphType] = useState('Longest Open');
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useSummaryProjectSelection(
+    'issue-tracking',
+    [],
+    'ids',
+  );
   const [dateRange, setDateRange] = useState({ start: null, end: null });
 
   const { longestOpenIssues = [], mostExpensiveIssues = [] } = useSelector(

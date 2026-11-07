@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../summaryProjectSelection';
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -43,9 +48,15 @@ const projectDemoCosts = {
 
 function TotalMaterialCostPerProject() {
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [allProjects, setAllProjects] = useState([]);
+  const [localProjects, setAllProjects] = useState([]);
+  const allProjects = useSummaryProjects(localProjects);
+  const summaryScope = useSummaryScope();
   const [projectCosts, setProjectCosts] = useState({});
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useSummaryProjectSelection(
+    'material-cost',
+    [],
+    'options',
+  );
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const textColor = darkMode ? '#ffffff' : '#666';
@@ -92,7 +103,9 @@ function TotalMaterialCostPerProject() {
     const fetchData = async () => {
       setDataLoaded(false);
       try {
-        const projectsResponse = await axios.get(ENDPOINTS.BM_PROJECTS);
+        const projectsResponse = summaryScope
+          ? { status: 200, data: summaryScope.projects }
+          : await axios.get(ENDPOINTS.BM_PROJECTS);
         if (projectsResponse.status < 200 || projectsResponse.status >= 300) {
           throw new Error(
             `API request to get projects list failed with status ${projectsResponse.status}`,
@@ -102,7 +115,7 @@ function TotalMaterialCostPerProject() {
           value: project._id,
           label: project.name,
         }));
-        setSelectedProjects(projectsFilteredData);
+        if (!summaryScope) setSelectedProjects(projectsFilteredData);
         setAllProjects(projectsFilteredData);
 
         const costResponse = await axios.get(ENDPOINTS.BM_PROJECT_MATERIALS_COST);
@@ -118,10 +131,10 @@ function TotalMaterialCostPerProject() {
         setProjectCosts(projectCostsData);
       } catch (error) {
         toast.error(`Error fetching data: ${error.message}`);
-        toast.error('Using mock data as fallback');
-        setSelectedProjects(allDemoProjects);
+        if (!summaryScope) toast.error('Using mock data as fallback');
+        if (!summaryScope) setSelectedProjects(allDemoProjects);
         setAllProjects(allDemoProjects);
-        setProjectCosts(projectDemoCosts);
+        setProjectCosts(summaryScope ? {} : projectDemoCosts);
       } finally {
         setDataLoaded(true);
       }
@@ -129,19 +142,20 @@ function TotalMaterialCostPerProject() {
     fetchData();
   }, []);
 
+  const displayedProjects = selectedProjects.length ? selectedProjects : allProjects;
   const data = useMemo(
     () => ({
-      labels: selectedProjects.map(p => p.label),
+      labels: displayedProjects.map(p => p.label),
       datasets: [
         {
           label: 'Total Material Cost (*1000$)',
-          data: selectedProjects.map(p => projectCosts[p.value]),
+          data: displayedProjects.map(p => projectCosts[p.value] || 0),
           backgroundColor: 'rgb(23, 154, 197)',
           borderRadius: 10,
         },
       ],
     }),
-    [selectedProjects, projectCosts],
+    [displayedProjects, projectCosts],
   );
 
   const selectStyles = useMemo(
@@ -238,21 +252,25 @@ function TotalMaterialCostPerProject() {
             <Select
               isMulti
               isSearchable
-              options={allProjects}
+              options={[{ value: 'all', label: 'All Projects' }, ...allProjects]}
               value={selectedProjects}
-              onChange={setSelectedProjects}
+              onChange={options =>
+                setSelectedProjects(
+                  (options || []).some(option => option.value === 'all') ? [] : options || [],
+                )
+              }
               classNamePrefix="select"
               styles={selectStyles}
               menuPortalTarget={document.body}
               menuPosition="fixed"
               defaultValue={allProjects}
-              placeholder="Select Projects"
+              placeholder="All Projects"
               closeMenuOnSelect={false}
               hideSelectedOptions={false}
             />
           </div>
           <div style={{ overflowX: 'auto' }}>
-            <div style={{ minWidth: `${selectedProjects.length * 20}px`, minHeight: '300px' }}>
+            <div style={{ minWidth: `${displayedProjects.length * 20}px`, minHeight: '300px' }}>
               <Bar data={data} options={options} />
             </div>
           </div>

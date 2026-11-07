@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import TotalMaterialCostPerProject from '../TotalMaterialCostPerProject';
+import { SummaryProjectProvider } from '../../summaryProjectSelection';
 
 // Mocks
 vi.mock('axios');
@@ -42,6 +43,26 @@ const mockCosts = [
 ];
 
 describe('TotalMaterialCostPerProject', () => {
+  it('uses the page metadata default without refetching the project list', async () => {
+    axios.get.mockClear();
+    const projects = [
+      { _id: 'a', name: 'Project A', createdAt: '2026-01-01' },
+      { _id: 'b', name: 'Project B', updatedAt: '2026-10-01' },
+    ];
+    render(
+      <Provider store={store}>
+        <SummaryProjectProvider projects={projects}>
+          <TotalMaterialCostPerProject />
+        </SummaryProjectProvider>
+      </Provider>,
+    );
+    expect(await screen.findByTestId('bar-chart')).toHaveTextContent('Project B');
+    expect(screen.getByTestId('bar-chart')).not.toHaveTextContent('Project A');
+    expect(axios.get.mock.calls.some(([url]) => url.includes('/bm/projects'))).toBe(false);
+    await userEvent.click(screen.getByRole('button', { name: 'Remove Project B' }));
+    expect(screen.getByTestId('bar-chart')).toHaveTextContent('Project A,Project B');
+  });
+
   beforeEach(() => {
     axios.get.mockImplementation(url => {
       if (url.includes('/bm/projects')) {
@@ -122,8 +143,7 @@ describe('TotalMaterialCostPerProject', () => {
 
     // De-Select Project A in the dropdown
     fireEvent.keyDown(mySelectComponent.firstChild, { key: 'ArrowDown' });
-    await waitFor(() => document.querySelector('#react-select-5-option-0'));
-    fireEvent.click(document.querySelector('#react-select-5-option-0'));
+    fireEvent.click(await screen.findByRole('option', { name: 'Project A' }));
     expect(within(barChart).queryByText(/Project A/)).not.toBeInTheDocument();
   });
 

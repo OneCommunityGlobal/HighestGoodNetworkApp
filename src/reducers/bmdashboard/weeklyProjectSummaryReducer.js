@@ -8,7 +8,7 @@ import {
 } from '../../constants/bmdashboard/weeklyProjectSummaryConstants';
 
 const initialState = {
-  projectFilter: 'One Community',
+  projectFilter: '',
   dateRangeFilter: '',
   comparisonPeriodFilter: 'No Comparison',
   projectStatusData: null,

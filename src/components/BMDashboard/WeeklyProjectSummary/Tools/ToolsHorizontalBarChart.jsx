@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../summaryProjectSelection';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -80,8 +85,14 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const [toolsData, setToolsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [allProjects, setAllProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [localProjects, setAllProjects] = useState([]);
+  const allProjects = useSummaryProjects(localProjects);
+  const summaryScope = useSummaryScope();
+  const [selectedProject, setSelectedProject] = useSummaryProjectSelection(
+    'tool-availability',
+    null,
+    'option',
+  );
   const [allTools, setAllTools] = useState([]);
   const [selectedTools, setSelectedTools] = useState([]);
   const [isPreviewHovering, setIsPreviewHovering] = useState(false);
@@ -101,6 +112,10 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   }, []);
 
   useEffect(() => {
+    if (summaryScope) {
+      setLoading(false);
+      return;
+    }
     const fetchProjects = async () => {
       try {
         const projectsResponse = await axios.get(ENDPOINTS.TOOLS_AVAILABILITY_PROJECTS);
@@ -290,7 +305,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
             classNamePrefix="select"
             value={selectedProject}
             onChange={handleProjectChange}
-            options={allProjects}
+            options={[{ value: 'all', label: 'All Projects' }, ...allProjects]}
             placeholder="Select a project"
             isClearable={false}
             isDisabled={allProjects.length === 0}

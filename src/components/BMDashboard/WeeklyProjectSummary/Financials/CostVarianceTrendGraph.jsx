@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../summaryProjectSelection';
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -218,7 +223,7 @@ export default function CostVarianceTrendGraph() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const textColor = darkMode ? '#ffffff' : '#666';
 
-  const [projectId, setProjectId] = useState('ALL');
+  const [projectId, setProjectId] = useSummaryProjectSelection('variance', 'ALL', 'name');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
 
@@ -237,7 +242,23 @@ export default function CostVarianceTrendGraph() {
     dateRange,
   ]);
 
-  const projectOptions = useMemo(() => buildDropdownOptions(data, 'projectId'), [data]);
+  const summaryScope = useSummaryScope();
+  const summaryProjects = useSummaryProjects();
+  const mockProjectOptions = buildDropdownOptions(data, 'projectId');
+  const projectOptions = summaryScope
+    ? [
+        { value: 'ALL', label: 'All Projects' },
+        ...summaryProjects.map(project => ({
+          value: project.name,
+          label: project.name,
+        })),
+        ...mockProjectOptions.filter(
+          option =>
+            option.value !== 'ALL' &&
+            !summaryProjects.some(project => project.name === option.value),
+        ),
+      ]
+    : mockProjectOptions;
   const categoryOptions = useMemo(() => buildDropdownOptions(data, 'category'), [data]);
 
   const selectStyles = useMemo(() => generateSelectStyles(darkMode), [darkMode]);

@@ -1,4 +1,9 @@
 import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../summaryProjectSelection';
+import {
   BarChart,
   Bar,
   XAxis,
@@ -318,7 +323,12 @@ CustomTooltip.propTypes = {
 };
 
 export default function ExpenseBarChart({ darkMode }) {
-  const [projectId, setProjectId] = useState('');
+  const summaryProjects = useSummaryProjects();
+  const summaryScope = useSummaryScope();
+  const projectNames = summaryScope
+    ? [...new Set([...summaryProjects.map(project => project.name), ...projects])]
+    : projects;
+  const [projectId, setProjectId] = useSummaryProjectSelection('expense', '', 'name');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -404,7 +414,7 @@ export default function ExpenseBarChart({ darkMode }) {
           Project:
           <select value={projectId} onChange={e => setProjectId(e.target.value)} style={inputStyle}>
             <option value="">All</option>
-            {projects.map(p => (
+            {projectNames.map(p => (
               <option key={p} value={p}>
                 {p}
               </option>

@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../summaryProjectSelection';
 import { useState, useEffect, useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
@@ -434,7 +439,11 @@ export default function PaidLaborCost() {
   const textColor = darkMode ? '#ffffff' : '#333';
   // Filter States
   const [taskFilter, setTaskFilter] = useState([]); // Array of selected task names, empty = all tasks
-  const [projectFilter, setProjectFilter] = useState('All Projects');
+  const [projectFilter, setProjectFilter] = useSummaryProjectSelection(
+    'paid-labor',
+    'All Projects',
+    'name',
+  );
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
   const [hiddenTasks, setHiddenTasks] = useState([]); // Tasks toggled off from the legend
 
@@ -486,12 +495,17 @@ export default function PaidLaborCost() {
     allAvailableTasks,
   ]);
 
+  const summaryScope = useSummaryScope();
+  const summaryProjects = useSummaryProjects();
   const projectOptions = useMemo(
     () => [
       { label: 'ALL', value: 'All Projects' },
-      ...allAvailableProjects.map(proj => ({ label: proj, value: proj })),
+      ...(summaryScope
+        ? [...new Set([...summaryProjects.map(project => project.name), ...allAvailableProjects])]
+        : allAvailableProjects
+      ).map(proj => ({ label: proj, value: proj })),
     ],
-    [allAvailableProjects],
+    [allAvailableProjects, summaryScope, summaryProjects],
   );
 
   const handleStartDateChange = date => setDateRange(prev => ({ ...prev, startDate: date }));

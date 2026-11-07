@@ -1,3 +1,7 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryScope,
+} from '../WeeklyProjectSummary/summaryProjectSelection';
 import { useRef, useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -201,7 +205,11 @@ export default function RentalChart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chartType, setChartType] = useState('cost');
-  const [selectedProject, setSelectedProject] = useState(FILTER_ALL);
+  const [selectedProject, setSelectedProject] = useSummaryProjectSelection(
+    'rental',
+    FILTER_ALL,
+    'id',
+  );
   const [selectedTool, setSelectedTool] = useState(FILTER_ALL);
   const darkMode = useSelector(state => state.theme.darkMode);
   const bmProjects = useSelector(state => state.bmProjects);
@@ -212,11 +220,12 @@ export default function RentalChart() {
   const [rawData, setRawData] = useState([]);
 
   // Only list projects that have rental data; prefer names from the BM projects list
+  const summaryScope = useSummaryScope();
   const availableProjects = useMemo(() => {
     const bmProjectNames = new Map(
       (Array.isArray(bmProjects) ? bmProjects : []).map(p => [p._id, p.name]),
     );
-    const projectMap = new Map();
+    const projectMap = new Map(summaryScope ? bmProjectNames : []);
     rawData.forEach(item => {
       if (item.projectId && !projectMap.has(item.projectId)) {
         projectMap.set(
@@ -228,7 +237,7 @@ export default function RentalChart() {
       }
     });
     return projectMap;
-  }, [rawData, bmProjects, fallbackProjectNames]);
+  }, [rawData, bmProjects, fallbackProjectNames, summaryScope]);
 
   // Tools are picked per project, so the list only has the selected project's tools
   const availableTools = useMemo(() => {
@@ -265,14 +274,16 @@ export default function RentalChart() {
         const headers = { Authorization: localStorage.getItem('token') };
         const [rentalResponse, projectsResponse] = await Promise.allSettled([
           axios.get(ENDPOINTS.BM_RENTAL_CHART),
-          axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, { headers }),
+          summaryScope
+            ? Promise.resolve({ data: [] })
+            : axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, { headers }),
         ]);
 
         if (rentalResponse.status === 'fulfilled' && rentalResponse.value.data.success) {
           const { data } = rentalResponse.value.data;
 
           // Fallback names for projects missing from the BM projects list
-          const projectMap = new Map();
+          const projectMap = new Map(summaryScope ? bmProjectNames : []);
           if (projectsResponse.status === 'fulfilled') {
             let pData = projectsResponse.value.data;
             if (pData && !Array.isArray(pData)) pData = pData.data || pData.results || [];

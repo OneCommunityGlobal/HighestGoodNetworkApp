@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection, useSummaryProjects } from './summaryProjectSelection';
 import { useEffect, useState } from 'react';
 import {
   BarChart,
@@ -63,11 +64,12 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [supplierData, setSupplierData] = useState([]);
-  const [projects, setProjects] = useState([]);
+  const [localProjects, setProjects] = useState([]);
+  const projects = useSummaryProjects(localProjects);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDateRange, setSelectedDateRange] = useState('all');
-  const [selectedProject, setSelectedProject] = useState('all');
+  const [selectedProject, setSelectedProject] = useSummaryProjectSelection('supplier', 'all', 'id');
 
   const chartTheme = {
     textColor: darkMode ? '#e0e0e0' : '#333',
