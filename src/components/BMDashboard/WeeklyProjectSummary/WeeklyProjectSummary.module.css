@@ -450,6 +450,70 @@
   background: var(--section-title-hover);
 }
 
+/* Title bar: the toggle button fills the bar; "Click here for more" links
+   sit on top of it, right-aligned before the chevron, so the rest of the
+   bar stays clickable. Links are siblings, never nested in the button. */
+.sectionTitleBar {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+
+.sectionTitleBar > .weeklyProjectSummaryDashboardCategoryTitle {
+  grid-area: 1 / 1;
+  width: 100%;
+}
+
+.sectionMoreLinks {
+  grid-area: 1 / 1;
+  justify-self: end;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-right: 44px;
+  pointer-events: none;
+}
+
+.sectionMoreLink {
+  pointer-events: auto;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0a58ca;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sectionMoreLink:hover,
+.sectionMoreLink:focus-visible {
+  color: #084298;
+}
+
+.sectionMoreLink:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.darkMode .sectionMoreLink {
+  color: #9ecbff;
+}
+
+.darkMode .sectionMoreLink:hover,
+.darkMode .sectionMoreLink:focus-visible {
+  color: #cfe5ff;
+}
+
+/* Narrow screens: drop the links below the bar so they never overlap the title */
+@media (width <= 768px) {
+  .sectionMoreLinks {
+    grid-area: 2 / 1;
+    justify-self: start;
+    margin: 6px 0 0 16px;
+  }
+}
+
 .weeklyProjectSummaryDashboardCategoryContent {
   padding: 15px;
   display: grid;
