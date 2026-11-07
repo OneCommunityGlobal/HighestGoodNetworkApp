@@ -1,4 +1,14 @@
 /* v1.1.0 */
+.riskProfileRoot {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  border-radius: 10px;
+}
+
 .container {
   --surface: #fff;
   --subtle: #f1f5f9;
@@ -6,7 +16,7 @@
   --muted: #475569;
   --border: #cbd5e1;
 
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 28px;
   border: 1px solid var(--border);

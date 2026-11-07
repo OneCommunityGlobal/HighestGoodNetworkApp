@@ -92,7 +92,9 @@ it('clearing the project selection shows an empty result instead of all projects
   fireEvent.keyDown(screen.getByLabelText('Projects'), { key: 'Backspace', code: 'Backspace' });
   fireEvent.keyDown(screen.getByLabelText('Projects'), { key: 'Backspace', code: 'Backspace' });
   expect(
-    await screen.findByText('No data available for the selected filters.'),
+    await screen.findByText(
+      'No projects selected. Choose at least one project to see its risk profile.',
+    ),
   ).toBeInTheDocument();
   expect(screen.queryByRole('table')).not.toBeInTheDocument();
 });

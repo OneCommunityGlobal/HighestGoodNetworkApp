@@ -152,7 +152,7 @@ export default function ProjectRiskProfileOverview() {
   const chartMax = chartRows.reduce((max, row) => Math.max(max, row[metricKey]), 20);
 
   return (
-    <Container fluid className="mt-5 pt-5 mb-5">
+    <Container fluid className={styles.riskProfileRoot}>
       <section
         className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}
         aria-labelledby={`${id}-title`}
@@ -322,7 +322,9 @@ export default function ProjectRiskProfileOverview() {
             </details>
             {rows.length === 0 ? (
               <p role="status" className={styles.empty}>
-                No data available for the selected filters.
+                {selectedProjects.length === 0 && options.length > 0
+                  ? 'No projects selected. Choose at least one project to see its risk profile.'
+                  : 'No data available for the selected filters.'}
               </p>
             ) : (
               <>
