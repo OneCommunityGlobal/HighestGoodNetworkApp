@@ -45,6 +45,7 @@ export const fetchSupplierPerformance = ({ projectId = 'all', startDate, endDate
     } catch (error) {
       dispatch(supplierPerformanceError(error.message));
       toast.error('Failed to fetch supplier performance data');
+      throw error;
     }
   };
 };

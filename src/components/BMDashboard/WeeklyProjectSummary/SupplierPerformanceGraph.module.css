@@ -185,3 +185,10 @@
     gap: 12px;
   }
 }
+
+.analytics { color: var(--text-color, #333); }
+.supplier-performance-dark-mode .analytics { color: #e0e0e0; }
+.tableScroll { overflow-x: auto; margin-bottom: 12px; }
+.tableScroll table { width: 100%; border-collapse: collapse; }
+.tableScroll th, .tableScroll td { padding: 8px; border-bottom: 1px solid #888; text-align: left; }
+.analytics button { margin: 4px; padding: 6px 10px; border-radius: 4px; }

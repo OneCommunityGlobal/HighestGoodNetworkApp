@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -142,6 +142,19 @@ describe('WeeklyProjectSummary regression tests', () => {
     }).not.toThrow();
 
     expect(screen.getByTestId('weekly-project-summary-header')).toBeInTheDocument();
+  });
+
+  it('places supplier analytics in Financials rather than Tools and Equipment Tracking', () => {
+    render(
+      <Provider store={store}>
+        <WeeklyProjectSummary />
+      </Provider>,
+    );
+    const financials = screen.getByRole('button', { name: /^Financials\s+\S$/ });
+    fireEvent.click(financials);
+    expect(screen.getByText('Supplier Performance')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^Tools and Equipment Tracking/ }));
+    expect(screen.getAllByText('Supplier Performance')).toHaveLength(1);
   });
 
   it('dispatches initial data-loading actions when data is empty', () => {
