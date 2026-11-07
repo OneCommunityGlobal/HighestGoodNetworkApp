@@ -1,3 +1,4 @@
+// File version: 1.0.0
 // export default WeeklyProjectSummary;
 
 /* eslint-disable import/no-unresolved */
@@ -34,6 +35,7 @@ import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
+import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
@@ -433,6 +435,12 @@ function WeeklyProjectSummary() {
             comparisonDateRange={comparisonDateRange}
           />
         ),
+      },
+      {
+        title: 'Material Stock-Out Risk',
+        key: 'Material Stock-Out Risk',
+        className: 'full',
+        content: <MaterialStockOutRiskIndicator />,
       },
       {
         title: 'Issue Tracking',
