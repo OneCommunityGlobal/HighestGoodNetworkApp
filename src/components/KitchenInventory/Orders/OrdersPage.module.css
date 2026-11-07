@@ -1,4 +1,5 @@
 /* Container */
+
 .container {
   min-height: 100vh;
   background-color: #f8f9fa;
@@ -11,6 +12,7 @@
 }
 
 /* Main Content */
+
 .main {
   max-width: 1200px;
   margin: 0 auto;
@@ -41,6 +43,7 @@
 }
 
 /* Stats Grid */
+
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -108,6 +111,7 @@
 }
 
 /* Tabs */
+
 .tabs {
   display: flex;
   gap: 8px;
@@ -152,6 +156,7 @@
 }
 
 /* Toolbar */
+
 .toolbar {
   display: flex;
   gap: 12px;
@@ -249,6 +254,7 @@
 }
 
 /* Modal Buttons */
+
 .btnModalPrimary {
   padding: 8px 24px;
   background-color: #2e7d32;
@@ -295,6 +301,7 @@
 }
 
 /* Order Card */
+
 .orderCard {
   background-color: #fff;
   border-radius: 8px;
@@ -348,6 +355,7 @@
 }
 
 /* Status Badges */
+
 .badge {
   padding: 4px 10px;
   border-radius: 12px;
@@ -411,6 +419,7 @@
 }
 
 /* Order Meta */
+
 .orderMeta {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -432,6 +441,26 @@
   border-bottom-color: #2a2a4a;
 }
 
+/* Status Badges - Dark Mode */
+
+.modalDark .badgeOrdered {
+  background-color: #3b2600;
+  color: #ffcc80;
+  border: 1px solid #8d5f00;
+}
+
+.modalDark .badgeReceived {
+  background-color: #12351f;
+  color: #a5d6a7;
+  border: 1px solid #3f7f4f;
+}
+
+.modalDark .badgeStocked {
+  background-color: #102d4a;
+  color: #90caf9;
+  border: 1px solid #3d6f9e;
+}
+
 .metaLabel {
   color: #999;
   font-size: 12px;
@@ -449,6 +478,7 @@
 }
 
 /* Items Section */
+
 .itemsSection {
   margin-top: 16px;
 }
@@ -522,6 +552,7 @@
 }
 
 /* Urgent Banner */
+
 .notesBanner {
   background-color: #e3f2fd;
   border: 1px solid #90caf9;
@@ -542,6 +573,7 @@
 }
 
 /* Actions */
+
 .actions {
   margin-top: 16px;
   display: flex;
@@ -592,6 +624,7 @@
 }
 
 /* Empty State */
+
 .emptyState {
   text-align: center;
   padding: 40px;
@@ -607,6 +640,7 @@
 }
 
 /* Loading Spinner */
+
 .spinner {
   width: 24px;
   height: 24px;
@@ -628,6 +662,7 @@
 }
 
 /* Pagination */
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -691,6 +726,7 @@
 }
 
 /* New Order Form */
+
 .formRow {
   display: flex;
   gap: 16px;
@@ -734,6 +770,8 @@
   min-width: 0;
 }
 
+/* Add Item Button */
+
 .addItemBtn {
   background: none;
   border: 1px dashed #2e7d32;
@@ -743,11 +781,16 @@
   cursor: pointer;
   font-size: 13px;
   margin-bottom: 16px;
-  transition: background-color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
 }
 
 .addItemBtn:hover {
-  background-color: #e8f5e9;
+  background-color: #2e7d32;
+  color: #fff;
+  border-color: #2e7d32;
 }
 
 .containerDark .addItemBtn {
@@ -756,7 +799,9 @@
 }
 
 .containerDark .addItemBtn:hover {
-  background-color: #1b3a1b;
+  background-color: #4caf50;
+  color: #fff;
+  border-color: #4caf50;
 }
 
 .removeItemBtn {
@@ -797,6 +842,7 @@
 }
 
 /* Detail Modal */
+
 .detailSection {
   margin-bottom: 16px;
 }
@@ -965,32 +1011,160 @@
   border-color: #3a3a5a;
 }
 
-/* Supplier Card */
+/* Suppliers Section */
+
+.suppliersSection {
+  width: 100%;
+}
+
+.suppliersHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+}
+
+.containerDark .sectionTitle {
+  color: #e0e0e0;
+}
+
+.sectionSubtitle {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.containerDark .sectionSubtitle {
+  color: #aaa;
+}
+
+.supplierCount {
+  padding: 6px 12px;
+  border-radius: 16px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.containerDark .supplierCount {
+  background-color: #1b3a1b;
+  color: #81c784;
+}
+
+/* Supplier Profile Grid */
+
+.supplierGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* Supplier Profile Card */
+
+.supplierCard {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  padding: 20px;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+  min-width: 0;
+}
+
+.supplierCard:hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  transform: translateY(-1px);
+}
+
+.containerDark .supplierCard {
+  background-color: #16213e;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+}
+
+.containerDark .supplierCard:hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+}
+
+/* Supplier Header */
+
 .supplierCardHeader {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.containerDark .supplierCardHeader {
+  border-bottom-color: #2a2a4a;
+}
+
+.supplierIdentity {
+  display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.supplierIcon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 50%;
+  background-color: #e8f5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.containerDark .supplierIcon {
+  background-color: #1b3a1b;
 }
 
 .supplierCardName {
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
-  font-size: 15px;
   color: #333;
+  overflow-wrap: anywhere;
 }
 
 .containerDark .supplierCardName {
   color: #e0e0e0;
 }
 
+.supplierCategory {
+  margin: 3px 0 0;
+  color: #777;
+  font-size: 12px;
+}
+
+.containerDark .supplierCategory {
+  color: #aaa;
+}
+
 .trustedBadge {
   background-color: #e8f5e9;
   color: #2e7d32;
   border: 1px solid #a5d6a7;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: 12px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .containerDark .trustedBadge {
@@ -999,35 +1173,276 @@
   border-color: #2e5a2e;
 }
 
-.supplierCardGrid {
+/* Contact Details */
+
+.supplierDetails {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.containerDark .supplierCardGrid {
-  border-top-color: #2a2a4a;
+.containerDark .supplierDetails {
+  border-bottom-color: #2a2a4a;
 }
 
-@media (width <= 768px) {
-  .supplierCardGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.supplierDetail {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
 }
 
-@media (width <= 480px) {
-  .supplierCardGrid {
+.detailIcon {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.containerDark .detailIcon {
+  background-color: #1c2541;
+}
+
+.supplierDetailLabel {
+  margin: 0 0 2px;
+  color: #999;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.supplierDetailValue {
+  margin: 0;
+  color: #333;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.containerDark .supplierDetailValue {
+  color: #e0e0e0;
+}
+
+/* Supplier Stats */
+
+.supplierStats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.containerDark .supplierStats {
+  border-bottom-color: #2a2a4a;
+}
+
+.supplierStat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+}
+
+.containerDark .supplierStat {
+  background-color: #1c2541;
+}
+
+.supplierStatIcon {
+  font-size: 18px;
+}
+
+.supplierStatLabel {
+  margin: 0 0 2px;
+  color: #999;
+  font-size: 11px;
+}
+
+.supplierStatValue {
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.containerDark .supplierStatValue {
+  color: #e0e0e0;
+}
+
+/* Specialties */
+
+.specialtiesSection {
+  padding: 16px 0;
+}
+
+.specialtiesLabel {
+  margin: 0 0 8px;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.containerDark .specialtiesLabel {
+  color: #aaa;
+}
+
+.specialtiesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.specialtyTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 12px;
+  background-color: #f1f8e9;
+  border: 1px solid #c5e1a5;
+  color: #33691e;
+  font-size: 11px;
+}
+
+.containerDark .specialtyTag {
+  background-color: #263b20;
+  border-color: #3d5a32;
+  color: #aed581;
+}
+
+.noSpecialties {
+  color: #999;
+  font-size: 12px;
+}
+
+/* Supplier Actions */
+
+.supplierActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.supplierActionBtn {
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.pricingBtn {
+  flex: 1 1 100%;
+  background-color: transparent;
+  border: 1px solid #2e7d32;
+  color: #2e7d32;
+}
+
+.pricingBtn:hover {
+  background-color: #e8f5e9;
+}
+
+.containerDark .pricingBtn {
+  border-color: #4caf50;
+  color: #81c784;
+}
+
+.containerDark .pricingBtn:hover {
+  background-color: #1b3a1b;
+}
+
+.editSupplierBtn {
+  flex: 1;
+  background-color: #fff;
+  border: 1px solid #bbb;
+  color: #555;
+}
+
+.editSupplierBtn:hover {
+  background-color: #f5f5f5;
+}
+
+.containerDark .editSupplierBtn {
+  background-color: #1c2541;
+  border-color: #6b7280;
+  color: #f1f5f9;
+}
+
+.containerDark .editSupplierBtn:hover {
+  background-color: #26324f;
+  border-color: #9ca3af;
+  color: #fff;
+}
+
+.newOrderBtn {
+  flex: 1;
+  background-color: #2e7d32;
+  border: 1px solid #2e7d32;
+  color: #fff;
+}
+
+.newOrderBtn:hover {
+  background-color: #1b5e20;
+  border-color: #1b5e20;
+  color: #fff;
+}
+
+/* Supplier Responsive Layout */
+
+@media (width <= 900px) {
+  .supplierGrid {
     grid-template-columns: 1fr;
   }
 }
 
-.supplierCardField {
-  min-width: 0;
+@media (width <= 600px) {
+  .suppliersHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .supplierCount {
+    align-self: flex-start;
+  }
+
+  .supplierCard {
+    padding: 16px;
+  }
+
+  .supplierStats {
+    grid-template-columns: 1fr;
+  }
+
+  .supplierActions {
+    flex-direction: column;
+  }
+
+  .supplierActionBtn {
+    width: 100%;
+    flex: none;
+  }
 }
 
 /* Responsive */
+
 @media (width <= 768px) {
   .main {
     padding: 16px;
@@ -1074,6 +1489,7 @@
 }
 
 /* Modal Component */
+
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -1143,6 +1559,7 @@
 }
 
 /* Modal Dark Mode */
+
 .modalDark .modalContent {
   background-color: #16213e;
 }
@@ -1169,6 +1586,7 @@
 }
 
 /* Form Elements */
+
 .label {
   display: block;
   margin: 0 0 4px;
@@ -1239,4 +1657,19 @@
 
 .modalDark .modalBody .input[type='date'] {
   color-scheme: dark;
+}
+
+/* Mobile Tab Spacing */
+
+@media (width <= 600px) {
+  .tabs {
+    gap: 16px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .tab {
+    padding: 12px;
+    flex-shrink: 0;
+  }
 }
