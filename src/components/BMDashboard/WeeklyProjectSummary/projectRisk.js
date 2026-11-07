@@ -1,4 +1,4 @@
-// v1.2.0
+// v1.2.1
 export const METRICS = [
   { key: 'cost', label: 'Cost variance', medium: 5, high: 15, weight: 0.4 },
   { key: 'delay', label: 'Time delay', medium: 5, high: 15, weight: 0.4 },
@@ -99,16 +99,15 @@ export function buildRiskRows(projects, start, end, currentSnapshot = false) {
         .map(h => ({ ...normalizeMetrics(h), date: new Date(h.date).toISOString().slice(0, 10) }));
       const selected = history.filter(h => h.date >= start && h.date <= end);
       const previous = history.filter(h => h.date >= previousStart && h.date < start).slice(-1)[0];
-      // Snapshot-only responses have no historical dates; never invent observations.
-      const current =
-        currentSnapshot || !history.length ? normalizeMetrics(project) : selected.slice(-1)[0];
+      // Historical views require a recorded observation, even for snapshot-only projects.
+      const current = currentSnapshot ? normalizeMetrics(project) : selected.slice(-1)[0];
       if (!current) return null;
       return {
         ...current,
         id: String(project._id || project.projectId || index),
         projectName: project.projectName || project.name || 'Unknown project',
         history: selected,
-        snapshotOnly: currentSnapshot || history.length === 0,
+        snapshotOnly: currentSnapshot,
         comparison: comparisonText(current, previous),
         ...assessRisk(current),
       };

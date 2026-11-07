@@ -1,4 +1,4 @@
-// v1.2.0
+// v1.2.1
 import {
   assessRisk,
   buildRiskRows,
@@ -21,6 +21,7 @@ describe('project risk assessment', () => {
       ['profile-a', 'profile-b'].map(_id => ({ ...snapshot, _id, projectId: 'shared-project' })),
       '2026-10-01',
       '2026-10-30',
+      true,
     );
     expect(rows.map(row => row.id)).toEqual(['profile-a', 'profile-b']);
   });
@@ -96,7 +97,7 @@ describe('project risk assessment', () => {
   });
 
   it('uses the actual snapshot without generating history or changes', () => {
-    const [row] = buildRiskRows([snapshot], '2026-10-01', '2026-10-30');
+    const [row] = buildRiskRows([snapshot], '2026-10-01', '2026-10-30', true);
     expect(row).toMatchObject({ cost: -20, delay: 0, score: 0, snapshotOnly: true, history: [] });
     expect(row.comparison).toContain('unavailable (no recorded history)');
   });
@@ -129,6 +130,7 @@ describe('project risk assessment', () => {
   });
 
   it('does not substitute current values for an empty historical period or a missing comparison', () => {
+    expect(buildRiskRows([snapshot], '2026-10-01', '2026-10-30')).toEqual([]);
     expect(
       buildRiskRows(
         [{ ...snapshot, history: [{ ...snapshot, date: '2026-09-01' }] }],

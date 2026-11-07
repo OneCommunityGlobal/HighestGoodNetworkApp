@@ -1,4 +1,4 @@
-// v1.2.0
+// v1.2.1
 import React from 'react';
 import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -99,6 +99,19 @@ it('clearing the project selection shows an empty result instead of all projects
   expect(screen.queryByRole('table')).not.toBeInTheDocument();
 });
 
+it('Tab leaves the project menu without selecting another project', async () => {
+  renderPage();
+  await screen.findByRole('table');
+  fireEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
+  const projects = screen.getByLabelText('Projects');
+  fireEvent.change(projects, { target: { value: 'Bravo' } });
+  fireEvent.keyDown(projects, { key: 'Enter', code: 'Enter' });
+  fireEvent.keyDown(projects, { key: 'ArrowDown', code: 'ArrowDown' });
+  fireEvent.keyDown(projects, { key: 'Tab', code: 'Tab' });
+  expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(2);
+  expect(screen.getByRole('table')).toHaveTextContent('Bravo');
+});
+
 it('displays fetch failures and retries', async () => {
   httpService.get.mockRejectedValueOnce(new Error('offline'));
   renderPage();
@@ -154,6 +167,20 @@ it('defaults to current values instead of replacing them with older recorded his
   renderPage();
   expect(await screen.findByRole('table')).toHaveTextContent('100/100');
   expect(screen.getByLabelText('History period')).toHaveValue('current');
+});
+
+it('excludes snapshot-only projects from historical periods and restores them in current view', async () => {
+  httpService.get.mockResolvedValue({
+    data: [data[0], { ...data[1], history: [{ ...data[1], date: new Date().toISOString() }] }],
+  });
+  renderPage();
+  const table = await screen.findByRole('table');
+  expect(table).toHaveTextContent('Alpha');
+  fireEvent.change(screen.getByLabelText('History period'), { target: { value: '7' } });
+  expect(table).not.toHaveTextContent('Alpha');
+  expect(table).toHaveTextContent('Bravo');
+  fireEvent.change(screen.getByLabelText('History period'), { target: { value: 'current' } });
+  expect(table).toHaveTextContent('Alpha');
 });
 
 it('shows explanations, comparisons, and actions in hover details', () => {

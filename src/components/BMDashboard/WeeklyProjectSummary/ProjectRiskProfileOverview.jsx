@@ -1,4 +1,4 @@
-// v1.2.0
+// v1.2.1
 import React, { useState, useEffect, useMemo, useId } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -178,6 +178,7 @@ export default function ProjectRiskProfileOverview() {
                   isMulti
                   hideSelectedOptions={false}
                   closeMenuOnSelect={false}
+                  tabSelectsValue={false}
                   aria-describedby={`${id}-project-help`}
                   options={options}
                   value={options.filter(p => selectedProjects.includes(p.value))}
@@ -281,7 +282,7 @@ export default function ProjectRiskProfileOverview() {
             {!validRange && <p role="alert">Choose a start date on or before the end date.</p>}
             <p className={styles.note}>
               {hasHistory
-                ? 'Current snapshot uses live metrics and compares with yesterday. Other periods use the latest stored daily observation; up to 365 days of history are available. Snapshot-only projects always show current values.'
+                ? 'Current snapshot uses live metrics and compares with yesterday. Other periods show only projects with a recorded observation in that period; up to 365 days of history are available.'
                 : 'Current snapshot. Previous-period changes and historical trends are unavailable because no recorded history is available.'}
             </p>
             <div className={styles.summary} aria-label="Risk summary">
