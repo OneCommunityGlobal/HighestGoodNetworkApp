@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Col, Container, Row } from 'reactstrap';
+import { Button, Col, Container, Modal, ModalBody, Row } from 'reactstrap';
 import { updateSummaryBarData } from '~/actions/dashboardActions';
 import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
@@ -15,6 +15,8 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import Timelog from '../Timelog/Timelog';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
+import { getQuestionnaireStatus } from '../HGNForm/HGNQuestionnarieRemainder/services/questionnaireService';
+import QuestionnaireReminder from '../HGNForm/HGNQuestionnarieRemainder/components/QuestionnaireReminder';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -57,6 +59,31 @@ export function Dashboard(props) {
     setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
   };
 
+  const [questionnaireCompleted, setQuestionnaireCompleted] = useState(null);
+  const [questionnaireLoading, setQuestionnaireLoading] = useState(true);
+  const [questionnaireError, setQuestionnaireError] = useState(false);
+
+  const checkQuestionnaireStatus = async () => {
+    setQuestionnaireLoading(true);
+    setQuestionnaireError(false);
+
+    try {
+      const data = await getQuestionnaireStatus();
+      setQuestionnaireCompleted(data.completed);
+    } catch (error) {
+      console.error('Error checking questionnaire status:', error);
+      setQuestionnaireError(true);
+    } finally {
+      setQuestionnaireLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (authUser?.userid) {
+      checkQuestionnaireStatus();
+    }
+  }, [authUser?.userid]);
+
   useEffect(() => {
     window.addEventListener('storage', handleStorageEvent);
     return () => {
@@ -84,6 +111,25 @@ export function Dashboard(props) {
       state: Object.keys(remainingState).length ? remainingState : undefined,
     });
   }, [history, location]);
+
+  if (questionnaireLoading) {
+    return <Container fluid>Loading dashboard...</Container>;
+  }
+
+  if (questionnaireError) {
+    return (
+      <Container fluid className="text-center mt-5">
+        <p>Unable to verify your questionnaire completion status.</p>
+        <Button color="primary" onClick={checkQuestionnaireStatus}>
+          Try Again
+        </Button>
+      </Container>
+    );
+  }
+
+  if (!questionnaireCompleted) {
+    return <QuestionnaireReminder onComplete={() => history.push('/hgnform')} />;
+  }
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
