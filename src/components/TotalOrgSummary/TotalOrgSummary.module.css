@@ -407,7 +407,7 @@
 
 /* Component containers - Clean borderless design */
 .componentContainer {
-  margin: 0 0 15px;
+  margin: 0;
   padding: 20px;
   background-color: #fff;
   border-radius: 10px;
@@ -449,7 +449,7 @@
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
   width: 100%;
-  margin-top: 15px;
+  margin-top: 0;
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -746,7 +746,7 @@
   .componentContainer,
   .componentBorder {
     padding: 12px;
-    margin: 0 0 12px;
+    margin: 0;
   }
 
   .totalOrgChartTitle p {
@@ -783,11 +783,11 @@
 
   /* Fix AccordianWrapper margins on small mobile */
   :global(.Collapsible) {
-    margin: 8px 0 !important;
+    margin: 24px 0 !important;
   }
 
   :global(.Collapsible__contentInner) {
-    padding: 8px 4px !important;
+    padding: 24px 4px 8px !important;
   }
 
   :global(.Collapsible__trigger) {

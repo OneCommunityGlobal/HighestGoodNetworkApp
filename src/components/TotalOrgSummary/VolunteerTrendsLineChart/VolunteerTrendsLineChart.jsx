@@ -38,13 +38,12 @@ const formatChartData = rawData => {
 
   return sorted.map((item, index) => {
     const year = item._id?.year;
-    const shortYear = year ? `'${String(year).slice(-2)}` : '';
 
     if (isMonthly) {
       const monthStr = integerToMonths[item._id?.month] || `M${item._id?.month}`;
       return {
         id: `${year}-${item._id?.month}-${index}`,
-        xLabel: shortYear ? `${monthStr} ${shortYear}` : monthStr,
+        xLabel: monthStr,
         totalHours: Number(item.totalHours) || 0,
         year,
         interval: 'month',
@@ -54,7 +53,7 @@ const formatChartData = rawData => {
     const weekNum = Number(item._id?.week) || 0;
     return {
       id: `${year}-W${weekNum}-${index}`,
-      xLabel: shortYear ? `W${weekNum} ${shortYear}` : `W${weekNum}`,
+      xLabel: `W${weekNum}`,
       totalHours: Number(item.totalHours) || 0,
       year,
       interval: 'week',
@@ -176,7 +175,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
       const textColor = darkMode ? '#fff' : '#222';
       const labelColor = darkMode ? '#90cdf4' : '#222';
 
-      const formattedLabel = interval === 'week' ? `Week ${label}` : label;
+      const formattedLabel = interval === 'week' ? `Week ${label.slice(1)}` : label;
 
       return (
         <div
@@ -314,7 +313,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           width={chartSize.width}
           height={chartSize.height}
           data={data}
-          margin={{ right: 50, top: 50, left: 90 }}
+          margin={{ right: 50, top: 50, left: 90, bottom: 20 }}
         >
           <CartesianGrid stroke="#ccc" vertical={false} />
 
@@ -326,6 +325,12 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
             axisLine={false}
             tickLine={false}
             tick={{ fill: darkMode ? '#ccc' : undefined, fontSize: 11 }}
+            label={{
+              value: requestOffset === 'week' ? 'Week' : 'Month',
+              position: 'insideBottom',
+              offset: -15,
+              fill: darkMode ? '#ccc' : '#666',
+            }}
           />
 
           <YAxis
