@@ -1,4 +1,3 @@
-// v1.0.0
 /* eslint-disable testing-library/no-node-access -- the honeypot, script tag and form fields are checked by id/selector on purpose */
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -47,7 +46,7 @@ const fillProfile = async () => {
   fireEvent.change(document.getElementById('jaf-timezone'), { target: { value: 'GMT' } });
   fireEvent.change(document.getElementById('jaf-phone'), { target: { value: '+442071838750' } });
   fireEvent.change(screen.getByLabelText('Choose file'), {
-    target: { files: [new File(['resume fixture'], 'resume.pdf', { type: 'application/pdf' })] },
+    target: { files: [new File(['resume'], 'resume.pdf', { type: 'application/pdf' })] },
   });
 };
 

@@ -1,4 +1,3 @@
-// v1.0.0
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -43,9 +42,6 @@ async function mountApplication(darkMode = false) {
 }
 
 function fillProfile() {
-  fireEvent.change(screen.getByLabelText('Choose file'), {
-    target: { files: [new File(['resume fixture'], 'resume.pdf', { type: 'application/pdf' })] },
-  });
   fireEvent.change(screen.getByRole('textbox', { name: /First Name/i }), {
     target: { value: 'Fixture' },
   });
@@ -63,6 +59,9 @@ function fillProfile() {
   });
   fireEvent.change(screen.getByRole('textbox', { name: /^Phone/i }), {
     target: { value: '+12133734253' },
+  });
+  fireEvent.change(screen.getByLabelText('Choose file'), {
+    target: { files: [new File(['resume'], 'resume.pdf', { type: 'application/pdf' })] },
   });
 }
 

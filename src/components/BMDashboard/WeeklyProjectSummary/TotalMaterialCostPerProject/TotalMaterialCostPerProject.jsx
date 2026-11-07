@@ -135,7 +135,10 @@ function TotalMaterialCostPerProject() {
       datasets: [
         {
           label: 'Total Material Cost (*1000$)',
-          data: selectedProjects.map(p => projectCosts[p.value]),
+          data: selectedProjects.map(p => {
+            const cost = Number(projectCosts[p.value]);
+            return Number.isFinite(cost) ? cost : 0;
+          }),
           backgroundColor: 'rgb(23, 154, 197)',
           borderRadius: 10,
         },
