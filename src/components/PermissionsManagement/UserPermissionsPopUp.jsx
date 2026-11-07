@@ -294,7 +294,7 @@ function UserPermissionsPopUp({
               setIsOpen(true);
             }}
             placeholder="Shows only ACTIVE users"
-            className={darkMode ? styles['bg-darkmode-liblack text-light border-0'] : ''}
+            className={darkMode ? `${appStyles['bg-darkmode-liblack']} text-light border-0` : ''}
             autoComplete="off"
             name="user-search"
           />
@@ -303,10 +303,9 @@ function UserPermissionsPopUp({
               tabIndex="-1"
               role="menu"
               aria-hidden="false"
-              className={`dropdown-menu${classTheme(
-                isOpen,
-                ` show ${styles['dropdown__user-perms']}`,
-              )}`}
+              className={`dropdown-menu${isOpen ? ` show ${styles['dropdown__user-perms']}` : ''} ${
+                darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''
+              }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
               {filteredUsers.length > 0 ? (

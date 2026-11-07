@@ -1167,19 +1167,25 @@ setUpdatedTasks(prev => {
       ...userProfile,
       isRehireable: newRehireableStatus,
     };
-    const savedReason = !newRehireableStatus ? notRehireableReason.trim() : '';
+    const savedReason =
+      !newRehireableStatus && typeof notRehireableReason === 'string'
+        ? notRehireableReason.trim()
+        : '';
     if (savedReason) updatedUserProfile.notRehireableReason = savedReason;
     else delete updatedUserProfile.notRehireableReason;
 
     try {
-      await dispatch(
+      const savedUserProfile = await dispatch(
         updateRehireableStatus(updatedUserProfile, newRehireableStatus, savedReason),
       );
       setIsRehireable(newRehireableStatus);
-      setUserProfile(updatedUserProfile);
-      setOriginalUserProfile(updatedUserProfile);
+      const profileWithSavedHistory = savedUserProfile || updatedUserProfile;
+      setUserProfile(profileWithSavedHistory);
+      setOriginalUserProfile(profileWithSavedHistory);
+      return true;
     } catch (error) {
       toast.error('Unable change rehireable status');
+      return false;
     }
   };
 
@@ -1605,6 +1611,7 @@ setUpdatedTasks(prev => {
               <RehireableStatusControl
                 isRehireable={Boolean(isRehireable)}
                 notRehireableReason={userProfile?.notRehireableReason || ''}
+                notRehireableReasonHistory={userProfile?.notRehireableReasonHistory || []}
                 darkMode={darkMode}
                 onConfirm={handleConfirmRehireableChange}
               />
