@@ -482,6 +482,8 @@ const buildChartOptions = (textColor, darkMode) => ({
   layout: { padding: { top: 48, left: 10, right: 10, bottom: 4 } },
   plugins: {
     barValueLabelPlugin: { darkMode },
+    // chartjs-plugin-datalabels is registered globally by other charts and would draw raw values inside the bars
+    datalabels: { display: false },
     // One entry per bar crowded out the plot; a per-task HTML legend is rendered below instead
     legend: { display: false },
     tooltip: {

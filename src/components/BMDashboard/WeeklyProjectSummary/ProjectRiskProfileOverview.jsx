@@ -389,7 +389,7 @@ export default function ProjectRiskProfileOverview() {
   if (error) return <div className={styles.error}>{error}</div>;
 
   return (
-    <Container fluid className="mt-5 pt-5 mb-5">
+    <Container fluid className={styles.riskProfileRoot}>
       <div className={`${styles.wrapper} ${darkMode ? styles.darkMode : ''}`}>
         <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
           <div className={styles.headerRow}>
