@@ -7,6 +7,8 @@
 }
 
 .chartsSectionDark {
+  --chart-axis-color: #fff;
+
   background: #1c2541;
   color: #fff;
   border: 1px solid #333;
@@ -58,10 +60,6 @@
 .chartsSectionDark .chartBoxFull {
   background: #3a506b;
   border: 1px solid #555;
-}
-
-.chartsSectionDark :global(.recharts-cartesian-axis-tick-value) {
-  fill: #fff !important;
 }
 
 @media (width <= 768px) {
