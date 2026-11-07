@@ -41,6 +41,9 @@ const fillValidApplication = async () => {
   fireEvent.change(screen.getByLabelText(/^Location/), { target: { value: 'Charlotte, NC' } });
   fireEvent.change(screen.getByLabelText(/^Time Zone/), { target: { value: 'America/New_York' } });
   fireEvent.change(screen.getByLabelText(/^Phone/), { target: { value: '+1 213-456-7890' } });
+  fireEvent.change(screen.getByLabelText('Choose file'), {
+    target: { files: [new File(['x'], 'resume.pdf', { type: 'application/pdf' })] },
+  });
   fireEvent.click(screen.getByRole('checkbox', { name: /I agree to terms and conditions/i }));
 };
 
@@ -87,6 +90,7 @@ describe('JobApplicationForm duplicate application handling', () => {
     });
     renderForm();
     await fillValidApplication();
+    toast.success.mockClear();
     await submit();
 
     await waitFor(() =>
