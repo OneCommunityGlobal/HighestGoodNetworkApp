@@ -7,7 +7,7 @@ export const setCurrentWishListItem = item => ({
 
 const wishlists = [
   {
-    id: '1',
+    id: '507f1f77bcf86cd799439001',
     title: 'Earthbag Village',
     unit: 'Unit 405',
     images: [
@@ -38,7 +38,7 @@ const wishlists = [
     },
   },
   {
-    id: '2',
+    id: '507f1f77bcf86cd799439002',
     title: 'Cob Village',
     unit: 'Unit 105',
     images: [
@@ -62,7 +62,7 @@ const wishlists = [
     },
   },
   {
-    id: '3',
+    id: '507f1f77bcf86cd799439003',
     title: 'Rob Village',
     unit: 'Unit 205',
     images: [
