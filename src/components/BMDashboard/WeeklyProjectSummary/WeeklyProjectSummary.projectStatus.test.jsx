@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import WeeklyProjectSummary from './WeeklyProjectSummary';
 import {
@@ -142,7 +143,9 @@ const renderWithState = state => {
   const store = mockStore(state);
   const view = render(
     <Provider store={store}>
-      <WeeklyProjectSummary />
+      <MemoryRouter>
+        <WeeklyProjectSummary />
+      </MemoryRouter>
     </Provider>,
   );
 
@@ -204,7 +207,9 @@ describe('WeeklyProjectSummary Project Status request state', () => {
     const monthState = createState({ comparisonPeriodFilter: 'Month Over Month' });
     rerender(
       <Provider store={mockStore(monthState)}>
-        <WeeklyProjectSummary />
+        <MemoryRouter>
+          <WeeklyProjectSummary />
+        </MemoryRouter>
       </Provider>,
     );
 
