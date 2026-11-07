@@ -140,7 +140,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
   };
   const getReasonTextColor = reason => {
     if (!reason?.includes('Role')) {
-      return undefined;
+      return '';
     }
 
     return darkMode ? styles.cyan : '';
