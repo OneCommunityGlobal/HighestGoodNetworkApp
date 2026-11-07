@@ -15,7 +15,10 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const centerTextPlugin = {
   id: 'centerText',
   afterDraw(chart) {
-    if (chart.options.plugins?.centerText === false) return;
+    if (!chart.options.plugins.centerText?.enabled) return;
+    const centerTextOptions = chart.options.plugins.centerText;
+    // Only charts that explicitly enable centerText should draw this label.
+    if (!centerTextOptions?.display) return;
 
     const pluginOpts = chart.options.plugins?.centerText;
     const { ctx, width, height } = chart;
@@ -200,6 +203,7 @@ export default function ProjectStatus() {
         },
         title: { display: false },
         centerText: {
+          enabled: true,
           display: true,
           total: data?.totalProjects ?? 0,
           darkMode,
