@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 .userManagementTable thead {
   background: aliceblue;
 }
@@ -479,7 +480,6 @@
   color: #fff !important;
 }
 
-
 .lightUsermanagementData {
   background-color: white;
 }
@@ -540,9 +540,6 @@
   color: #fff !important;
 }
 
-
-
-
 .darkSearchBox input::placeholder,
 .darkSearchBox .form-control::placeholder,
 .darkSearchRow input::placeholder {
@@ -579,17 +576,17 @@
 .darkSearchBox .btn,
 .darkSearchRow button,
 .darkSearchRow .btn,
-.darkUsermanagementData button,
-.darkUsermanagementData .btn {
+.darkUsermanagementData button:not(:global(.btn-success)),
+.darkUsermanagementData .btn:not(:global(.btn-success)) {
   background-color: #1d62f0 !important; /* Standout blue background color */
-  color: #fff !important;            /* Pure white visible text */
+  color: #fff !important; /* Pure white visible text */
   border: 1px solid #0056b3 !important;
 }
 
 /* Ensures crisp visibility when hovering over those specific buttons */
 .darkSearchBox .btn:hover,
 .darkSearchRow .btn:hover,
-.darkUsermanagementData .btn:hover {
+.darkUsermanagementData .btn:not(:global(.btn-success)):hover {
   background-color: #0b49c4 !important;
   color: #fff !important;
 }
