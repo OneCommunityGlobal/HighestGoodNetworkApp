@@ -186,29 +186,53 @@
   color: #f5a623;
 }
 
-.calendarTileAvailable {
-  background-color: #e8f0fe;
+.eventPage
+  :global(.react-calendar__tile).calendarTileAvailable:enabled:not(:global(.react-calendar__tile--active)) {
+  background-color: #cfe0ff;
   color: #0b2a5b;
-  border: 1px solid #003f87;
+  border: 2px solid #003f87;
+  font-weight: 600;
   cursor: pointer;
 }
 
-.eventPageDark :global(.react-calendar__tile).calendarTileAvailableDark {
-  background-color: #2d4a7a;
+.eventPage
+  :global(.react-calendar__tile).calendarTileAvailable:enabled:not(:global(.react-calendar__tile--active)):hover,
+.eventPage
+  :global(.react-calendar__tile).calendarTileAvailable:enabled:not(:global(.react-calendar__tile--active)):focus {
+  background-color: #a9c6ff;
+  color: #0b2a5b;
+}
+
+.eventPageDark
+  :global(.react-calendar__tile).calendarTileAvailableDark:enabled:not(:global(.react-calendar__tile--active)) {
+  background-color: #35609f;
   color: #fff;
-  border: 1px solid #9ec1ff;
+  border: 2px solid #9ec1ff;
+  font-weight: 600;
   cursor: pointer;
 }
 
-.calendarTileDisabled {
+.eventPageDark
+  :global(.react-calendar__tile).calendarTileAvailableDark:enabled:not(:global(.react-calendar__tile--active)):hover,
+.eventPageDark
+  :global(.react-calendar__tile).calendarTileAvailableDark:enabled:not(:global(.react-calendar__tile--active)):focus {
+  background-color: #416cae;
+  color: #fff;
+}
+
+.eventPage :global(.react-calendar__tile).calendarTileDisabled {
   color: #595959;
   background-color: #f0f0f0;
+  border: 2px solid transparent;
+  font-weight: 400;
   pointer-events: none;
 }
 
 .eventPageDark :global(.react-calendar__tile).calendarTileDisabledDark {
-  color: #8a9bbd;
+  color: #a9b8d6;
   background-color: #22304d;
+  border: 2px solid transparent;
+  font-weight: 400;
   pointer-events: none;
 }
 
