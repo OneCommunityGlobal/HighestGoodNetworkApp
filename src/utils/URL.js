@@ -388,6 +388,7 @@ export const ENDPOINTS = {
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
   BM_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS: `${APIEndpoint}/bm/weekly-project-summary/project-status`,
+  BM_WEEKLY_PROJECT_SUMMARY_FINANCIAL_OVERVIEW: `${APIEndpoint}/bm/weekly-project-summary/financial-overview`,
   BM_DELETE_INVENTORTY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
