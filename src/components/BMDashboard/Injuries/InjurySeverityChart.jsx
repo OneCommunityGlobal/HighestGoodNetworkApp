@@ -307,9 +307,9 @@ function InjurySeverityBarChart({
               payload={legendPayload}
             />
             <Customized
-              component={props => (
-                <ProjectLabels {...props} visibleProjects={visibleProjects} darkMode={darkMode} />
-              )}
+              component={ProjectLabels}
+              visibleProjects={visibleProjects}
+              darkMode={darkMode}
             />
 
             {chartBars.map(bar => (
