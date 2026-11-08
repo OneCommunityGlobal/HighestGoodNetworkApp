@@ -347,12 +347,10 @@
   box-sizing: border-box;
 }
 
-.err-message--dark {
-  color: #ff6b6b;
-}
-
+.err-message--dark,
 .err-message--dark h6 {
-  color: #ff6b6b;
+  color: #ff6b6b !important;
+  -webkit-text-fill-color: #ff6b6b;
 }
 
 .err-message h6 {
@@ -361,7 +359,8 @@
 }
 
 .item__error-link--dark {
-  color: #9ec5ff !important;
+  color: #81b0ff !important;
+  -webkit-text-fill-color: #81b0ff;
 }
 
 .item__location {
@@ -392,11 +391,18 @@
 
 .item__location-link--dark {
   color: #81b0ff !important;
+  -webkit-text-fill-color: #81b0ff;
 }
 
 .item__icon {
   color: #d32f2f;
-  font-size: 1.3rem
+  fill: #d32f2f;
+  font-size: 1.3rem;
+}
+
+.item__icon--dark {
+  color: #ff5252 !important;
+  fill: #ff5252 !important;
 }
 
 .item__details-right {
@@ -633,11 +639,14 @@
 }
 
 .saved__item {
-  color: red;
+  color: #d32f2f;
+  fill: #d32f2f;
 }
 
-.item__icon-empty--dark {
-  color: #fff !important;
+.item__icon-empty--dark,
+.saved__item--dark {
+  color: #ff5252 !important;
+  fill: #ff5252 !important;
 }
 
 .item_overview_module {

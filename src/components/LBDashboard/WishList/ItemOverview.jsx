@@ -158,7 +158,13 @@ function WishListItem(props) {
                 darkMode,
               )}
             >
-              <FaMapMarkerAlt className={styles['item__icon']} />
+              <FaMapMarkerAlt
+                className={getClassNames(
+                  styles['item__icon'],
+                  styles['item__icon--dark'],
+                  darkMode,
+                )}
+              />
               <Link
                 to="/lbdashboard/masterplan"
                 className={getClassNames('', styles['item__location-link--dark'], darkMode)}
@@ -319,7 +325,13 @@ function WishListItem(props) {
                   }}
                 >
                   {isWishlist ? (
-                    <IoMdHeart className={styles['saved__item']} />
+                    <IoMdHeart
+                      className={getClassNames(
+                        styles['saved__item'],
+                        styles['saved__item--dark'],
+                        darkMode,
+                      )}
+                    />
                   ) : (
                     <IoMdHeartEmpty
                       className={getClassNames('', styles['item__icon-empty--dark'], darkMode)}
