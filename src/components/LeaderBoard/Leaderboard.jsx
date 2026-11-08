@@ -526,11 +526,6 @@ function LeaderBoard({
   useEffect(() => {
     setFilteredUsers(leaderBoardData);
 
-    const rawTotal = leaderBoardData.reduce(
-      (total, user) => total + parseFloat(user.totaltime || 0),
-      0,
-    );
-
     return () => {
       setSearchInput('');
     };
