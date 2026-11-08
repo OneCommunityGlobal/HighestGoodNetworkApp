@@ -455,10 +455,19 @@ function TimeEntryForm(props) {
     };
 
     try {
+      let responseStatus;
+
       if (edit) {
-        await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
+        responseStatus = await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
-        await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
+        responseStatus = await props.postTimeEntry(timeEntry, {
+          displayedUserId: props.displayedUserId,
+        });
+      }
+
+      if (from === 'Timer' && !(responseStatus >= 200 && responseStatus < 300)) {
+        handleError(`Request failed with status ${responseStatus}`);
+        return;
       }
 
       await handlePostSubmitActions();

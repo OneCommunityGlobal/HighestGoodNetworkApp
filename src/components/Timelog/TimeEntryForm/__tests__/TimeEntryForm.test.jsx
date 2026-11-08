@@ -19,6 +19,7 @@ vi.mock('../../../../actions/timeEntries', async () => {
     __esModule: true,
     ...actual,
     editTimeEntry: vi.fn(() => ({ type: 'MOCK_EDIT_TIME_ENTRY' })),
+    postTimeEntry: vi.fn(() => () => Promise.resolve(200)),
   };
 });
 
@@ -155,6 +156,9 @@ it('should change Project with user input', async () => {
 it('pauses on timer submit and clears after successful logging', async () => {
   const sendPause = vi.fn();
   const sendClear = vi.fn();
+  store.dispatch.mockImplementation(action =>
+    typeof action === 'function' ? action(store.dispatch, store.getState) : action,
+  );
 
   renderWithProvider(
     <TimeEntryForm
@@ -180,5 +184,39 @@ it('pauses on timer submit and clears after successful logging', async () => {
   expect(sendPause.mock.invocationCallOrder[0]).toBeLessThan(
     sendClear.mock.invocationCallOrder[0],
   );
+});
+it('keeps timer paused and does not clear when time logging fails', async () => {
+  const sendPause = vi.fn();
+  const sendClear = vi.fn();
+
+  store.dispatch.mockImplementation(action =>
+    typeof action === 'function' ? action(store.dispatch, store.getState) : action,
+  );
+
+  const { postTimeEntry } = await import('../../../../actions/timeEntries');
+  postTimeEntry.mockImplementationOnce(() => () => Promise.resolve(500));
+
+  renderWithProvider(
+    <TimeEntryForm
+      from="Timer"
+      data={data}
+      edit={false}
+      toggle={toggle}
+      isOpen
+      sendPause={sendPause}
+      sendClear={sendClear}
+      timerConnected
+    />,
+    { store },
+  );
+
+  await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+  await waitFor(() => {
+    expect(sendPause).toHaveBeenCalledTimes(1);
+  });
+
+  expect(sendClear).not.toHaveBeenCalled();
+  expect(toggle).not.toHaveBeenCalled();
 });
 });
