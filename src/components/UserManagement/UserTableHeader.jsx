@@ -36,40 +36,41 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
       try {
         const requestor = authUser;
         const roleUpdateData = updatedUserData.filter(change => change.item === 'role')
-        const allUpdatedUsers = [];
-        for(const roleUpdate of roleUpdateData) {
-          const user = await axios.get(ENDPOINTS.USER_PROFILE(roleUpdate.user_id));
-          allUpdatedUsers.push(user);
-        }
-
+        const allUpdatedUsers = await Promise.all(
+          roleUpdateData.map(async roleUpdate =>
+            axios.get(ENDPOINTS.USER_PROFILE(roleUpdate.user_id)),
+          ),
+        );
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData)
 
         if (response.status === 200) {
-          for(const roleUpdate of roleUpdateData) {
-            const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${roleUpdate.user_id}`;
-            const user = allUpdatedUsers.find(( user ) => user?.data?._id === roleUpdate.user_id)
-            const permissions = {
-              frontPermissions: user.data?.permissions.frontPermissions,
-              removedDefaultPermissions: user.data.permissions?.removedDefaultPermissions,
-            };
-            const permissionData = {
-              previousRole: user.data.role,
-              newRole: roleUpdate.value,
-              permissions: permissions,
-              requestor: requestor,
-            }
-            await axios.patch(permissionURL, permissionData)
-              .catch(err => {
-                // use old userData to try reverting
+          await Promise.all(
+            roleUpdateData.map(async roleUpdate => {
+              const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${roleUpdate.user_id}`;
+              const user = allUpdatedUsers.find(( user ) => user?.data?._id === roleUpdate.user_id)
+              const permissions = {
+                frontPermissions: user.data?.permissions.frontPermissions,
+                removedDefaultPermissions: user.data.permissions?.removedDefaultPermissions,
+              };
+              const permissionData = {
+                previousRole: user.data.role,
+                newRole: roleUpdate.value,
+                permissions: permissions,
+                requestor: requestor,
+              }
+              try {
+                await axios.patch(permissionURL, permissionData)
+              } catch (err) {
                 try {
                   // Idea for now, unsure whether this would work though
                   // await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData)
-                } catch (error) {
+                } catch (rollbackError) {
                   console.log('Error occurring during rollback attempt, so user state may be inconsistent')
                 }
                 throw err;
-              });
-            }
+              }
+            }),
+          );
           const toastId = toast.success(' Saving Data...', { autoClose: false });
           // Clear the pending edit queue now that it has been saved successfully.
           // Without this, these edits would remain queued and get resubmitted
@@ -371,7 +372,6 @@ UserTableHeaderComponent.propTypes = {
   disableEditUserInfo: PropTypes.func.isRequired,
   isMobile: PropTypes.bool,
   mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  roles: PropTypes.object,
  
 };
 
