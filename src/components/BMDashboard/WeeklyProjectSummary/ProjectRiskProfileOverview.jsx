@@ -43,16 +43,45 @@ function buildDateRange(endDateISO, days) {
   return dates;
 }
 
+// Real issue count per date: running total of the API's per-day counts
+// (dailyIssueCounts: [{ date, issues }]). Counts dated before the first date
+// fold into the first point and the last point always equals the snapshot
+// total, so it matches the cards. Without daily counts the total is constant.
+function buildIssueSeries(dates, total, dailyIssueCounts) {
+  const daily = (Array.isArray(dailyIssueCounts) ? dailyIssueCounts : [])
+    .map(d => ({ date: d.date, issues: Number(d.issues) || 0 }))
+    .filter(d => d.date)
+    .sort((a, b) => (a.date < b.date ? -1 : 1));
+  if (daily.length === 0) return dates.map(() => total);
+
+  // Issues with no usable date are treated as present for the whole range.
+  const dailySum = daily.reduce((sum, d) => sum + d.issues, 0);
+  const baseline = Math.max(0, total - dailySum);
+  let running = baseline;
+  let i = 0;
+  return dates.map((date, idx) => {
+    while (i < daily.length && daily[i].date <= date) {
+      running += daily[i].issues;
+      i += 1;
+    }
+    return idx === dates.length - 1 ? total : running;
+  });
+}
+
 // The API only provides one current snapshot per project. Build an
 // illustrative trend that ENDS at the real current values (walking backwards
 // in time), so the bars always show the real numbers. Values are floored at 0
-// only - there is no artificial upper cap.
-function generateSyntheticHistory(projectName, snapshot, days, endDateISO) {
+// only - there is no artificial upper cap. Issues use real per-day counts.
+function generateSyntheticHistory(projectName, snapshot, days, endDateISO, dailyIssueCounts) {
   const seed = hashString(projectName);
   const dates = buildDateRange(endDateISO, days);
   let cost = Number(snapshot.predictedCostOverrun ?? 0);
   let delay = Number(snapshot.predictedTimeDelay ?? 0);
-  const issues = Number(snapshot.totalOpenIssues ?? 0);
+  const issueSeries = buildIssueSeries(
+    dates,
+    Number(snapshot.totalOpenIssues ?? 0),
+    dailyIssueCounts,
+  );
   const r1 = ((seed % 97) / 97 - 0.5) * 2;
   const r2 = (((seed >> 3) % 89) / 89 - 0.5) * 2;
 
@@ -62,7 +91,7 @@ function generateSyntheticHistory(projectName, snapshot, days, endDateISO) {
       date: dates[idx],
       predictedCostOverrun: Number(cost.toFixed(2)),
       predictedTimeDelay: Number(delay.toFixed(2)),
-      totalOpenIssues: issues,
+      totalOpenIssues: issueSeries[idx],
     };
     cost = Math.max(0, cost - (r1 * 1.2 + Math.sin((idx + seed) / 5) * 0.6));
     delay = Math.max(0, delay - (r2 * 0.4 + Math.cos((idx + seed) / 6) * 0.2));
@@ -263,6 +292,7 @@ export default function ProjectRiskProfileOverview() {
         snapshot,
         effectiveWindow.days || 30,
         endISO,
+        p.dailyIssueCounts,
       );
       return { ...p, history: hist };
     });
