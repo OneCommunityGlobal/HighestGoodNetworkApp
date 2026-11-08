@@ -432,7 +432,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     <!-- Footer -->
     <div class="footer">
       <p>One Community Global | Creating a New Perspective for Humanity</p>
-      <p><a href="{{unsubscribeLink}}">Unsubscribe from these emails</a></p>
+      <p><a href="${window.location.origin}/unsubscribe">Unsubscribe from these emails</a></p>
       <p>© ${new Date().getFullYear()} One Community. All rights reserved.</p>
     </div>
   </div>
