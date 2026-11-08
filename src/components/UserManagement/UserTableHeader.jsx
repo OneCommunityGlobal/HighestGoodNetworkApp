@@ -76,11 +76,12 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
               } catch (err) {
                 try {
                   // Idea for now, unsure whether this would work though
+                  // Rollback changes made to specific user that making a change log fails
+                  // But would not prevent or undo changes made to others in the same group.
                   // await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData)
                 } catch (rollbackError) {
-                  console.log('Error occurring during rollback attempt, so user state may be inconsistent')
+                  toast.error('Error occurring during rollback attempt, so some user states may be inconsistent')
                 }
-                throw err;
               }
             }),
           );
