@@ -30,7 +30,17 @@ import styles from './usermanagement.module.css';
 const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const authRole = authUser?.role;
     const dispatch = useDispatch();
-    const [editFlag, setEditFlag] = useState(editUser);
+    const defaultEditFlags = {
+       first: 1,
+       last: 1,
+       role: 1,
+       jobTitle: 1,
+       email: 1,
+       weeklycommittedHours: 1,
+       startDate: 1,
+       endDate: 1,
+   };
+    const [editFlag, setEditFlag] = useState(editUser ?? defaultEditFlags);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
@@ -41,9 +51,12 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
             axios.get(ENDPOINTS.USER_PROFILE(roleUpdate.user_id)),
           ),
         );
-        const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData)
+        const response = await axios.patch(
+          ENDPOINTS.USER_PROFILE_UPDATE,
+          updatedData
+        );
 
-        if (response.status === 200) {
+        if (response.status >= 200 && response.status < 300) {
           await Promise.all(
             roleUpdateData.map(async roleUpdate => {
               const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${roleUpdate.user_id}`;
@@ -71,38 +84,53 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
               }
             }),
           );
-          const toastId = toast.success(' Saving Data...', { autoClose: false });
-          // Clear the pending edit queue now that it has been saved successfully.
-          // Without this, these edits would remain queued and get resubmitted
-          // (replayed) the next time any user's info is saved, silently
-          // overwriting that user's data with stale values.
+
+          const toastId = toast.success('Saving Data...', { autoClose: false });
+
+          // Clear pending edits only after a successful save.
           dispatch(finishUserInfoUpdate());
+
           await dispatch(getAllUserProfile());
+
           toast.update(toastId, {
             render: 'Data Updated successfully !',
-            // type: toast.TYPE.SUCCESS,
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
             autoClose: 3000,
           });
-        } else {
-          toast.error('Error Updating Data!');
+
+          return true;
         }
+
+        toast.error('Error Updating Data!');
+        return false;
       } catch (error) {
         console.log('error: ', error)
         console.log('error status: ', error.statusCode)
         console.log('error message: ', error.message)
         toast.error('Error Updating Data ! ');
+        return false;
       }
     };
-    const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#3a506b' } : { backgroundColor: "#f0f8ff",color:"black"};
+    const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#364456' } : { backgroundColor: "#f0f8ff",color:"black"};
     const enableEdit = value => {
       setEditFlag(value);
       enableEditUserInfo(value);
     };
-    const disableEdit = value => {
-      setEditFlag(value);
-      disableEditUserInfo(value);
-      saveUserInformation(updatedUserData);
-    };
+    
+    const disableEdit = async value => {
+        if (updatedUserData.length > 0) {
+          const saved = await saveUserInformation(updatedUserData);
+
+          if (!saved) {
+            return;
+          }
+        }
+
+        setEditFlag(value);
+        dispatch(disableEditUserInfo(value));
+      };
+
 
     return (
       <tr className={darkMode ? 'bg-space-cadet' : ''}
