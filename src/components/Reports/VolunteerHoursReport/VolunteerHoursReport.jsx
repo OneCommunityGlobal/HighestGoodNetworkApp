@@ -110,22 +110,24 @@ try {
           }).filter(item => item.totalHours > 0); // Only show people with hours
         }
       } else if (reportType === 'team') {
-        const res = await axios.post(ENDPOINTS.TEAMS_COMMITTED_HOURS,{fromDate, toDate});
-        data = res.data.map(team => ({
-               id: team.teamId,
-               name: team.teamName,
-               totalHours: Number(team.committedHours.toFixed(1)),
-      })).filter(team => team.totalHours > 0);
-
+        const res = await axios.post(ENDPOINTS.TEAMS_COMMITTED_HOURS, {fromDate,toDate,});
+          data = res.data
+            .map((team) => ({
+              id: team.teamId,
+              name: team.teamName,
+              totalHours: Number((team.loggedHours || 0).toFixed(1)),
+            }))
+            .filter((team) => team.totalHours > 0);
       } else if (reportType === 'project') {
-        const res = await axios.post(ENDPOINTS.PROJECTS_COMMITTED_HOURS, {fromDate, toDate});
-        data = res.data.map(project => ({
-        id: project.projectId,
-        name: project.projectName,
-        totalHours: Number(project.committedHours.toFixed(1)),
-      })).filter(project => project.totalHours > 0);
+        const res = await axios.post(ENDPOINTS.PROJECTS_COMMITTED_HOURS, {fromDate,toDate,});
+          data = res.data
+            .map((project) => ({
+              id: project.projectId,
+              name: project.projectName,
+              totalHours: Number((project.loggedHours || 0).toFixed(1)),
+            }))
+            .filter((project) => project.totalHours > 0);
       }
-
       // Sort by total hours descending
       data.sort((a, b) => b.totalHours - a.totalHours);
       setReportData(data);
