@@ -105,9 +105,6 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
         toast.error('Error Updating Data!');
         return false;
       } catch (error) {
-        console.log('error: ', error)
-        console.log('error status: ', error.statusCode)
-        console.log('error message: ', error.message)
         toast.error('Error Updating Data ! ');
         return false;
       }
