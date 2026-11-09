@@ -1078,12 +1078,7 @@ export default (
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
         {/* ----- Kitchen and Inventory Portal Routes ----- */}
-        <ProtectedRoute
-          path="/kitchenandinventory"
-          exact
-          render={() => <Redirect to="/kitchenandinventory/dashboard" />}
-        />
-        <ProtectedRoute path="/kitchenandinventory/dashboard" exact component={KIDashboard} />
+        <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
         <ProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
         <ProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
         <ProtectedRoute
