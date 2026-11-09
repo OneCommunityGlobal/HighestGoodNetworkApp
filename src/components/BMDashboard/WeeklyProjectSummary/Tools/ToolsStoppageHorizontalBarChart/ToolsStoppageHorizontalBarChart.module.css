@@ -414,3 +414,28 @@
     padding: 10px;
   }
 }
+
+/* Keep the chart area stable while loading, empty, or while a date range is being selected. */
+.chartStateContainer {
+  min-height: 400px;
+}
+
+.chartStateMessage {
+  min-height: 400px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.chartStateMessage p {
+  margin: 0;
+}
+
+@media (width <= 480px) {
+  .chartStateContainer,
+  .chartStateMessage {
+    min-height: 300px;
+  }
+}
