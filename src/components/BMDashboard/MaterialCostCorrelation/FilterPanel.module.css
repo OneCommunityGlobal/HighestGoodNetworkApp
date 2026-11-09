@@ -419,29 +419,29 @@
 /* Force react-datepicker input spacing and dark-mode styling. */
 .filterPanel :global(.react-datepicker-wrapper) input.datePickerLight,
 .filterPanel :global(.react-datepicker-wrapper) input.datePickerDark {
-  padding: 8px 12px 8px 52px !important;
+  padding: 8px 12px 8px 52px;
 }
 
 .filterPanel.darkMode :global(.react-datepicker-wrapper) input.datePickerDark {
-  background-color: #1e293b !important;
-  color: #f7fafc !important;
-  border-color: #475569 !important;
+  background-color: #1e293b;
+  color: #f7fafc;
+  border-color: #475569;
 }
 
 .filterPanel.darkMode :global(.react-datepicker-wrapper) input.datePickerDark::placeholder {
-  color: #cbd5e1 !important;
+  color: #cbd5e1;
   opacity: 1;
 }
 
 .filterPanel :global(.react-datepicker__calendar-icon) {
-  left: 14px !important;
-  top: 50% !important;
+  left: 14px;
+  top: 50%;
   transform: translateY(-50%);
 }
 
 .filterPanel.darkMode :global(.react-datepicker__calendar-icon) {
-  color: #f7fafc !important;
-  fill: #f7fafc !important;
+  color: #f7fafc;
+  fill: #f7fafc;
   filter: brightness(0) invert(1);
 }
 
