@@ -102,35 +102,6 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.filterPanel.darkMode input.datePickerDark {
-  background-color: #1e293b;
-  color: #f7fafc;
-  border-color: #475569;
-}
-
-.filterPanel.darkMode input.datePickerDark::placeholder {
-  color: #cbd5e1;
-  opacity: 1;
-}
-
-/* Keep the react-datepicker calendar icon visible in dark mode. */
-.filterPanel.darkMode :global(.react-datepicker__calendar-icon) {
-  filter: brightness(0) invert(1);
-  opacity: 0.95;
-}
-
-/* Leave space for the calendar icon so it does not overlap the date text. */
-.filterPanel :global(.react-datepicker__view-calendar-icon input) {
-  padding-left: 40px;
-}
-
-.datePickerLight:focus,
-.datePickerDark:focus {
-  outline: none;
-  border-color: var(--button-bg);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
-}
-
 .presetButtons {
   display: flex;
   gap: 8px;
@@ -443,6 +414,42 @@
   .dateSeparator {
     display: none;
   }
+}
+
+/* Force react-datepicker input spacing and dark-mode styling. */
+.filterPanel :global(.react-datepicker-wrapper) input.datePickerLight,
+.filterPanel :global(.react-datepicker-wrapper) input.datePickerDark {
+  padding: 8px 12px 8px 52px !important;
+}
+
+.filterPanel.darkMode :global(.react-datepicker-wrapper) input.datePickerDark {
+  background-color: #1e293b !important;
+  color: #f7fafc !important;
+  border-color: #475569 !important;
+}
+
+.filterPanel.darkMode :global(.react-datepicker-wrapper) input.datePickerDark::placeholder {
+  color: #cbd5e1 !important;
+  opacity: 1;
+}
+
+.filterPanel :global(.react-datepicker__calendar-icon) {
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+}
+
+.filterPanel.darkMode :global(.react-datepicker__calendar-icon) {
+  color: #f7fafc !important;
+  fill: #f7fafc !important;
+  filter: brightness(0) invert(1);
+}
+
+.datePickerLight:focus,
+.datePickerDark:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 @media (width <= 480px) {

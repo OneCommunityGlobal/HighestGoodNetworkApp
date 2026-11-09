@@ -123,12 +123,11 @@ const getAutoClose = errorType =>
 const normalizeIds = ids => {
   if (!Array.isArray(ids)) return [];
 
-  return ids.filter(
-    id =>
-      typeof id === 'string' &&
-      id.trim() !== '' &&
-      id !== 'all',
-  );
+  return ids
+    .filter(id => typeof id === 'string')
+    .map(id => id.trim())
+    .filter(id => id !== '' && id.toLowerCase() !== 'all')
+    .filter(id => isValidObjectId(id));
 };
 const validateInputs = (projectIds, materialTypeIds, startDate, endDate, dispatch) => {
   const dateValidation = validateDateRange(startDate, endDate);
