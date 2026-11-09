@@ -3,11 +3,11 @@
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { UncontrolledTooltip } from 'reactstrap';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import CardSelector from './CardSelector';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 
@@ -32,15 +32,15 @@ import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import CostPredictionChart from './CostPredictionChart';
 import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
+import { StatusCardGrid, buildStatusCards, toCardButtons } from './StatusCards';
+import FinancialOverview from './Financials/FinancialOverview';
 
 const projectStatusButtonData = [
   ['Total Projects', 'totalProjects', '#F0FFEE', '#BAF0B6', '#328D1B'],
@@ -56,89 +56,15 @@ const projectStatusButtonData = [
   ['Material Wasted', 'materialWasted', '#EFBABB', '#F79395', '#328D1B'],
 ];
 
-const projectStatusButtons = projectStatusButtonData.map(
-  ([title, metricKey, bgColor, buttonColor, textColor]) => ({
-    title,
-    metricKey,
-    bgColor,
-    buttonColor,
-    textColor,
-  }),
-);
+const projectStatusButtons = toCardButtons(projectStatusButtonData).map(button => ({
+  ...button,
+  description:
+    button.metricKey === 'avgProjectDuration'
+      ? 'Start to completion for projects completed in the selected period.'
+      : undefined,
+}));
 
-const PERIOD_COMPARABLE = 'PERIOD_COMPARABLE';
-const UNAVAILABLE = 'UNAVAILABLE';
 const EMPTY_PROJECT_STATUS_METRICS = {};
-
-function formatProjectStatusValue(metric) {
-  if (!metric || metric.comparisonType === UNAVAILABLE || metric.value === null) {
-    return 'N/A';
-  }
-
-  if (metric.unit === 'USD') {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(metric.value);
-  }
-
-  if (metric.unit === 'hrs') {
-    return `${metric.value} hrs`;
-  }
-
-  if (typeof metric.value === 'number') {
-    return new Intl.NumberFormat('en-US').format(metric.value);
-  }
-
-  return metric.value;
-}
-
-function getProjectStatusUnavailableReason(metric) {
-  if (!metric || (metric.comparisonType !== UNAVAILABLE && metric.value !== null)) {
-    return null;
-  }
-
-  return metric.unavailableReason || 'Data does not exist for the selected period.';
-}
-
-function getProjectStatusComparisonUnavailableText(comparisonPeriodFilter) {
-  return `No ${comparisonPeriodFilter.toLowerCase()} comparison available`;
-}
-
-function formatProjectStatusChange(metric, comparisonPeriodFilter) {
-  const percentageChange = metric?.percentageChange;
-
-  if (comparisonPeriodFilter === 'No Comparison') {
-    return null;
-  }
-
-  if (
-    metric?.comparisonType !== PERIOD_COMPARABLE ||
-    percentageChange === null ||
-    percentageChange === undefined ||
-    typeof percentageChange === 'string'
-  ) {
-    return getProjectStatusComparisonUnavailableText(comparisonPeriodFilter);
-  }
-
-  const percent = Math.round(percentageChange * 100);
-  const prefix = percent > 0 ? '+' : '';
-  return `${prefix}${percent}% ${comparisonPeriodFilter.toLowerCase()}`;
-}
-
-function getProjectStatusChangeColor(metric) {
-  if (typeof metric?.percentageChange !== 'number') {
-    return '#C82F2F';
-  }
-
-  if (metric.percentageChange === 0) {
-    return '#000';
-  }
-
-  return metric.percentageChange > 0 ? '#328D1B' : '#C82F2F';
-}
 
 function getProjectStatusErrorMessage(error) {
   return (
@@ -171,6 +97,20 @@ function WeeklyProjectSummary() {
     state => state.weeklyProjectSummary?.projectStatusErrorRequestKey,
   );
   const containerRef = useRef(null);
+  const userId = useSelector(state => state.auth?.user?.userid);
+  const cardPrefsKey = `weeklyProjectSummaryCards:${userId || 'guest'}`;
+  // Saved card selection per user: { visibleKeys, cardLimit }. null = show all.
+  const [cardPrefs, setCardPrefs] = useState(null);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(cardPrefsKey) || 'null');
+      setCardPrefs(saved && Array.isArray(saved.visibleKeys) ? saved : null);
+    } catch {
+      setCardPrefs(null);
+    }
+  }, [cardPrefsKey]);
+
   const comparisonEnabled = comparisonPeriodFilter !== 'No Comparison';
 
   const currentDateRange = useMemo(() => parseWeeklySummaryDateRange(dateRangeFilter), [
@@ -285,17 +225,7 @@ function WeeklyProjectSummary() {
       : EMPTY_PROJECT_STATUS_METRICS;
 
   const projectStatusCards = useMemo(
-    () =>
-      projectStatusButtons.map(button => {
-        const metric = projectStatusMetrics[button.metricKey];
-        return {
-          ...button,
-          value: formatProjectStatusValue(metric),
-          unavailableReason: getProjectStatusUnavailableReason(metric),
-          change: formatProjectStatusChange(metric, comparisonPeriodFilter),
-          changeColor: getProjectStatusChangeColor(metric),
-        };
-      }),
+    () => buildStatusCards(projectStatusButtons, projectStatusMetrics, comparisonPeriodFilter),
     [comparisonPeriodFilter, projectStatusMetrics],
   );
 
@@ -321,75 +251,11 @@ function WeeklyProjectSummary() {
             {projectStatusDisplayError && (
               <div role="alert">{getProjectStatusErrorMessage(projectStatusDisplayError)}</div>
             )}
-            <div className={`${styles.projectStatusGrid}`}>
-              {projectStatusCards.map(button => {
-                const unavailableTooltipId = `project-status-unavailable-${button.metricKey}`;
-                return (
-                  <section
-                    key={button.metricKey}
-                    aria-label={button.title}
-                    className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                    style={{ backgroundColor: button.bgColor }}
-                  >
-                    <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
-                    {button.metricKey === 'avgProjectDuration' && (
-                      <div className={styles.projectDurationDescription}>
-                        Start to completion for projects completed in the selected period.
-                      </div>
-                    )}
-                    <div
-                      className={`${styles.weeklyStatusButton}`}
-                      style={{ backgroundColor: button.buttonColor }}
-                    >
-                      <span className={`${styles.weeklyStatusValue}`}>
-                        {button.value}
-                        {button.unavailableReason && (
-                          <>
-                            <span
-                              id={unavailableTooltipId}
-                              className={styles.projectStatusUnavailableInfo}
-                            >
-                              <button
-                                type="button"
-                                className={styles.projectStatusUnavailableButton}
-                                aria-label={button.unavailableReason}
-                              >
-                                i
-                              </button>
-                            </span>
-                            <UncontrolledTooltip
-                              placement="top"
-                              target={unavailableTooltipId}
-                              trigger="hover focus"
-                              className={styles.projectStatusUnavailableTooltip}
-                              container="body"
-                              autohide={false}
-                              modifiers={{
-                                offset: { offset: '0, 12' },
-                                preventOverflow: { boundariesElement: 'viewport' },
-                              }}
-                            >
-                              {button.unavailableReason}
-                            </UncontrolledTooltip>
-                          </>
-                        )}
-                      </span>
-                    </div>
-                    {showProjectStatusComparison && button.change && (
-                      <div
-                        className="weekly-status-change"
-                        style={{
-                          color: button.changeColor,
-                          '--project-status-change-color': button.changeColor,
-                        }}
-                      >
-                        {button.change}
-                      </div>
-                    )}
-                  </section>
-                );
-              })}
-            </div>
+            <StatusCardGrid
+              cards={projectStatusCards}
+              showComparison={showProjectStatusComparison}
+              idPrefix="project-status"
+            />
           </>
         ),
       },
@@ -566,7 +432,7 @@ function WeeklyProjectSummary() {
         content: (
           <div
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
-            style={{ height: '500px', padding: '0' }}
+            style={{ padding: '0' }}
           >
             <InteractiveMap />
           </div>
@@ -622,27 +488,23 @@ function WeeklyProjectSummary() {
         ),
       },
       {
+        title: 'Financials: Overview',
+        key: 'Financials: Overview',
+        className: 'full',
+        content: (
+          <FinancialOverview
+            requestParams={projectStatusRequestParams}
+            comparisonPeriodFilter={comparisonPeriodFilter}
+          />
+        ),
+      },
+      {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
         content: (
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection />
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '15px',
-                marginTop: '15px',
-              }}
-            >
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <CostPredictionChart projectId={1} />
-              </div>
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <ActualVsPlannedCost />
-              </div>
-            </div>
           </div>
         ),
       },
@@ -657,8 +519,25 @@ function WeeklyProjectSummary() {
       showProjectStatusComparison,
       currentDateRange,
       comparisonDateRange,
+      projectStatusRequestParams,
     ],
   );
+
+  const visibleKeys = cardPrefs?.visibleKeys ?? sections.map(section => section.key);
+  const cardLimit = cardPrefs?.cardLimit ?? 'all';
+  const selectedSections = sections.filter(section => visibleKeys.includes(section.key));
+  const visibleSections =
+    cardLimit === 'all' ? selectedSections : selectedSections.slice(0, Number(cardLimit));
+
+  const handleCardsChange = (keys, limit) => {
+    const next = { visibleKeys: keys, cardLimit: limit };
+    setCardPrefs(next);
+    try {
+      localStorage.setItem(cardPrefsKey, JSON.stringify(next));
+    } catch {
+      // Storage unavailable (e.g. private browsing); keep the in-memory choice.
+    }
+  };
 
   const handleSaveAsPDF = async () => {
     // Prevent multiple simultaneous PDF generations
@@ -845,8 +724,25 @@ function WeeklyProjectSummary() {
         isGeneratingPDF={isGeneratingPDF}
       />
       <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
+        {isGeneratingPDF === false && (
+          <div className={styles.cardSelectorBar}>
+            <CardSelector
+              cards={sections.map(({ key, title }) => ({ key, title }))}
+              visibleKeys={visibleKeys}
+              cardLimit={cardLimit}
+              shownCount={visibleSections.length}
+              onChange={handleCardsChange}
+              darkMode={darkMode}
+            />
+          </div>
+        )}
+        {visibleSections.length === 0 && (
+          <p className={styles.noCardsMessage}>
+            No cards selected. Use Customize Cards to choose which cards to show.
+          </p>
+        )}
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
-          {sections.map(({ title, key, className, content }) => (
+          {visibleSections.map(({ title, key, className, content }) => (
             <div
               key={key}
               className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
