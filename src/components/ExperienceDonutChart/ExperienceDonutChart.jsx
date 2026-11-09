@@ -1,7 +1,11 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios'; // Added axios import to fix network request errors
-import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import Select, { components } from 'react-select';
+import DatePicker from 'react-datepicker';
+import clsx from 'clsx';
+import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ExperienceDonutChart.module.css';
 
 const SEGMENT_COLORS = [
@@ -16,14 +20,19 @@ const SEGMENT_COLORS = [
 
 const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
 
-function getContrastColor(hexColor) {
-  const hex = hexColor.replace('#', '');
-  const bigint = parseInt(hex, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness > 150 ? '#111827' : '#ffffff';
+const AVAILABLE_ROLES = [
+  { value: 'Frontend Developer', label: 'Frontend Developer' },
+  { value: 'DevOps Engineer', label: 'DevOps Engineer' },
+  { value: 'Project Manager', label: 'Project Manager' },
+  { value: 'Junior Developer', label: 'Junior Developer' },
+  { value: 'Full Stack Developer', label: 'Full Stack Developer' },
+];
+
+// ✅ Crypto-based RNG (safer than Math.random)
+function secureRandomInt(min, max) {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return min + (array[0] % (max - min + 1));
 }
 
 function Spinner() {
@@ -35,16 +44,91 @@ function Spinner() {
   );
 }
 
-const TODAY = new Date().toISOString().split('T')[0];
+function DetailsPanel({ chartData, total, activeIndex }) {
+  if (!chartData || total === 0) return null;
 
-const PREFERS_REDUCED_MOTION =
-  typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    : false;
+  return (
+    <div className={styles['chart-details']}>
+      {chartData.map((d, idx) => {
+        const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
+        return (
+          <div
+            key={d.name}
+            className={`${styles['detail-item']} ${activeIndex === idx ? styles.active : ''}`}
+          >
+            <div className={styles['detail-header']}>
+              <span className={styles['detail-dot']} style={{ backgroundColor: d.color }} />
+              <span className={styles['detail-name']}>{d.name}</span>
+            </div>
+            <div className={styles['detail-stats']}>
+              <div className={styles['detail-stats-count']}>
+                <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
+                <span className={styles['detail-applicant-label']}>
+                  {' '}
+                  applicant{d.value > 0 && 's'}
+                </span>
+              </div>
+              <span className={styles['detail-pct']}>{pct}%</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function CustomTooltip({ active, payload, total }) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0]?.payload;
+  const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
+
+  return (
+    <div className={styles['custom-tooltip']}>
+      <div className={styles['custom-tooltip-name']}>{d.name}</div>
+      <div className={styles['custom-tooltip-stats']}>
+        <div className={styles['custom-tooltip-applicant']}>
+          <span>Applicants:</span> <strong>{d.value}</strong>
+        </div>
+        <div className={styles['custom-tooltip-percentage']}>
+          <span>% of applicants:</span> <strong>{pct}%</strong>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SelectedRoleValue(props) {
+  const { index, getValue, children, ...rest } = props;
+  const allSelected = getValue();
+  const isOverflowPill = index === 1 && allSelected.length > 1;
+  if (!isOverflowPill && index > 0) return null;
+  const pillClasses = `${styles.selectedPill}`;
+  if (isOverflowPill) {
+    const overflowCount = allSelected.length - 1;
+    return (
+      <div className={pillClasses}>
+        + {overflowCount} role{overflowCount === 1 ? '' : 's'} selected
+      </div>
+    );
+  }
+  return (
+    <div className={pillClasses} {...rest}>
+      {children}
+    </div>
+  );
+}
+
+function SelectedRoleRemove(props) {
+  const { index, getValue } = props;
+  if (index === 0 && getValue().length > 1) return null;
+  return <components.MultiValueRemove {...props} />;
+}
 
 export default function ExperienceDonutChart() {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [dateRange, setDateRange] = useState({
+    start: null,
+    end: null,
+  });
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   const [appliedFilters, setAppliedFilters] = useState({ startDate: '', endDate: '', roles: [] });
@@ -54,6 +138,7 @@ export default function ExperienceDonutChart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [activeIndex, setActiveIndex] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const hasFilters = useMemo(
@@ -61,17 +146,15 @@ export default function ExperienceDonutChart() {
       Boolean(
         appliedFilters.startDate ||
           appliedFilters.endDate ||
-          (appliedFilters.roles?.length ?? 0) > 0 ||
-          startDate ||
-          endDate ||
-          selectedRoles.length > 0,
+          (appliedFilters.roles?.length ?? 0) > 0,
       ),
-    [appliedFilters, startDate, endDate, selectedRoles],
+    [appliedFilters],
   );
 
   const fetchData = async () => {
     setLoading(true);
     setError(null);
+    setActiveIndex(null);
 
     try {
       const token = localStorage.getItem('token');
@@ -126,154 +209,32 @@ export default function ExperienceDonutChart() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appliedFilters]);
-
-  const visibleChartData = useMemo(() => chartData?.filter(d => d.value > 0) ?? [], [chartData]);
-
-  // Hide counts until the sweep animation finishes so they don't bleed through
-  const [animationDone, setAnimationDone] = useState(false);
-  useEffect(() => {
-    setAnimationDone(PREFERS_REDUCED_MOTION);
-  }, [chartData]);
-
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' && window.innerWidth < 450,
-  );
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 450);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  const pieMargin = isMobile
-    ? { top: 5, right: 5, bottom: 5, left: 5 }
-    : { top: 20, right: 115, bottom: 20, left: 115 };
-
-  // Renders the hovered segment with a slightly larger outer radius
-  const renderActiveShape = props => {
-    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
-    return (
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius - 3}
-        outerRadius={outerRadius + 10}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
-    );
-  };
-
-  // Draws the count at the visual center of each segment — only after animation completes
-  const renderInsideCount = ({ cx, cy, midAngle, innerRadius, outerRadius, value, index }) => {
-    if (!value || !animationDone) return null;
-    const isHovered = index === hoveredIndex;
-    const RADIAN = Math.PI / 180;
-    // Push centroid outward slightly when hovered to stay centered in the expanded segment
-    const expandedOuter = isHovered ? outerRadius + 10 : outerRadius;
-    const radius = (innerRadius - (isHovered ? 3 : 0) + expandedOuter) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    return (
-      <text
-        x={x}
-        y={y}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill={getContrastColor(visibleChartData[index]?.color ?? '#000')}
-        style={{
-          fontSize: isHovered ? '1.35rem' : '1.2rem',
-          fontWeight: 800,
-          pointerEvents: 'none',
-          transition: 'font-size 0.15s ease',
-        }}
-      >
-        {value.toLocaleString()}
-      </text>
-    );
-  };
-
-  // Draws name on top line, percentage below — outside the segment, only after animation completes
-  const renderOutsideLabel = ({ cx, cy, midAngle, outerRadius, name, percent, index }) => {
-    if (!animationDone) return null;
-    // On very small screens hide outside labels — inside counts are still visible
-    if (isMobile) return null;
-    const isHovered = index === hoveredIndex;
-    const RADIAN = Math.PI / 180;
-    const expandedOuter = isHovered ? outerRadius + 10 : outerRadius;
-    const lineStart = expandedOuter + 8;
-    const lineEnd = expandedOuter + (isMobile ? 30 : 50);
-    const sx = cx + lineStart * Math.cos(-midAngle * RADIAN);
-    const sy = cy + lineStart * Math.sin(-midAngle * RADIAN);
-    const ex = cx + lineEnd * Math.cos(-midAngle * RADIAN);
-    const ey = cy + lineEnd * Math.sin(-midAngle * RADIAN);
-    const isRight = ex > cx;
-    const elbowX = ex + (isRight ? 18 : -18);
-    const textX = elbowX + (isRight ? 4 : -4);
-    const textAnchor = isRight ? 'start' : 'end';
-    const pct = `${(percent * 100).toFixed(1)}%`;
-    const labelColor = darkMode ? '#f8fafc' : '#0f172a';
-    const lineColor = darkMode ? '#94a3b8' : '#64748b';
-    const nameFontSize = isHovered ? '1.2rem' : '1.05rem';
-    const pctFontSize = isHovered ? '1.05rem' : '0.95rem';
-    const strokeWidth = isHovered ? 2.5 : 1.5;
-
-    return (
-      <g style={{ transition: 'all 0.15s ease' }}>
-        <path
-          d={`M${sx},${sy} L${ex},${ey} L${elbowX},${ey}`}
-          fill="none"
-          stroke={lineColor}
-          strokeWidth={strokeWidth}
-        />
-        <text
-          x={textX}
-          y={ey}
-          textAnchor={textAnchor}
-          fill={labelColor}
-          style={{ fontWeight: 700 }}
-        >
-          <tspan x={textX} dy="-0.55em" style={{ fontSize: nameFontSize }}>
-            {name}
-          </tspan>
-          <tspan x={textX} dy="1.2em" style={{ fontSize: pctFontSize, opacity: 0.75 }}>
-            {pct}
-          </tspan>
-        </text>
-      </g>
-    );
+  const handleRoleChange = selectedOptions => {
+    setSelectedRoles(selectedOptions || []);
   };
 
   const applyFilters = () => {
-    if (startDate && startDate > TODAY) {
-      setError('Start date cannot be in the future.');
-      return;
-    }
-    if (endDate && endDate > TODAY) {
-      setError('End date cannot be in the future.');
-      return;
-    }
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      setError('Start date must be before end date.');
-      return;
-    }
-    setError(null);
-    setAppliedFilters({ startDate, endDate, roles: selectedRoles });
+    setAppliedFilters({
+      startDate: dateRange.start,
+      endDate: dateRange.end,
+      roles: selectedRoles.map(r => r.value),
+    });
   };
 
   const resetFilters = () => {
-    setStartDate('');
-    setEndDate('');
+    setDateRange({
+      start: null,
+      end: null,
+    });
     setSelectedRoles([]);
     setError(null);
     setAppliedFilters({ startDate: '', endDate: '', roles: [] });
   };
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFilters]);
 
   return (
     <div
@@ -287,76 +248,101 @@ export default function ExperienceDonutChart() {
 
         <section className={styles['filter-section']}>
           <div className={styles['filter-row']}>
-            <div className={styles['filter-group']}>
+            <div className={clsx(styles['filter-group'], styles['filter-group-date'])}>
               <label className={styles['filter-label']} htmlFor="startDate">
                 Start Date
               </label>
-              <input
-                id="startDate"
-                type="date"
-                className={styles['filter-input']}
-                value={startDate}
-                max={TODAY}
-                onChange={e => setStartDate(e.target.value)}
+              <DatePicker
+                selected={dateRange?.start ? new Date(dateRange.start) : null}
+                onChange={date => {
+                  const newEnd =
+                    dateRange.end && date && new Date(date) > new Date(dateRange.end)
+                      ? null
+                      : dateRange.end;
+                  setDateRange({
+                    ...dateRange,
+                    start: date,
+                    end: newEnd,
+                  });
+                }}
+                selectsStart
+                startDate={dateRange.start}
+                endDate={dateRange.end}
+                dateFormat="yyyy-MM-dd"
+                isClearable={dateRange.start}
+                placeholderText="Start date"
+                className={styles['experience-date-input']}
+                calendarClassName={clsx(
+                  'experience-datepicker',
+                  darkMode ? 'experience-datepicker-dark' : 'experience-datepicker-light',
+                )}
               />
             </div>
 
-            <div className={styles['filter-group']}>
+            <div className={clsx(styles['filter-group'], styles['filter-group-date'])}>
               <label className={styles['filter-label']} htmlFor="endDate">
                 End Date
               </label>
-              <input
-                id="endDate"
-                type="date"
-                className={styles['filter-input']}
-                value={endDate}
-                max={TODAY}
-                onChange={e => setEndDate(e.target.value)}
+              <DatePicker
+                selected={dateRange?.end ? new Date(dateRange.end) : null}
+                onChange={date => {
+                  setDateRange({
+                    ...dateRange,
+                    end: date,
+                  });
+                }}
+                selectsEnd
+                startDate={dateRange.start}
+                endDate={dateRange.end}
+                dateFormat="yyyy-MM-dd"
+                minDate={dateRange?.start ? new Date(dateRange.start) : undefined}
+                isClearable={dateRange.end}
+                placeholderText="End date"
+                className={styles['experience-date-input']}
+                calendarClassName={clsx(
+                  'experience-datepicker',
+                  darkMode ? 'experience-datepicker-dark' : 'experience-datepicker-light',
+                )}
               />
             </div>
 
-            <div className={styles['filter-group']}>
-              <fieldset className={styles['checkbox-fieldset']}>
-                <legend className={styles['filter-label']}>Roles</legend>
-                <div className={styles['checkbox-list']}>
-                  {[
-                    'Frontend Developer',
-                    'DevOps Engineer',
-                    'Project Manager',
-                    'Junior Developer',
-                    'Full Stack Developer',
-                  ].map(role => (
-                    <label key={role} className={styles['checkbox-item']}>
-                      <input
-                        type="checkbox"
-                        value={role}
-                        checked={selectedRoles.includes(role)}
-                        onChange={e => {
-                          setSelectedRoles(prev =>
-                            e.target.checked ? [...prev, role] : prev.filter(r => r !== role),
-                          );
-                        }}
-                      />
-                      {role}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
+            <div className={clsx(styles['filter-group'], styles['filter-group-role'])}>
+              <label className={styles['filter-label']} htmlFor="roles">
+                Roles
+              </label>
+              <Select
+                isMulti
+                options={AVAILABLE_ROLES}
+                value={selectedRoles}
+                onChange={handleRoleChange}
+                placeholder="Select roles"
+                className={styles['experience-role-multi-select']}
+                classNamePrefix="experience-role-multi-select"
+                isDisabled={AVAILABLE_ROLES.length === 0}
+                closeMenuOnSelect={false}
+                hideSelectedOptions={false}
+                menuPlacement="auto"
+                components={{
+                  MultiValue: SelectedRoleValue,
+                  MultiValueRemove: SelectedRoleRemove,
+                }}
+              />
             </div>
           </div>
 
           <div className={styles['filter-actions']}>
-            <button className={`${styles.btn} ${styles.primary}`} onClick={applyFilters}>
+            <button
+              className={clsx(styles['filter-button'], styles['filter-button-apply'])}
+              onClick={applyFilters}
+            >
               Apply
             </button>
             <button
-              className={`${styles.btn} ${styles.ghost} ${
-                hasFilters ? styles['ghost-active'] : ''
-              }`}
+              className={clsx(styles['filter-button'], styles['filter-button-clear-all'])}
               onClick={resetFilters}
               disabled={!hasFilters}
             >
-              Reset
+              Clear all
             </button>
           </div>
         </section>
@@ -368,84 +354,47 @@ export default function ExperienceDonutChart() {
             {!loading && !error && chartData && total > 0 && (
               <>
                 <div className={styles['chart-canvas']}>
-                  <ResponsiveContainer width="100%" aspect={1.2}>
-                    <PieChart margin={pieMargin}>
+                  <ResponsiveContainer width="100%" aspect={1}>
+                    <PieChart>
                       <Pie
-                        data={visibleChartData}
+                        data={chartData}
                         cx="50%"
                         cy="50%"
                         dataKey="value"
-                        innerRadius="42%"
-                        outerRadius="78%"
+                        innerRadius="55%"
+                        outerRadius="82%"
                         stroke={darkMode ? '#1c2441' : '#fff'}
                         strokeWidth={3}
-                        labelLine={false}
-                        label={renderOutsideLabel}
-                        isAnimationActive={!PREFERS_REDUCED_MOTION}
-                        onAnimationEnd={() => setAnimationDone(true)}
-                        activeIndex={hoveredIndex}
-                        activeShape={renderActiveShape}
-                        onMouseEnter={(_, index) => setHoveredIndex(index)}
-                        onMouseLeave={() => setHoveredIndex(null)}
+                        onMouseEnter={(_, i) => setActiveIndex(i)}
+                        onMouseLeave={() => setActiveIndex(null)}
                       >
-                        {visibleChartData.map(d => (
-                          <Cell key={d.name} fill={d.color} className={styles['pie-cell']} />
+                        {chartData.map((d, i) => (
+                          <Cell
+                            key={d.name}
+                            fill={d.color}
+                            className={styles['pie-cell']}
+                            opacity={activeIndex == null || activeIndex === i ? 1 : 0.45}
+                          />
                         ))}
                       </Pie>
-                      {/* Inside counts rendered as a second label pass — animation disabled to prevent double-sweep */}
-                      <Pie
-                        data={visibleChartData}
-                        cx="50%"
-                        cy="50%"
-                        dataKey="value"
-                        innerRadius="42%"
-                        outerRadius="78%"
-                        stroke="none"
-                        strokeWidth={0}
-                        labelLine={false}
-                        label={renderInsideCount}
-                        isAnimationActive={false}
-                        style={{ pointerEvents: 'none' }}
+                      <Tooltip content={<CustomTooltip total={total} />} />
+                      <text
+                        x="50%"
+                        y="50%"
+                        dominantBaseline="middle"
+                        textAnchor="middle"
+                        style={{
+                          fontWeight: 800,
+                          fontSize: '1rem',
+                          fill: darkMode ? '#f8fafc' : '#0f172a',
+                        }}
                       >
-                        {visibleChartData.map(d => (
-                          <Cell key={d.name} fill="transparent" />
-                        ))}
-                      </Pie>
-                      {animationDone && (
-                        <text
-                          x="50%"
-                          y="50%"
-                          dominantBaseline="middle"
-                          textAnchor="middle"
-                          style={{
-                            fontWeight: 800,
-                            fontSize: '1.25rem',
-                            fill: darkMode ? '#f8fafc' : '#0f172a',
-                          }}
-                        >
-                          {total.toLocaleString()}
-                        </text>
-                      )}
+                        {total.toLocaleString()}
+                      </text>
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                {isMobile && (
-                  <div className={styles['mobile-legend']}>
-                    {visibleChartData.map(d => {
-                      const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
-                      return (
-                        <div key={d.name} className={styles['mobile-legend-item']}>
-                          <span
-                            className={styles['mobile-legend-dot']}
-                            style={{ backgroundColor: d.color }}
-                          />
-                          <span className={styles['mobile-legend-name']}>{d.name}</span>
-                          <span className={styles['mobile-legend-pct']}>{pct}%</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                <DetailsPanel chartData={chartData} total={total} activeIndex={activeIndex} />
               </>
             )}
 

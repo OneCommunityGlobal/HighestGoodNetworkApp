@@ -82,4 +82,34 @@ describe('BadgeDevelopment Component', () => {
     fireEvent.click(screen.getByText('New Badge'));
     expect(screen.getByText('Create New Badge'));
   });
+
+  it('disables Create New Badge when user lacks createBadges permission', () => {
+    const store = mockStore({
+      allProjects: { projects: [] },
+      auth: {
+        isAuthenticated: true,
+        user: {
+          userid: '123',
+          role: 'Volunteer',
+          permissions: {
+            frontPermissions: ['seeBadges', 'updateBadges'],
+            backPermissions: [],
+          },
+        },
+      },
+      userProfile: { email: 'test@example.com' },
+      taskEditSuggestionCount: 0,
+      role: { roles: [{ roleName: 'Volunteer', permissions: ['seeBadges', 'updateBadges'] }] },
+      theme: themeMock,
+      badge: { message: '', alertVisible: false, color: '' },
+    });
+
+    render(
+      <Provider store={store}>
+        <BadgeDevelopment />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Create New Badge')).toBeDisabled();
+  });
 });

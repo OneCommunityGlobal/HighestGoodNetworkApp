@@ -6,16 +6,17 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '~/utils/permissions';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 import styles from './TeamTableSearchPanel.module.css';
+import { permissions } from '../../utils/constants';
 /**
  * The search panel stateless component for Teams grid
  */
 export function TeamTableSearchPanelBase(props) {
   const { darkMode } = props;
 
-  const [canPostTeam, setCanPostTeam] = useState(props.hasPermission('postTeam'));
+  const [canPostTeam, setCanPostTeam] = useState(props.hasPermission(permissions.postTeam));
 
   // prettier-ignore
-  if (canPostTeam === false) setTimeout(() => setCanPostTeam(props.hasPermission('postTeam')), 1000);
+  if (canPostTeam === false) setTimeout(() => setCanPostTeam(props.hasPermission(permissions.postTeam)), 1000);
 
   const inputRef = useRef(null);
 
@@ -26,16 +27,20 @@ export function TeamTableSearchPanelBase(props) {
   }, []);
 
   return (
-    <div className="input-group" id="new_team">
+    <div className={`input-group ${styles.searchRow}`} id="new_team">
       <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
-        <span className={`input-group-text ${darkMode ? styles.searchLabelDark : ''}`}>
+        <span
+          className={`input-group-text ${styles.compactControl} ${
+            darkMode ? styles.searchLabelDark : ''
+          }`}
+        >
           {SEARCH}
         </span>
       </div>
       <input
         ref={inputRef}
         type="text"
-        className={`form-control ${darkMode ? styles.searchInputDark : ''}`}
+        className={`form-control ${styles.searchInput} ${darkMode ? styles.searchInputDark : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
@@ -46,7 +51,7 @@ export function TeamTableSearchPanelBase(props) {
       {canPostTeam && (
         <button
           type="button"
-          className="btn btn-info ml-2"
+          className={`btn btn-info ml-2 ${styles.compactControl}`}
           onClick={() => {
             props.onCreateNewTeamClick();
           }}
