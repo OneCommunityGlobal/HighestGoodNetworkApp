@@ -97,7 +97,14 @@ export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
     });
 }
 
-export const updateEquipment = (equipmentId, updateData, options = {}) => async (dispatch, getState) => {
+// Multipart fields are strings; preserve boolean choices using the API's yes/no values.
+const multipartSelection = value => {
+  if (value === true) return 'yes';
+  if (value === false) return 'no';
+  return value;
+};
+
+export const updateEquipment = (equipmentId, updateData, imageFile = null, options = {}) => async (dispatch, getState) => {
   const url = `${ENDPOINTS.BM_EQUIPMENT_STATUS_UPDATE(equipmentId)}`;
 
   try {
@@ -126,16 +133,35 @@ export const updateEquipment = (equipmentId, updateData, options = {}) => async 
 
     const statusUpdateData = {
       condition: updateData.condition,
-      lastUsedBy: updateData.lastUsedBy,
-      lastUsedFor: updateData.lastUsedFor,
-      replacementRequired: updateData.replacementRequired,
+      lastUsedBy: updateData.lastUsedBy || '',
+      lastUsedFor: updateData.lastUsedFor || '',
+      replacementRequired: updateData.replacementRequired ?? '',
       description: updateData.description || '',
       notes: updateData.notes || '',
       createdBy: currentUserId,
       sendNote: updateData.sendNote,
     };
 
-    const res = await axios.put(url, statusUpdateData);
+    let res;
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append('condition', statusUpdateData.condition);
+      formData.append('createdBy', statusUpdateData.createdBy);
+      formData.append('lastUsedBy', statusUpdateData.lastUsedBy);
+      formData.append('lastUsedFor', statusUpdateData.lastUsedFor);
+      formData.append('replacementRequired', multipartSelection(statusUpdateData.replacementRequired));
+      formData.append('description', statusUpdateData.description);
+      formData.append('notes', statusUpdateData.notes);
+      const sendNote = statusUpdateData.sendNote;
+      if (sendNote !== undefined) {
+        formData.append('sendNote', multipartSelection(sendNote));
+      }
+      formData.append('image', imageFile);
+      // Do NOT set Content-Type — axios sets multipart/form-data with the correct boundary
+      res = await axios.put(url, formData);
+    } else {
+      res = await axios.put(url, statusUpdateData);
+    }
 
     if (options.publish !== false) dispatch(setEquipment(res.data));
     toast.success('Equipment status updated successfully!');
@@ -143,7 +169,6 @@ export const updateEquipment = (equipmentId, updateData, options = {}) => async 
 
     return res.data;
   } catch (err) {
-
     let errorMessage = 'Failed to update equipment status.';
 
     if (err.response) {

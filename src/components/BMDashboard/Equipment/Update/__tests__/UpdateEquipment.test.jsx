@@ -16,22 +16,34 @@ vi.mock('react-toastify', () => ({ toast: { success: vi.fn(), error: vi.fn() } }
 vi.mock('~/components/BMDashboard/shared/CheckTypesModal', () => ({ default: () => null }));
 vi.mock('~/components/common/Image/Image', () => ({ default: () => null }));
 vi.mock('~/components/common/FilePreview/FilePreview', () => ({
-  default: ({ darkMode }) => (
-    <span data-testid="local-preview" data-dark-mode={String(darkMode)}>
-      Local preview
-    </span>
+  default: ({ darkMode, file, index, onRemove }) => (
+    <div>
+      <span data-testid="local-preview" data-dark-mode={String(darkMode)}>
+        Local preview
+      </span>
+      <span>{file.name}</span>
+      <button type="button" onClick={() => onRemove(index)}>
+        Remove image
+      </button>
+    </div>
   ),
 }));
 vi.mock('~/components/common/DragAndDrop/DragAndDrop', () => ({
   default: ({ updateUploadedFiles }) => (
-    <button
-      type="button"
-      onClick={() => updateUploadedFiles([new File(['x'], 'photo.png', { type: 'image/png' })])}
-    >
-      Preview image
-    </button>
+    <>
+      <input
+        type="file"
+        name="file-upload-input"
+        aria-label="Choose test image"
+        onChange={event => updateUploadedFiles(Array.from(event.target.files))}
+      />
+      <button type="button" onClick={() => updateUploadedFiles(selectedImages)}>
+        Preview image
+      </button>
+    </>
   ),
 }));
+let selectedImages;
 const id = '0123456789abcdef01234567';
 const otherId = 'abcdef0123456789abcdef01';
 const record = {
@@ -95,6 +107,7 @@ function deferred() {
 }
 beforeEach(() => {
   vi.clearAllMocks();
+  selectedImages = [new File(['x'], 'photo.png', { type: 'image/png' })];
   axios.get.mockResolvedValue({ data: record });
   axios.put.mockResolvedValue({ data: record });
   URL.createObjectURL = vi.fn(() => 'blob:preview');
@@ -102,6 +115,175 @@ beforeEach(() => {
 });
 
 describe('Equipment status form', () => {
+  it('keeps invalid-image feedback when the native file-input change bubbles to the form', async () => {
+    setup();
+    await loaded();
+    const image = new File(['bad'], 'wrong.gif', { type: 'image/gif' });
+    fireEvent.change(screen.getByLabelText('Choose test image'), { target: { files: [image] } });
+    expect(screen.getByText('Invalid image. Use PNG, JPG, or JPEG under 5MB.')).toBeInTheDocument();
+    expect(screen.queryByTestId('local-preview')).not.toBeInTheDocument();
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.put).not.toHaveBeenCalled();
+  });
+
+  it('sends one image as multipart with notes, confirmation gating, and preserved lifecycle options', async () => {
+    setup();
+    await loaded();
+    fill({ confirm: false });
+    fireEvent.click(screen.getByRole('button', { name: 'Preview image' }));
+    submit();
+    expect(axios.put).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('checkbox'));
+    fireEvent.click(
+      within(screen.getByRole('radiogroup', { name: /Require a replacement/ })).getByLabelText(
+        'No',
+      ),
+    );
+    fireEvent.click(
+      within(screen.getByRole('radiogroup', { name: /send a note/ })).getByLabelText('Yes'),
+    );
+    fireEvent.change(screen.getByLabelText('Update note *'), {
+      target: { value: 'Image attached' },
+    });
+    submit();
+    await screen.findByText(/Image saved/);
+    const [url, data, config] = axios.put.mock.calls[0];
+    expect(url).toBe(ENDPOINTS.BM_EQUIPMENT_STATUS_UPDATE(id));
+    expect(data).toBeInstanceOf(FormData);
+    expect(data.getAll('image')).toEqual([selectedImages[0]]);
+    expect(data.get('condition')).toBe('Good');
+    expect(data.get('replacementRequired')).toBe('no');
+    expect(data.get('sendNote')).toBe('yes');
+    expect(data.get('notes')).toBe('Image attached');
+    expect(data.get('lastUsedBy')).toBe('Alex');
+    expect(data.get('lastUsedFor')).toBe('Site preparation');
+    expect(data.has('confirmed')).toBe(false);
+    expect(data.has('date')).toBe(false);
+    expect(config).toBeUndefined();
+    expect(screen.queryByTestId('local-preview')).not.toBeInTheDocument();
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:preview');
+    expect(axios.get).toHaveBeenCalledTimes(1);
+  });
+  it('keeps only the first valid image and revokes a replaced preview without fetching metadata', async () => {
+    setup();
+    await loaded();
+    selectedImages = [
+      new File(['x'], 'first.png', { type: 'image/png' }),
+      new File(['y'], 'second.jpg', { type: 'image/jpeg' }),
+    ];
+    fireEvent.click(screen.getByRole('button', { name: 'Preview image' }));
+    expect(screen.getAllByTestId('local-preview')).toHaveLength(1);
+    expect(screen.getByText('first.png')).toBeInTheDocument();
+    expect(screen.queryByText('second.jpg')).not.toBeInTheDocument();
+    selectedImages = [new File(['z'], 'replacement.jpg', { type: 'image/jpeg' })];
+    fireEvent.click(screen.getByRole('button', { name: 'Preview image' }));
+    expect(screen.queryByText('first.png')).not.toBeInTheDocument();
+    expect(screen.getByText('replacement.jpg')).toBeInTheDocument();
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:preview');
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    fill();
+    submit();
+    await screen.findByText(/Image saved/);
+    expect(axios.put.mock.calls[0][1].getAll('image')).toEqual([selectedImages[0]]);
+  });
+  it.each([
+    ['image/gif', 'animated.gif', 1],
+    ['image/webp', 'photo.webp', 1],
+    ['text/plain', 'fake.png', 1],
+    ['image/png', 'large.png', 5 * 1024 * 1024 + 1],
+  ])('rejects unsupported or oversized selection (%s, %s)', async (type, name, size) => {
+    setup();
+    await loaded();
+    selectedImages = [new File([new Uint8Array(size)], name, { type })];
+    fireEvent.click(screen.getByRole('button', { name: 'Preview image' }));
+    expect(screen.getByText('Invalid image. Use PNG, JPG, or JPEG under 5MB.')).toBeInTheDocument();
+    expect(screen.queryByTestId('local-preview')).not.toBeInTheDocument();
+    expect(axios.put).not.toHaveBeenCalled();
+  });
+  it('accepts JPEG at the 5MB limit and sends it through the third action argument', async () => {
+    setup();
+    await loaded();
+    fill();
+    selectedImages = [
+      new File([new Uint8Array(5 * 1024 * 1024)], 'limit.jpg', { type: 'image/jpeg' }),
+    ];
+    fireEvent.click(screen.getByRole('button', { name: 'Preview image' }));
+    submit();
+    await screen.findByText(/Image saved/);
+    expect(axios.put.mock.calls[0][1].get('image')).toBe(selectedImages[0]);
+  });
+  it('preserves the selected image and form input on upload failure and retries with the same image', async () => {
+    axios.put.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Image save failed' } },
+    });
+    setup();
+    await loaded();
+    fill();
+    fireEvent.click(screen.getByRole('button', { name: 'Preview image' }));
+    submit();
+    await screen.findByText(/Image save failed.*not saved/);
+    expect(screen.queryByText(/Image saved/)).not.toBeInTheDocument();
+    expect(screen.getByTestId('local-preview')).toBeInTheDocument();
+    expect(screen.getByLabelText('Name of the last equipment user (required)')).toHaveValue('Alex');
+    expect(screen.getByRole('checkbox')).toBeChecked();
+    expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+    submit();
+    await screen.findByText(/Image saved/);
+    expect(axios.put.mock.calls[1][1].get('image')).toBe(selectedImages[0]);
+    expect(axios.get).toHaveBeenCalledTimes(1);
+  });
+  it('removes the selected image and then submits JSON without an image', async () => {
+    setup();
+    await loaded();
+    fill();
+    fireEvent.click(screen.getByRole('button', { name: 'Preview image' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Remove image' }));
+    submit();
+    await screen.findByText(/The update date was recorded by the server/);
+    expect(axios.put.mock.calls[0][1]).not.toBeInstanceOf(FormData);
+    expect(axios.put.mock.calls[0][1]).not.toHaveProperty('image');
+    expect(axios.get).toHaveBeenCalledTimes(1);
+  });
+  it('revalidates the selected image at submission time', async () => {
+    setup();
+    await loaded();
+    fill();
+    fireEvent.click(screen.getByRole('button', { name: 'Preview image' }));
+    Object.defineProperty(selectedImages[0], 'size', { value: 5 * 1024 * 1024 + 1 });
+    submit();
+    expect(screen.getByText('Invalid image. Use PNG, JPG, or JPEG under 5MB.')).toBeInTheDocument();
+    expect(axios.put).not.toHaveBeenCalled();
+  });
+  it.each([
+    [false, true, 'no', 'yes'],
+    [true, false, 'yes', 'no'],
+  ])(
+    'serializes boolean API selections compatibly for multipart (%s, %s)',
+    async (replacementRequired, sendNote, expectedReplacement, expectedNote) => {
+      const store = storeFactory({ auth: { user: { userid: 'user-123' } } });
+      await store.dispatch(
+        updateEquipment(
+          id,
+          { condition: 'Good', replacementRequired, sendNote, notes: 'Note' },
+          selectedImages[0],
+          { publish: false, refresh: false },
+        ),
+      );
+      const data = axios.put.mock.calls[0][1];
+      expect(data.get('replacementRequired')).toBe(expectedReplacement);
+      expect(data.get('sendNote')).toBe(expectedNote);
+      expect(axios.get).not.toHaveBeenCalled();
+      expect(store.getActions()).toEqual([]);
+    },
+  );
+  it('preserves the default Redux publish and refresh when called with an image only', async () => {
+    const store = storeFactory({ auth: { user: { userid: 'user-123' } } });
+    await store.dispatch(updateEquipment(id, { condition: 'Good' }, selectedImages[0]));
+    expect(axios.put.mock.calls[0][1].get('image')).toBe(selectedImages[0]);
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(store.getActions().length).toBeGreaterThan(0);
+  });
+
   it.each([
     [400, { error: 'Invalid equipment ID.' }],
     [401, { error: 'Invalid token' }],
@@ -261,16 +443,15 @@ describe('Equipment status form', () => {
     expect(yes).toBeChecked();
     await userEvent.tab();
     expect(no).not.toHaveFocus();
-    expect(screen.getByRole('button', { name: 'Preview image' })).toHaveFocus();
+    expect(screen.getByLabelText('Choose test image')).toHaveFocus();
   });
   it('preserves boolean false in the status action payload', async () => {
     const store = storeFactory({ auth: { user: { userid: 'user-123' } } });
     await store.dispatch(
-      updateEquipment(
-        id,
-        { condition: 'Good', replacementRequired: false },
-        { publish: false, refresh: false },
-      ),
+      updateEquipment(id, { condition: 'Good', replacementRequired: false }, null, {
+        publish: false,
+        refresh: false,
+      }),
     );
     expect(axios.put).toHaveBeenCalledWith(
       ENDPOINTS.BM_EQUIPMENT_STATUS_UPDATE(id),

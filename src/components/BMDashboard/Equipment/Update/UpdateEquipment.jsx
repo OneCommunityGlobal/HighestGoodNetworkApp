@@ -30,6 +30,32 @@ import FilePreview from '~/components/common/FilePreview/FilePreview'; // Import
 import styles from './UpdateEquipment.module.css';
 import styles1 from '../../BMDashboard.module.css';
 
+const ALLOWED_MIME_TYPES = new Set(['image/png', 'image/jpeg']);
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const INVALID_IMAGE_MSG = 'Invalid image. Use PNG, JPG, or JPEG under 5MB.';
+
+function isValidImage(file) {
+  return (
+    file &&
+    ALLOWED_MIME_TYPES.has(file.type) &&
+    Number.isFinite(file.size) &&
+    file.size >= 0 &&
+    file.size <= MAX_IMAGE_SIZE_BYTES
+  );
+}
+
+function buildErrorMessage(error, hasImage) {
+  const message = error.response?.data?.error || error.response?.data?.message;
+  const baseError =
+    (typeof message === 'string' && message.trim() ? message : null) ||
+    (error.request ? 'No response from server. Please check your connection.' : null) ||
+    error.message ||
+    'Failed to update equipment. Please try again.';
+  return hasImage
+    ? `${baseError} Note: The image was selected and previewed but not saved to database.`
+    : baseError;
+}
+
 function displayText(value, fallback = 'Not provided') {
   return typeof value === 'string' && value.trim() ? value : fallback;
 }
@@ -204,32 +230,34 @@ function EquipmentStatusForm({ equipmentId }) {
   const handleFileUpload = useCallback(
     files => {
       if (!metadataReady || !hasEquipmentName || submittingRef.current) return;
-      const validFiles = files.filter(file => {
-        const fileType = file.type || '';
-        const fileName = file.name || '';
-        const isValidType = fileType.startsWith('image/');
-        const isValidExtension = fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-        return isValidType || isValidExtension;
-      });
+      setSubmitSuccess('');
+      setIsUpdated(false);
+      const validFiles = files.filter(isValidImage);
 
       if (validFiles.length === 0) {
+        setSubmitError(INVALID_IMAGE_MSG);
         return;
       }
 
-      const newPreviews = validFiles.map(file => ({
-        name: file.name || 'Image',
-        preview: URL.createObjectURL(file),
-        size: file.size || 0,
-        type: file.type || 'image/*',
-        file: file,
+      const selectedFile = validFiles[0];
+
+      cleanupFilePreviews(uploadedFilesPreview);
+
+      const newPreview = {
+        name: selectedFile.name || 'Image',
+        preview: URL.createObjectURL(selectedFile),
+        size: selectedFile.size || 0,
+        type: selectedFile.type || 'image/*',
+        file: selectedFile,
         status: 'uploaded',
         uploadedAt: new Date().toISOString(),
-      }));
+      };
 
-      setUploadedFiles(prev => [...prev, ...validFiles]);
-      setUploadedFilesPreview(prev => [...prev, ...newPreviews]);
+      setUploadedFiles([selectedFile]);
+      setUploadedFilesPreview([newPreview]);
+      setSubmitError('');
     },
-    [metadataReady, hasEquipmentName],
+    [metadataReady, hasEquipmentName, uploadedFilesPreview, cleanupFilePreviews],
   );
 
   const handleSubmit = useCallback(
@@ -267,6 +295,13 @@ function EquipmentStatusForm({ equipmentId }) {
         return;
       }
 
+      const imageFile = uploadedFiles.length > 0 ? uploadedFiles[0] : null;
+
+      if (imageFile && !isValidImage(imageFile)) {
+        setSubmitError(INVALID_IMAGE_MSG);
+        return;
+      }
+
       submittingRef.current = true;
       setIsSubmitting(true);
       setSubmitError('');
@@ -284,7 +319,7 @@ function EquipmentStatusForm({ equipmentId }) {
         };
 
         const updatedEquipment = await dispatch(
-          updateEquipment(equipmentId, updateData, { refresh: false, publish: false }),
+          updateEquipment(equipmentId, updateData, imageFile, { refresh: false, publish: false }),
         );
         if (!activeRef.current) return;
         // Use a complete returned record, otherwise perform one guarded metadata refresh.
@@ -299,25 +334,20 @@ function EquipmentStatusForm({ equipmentId }) {
         }
         setIsUpdated(true);
         setSubmitSuccess(
-          'Equipment status updated successfully. The update date was recorded by the server.',
+          `Equipment status updated successfully. The update date was recorded by the server.${
+            imageFile ? ' Image saved.' : ''
+          }`,
         );
         setConfirmed(false);
+        cleanupFilePreviews(uploadedFilesPreview);
+        setUploadedFiles([]);
+        setUploadedFilesPreview([]);
       } catch (error) {
         if (!activeRef.current) return;
 
-        let errorMessage = 'Failed to update equipment. Please try again.';
-
-        if (error.message?.includes('User not authenticated')) {
-          errorMessage = 'Authentication error. Please check if you are logged in.';
-        } else if (
-          typeof error.response?.data?.error === 'string' &&
-          error.response.data.error.includes('Invalid user ID format')
-        ) {
-          errorMessage = 'User ID format error. Please contact support.';
-        }
+        const errorMessage = buildErrorMessage(error, uploadedFiles.length > 0);
 
         if (uploadedFiles.length > 0) {
-          errorMessage += ' Note: Images were selected and previewed but not saved to database.';
           setUploadedFilesPreview(prev =>
             prev.map(file => ({
               ...file,
@@ -327,8 +357,6 @@ function EquipmentStatusForm({ equipmentId }) {
           );
         }
 
-        const serverMessage = error.response?.data?.error || error.response?.data?.message;
-        if (typeof serverMessage === 'string' && serverMessage.trim()) errorMessage = serverMessage;
         setSubmitError(errorMessage);
       } finally {
         submittingRef.current = false;
@@ -599,6 +627,8 @@ function EquipmentStatusForm({ equipmentId }) {
         onSubmit={handleSubmit}
         onChange={event => {
           const { name } = event.target;
+          // Upload validation owns its feedback; do not erase it as the file change bubbles.
+          if (name === 'file-upload-input') return;
           setErrors(previous => {
             const next = { ...previous };
             delete next[name];
@@ -847,12 +877,12 @@ function EquipmentStatusForm({ equipmentId }) {
 
           <FormGroup>
             <Label for="file-upload-input" style={formLabelStyle}>
-              Preview latest picture of this equipment. (optional)
+              Upload latest picture of this equipment. (optional)
               <small
                 className="text-muted ms-2"
                 style={{ color: darkMode ? '#b0b7c0' : '#6c757d' }}
               >
-                Accepted: PNG, JPG, JPEG, GIF, WEBP
+                Accepted: PNG, JPG, JPEG (one image, max 5MB)
               </small>
             </Label>
 
@@ -876,7 +906,7 @@ function EquipmentStatusForm({ equipmentId }) {
 
             {hasFilePreviews && (
               <div className="mt-3">
-                <Label style={formLabelStyle}>Uploaded Images Preview:</Label>
+                <Label style={formLabelStyle}>Selected Image Preview:</Label>
                 <div className="d-flex flex-wrap gap-3 mt-2">
                   {uploadedFilesPreview.map((file, index) => (
                     <FilePreview
@@ -909,8 +939,8 @@ function EquipmentStatusForm({ equipmentId }) {
                     <small>
                       <i className="fas fa-info-circle me-1" />
                       {hasNotSavedFiles
-                        ? 'Images are shown for preview purposes only and are not saved to the database.'
-                        : 'Images are previewed locally only and are not saved with this status update.'}
+                        ? 'The selected image was not saved. Submit again to retry.'
+                        : 'The image will be submitted and saved with this status update.'}
                     </small>
                   </Alert>
                 </div>
