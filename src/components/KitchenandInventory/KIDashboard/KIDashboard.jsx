@@ -5,7 +5,7 @@ import styles from './KIDashboard.module.css';
 // They can be replaced with API data when the backend is ready.
 const TOTAL_INGREDIENTS = 247;
 const ONSITE_GROWN = 89;
-const UPCOMING_MEALS = 28;
+const UPCOMING_MEALS = 25;
 const PENDING_ORDERS = 3;
 const PENDING_ORDER_VALUE = 1247;
 
