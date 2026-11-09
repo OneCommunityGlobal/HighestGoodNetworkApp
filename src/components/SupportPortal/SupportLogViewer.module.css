@@ -83,6 +83,7 @@
 }
 
 .timelineContent {
+  min-width: 0;
   margin-left: 1.75rem;
   background-color: #fff;
   border-radius: 6px;
@@ -123,6 +124,21 @@
   margin: 0.3rem 0 0;
   font-size: 0.9rem;
   color: #555;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.metadataFields {
+  margin: 0.25rem 0;
+}
+
+.metadataFields dd {
+  margin: 0 0 0.5rem 0.75rem;
+}
+
+.metadataList {
+  margin: 0.25rem 0;
+  padding-left: 1rem;
 }
 
 /* ==== Empty ==== */
@@ -181,11 +197,6 @@
 .darkMode .timelineContent {
   background-color: #1e293b;
   border-color: #334155;
-}
-
-.darkMode .badge {
-  background-color: #334155;
-  color: #fff;
 }
 
 /* ==== Responsive ==== */

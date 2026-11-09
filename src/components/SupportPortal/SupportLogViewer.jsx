@@ -12,6 +12,43 @@ const formatEntryDate = timestamp => {
   return Number.isNaN(date.getTime()) ? 'Date unavailable' : date.toLocaleString();
 };
 
+const isEmptyMetadata = value => {
+  if (value == null) return true;
+  if (typeof value === 'string') return !value.trim();
+  if (typeof value === 'object') return Object.keys(value).length === 0;
+  return false;
+};
+
+const renderMetadata = (value, depth = 0) => {
+  if (value == null) return 'Not provided';
+  if (typeof value === 'string') return value.trim() ? value : 'Empty text';
+  if (typeof value !== 'object') return String(value);
+  if (isEmptyMetadata(value)) return Array.isArray(value) ? 'Empty list' : 'Empty object';
+  // Bound recursion for unusually deep payloads, explicitly marking omitted details.
+  if (depth >= 8) return 'Further details omitted (nesting limit reached).';
+  if (Array.isArray(value)) {
+    return (
+      <ol className={styles.metadataList}>
+        {value.map((item, index) => (
+          // Array positions preserve ordering; metadata is read-only.
+          // eslint-disable-next-line react/no-array-index-key
+          <li key={index}>{renderMetadata(item, depth + 1)}</li>
+        ))}
+      </ol>
+    );
+  }
+  return (
+    <dl className={styles.metadataFields}>
+      {Object.entries(value).map(([key, item]) => (
+        <React.Fragment key={key}>
+          <dt>{key}</dt>
+          <dd>{renderMetadata(item, depth + 1)}</dd>
+        </React.Fragment>
+      ))}
+    </dl>
+  );
+};
+
 export default function SupportLogViewer({ match }) {
   // Keep the log viewer in sync with the shared HGN theme preference.
   const darkMode = useSelector(state => state.theme?.darkMode || false);
@@ -68,12 +105,7 @@ export default function SupportLogViewer({ match }) {
     };
 
     if (studentId) {
-      Promise.all([fetchProfile(), fetchLog()]).catch(() => {
-        if (active) {
-          setError('Unable to load daily log. Please try again later.');
-          setIsLoading(false);
-        }
-      });
+      Promise.all([fetchProfile(), fetchLog()]);
     }
     return () => {
       active = false;
@@ -103,13 +135,11 @@ export default function SupportLogViewer({ match }) {
                 <span className={styles.entryDate}>{formatEntryDate(entry.created_at)}</span>
               </div>
               <p className={styles.entryText}>{entry.action_type}</p>
-              {entry.metadata != null && (
-                <p className={styles.supportNotes}>
+              {!isEmptyMetadata(entry.metadata) && (
+                <div className={styles.supportNotes}>
                   <strong>Details: </strong>
-                  {typeof entry.metadata === 'string'
-                    ? entry.metadata
-                    : JSON.stringify(entry.metadata)}
-                </p>
+                  {renderMetadata(entry.metadata)}
+                </div>
               )}
             </div>
           </div>
