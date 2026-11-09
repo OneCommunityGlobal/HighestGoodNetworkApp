@@ -105,7 +105,7 @@ export default function SupportLogViewer({ match }) {
     };
 
     if (studentId) {
-      Promise.all([fetchProfile(), fetchLog()]);
+      void Promise.all([fetchProfile(), fetchLog()]);
     }
     return () => {
       active = false;
