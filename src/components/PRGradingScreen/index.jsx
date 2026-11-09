@@ -82,6 +82,7 @@ const buildTeamData = (teamName, weekStart) => {
 
   return {
     teamName,
+    weekStart,
     dateRange: {
       start: start.toLocaleDateString('en-US', {
         timeZone: 'UTC',
@@ -110,7 +111,7 @@ const transformApiResponse = (flatArray, teamName, weekStart) => ({
     gradedPrs: (entry.gradedPrs ?? []).map(pr => ({
       id: uuidv4(),
       prNumbers: pr.prNumbers,
-      grade: pr.grade,
+      grade: pr.grade === 'No Correct Image' ? 'Cannot find image' : pr.grade,
     })),
   })),
 });
@@ -256,7 +257,7 @@ const PRGradingScreenContainer = () => {
             prsReviewed: r.gradedPrs.length,
             gradedPrs: r.gradedPrs.map(pr => ({
               prNumbers: pr.prNumbers,
-              grade: pr.grade,
+              grade: pr.grade === 'Cannot find image' ? 'No Correct Image' : pr.grade,
             })),
           })),
         };
