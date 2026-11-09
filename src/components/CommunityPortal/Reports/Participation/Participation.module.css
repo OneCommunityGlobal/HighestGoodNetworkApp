@@ -660,9 +660,9 @@
 }
 
 /* Use :global for data attributes and print styles */
-:global(html[data-exporting='true'][data-exporting='true']) .caseCards:global(.expanded),
-:global(html[data-exporting='true'][data-exporting='true']) .caseList:global(.expanded),
-:global(html[data-exporting='true'][data-exporting='true']) .trackingListContainer {
+:global(html[data-exporting='true']) .caseCards:global(.expanded),
+:global(html[data-exporting='true']) .caseList:global(.expanded),
+:global(html[data-exporting='true']) .trackingListContainer {
   max-height: none;
   overflow: visible;
   -webkit-overflow-scrolling: auto;
@@ -673,7 +673,7 @@
   transition: none;
 }
 
-:global(html[data-exporting='true'][data-exporting='true']) .participationLandingPageDark {
+:global(html[data-exporting='true']) .participationLandingPageDark {
   background-color: #1b2a41;
 }
 
@@ -690,6 +690,26 @@
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.5px;
+}
+
+.savePdfBtn {
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.savePdfBtn:hover {
+  background-color: #f1f5f9;
+}
+
+.savePdfBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .savePdfBtnDark {
@@ -721,6 +741,7 @@
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
 .mainTitle {
@@ -2300,5 +2321,65 @@
 @media (width <= 768px) {
   .navigationGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  :global(html),
+  :global(body) {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .participationLandingPage,
+  .participationLandingPageDark {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .savePdfBtn {
+    display: none !important;
+  }
+
+  .headerContent {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .headerTitle {
+    width: 100% !important;
+    margin-right: 0 !important;
+  }
+
+  .headerNavigation {
+    width: 100% !important;
+  }
+
+  .metricsSummary {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  .chartsRow {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .engagementCards {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .engagementCard {
+    min-width: 0 !important;
+    break-inside: avoid !important;
   }
 }

@@ -107,6 +107,7 @@
 
 .myCasesPageDark .viewSwitcher button:hover {
   background-color: #4a5f7a;
+  color: #fff;
 }
 
 .myCasesPageDark .viewSwitcher button.active {
@@ -829,6 +830,11 @@
   background-color: #004085;
 }
 
+.myCasesPageDark .createNew:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
 /* ---------- More button ---------- */
 .moreBtn {
   background-color: #0069d9;
@@ -844,6 +850,11 @@
 
 .moreBtn:hover {
   background-color: #004085;
+}
+
+.myCasesPageDark .moreBtn:hover {
+  background-color: #5a6b7d;
+  color: #fff;
 }
 
 .caseCard:hover {

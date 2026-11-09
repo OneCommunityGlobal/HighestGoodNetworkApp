@@ -97,7 +97,7 @@ function MyCases() {
   let visibleEvents = filteredEvents;
 
   if (!isExporting) {
-    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, 10);
+    visibleEvents = filteredEvents.slice(0, expanded ? 40 : 10);
   }
 
   const FALLBACK_IMG =
@@ -155,7 +155,7 @@ function MyCases() {
     return (
       <div
         className={`case-cards-global ${styles.caseCards} ${
-          expanded || isExporting ? styles.expanded : ''
+          expanded && !isExporting ? styles.expanded : ''
         }`}
       >
         {visibleEvents.map(event => (
@@ -226,7 +226,7 @@ function MyCases() {
     return (
       <ul
         className={`case-list-global ${styles.caseList} ${
-          expanded || isExporting ? styles.expanded : ''
+          expanded && !isExporting ? styles.expanded : ''
         }`}
       >
         {visibleEvents.map(event => (
@@ -444,7 +444,12 @@ function MyCases() {
             <button
               type="button"
               className={`more-btn-global ${styles.moreBtn}`}
-              onClick={() => setExpanded(!expanded)}
+              onClick={() => {
+                setExpanded(!expanded);
+                if (!expanded) {
+                  document.querySelector('.case-cards-global, .case-list-global')?.scrollTo(0, 0);
+                }
+              }}
             >
               {expanded ? 'Show Less' : 'More'}
             </button>
