@@ -274,9 +274,10 @@ div.lossTrackingChartContainer span.dateRangeError {
   min-width: 0;
 }
 
-.responsiveChartBox {
-  flex: 1;
-  min-height: 0;
+/* Fixed-height box for ResponsiveContainer (height="100%") */
+.chartArea {
+  height: var(--chart-height);
+  min-width: 0;
   width: 100%;
 }
 
@@ -294,7 +295,8 @@ div.lossTrackingChartContainer span.dateRangeError {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: var(--chart-height);
+  box-sizing: border-box;
   font-size: 1rem;
   font-weight: 600;
   color: var(--muted-text);
