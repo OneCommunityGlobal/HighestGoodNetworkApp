@@ -43,6 +43,7 @@ const filterStatusLabel = filter => {
 const statusBadgeClass = status => {
   if (status === 'Checked In') return styles.statusSuccess;
   if (status === 'Pending') return styles.statusPending;
+  if (status === 'Cancelled') return styles.statusCancelled;
   return styles.statusDanger;
 };
 

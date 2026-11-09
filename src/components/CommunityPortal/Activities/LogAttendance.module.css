@@ -560,6 +560,14 @@
   font-weight: 600;
 }
 
+.statusCancelled {
+  background: #e2e8f0;
+  color: #475569;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
 .placeholder {
   padding: 48px;
   border-radius: 24px;
@@ -612,11 +620,15 @@
 }
 
 .page.darkMode .statusBadge {
-  background: #166534;
   color: #fff;
 }
 
 .page.darkMode .avatarStack span {
+  background: #475569;
+  color: #fff;
+}
+
+.darkMode .statusCancelled {
   background: #475569;
   color: #fff;
 }
