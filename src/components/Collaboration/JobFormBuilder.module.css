@@ -127,13 +127,13 @@
 }
 
 .darkMode .retryButton {
-  background: #b5d9f5;
-  color: #153a50;
+  background: #245b86;
+  color: #fff;
   border-color: #b5d9f5;
 }
 
 .darkMode .retryButton:hover {
-  background: #d5eaff;
+  background: #2f6fa0;
 }
 
 .darkMode .retryButton:focus-visible {
