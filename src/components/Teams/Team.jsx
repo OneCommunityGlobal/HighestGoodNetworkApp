@@ -1,6 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import styles from './Team.module.css';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
@@ -15,23 +15,46 @@ import {
 } from './teamMembersCache';
 
 import { permissions } from '../../utils/constants';
-function computeCounts(members, loading, localMembers) {
-  const list = Array.isArray(members) ? members : [];
+// The getAllTeams aggregation does not include each member's isActive flag,
+// so the row resolves it from the user profiles the Teams page already loads.
+// The map is built once per profiles array and shared by every row.
+let cachedProfiles;
+let cachedStatusMap = new Map();
+function getUserStatusMap(profiles) {
+  if (profiles !== cachedProfiles) {
+    cachedProfiles = profiles;
+    cachedStatusMap = new Map();
+    if (Array.isArray(profiles)) {
+      for (const p of profiles) {
+        if (p?._id && typeof p.isActive === 'boolean')
+          cachedStatusMap.set(String(p._id), p.isActive);
+      }
+    }
+  }
+  return cachedStatusMap;
+}
 
-  if (loading && localMembers == null) return { total: '…', active: '…', inactive: '…' };
+export function computeCounts(members, statusMap = new Map()) {
+  // Skip entries with no user id: the aggregation emits an empty object for a
+  // team with no members and for members whose profile was deleted, and the
+  // members popup does not list those either.
+  const list = (Array.isArray(members) ? members : []).filter(m => m?._id);
   const tot = list.length;
   if (tot === 0) return { total: 0, active: 0, inactive: 0 };
 
   let act = 0;
   let sawFlag = false;
   for (const m of list) {
-    const flag = m?.isActive ?? m?.active;
+    const ownFlag = m.isActive ?? m.active;
+    const flag = typeof ownFlag === 'boolean' ? ownFlag : statusMap.get(String(m._id));
     if (typeof flag === 'boolean') {
       sawFlag = true;
       if (flag) act += 1;
     }
   }
+  // Statuses are unknown until the user profiles finish loading.
   if (!sawFlag) return { total: tot, active: '…', inactive: '…' };
+  // Same rule as the members popup: anyone not explicitly active is inactive.
   return { total: tot, active: act, inactive: tot - act };
 }
 import headerStyles from './TeamTableHeader.module.css';
@@ -66,6 +89,8 @@ export function Team({
   };
   const dispatch = useDispatch();
   const darkMode = useSelector(s => s.theme.darkMode);
+  const userProfiles = useSelector(s => s.allUserProfiles?.userProfiles);
+  const userStatusMap = useMemo(() => getUserStatusMap(userProfiles), [userProfiles]);
   const canDeleteTeam = props.hasPermission(permissions.deleteTeam);
   const canPutTeam = props.hasPermission(permissions.putTeam);
 
@@ -86,7 +111,7 @@ export function Team({
   const [localMembers, setLocalMembers] = useState(() => getCachedTeamMembers(teamIdKey) || null);
 
   const members = localMembers ?? props.team?.members ?? [];
-  const { total, active: activeCount, inactive } = computeCounts(members, false, localMembers);
+  const { total, active: activeCount, inactive } = computeCounts(members, userStatusMap);
 
   // Fire callback immediately (keeps tests & UX snappy), then refresh members.
   // We do NOT reset localMembers to null or set loading=true here — doing so
@@ -143,23 +168,38 @@ export function Team({
         className={styles['centered-cell']}
         style={{ textAlign: 'center', verticalAlign: 'middle' }}
       >
-        <button
-          style={darkMode ? {} : boxStyle}
-          type="button"
-          className="btn btn-outline-info"
-          onMouseEnter={() => {
-            if (!getCachedTeamMembers(teamIdKey)) {
-              fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
-                .then(setLocalMembers)
-                .catch(() => {});
+        <div className={styles.membersBtnWrapper}>
+          <button
+            style={darkMode ? {} : boxStyle}
+            type="button"
+            className="btn btn-outline-info"
+            onMouseEnter={() => {
+              if (!getCachedTeamMembers(teamIdKey)) {
+                fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
+                  .then(setLocalMembers)
+                  .catch(() => {});
+              }
+            }}
+            onClick={handleOpenMembers}
+            data-testid="members-btn"
+            aria-label={
+              typeof activeCount === 'number' ? `Users, ${activeCount} active members` : 'Users'
             }
-          }}
-          onClick={handleOpenMembers}
-          data-testid="members-btn"
-          aria-label="Users"
-        >
-          <i className="fa fa-users" />
-        </button>
+          >
+            <i className="fa fa-users" />
+          </button>
+          {/* Same green active-member bubble as the Projects page Members button. */}
+          {typeof activeCount === 'number' && (
+            <span
+              className={styles.activeMemberBadge}
+              data-testid="active-member-badge"
+              title="Active members"
+              aria-hidden="true"
+            >
+              {activeCount}
+            </span>
+          )}
+        </div>
       </td>
 
       {(canDeleteTeam || canPutTeam) && (
