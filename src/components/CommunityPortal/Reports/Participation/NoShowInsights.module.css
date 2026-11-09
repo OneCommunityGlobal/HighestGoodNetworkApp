@@ -1,0 +1,45 @@
+/* No-show rate insights: filter and tab icons */
+.headerWrap {
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.filtersRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.filterField {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.filterIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  color: #6b7280;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.filterIconDark {
+  color: #cbd5e1;
+}
+
+.filterField .selectWithIcon {
+  margin-left: 0 !important;
+  padding-left: 1.9rem !important;
+}
+
+.tabIcon {
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+}

@@ -2,13 +2,22 @@ import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Tooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faInfoCircle,
+  faCalendarCheck,
+  faClock,
+  faTag,
+  faLocationDot,
+} from '@fortawesome/free-solid-svg-icons';
 import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
+import iconStyles from './NoShowInsights.module.css';
 import { filterEventsByDate } from './FilterByDate';
+
+const TAB_ICONS = { 'Event type': faTag, Time: faClock, Location: faLocationDot };
 
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('This Week');
@@ -273,7 +282,11 @@ function NoShowInsights() {
         ref={insightsRef}
         className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}
       >
-        <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
+        <div
+          className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''} ${
+            iconStyles.headerWrap
+          }`}
+        >
           <div className={styles.insightsTitleWrapper}>
             <h3>No-show rate insights</h3>
             <span id="noShowInsightsTooltip" className={styles.infoIcon}>
@@ -292,21 +305,45 @@ function NoShowInsights() {
             </Tooltip>
           </div>
           <div
-            className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
+            className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''} ${
+              iconStyles.filtersRow
+            }`}
           >
-            <select value={scopeFilter} onChange={e => setScopeFilter(e.target.value)}>
-              <option value="My Event">My Event</option>
-              <option value="All Events">All Events</option>
-            </select>
-            <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
-              <option value="All Time">All Time</option>
-              <option value="Today">Today</option>
-              <option value="This Week">This Week</option>
-              <option value="This Month">This Month</option>
-              <option value="Last 3 Months">Last 3 Months</option>
-              <option value="Last 6 Months">Last 6 Months</option>
-              <option value="Last 12 Months">Last 12 Months</option>
-            </select>
+            <div className={iconStyles.filterField}>
+              <FontAwesomeIcon
+                icon={faCalendarCheck}
+                className={`${iconStyles.filterIcon} ${darkMode ? iconStyles.filterIconDark : ''}`}
+              />
+              <select
+                className={iconStyles.selectWithIcon}
+                aria-label="Filter by event scope"
+                value={scopeFilter}
+                onChange={e => setScopeFilter(e.target.value)}
+              >
+                <option value="My Event">My Event</option>
+                <option value="All Events">All Events</option>
+              </select>
+            </div>
+            <div className={iconStyles.filterField}>
+              <FontAwesomeIcon
+                icon={faClock}
+                className={`${iconStyles.filterIcon} ${darkMode ? iconStyles.filterIconDark : ''}`}
+              />
+              <select
+                className={iconStyles.selectWithIcon}
+                aria-label="Filter by time"
+                value={dateFilter}
+                onChange={e => setDateFilter(e.target.value)}
+              >
+                <option value="All Time">All Time</option>
+                <option value="Today">Today</option>
+                <option value="This Week">This Week</option>
+                <option value="This Month">This Month</option>
+                <option value="Last 3 Months">Last 3 Months</option>
+                <option value="Last 6 Months">Last 6 Months</option>
+                <option value="Last 12 Months">Last 12 Months</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -322,8 +359,10 @@ function NoShowInsights() {
                 ${
                   activeTab === tab ? (darkMode ? styles.activeTabDarkMode : styles.activeTab) : ''
                 }`}
+                aria-pressed={activeTab === tab}
                 onClick={() => setActiveTab(tab)}
               >
+                <FontAwesomeIcon icon={TAB_ICONS[tab]} className={iconStyles.tabIcon} />
                 {tab}
               </button>
             ))}
