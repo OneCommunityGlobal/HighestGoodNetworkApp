@@ -242,6 +242,8 @@ export function TimeEntryForm(props) {
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const splitAvailable = from === 'Timer' && !edit && formValues.personId === authUser.userid;
+  const splitTotalMinutes = Number(formValues.hours) * 60 + Number(formValues.minutes);
+  const splitTooShort = !Number.isSafeInteger(splitTotalMinutes) || splitTotalMinutes < 2;
   const hasPendingSplit = () => splitAvailable && Boolean(readSplitDraft(authUser.userid)?.attempted);
   const [splitMode, setSplitMode] = useState(hasPendingSplit);
   const [splitLocked, setSplitLocked] = useState(hasPendingSplit);
@@ -866,19 +868,28 @@ export function TimeEntryForm(props) {
                   <Input
                     type="checkbox"
                     checked={splitMode}
-                    disabled={splitLocked || !props.timerSessionId}
+                    disabled={splitLocked || !props.timerSessionId || (!splitMode && splitTooShort)}
+                    aria-describedby={
+                      splitTooShort && !splitLocked ? 'split-minimum-time-help' : undefined
+                    }
                     onChange={event => setSplitMode(event.target.checked)}
                   />
                   Worked on multiple tasks?
                 </Label>
+                {splitTooShort && !splitLocked && (
+                  <div id="split-minimum-time-help" className={fontColor}>
+                    At least 2 minutes are needed to split time between tasks.
+                  </div>
+                )}
               </FormGroup>
             )}
             {splitMode ? (
               <SplitTimeEntryForm
+                key={`${authUser.userid}:${props.timerSessionId || ''}`}
                 personId={authUser.userid}
                 batchId={props.timerSessionId || ''}
                 dateOfWork={formValues.dateOfWork}
-                totalMinutes={Number(formValues.hours) * 60 + Number(formValues.minutes)}
+                totalMinutes={splitTotalMinutes}
                 tasks={timeEntryFormUserTasks}
                 loading={!isAsyncDataLoaded}
                 connected={timerConnected !== false}

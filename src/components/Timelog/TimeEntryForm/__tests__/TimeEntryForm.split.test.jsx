@@ -102,41 +102,46 @@ it('stops only after the batch save and refreshes profile, logs and tasks', asyn
     sessionId: 'client-session',
   });
 });
-it('recovers an earlier committed split without stopping a new timer', async () => {
-  const payload = {
-    personId,
-    batchId: 'an-earlier-server-key',
-    dateOfWork: '2026-11-05',
-    totalMinutes: 300,
-    allocations: tasks.map((task, index) => ({
-      taskId: task._id,
-      minutes: index ? 120 : 180,
-      notes,
-    })),
-  };
-  localStorage.setItem(
-    splitDraftKey(personId),
-    JSON.stringify({
-      attempted: true,
-      saved: true,
-      payload,
-      receipt: payload,
-      rows: tasks.map((task, index) => ({
-        id: String(index),
+it.each([0, 300])(
+  'recovers an earlier committed split without stopping a new %i-minute timer',
+  async currentMinutes => {
+    const payload = {
+      personId,
+      batchId: 'an-earlier-server-key',
+      dateOfWork: '2026-11-05',
+      totalMinutes: 300,
+      allocations: tasks.map((task, index) => ({
         taskId: task._id,
-        hours: index ? '2' : '3',
-        minutes: '0',
+        minutes: index ? 120 : 180,
         notes,
       })),
-    }),
-  );
-  mount();
-  fireEvent.click(screen.getByRole('button', { name: 'Finish timer' }));
-  await waitFor(() => expect(props.toggle).toHaveBeenCalled());
-  expect(props.sendStop).not.toHaveBeenCalled();
-  expect(axios.post).not.toHaveBeenCalled();
-  expect(props.onTimeSubmitted).not.toHaveBeenCalled();
-});
+    };
+    localStorage.setItem(
+      splitDraftKey(personId),
+      JSON.stringify({
+        attempted: true,
+        saved: true,
+        payload,
+        receipt: payload,
+        rows: tasks.map((task, index) => ({
+          id: String(index),
+          taskId: task._id,
+          hours: index ? '2' : '3',
+          minutes: '0',
+          notes,
+        })),
+      }),
+    );
+    mount({
+      data: { hours: Math.floor(currentMinutes / 60), minutes: currentMinutes % 60, notes: '' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Finish timer' }));
+    await waitFor(() => expect(props.toggle).toHaveBeenCalled());
+    expect(props.sendStop).not.toHaveBeenCalled();
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(props.onTimeSubmitted).not.toHaveBeenCalled();
+  },
+);
 it('does not expose splitting when logging for someone else', async () => {
   sessionStorage.setItem(
     'viewingUser',
@@ -145,4 +150,23 @@ it('does not expose splitting when logging for someone else', async () => {
   mount();
   await waitFor(() => expect(screen.queryByText('Loading Data...')).not.toBeInTheDocument());
   expect(screen.queryByLabelText('Worked on multiple tasks?')).not.toBeInTheDocument();
+});
+
+it.each([0, 1])('explains why a %i-minute session cannot start a split', async minutes => {
+  mount({ data: { hours: 0, minutes, notes: '' } });
+  const checkbox = screen.getByLabelText('Worked on multiple tasks?');
+  expect(checkbox).toBeDisabled();
+  expect(checkbox).toHaveAccessibleDescription(
+    'At least 2 minutes are needed to split time between tasks.',
+  );
+  expect(screen.getByLabelText('Project/Task')).toBeInTheDocument();
+  expect(axios.post).not.toHaveBeenCalled();
+});
+
+it('allows a two-minute session to start a split', async () => {
+  mount({ data: { hours: 0, minutes: 2, notes: '' } });
+  expect(screen.getByLabelText('Worked on multiple tasks?')).toBeEnabled();
+  expect(
+    screen.queryByText('At least 2 minutes are needed to split time between tasks.'),
+  ).not.toBeInTheDocument();
 });

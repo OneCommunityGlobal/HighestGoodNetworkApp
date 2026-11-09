@@ -26,22 +26,22 @@ const receipt = () => ({
     notes,
   })),
 });
-const mount = extra =>
-  render(
-    <SplitTimeEntryForm
-      personId={personId}
-      batchId="server-session-1234567890"
-      dateOfWork="2026-11-05"
-      totalMinutes={300}
-      tasks={tasks}
-      loading={false}
-      connected
-      darkMode={false}
-      onComplete={complete}
-      onLockChange={lock}
-      {...extra}
-    />,
-  );
+const form = extra => (
+  <SplitTimeEntryForm
+    personId={personId}
+    batchId="server-session-1234567890"
+    dateOfWork="2026-11-05"
+    totalMinutes={300}
+    tasks={tasks}
+    loading={false}
+    connected
+    darkMode={false}
+    onComplete={complete}
+    onLockChange={lock}
+    {...extra}
+  />
+);
+const mount = extra => render(form(extra));
 const fill = () => {
   fireEvent.change(screen.getByLabelText('Task 1'), { target: { value: tasks[0]._id } });
   fireEvent.change(screen.getByLabelText('Task 2'), { target: { value: tasks[1]._id } });
@@ -70,6 +70,62 @@ describe('Split timer allocations', () => {
     expect(screen.getByText('Over allocated')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Submit 2 time entries' })).toBeDisabled();
   });
+  it('refreshes an unsubmitted draft total and date after the same timer session resumes', async () => {
+    const view = mount();
+    fill();
+    view.unmount();
+    mount({ totalMinutes: 360, dateOfWork: '2026-11-06' });
+
+    expect(screen.getByText('6:00')).toBeInTheDocument();
+    expect(screen.getByText('1:00')).toBeInTheDocument();
+    expect(screen.getByText('2026-11-06')).toBeInTheDocument();
+    expect(screen.getByLabelText('Task 1')).toHaveValue(tasks[0]._id);
+    expect(screen.getAllByLabelText('Work description and reference link')[0]).toHaveValue(notes);
+    expect(screen.getByRole('button', { name: 'Submit 2 time entries' })).toBeDisabled();
+    expect(axios.post).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getAllByLabelText('Hours')[0], { target: { value: '4' } });
+    axios.post.mockImplementationOnce(async (_url, body) => ({
+      data: { ...body, entryIds: ['one', 'two'] },
+    }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit 2 time entries' }));
+    await waitFor(() => expect(complete).toHaveBeenCalled());
+    expect(axios.post.mock.calls[0][1]).toMatchObject({
+      totalMinutes: 360,
+      dateOfWork: '2026-11-06',
+      allocations: [
+        { taskId: tasks[0]._id, minutes: 240, notes },
+        { taskId: tasks[1]._id, minutes: 120, notes },
+      ],
+    });
+  });
+
+  it('updates an editable total while mounted and keeps the existing rows', () => {
+    const view = mount();
+    fill();
+    view.rerender(form({ totalMinutes: 360, dateOfWork: '2026-11-06' }));
+    expect(screen.getByText('6:00')).toBeInTheDocument();
+    expect(screen.getByText('2026-11-06')).toBeInTheDocument();
+    expect(screen.getAllByLabelText('Hours')[0]).toHaveValue(3);
+    expect(screen.getByRole('button', { name: 'Submit 2 time entries' })).toBeDisabled();
+  });
+
+  it('keeps the exact attempted body after the timer total and date change', async () => {
+    axios.post.mockRejectedValueOnce(new Error('Lost response'));
+    const view = mount();
+    fill();
+    fireEvent.click(screen.getByRole('button', { name: 'Submit 2 time entries' }));
+    await screen.findByRole('button', { name: 'Retry split save' });
+    const original = JSON.stringify(axios.post.mock.calls[0][1]);
+    view.unmount();
+    mount({ totalMinutes: 360, dateOfWork: '2026-11-06' });
+    expect(screen.getAllByText('5:00')).toHaveLength(2);
+    expect(screen.getByText('2026-11-05')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Retry split save' }));
+    await waitFor(() => expect(complete).toHaveBeenCalled());
+    expect(JSON.stringify(axios.post.mock.calls[1][1])).toBe(original);
+  });
+
   it('posts one batch with separate task descriptions and total minutes', async () => {
     mount();
     fill();

@@ -48,7 +48,7 @@ export default function SplitTimeEntryForm({
   onComplete,
   onLockChange,
 }) {
-  const [draft, setDraft] = useState(() => {
+  const [draftState, setDraft] = useState(() => {
     const saved = readSplitDraft(personId);
     if (saved && (saved.attempted || saved.payload.batchId === batchId)) return saved;
     return {
@@ -58,6 +58,11 @@ export default function SplitTimeEntryForm({
       saved: false,
     };
   });
+  // Editable rows can outlive a pause/resume cycle. Only attempted requests keep
+  // frozen metadata: changing them would make an uncertain save unsafe to retry.
+  const draft = draftState.attempted
+    ? draftState
+    : { ...draftState, payload: { personId, batchId, dateOfWork, totalMinutes } };
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const inFlight = useRef(false);
