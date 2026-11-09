@@ -42,7 +42,7 @@ const fillValidApplication = async () => {
   fireEvent.change(screen.getByLabelText(/^Time Zone/), { target: { value: 'America/New_York' } });
   fireEvent.change(screen.getByLabelText(/^Phone/), { target: { value: '+1 213-456-7890' } });
   fireEvent.change(screen.getByLabelText('Choose file'), {
-    target: { files: [new File(['Test resume'], 'resume.pdf', { type: 'application/pdf' })] },
+    target: { files: [new File(['resume'], 'resume.pdf', { type: 'application/pdf' })] },
   });
   fireEvent.click(screen.getByRole('checkbox', { name: /I agree to terms and conditions/i }));
 };

@@ -61,7 +61,7 @@ function fillProfile() {
     target: { value: '+12133734253' },
   });
   fireEvent.change(screen.getByLabelText('Choose file'), {
-    target: { files: [new File(['Test resume'], 'resume.pdf', { type: 'application/pdf' })] },
+    target: { files: [new File(['resume'], 'resume.pdf', { type: 'application/pdf' })] },
   });
 }
 
