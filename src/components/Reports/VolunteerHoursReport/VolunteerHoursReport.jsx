@@ -60,31 +60,32 @@ useEffect(() => {
   
     
 // Generate report data based on selected type
-const generateReport = useCallback(async () => {
-console.log('Generating Volunteer Hours Report:', {
-    reportType,
-    appliedDateRange,
-    userProfilesCount: userProfiles?.length,
-  });
+const generateReport = useCallback(async (range = appliedDateRange) => {
+  
+  setReportError('');
+  setValidationError('');
+  const start = moment(range?.startDate);
+  const end = moment(range?.endDate);
 
-const start = moment(appliedDateRange.startDate);
-const end = moment(appliedDateRange.endDate);
+  if (
+    !range?.startDate ||
+    !range?.endDate ||
+    !start.isValid() ||
+    !end.isValid() ||
+    end.isBefore(start, 'day')
+  ) {
+    setValidationError(
+      'Please select valid From Date and To Date values. To Date must not be earlier than From Date.'
+    );
+    setReportData([]);
+    setCurrentPage(1);
+    return;
+  }
 
-if (
-  !start.isValid() ||
-  !end.isValid() ||
-  end.isBefore(start, 'day')
-) {
-  setValidationError(
-    'Please select valid From Date and To Date values. To Date must not be earlier than From Date.'
-  );
-  return;
-}
-
-setValidationError('');
-setReportData([]);
-setCurrentPage(1);
-setLoading(true);
+  setValidationError('');
+  setReportData([]);
+  setCurrentPage(1);
+  setLoading(true);
 
 try {
   const fromDate = start.format('YYYY-MM-DD');
@@ -150,7 +151,31 @@ try {
     return;
   }
   generateReport();
-}, [reportType, userProfiles, generateReport]);
+}, [reportType, userProfiles, appliedDateRange, generateReport]);
+
+const handleRefreshReport = () => {
+  const start = moment(dateRange.startDate);
+  const end = moment(dateRange.endDate);
+
+  if (
+    !dateRange.startDate ||
+    !dateRange.endDate ||
+    !start.isValid() ||
+    !end.isValid() ||
+    end.isBefore(start, 'day')
+  ) {
+    setValidationError(
+      'Please select valid From Date and To Date values. To Date must not be earlier than From Date.'
+    );
+    setReportData([]);
+    setCurrentPage(1);
+    return;
+  }
+
+  setValidationError('');
+  setAppliedDateRange({ ...dateRange });
+  generateReport(dateRange);
+};
 
   const formatDateRange = () => {
   return `${moment(appliedDateRange.startDate).format('MMM DD, YYYY')} - ${moment(appliedDateRange.endDate).format('MMM DD, YYYY')}`;
@@ -217,9 +242,9 @@ try {
                 </Input>
               </FormGroup>
             </Col>
-            <Col md={6} classname={styles.filterColumn}>
+            <Col md={6} className={styles.filterColumn}>
               <Row className={styles.filterRow}>
-                <Col md={6} classname={styles.filterColumn}>
+                <Col md={6} className={styles.filterColumn}>
                   <FormGroup>
                     <Label for="fromDate">From Date</Label>
                     <DatePicker
@@ -236,7 +261,7 @@ try {
                     />
                   </FormGroup>
                 </Col>
-                <Col md={6} classname={styles.filterColumn}>
+                <Col md={6} className={styles.filterColumn}>
                   <FormGroup>
                     <Label for="toDate">To Date</Label>
                     <DatePicker
@@ -255,20 +280,18 @@ try {
                 </Col>
               </Row>
             </Col>
-            <Col md={2} classname={styles.filterColumn}>
+            <Col md={2} className={styles.filterColumn}>
               <FormGroup>
 
              <Col md={6} className={styles.refreshButtonContainer}>
               <Button
-                  color="success"
-                  className={styles.refreshButton}
-                  onClick={() => {
-                      setAppliedDateRange({ ...dateRange });
-                  }}
-                  disabled={loading}
-                >
-                  {loading ? 'Refreshing...' : 'Refresh Report'}
-                </Button>
+                color="success"
+                className={styles.refreshButton}
+                onClick={handleRefreshReport}
+                disabled={loading}
+              >
+                {loading ? 'Refreshing...' : 'Refresh Report'}
+              </Button>
                 </Col>
               </FormGroup>
             </Col>
@@ -303,15 +326,21 @@ try {
                     {paginatedReportData.map(item => renderTableRow(item))}
                   </tbody>
                   <tfoot>
+                  {reportType !== 'team' && (
                     <tr className={styles.totalRow}>
-                      <td colSpan={getTableHeaders().length - 1}><strong>Total</strong></td>
+                      <td colSpan={getTableHeaders().length - 1}>
+                        <strong>Total</strong>
+                      </td>
                       <td className={styles.hoursCell}>
                         <strong>
-                          {reportData.reduce((sum, item) => sum + item.totalHours, 0).toFixed(1)}
+                          {reportData
+                            .reduce((sum, item) => sum + item.totalHours, 0)
+                            .toFixed(1)}
                         </strong>
                       </td>
                     </tr>
-                  </tfoot>
+                  )}
+                </tfoot>
                 </Table>
                 {totalPages > 1 && (
   <div className="d-flex justify-content-center align-items-center mt-3 gap-2">
@@ -340,10 +369,14 @@ try {
             </div>
           )}
 
-          {reportData.length === 0 && !loading && (
+          {reportData.length === 0 && !loading && !validationError && !reportError && (
             <div className="text-center text-muted">
-              <p className={darkMode ? styles.darkModeText : ''}>No data found for the selected criteria and date range.</p>
-              <p className={darkMode ? styles.darkModeText : ''}>Try adjusting your date range or report type.</p>
+              <p className={darkMode ? styles.darkModeText : ''}>
+                No data found for the selected criteria and date range.
+              </p>
+              <p className={darkMode ? styles.darkModeText : ''}>
+                Try adjusting your date range or report type.
+              </p>
             </div>
           )}
         </CardBody>
