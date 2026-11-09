@@ -1,0 +1,81 @@
+/* Scoped date filter styles; shared overrides exclude this graph's date picker. */
+.dateField :global(.react-datepicker-wrapper) {
+  display: block;
+  width: 100%;
+}
+
+.dateField :global(.react-datepicker-wrapper) input.dateInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.dateField :global(.react-datepicker-wrapper) input.dateInputDark {
+  background-color: #253342;
+  color: #fff;
+  border: 1px solid rgb(255 255 255 / 20%);
+}
+
+.dateField :global(.react-datepicker-wrapper) input.dateInputDark::placeholder {
+  color: #c8d2e0;
+}
+
+.calendar :global(.react-datepicker__day--outside-month) {
+  color: #b0b0b0;
+}
+
+/* Keep vendor class names global so CSS Modules preserves date-picker selectors. */
+.calendarDark {
+  background-color: #253342;
+  border-color: #3f5269;
+  color: #e8edf4;
+}
+
+.calendarDark :global(.react-datepicker__header) {
+  background-color: #2f4157;
+  border-color: #3f5269;
+}
+
+.calendarDark :global(.react-datepicker__current-month),
+.calendarDark :global(.react-datepicker__day-name),
+.calendarDark :global(.react-datepicker__day) {
+  color: #e8edf4;
+}
+
+.calendarDark :global(.react-datepicker__day:hover) {
+  background-color: #3a506b;
+}
+
+.calendar.calendarDark :global(.react-datepicker__day--outside-month) {
+  color: #7d8a9c;
+}
+
+.calendar.calendarDark :global(.react-datepicker__day--disabled),
+.calendar.calendarDark :global(.react-datepicker__day--disabled:hover) {
+  color: #56637a;
+  background-color: transparent;
+  cursor: default;
+}
+
+.calendarDark :global(.react-datepicker__day--selected),
+.calendarDark :global(.react-datepicker__day--keyboard-selected),
+.calendarDark :global(.react-datepicker__day--in-range) {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.calendarDark :global(.react-datepicker__navigation-icon::before) {
+  border-color: #c8d2e0;
+}
+
+.popperDark:global(.react-datepicker-popper[data-placement^='bottom'])
+  :global(.react-datepicker__triangle::before),
+.popperDark:global(.react-datepicker-popper[data-placement^='bottom'])
+  :global(.react-datepicker__triangle::after) {
+  border-bottom-color: #2f4157;
+}
