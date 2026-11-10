@@ -155,12 +155,7 @@ const getStatusClass = (status, stylesObject) => {
 
 const Modal = ({ title, subtitle, children, onClose, submitting }) => (
   <div className={styles.modalOverlay}>
-    <div
-      className={styles.modal}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="garden-modal-title"
-    >
+    <dialog className={styles.modal} open aria-labelledby="garden-modal-title">
       <div className={styles.modalHeader}>
         <div>
           <h2 id="garden-modal-title" className={styles.modalTitle}>
@@ -182,7 +177,7 @@ const Modal = ({ title, subtitle, children, onClose, submitting }) => (
       </div>
 
       {children}
-    </div>
+    </dialog>
   </div>
 );
 
@@ -282,18 +277,17 @@ const CalendarEvent = ({ event, type, onComplete, onDelete }) => {
 
 const CalendarCard = ({ type, events, onAdd, onComplete, onDelete }) => {
   const config = CALENDAR_TYPES[type];
+  const typeIconClass = styles[`calendarIcon_${type}`] || '';
+  const iconClassName = `${styles.calendarIcon} ${typeIconClass}`;
 
   return (
     <section className={styles.calendarCard}>
       <div className={styles.calendarCardHeader}>
         <div className={styles.calendarHeading}>
-          <div className={`${styles.calendarIcon} ${styles[`calendarIcon_${type}`] || ''}`}>
-            {config.icon}
-          </div>
+          <div className={iconClassName}>{config.icon}</div>
 
           <div>
             <h2 className={styles.calendarTitle}>{config.label}</h2>
-
             <p className={styles.calendarSubtitle}>{config.subtitle}</p>
           </div>
         </div>
@@ -587,7 +581,7 @@ function GardenManagementPage() {
   };
 
   useEffect(() => {
-    loadGardenData();
+    void loadGardenData();
   }, []);
 
   /* =======================================================
@@ -724,113 +718,125 @@ function GardenManagementPage() {
     }));
   };
 
+  // Build and validate seeding event data
+  const buildSeedingPayload = form => {
+    if (!form.startDate) {
+      return { error: 'Start date is required.' };
+    }
+
+    if (form.endDate && form.endDate < form.startDate) {
+      return { error: 'End date cannot be before the start date.' };
+    }
+
+    return {
+      payload: {
+        startDate: form.startDate,
+        ...(form.endDate && { endDate: form.endDate }),
+        ...(form.location.trim() && { location: form.location.trim() }),
+      },
+    };
+  };
+
+  // Build transplanting event data
+  const buildTransplantingPayload = form => {
+    if (!form.date) {
+      return { error: 'Transplant date is required.' };
+    }
+
+    return {
+      payload: {
+        date: form.date,
+        ...(form.from.trim() && { from: form.from.trim() }),
+        ...(form.to.trim() && { to: form.to.trim() }),
+        ...(form.location.trim() && { location: form.location.trim() }),
+      },
+    };
+  };
+
+  // Build succession event data
+  const buildSuccessionPayload = form => {
+    if (!form.lastSow) {
+      return { error: 'Last sow date is required.' };
+    }
+
+    if (form.nextSow && form.nextSow < form.lastSow) {
+      return { error: 'Next sow date cannot be before the last sow date.' };
+    }
+
+    return {
+      payload: {
+        lastSow: form.lastSow,
+        ...(form.nextSow && { nextSow: form.nextSow }),
+        ...(form.interval.trim() && { interval: form.interval.trim() }),
+      },
+    };
+  };
+
+  // Build harvesting event data
+  const buildHarvestingPayload = form => {
+    if (!form.expected) {
+      return { error: 'Expected harvest date is required.' };
+    }
+
+    return {
+      payload: {
+        expected: form.expected,
+        ...(form.yield.trim() && { yield: form.yield.trim() }),
+      },
+    };
+  };
+
+  // Validate and build the complete calendar payload
+  const buildCalendarPayload = (form, type) => {
+    if (!form.name.trim()) {
+      return { error: 'Event name is required.' };
+    }
+
+    const payloadBuilders = {
+      seeding: buildSeedingPayload,
+      transplanting: buildTransplantingPayload,
+      succession: buildSuccessionPayload,
+      harvesting: buildHarvestingPayload,
+    };
+
+    const buildPayload = payloadBuilders[type];
+
+    if (!buildPayload) {
+      return { error: 'Invalid calendar type.' };
+    }
+
+    const result = buildPayload(form);
+
+    if (result.error) {
+      return result;
+    }
+
+    return {
+      payload: {
+        name: form.name.trim(),
+        type,
+        status: form.status,
+        ...result.payload,
+      },
+    };
+  };
+
+  // Submit calendar event
   const handleCalendarSubmit = async event => {
     event.preventDefault();
     setFormError('');
 
-    if (!calendarForm.name.trim()) {
-      setFormError('Event name is required.');
+    const result = buildCalendarPayload(calendarForm, modalType);
+
+    if (result.error) {
+      setFormError(result.error);
       return;
-    }
-
-    if (
-      modalType !== 'seeding' &&
-      modalType !== 'transplanting' &&
-      modalType !== 'succession' &&
-      modalType !== 'harvesting'
-    ) {
-      setFormError('Invalid calendar type.');
-      return;
-    }
-
-    const payload = {
-      name: calendarForm.name.trim(),
-      type: modalType,
-      status: calendarForm.status,
-    };
-
-    if (modalType === 'seeding') {
-      if (!calendarForm.startDate) {
-        setFormError('Start date is required.');
-        return;
-      }
-
-      if (calendarForm.endDate && calendarForm.endDate < calendarForm.startDate) {
-        setFormError('End date cannot be before the start date.');
-        return;
-      }
-
-      payload.startDate = calendarForm.startDate;
-
-      if (calendarForm.endDate) {
-        payload.endDate = calendarForm.endDate;
-      }
-
-      if (calendarForm.location.trim()) {
-        payload.location = calendarForm.location.trim();
-      }
-    }
-
-    if (modalType === 'transplanting') {
-      if (!calendarForm.date) {
-        setFormError('Transplant date is required.');
-        return;
-      }
-
-      payload.date = calendarForm.date;
-
-      if (calendarForm.from.trim()) {
-        payload.from = calendarForm.from.trim();
-      }
-
-      if (calendarForm.to.trim()) {
-        payload.to = calendarForm.to.trim();
-      }
-
-      if (calendarForm.location.trim()) {
-        payload.location = calendarForm.location.trim();
-      }
-    }
-
-    if (modalType === 'succession') {
-      if (!calendarForm.lastSow) {
-        setFormError('Last sow date is required.');
-        return;
-      }
-
-      if (calendarForm.nextSow && calendarForm.nextSow < calendarForm.lastSow) {
-        setFormError('Next sow date cannot be before the last sow date.');
-        return;
-      }
-
-      payload.lastSow = calendarForm.lastSow;
-
-      if (calendarForm.nextSow) {
-        payload.nextSow = calendarForm.nextSow;
-      }
-
-      if (calendarForm.interval.trim()) {
-        payload.interval = calendarForm.interval.trim();
-      }
-    }
-
-    if (modalType === 'harvesting') {
-      if (!calendarForm.expected) {
-        setFormError('Expected harvest date is required.');
-        return;
-      }
-
-      payload.expected = calendarForm.expected;
-
-      if (calendarForm.yield.trim()) {
-        payload.yield = calendarForm.yield.trim();
-      }
     }
 
     try {
       setSubmitting(true);
 
-      await createGardenCalendarEvent(payload);
+      await createGardenCalendarEvent(result.payload);
 
       setModalType(null);
       resetAllForms();
