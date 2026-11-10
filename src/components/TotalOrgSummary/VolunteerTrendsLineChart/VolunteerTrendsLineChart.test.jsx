@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cloneElement } from 'react';
 import axios from 'axios';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import VolunteerTrendsLineChart from './VolunteerTrendsLineChart';
@@ -20,7 +21,7 @@ vi.mock('recharts', () => ({
   Line: () => null,
   CartesianGrid: () => null,
   Tooltip: ({ content }) =>
-    content({
+    cloneElement(content, {
       active: true,
       label: chart.data[0]?.xLabel,
       payload: chart.data.length
@@ -49,8 +50,8 @@ describe('Volunteer Trends labels', () => {
     expect(await screen.findByText('Week 43, 2025')).toBeInTheDocument();
     expect(chart.data.map(point => point.xLabel)).toEqual(['W43', 'W43']);
     expect(new Set(chart.data.map(point => point.id)).size).toBe(2);
-    expect(chart.axis.label.value).toBe('Week');
-    expect(chart.axis.label.fill).toBe(darkMode ? '#ccc' : '#666');
+    expect(chart.axis.label.value).toBe('Weekly from 2025 to 2026');
+    expect(chart.axis.label.style.fill).toBe(darkMode ? '#ccc' : undefined);
     expect(screen.queryByText(/'25|'26/)).not.toBeInTheDocument();
   });
 
@@ -65,7 +66,7 @@ describe('Volunteer Trends labels', () => {
 
     expect(await screen.findByText('Oct, 2026')).toBeInTheDocument();
     expect(chart.data[0].xLabel).toBe('Oct');
-    expect(chart.axis.label.value).toBe('Month');
+    expect(chart.axis.label.value).toBe('Monthly for year 2026');
   });
 
   it('handles an empty response without rendering a tooltip', async () => {
