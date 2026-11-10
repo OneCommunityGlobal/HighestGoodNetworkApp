@@ -111,7 +111,6 @@ export const layoutOutsideLabelBoxes = (
   labelBoxes,
   {
     chartHeight,
-    chartWidth,
     containmentPadding = 4,
     outsideGap = 12,
     minimumSpacing = 8,
@@ -120,7 +119,6 @@ export const layoutOutsideLabelBoxes = (
 ) => {
   const leftBoxes = [];
   const rightBoxes = [];
-  const paddingX = Math.max(0, containmentPadding || 0);
 
   labelBoxes.forEach(labelBox => {
     const direction = Math.cos(labelBox.angle) >= 0 ? 1 : -1;
@@ -130,14 +128,6 @@ export const layoutOutsideLabelBoxes = (
     labelBox.effectiveDirection = direction;
     labelBox.boxX =
       direction > 0 ? arcRight + outsideGap : arcLeft - outsideGap - labelBox.boxWidth;
-    // Keep callouts fully inside the canvas so right/left edges are not chopped.
-    if (chartWidth > 0) {
-      const minX = paddingX;
-      const maxX = chartWidth - labelBox.boxWidth - paddingX;
-      if (minX <= maxX) {
-        labelBox.boxX = clampValue(labelBox.boxX, minX, maxX);
-      }
-    }
     labelBox.radialX =
       labelBox.x + Math.cos(labelBox.angle) * (labelBox.arc.outerRadius + connectorRadialOffset);
     labelBox.radialY =
@@ -526,7 +516,6 @@ const externalLabelGuidesPlugin = {
     if (options.placement === 'outside') {
       layoutOutsideLabelBoxes(labelBoxes, {
         chartHeight: chart.height,
-        chartWidth: chart.width,
         containmentPadding: options.containmentPadding,
         outsideGap: options.outsideGap,
         minimumSpacing: options.minimumLabelSpacing,

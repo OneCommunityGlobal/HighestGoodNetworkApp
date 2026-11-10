@@ -164,13 +164,11 @@ function DonutChart(props) {
     maintainAspectRatio: false,
     cutout: comparisonType !== 'No Comparison' ? '70%' : '62%',
     layout: {
-      // Leave room for outside callout boxes (e.g. "2598 (99.9%)") so they are
-      // not drawn past the canvas edge and chopped in half-width / stacked cards.
       padding: {
         top: 28,
-        right: 108,
+        right: 80,
         bottom: 28,
-        left: 108,
+        left: 80,
       },
     },
     onHover: (event, elements) => {

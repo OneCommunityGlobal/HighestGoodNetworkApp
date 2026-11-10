@@ -6,9 +6,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  /* Prefer visible so callouts are not clipped; fall back to auto only if needed. */
-  overflow: visible;
-  padding: 0.6rem 0.85rem;
+  overflow-x: auto;
+  padding: 0.6rem;
   margin-top: 20px;
   margin-bottom: -35px;
   container-type: inline-size;
@@ -36,7 +35,6 @@
   max-width: 30rem;
   height: 26rem;
   margin-left: 0;
-  /* Callouts are drawn on the canvas; keep the wrapper from clipping neighbors. */
   overflow: visible;
 }
 
@@ -172,6 +170,7 @@
 
 @media (width <= 615px) {
   .donutContainer {
+    overflow-x: visible;
     justify-content: start;
   }
 
