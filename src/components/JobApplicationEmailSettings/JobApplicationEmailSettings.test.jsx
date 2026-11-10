@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
@@ -50,7 +50,7 @@ describe('JobApplicationEmailSettings', () => {
 
     await screen.findByText('owner@example.com');
 
-    fireEvent.change(screen.getByLabelText('Email address'), {
+    fireEvent.change(screen.getByLabelText('CC email address'), {
       target: {
         value: ' NEW@Example.COM ',
       },
@@ -60,7 +60,7 @@ describe('JobApplicationEmailSettings', () => {
 
     expect(screen.getByText('new@example.com')).toBeTruthy();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save Recipients' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save CC Recipients' }));
 
     await waitFor(() => {
       expect(httpService.put).toHaveBeenCalledWith(ENDPOINTS.JOB_APPLICATION_EMAIL_RECIPIENTS, {
@@ -68,7 +68,7 @@ describe('JobApplicationEmailSettings', () => {
       });
     });
 
-    expect(await screen.findByText('Email recipients saved successfully.')).toBeTruthy();
+    expect(await screen.findByText('CC recipients saved successfully.')).toBeTruthy();
   });
 
   it('blocks invalid email addresses', async () => {
@@ -76,7 +76,7 @@ describe('JobApplicationEmailSettings', () => {
 
     await screen.findByText('owner@example.com');
 
-    fireEvent.change(screen.getByLabelText('Email address'), {
+    fireEvent.change(screen.getByLabelText('CC email address'), {
       target: {
         value: 'invalid-email',
       },
@@ -94,7 +94,7 @@ describe('JobApplicationEmailSettings', () => {
 
     await screen.findByText('owner@example.com');
 
-    fireEvent.change(screen.getByLabelText('Email address'), {
+    fireEvent.change(screen.getByLabelText('CC email address'), {
       target: {
         value: 'OWNER@EXAMPLE.COM',
       },
@@ -118,11 +118,11 @@ describe('JobApplicationEmailSettings', () => {
       }),
     );
 
-    expect(screen.getByText('No notification recipients configured.')).toBeTruthy();
+    expect(screen.getByText('No CC recipients configured.')).toBeTruthy();
 
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Save Recipients',
+        name: 'Save CC Recipients',
       }),
     );
 
@@ -140,10 +140,10 @@ describe('JobApplicationEmailSettings', () => {
 
     expect(await screen.findByRole('alert')).toHaveProperty(
       'textContent',
-      'Unable to load recipients. Please close and reopen to try again.',
+      'Unable to load CC recipients. Please close and reopen to try again.',
     );
 
-    expect(screen.getByRole('button', { name: 'Save Recipients' }).disabled).toBe(true);
+    expect(screen.getByRole('button', { name: 'Save CC Recipients' }).disabled).toBe(true);
 
     expect(httpService.put).not.toHaveBeenCalled();
   });
@@ -173,16 +173,16 @@ describe('JobApplicationEmailSettings', () => {
 
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Save Recipients',
+        name: 'Save CC Recipients',
       }),
     );
 
     expect(await screen.findByRole('alert')).toHaveProperty(
       'textContent',
-      'Unable to save recipients. Please try again.',
+      'Unable to save CC recipients. Please try again.',
     );
 
-    expect(screen.queryByText('Email recipients saved successfully.')).toBeNull();
+    expect(screen.queryByText('CC recipients saved successfully.')).toBeNull();
   });
 
   it('applies dark-mode styling and closes without saving', async () => {
@@ -195,7 +195,7 @@ describe('JobApplicationEmailSettings', () => {
 
     await screen.findByText('owner@example.com');
 
-    expect(screen.getByLabelText('Email address')).toBeInTheDocument();
+    expect(screen.getByLabelText('CC email address')).toBeInTheDocument();
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
@@ -209,7 +209,7 @@ describe('JobApplicationEmailSettings', () => {
 
     await screen.findByText('owner@example.com');
 
-    fireEvent.change(screen.getByLabelText('Email address'), {
+    fireEvent.change(screen.getByLabelText('CC email address'), {
       target: { value: 'richa@gmail..com' },
     });
 

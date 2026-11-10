@@ -44,7 +44,7 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
         if (!active) return;
 
         setLoadFailed(true);
-        setError('Unable to load recipients. Please close and reopen to try again.');
+        setError('Unable to load CC recipients. Please close and reopen to try again.');
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -93,9 +93,9 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
       });
 
       setRecipients(Array.isArray(data?.recipients) ? data.recipients : recipients);
-      setSuccess('Email recipients saved successfully.');
+      setSuccess('CC recipients saved successfully.');
     } catch {
-      setError('Unable to save recipients. Please try again.');
+      setError('Unable to save CC recipients. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -118,7 +118,11 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
       </ModalHeader>
 
       <ModalBody className={darkMode ? 'bg-yinmn-blue text-white' : ''}>
-        <p>Manage the email addresses that receive new job application notifications.</p>
+        <p>
+          Manage CC addresses for new job application notifications. Every submitted application is
+          emailed to the default inbox configured on the server; the applicant and addresses listed
+          here are carbon copied on that same message.
+        </p>
 
         {error && (
           <div
@@ -143,15 +147,15 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
         )}
 
         {loading ? (
-          <p role="status">Loading recipients...</p>
+          <p role="status">Loading CC recipients...</p>
         ) : loadFailed ? (
           <p>
-            Recipient settings could not be loaded. No changes can be saved until they are loaded
+            CC recipient settings could not be loaded. No changes can be saved until they are loaded
             successfully.
           </p>
         ) : (
           <>
-            <label htmlFor="job-application-recipient-email">Email address</label>
+            <label htmlFor="job-application-recipient-email">CC email address</label>
 
             <div className="d-flex mb-3">
               <input
@@ -176,9 +180,9 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
             </div>
 
             {recipients.length === 0 ? (
-              <p>No notification recipients configured.</p>
+              <p>No CC recipients configured.</p>
             ) : (
-              <ul className="list-unstyled" aria-label="Notification recipients">
+              <ul className="list-unstyled" aria-label="CC recipients">
                 {recipients.map(recipient => (
                   <li
                     key={recipient}
@@ -216,7 +220,7 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
           onClick={saveRecipients}
           disabled={busy || loadFailed}
         >
-          {saving ? 'Saving...' : 'Save Recipients'}
+          {saving ? 'Saving...' : 'Save CC Recipients'}
         </Button>
       </ModalFooter>
     </Modal>
