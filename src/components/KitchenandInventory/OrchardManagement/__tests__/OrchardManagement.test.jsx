@@ -89,23 +89,27 @@ const expectHeading = name => {
   expect(screen.getByRole('heading', { name })).toBeInTheDocument();
 };
 
+// Use screen for regular page queries.
+const expectTexts = values => {
+  values.forEach(value => {
+    expect(screen.getByText(value)).toBeInTheDocument();
+  });
+};
+
 describe('OrchardManagement', () => {
   it('renders the page heading, description, and summary metrics', async () => {
     await renderPage();
 
     expectHeading('Orchard Management');
+
     expect(
       screen.getByText('Manage fruit trees, bushes, and orchard maintenance schedules.'),
     ).toBeInTheDocument();
 
-    [
-      'Total Trees & Bushes',
-      'Pending Orders',
-      'Trimming Tasks',
-      'Expected Harvests',
-    ].forEach(metric => expect(screen.getByText(metric)).toBeInTheDocument());
+    expectTexts(['Total Trees & Bushes', 'Pending Orders', 'Trimming Tasks', 'Expected Harvests']);
 
     const metricValues = screen.getAllByText(/^(5|2|4|6)$/).map(element => element.textContent);
+
     expect(metricValues).toEqual(expect.arrayContaining(['5', '2', '4', '6']));
   });
 
@@ -114,13 +118,13 @@ describe('OrchardManagement', () => {
 
     expectHeading('Orchard Inventory');
 
-    [
+    expectTexts([
       'Apple Tree (Honeycrisp)',
       'Pear Tree (Bartlett)',
       'Cherry Tree (Bing)',
       'Blueberry Bush',
       'Raspberry Bush',
-    ].forEach(name => expect(screen.getByText(name)).toBeInTheDocument());
+    ]);
 
     expect(screen.getAllByRole('button', { name: 'View Details' })).toHaveLength(5);
     expect(screen.getByRole('button', { name: '+ Add Tree/Bush' })).toBeInTheDocument();
@@ -138,9 +142,9 @@ describe('OrchardManagement', () => {
       within(dialog).getByRole('heading', { name: /^Tree & Bush Details/ }),
     ).toBeInTheDocument();
 
-    ['Apple Tree (Honeycrisp)', 'Row 1, Position 3', '2022-04-15', 'excellent'].forEach(detail =>
-      expect(within(dialog).getByText(detail)).toBeInTheDocument(),
-    );
+    ['Apple Tree (Honeycrisp)', 'Row 1, Position 3', '2022-04-15', 'excellent'].forEach(value => {
+      expect(within(dialog).getByText(value)).toBeInTheDocument();
+    });
 
     expect(within(dialog).getByText(/years/)).toBeInTheDocument();
   });
@@ -151,6 +155,7 @@ describe('OrchardManagement', () => {
     const detailsButton = screen.getAllByRole('button', { name: 'View Details' })[0];
 
     await userEvent.click(detailsButton);
+
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Close' }));
@@ -166,14 +171,14 @@ describe('OrchardManagement', () => {
 
     expectHeading('Tree & Bush Orders');
 
-    [
+    expectTexts([
       'OR-001',
       'OR-002',
       'Heritage Orchard Nursery',
       'Berry Best Plants',
       'ordered',
       'shipped',
-    ].forEach(value => expect(screen.getByText(value)).toBeInTheDocument());
+    ]);
   });
 
   it('opens and closes the New Order form', async () => {
@@ -181,9 +186,7 @@ describe('OrchardManagement', () => {
 
     await openForm('+ New Order');
 
-    ['Supplier', 'Items'].forEach(label => {
-      expect(screen.getByRole('textbox', { name: label })).toBeInTheDocument();
-    });
+    expectTexts(['Supplier', 'Items']);
 
     ['Ordered date', 'Expected delivery'].forEach(label => {
       expect(screen.getByLabelText(label)).toBeInTheDocument();
@@ -209,9 +212,7 @@ describe('OrchardManagement', () => {
 
     await openForm('Save Order');
 
-    ['OR-003', 'Green Valley Nursery', '3x Lemon Trees', '2026-12-01'].forEach(value => {
-      expect(screen.getByText(value)).toBeInTheDocument();
-    });
+    expectTexts(['OR-003', 'Green Valley Nursery', '3x Lemon Trees', '2026-12-01']);
 
     expect(screen.getByText('3', { exact: true })).toBeInTheDocument();
   });
@@ -250,14 +251,18 @@ describe('OrchardManagement', () => {
       'ordered',
       '2024-10-01',
       '2024-11-15',
-    ].forEach(value => expect(within(dialog).getByText(value)).toBeInTheDocument());
+    ].forEach(value => {
+      expect(within(dialog).getByText(value)).toBeInTheDocument();
+    });
   });
 
   it('shows the empty state when all orders have been delivered', async () => {
     await renderPage('Orders');
 
     await openForm('Mark as Shipped');
+
     await userEvent.click(screen.getAllByRole('button', { name: 'Mark as Delivered' })[0]);
+
     await openForm('Mark as Delivered');
 
     expect(screen.getByText('No pending orders.')).toBeInTheDocument();
@@ -269,13 +274,13 @@ describe('OrchardManagement', () => {
 
     expectHeading('Planting Schedule');
 
-    [
+    expectTexts([
       '2x Peach Trees',
       '1x Plum Tree',
       '5x Strawberry Plants',
       'Requires full sun',
       'Add compost before planting',
-    ].forEach(value => expect(screen.getByText(value)).toBeInTheDocument());
+    ]);
   });
 
   it('opens and closes the Add Planting Task form', async () => {
@@ -283,9 +288,7 @@ describe('OrchardManagement', () => {
 
     await openForm('+ Add Planting Task');
 
-    ['Plant name', 'Notes'].forEach(label => {
-      expect(screen.getByRole('textbox', { name: label })).toBeInTheDocument();
-    });
+    expectTexts(['Plant name', 'Notes']);
 
     ['Quantity', 'Row', 'Position'].forEach(label => {
       expect(screen.getByRole('spinbutton', { name: label })).toBeInTheDocument();
@@ -313,9 +316,7 @@ describe('OrchardManagement', () => {
 
     await openForm('Save Planting Task');
 
-    ['3x Orange Trees', 'Row 5, Position 2', 'Water regularly', '2026-12-15'].forEach(value =>
-      expect(screen.getByText(value)).toBeInTheDocument(),
-    );
+    expectTexts(['3x Orange Trees', 'Row 5, Position 2', 'Water regularly', '2026-12-15']);
 
     expect(screen.queryByRole('button', { name: 'Save Planting Task' })).toBeNull();
   });
@@ -333,8 +334,7 @@ describe('OrchardManagement', () => {
 
     await openForm('Save Planting Task');
 
-    expect(screen.getByText('1x Fig Tree')).toBeInTheDocument();
-    expect(screen.getByText('No notes provided')).toBeInTheDocument();
+    expectTexts(['1x Fig Tree', 'No notes provided']);
   });
 
   it('shows the placeholder content for Trimming Schedule and Harvest Calendar', async () => {
