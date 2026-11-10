@@ -8,7 +8,6 @@ import {
   faEye,
   faGraduationCap,
   faExclamationTriangle,
-  faTimes,
   faCalendarAlt,
   faPercent,
   faAward,
@@ -556,7 +555,6 @@ const EvaluationResults = ({ auth }) => {
         </ModalBody>
         <ModalFooter className={styles.modalFooter}>
           <Button color="primary" onClick={closeFeedbackModal}>
-            <FontAwesomeIcon icon={faTimes} className="me-2" />
             Close
           </Button>
         </ModalFooter>
