@@ -35,7 +35,7 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
         if (!active) return;
 
         if (!Array.isArray(data?.recipients)) {
-          throw new Error('Invalid recipients response');
+          throw new TypeError('Invalid recipients response');
         }
 
         setRecipients(data.recipients);
@@ -103,6 +103,73 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
 
   const busy = loading || saving;
 
+  let recipientsPanel;
+  if (loading) {
+    recipientsPanel = <output className="d-block">Loading CC recipients...</output>;
+  } else if (loadFailed) {
+    recipientsPanel = (
+      <p>
+        CC recipient settings could not be loaded. No changes can be saved until they are loaded
+        successfully.
+      </p>
+    );
+  } else {
+    recipientsPanel = (
+      <>
+        <label htmlFor="job-application-recipient-email">CC email address</label>
+
+        <div className="d-flex mb-3">
+          <input
+            id="job-application-recipient-email"
+            type="email"
+            className="form-control mr-2"
+            value={email}
+            onChange={event => setEmail(event.target.value)}
+            onKeyDown={event => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                addEmail();
+              }
+            }}
+            disabled={busy}
+            placeholder="name@example.com"
+          />
+
+          <Button color="secondary" type="button" onClick={addEmail} disabled={busy}>
+            Add
+          </Button>
+        </div>
+
+        {recipients.length === 0 ? (
+          <p>No CC recipients configured.</p>
+        ) : (
+          <ul className="list-unstyled" aria-label="CC recipients">
+            {recipients.map(recipient => (
+              <li
+                key={recipient}
+                className="d-flex align-items-center justify-content-between mb-2"
+              >
+                <span className="text-break mr-2">{recipient}</span>
+
+                <Button
+                  type="button"
+                  color="danger"
+                  outline
+                  size="sm"
+                  aria-label={`Remove ${recipient}`}
+                  disabled={busy}
+                  onClick={() => removeEmail(recipient)}
+                >
+                  Remove
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </>
+    );
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -136,77 +203,16 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
         )}
 
         {success && (
-          <div
-            role="status"
-            className="alert alert-success"
+          <output
+            className="alert alert-success d-block"
             // Keep Bootstrap success colors; parent modal uses text-white in dark mode.
             style={darkMode ? { color: '#155724' } : undefined}
           >
             {success}
-          </div>
+          </output>
         )}
 
-        {loading ? (
-          <p role="status">Loading CC recipients...</p>
-        ) : loadFailed ? (
-          <p>
-            CC recipient settings could not be loaded. No changes can be saved until they are loaded
-            successfully.
-          </p>
-        ) : (
-          <>
-            <label htmlFor="job-application-recipient-email">CC email address</label>
-
-            <div className="d-flex mb-3">
-              <input
-                id="job-application-recipient-email"
-                type="email"
-                className="form-control mr-2"
-                value={email}
-                onChange={event => setEmail(event.target.value)}
-                onKeyDown={event => {
-                  if (event.key === 'Enter') {
-                    event.preventDefault();
-                    addEmail();
-                  }
-                }}
-                disabled={busy}
-                placeholder="name@example.com"
-              />
-
-              <Button color="secondary" type="button" onClick={addEmail} disabled={busy}>
-                Add
-              </Button>
-            </div>
-
-            {recipients.length === 0 ? (
-              <p>No CC recipients configured.</p>
-            ) : (
-              <ul className="list-unstyled" aria-label="CC recipients">
-                {recipients.map(recipient => (
-                  <li
-                    key={recipient}
-                    className="d-flex align-items-center justify-content-between mb-2"
-                  >
-                    <span className="text-break mr-2">{recipient}</span>
-
-                    <Button
-                      type="button"
-                      color="danger"
-                      outline
-                      size="sm"
-                      aria-label={`Remove ${recipient}`}
-                      disabled={busy}
-                      onClick={() => removeEmail(recipient)}
-                    >
-                      Remove
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
-        )}
+        {recipientsPanel}
       </ModalBody>
 
       <ModalFooter className={darkMode ? 'bg-yinmn-blue text-white' : ''}>
