@@ -1,9 +1,17 @@
 /* eslint-disable import/prefer-default-export */
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Cell, Label, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { useTable } from 'react-table';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { CHART_RADIUS, CHART_SIZE } from './constants'; // use same numbers as the D3 chart
 import styles from './UserProjectPieChart.module.css';
+
+// Hard cap on the legend rows rendered while collapsed. Half the tasks chart's
+// limit of 20 because a person logs time to far fewer projects than tasks, and
+// this card sits above it — a long project list pushes the whole report down.
+// Fixed rather than viewport-derived so the card is the same height on every
+// screen; these reports get screenshotted into work confirmation letters.
+export const MAX_VISIBLE_PROJECTS = 10;
 
 const BASE_COLORS = [
   '#3366CC',
@@ -112,6 +120,16 @@ export default function UserProjectD3PieChart({
     [colors, data],
   );
 
+  const [expanded, setExpanded] = useState(false);
+
+  // Only the legend table is capped. The pie itself always renders every slice,
+  // so the chart and the "Total Hours" figure stay consistent with each other.
+  const hiddenCount = Math.max(0, tableData.length - MAX_VISIBLE_PROJECTS);
+  const visibleRows = expanded ? tableData : tableData.slice(0, MAX_VISIBLE_PROJECTS);
+  const moreProjectsLabel = `+ ${hiddenCount} more project${hiddenCount === 1 ? '' : 's'}`;
+  const toggleLabel = expanded ? 'Show less' : moreProjectsLabel;
+  const ToggleIcon = expanded ? FiChevronUp : FiChevronDown;
+
   const columns = useMemo(
     () => [
       {
@@ -140,7 +158,7 @@ export default function UserProjectD3PieChart({
   );
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
     columns,
-    data: tableData,
+    data: visibleRows,
   });
 
   if (!data.length || total === 0) return null;
@@ -216,6 +234,21 @@ export default function UserProjectD3PieChart({
             })}
           </tbody>
         </table>
+
+        {hiddenCount > 0 && (
+          <div className={styles['more-rows-footer']}>
+            <button
+              type="button"
+              data-testid="toggle-more-projects"
+              className={styles['show-more-btn']}
+              aria-expanded={expanded}
+              onClick={() => setExpanded(prev => !prev)}
+            >
+              {toggleLabel}
+              <ToggleIcon className={styles['show-more-icon']} aria-hidden="true" />
+            </button>
+          </div>
+        )}
 
         <div
           className={`${styles['data-total-value']} ${darkMode ? styles['text-light'] : ''}`}
