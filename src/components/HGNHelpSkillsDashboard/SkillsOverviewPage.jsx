@@ -15,6 +15,7 @@ function SkillsOverviewPage() {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const darkMode = useSelector(state => state.theme.darkMode);
   const [profileData, setProfileData] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -43,7 +44,9 @@ function SkillsOverviewPage() {
       .catch(() => setProfileData(null))
       .finally(() => setLoadingProfile(false));
   }, []);
-
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSkills, selectedPreferences, searchQuery]);
   const hasFilters =
     selectedSkills.length > 0 || selectedPreferences.length > 0 || searchQuery.trim().length > 0;
 
@@ -97,6 +100,8 @@ function SkillsOverviewPage() {
             selectedSkills={selectedSkills}
             selectedPreferences={selectedPreferences}
             searchQuery={searchQuery.trim()}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
           />
         ) : (
           <p className={styles.message}>
