@@ -127,7 +127,12 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
         )}
 
         {success && (
-          <div role="status" className="alert alert-success">
+          <div
+            role="status"
+            className="alert alert-success"
+            // Keep Bootstrap success colors; parent modal uses text-white in dark mode.
+            style={darkMode ? { color: '#155724' } : undefined}
+          >
             {success}
           </div>
         )}
