@@ -104,26 +104,17 @@ const multipartSelection = value => {
   return value;
 };
 
+const getCurrentUserId = state => {
+  const userId = state?.auth?.user?.userid ||
+    state?.auth?.user?._id || state?.auth?.user?.id || state?.auth?._id || state?.auth?.id;
+  return userId || localStorage.getItem('userId');
+};
+
 export const updateEquipment = (equipmentId, updateData, imageFile = null, options = {}) => async (dispatch, getState) => {
   const url = `${ENDPOINTS.BM_EQUIPMENT_STATUS_UPDATE(equipmentId)}`;
 
   try {
-    const state = getState();
-    let currentUserId = state?.auth?.user?.userid;
-
-    if (!currentUserId) {
-      currentUserId = state?.auth?.user?._id ||
-        state?.auth?.user?.id ||
-        state?.auth?._id ||
-        state?.auth?.id;
-    }
-
-    if (!currentUserId) {
-      const storedUserId = localStorage.getItem('userId');
-      if (storedUserId) {
-        currentUserId = storedUserId;
-      }
-    }
+    const currentUserId = getCurrentUserId(getState());
 
     if (!currentUserId) {
       const errorMsg = 'User not authenticated. Please log in.';

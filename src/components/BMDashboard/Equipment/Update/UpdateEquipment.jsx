@@ -25,7 +25,6 @@ import {
   CONDITIONS,
 } from './equipmentStatusValidation';
 import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
-import Image from '~/components/common/Image/Image';
 import FilePreview from '~/components/common/FilePreview/FilePreview'; // Import the new component
 import styles from './UpdateEquipment.module.css';
 import styles1 from '../../BMDashboard.module.css';
@@ -112,6 +111,198 @@ function Radio({ name, value, onChange, error, helpId }) {
   );
 }
 
+function equipmentHasName(details) {
+  return typeof details?.itemType?.name === 'string' && Boolean(details.itemType.name.trim());
+}
+
+function isCompleteEquipment(details, equipmentId) {
+  return !equipmentIdentityError(details, equipmentId) && equipmentHasName(details);
+}
+
+function buildUpdateData({
+  status,
+  lastUsedBy,
+  lastUsedByOther,
+  lastUsedFor,
+  lastUsedForOther,
+  replacementRequired,
+  description,
+  notes,
+  sendNote,
+}) {
+  return {
+    condition: status,
+    lastUsedBy: lastUsedBy === 'other' ? lastUsedByOther.trim() : lastUsedBy,
+    lastUsedFor: lastUsedFor === 'other' ? lastUsedForOther.trim() : lastUsedFor,
+    replacementRequired,
+    description,
+    notes: sendNote === 'yes' ? notes.trim() : '',
+    sendNote,
+  };
+}
+
+function previewAlertStyle(hasNotSavedFiles, darkMode) {
+  return hasNotSavedFiles
+    ? {
+        backgroundColor: darkMode ? '#664d03' : '#fff3cd',
+        borderColor: darkMode ? '#ffc107' : '#ffeaa7',
+        color: darkMode ? '#fff9e6' : '#664d03', // Fixed contrast
+      }
+    : {
+        backgroundColor: darkMode ? '#0a3d4f' : '#d1ecf1',
+        borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
+        color: darkMode ? '#d1ecf1' : '#0c5460',
+      };
+}
+
+function EquipmentImageUpload({
+  formLabelStyle,
+  darkMode,
+  hasUploadedFiles,
+  uploadedFiles,
+  handleFileUpload,
+  hasFilePreviews,
+  uploadedFilesPreview,
+  handleRemoveFile,
+  hasNotSavedFiles,
+}) {
+  return (
+    <FormGroup>
+      <Label for="file-upload-input" style={formLabelStyle}>
+        Upload latest picture of this equipment. (optional){' '}
+        <small className="text-muted ms-2" style={{ color: darkMode ? '#b0b7c0' : '#6c757d' }}>
+          Accepted: PNG, JPG, JPEG (one image, max 5MB)
+        </small>
+      </Label>
+
+      {hasUploadedFiles && (
+        <Alert
+          color="info"
+          className="mb-3"
+          style={{
+            backgroundColor: darkMode ? '#0a3d4f' : '#d1ecf1',
+            borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
+            color: darkMode ? '#d1ecf1' : '#0c5460',
+          }}
+        >
+          <i className="fas fa-info-circle me-2" />
+          {uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} selected for preview
+        </Alert>
+      )}
+
+      <DragAndDrop updateUploadedFiles={handleFileUpload} />
+
+      {hasFilePreviews && (
+        <div className="mt-3">
+          <Label style={formLabelStyle}>Selected Image Preview:</Label>
+          <div className="d-flex flex-wrap gap-3 mt-2">
+            {uploadedFilesPreview.map((file, index) => (
+              <FilePreview
+                key={`file-${index}-${file.uploadedAt || Date.now()}`}
+                file={file}
+                index={index}
+                darkMode={darkMode}
+                onRemove={handleRemoveFile}
+              />
+            ))}
+          </div>
+
+          <div className="mt-3">
+            <Alert
+              color={hasNotSavedFiles ? 'warning' : 'info'}
+              style={previewAlertStyle(hasNotSavedFiles, darkMode)}
+            >
+              <small>
+                <i className="fas fa-info-circle me-1" />
+                {hasNotSavedFiles
+                  ? 'The selected image was not saved. Submit again to retry.'
+                  : 'The image will be submitted and saved with this status update.'}
+              </small>
+            </Alert>
+          </div>
+        </div>
+      )}
+    </FormGroup>
+  );
+}
+
+function EquipmentFeedback({
+  darkMode,
+  isUpdated,
+  equipmentId,
+  submitError,
+  submitSuccess,
+  history,
+}) {
+  return (
+    <>
+      <Row>
+        <Col md={12}>
+          <header className={`${styles1.bmDashboardHeader} text-center`}>
+            <h1 style={{ color: darkMode ? '#ffffff' : '#212529' }}>Update Equipment Status</h1>
+            {isUpdated && (
+              <output className="text-success mt-2 d-block" style={{ fontSize: '0.9rem' }}>
+                <i className="fas fa-sync-alt me-2" />
+                Update saved for Equipment ID: {equipmentId}
+              </output>
+            )}
+          </header>
+        </Col>
+      </Row>
+
+      {submitError && (
+        <Row>
+          <Col md={12}>
+            <Alert
+              color="danger"
+              className="mt-3"
+              role="alert"
+              style={{
+                backgroundColor: darkMode ? '#5c1a1a' : '#f8d7da',
+                borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
+                color: darkMode ? '#f8d7da' : '#842029',
+              }}
+            >
+              <i className="fas fa-exclamation-circle me-2" aria-hidden="true" />
+              {submitError}
+            </Alert>
+          </Col>
+        </Row>
+      )}
+
+      {submitSuccess && (
+        <Row>
+          <Col md={12}>
+            <Alert
+              color="success"
+              className={`mt-3 ${styles.successAlert}`}
+              style={{
+                backgroundColor: darkMode ? '#0a3a27' : '#d1e7dd',
+                borderColor: darkMode ? '#badbcc' : '#a3cfbb',
+                color: darkMode ? '#d1e7dd' : '#0f5132',
+              }}
+            >
+              <i className={`fas fa-check-circle ${styles.successIcon}`} aria-hidden="true" />
+              <p className={styles.successMessage}>{submitSuccess}</p>
+              <div className={`small ${styles.successAction}`}>
+                <span>You can continue editing or</span>
+                <Button
+                  color="link"
+                  className={styles.successLink}
+                  onClick={() => history.push(`/bmdashboard/equipment/${equipmentId}`)}
+                  style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
+                >
+                  view the equipment details
+                </Button>
+              </div>
+            </Alert>
+          </Col>
+        </Row>
+      )}
+    </>
+  );
+}
+
 export default function UpdateEquipment() {
   const { equipmentId } = useParams();
   return <EquipmentStatusForm key={equipmentId} equipmentId={equipmentId} />;
@@ -145,9 +336,7 @@ function EquipmentStatusForm({ equipmentId }) {
   const submittingRef = useRef(false);
   const activeRef = useRef(true);
   const previewRef = useRef([]);
-  const hasEquipmentName =
-    typeof equipmentDetails?.itemType?.name === 'string' &&
-    Boolean(equipmentDetails.itemType.name.trim());
+  const hasEquipmentName = equipmentHasName(equipmentDetails);
   const metadataReady =
     !metadataLoading && !metadataError && !equipmentIdentityError(equipmentDetails, equipmentId);
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -295,7 +484,7 @@ function EquipmentStatusForm({ equipmentId }) {
         return;
       }
 
-      const imageFile = uploadedFiles.length > 0 ? uploadedFiles[0] : null;
+      const imageFile = uploadedFiles[0] || null;
 
       if (imageFile && !isValidImage(imageFile)) {
         setSubmitError(INVALID_IMAGE_MSG);
@@ -308,26 +497,24 @@ function EquipmentStatusForm({ equipmentId }) {
       setSubmitSuccess('');
 
       try {
-        const updateData = {
-          condition: status,
-          lastUsedBy: lastUsedBy === 'other' ? lastUsedByOther.trim() : lastUsedBy,
-          lastUsedFor: lastUsedFor === 'other' ? lastUsedForOther.trim() : lastUsedFor,
+        const updateData = buildUpdateData({
+          status,
+          lastUsedBy,
+          lastUsedByOther,
+          lastUsedFor,
+          lastUsedForOther,
           replacementRequired,
           description,
-          notes: sendNote === 'yes' ? notes.trim() : '',
+          notes,
           sendNote,
-        };
+        });
 
         const updatedEquipment = await dispatch(
           updateEquipment(equipmentId, updateData, imageFile, { refresh: false, publish: false }),
         );
         if (!activeRef.current) return;
         // Use a complete returned record, otherwise perform one guarded metadata refresh.
-        if (
-          !equipmentIdentityError(updatedEquipment, equipmentId) &&
-          typeof updatedEquipment.itemType?.name === 'string' &&
-          updatedEquipment.itemType.name.trim()
-        ) {
+        if (isCompleteEquipment(updatedEquipment, equipmentId)) {
           setEquipmentDetails(updatedEquipment);
         } else {
           setRetry(value => value + 1);
@@ -521,80 +708,26 @@ function EquipmentStatusForm({ equipmentId }) {
   return (
     <Container className={`${styles1.invFormPageContainer} ${darkMode ? 'dark-mode' : ''}`}>
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
-      <Row>
-        <Col md={12}>
-          <header className={`${styles1.bmDashboardHeader} text-center`}>
-            <h1 style={{ color: darkMode ? '#ffffff' : '#212529' }}>Update Equipment Status</h1>
-            {isUpdated && (
-              <output className="text-success mt-2 d-block" style={{ fontSize: '0.9rem' }}>
-                <i className="fas fa-sync-alt me-2" />
-                Update saved for Equipment ID: {equipmentId}
-              </output>
-            )}
-          </header>
-        </Col>
-      </Row>
 
-      {submitError && (
-        <Row>
-          <Col md={12}>
-            <Alert
-              color="danger"
-              className="mt-3"
-              role="alert"
-              style={{
-                backgroundColor: darkMode ? '#5c1a1a' : '#f8d7da',
-                borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
-                color: darkMode ? '#f8d7da' : '#842029',
-              }}
-            >
-              <i className="fas fa-exclamation-circle me-2" aria-hidden="true" />
-              {submitError}
-            </Alert>
-          </Col>
-        </Row>
-      )}
-
-      {submitSuccess && (
-        <Row>
-          <Col md={12}>
-            <Alert
-              color="success"
-              className="mt-3"
-              style={{
-                backgroundColor: darkMode ? '#0a3a27' : '#d1e7dd',
-                borderColor: darkMode ? '#badbcc' : '#a3cfbb',
-                color: darkMode ? '#d1e7dd' : '#0f5132',
-              }}
-            >
-              <i className="fas fa-check-circle me-2" />
-              {submitSuccess}
-              <div className="mt-2 small">
-                You can continue editing or{' '}
-                <Button
-                  color="link"
-                  className="p-0"
-                  onClick={() => history.push(`/bmdashboard/equipment/${equipmentId}`)}
-                  style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
-                >
-                  view the equipment details
-                </Button>
-              </div>
-            </Alert>
-          </Col>
-        </Row>
-      )}
+      <EquipmentFeedback
+        darkMode={darkMode}
+        isUpdated={isUpdated}
+        equipmentId={equipmentId}
+        submitError={submitError}
+        submitSuccess={submitSuccess}
+        history={history}
+      />
 
       {metadataReady && equipmentDetails && (
         <Row className="mb-4">
-          <Col md={3}>
-            <Image
-              name="equipment-image"
+          <Col md={12}>
+            <img
+              id="equipment-image"
               src={equipmentDetails.imageUrl || 'https://via.placeholder.com/150'}
-              alt="Equipment image"
+              alt={displayText(equipmentDetails.itemType?.name, 'Equipment')}
               className={`${styles.largeSquareImage} mb-3`}
               style={{
-                border: `2px solid ${darkMode ? '#444444' : '#dee2e6'}`,
+                borderColor: darkMode ? '#444444' : '#dee2e6',
                 backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
               }}
             />
@@ -603,9 +736,9 @@ function EquipmentStatusForm({ equipmentId }) {
       )}
 
       {metadataLoading && (
-        <div role="status" className={styles.metadataMessage}>
+        <output className={`${styles.metadataMessage} d-block`}>
           <Spinner size="sm" role="presentation" aria-hidden="true" /> Loading equipment…
-        </div>
+        </output>
       )}
       {metadataError && (
         <Alert color="danger" role="alert">
@@ -875,78 +1008,17 @@ function EquipmentStatusForm({ equipmentId }) {
             </small>
           </FormGroup>
 
-          <FormGroup>
-            <Label for="file-upload-input" style={formLabelStyle}>
-              Upload latest picture of this equipment. (optional)
-              <small
-                className="text-muted ms-2"
-                style={{ color: darkMode ? '#b0b7c0' : '#6c757d' }}
-              >
-                Accepted: PNG, JPG, JPEG (one image, max 5MB)
-              </small>
-            </Label>
-
-            {hasUploadedFiles && (
-              <Alert
-                color="info"
-                className="mb-3"
-                style={{
-                  backgroundColor: darkMode ? '#0a3d4f' : '#d1ecf1',
-                  borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
-                  color: darkMode ? '#d1ecf1' : '#0c5460',
-                }}
-              >
-                <i className="fas fa-info-circle me-2" />
-                {uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} selected for
-                preview
-              </Alert>
-            )}
-
-            <DragAndDrop updateUploadedFiles={handleFileUpload} />
-
-            {hasFilePreviews && (
-              <div className="mt-3">
-                <Label style={formLabelStyle}>Selected Image Preview:</Label>
-                <div className="d-flex flex-wrap gap-3 mt-2">
-                  {uploadedFilesPreview.map((file, index) => (
-                    <FilePreview
-                      key={`file-${index}-${file.uploadedAt || Date.now()}`}
-                      file={file}
-                      index={index}
-                      darkMode={darkMode}
-                      onRemove={handleRemoveFile}
-                    />
-                  ))}
-                </div>
-
-                <div className="mt-3">
-                  <Alert
-                    color={hasNotSavedFiles ? 'warning' : 'info'}
-                    style={
-                      hasNotSavedFiles
-                        ? {
-                            backgroundColor: darkMode ? '#664d03' : '#fff3cd',
-                            borderColor: darkMode ? '#ffc107' : '#ffeaa7',
-                            color: darkMode ? '#fff9e6' : '#664d03', // Fixed contrast
-                          }
-                        : {
-                            backgroundColor: darkMode ? '#0a3d4f' : '#d1ecf1',
-                            borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
-                            color: darkMode ? '#d1ecf1' : '#0c5460',
-                          }
-                    }
-                  >
-                    <small>
-                      <i className="fas fa-info-circle me-1" />
-                      {hasNotSavedFiles
-                        ? 'The selected image was not saved. Submit again to retry.'
-                        : 'The image will be submitted and saved with this status update.'}
-                    </small>
-                  </Alert>
-                </div>
-              </div>
-            )}
-          </FormGroup>
+          <EquipmentImageUpload
+            formLabelStyle={formLabelStyle}
+            darkMode={darkMode}
+            hasUploadedFiles={hasUploadedFiles}
+            uploadedFiles={uploadedFiles}
+            handleFileUpload={handleFileUpload}
+            hasFilePreviews={hasFilePreviews}
+            uploadedFilesPreview={uploadedFilesPreview}
+            handleRemoveFile={handleRemoveFile}
+            hasNotSavedFiles={hasNotSavedFiles}
+          />
 
           <FormGroup>
             <Label for="description" style={formLabelStyle}>

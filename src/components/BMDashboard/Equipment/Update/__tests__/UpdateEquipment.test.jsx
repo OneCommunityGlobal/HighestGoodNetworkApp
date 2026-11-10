@@ -14,7 +14,6 @@ import { updateEquipment } from '~/actions/bmdashboard/equipmentActions';
 vi.mock('axios', () => ({ default: { get: vi.fn(), put: vi.fn() } }));
 vi.mock('react-toastify', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 vi.mock('~/components/BMDashboard/shared/CheckTypesModal', () => ({ default: () => null }));
-vi.mock('~/components/common/Image/Image', () => ({ default: () => null }));
 vi.mock('~/components/common/FilePreview/FilePreview', () => ({
   default: ({ darkMode, file, index, onRemove }) => (
     <div>
@@ -115,6 +114,69 @@ beforeEach(() => {
 });
 
 describe('Equipment status form', () => {
+  it.each([false, true])(
+    'shows the saved image and separates success navigation (darkMode=%s)',
+    async darkMode => {
+      const imageUrl = 'https://example.com/saved-equipment.jpg';
+      axios.put.mockResolvedValueOnce({ data: { ...record, imageUrl } });
+      const { history } = setup({ darkMode });
+      await loaded();
+      fill();
+      fireEvent.click(screen.getByRole('button', { name: 'Preview image' }));
+      submit();
+      const message = await screen.findByText(/The update date was recorded by the server/);
+      const image = screen.getByRole('img', { name: 'Excavator' });
+      expect(image).toHaveAttribute('src', imageUrl);
+      expect(image).toHaveClass(styles.largeSquareImage);
+      expect(image).toHaveStyle({ borderColor: darkMode ? '#444444' : '#dee2e6' });
+      expect(screen.getAllByRole('img', { name: 'Excavator' })).toHaveLength(1);
+      expect(screen.queryByTestId('local-preview')).not.toBeInTheDocument();
+      expect(message).toHaveClass(styles.successMessage);
+      const success = screen.getByRole('alert');
+      expect(success).toHaveClass(styles.successAlert);
+      const navigation = within(success).getByRole('button', {
+        name: 'view the equipment details',
+      });
+      expect(navigation).toHaveClass(styles.successLink);
+      fireEvent.click(navigation);
+      expect(history.location.pathname).toBe(`/bmdashboard/equipment/${id}`);
+    },
+  );
+
+  it('announces metadata loading with a native output element', async () => {
+    const pending = deferred();
+    axios.get.mockReturnValueOnce(pending.promise);
+    setup();
+    expect(screen.getByRole('status')).toHaveTextContent('Loading equipment…');
+    expect(screen.getByRole('status').tagName).toBe('OUTPUT');
+    await act(async () => pending.resolve({ data: record }));
+    await loaded();
+    expect(screen.queryByText('Loading equipment…')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [
+      { user: { userid: 'primary', _id: 'nested', id: 'nested-id' }, _id: 'auth', id: 'auth-id' },
+      'primary',
+    ],
+    [{ user: { _id: 'nested', id: 'nested-id' }, _id: 'auth' }, 'nested'],
+    [{ user: { id: 'nested-id' }, _id: 'auth' }, 'nested-id'],
+    [{ _id: 'auth', id: 'auth-id' }, 'auth'],
+    [{ id: 'auth-id' }, 'auth-id'],
+    [{}, 'stored'],
+  ])('preserves authentication fallback order for %j', async (auth, expectedId) => {
+    const previousId = localStorage.getItem('userId');
+    localStorage.setItem('userId', 'stored');
+    try {
+      const store = storeFactory({ auth });
+      await store.dispatch(updateEquipment(id, { condition: 'Good' }, null, { refresh: false }));
+      expect(axios.put.mock.calls[0][1].createdBy).toBe(expectedId);
+    } finally {
+      if (previousId === null) localStorage.removeItem('userId');
+      else localStorage.setItem('userId', previousId);
+    }
+  });
+
   it('keeps invalid-image feedback when the native file-input change bubbles to the form', async () => {
     setup();
     await loaded();
