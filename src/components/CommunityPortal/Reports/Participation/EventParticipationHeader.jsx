@@ -1,8 +1,16 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
+import headerStyles from './EventParticipationHeader.module.css';
+
+const DEFAULT_AVATAR = '/pfp-default-header.png';
 
 function EventParticipationHeader() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const profilePic = useSelector(state => state.auth?.profilePic);
+  const firstName = useSelector(state => state.auth?.firstName);
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  const avatarSrc = profilePic && avatarFailed === false ? profilePic : DEFAULT_AVATAR;
 
   const eventMetrics = {
     totalEvents: 24,
@@ -25,7 +33,7 @@ function EventParticipationHeader() {
           </p>
         </div>
 
-        <div className={styles.headerNavigation}>
+        <div className={`${styles.headerNavigation} ${headerStyles.navWithAvatar}`}>
           <nav className={styles.navLinks}>
             <a
               href="/communityportal/reports/participation/virtual-vs-inperson"
@@ -40,6 +48,14 @@ function EventParticipationHeader() {
               Participation Trends
             </a>
           </nav>
+          <img
+            src={avatarSrc}
+            alt={firstName ? `${firstName}'s profile picture` : 'Profile picture'}
+            className={`${headerStyles.profileAvatar} ${
+              darkMode ? headerStyles.profileAvatarDark : ''
+            }`}
+            onError={() => setAvatarFailed(true)}
+          />
         </div>
       </div>
 
