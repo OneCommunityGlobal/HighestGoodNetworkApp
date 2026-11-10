@@ -114,6 +114,14 @@ vi.mock('../../Issues/LongestOpenIssuesChart', () => ({
   default: () => <div>Issues Chart</div>,
 }));
 
+vi.mock('../../RentalChart/RentalChart', () => ({
+  default: () => <div>Rental Chart</div>,
+}));
+
+vi.mock('../../RentalChart/ReturnedLateChart', () => ({
+  default: () => <div>Returned Late Chart</div>,
+}));
+
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 

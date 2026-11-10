@@ -782,7 +782,7 @@ function QuantityOfMaterialsUsed({
           onChange={selectedOptions =>
             setSelectedMaterials(selectedOptions.map(({ value }) => value))
           }
-          placeholder="All Materials testing"
+          placeholder="All Materials"
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
           menuPosition="fixed"

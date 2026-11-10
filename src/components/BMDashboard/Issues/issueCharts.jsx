@@ -753,7 +753,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           }`}
           style={isCardVariant ? { marginTop: 0, marginBottom: 8 } : {}}
         >
-          Issue Chart
+          Number of Issues Reported by Type
         </h2>
       )}
 

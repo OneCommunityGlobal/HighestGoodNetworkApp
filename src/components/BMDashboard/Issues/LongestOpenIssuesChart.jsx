@@ -106,7 +106,7 @@ function IssuesCharts({ bmProjects = [] }) {
           text:
             graphType === 'Longest Open'
               ? 'Top 5 Longest Open Issues'
-              : 'Most Expensive Issues by Time Open',
+              : 'Top 5 Most Expensive Issues',
           font: { size: 14, weight: 'bold' },
           color: darkMode ? '#fff' : '#000',
         },

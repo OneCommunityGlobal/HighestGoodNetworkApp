@@ -136,7 +136,7 @@ function WeeklyProjectSummary() {
   const toggleSection = category => {
     setOpenSections(prev => ({
       ...prev,
-      [category]: !prev[category],
+      [category]: prev[category] === false,
     }));
   };
 
@@ -746,9 +746,9 @@ function WeeklyProjectSummary() {
                 className={styles.weeklyProjectSummaryDashboardCategoryTitle}
                 onClick={() => toggleSection(key)}
               >
-                {title} <span>{openSections[key] ? '∧' : '∨'}</span>
+                {title} <span>{openSections[key] !== false ? '∧' : '∨'}</span>
               </button>
-              {openSections[key] && (
+              {openSections[key] !== false && (
                 <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
                   {content}
                 </div>
