@@ -71,13 +71,10 @@
   height: auto !important;
 }
 
-.containerTotalOrgWrapper canvas {
-  max-width: 100% !important;
-}
-
 /*
- * Volunteer/mentor donuts fill their Chart.js wrapper. Do not set height: auto on
- * these canvases — that fought Chart.js sizing and forced an !important override.
+ * Canvas max-width comes from `.containerTotalOrgWrapper *` below (no !important).
+ * Volunteer/mentor donuts fill their Chart.js wrapper — do not set height: auto on
+ * these canvases (that fought Chart.js sizing).
  */
 .containerTotalOrgWrapper :global([data-chart='volunteer-status']) canvas,
 .containerTotalOrgWrapper :global([data-chart='mentor-status']) canvas {
