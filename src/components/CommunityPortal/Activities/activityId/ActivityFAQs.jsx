@@ -2,8 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounce } from 'lodash';
 import { FaSearch, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import { getAllFAQs } from '~/components/Faq/api';
 import styles from './ActivityFAQs.module.css';
+
+const CONTACT_EMAIL = 'onecommunityglobal@gmail.com';
 
 function normalizeFaqFromApi(faq) {
   return {
@@ -97,6 +100,13 @@ function ActivityFAQs() {
   const handleSearchChange = e => {
     const query = e.target.value;
     setSearchQuery(query);
+  };
+
+  const handleContactClick = () => {
+    navigator.clipboard
+      .writeText(CONTACT_EMAIL)
+      .then(() => toast.success('Email copied!'))
+      .catch(() => toast.error('Failed to copy email.'));
   };
 
   // Determine empty state message
@@ -193,9 +203,9 @@ function ActivityFAQs() {
       <div className={styles.footer}>
         <p className={styles.footerText}>
           Still have questions? Feel free to{' '}
-          <a href="#contact" className={styles.footerLink}>
+          <button type="button" className={styles.footerLink} onClick={handleContactClick}>
             contact
-          </a>{' '}
+          </button>{' '}
           with us!
         </p>
       </div>

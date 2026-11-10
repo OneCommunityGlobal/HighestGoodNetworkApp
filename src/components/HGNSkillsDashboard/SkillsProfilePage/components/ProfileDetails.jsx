@@ -50,9 +50,6 @@ function ProfileDetails() {
         </span>
         <span>
           <strong>Years of Experience:</strong>{' '}
-          <span className={styles.value}>
-            {profileData.skillInfo?.general?.yearsOfExperience || 'N/A'}
-          </span>
           {isEditing ? (
             <input
               type="number"

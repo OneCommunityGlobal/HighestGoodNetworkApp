@@ -225,4 +225,54 @@ describe('Projects component', () => {
     //   fireEvent.click(closeButton)
     //   expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
   });
+
+  it('searches archived projects while the archived view is open', async () => {
+    axios.get.mockResolvedValue({ status: 200, data: [] });
+    const activeProject = { ...projects[0], _id: 'active-project', projectName: 'Active Alpha' };
+    const archivedProject = {
+      ...projects[0],
+      _id: 'archived-project',
+      projectName: 'Archived Alpha',
+      isArchived: true,
+    };
+    const archivedStore = buildTestStore({
+      allProjectsState: {
+        projects: [activeProject],
+        archivedProjects: [archivedProject],
+        status: 200,
+        fetching: false,
+        fetched: true,
+      },
+    });
+
+    renderProjects(archivedStore);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show Archived' }));
+    fireEvent.change(screen.getByLabelText('Filter by'), { target: { value: 'project' } });
+    fireEvent.change(screen.getByPlaceholderText('Search by Project Name'), {
+      target: { value: 'Archived Alpha' },
+    });
+
+    // The search input is debounced, so poll until the filtered list settles rather
+    // than sleeping for a hardcoded interval.
+    await waitFor(() => {
+      expect(screen.getByText('Archived Alpha')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('Active Alpha')).not.toBeInTheDocument();
+  });
+
+  it('does not use the light Bootstrap button treatment in dark mode', () => {
+    axios.get.mockResolvedValue({ status: 200, data: [] });
+    const darkStore = mockStore({
+      ...store.getState(),
+      theme: { darkMode: true },
+    });
+
+    renderProjects(darkStore);
+
+    expect(screen.getByRole('button', { name: 'Show Archived' })).not.toHaveClass(
+      'btn-outline-light',
+    );
+  });
 });

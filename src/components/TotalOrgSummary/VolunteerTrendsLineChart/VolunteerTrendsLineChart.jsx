@@ -7,40 +7,65 @@ import Loading from '~/components/common/Loading';
 import styles from './VolunteerTrendsStyles.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const formatChartData = rawData => {
-  if (rawData[0]._id.month) {
-    // for monthly intervals
-    const integerToMonths = {
-      1: 'Jan',
-      2: 'Feb',
-      3: 'Mar',
-      4: 'Apr',
-      5: 'May',
-      6: 'Jun',
-      7: 'Jul',
-      8: 'Aug',
-      9: 'Sep',
-      10: 'Oct',
-      11: 'Nov',
-      12: 'Dec',
-    };
+const MONTH_NAMES = {
+  1: 'Jan',
+  2: 'Feb',
+  3: 'Mar',
+  4: 'Apr',
+  5: 'May',
+  6: 'Jun',
+  7: 'Jul',
+  8: 'Aug',
+  9: 'Sep',
+  10: 'Oct',
+  11: 'Nov',
+  12: 'Dec',
+};
 
-    return rawData.map(data => {
+const TIMEFRAME_OPTIONS = [
+  { value: 'years1', label: 'This year' },
+  { value: 'years2', label: 'Last 2 years' },
+  { value: 'years3', label: 'Last 3 years' },
+  { value: 'years5', label: 'Last 5 years' },
+  { value: 'years10', label: 'Last 10 years' },
+  { value: 'years0', label: 'All-time' },
+  { value: 'yearsCustom', label: 'Choose Date Range' },
+];
+
+const formatChartData = rawData => {
+  if (!Array.isArray(rawData) || rawData.length === 0) return [];
+
+  // Sort chronologically by year, then month/week
+  const sorted = [...rawData].sort((a, b) => {
+    const yearDiff = (a._id?.year || 0) - (b._id?.year || 0);
+    if (yearDiff !== 0) return yearDiff;
+    const timeA = a._id?.month ?? a._id?.week ?? 0;
+    const timeB = b._id?.month ?? b._id?.week ?? 0;
+    return timeA - timeB;
+  });
+
+  const isMonthly = sorted[0]?._id?.month !== undefined;
+
+  return sorted.map((item, index) => {
+    const year = item._id?.year;
+
+    if (isMonthly) {
+      const monthStr = MONTH_NAMES[item._id?.month] || `M${item._id?.month}`;
       return {
-        xLabel: integerToMonths[data._id.month],
-        totalHours: data.totalHours,
-        year: data._id.year,
+        id: `${year}-${item._id?.month}-${index}`,
+        xLabel: monthStr,
+        totalHours: Number(item.totalHours) || 0,
+        year,
         interval: 'month',
       };
-    });
-  }
+    }
 
-  // for weekly intervals
-  return rawData.map(data => {
+    const weekNum = Number(item._id?.week) || 0;
     return {
-      xLabel: data._id.week,
-      totalHours: data.totalHours,
-      year: data._id.year,
+      id: `${year}-W${weekNum}-${index}`,
+      xLabel: `W${weekNum}`,
+      totalHours: Number(item.totalHours) || 0,
+      year,
       interval: 'week',
     };
   });
@@ -50,56 +75,121 @@ const dateToYYYYMMDD = date => {
   return date.toISOString().split('T')[0];
 };
 
+const formatNumber = number => {
+  if (number === null || number === undefined) return '0';
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
+// Descriptive x-axis label, e.g. "Weekly for year 2026" or "Monthly from 2024 to 2026"
+const getXAxisLabel = (data, requestOffset) => {
+  if (!data?.length) return '';
+  const years = [...new Set(data.map(d => d.year))].filter(Boolean);
+  if (years.length === 0) return '';
+  const period = requestOffset === 'week' ? 'Weekly' : 'Monthly';
+  if (years.length === 1) return `${period} for year ${years[0]}`;
+  return `${period} from ${years[0]} to ${years.at(-1)}`;
+};
+
+const buildTrendsUrl = (timeFrame, offset, dateRange) => {
+  if (dateRange.every(Boolean)) {
+    const [startDate, endDate] = dateRange.map(dateToYYYYMMDD);
+    return ENDPOINTS.VOLUNTEER_TRENDS(timeFrame, offset, startDate, endDate);
+  }
+  return ENDPOINTS.VOLUNTEER_TRENDS(timeFrame, offset);
+};
+
+const getChartSize = viewportWidth => {
+  if (viewportWidth < 650) return { width: 380, height: 250 };
+  if (viewportWidth < 1200) return { width: 500, height: 350 };
+  return { width: 600, height: 350 };
+};
+
+const getSelectStyles = darkMode => {
+  const background = darkMode ? '#111827' : '#ffffff';
+  const color = darkMode ? '#f8fafc' : '#111827';
+  return {
+    select: {
+      backgroundColor: background,
+      color,
+      border: darkMode ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid #ccc',
+      borderRadius: 4,
+      padding: '2px 8px',
+    },
+    option: { backgroundColor: background, color },
+  };
+};
+
+// Returns a recharts `dot` renderer that only draws the final point
+const createDotRenderer = (darkMode, pointCount) =>
+  function renderCustomDot({ cx, cy, index, value }) {
+    if (index !== pointCount - 1) return null;
+
+    const color = darkMode ? 'white' : 'black';
+    return (
+      <g key={`last-dot-${index}`}>
+        <circle cx={cx} cy={cy} r={24} opacity="0.1" fill={color} />
+        <circle cx={cx} cy={cy} r={6} fill={color} />
+        <text x={cx} y={cy - 30} fill={color} textAnchor="middle" fontWeight={600} fontSize={16}>
+          {formatNumber(value)}
+        </text>
+      </g>
+    );
+  };
+
+function CustomTooltip({ active, payload, label, darkMode }) {
+  if (!active || !payload?.length) return null;
+
+  const { year, interval } = payload[0].payload;
+  const bgColor = darkMode ? '#222' : 'white';
+  const textColor = darkMode ? '#fff' : '#222';
+  const labelColor = darkMode ? '#90cdf4' : '#222';
+
+  // label is e.g. "W40" -> "Week 40"; months are shown as-is (e.g. "Oct")
+  const formattedLabel = interval === 'week' ? String(label).replace(/^W/, 'Week ') : label;
+
+  return (
+    <div
+      style={{
+        backgroundColor: bgColor,
+        color: textColor,
+        border: '1px solid #ccc',
+        minWidth: '180px',
+        padding: '10px',
+      }}
+    >
+      <h6 style={{ color: labelColor }}>
+        {formattedLabel}
+        {year ? `, ${year}` : ''}
+      </h6>
+      <h6 style={{ color: darkMode ? '#90ee90' : '#328D1B' }}>
+        {formatNumber(payload[0].value)} hours
+      </h6>
+    </div>
+  );
+}
+
 export default function VolunteerTrendsLineChart({ darkMode }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [fetchError, setFetchError] = useState(false);
-  const latestNumberOfHours = data?.[data.length - 1].totalHours || 0;
-  const [chartSize, setChartSize] = useState({ width: null, height: null });
+  const [data, setData] = useState([]);
+  const [fetchError, setFetchError] = useState(null);
+
+  const [chartSize, setChartSize] = useState({ width: 600, height: 350 });
   const [requestTimeFrame, setRequestTimeFrame] = useState(1);
   const [requestOffset, setRequestOffset] = useState('week');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDateRange, setCustomDateRange] = useState([null, null]);
   const [customStartDate = new Date(), customEndDate = new Date()] = customDateRange;
 
-  //dropdown styling - dark mode
-  const selectStyle = {
-    backgroundColor: darkMode ? '#111827' : '#ffffff',
-    color: darkMode ? '#f8fafc' : '#111827',
-    border: darkMode ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid #ccc',
-    borderRadius: 4,
-    padding: '2px 8px',
-  };
-
-  // option colors
-  const optionStyle = {
-    backgroundColor: darkMode ? '#111827' : '#ffffff',
-    color: darkMode ? '#f8fafc' : '#111827',
-  };
+  const { select: selectStyle, option: optionStyle } = getSelectStyles(darkMode);
+  const axisColor = darkMode ? '#ccc' : undefined;
+  const hasCustomRange = customDateRange.every(Boolean);
 
   useEffect(() => {
-    // Gets backend data
     const getData = async () => {
-      // TODO: NEED TO ABSTRACT THIS TO ITS OWN REDUX REDUCER
-      let url;
-      if (customDateRange.every(date => date)) {
-        // URL for custom dates
-        const formattedDateRange = customDateRange.map(date => dateToYYYYMMDD(date));
-        url = ENDPOINTS.VOLUNTEER_TRENDS(
-          requestTimeFrame,
-          requestOffset,
-          formattedDateRange[0],
-          formattedDateRange[1],
-        );
-      } else {
-        // URL for pre-set timeframes
-        url = ENDPOINTS.VOLUNTEER_TRENDS(requestTimeFrame, requestOffset);
-      }
-
       try {
+        const url = buildTrendsUrl(requestTimeFrame, requestOffset, customDateRange);
         const response = await axios.get(url);
-        const rawData = formatChartData(response.data);
-        setData(rawData);
+        setData(formatChartData(response.data));
       } catch (err) {
         setFetchError(err);
       } finally {
@@ -110,21 +200,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   }, [requestTimeFrame, requestOffset, customDateRange]);
 
   useEffect(() => {
-    // Add event listener to set chart width on window resize
-    const updateChartSize = () => {
-      // Default sizes
-      let width = 600;
-      let height = 350;
-      if (window.innerWidth < 650) {
-        // Mobile
-        width = 400;
-        height = 250;
-      } else if (window.innerWidth < 1200) {
-        // Tablet
-        width = 500;
-      }
-      setChartSize({ width, height });
-    };
+    const updateChartSize = () => setChartSize(getChartSize(window.innerWidth));
     updateChartSize();
     window.addEventListener('resize', updateChartSize);
     return () => {
@@ -132,68 +208,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
     };
   }, []);
 
-  const formatNumber = number => {
-    // Add comma every third digit (e.g. makes 1000 a 1,000)
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  };
-
-  const renderCustomDot = ({ cx, cy, index }) => {
-    // Highlight and show value of last dot on the line
-    const isLastPoint = index === data.length - 1;
-    const formattedNumber = formatNumber(latestNumberOfHours);
-    if (isLastPoint) {
-      return (
-        <g key={index}>
-          <circle cx={cx} cy={cy} r={24} opacity="0.1" fill={darkMode ? 'white' : 'black'} />
-          <circle cx={cx} cy={cy} r={6} fill={darkMode ? 'white' : 'black'} />
-          <text
-            x={cx}
-            y={cy - 30}
-            fill={darkMode ? 'white' : 'black'}
-            textAnchor="middle"
-            fontWeight={600}
-            fontSize={16}
-          >
-            {formattedNumber}
-          </text>
-        </g>
-      );
-    }
-    return null;
-  };
-
-  const renderCustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      const { year, interval } = payload[0].payload;
-      const bgColor = darkMode ? '#222' : 'white';
-      const textColor = darkMode ? '#fff' : '#222';
-      const labelColor = darkMode ? '#90cdf4' : '#222';
-      return (
-        <div
-          style={{
-            backgroundColor: bgColor,
-            color: textColor,
-            border: '1px solid #ccc',
-            minWidth: '180px',
-            padding: '10px',
-          }}
-        >
-          <h6 style={{ color: labelColor }}>
-            {interval === 'week' ? 'Week ' : ''}
-            {label}
-            {`, `}
-            {year}
-          </h6>
-
-          <h6 style={{ color: darkMode ? '#90ee90' : '#328D1B' }}>
-            {payload[0].value}
-            {' hours'}
-          </h6>
-        </div>
-      );
-    }
-    return null;
-  };
+  const xAxisLabel = getXAxisLabel(data, requestOffset);
 
   const setTimeframeFilter = e => {
     if (e.target.value === 'yearsCustom') {
@@ -205,11 +220,11 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
     const numberOfYears = e.target.value.substring(5);
     setIsLoading(true);
     setRequestTimeFrame(numberOfYears);
-    return undefined;
   };
 
   const setOffsetFilter = e => {
     const offset = e.target.value;
+    setIsLoading(true);
     setRequestOffset(offset);
   };
 
@@ -235,37 +250,21 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           onChange={setTimeframeFilter}
           style={selectStyle}
         >
-          <option value="years1" style={optionStyle}>
-            This year
-          </option>
-          <option value="years2" style={optionStyle}>
-            Last 2 years
-          </option>
-          <option value="years3" style={optionStyle}>
-            Last 3 years
-          </option>
-          <option value="years5" style={optionStyle}>
-            Last 5 years
-          </option>
-          <option value="years10" style={optionStyle}>
-            Last 10 years
-          </option>
-          <option value="years0" style={optionStyle}>
-            All-time
-          </option>
-          <option value="yearsCustom" style={optionStyle}>
-            Choose Date Range
-          </option>
+          {TIMEFRAME_OPTIONS.map(({ value, label }) => (
+            <option key={value} value={value} style={optionStyle}>
+              {label}
+            </option>
+          ))}
         </select>
-        by
+        {' by '}
         <select
           name="offset-filter"
           id="offset-filter"
           onChange={setOffsetFilter}
           style={selectStyle}
         >
-          <option value="week">week</option>
-          <option value="month">month</option>
+          <option value="week">Week</option>
+          <option value="month">Month</option>
         </select>
       </div>
 
@@ -281,14 +280,14 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
               selectsRange
               inline
               dateFormat="MM-dd-yyyy"
-              className="date-picker"
+              className={darkMode ? styles.darkCalendar : styles.lightCalendar}
             />
           )}
         </div>
       </div>
 
       {/* CUSTOM DATE RANGE */}
-      {customDateRange.every(date => date) && (
+      {hasCustomRange && (
         <div className={styles.customDateRange}>
           <span>{dateToYYYYMMDD(customDateRange[0])}</span>
           <span> to </span>
@@ -308,38 +307,51 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           width={chartSize.width}
           height={chartSize.height}
           data={data}
-          margin={{ right: 50, top: 50, left: 20 }}
+          margin={{ right: 50, top: 50, left: 90, bottom: 30 }}
         >
           <CartesianGrid stroke="#ccc" vertical={false} />
+
           <XAxis
             dataKey="xLabel"
+            type="category"
+            interval="preserveStartEnd"
+            minTickGap={25}
             axisLine={false}
             tickLine={false}
-            tick={{ fill: darkMode ? '#ccc' : undefined }}
+            tick={{ fill: axisColor, fontSize: 11 }}
+            label={{
+              value: xAxisLabel,
+              position: 'insideBottom',
+              offset: -20,
+              style: { fontSize: 14, fill: axisColor, textAnchor: 'middle' },
+            }}
           />
+
           <YAxis
+            width={75}
             tickFormatter={formatNumber}
             axisLine={false}
             tickLine={false}
-            tick={{ fill: darkMode ? '#ccc' : undefined }}
+            tick={{ fill: axisColor }}
             label={{
               value: 'Total Hours',
               angle: -90,
               position: 'insideLeft',
-              dy: 20,
-              dx: -15,
-              style: { fontSize: 18, fill: darkMode ? '#ccc' : undefined },
+              dy: 50,
+              dx: -65,
+              style: { fontSize: 18, fill: axisColor, textAnchor: 'middle' },
             }}
           />
+
           <Line
             type="linear"
             dataKey="totalHours"
             stroke="#328D1B"
             strokeWidth={4}
-            dot={renderCustomDot}
+            dot={createDotRenderer(darkMode, data.length)}
             strokeLinecap="round"
           />
-          <Tooltip content={renderCustomTooltip} />
+          <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
         </LineChart>
       )}
     </div>
