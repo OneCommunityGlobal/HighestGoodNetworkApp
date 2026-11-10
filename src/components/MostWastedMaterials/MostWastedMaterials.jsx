@@ -223,6 +223,7 @@ export default function MostWastedMaterials() {
               id="mw-from"
               type="date"
               value={dateRange.from}
+              max={dateRange.to}
               onChange={e => setDateRange(r => ({ ...r, from: e.target.value }))}
               className={styles.input}
             />
@@ -236,6 +237,7 @@ export default function MostWastedMaterials() {
               id="mw-to"
               type="date"
               value={dateRange.to}
+              min={dateRange.from}
               onChange={e => setDateRange(r => ({ ...r, to: e.target.value }))}
               className={styles.input}
             />
