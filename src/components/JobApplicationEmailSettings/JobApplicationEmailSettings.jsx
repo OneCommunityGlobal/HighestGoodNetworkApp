@@ -121,7 +121,12 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
         <p>Manage the email addresses that receive new job application notifications.</p>
 
         {error && (
-          <div role="alert" className="alert alert-danger">
+          <div
+            role="alert"
+            className="alert alert-danger"
+            // Keep Bootstrap danger colors; parent modal uses text-white in dark mode.
+            style={darkMode ? { color: '#721c24' } : undefined}
+          >
             {error}
           </div>
         )}
