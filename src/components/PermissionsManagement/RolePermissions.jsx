@@ -16,6 +16,7 @@ import { updateRole, getAllRoles } from '../../actions/role';
 import { permissions as permissionKeys } from '../../utils/constants';
 import hasPermission from '../../utils/permissions';
 import PermissionList from './PermissionList';
+import PermissionChangesList from './PermissionChangesList';
 import permissionLabel from './PermissionsConst';
 import styles from './RolePermissions.module.css';
 
@@ -116,11 +117,29 @@ function RolePermissions(props) {
     }
   };
 
+  // A cleared (empty) name gets no rename line
+  const renameLine =
+    roleName && roleName !== props.role
+      ? `Role name changed from ${props.role} to ${roleName}`
+      : '';
+
   return (
     <div className={styles.wrapper}>
       {changed && (
-        <Alert color="warning" className={styles.unsavedAlert}>
-          You have unsaved changes! Please click <strong>Save</strong> button to save changes!
+        <Alert
+          color="warning"
+          className={`${styles.unsavedAlert} ${darkMode ? 'bg-dark border-warning' : ''}`}
+        >
+          {/* Announcements email index.css makes .alert flex; one wrapper keeps the list below */}
+          <div>
+            You have unsaved changes! Please click <strong>Save</strong> button to save changes!
+            <PermissionChangesList
+              saved={props.permissions}
+              draft={permissions}
+              emptyText="No permission changes"
+              extraLine={renameLine}
+            />
+          </div>
         </Alert>
       )}
 

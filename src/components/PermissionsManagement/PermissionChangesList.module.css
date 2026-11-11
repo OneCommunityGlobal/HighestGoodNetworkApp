@@ -1,0 +1,13 @@
+.permissionChangesList {
+  margin-top: 0.5rem;
+}
+
+.permissionChangesLine {
+  margin: 0;
+}
+
+/* A long list scrolls, so the fixed Remember to Save card stays on screen */
+.permissionChangesListScrollable {
+  max-height: 25vh;
+  overflow-y: auto;
+}

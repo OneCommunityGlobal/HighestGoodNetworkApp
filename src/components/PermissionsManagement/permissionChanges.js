@@ -18,3 +18,13 @@ export function hasUserPermissionChanges({ savedFront, draftFront, savedRemoved,
     hasPermissionListChanged(savedRemoved, draftRemoved)
   );
 }
+
+/** List the keys added to and removed from the saved list. */
+export function listPermissionChanges(saved, draft) {
+  const savedSet = new Set(saved || []);
+  const draftSet = new Set(draft || []);
+  return {
+    added: [...draftSet].filter(permission => !savedSet.has(permission)),
+    removed: [...savedSet].filter(permission => !draftSet.has(permission)),
+  };
+}
