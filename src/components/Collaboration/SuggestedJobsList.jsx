@@ -40,9 +40,11 @@ function SuggestedJobsList() {
 
   const handleApplyNow = ad => {
     const title = ad.title || '';
-    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
+    // Route by the ad's unique id so same-title ads get distinct, shareable URLs.
+    const pathname = ad._id ? `/job-application/${ad._id}` : buildApplyPath(title);
+    const search = !ad._id && title ? `?jobTitle=${encodeURIComponent(title)}` : '';
     history.push({
-      pathname: buildApplyPath(title),
+      pathname,
       search,
       state: {
         jobId: ad._id,

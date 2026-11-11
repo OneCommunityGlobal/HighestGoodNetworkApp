@@ -1169,6 +1169,7 @@ function JobApplicationForm() {
   };
 
   const fetchJobData = async jobId => {
+    setJobLookupStatus('loading');
     try {
       const response = await axios.get(
         `${ENDPOINTS.APIEndpoint()}/jobs/${jobId}`,
@@ -1795,7 +1796,20 @@ function JobApplicationForm() {
               <p>This job may have been removed or the link may be incorrect.</p>
             )}
             {jobLookupStatus === 'error' && (
-              <p>Something went wrong while loading the job. Please try again later.</p>
+              <>
+                <p>Something went wrong while loading the job. Please try again.</p>
+                <button
+                  type="button"
+                  className={styles.submitButton}
+                  onClick={() => {
+                    const id = new URLSearchParams(routerLocation.search).get('jobId');
+                    const retryId = id && isMongoObjectId(id) ? id : positionSlug;
+                    if (retryId && isMongoObjectId(retryId)) void fetchJobData(retryId);
+                  }}
+                >
+                  Retry
+                </button>
+              </>
             )}
           </section>
         </main>
