@@ -393,6 +393,7 @@ export const ENDPOINTS = {
   BM_DELETE_INVENTORTY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
+  BM_MATERIAL_COST_CORRELATION: `${APIEndpoint}/bm/materials/cost-correlation`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -449,6 +450,8 @@ export const ENDPOINTS = {
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
+  BM_RENTAL_COST_OVER_TIME: `${APIEndpoint}/bm/rentals/cost-over-time`,
+  BM_TOOLS_COST_BREAKDOWN: `${APIEndpoint}/bm/tools/cost-breakdown`,
   BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
   BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
 
