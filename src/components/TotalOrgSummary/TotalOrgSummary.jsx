@@ -479,22 +479,15 @@ function TotalOrgSummary(props) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  /*
-    BUG FIX: fromDate/toDate now correctly represent the CURRENT week (see
-    calculateStartDate/calculateEndDate above). Since the default label here
-    is 'Previous Week', the initial currentFromDate/currentToDate must be
-    computed via getPreviousWeekDates(fromDate, toDate) - matching what the
-    "Previous Week" dropdown option itself computes - rather than reusing
-    fromDate/toDate directly, which would (after the fix above) describe the
-    CURRENT week instead and mismatch the 'Previous Week' label on first
-    render.
+
+  /* BUG FIX:
+  fromDate/toDate are already the previous week (computed above via getPreviousWeekDates() above).
+  Use them directly as the initial date range to match the 'Previous Week' default label.
   */
-  const [currentFromDate, setCurrentFromDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).start,
-  );
-  const [currentToDate, setCurrentToDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).end,
-  );
+
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
+
   const rootRef = useRef(null);
   const cacheRef = useRef({});
 
@@ -707,12 +700,25 @@ function TotalOrgSummary(props) {
                 <div
                   className={clsx(
                     styles.totalOrgChartTitle,
+                    styles.mapTitle,
                     darkMode && styles.totalOrgChartTitleDark,
                   )}
                   data-pdf-title
                 >
                   <p>Global Volunteer Network: Uniting Communities Worldwide</p>
                 </div>
+                {!isLoading && volunteerStats?.countryCounts && (
+                  <div className={styles.countryCounts} aria-label="Volunteer country counts">
+                    <p>
+                      All-time contributing countries:{' '}
+                      <strong>{volunteerStats.countryCounts.allTime}</strong>
+                    </p>
+                    <p>
+                      Currently active countries:{' '}
+                      <strong>{volunteerStats.countryCounts.active}</strong>
+                    </p>
+                  </div>
+                )}
                 <GlobalVolunteerMap
                   isLoading={isLoading}
                   locations={volunteerStats?.userLocations}
