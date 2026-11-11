@@ -17,10 +17,12 @@
   margin: 0 auto;
 }
 
+.pr-grading-screen-card-body,
 .pr-grading-screen-card .card-body {
   padding: 24px;
   width: 100%;
   box-sizing: border-box;
+  background-color: #fff;
 }
 
 .pr-grading-screen-header {
@@ -153,12 +155,20 @@
   text-align: center;
 }
 
-.pr-grading-screen-reviewer-info {
+.pr-grading-screen-reviewer-info,
+.reviewer-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.reviewer-cell:hover {
+  background-color: transparent;
 }
 
 .pr-grading-screen-reviewer-name {
@@ -166,16 +176,21 @@
   margin-bottom: 4px;
   font-size: 1rem;
   line-height: 1.3;
-  color: inherit;
+  color: #212529;
 }
 
 .pr-grading-screen-reviewer-role {
   font-size: 0.8rem;
-  color: #b0b8c4;
+  color: #6c757d;
   line-height: 1.3;
   text-align: center;
   max-width: 180px;
   overflow-wrap: break-word;
+}
+
+.pr-grading-screen-promote-btn {
+  margin-top: 8px;
+  font-weight: 600;
 }
 
 /* Column 2: PR reviewed */
@@ -668,6 +683,7 @@
   color: #e8a71c;
 }
 
+.pr-grading-screen-card-body.dark-mode,
 .card-body.dark-mode {
   background-color: #1b2a41;
   color: #fff;
@@ -696,8 +712,41 @@
   background-color: #2d4059;
 }
 
-.pr-grading-screen-table-row.dark-mode td {
+.pr-grading-screen-table-row.dark-mode td,
+.pr-grading-screen-td-name.dark-mode,
+.pr-grading-screen-td-reviewed.dark-mode,
+.pr-grading-screen-td-needed.dark-mode,
+.pr-grading-screen-td-numbers.dark-mode {
   color: #fff;
+}
+
+.reviewer-cell.dark-mode,
+.reviewer-cell.dark-mode:hover {
+  background-color: transparent;
+  color: #fff;
+}
+
+.pr-grading-screen-reviewer-name.dark-mode,
+.reviewer-cell.dark-mode:hover .pr-grading-screen-reviewer-name {
+  color: #fff;
+}
+
+.pr-grading-screen-reviewer-role.dark-mode,
+.reviewer-cell.dark-mode:hover .pr-grading-screen-reviewer-role {
+  color: #b0b8c4;
+}
+
+.pr-grading-screen-promote-btn.dark-mode:not(:disabled) {
+  color: #ffc107;
+  border-color: #ffc107;
+  background-color: transparent;
+}
+
+.pr-grading-screen-promote-btn.dark-mode:hover:not(:disabled),
+.pr-grading-screen-promote-btn.dark-mode:focus:not(:disabled) {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #1b2a41;
 }
 
 .pr-grading-screen-table.dark-mode .pr-grading-screen-pr-input {
@@ -759,7 +808,8 @@
   color: #fff;
 }
 
-.pr-grading-screen-modal-header.dark-mode h3 {
+.pr-grading-screen-modal-header.dark-mode h3,
+.pr-grading-screen-modal-header.dark-mode h4 {
   color: #fff;
 }
 
@@ -1057,16 +1107,20 @@
   box-shadow: 0 4px 10px rgb(40 167 69 / 40%);
 }
 
+.pr-promotion-btn-cancel.dark-mode,
 .dark-mode .pr-promotion-btn-cancel {
   border-color: #5a6b88;
   background-color: #475569;
+  color: #fff;
 }
 
+.pr-promotion-btn-cancel.dark-mode:hover,
 .dark-mode .pr-promotion-btn-cancel:hover {
   background-color: #5a6b88;
   border-color: #8a9bb8;
 }
 
+.pr-promotion-btn-confirm.dark-mode:hover,
 .dark-mode .pr-promotion-btn-confirm:hover {
   background-color: #1e7e34;
 }

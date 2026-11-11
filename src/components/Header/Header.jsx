@@ -1009,7 +1009,7 @@ export function Header(props) {
                     <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                       <DropdownItem tag={Link} to="/pr-dashboard" className={fontColor} disabled={headerDisabled}>PR Team Analysis Dashboard</DropdownItem>
                       <DropdownItem divider />
-                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor} disabled={headerDisabled}>PR Team Analytics</DropdownItem>
+                      <DropdownItem tag={Link} to="/pr-grading-screen" className={fontColor} disabled={headerDisabled}>PR Team Analytics</DropdownItem>
                       <DropdownItem tag={Link} to="/pr-dashboard/analytics" className={fontColor} disabled={headerDisabled}>PR Analytics</DropdownItem>
                       <DropdownItem
                         tag={Link}

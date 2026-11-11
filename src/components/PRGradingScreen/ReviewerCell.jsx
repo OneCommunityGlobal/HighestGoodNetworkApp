@@ -2,35 +2,36 @@ import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import styles from './PRGradingScreen.module.css';
 
-const ReviewerCell = ({ reviewer, isPromoted, promoted, onPromoteClick }) => {
+const ReviewerCell = ({ reviewer, isPromoted, promoted, onPromoteClick, darkMode }) => {
   // Compatibility fallback for promotion status props
   const promotedState = isPromoted !== undefined ? isPromoted : promoted;
+  const dm = darkMode ? styles['dark-mode'] : '';
 
   return (
     /* Vertical container anchoring the reviewer name and action button */
     <div
-      className={styles['pr-reviewer-cell'] || ''}
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '6px' }}
+      className={`${styles['reviewer-cell']} ${styles['pr-grading-screen-reviewer-info']} ${dm}`}
     >
       {/* Display the reviewer name */}
-      <span style={{ fontWeight: 600 }}>{reviewer.reviewer}</span>
+      <span className={`${styles['pr-grading-screen-reviewer-name']} ${dm}`}>
+        {reviewer.reviewer}
+      </span>
+
+      {reviewer.role && (
+        <span className={`${styles['pr-grading-screen-reviewer-role']} ${dm}`}>
+          {reviewer.role}
+        </span>
+      )}
 
       {/* Render the Promote / Promoted button directly beneath the reviewer name */}
       <Button
-        variant={promotedState ? 'secondary' : 'primary'}
+        variant={promotedState ? 'success' : 'outline-warning'}
         size="sm"
         disabled={promotedState}
         onClick={() => onPromoteClick(reviewer)}
-        style={{
-          fontSize: '12px',
-          padding: '3px 10px',
-          borderRadius: '4px',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-        }}
+        className={`${styles['pr-grading-screen-promote-btn']} ${dm}`}
       >
-        {promotedState ? 'Promoted' : 'Promote'}
+        {promotedState ? '✅ Promoted' : '🏆 Promote'}
       </Button>
     </div>
   );
@@ -40,10 +41,18 @@ ReviewerCell.propTypes = {
   reviewer: PropTypes.shape({
     id: PropTypes.string.isRequired,
     reviewer: PropTypes.string.isRequired,
+    role: PropTypes.string,
   }).isRequired,
   isPromoted: PropTypes.bool,
   promoted: PropTypes.bool,
   onPromoteClick: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+ReviewerCell.defaultProps = {
+  isPromoted: undefined,
+  promoted: false,
+  darkMode: false,
 };
 
 export default ReviewerCell;

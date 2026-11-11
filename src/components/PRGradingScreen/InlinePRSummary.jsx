@@ -12,8 +12,8 @@ const InlinePRSummary = ({ reviewer, onGradeChange, isFinalized, darkMode }) => 
   }
 
   return (
-    <tr className={styles['pr-grading-inline-summary-row']}>
-      <td colSpan={4} className={styles['pr-grading-inline-summary-cell']}>
+    <tr className={`${styles['pr-grading-inline-summary-row']} ${dm}`}>
+      <td colSpan={4} className={`${styles['pr-grading-inline-summary-cell']} ${dm}`}>
         <div className={`${styles['pr-grading-inline-summary-container']} ${dm}`}>
           {/* Scroll rail. The five columns cannot fit a ~420px viewport, and
               without this the rightmost grades clip off the edge unreachable. */}
