@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './KIDashboard.module.css';
+import FoodCategoriesPieChart from './FoodCategoriesPieChart/FoodCategoriesPieChart';
 
 // These are temporary frontend values.
 // They can be replaced with API data when the backend is ready.
@@ -151,6 +152,8 @@ const KIDashboard = () => {
 
   const nextHarvest = [...harvests].sort((a, b) => a.date.localeCompare(b.date))[0];
 
+  // Temporary frontend behavior. Harvested items reset when the page reloads.
+  // Backend persistence can be added when the API is available.
   const handleHarvest = harvestId => {
     setHarvests(currentHarvests => currentHarvests.filter(harvest => harvest.id !== harvestId));
   };
@@ -233,7 +236,7 @@ const KIDashboard = () => {
             <div className={styles.alertBannerIcon}>□</div>
 
             <div className={styles.alertBannerContent}>
-              <h2>Harvest Upcoming</h2>
+              <h2>Next Harvest</h2>
               <p>
                 {nextHarvest.name} - {getHarvestDetails(nextHarvest.date).status}. Expected yield:{' '}
                 {nextHarvest.yield}.
@@ -395,6 +398,11 @@ const KIDashboard = () => {
         </article>
       </section>
 
+      {/* Food Categories Pie Chart from PR #5719 */}
+      <section className={styles.overviewCard}>
+        <FoodCategoriesPieChart />
+      </section>
+
       {/* Upcoming Harvests */}
       <section className={styles.harvestSection}>
         <div className={styles.harvestHeader}>
@@ -403,7 +411,7 @@ const KIDashboard = () => {
               <span className={styles.harvestIcon} aria-hidden="true">
                 ▣
               </span>
-              Upcoming Harvests
+              Harvests
             </h2>
 
             <p className={styles.cardSubtitle}>Scheduled harvest timeline for onsite produce</p>
@@ -461,13 +469,6 @@ const KIDashboard = () => {
           )}
         </div>
       </section>
-import FoodCategoriesPieChart from './FoodCategoriesPieChart/FoodCategoriesPieChart';
-
-export function KIDashboard() {
-  return (
-    <div>
-      <h1>Welcome to Kitchen and Inventory Dashboard</h1>
-      <FoodCategoriesPieChart />
     </div>
   );
 };
