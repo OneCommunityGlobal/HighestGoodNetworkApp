@@ -35,6 +35,9 @@ function UserCard({ user }) {
     weeklySummaryStatus,
   } = user;
   const darkMode = useSelector(state => state.theme.darkMode);
+  const normalizedEmail = typeof email === 'string' ? email.trim() : '';
+  const hasValidEmail = normalizedEmail.length > 0 && normalizedEmail.toUpperCase() !== 'N/A';
+  const displayEmail = hasValidEmail ? normalizedEmail : 'N/A';
 
   const normalizedSkills = getNormalizedSkills({ displaySkills, topSkills, skills });
 
@@ -53,12 +56,22 @@ function UserCard({ user }) {
           <div className={`${styles.userName}`}>{name}</div>
         )}
         <WeeklySummaryStatusBadge status={weeklySummaryStatus} />
-        {email && (
-          <div className={`${styles.contactLine}`}>
-            <MdEmail className={`${styles.contactIcon}`} aria-label="Email" />
-            <span>{email}</span>
-          </div>
-        )}
+
+        <div className={`${styles.contactLine}`}>
+          <MdEmail className={`${styles.contactIcon}`} aria-label="Email" />
+
+          {hasValidEmail ? (
+            <a
+              href={`mailto:${normalizedEmail}`}
+              aria-label={`Email ${name}`}
+              className={`${styles.contactLink}`}
+            >
+              {displayEmail}
+            </a>
+          ) : (
+            <span>{displayEmail}</span>
+          )}
+        </div>
         {slack && (
           <div className={`${styles.contactLine}`}>
             <img src={slackIcon} alt="Slack" className={`${styles.contactIcon}`} />

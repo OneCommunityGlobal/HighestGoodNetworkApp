@@ -1,5 +1,15 @@
 /* stylelint-disable  */
 /* stylelint-disable no-duplicate-selectors, no-descending-specificity, declaration-block-single-line-max-declarations */
+.riskProfileRoot {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  border-radius: 10px;
+}
+
 .wrapper {
   width: 100%;
   display: block;
@@ -11,12 +21,12 @@
 }
 
 .darkMode.wrapper {
-  background: #141a23;
+  background: var(--section-bg);
 }
 
 .container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 100%;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -38,8 +48,8 @@
 }
 
 .statusCard.darkMode {
-  background: #1e1e1e;
-  border-color: #374151;
+  background: #1b2a41;
+  border-color: #555;
   color: #f3f4f6;
   box-shadow: 0 2px 8px #111;
 }
@@ -57,7 +67,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 36px;
+  margin-bottom: 12px;
   gap: 24px;
   flex-wrap: wrap;
 }
@@ -103,7 +113,8 @@
   color: #f5f5f5;
 }
 
-.dropdownButton, .dateInput {
+.dropdownButton,
+.dateInput {
   font-size: 14px;
   color: #444;
   font-weight: 500;
@@ -122,21 +133,24 @@
   min-width: 150px;
 }
 
-.dropdownButton:hover, .dateInput:hover {
+.dropdownButton:hover,
+.dateInput:hover {
   background: #f8f8f8;
   border-color: #b0b0b0;
 }
 
-.darkMode .dropdownButton, .darkMode .dateInput {
+.darkMode .dropdownButton,
+.darkMode .dateInput {
   color: #e5e5e5;
-  background-color: #2c2c2c;
+  background-color: #1b2a41;
   border-color: #555;
   color-scheme: dark;
 }
 
-.darkMode .dropdownButton:hover, .darkMode .dateInput:hover {
-  background: #3a3a3a;
-  border-color: #777;
+.darkMode .dropdownButton:hover,
+.darkMode .dateInput:hover {
+  background: #1b2a41;
+  border-color: #555;
 }
 
 .dropdownMenu {
@@ -155,7 +169,7 @@
 .chartWrapper {
   width: 100%;
   height: 480px;
-  margin-top: 24px;
+  margin-top: 0;
   padding: 24px;
   background: #fafafa;
   border-radius: 10px;
@@ -168,11 +182,12 @@
 }
 
 .darkMode .chartWrapper {
-  background: #252525;
-  border-color: #404040;
+  background: #111a2b;
+  border-color: #555;
 }
 
-.emptyState, .noData {
+.emptyState,
+.noData {
   text-align: center;
   padding: 40px 20px;
   border-radius: 6px;
@@ -183,7 +198,8 @@
   border: 1px dashed #ccc;
 }
 
-.darkMode .emptyState, .darkMode .noData {
+.darkMode .emptyState,
+.darkMode .noData {
   color: #d1d5db;
   background: #2b2b2b;
   border-color: #555;
@@ -198,18 +214,20 @@
 }
 
 .darkMode .trendSection {
-  background: #252525;
-  border-color: #404040;
+  background: #111a2b;
+  border-color: #555;
 }
 
-.trendTitle, .subHeading {
+.trendTitle,
+.subHeading {
   margin: 0 0 16px 0;
   font-size: 18px;
   font-weight: 600;
   color: #1a1a1a;
 }
 
-.darkMode .trendTitle, .darkMode .subHeading {
+.darkMode .trendTitle,
+.darkMode .subHeading {
   color: #ddd;
 }
 
@@ -224,11 +242,11 @@
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .darkMode .trendCard {
-  background: #333;
+  background: #1b2a41;
   border-color: #555;
 }
 
@@ -254,12 +272,31 @@
   margin-bottom: 8px;
 }
 
-.trendRow span:first-child { flex: 1; color: #666; font-weight: 500; }
-.darkMode .trendRow span:first-child { color: #aaa; }
-.trendRow span:last-child { font-weight: 600; color: #1a1a1a; min-width: 50px; text-align: right; }
-.darkMode .trendRow span:last-child { color: #ddd; }
+.trendRow span:first-child {
+  flex: 1;
+  color: #666;
+  font-weight: 500;
+}
+.darkMode .trendRow span:first-child {
+  color: #aaa;
+}
+.trendRow span:last-child {
+  font-weight: 600;
+  color: #1a1a1a;
+  min-width: 50px;
+  text-align: right;
+}
+.darkMode .trendRow span:last-child {
+  color: #ddd;
+}
 
-.trendIndicator { font-size: 16px; font-weight: 700; display: inline-block; width: 24px; text-align: center; }
+.trendIndicator {
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+}
 
 .attributeRow {
   display: flex;
@@ -280,10 +317,22 @@
   padding-top: 0;
 }
 
-.attributeRow .label { flex: 1; color: #666; font-weight: 500; }
-.darkMode .attributeRow .label { color: #aaa; }
-.attributeRow .value { font-weight: 600; color: #1a1a1a; text-align: right; }
-.darkMode .attributeRow .value { color: #ddd; }
+.attributeRow .label {
+  flex: 1;
+  color: #666;
+  font-weight: 500;
+}
+.darkMode .attributeRow .label {
+  color: #aaa;
+}
+.attributeRow .value {
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: right;
+}
+.darkMode .attributeRow .value {
+  color: #ddd;
+}
 
 .tableScroll {
   width: 100%;
@@ -301,7 +350,7 @@
 }
 
 .darkMode .tableHeadRow {
-  background: #2b2b2b;
+  background: #1b2a41;
 }
 
 .th {
@@ -398,7 +447,7 @@
   padding: 12px;
   border-radius: 6px;
   color: #222;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .tooltipDark {
@@ -437,8 +486,8 @@
 }
 
 .darkMode .timelineSection {
-  background: #252525;
-  border-color: #404040;
+  background: #111a2b;
+  border-color: #555;
 }
 
 .error {
@@ -464,7 +513,7 @@
 }
 
 .darkMode .container {
-  background: #1e1e1e;
+  background: #1b2a41;
   box-shadow: 0 2px 8px #111;
   color: #eee;
 }
@@ -476,4 +525,11 @@
 .darkMode .dropdownMenu {
   background: #2c2c2c;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+/* Compact tooltip so it does not cover nearby bars and project names */
+.tooltip {
+  max-width: 240px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  line-height: 1.35;
 }
