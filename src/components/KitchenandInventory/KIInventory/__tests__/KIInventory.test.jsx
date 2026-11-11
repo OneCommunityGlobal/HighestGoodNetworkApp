@@ -99,6 +99,26 @@ describe('KIInventory action buttons', () => {
     expect(screen.getByText('ingredients')).toBeInTheDocument();
   });
 
+  test.each([
+    ['the backend message', { message: 'Item not found.' }, 'Item not found.'],
+    ['the Axios message', {}, 'Request failed with status code 404'],
+  ])('shows %s after a delete returns 404', async (_scenario, data, expectedMessage) => {
+    axios.delete.mockRejectedValueOnce({
+      message: 'Request failed with status code 404',
+      response: { status: 404, data },
+    });
+    renderInventory([inventoryItem]);
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Update Item' })[0]);
+    const dialog = screen.getByRole('dialog', { name: 'Update Inventory Item' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Delete Item' }));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Confirm Delete' }));
+
+    expect(axios.delete).toHaveBeenCalledWith(ENDPOINTS.KI_INVENTORY_ITEM(inventoryItem._id));
+    expect((await within(dialog).findByRole('alert')).textContent).toBe(expectedMessage);
+    expect(dialog).toBeInTheDocument();
+  });
+
   test('opens the Reorder modal with the selected item', () => {
     renderInventory([inventoryItem]);
 

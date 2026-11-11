@@ -168,12 +168,8 @@ export const deleteInventoryItem = itemId => async dispatch => {
 
     return res.data;
   } catch (err) {
-    const notFoundMessage =
-      'Inventory delete route was not found. Please confirm the backend is running with the item delete route.';
     const errorMessage =
-      err.response?.status === 404
-        ? notFoundMessage
-        : err.response?.data?.message || err.message || 'Failed to delete inventory item.';
+      err.response?.data?.message || err.message || 'Failed to delete inventory item.';
 
     dispatch({
       type: KI_INVENTORY_DELETE_FAILURE,
