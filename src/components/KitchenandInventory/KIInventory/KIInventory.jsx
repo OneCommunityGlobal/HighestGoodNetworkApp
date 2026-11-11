@@ -21,6 +21,7 @@ import { RiLeafLine } from 'react-icons/ri';
 import KIItemCard from './KIItemCard';
 import KIAddItemModal from './KIAddItemModal/KIAddItemModal';
 import KIReorderItemModal from './KIReorderItemModal/KIReorderItemModal';
+import KIScanBarcodeModal from './KIScanBarcodeModal/KIScanBarcodeModal';
 import KIUpdateItemModal from './KIUpdateItemModal/KIUpdateItemModal';
 import {
   addInventoryItem,
@@ -54,6 +55,7 @@ const KIInventory = () => {
     preservedItems,
     stats,
     loading,
+    error: inventoryError,
     addItemLoading,
     addItemError,
     updateItemLoading,
@@ -73,7 +75,8 @@ const KIInventory = () => {
   ];
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [addItemBarcode, setAddItemBarcode] = useState(null);
+  const [isScanBarcodeOpen, setIsScanBarcodeOpen] = useState(false);
   const [selectedInventoryItem, setSelectedInventoryItem] = useState(null);
   const [selectedReorderItem, setSelectedReorderItem] = useState(null);
 
@@ -262,12 +265,20 @@ const KIInventory = () => {
             <button
               type="button"
               className={classnames(styles.button, styles.addItemButton)}
-              onClick={() => setIsAddItemModalOpen(true)}
+              onClick={() => setAddItemBarcode('')}
             >
               {'+ Add Item'}
             </button>
-            <button className={classnames(styles.button, styles.scanBarcodeButton)}>
-              <span className={`${styles.otherIcons}`}>{<PiBarcode />}</span> {'Scan Barcode'}
+            <button
+              type="button"
+              className={classnames(styles.button, styles.scanBarcodeButton)}
+              aria-haspopup="dialog"
+              onClick={() => setIsScanBarcodeOpen(true)}
+            >
+              <span className={styles.otherIcons} aria-hidden="true">
+                <PiBarcode />
+              </span>{' '}
+              Scan Barcode
             </button>
           </div>
         </div>
@@ -317,12 +328,36 @@ const KIInventory = () => {
           </TabPane>
         ))}
       </TabContent>
+      {isScanBarcodeOpen && (
+        <KIScanBarcodeModal
+          items={items}
+          categoryLabels={CATEGORY_LABEL_MAP}
+          inventoryLoading={loading}
+          inventoryError={inventoryError}
+          onRetry={() => dispatch(fetchInventoryItems())}
+          onClose={() => setIsScanBarcodeOpen(false)}
+          onAddItem={barcode => {
+            setIsScanBarcodeOpen(false);
+            setAddItemBarcode(barcode);
+          }}
+          onUpdateItem={item => {
+            setIsScanBarcodeOpen(false);
+            handleOpenUpdateItemModal(item);
+          }}
+          onReorderItem={item => {
+            setIsScanBarcodeOpen(false);
+            handleOpenReorderItemModal(item);
+          }}
+          darkMode={darkMode}
+        />
+      )}
       <KIAddItemModal
-        isOpen={isAddItemModalOpen}
-        onClose={() => setIsAddItemModalOpen(false)}
+        isOpen={addItemBarcode !== null}
+        onClose={() => setAddItemBarcode(null)}
         onSubmit={handleAddItem}
         categoryLabel={activeTab}
         categoryValue={activeCategory}
+        initialBarcode={addItemBarcode ?? ''}
         isSubmitting={addItemLoading}
         submitError={addItemError}
         darkMode={darkMode}

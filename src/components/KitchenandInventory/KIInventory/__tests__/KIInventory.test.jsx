@@ -51,14 +51,26 @@ const getInventoryState = items => ({
   },
 });
 
-const renderInventory = (items = []) => {
-  const store = mockStore(getInventoryState(items));
+const renderInventory = (items = [], inventoryOverrides = {}) => {
+  const state = getInventoryState(items);
+  const store = mockStore({
+    ...state,
+    kiInventory: { ...state.kiInventory, ...inventoryOverrides },
+  });
 
   render(
     <Provider store={store}>
       <KIInventory />
     </Provider>,
   );
+};
+
+const findBarcode = value => {
+  fireEvent.click(screen.getByRole('button', { name: 'Scan Barcode' }));
+  const scanner = within(screen.getByRole('dialog', { name: 'Scan Barcode' }));
+  fireEvent.change(scanner.getByLabelText('Barcode'), { target: { value } });
+  fireEvent.click(scanner.getByRole('button', { name: 'Find Item' }));
+  return scanner;
 };
 
 describe('KIInventory action buttons', () => {
@@ -97,6 +109,73 @@ describe('KIInventory action buttons', () => {
     expect(screen.getByRole('dialog', { name: 'Update Inventory Item' })).toBeInTheDocument();
     expect(screen.getByDisplayValue('Tomatoes')).toBeInTheDocument();
     expect(screen.getByText('ingredients')).toBeInTheDocument();
+  });
+
+  test.each([
+    ['Update Item', 'Update Inventory Item'],
+    ['Reorder', 'Reorder Inventory Item'],
+  ])('opens %s from a matching record in another category', (action, dialogName) => {
+    renderInventory([
+      { ...inventoryItem, barcode: '0012345000058' },
+      {
+        ...inventoryItem,
+        _id: 'item-2',
+        name: 'Tomato seeds',
+        category: 'SEEDS',
+        location: 'Seed rack',
+        presentQuantity: 0,
+        barcode: '012345000058',
+      },
+    ]);
+    fireEvent.change(screen.getByPlaceholderText('Search ingredients...'), {
+      target: { value: 'Garlic' },
+    });
+
+    const scanner = findBarcode('012345000058');
+    expect(scanner.getByRole('status')).toHaveTextContent('2 matches');
+    const seedMatch = within(scanner.getAllByRole('listitem')[1]);
+    expect(seedMatch.getByText('Seed rack')).toBeInTheDocument();
+    expect(seedMatch.getByText('0 lbs')).toBeInTheDocument();
+    fireEvent.click(seedMatch.getByRole('button', { name: action }));
+
+    const dialog = within(screen.getByRole('dialog', { name: dialogName }));
+    if (action === 'Update Item') {
+      expect(dialog.getByDisplayValue('Tomato seeds')).toBeInTheDocument();
+      expect(dialog.getByText('seeds')).toBeInTheDocument();
+    } else {
+      expect(dialog.getByText('Tomato seeds')).toBeInTheDocument();
+    }
+    expect(screen.queryByRole('dialog', { name: 'Scan Barcode' })).not.toBeInTheDocument();
+  });
+
+  test('prefills Add Item from an unmatched barcode and clears it for the next normal add', () => {
+    renderInventory();
+    fireEvent.click(screen.getByText('Equipment & Supplies'));
+
+    const scanner = findBarcode(' 012345000058 ');
+    fireEvent.click(scanner.getByRole('button', { name: 'Add Item' }));
+
+    const addModal = within(screen.getByRole('dialog', { name: 'Add Inventory Item' }));
+    expect(addModal.getByLabelText('Barcode (optional)')).toHaveValue('0012345000058');
+    expect(addModal.getByText('equipment & supplies')).toBeInTheDocument();
+    expect(axios.post).not.toHaveBeenCalled();
+    fireEvent.click(addModal.getByRole('button', { name: 'Cancel' }));
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add Item' }));
+    expect(screen.getByLabelText('Barcode (optional)')).toHaveValue('');
+  });
+
+  test('retries an inventory lookup failure with the scanned code retained', () => {
+    renderInventory([], { error: 'Failed to fetch inventory items.' });
+
+    const scanner = findBarcode('012345000058');
+    expect(scanner.getByRole('alert')).toHaveTextContent('Failed to fetch inventory items.');
+    expect(scanner.queryByRole('button', { name: 'Add Item' })).not.toBeInTheDocument();
+    axios.get.mockClear();
+
+    fireEvent.click(scanner.getByRole('button', { name: 'Retry' }));
+    expect(axios.get).toHaveBeenCalledExactlyOnceWith(ENDPOINTS.KI_INVENTORY_ITEMS);
+    expect(scanner.getByLabelText('Barcode')).toHaveValue('0012345000058');
   });
 
   test.each([

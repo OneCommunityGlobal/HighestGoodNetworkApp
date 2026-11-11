@@ -8,6 +8,7 @@ export const inventoryItemShape = PropTypes.shape({
   unit: PropTypes.string,
   location: PropTypes.string,
   category: PropTypes.string,
+  barcode: PropTypes.string,
   presentQuantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   storedQuantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   reorderAt: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
