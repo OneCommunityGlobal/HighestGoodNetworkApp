@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
@@ -18,6 +19,16 @@ const renderActivityList = (initialState = { theme: { darkMode: false } }) => {
 };
 
 describe('ActivityList', () => {
+  // Mock events are dated; freeze today so past/upcoming filtering is stable over time.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-01T12:00:00'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test('renders Activity List heading', () => {
     renderActivityList();
     expect(screen.getByText('Activity List')).toBeInTheDocument();
@@ -57,6 +68,7 @@ describe('ActivityList', () => {
 
   test('sorts activities by date (latest to earliest)', () => {
     renderActivityList();
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
     fireEvent.change(screen.getByLabelText(/Sort By:/i), {
       target: { value: 'latest' },

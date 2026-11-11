@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { MemoryRouter } from 'react-router-dom';
 import moment from 'moment';
+import axios from 'axios';
 import momentTz from 'moment-timezone';
 import FormattedReport from '../FormattedReport';
 import '@testing-library/jest-dom/extend-expect';
@@ -98,6 +99,10 @@ const defaultProps = {
 };
 
 describe('FormattedReport minimal test', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('renders without crashing', () => {
     render(
       <Provider store={store}>
@@ -146,7 +151,181 @@ describe('FormattedReport minimal test', () => {
     );
     expect(screen.queryByText('Emails')).toBeNull();
   });
+  it('only suggests team codes currently in use on the visible weekly summaries page', () => {
+    const activeSummaryOne = {
+      ...dummySummary,
+      _id: 'active-1',
+      email: 'active1@example.com',
+      teamCode: 'ACT01',
+      endDate: null,
+    };
 
+    const activeSummaryTwo = {
+      ...dummySummary,
+      _id: 'active-2',
+      email: 'active2@example.com',
+      teamCode: 'ACT02',
+      endDate: null,
+    };
+
+    const expiredSummary = {
+      ...dummySummary,
+      _id: 'expired-1',
+      email: 'expired@example.com',
+      teamCode: 'OLD01',
+      isActive: false,
+      endDate: moment()
+        .subtract(6, 'weeks')
+        .toISOString(),
+      finalWeekIndex: 6,
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[activeSummaryOne, activeSummaryTwo, expiredSummary]}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const inputs = screen.getAllByPlaceholderText('X-XXX');
+    fireEvent.focus(inputs[0]);
+    fireEvent.change(inputs[0], {
+      target: { value: '' },
+    });
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
+    expect(screen.getByText('ACT02')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('includes an active user with a scheduled end date in team code suggestions', () => {
+    const activeScheduledEndSummary = {
+      ...dummySummary,
+      _id: 'future-end-user',
+      email: 'future@example.com',
+      teamCode: 'FUT01',
+      isActive: true,
+      endDate: moment()
+        .add(2, 'weeks')
+        .toISOString(),
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} summaries={[activeScheduledEndSummary]} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('FUT01')).toBeInTheDocument();
+  });
+
+  it('does not suggest the team code of an inactive user hidden from the current tab', () => {
+    const visibleSummary = {
+      ...dummySummary,
+      _id: 'visible-user',
+      email: 'visible@example.com',
+      teamCode: 'ACT01',
+      isActive: true,
+      endDate: null,
+    };
+
+    const hiddenInactiveSummary = {
+      ...dummySummary,
+      _id: 'inactive-user',
+      email: 'inactive@example.com',
+      teamCode: 'OLD01',
+      isActive: false,
+      endDate: null,
+      finalWeekIndex: 1,
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[visibleSummary, hiddenInactiveSummary]}
+            weekIndex={0}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: '' } });
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('updates active team code suggestions after a successful save', async () => {
+    function StatefulReport() {
+      const [summaries, setSummaries] = React.useState([dummySummary]);
+
+      const handleTeamCodeChange = (userId, newTeamCode) => {
+        setSummaries(prevSummaries =>
+          prevSummaries.map(summary =>
+            summary._id === userId ? { ...summary, teamCode: newTeamCode } : summary,
+          ),
+        );
+      };
+
+      return (
+        <FormattedReport
+          {...defaultProps}
+          summaries={summaries}
+          handleTeamCodeChange={handleTeamCodeChange}
+        />
+      );
+    }
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <StatefulReport />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+
+    fireEvent.focus(input);
+
+    expect(screen.getByText('ABC123')).toBeInTheDocument();
+
+    fireEvent.change(input, {
+      target: { value: 'NEW01' },
+    });
+
+    fireEvent.blur(input);
+
+    await waitFor(() => {
+      expect(axios.patch).toHaveBeenCalledWith(expect.any(String), {
+        userIds: ['1'],
+        replaceCode: 'NEW01',
+      });
+    });
+
+    fireEvent.focus(input);
+
+    fireEvent.change(input, {
+      target: { value: '' },
+    });
+
+    expect(screen.getByText('NEW01')).toBeInTheDocument();
+    expect(screen.queryByText('ABC123')).not.toBeInTheDocument();
+  });
   it('renders fallback text when weekly summary text is missing', () => {
     const summaryNoText = {
       ...dummySummary,
@@ -228,7 +407,7 @@ describe('FormattedReport minimal test', () => {
       </Provider>,
     );
     expect(screen.queryByPlaceholderText('X-XXX')).toBeNull();
-    expect(screen.getByText('ABC123')).toBeInTheDocument();
+    expect(screen.getByText('ABC123', { selector: 'div' })).toBeInTheDocument();
   });
 });
 
@@ -358,5 +537,101 @@ describe('FormattedReport requested week off notice', () => {
     fireEvent.click(button);
     fireEvent.keyDown(button, { key: 'Escape' });
     expect(screen.queryByText('Family trip')).toBeNull();
+  });
+
+  it('updates the correct report user and applies the warning returned by the API', async () => {
+    const handleTeamCodeChange = vi.fn();
+    axios.patch.mockResolvedValueOnce({
+      data: { updatedUsers: [{ userId: '1', teamCodeWarning: true }] },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} handleTeamCodeChange={handleTeamCodeChange} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const codeInput = screen.getByPlaceholderText('X-XXX');
+    fireEvent.change(codeInput, { target: { value: 'HaHUS' } });
+    fireEvent.blur(codeInput);
+
+    await waitFor(() => expect(handleTeamCodeChange).toHaveBeenCalledWith('1', 'HaHUS', true));
+  });
+
+  describe.each([false, true])('historical badges (darkMode=%s)', darkMode => {
+    const historicalBadgeId = '67919bab07b2a31a54e59265';
+    const badgeData = [
+      {
+        _id: historicalBadgeId,
+        badgeName: '90 FOR 6 WEEK streak',
+        imageUrl: 'https://example.com/test-badge.png',
+      },
+    ];
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-09-19T12:00:00-07:00'));
+    });
+
+    it.each([
+      ['earlier entry in a multi-week history', ['Sep-12-26', 'Sep-19-26'], 1, true],
+      ['unpadded writer output', ['Sep-6-26', 'Sep-19-26'], 1, true],
+      ['padded single-digit day', ['Sep-06-26'], 1, true],
+      ['ISO calendar date', ['2026-09-06'], 1, true],
+      ['stored ISO timestamp', ['2026-09-05T20:49:24.113Z'], 2, true],
+      ['stored timestamp outside the selected week', ['2026-09-05T20:49:24.113Z'], 1, false],
+      ['inclusive week start', ['2026-09-06T07:00:00.000Z'], 1, true],
+      ['just before week start', ['2026-09-06T06:59:59.999Z'], 1, false],
+      ['inclusive week end', ['2026-09-13T06:59:59.999Z'], 1, true],
+      ['just after week end', ['2026-09-13T07:00:00.000Z'], 1, false],
+      ['timestamp with an explicit offset', ['2026-09-12T23:30:00-07:00'], 1, true],
+      ['next-week calendar date', ['2026-09-13'], 1, false],
+      ['previous-week calendar date', ['Sep-5-26'], 1, false],
+      ['invalid dates', ['garbage', 'Sep-31-26', '2026-09-10Tgarbage'], 1, false],
+      ['multiple matching entries render once', ['Sep-6-26', 'Sep-12-26'], 1, true],
+      ['empty history uses lastModified', [], 1, true],
+      ['missing history uses lastModified', undefined, 1, true],
+    ])('%s', (_label, earnedDate, weekIndex, visible) => {
+      const themeStore = createStore(
+        state => state,
+        { theme: { darkMode } },
+        applyMiddleware(thunk),
+      );
+      const summaryWithHistoricalBadge = {
+        ...dummySummary,
+        badgeCollection: [
+          {
+            count: 1,
+            earnedDate,
+            badge: historicalBadgeId,
+            // A populated history must take precedence over this fallback.
+            lastModified: '2026-09-10T12:00:00.000Z',
+          },
+        ],
+      };
+
+      render(
+        <Provider store={themeStore}>
+          <MemoryRouter>
+            <FormattedReport
+              {...defaultProps}
+              summaries={[summaryWithHistoricalBadge]}
+              weekIndex={weekIndex}
+              badges={badgeData}
+              darkMode={darkMode}
+              loadBadges
+            />
+          </MemoryRouter>
+        </Provider>,
+      );
+
+      expect(
+        screen.queryAllByAltText('', {
+          selector: 'img[src="https://example.com/test-badge.png"]',
+        }),
+      ).toHaveLength(visible ? 1 : 0);
+    });
   });
 });

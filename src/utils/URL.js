@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILES: `${APIEndpoint}/userProfile`,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
+  HGN_FORMS: `${APIEndpoint}/form`,
   USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PAUSE: userId => `${APIEndpoint}/userProfile/${userId}/pause`,
@@ -46,6 +47,8 @@ export const ENDPOINTS = {
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
   USER_PROFILE_BASIC_INFO: source => `${APIEndpoint}/userProfile/basicInfo/${source}`,
+  // Single-user lookup contract: backend reads this as req.query.userId, not a path segment.
+  USER_PROFILE_BASIC_INFO_BY_ID: userId => `${APIEndpoint}/userProfile/basicInfo?userId=${userId}`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
   SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
@@ -86,6 +89,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
 
   // Questionnaire endpoints
+  QUESTIONNAIRE_CHECK_MODAL: userId => `${APIEndpoint}/dashboard/questionaire/checkModal/${userId}`,
   QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
   QUESTIONNAIRE_CLOSE_PERMANENTLY: () =>
     `${APIEndpoint}/dashboard/questionaire/checkUserFoundHelpSomewhere`,
@@ -135,6 +139,8 @@ export const ENDPOINTS = {
   WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceIndividualTeamcodes`,
   SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
+  KITCHEN_REPORTS_EXPORT_PDF: () => `${APIEndpoint}/kitchenandinventory/reports/export/pdf`,
+  KITCHEN_REPORTS_EXPORT_CSV: () => `${APIEndpoint}/kitchenandinventory/reports/export/csv`,
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
   POST_NEW_WARNING: () => `${APIEndpoint}/currentWarnings`,
   UPDATE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
@@ -166,7 +172,8 @@ export const ENDPOINTS = {
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
   APPLICANT_VOLUNTEER_RATIO: `${APIEndpoint}/applicant-volunteer-ratio`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
-  BADGE: () => `${APIEndpoint}/badge`,
+  // BADGE: () => `${APIEndpoint}/badge`,
+  BADGE: () => `${APIEndpoint}/badge/getAllBadges`,
   BADGE_ASSIGN_MULTIPLE: `${APIEndpoint}/badge/assign`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
@@ -381,10 +388,12 @@ export const ENDPOINTS = {
   BM_PROJECTS_WITH_LOCATION: `${APIEndpoint}/bm/projects/location`,
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS: `${APIEndpoint}/bm/weekly-project-summary/project-status`,
+  BM_WEEKLY_PROJECT_SUMMARY_FINANCIAL_OVERVIEW: `${APIEndpoint}/bm/weekly-project-summary/financial-overview`,
   BM_DELETE_INVENTORTY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
-
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
+  BM_MATERIAL_COST_CORRELATION: `${APIEndpoint}/bm/materials/cost-correlation`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -441,6 +450,8 @@ export const ENDPOINTS = {
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
+  BM_RENTAL_COST_OVER_TIME: `${APIEndpoint}/bm/rentals/cost-over-time`,
+  BM_TOOLS_COST_BREAKDOWN: `${APIEndpoint}/bm/tools/cost-breakdown`,
   BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
   BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
 
@@ -601,6 +612,35 @@ export const ENDPOINTS = {
   ATTENDANCE_BY_ID: attendanceId => `${APIEndpoint}/attendance/${attendanceId}`,
   ATTENDANCE_SEED: eventId => `${APIEndpoint}/attendance/event/${eventId}/seed`,
   ATTENDANCE_MOCK: eventId => `${APIEndpoint}/attendance/event/${eventId}/mock`,
+  EVENT_POPULARITY: (startDate, endDate) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    const queryString = params.length ? `?${params.join('&')}` : '';
+    return `${APIEndpoint}/events/popularity${queryString}`;
+  },
+  EVENT_ENGAGEMENT: (startDate, endDate, format) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    if (format) params.push(`format=${encodeURIComponent(format)}`);
+    const queryString = params.length ? `?${params.join('&')}` : '';
+    return `${APIEndpoint}/events/engagement${queryString}`;
+  },
+  EVENT_VALUE: (startDate, endDate) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    const queryString = params.length ? `?${params.join('&')}` : '';
+    return `${APIEndpoint}/events/value${queryString}`;
+  },
+  EVENT_FORMAT_COMPARISON: (startDate, endDate) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    const queryString = params.length ? `?${params.join('&')}` : '';
+    return `${APIEndpoint}/events/format-comparison${queryString}`;
+  },
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
@@ -649,18 +689,19 @@ export const ENDPOINTS = {
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
   HELP_REQUEST_CREATE: `${APIEndpoint}/helprequest/create`,
+  HELP_REQUEST_ELIGIBILITY: `${APIEndpoint}/helprequest/eligibility`,
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
-  let url = `${APIEndpoint}/analytics/opt-status`;
-  const params = [];
+    let url = `${APIEndpoint}/analytics/opt-status`;
+    const params = [];
 
-  if (startDate) params.push(`startDate=${startDate}`);
-  if (endDate) params.push(`endDate=${endDate}`);
-  if (role) params.push(`role=${role}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (role) params.push(`role=${role}`);
 
-  return params.length > 0 ? `${url}?${params.join("&")}` : url;
-},
+    return params.length > 0 ? `${url}?${params.join("&")}` : url;
+  },
 
 
 
@@ -774,6 +815,7 @@ export const ENDPOINTS = {
 
   // Help Request & Feedback Modal endpoints
   HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
+  HGN_COMMUNITY_MEMBERS: `${APIEndpoint}/hgnHelp/community`,
   HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
   FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
   FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,

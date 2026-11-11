@@ -15,6 +15,8 @@ import {
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
   FINISH_USER_INFO_UPDATE,
+  RESET_USER_PROFILE_EDIT,
+  CLEAR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
@@ -209,6 +211,7 @@ export const buildUpdatedUserLifecycleDetails = (user, payload) => {
 };
 
 const buildBackendPayload = (userDetails, action) => {
+  console.log('Building backend payload with:', { userDetails, action });
   switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
@@ -305,16 +308,31 @@ export const updateRehireableStatus = (user, isRehireable, notRehireableReason =
     const reason = typeof notRehireableReason === 'string' ? notRehireableReason.trim() : '';
     const requestData = { isRehireable };
 
-    if (!isRehireable && reason) {
+    if (!isRehireable && !reason) {
+      throw new Error('A reason is required when a user is not rehireable.');
+    }
+
+    if (!isRehireable) {
       userProfile.notRehireableReason = reason;
       requestData.notRehireableReason = reason;
     } else {
       delete userProfile.notRehireableReason;
-      if (!isRehireable) requestData.notRehireableReason = '';
     }
 
-    await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
+    const response = await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
+    const responseData = response?.data || {};
+    if (Array.isArray(responseData.notRehireableReasonHistory)) {
+      userProfile.notRehireableReasonHistory = responseData.notRehireableReasonHistory;
+    }
+    if (typeof responseData.notRehireableReason === 'string') {
+      if (responseData.notRehireableReason) {
+        userProfile.notRehireableReason = responseData.notRehireableReason;
+      } else {
+        delete userProfile.notRehireableReason;
+      }
+    }
     dispatch(userProfileUpdateAction(userProfile));
+    return userProfile;
   };
 };
 
@@ -423,7 +441,7 @@ export const getUserProfileBasicInfo = ({ userId, source } = {}) => {
   // API request to fetch basic user profile information
   let userProfileBasicInfoPromise;
   if (userId)
-    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE(userId));
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO_BY_ID(userId));
   else if (source)
     userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
   else
@@ -462,6 +480,10 @@ export const updateUserInfomation = value => dispatch => {
   dispatch({ type: START_USER_INFO_UPDATE, payload: value });
 };
 
+export const clearUserInformation = () => dispatch => {
+  dispatch({ type: CLEAR_USER_INFO_UPDATE });
+};
+
 /**
  * Clears the queue of pending user info edits (newUserData) after they have
  * been successfully saved to the backend. Without this, previously-saved
@@ -471,4 +493,8 @@ export const updateUserInfomation = value => dispatch => {
  */
 export const finishUserInfoUpdate = () => dispatch => {
   dispatch({ type: FINISH_USER_INFO_UPDATE });
+};
+
+export const resetUserProfileEdit = () => dispatch => {
+  dispatch({ type: RESET_USER_PROFILE_EDIT });
 };
