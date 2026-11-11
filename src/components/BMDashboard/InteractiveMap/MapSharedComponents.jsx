@@ -504,9 +504,12 @@ export const MapUtils = {
    MAP CONFIGURATION CONSTANTS
 ----------------------------------------------------- */
 export const MapConfig = {
-  // One tile source for both themes. CARTO's dark_all tiles now require an API key
-  // (they render "API KEY REQUIRED"), so dark mode darkens these tiles with CSS instead.
-  tileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  // One tile source for both themes. Esri's World_Street_Map renders place labels in
+  // English worldwide (plain OSM tiles use each country's local script) and needs no
+  // API key. Dark mode darkens these tiles with CSS instead of swapping providers,
+  // since CARTO's dark tiles now require an API key (render "API KEY REQUIRED").
+  tileUrl:
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
   maxZoom: 15,
   minZoom: 1,
   clusterSettings: {
