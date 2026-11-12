@@ -31,7 +31,8 @@ function MaterialsDisplay({ projectId }) {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    Promise.resolve(dispatch(fetchAllMaterials())).finally(() => {
+    // allSettled never rejects, so a failed request still ends the loading state.
+    Promise.allSettled([dispatch(fetchAllMaterials())]).then(() => {
       if (!cancelled) setLoading(false);
     });
     return () => {

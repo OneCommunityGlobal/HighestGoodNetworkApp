@@ -61,7 +61,7 @@ function RentedToolsDisplay({ projectId }) {
         `${item.name} marked as returned${result.data?.returnedLate ? ' (returned late)' : ''}`,
       );
       closeDialog();
-      refresh();
+      await refresh();
     } else {
       toast.error(errorMessage(result, `Could not mark ${item.name} as returned.`));
     }
@@ -77,7 +77,7 @@ function RentedToolsDisplay({ projectId }) {
         `${item.name} rental extended to ${new Date(rentalDueDate).toLocaleDateString()}`,
       );
       closeDialog();
-      refresh();
+      await refresh();
     } else {
       setFieldError(errorMessage(result, 'Could not extend the rental.'));
     }
