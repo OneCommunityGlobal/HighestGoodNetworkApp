@@ -64,6 +64,7 @@ const UserTableSearchHeader = React.memo(function UserTableSeacrhHeader(props) {
         <DropDownSearchBox
           width="100px"
           className={darkInput}
+          placeholder=" Search Role"
           id="role_search"
           items={props.roles}
           searchCallback={onRoleSearch}
@@ -95,6 +96,7 @@ const UserTableSearchHeader = React.memo(function UserTableSeacrhHeader(props) {
           id="hrs_search"
           style={{ maxWidth: '75px', margin: '0 auto', width: isMobile ? mobileWidth : 'initial' }}
           searchCallback={onWeeklyHrsSearch}
+          placeholder=" Search Hrs"
           className={darkInput}
         />
       </td>
