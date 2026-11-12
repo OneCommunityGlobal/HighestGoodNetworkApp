@@ -32,7 +32,7 @@ export const setToolAvailability = payload => ({
 export const fetchTools = () => {
   const url = ENDPOINTS.BM_TOOLS;
   return async dispatch => {
-    axios
+    return axios
       .get(url)
       .then(res => {
         dispatch(setTools(res.data));

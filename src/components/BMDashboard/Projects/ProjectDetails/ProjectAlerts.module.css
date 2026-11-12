@@ -1,0 +1,212 @@
+/* Rented tools and low-stock material alert sections on the project details page. */
+
+.section {
+  padding: 12px;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #1a1a1a;
+  text-align: left;
+}
+
+.sectionDark {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+/* Sort / filter controls */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  flex: 1 1 140px;
+}
+
+.controlGroup label {
+  margin-bottom: 2px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.controlGroup select {
+  padding: 4px 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #1a1a1a;
+  font-size: 0.85rem;
+}
+
+.sectionDark .controlGroup select {
+  border-color: #6b7280;
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+}
+
+/* Card list */
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 520px;
+  padding: 2px;
+  margin: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-left-width: 6px;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover,
+.card:focus-within {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+}
+
+.sectionDark .card {
+  border-color: #4b5563;
+  background-color: #1f2937;
+}
+
+.card.critical {
+  border-left-color: #dc3545;
+}
+
+.card.warning {
+  border-left-color: #f0ad4e;
+}
+
+.card.normal {
+  border-left-color: #28a745;
+}
+
+.cardImage {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.cardBody {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cardHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.cardTitle a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.cardMeta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1px 8px;
+  margin: 6px 0;
+  font-size: 0.8rem;
+}
+
+.cardMeta dt {
+  font-weight: 600;
+}
+
+.cardMeta dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Risk badges: text plus color, so the level is not conveyed by color alone. */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badgeCritical {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.badgeWarning {
+  background-color: #fff3cd;
+  color: #664d03;
+}
+
+.badgeNormal {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+/* Two classes so badge text keeps its color against `body.dark-mode * { color: #fff !important }`. */
+.sectionDark .badgeCritical {
+  color: #842029 !important;
+}
+
+.sectionDark .badgeWarning {
+  color: #664d03 !important;
+}
+
+.sectionDark .badgeNormal {
+  color: #0f5132 !important;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.actions button {
+  padding: 2px 10px;
+  font-size: 0.8rem;
+}
+
+.emptyState {
+  padding: 16px;
+  margin: 0;
+  text-align: center;
+  font-style: italic;
+}
