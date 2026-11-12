@@ -8,7 +8,7 @@ import { createMemoryHistory } from 'history';
 import axios from 'axios';
 import mockAdminState from '__tests__/mockAdminState';
 import { ModalContext } from '~/context/ModalContext';
-import { permissionLabelKeyMappingObj } from '../PermissionsConst';
+import { permissionLabelKeyMappingObj, permissionLabels } from '../PermissionsConst';
 import PermissionChangesList from '../PermissionChangesList';
 import listStyles from '../PermissionChangesList.module.css';
 import RolePermissions from '../RolePermissions';
@@ -59,6 +59,14 @@ const namesOn = testId => screen.getByTestId(testId).textContent.split('; ');
 
 const clickRow = (key, buttonName) =>
   fireEvent.click(within(screen.getByTestId(key)).getByRole('button', { name: buttonName }));
+
+const leafKeys = item => (item.subperms ? item.subperms.flatMap(leafKeys) : [item.key]);
+
+const clickHeading = (name, buttonName) => {
+  // eslint-disable-next-line testing-library/no-node-access
+  const heading = screen.getByText(new RegExp(`^${name}$`, 'i')).closest('li');
+  fireEvent.click(within(heading).getByRole('button', { name: buttonName }));
+};
 
 const flushAllPromises = () =>
   new Promise(resolve => {
@@ -165,9 +173,7 @@ describe('unsaved changes list on the role page', () => {
   it('lists each permission once after a heading Add', () => {
     renderRolePage();
 
-    // eslint-disable-next-line testing-library/no-node-access
-    const general = screen.getByText(/^general$/i).closest('li');
-    fireEvent.click(within(general).getByRole('button', { name: 'Add' }));
+    clickHeading('General', 'Add');
 
     // seeUsersInDashboard also has a row under Misc/Unsorted; listed once
     expect(namesOn('permissions-added')).toEqual([
@@ -290,6 +296,38 @@ describe('unsaved changes list in Manage User Permissions', () => {
 
     clickRow('putUserProfile', 'Add');
     expect(screen.queryByTestId('permission-changes')).not.toBeInTheDocument();
+  });
+
+  it('leaves role defaults on after a heading Add', async () => {
+    await openManager({ frontPermissions: [], removedDefaultPermissions: [] });
+
+    clickHeading('User Management', 'Add');
+
+    expect(screen.queryByTestId('permissions-removed')).not.toBeInTheDocument();
+    expect(namesOn('permissions-added')).toContain(labelOf('postUserProfile'));
+  });
+
+  it('turns a removed role default back on after a heading Add', async () => {
+    await openManager({ frontPermissions: [], removedDefaultPermissions: ['putUserProfile'] });
+
+    clickHeading('User Management', 'Add');
+
+    expect(namesOn('permissions-added')).toContain(labelOf('putUserProfile'));
+    expect(screen.queryByTestId('permissions-removed')).not.toBeInTheDocument();
+  });
+
+  it('offers Add on a heading while one of its role defaults is turned off', async () => {
+    const reportsKeys = leafKeys(permissionLabels.find(item => /^reports$/i.test(item.label)));
+    // Saved: every Reports row on, except the role default turned off
+    await openManager({
+      frontPermissions: reportsKeys.filter(key => key !== 'getWeeklySummaries'),
+      removedDefaultPermissions: ['getWeeklySummaries'],
+    });
+
+    clickHeading('Reports', 'Add');
+
+    expect(namesOn('permissions-added')).toEqual([labelOf('getWeeklySummaries')]);
+    expect(screen.queryByTestId('permissions-removed')).not.toBeInTheDocument();
   });
 
   it('after Reset to Default, lists extras as removed and returning role defaults as added', async () => {

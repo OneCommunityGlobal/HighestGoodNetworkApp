@@ -94,7 +94,11 @@ function PermissionListItem(props) {
       if (subperm.subperms) {
         setSubpermissions(subperm.subperms, adding);
       } else if (adding !== rolePermissions.includes(subperm.key)) {
-        togglePermission(subperm.key);
+        const defaultIsOn =
+          immutablePermissions.includes(subperm.key) &&
+          !removedDefaultPermissions?.includes(subperm.key);
+        // Add skips a role default that is already on
+        if (!(adding && defaultIsOn)) togglePermission(subperm.key);
       }
     });
   };
@@ -114,7 +118,10 @@ function PermissionListItem(props) {
       const perm = list.pop();
       if (perm.subperms) {
         list = list.concat(perm.subperms);
-      } else if (rolePermissions.includes(perm.key) || immutablePermissions.includes(perm.key)) {
+      } else if (
+        rolePermissions.includes(perm.key) ||
+        (immutablePermissions.includes(perm.key) && !removedDefaultPermissions?.includes(perm.key))
+      ) {
         none = false;
       } else {
         all = false;
