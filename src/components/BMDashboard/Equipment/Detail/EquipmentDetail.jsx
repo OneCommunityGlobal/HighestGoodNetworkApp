@@ -7,6 +7,7 @@ import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import { fetchEquipmentTypes } from '~/actions/bmdashboard/invTypeActions';
 import { v4 as uuidv4 } from 'uuid';
 import EquipmentModal from '../EquipmentModal';
+import EquipmentRecordSections from './EquipmentRecordSections';
 import styles from './EquipmentDetailPage.module.css';
 
 const OWNERSHIP_OPTIONS = ['Purchased', 'Rented'];
@@ -452,6 +453,8 @@ function EquipmentDetail() {
         {isEditing ? renderEditableFields() : renderViewFields()}
 
         {details.filter(Boolean).map(renderDetails)}
+
+        {!isEditing && <EquipmentRecordSections equipment={equipment} />}
 
         {isEditing && (
           <div className={styles.actionButtons}>

@@ -166,6 +166,42 @@ button.descriptionItem_button:hover {
   min-width: 100px;
 }
 
+.recordSections {
+  margin: 1.5rem 0;
+}
+
+.recordSection {
+  border: 1px solid #d4e4da;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.recordSection summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+}
+
+.recordSection summary:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+.recordTable {
+  margin-bottom: 0;
+}
+
+.recordTable th,
+.recordTable td {
+  padding: 0.6rem 1rem;
+}
+
+.emptyRecords {
+  margin: 0;
+  padding: 0.25rem 1rem 1rem;
+}
+
 /* Dark mode - use body class (matches app toggle) */
 :global(body.dark-mode) .equipmentDetailPage,
 :global(body.bm-dashboard-dark) .equipmentDetailPage {
@@ -245,4 +281,14 @@ button.descriptionItem_button:hover {
 :global(body.bm-dashboard-dark) .backBtn {
   color: #e0eaf5 !important;
   border-color: #e0eaf5 !important;
+}
+
+:global(body.dark-mode) .recordSection,
+:global(body.bm-dashboard-dark) .recordSection {
+  border-color: #40536a;
+}
+
+:global(body.dark-mode) .recordTable,
+:global(body.bm-dashboard-dark) .recordTable {
+  color: #e0eaf5;
 }
