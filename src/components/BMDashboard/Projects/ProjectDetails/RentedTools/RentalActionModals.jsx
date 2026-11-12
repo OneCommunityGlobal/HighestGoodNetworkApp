@@ -79,7 +79,8 @@ export function ExtendRentalModal({ item, isOpen, toggle, onSubmit, busy }) {
   const handleSubmit = e => {
     e.preventDefault();
     if (!date || date < minDate) {
-      setError(`Choose a date on or after ${new Date(`${minDate}T00:00`).toLocaleDateString()}.`);
+      const earliest = new Date(`${minDate}T00:00`).toLocaleDateString();
+      setError(`Choose a date on or after ${earliest}.`);
       return;
     }
     onSubmit(endOfDay(date).toISOString(), setError);

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { Button, Card } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { fetchTools } from '~/actions/bmdashboard/toolActions';
@@ -24,7 +23,6 @@ const errorMessage = (result, fallback) =>
 
 function RentedToolsDisplay({ projectId }) {
   const dispatch = useDispatch();
-  const history = useHistory();
   const darkMode = useSelector(state => state.theme?.darkMode);
   const tools = useSelector(state => state.bmTools?.toolslist);
   const equipments = useSelector(state => state.bmEquipments?.equipmentslist);
@@ -129,7 +127,6 @@ function RentedToolsDisplay({ projectId }) {
             title={item.name}
             imageUrl={item.imageUrl}
             detailPath={item.detailPath}
-            onOpen={() => history.push(item.detailPath)}
             badgeText={formatDueIn(item.daysLeft)}
             meta={[
               ['Type', item.kind === 'tool' ? 'Tool' : 'Equipment'],

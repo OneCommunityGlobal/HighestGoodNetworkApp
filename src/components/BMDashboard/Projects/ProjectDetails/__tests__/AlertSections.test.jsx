@@ -103,9 +103,11 @@ describe('RentedToolsDisplay', () => {
     expect(screen.queryByText('Card title')).not.toBeInTheDocument();
   });
 
-  it('opens the tool detail page when the card is clicked', async () => {
+  it('links each card to its tool detail page', async () => {
     const history = setup(<RentedToolsDisplay projectId={PROJECT} />);
-    fireEvent.click(await screen.findByTestId('alert-card-t-late'));
+    const link = await screen.findByRole('link', { name: 'Late Drill' });
+    expect(link).toHaveAttribute('href', '/bmdashboard/tools/t-late');
+    fireEvent.click(link);
     expect(history.location.pathname).toBe('/bmdashboard/tools/t-late');
   });
 
@@ -138,7 +140,8 @@ describe('MaterialsDisplay', () => {
     setup(<MaterialsDisplay projectId={PROJECT} />);
     fireEvent.click(await screen.findByRole('button', { name: 'Update quantity' }));
     expect(screen.getByText('Update modal for Sand')).toBeInTheDocument();
-    fireEvent.click(screen.getByTestId('alert-card-m1'));
+    // The card's title button (stretched over the card) opens the history view.
+    fireEvent.click(screen.getByRole('button', { name: 'Sand' }));
     expect(screen.getByText('History for Sand')).toBeInTheDocument();
   });
 

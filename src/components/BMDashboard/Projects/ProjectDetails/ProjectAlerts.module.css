@@ -71,6 +71,7 @@
 }
 
 .card {
+  position: relative;
   display: flex;
   gap: 10px;
   padding: 10px;
@@ -154,6 +155,19 @@
   overflow-wrap: anywhere;
 }
 
+/* The title link/button covers the whole card, so a click anywhere opens it. */
+.stretchedLink::after {
+  position: absolute;
+  z-index: 1;
+  content: '';
+  inset: 0;
+}
+
+.stretchedLink:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
 /* Risk badges: text plus color, so the level is not conveyed by color alone. */
 .badge {
   display: inline-block;
@@ -193,6 +207,8 @@
 }
 
 .actions {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
