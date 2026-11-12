@@ -3,6 +3,7 @@ import styles from './PRGradingScreen.module.css';
 
 function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
   const { reviewerName, teamCode, teamReviewerName, weeklyPRs } = reviewer;
+  const dm = darkMode ? styles['dark-mode'] : '';
 
   // With no recorded weekly history, show that plainly instead of computing stats:
   // `[].every(...)` is true, which would otherwise label an unknown history "Consistent".
@@ -12,24 +13,14 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
   const isConsistent = hasWeeklyHistory && weeklyPRs.every(w => w.count >= 8);
 
   return (
-    <div
-      className={`${styles['pr-grading-screen-modal-overlay']} ${
-        darkMode ? styles['dark-mode'] : ''
-      }`}
-    >
-      <div
-        className={`${styles['pr-grading-screen-modal']} ${darkMode ? styles['dark-mode'] : ''}`}
-      >
+    <div className={`${styles['pr-grading-screen-modal-overlay']} ${dm}`}>
+      <div className={`${styles['pr-grading-screen-modal']} ${dm}`}>
         {/* Header */}
-        <div
-          className={`${styles['pr-grading-screen-modal-header']} ${
-            darkMode ? styles['dark-mode'] : ''
-          }`}
-        >
+        <div className={`${styles['pr-grading-screen-modal-header']} ${dm}`}>
           <h4 style={{ margin: 0, color: darkMode ? '#fff' : '#333' }}>🏆 Confirm Promotion</h4>
           <button
             type="button"
-            className={styles['pr-grading-screen-modal-close']}
+            className={`${styles['pr-grading-screen-modal-close']} ${dm}`}
             onClick={onCancel}
             aria-label="Close"
           >
@@ -38,11 +29,7 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
         </div>
 
         {/* Body */}
-        <div
-          className={`${styles['pr-grading-screen-modal-body']} ${
-            darkMode ? styles['dark-mode'] : ''
-          }`}
-        >
+        <div className={`${styles['pr-grading-screen-modal-body']} ${dm}`}>
           {/* Reviewer Info */}
           <div
             style={{
@@ -217,11 +204,7 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
               </div>
             </>
           ) : (
-            <p
-              className={`${styles['pr-promotion-no-history']} ${
-                darkMode ? styles['dark-mode'] : ''
-              }`}
-            >
+            <p className={`${styles['pr-promotion-no-history']} ${dm}`}>
               No weekly PR history is available for this reviewer.
             </p>
           )}
@@ -243,16 +226,18 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
 
         {/* Footer */}
         <div
-          className={`${styles['pr-grading-screen-modal-footer']} ${
-            styles['pr-promotion-footer']
-          } ${darkMode ? styles['dark-mode'] : ''}`}
+          className={`${styles['pr-grading-screen-modal-footer']} ${styles['pr-promotion-footer']} ${dm}`}
         >
-          <button type="button" className={styles['pr-promotion-btn-cancel']} onClick={onCancel}>
+          <button
+            type="button"
+            className={`${styles['pr-promotion-btn-cancel']} ${dm}`}
+            onClick={onCancel}
+          >
             Cancel
           </button>
           <button
             type="button"
-            className={styles['pr-promotion-btn-confirm']}
+            className={`${styles['pr-promotion-btn-confirm']} ${dm}`}
             onClick={() => onConfirm(reviewerName, reviewer.reviewerId || reviewer.id)}
           >
             Confirm Promotion
@@ -265,6 +250,7 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
 
 PromotionConfirmationBox.propTypes = {
   reviewer: PropTypes.shape({
+    id: PropTypes.string,
     reviewerId: PropTypes.string,
     reviewerName: PropTypes.string.isRequired,
     teamCode: PropTypes.string,

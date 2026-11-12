@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import styles from './PRGradingScreen.module.css';
 import InlinePRSummary from './InlinePRSummary';
+import PromotionConfirmationBox from './PromotionConfirmationBox';
+import ReviewerCell from './ReviewerCell';
 import GRADE_OPTIONS from './gradeOptions';
 
 const PRGradingView = ({
@@ -32,6 +34,8 @@ const PRGradingView = ({
   onInputSubmit,
   onCancelInput,
   onPRNumberClick,
+  selectedReviewerId,
+  onSelectReviewer,
   promotingReviewer,
   onConfirmPromotion,
   onCancelPromotion,
@@ -40,7 +44,7 @@ const PRGradingView = ({
   gradingReviewer,
   onGradeChange,
 }) => {
-  const dm = darkMode ? 'dark-mode' : '';
+  const dm = darkMode ? styles['dark-mode'] : '';
 
   return (
     <Container fluid className={`${styles['pr-grading-screen-container']} ${dm}`}>
@@ -75,7 +79,7 @@ const PRGradingView = ({
               )}
             </Card.Header>
 
-            <Card.Body className={dm}>
+            <Card.Body className={`${styles['pr-grading-screen-card-body']} ${dm}`}>
               {gradeError && (
                 <p role="alert" className={`${styles['pr-grading-screen-error-message']} ${dm}`}>
                   {gradeError}
@@ -108,6 +112,7 @@ const PRGradingView = ({
 
                 {(searchTerm || roleFilter) && (
                   <button
+                    type="button"
                     onClick={onClearSearch}
                     className={`${styles['pr-grading-screen-clear-btn']} ${dm}`}
                   >
@@ -144,32 +149,20 @@ const PRGradingView = ({
 
                         return (
                           <React.Fragment key={reviewer.id}>
-                            <tr>
+                            <tr className={`${styles['pr-grading-screen-table-row']} ${dm}`}>
                               {/* Reviewer Name and Promote Button Cell */}
-                              <td className={styles['pr-grading-screen-td-name']}>
-                                <div className={styles['pr-grading-screen-reviewer-info']}>
-                                  <span className={styles['pr-grading-screen-reviewer-name']}>
-                                    {reviewer.reviewer}
-                                  </span>
-                                  {reviewer.role && (
-                                    <span className={styles['pr-grading-screen-reviewer-role']}>
-                                      {reviewer.role}
-                                    </span>
-                                  )}
-                                  <Button
-                                    variant={isPromoted ? 'success' : 'outline-warning'}
-                                    size="sm"
-                                    disabled={isPromoted}
-                                    onClick={() => onPromoteClick(reviewer)}
-                                    style={{ marginTop: '8px' }}
-                                  >
-                                    {isPromoted ? '✅ Promoted' : '🏆 Promote'}
-                                  </Button>
-                                </div>
+                              <td className={`${styles['pr-grading-screen-td-name']} ${dm}`}>
+                                <ReviewerCell
+                                  reviewer={reviewer}
+                                  isPromoted={isPromoted}
+                                  onPromoteClick={onPromoteClick}
+                                  onSelectReviewer={onSelectReviewer}
+                                  darkMode={darkMode}
+                                />
                               </td>
 
                               {/* PR Reviewed Count */}
-                              <td className={styles['pr-grading-screen-td-reviewed']}>
+                              <td className={`${styles['pr-grading-screen-td-reviewed']} ${dm}`}>
                                 <input
                                   type="number"
                                   value={reviewer.gradedPrs.length}
@@ -180,12 +173,12 @@ const PRGradingView = ({
                               </td>
 
                               {/* PRs Needed */}
-                              <td className={styles['pr-grading-screen-td-needed']}>
+                              <td className={`${styles['pr-grading-screen-td-needed']} ${dm}`}>
                                 {reviewer.prsNeeded}
                               </td>
 
                               {/* PR Numbers & Actions */}
-                              <td className={styles['pr-grading-screen-td-numbers']}>
+                              <td className={`${styles['pr-grading-screen-td-numbers']} ${dm}`}>
                                 <div className={styles['pr-grading-screen-pr-list']}>
                                   {reviewer.gradedPrs.map(pr => (
                                     <span
@@ -215,7 +208,7 @@ const PRGradingView = ({
                                     variant="success"
                                     size="sm"
                                     disabled={isLoadingSaved || isSavingPR || Boolean(loadError)}
-                                    className={styles['pr-grading-screen-add-btn']}
+                                    className={`${styles['pr-grading-screen-add-btn']} ${dm}`}
                                     onClick={() => onAddNewClick(reviewer.id)}
                                   >
                                     + Add new
@@ -223,14 +216,16 @@ const PRGradingView = ({
                                 )}
 
                                 {!isFinalized && activeInput === reviewer.id && (
-                                  <div className={styles['pr-grading-screen-input-container']}>
+                                  <div
+                                    className={`${styles['pr-grading-screen-input-container']} ${dm}`}
+                                  >
                                     <div className={styles['pr-grading-screen-input-wrapper']}>
                                       <input
                                         type="text"
                                         value={inputValue}
                                         disabled={isSavingPR}
                                         onChange={e => onInputValueChange(e.target.value)}
-                                        className={styles['pr-grading-screen-pr-number-input']}
+                                        className={`${styles['pr-grading-screen-pr-number-input']} ${dm}`}
                                         placeholder="1070 or 1070 + 1256"
                                       />
                                       {inputError && (
@@ -264,13 +259,15 @@ const PRGradingView = ({
                                 )}
                               </td>
                             </tr>
-                            {/* Render inline summary component below each reviewer row for state synchronization and unit tests */}
-                            <InlinePRSummary
-                              reviewer={reviewer}
-                              onGradeChange={onGradeChange}
-                              isFinalized={isFinalized || isSavingGrade}
-                              darkMode={darkMode}
-                            />
+                            {/* Only render inline PR grading summary when data loading is complete and this reviewer is selected */}
+                            {!isLoadingSaved && selectedReviewerId === reviewer.id && (
+                              <InlinePRSummary
+                                reviewer={reviewer}
+                                onGradeChange={onGradeChange}
+                                isFinalized={isFinalized || isSavingGrade}
+                                darkMode={darkMode}
+                              />
+                            )}
                           </React.Fragment>
                         );
                       })
@@ -290,6 +287,7 @@ const PRGradingView = ({
             <div className={`${styles['pr-grading-screen-modal-header']} ${dm}`}>
               <h3>Grade PR for {gradingReviewer.reviewer}</h3>
               <button
+                type="button"
                 className={`${styles['pr-grading-screen-modal-close']} ${dm}`}
                 disabled={isSavingGrade}
                 onClick={onCloseGradingModal}
@@ -348,67 +346,12 @@ const PRGradingView = ({
 
       {/* Promotion Confirmation Modal */}
       {promotingReviewer && (
-        <div className={`${styles['pr-grading-screen-modal-overlay']} ${dm}`}>
-          <div className={`${styles['pr-grading-screen-modal']} ${dm}`}>
-            <div className={`${styles['pr-grading-screen-modal-header']} ${dm}`}>
-              <h3>Confirm Promotion</h3>
-              <button
-                className={`${styles['pr-grading-screen-modal-close']} ${dm}`}
-                onClick={onCancelPromotion}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className={`${styles['pr-grading-screen-modal-body']} ${dm}`}>
-              <p>
-                Reviewer: <strong>{promotingReviewer.reviewerName}</strong>
-              </p>
-              <p>Team: {promotingReviewer.teamCode}</p>
-              <p>Status: {promotingReviewer.isConsistent ? '✅ Consistent' : '⚠️ Inconsistent'}</p>
-
-              {promotingReviewer.weeklyPRs && promotingReviewer.weeklyPRs.length > 0 ? (
-                <table className={`${styles['pr-grading-screen-grading-table']} ${dm}`}>
-                  <thead>
-                    <tr>
-                      <th>Week</th>
-                      <th>PR Count</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {promotingReviewer.weeklyPRs.map((count, index) => (
-                      <tr key={index}>
-                        <td>Week {index + 1}</td>
-                        <td>{count}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className={`${styles['pr-promotion-no-history']} ${dm}`}>
-                  No weekly PR history is available for this reviewer.
-                </div>
-              )}
-
-              <div className={styles['pr-promotion-footer']}>
-                <button
-                  type="button"
-                  onClick={onCancelPromotion}
-                  className={`${styles['pr-promotion-btn-cancel']} ${dm}`}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={onConfirmPromotion}
-                  className={`${styles['pr-promotion-btn-confirm']} ${dm}`}
-                >
-                  Confirm Promotion
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PromotionConfirmationBox
+          reviewer={promotingReviewer}
+          onConfirm={onConfirmPromotion}
+          onCancel={onCancelPromotion}
+          darkMode={darkMode}
+        />
       )}
     </Container>
   );
@@ -458,6 +401,8 @@ PRGradingView.propTypes = {
   onInputSubmit: PropTypes.func.isRequired,
   onCancelInput: PropTypes.func.isRequired,
   onPRNumberClick: PropTypes.func.isRequired,
+  selectedReviewerId: PropTypes.string,
+  onSelectReviewer: PropTypes.func,
   promotingReviewer: PropTypes.object,
   onConfirmPromotion: PropTypes.func.isRequired,
   onCancelPromotion: PropTypes.func.isRequired,
@@ -465,6 +410,15 @@ PRGradingView.propTypes = {
   onCloseGradingModal: PropTypes.func.isRequired,
   gradingReviewer: PropTypes.object,
   onGradeChange: PropTypes.func.isRequired,
+};
+
+PRGradingView.defaultProps = {
+  activeInput: null,
+  selectedReviewerId: null,
+  onSelectReviewer: undefined,
+  promotingReviewer: null,
+  showGradingModal: null,
+  gradingReviewer: null,
 };
 
 export default PRGradingView;
