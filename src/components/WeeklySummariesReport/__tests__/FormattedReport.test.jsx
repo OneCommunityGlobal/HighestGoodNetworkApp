@@ -575,6 +575,10 @@ describe('FormattedReport requested week off notice', () => {
       vi.setSystemTime(new Date('2026-09-19T12:00:00-07:00'));
     });
 
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it.each([
       ['earlier entry in a multi-week history', ['Sep-12-26', 'Sep-19-26'], 1, true],
       ['unpadded writer output', ['Sep-6-26', 'Sep-19-26'], 1, true],
