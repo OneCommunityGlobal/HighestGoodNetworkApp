@@ -2,6 +2,7 @@
 import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import reportStyles from './reportsPage.module.css';
 import { Input, FormGroup, FormFeedback, Button } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
@@ -163,7 +164,7 @@ const paginatedTeams = allTeams?.slice(
   return (
   <>
     <table
-      className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
+      className={`table ${darkMode ? reportStyles['reports-table-dark'] : 'table-bordered'}`}
       style={darkMode ? boxStyleDark : boxStyle}
     >
      <thead>

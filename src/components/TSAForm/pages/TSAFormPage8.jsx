@@ -1,13 +1,18 @@
+import { useSelector } from 'react-redux';
+import styles from '../TSAForm.module.css';
+
 function TSAFormPage8() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
     <div
+      className={`${styles.page} ${darkMode ? styles.dark : ''}`}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#e6f5fb',
         fontFamily: 'Arial, sans-serif',
         overflowY: 'auto',
         zIndex: 1000,
@@ -16,8 +21,8 @@ function TSAFormPage8() {
     >
       {/* Banner */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',
@@ -41,8 +46,8 @@ function TSAFormPage8() {
 
       {/* Title + Intro */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { Link } from 'react-router-dom';
+import styles from './reportsPage.module.css';
 
 function ProjectTable({ projects, darkMode }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,7 +48,7 @@ function ProjectTable({ projects, darkMode }) {
   return (
     <>
       <table
-        className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
+        className={`table ${darkMode ? styles['reports-table-dark'] : 'table-bordered'}`}
         style={darkMode ? boxStyleDark : boxStyle}
       >
         <thead>

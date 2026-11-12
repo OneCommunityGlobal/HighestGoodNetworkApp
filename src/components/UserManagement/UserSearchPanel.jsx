@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 import { useState } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip as ReactstrapTooltip } from 'reactstrap';
@@ -32,7 +33,6 @@ function UserSearchPanel({
   const canCreateUsers = hasPermission(permissions.postUserProfile);
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
   const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
-  const labelDarkClass = darkMode ? `${appStyles['bg-yinmn-blue']} text-light` : '';
   const inputDarkClass = darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : '';
   return (
     <div className={`input-group mt-3 ${styles.new_user_management}`}>
@@ -82,8 +82,14 @@ function UserSearchPanel({
       >
         {CREATE_NEW_USER}
       </button>
+      {/* SEARCH Label Box - dark background comes from the local module class; the text is
+          already forced white by the global `body.dark-mode *` rule in public/index.css */}
       <div className="input-group-prepend">
-        <span className={`input-group-text ${labelDarkClass}`}>
+        <span
+          className={`input-group-text ${
+            darkMode ? `${styles['dark-input-label']} font-weight-bold` : ''
+          }`}
+        >
           {SEARCH}
         </span>
       </div>
@@ -100,8 +106,13 @@ function UserSearchPanel({
         }}
         style={{ marginRight: '5px' }}
       />
+      {/* SHOW Label Box - same dark treatment as the SEARCH label above */}
       <div className="input-group-prepend">
-        <span className={`input-group-text ${labelDarkClass}`}>
+        <span
+          className={`input-group-text ${
+            darkMode ? `${styles['dark-input-label']} font-weight-bold` : ''
+          }`}
+        >
           {SHOW}
         </span>
         <select

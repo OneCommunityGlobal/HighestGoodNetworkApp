@@ -1,3 +1,4 @@
+/* Version 1.0.0 */
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { SiGmail } from 'react-icons/si';
@@ -17,6 +18,10 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
         </div>
       </div>
     );
+  }
+
+  if (!data?.['6Months'] || !data?.['1Year']) {
+    return <div>No anniversary data available for this period.</div>;
   }
 
   const sixMonthsData = data['6Months'];

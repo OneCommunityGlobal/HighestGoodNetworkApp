@@ -1,8 +1,11 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from '../TSAForm.module.css';
 
 function TSAFormPage7() {
   const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [errors, setErrors] = useState({
     agreementseven: false,
@@ -57,13 +60,13 @@ function TSAFormPage7() {
 
   return (
     <div
+      className={`${styles.page} ${darkMode ? styles.dark : ''}`}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#e6f5fb',
         fontFamily: 'Arial, sans-serif',
         overflowY: 'auto',
         zIndex: 1000,
@@ -72,8 +75,8 @@ function TSAFormPage7() {
     >
       {/* Banner */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',
@@ -97,8 +100,8 @@ function TSAFormPage7() {
 
       {/* Title + Intro */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',
@@ -154,8 +157,8 @@ function TSAFormPage7() {
 
       {/* Agreement 7 */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -215,8 +218,8 @@ function TSAFormPage7() {
 
       {/* Agreement of Terms */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -252,8 +255,8 @@ function TSAFormPage7() {
 
       {/* Agreement 8 */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -313,8 +316,8 @@ function TSAFormPage7() {
 
       {/* Digital Signature */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -340,8 +343,8 @@ function TSAFormPage7() {
 
       {/* Sign your name */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',

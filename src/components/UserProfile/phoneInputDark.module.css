@@ -1,0 +1,43 @@
+/* Dark mode for react-phone-input-2. Applied through PhoneInput's containerClass only in
+   dark mode, so it never reaches other phone inputs. The library's own rules are
+   `.react-tel-input .x` (two classes), so these need the extra class to win. */
+.phoneInputDark:global(.react-tel-input) :global(.form-control) {
+  background-color: #1c1c1c;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.phoneInputDark:global(.react-tel-input) :global(.flag-dropdown) {
+  background-color: #1c1c1c;
+  border-color: #3a506b;
+}
+
+.phoneInputDark:global(.react-tel-input) :global(.selected-flag):hover,
+.phoneInputDark:global(.react-tel-input) :global(.selected-flag):focus,
+.phoneInputDark:global(.react-tel-input) :global(.flag-dropdown.open .selected-flag) {
+  background-color: #2f4157;
+}
+
+.phoneInputDark:global(.react-tel-input) :global(.country-list) {
+  background-color: #1c1c1c;
+  color: #fff;
+}
+
+.phoneInputDark:global(.react-tel-input) :global(.country-list .country .dial-code) {
+  color: #b0b8c4;
+}
+
+.phoneInputDark:global(.react-tel-input) :global(.country-list .country:hover),
+.phoneInputDark:global(.react-tel-input) :global(.country-list .country.highlight) {
+  background-color: #2f4157;
+}
+
+.phoneInputDark:global(.react-tel-input) :global(.country-list .search) {
+  background-color: #1c1c1c;
+}
+
+.phoneInputDark:global(.react-tel-input) :global(.country-list .search-box) {
+  background-color: #2f4157;
+  border-color: #3a506b;
+  color: #fff;
+}

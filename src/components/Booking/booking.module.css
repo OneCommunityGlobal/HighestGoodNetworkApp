@@ -80,7 +80,8 @@
 }
 
 .villageSelect select {
-  background: #fff;
+  background: var(--panel);
+  color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 6px;
   height: 40px;
@@ -165,6 +166,20 @@
   color: var(--muted);
 }
 
+/* Was a bare native <button> with no class — rendered as unstyled browser
+   chrome (pale gray/white) that never read the page's theme variables at all.
+   Built from the same vars everything else in this file already uses, so it
+   themes for free in both modes with no darkMode conditional needed. */
+.morePhotosBtn {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: inherit;
+  cursor: pointer;
+}
+
 .sectionTitle {
   margin-bottom: 4px;
   color: var(--ink);
@@ -187,6 +202,23 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 12px;
+}
+
+/* reactstrap's <Alert color="info"|"danger"> paints Bootstrap's own fixed
+   colors, never themed for this page. Covers all three states rendered here
+   (pick-a-village prompt, "select dates" prompt, price error) since they all
+   sit in .priceBox and use the same two Bootstrap classes. :global() because
+   these class names are Bootstrap's, not this module's. */
+.darkMode .priceBox :global(.alert-info) {
+  background: var(--panel);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.darkMode .priceBox :global(.alert-danger) {
+  background: var(--panel);
+  color: var(--red);
+  border-color: var(--red);
 }
 
 .bookingH3 {

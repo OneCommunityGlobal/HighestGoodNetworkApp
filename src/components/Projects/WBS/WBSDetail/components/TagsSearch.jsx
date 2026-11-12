@@ -128,11 +128,11 @@ function TagsSearch(props) {
               {filteredMembers.map((member, index) => (
                 <li
                 key={member._id || member.userID || index} 
-                className={`dropdown-item border-bottom fs-6 w-100 p-1 ${darkMode ? styles.darkDropdownItem : ''}`}
+                className={`dropdown-item border-bottom fs-6 w-100 p-1 ${styles.memberOption} ${darkMode ? styles.darkDropdownItem : ''}`}
                 >
                 <button
                   type="button"
-                  className={`btn w-100 text-left p-1 ${darkMode ? 'text-light' : 'text-dark'}`}
+                  className={`btn w-100 text-left p-1 ${styles.memberOption} ${darkMode ? 'text-light' : 'text-dark'}`}
                   onMouseDown={event => handleClick(event, member)}
                 >
                   {`${member.firstName || member.first} ${member.lastName || member.last}`}
