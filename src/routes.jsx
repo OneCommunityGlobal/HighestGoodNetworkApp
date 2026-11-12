@@ -228,7 +228,7 @@ import { UserRole } from './utils/enums';
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
-import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
+import InteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
 import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
 import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
