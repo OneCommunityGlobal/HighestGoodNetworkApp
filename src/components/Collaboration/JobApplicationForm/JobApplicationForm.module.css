@@ -446,6 +446,57 @@
   font-size: 0.85rem;
 }
 
+/* Hint line: suggested address in bold, followed by a "Use this" button styled like the resume Remove button */
+.fieldHint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 4px 0 0;
+  color: #555;
+  font-size: 0.85rem;
+}
+
+.fieldHint strong {
+  font-size: inherit; /* a global rule sets strong to 16px */
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.termsAgreement {
+  margin-top: 1rem;
+}
+
+.termsLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.termsLabel input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin-top: 3px;
+  accent-color: #006b32;
+}
+
+.termsLabel a {
+  color: #006b32;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.termsHint {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+}
+
+.darkMode .termsLabel input[type='checkbox'] {
+  accent-color: #7ec8ff;
+}
+
 .submitButton {
   background-color: #006b32;
   color: #fff;
@@ -803,8 +854,14 @@
   cursor: pointer;
 }
 
+/* !important: the global `body.dark-mode * { color: #fff !important }` rule would otherwise
+   turn the error and suggestion white */
 .darkMode .fieldError {
-  color: #ff8a80;
+  color: #ff8a80 !important;
+}
+
+.darkMode .fieldHint {
+  color: #e0e0e0 !important;
 }
 
 .darkMode .inputFieldError {
@@ -1132,7 +1189,7 @@
   border: 2px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
   flex-shrink: 0;
 }
 
@@ -1217,4 +1274,36 @@
   height: auto !important;
   min-height: 0 !important;
   overflow: visible !important;
+}
+
+.darkMode .termsLabel a {
+  color: #7ec8ff;
+}
+
+.termsLabel input:focus-visible,
+.termsLabel a:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 3px;
+}
+
+.darkMode .termsLabel input:focus-visible,
+.darkMode .termsLabel a:focus-visible {
+  outline-color: #7ec8ff;
+}
+
+/* Bot-trap field: off-screen rather than display:none, because some bots skip hidden inputs */
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resumeLabel,
+  .requirementCheckboxCustom {
+    transition: none;
+  }
 }
