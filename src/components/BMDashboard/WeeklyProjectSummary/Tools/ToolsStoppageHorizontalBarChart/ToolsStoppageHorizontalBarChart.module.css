@@ -7,22 +7,14 @@
 /* Date picker input - consistent sizing in all modes */
 
 /* Base styles define size - dark mode only changes colors */
-:global(.datePickerInput),
-:global(.tools-availability-page .react-datepicker-wrapper input),
-:global(.tools-availability-page .react-datepicker-wrapper .datePickerInput) {
-  font-size: 13px !important;
-  padding: 8px 12px !important;
-  height: 38px !important;
-  line-height: 1.5 !important;
-  border-radius: 6px !important;
-  border-width: 1px !important;
-  border-style: solid !important;
-  box-sizing: border-box !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  background-color: #fff !important;
-  color: #000 !important;
-  border-color: #ccc !important;
+.datePickerInput {
+  font-size: 13px;
+  padding: 8px 12px;
+  height: 38px;
+  line-height: 1.5;
+  border-radius: 6px;
+  border-width: 1px;
+  border-style: solid;
 }
 
 /* Date picker input - dark mode (ONLY colors change, sizes stay the same) */
@@ -31,8 +23,8 @@
 :global(.tools-availability-page.dark-mode .react-datepicker-wrapper input.datePickerInput),
 :global(.tools-availability-page.dark-mode .datePickerInput),
 :global(.tools-availability-page.dark-mode .react-datepicker-wrapper input),
-:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"]),
-:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"].datePickerInput) {
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type='text']),
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type='text'].datePickerInput) {
   /* Only override colors - sizes inherit from base */
   background-color: #2b3e59 !important;
   color: #fff !important;
@@ -84,7 +76,7 @@
 }
 
 /* Dark theme calendar container */
-:global(.darkThemeCalendar) { 
+:global(.darkThemeCalendar) {
   background-color: #2b3e59 !important;
   color: #fff !important;
   border: 1px solid #6b6767 !important;

@@ -375,11 +375,6 @@
 
 .summaryLabel {
   font-size: 13px;
-  transition: background-color 0.2s;
-  aspect-ratio: 1 / 1;
-
-  /* Makes each day cell square */
-  min-height: 30px;
 }
 
 .varianceOver { color: #e74c3c; }

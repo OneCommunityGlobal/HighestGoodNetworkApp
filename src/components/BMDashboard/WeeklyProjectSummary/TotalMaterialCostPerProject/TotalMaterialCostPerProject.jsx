@@ -73,7 +73,10 @@ function TotalMaterialCostPerProject() {
         textStrokeColor: darkMode ? '#1a1f26' : '#fff',
         textStrokeWidth: 3,
         // Round only the displayed label text; keep the chart data unchanged.
-        formatter: value => Number(value ?? 0).toFixed(3),
+        formatter: value => {
+          const numericValue = Number(value);
+          return Number.isFinite(numericValue) ? numericValue.toFixed(3) : '0.000';
+        },
       },
       tooltip: {
         backgroundColor: darkMode ? '#22272e' : '#fff',
@@ -102,13 +105,8 @@ function TotalMaterialCostPerProject() {
         },
       },
       y: {
-        grid: { color: darkMode ? '#4a5a77' : '#ccc' },
-        ticks: {
-          color: textColor,
-          callback(val) {
-            return Number(val).toFixed(3);
-          },
-        },
+        grid: { color: darkMode ? '#8b949e' : '#ccc' },
+        ticks: { color: textColor },
       },
     },
   };
@@ -137,7 +135,8 @@ function TotalMaterialCostPerProject() {
           );
         }
         const projectCostsData = costResponse.data.reduce((acc, item) => {
-          acc[item.project] = item.totalCostK;
+          const cost = Number(item.totalCostK);
+          acc[item.project] = Number.isFinite(cost) ? cost : 0;
           return acc;
         }, {});
         setProjectCosts(projectCostsData);
