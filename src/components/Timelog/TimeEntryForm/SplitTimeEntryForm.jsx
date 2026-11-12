@@ -48,7 +48,7 @@ export default function SplitTimeEntryForm({
   onComplete,
   onLockChange,
 }) {
-  const [draftState, setDraft] = useState(() => {
+  const [draftState, setDraftState] = useState(() => {
     const saved = readSplitDraft(personId);
     if (saved && (saved.attempted || saved.payload.batchId === batchId)) return saved;
     return {
@@ -78,14 +78,14 @@ export default function SplitTimeEntryForm({
 
   const persist = next => {
     localStorage.setItem(splitDraftKey(personId), JSON.stringify(next));
-    setDraft(next);
+    setDraftState(next);
   };
   const updateDraft = next => {
     try {
       persist(next);
       setError('');
     } catch {
-      setDraft(next);
+      setDraftState(next);
       setError(
         'Your browser could not keep a recovery copy. Allow site storage before saving a split.',
       );
@@ -162,7 +162,7 @@ export default function SplitTimeEntryForm({
         try {
           persist(current);
         } catch {
-          setDraft(current);
+          setDraftState(current);
         }
         onLockChange(false);
       }

@@ -156,6 +156,38 @@ function timeEntryTheme(darkMode) {
   };
 }
 
+function SplitModeToggle({ locked, mode, tooShort, timerSessionId, fontColor, onChange }) {
+  const showMinimumTimeHelp = tooShort && !locked;
+  return (
+    <FormGroup check>
+      <Label check className={fontColor}>
+        <Input
+          type="checkbox"
+          checked={mode}
+          disabled={locked || !timerSessionId || (!mode && tooShort)}
+          aria-describedby={showMinimumTimeHelp ? 'split-minimum-time-help' : undefined}
+          onChange={event => onChange(event.target.checked)}
+        />
+        Worked on multiple tasks?
+      </Label>
+      {showMinimumTimeHelp && (
+        <div id="split-minimum-time-help" className={fontColor}>
+          At least 2 minutes are needed to split time between tasks.
+        </div>
+      )}
+    </FormGroup>
+  );
+}
+
+SplitModeToggle.propTypes = {
+  locked: PropTypes.bool.isRequired,
+  mode: PropTypes.bool.isRequired,
+  tooShort: PropTypes.bool.isRequired,
+  timerSessionId: PropTypes.string,
+  fontColor: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
 export function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
@@ -863,25 +895,14 @@ export function TimeEntryForm(props) {
               )}
             </FormGroup>
             {splitAvailable && (
-              <FormGroup check>
-                <Label check className={fontColor}>
-                  <Input
-                    type="checkbox"
-                    checked={splitMode}
-                    disabled={splitLocked || !props.timerSessionId || (!splitMode && splitTooShort)}
-                    aria-describedby={
-                      splitTooShort && !splitLocked ? 'split-minimum-time-help' : undefined
-                    }
-                    onChange={event => setSplitMode(event.target.checked)}
-                  />
-                  Worked on multiple tasks?
-                </Label>
-                {splitTooShort && !splitLocked && (
-                  <div id="split-minimum-time-help" className={fontColor}>
-                    At least 2 minutes are needed to split time between tasks.
-                  </div>
-                )}
-              </FormGroup>
+              <SplitModeToggle
+                locked={splitLocked}
+                mode={splitMode}
+                tooShort={splitTooShort}
+                timerSessionId={props.timerSessionId}
+                fontColor={fontColor}
+                onChange={setSplitMode}
+              />
             )}
             {splitMode ? (
               <SplitTimeEntryForm
