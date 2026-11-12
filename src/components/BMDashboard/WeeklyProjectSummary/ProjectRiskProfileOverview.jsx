@@ -76,6 +76,20 @@ function getArrow(delta) {
   return '→';
 }
 
+// Change over the selected period (last point vs first point). Shared by the
+// Risk Movement Tracking cards, the Trend Summary Table and the bar tooltip so
+// all three always show the same direction.
+function getPeriodDeltas(series) {
+  if (!series?.length) return { cost: 0, delay: 0, issues: 0 };
+  const first = series[0];
+  const last = series[series.length - 1];
+  return {
+    cost: last.predictedCostOverrun - first.predictedCostOverrun,
+    delay: last.predictedTimeDelay - first.predictedTimeDelay,
+    issues: last.totalOpenIssues - first.totalOpenIssues,
+  };
+}
+
 function getStableRiskContributorKey(series) {
   if (!series || series.length === 0) return null;
   const avg = series.reduce(
@@ -99,11 +113,11 @@ function getStableRiskContributorKey(series) {
   return scores[0]?.key ?? null;
 }
 
-const getTrendIndicator = (current, previous) => {
-  if (previous === undefined || previous === null) return null;
-  if (current > previous) return { symbol: '↑', color: '#EA4335', label: 'Increased' };
-  if (current < previous) return { symbol: '↓', color: '#34A853', label: 'Decreased' };
-  return { symbol: '→', color: '#FBBC05', label: 'Unchanged' };
+const getTrendIndicator = delta => {
+  const symbol = getArrow(delta);
+  if (delta > 0) return { symbol, color: '#EA4335', label: 'Increased over selected period' };
+  if (delta < 0) return { symbol, color: '#34A853', label: 'Decreased over selected period' };
+  return { symbol, color: '#FBBC05', label: 'Unchanged over selected period' };
 };
 
 const formatPercent = (value, digits = 2) => {
@@ -117,16 +131,7 @@ const RiskTooltip = ({ active, payload, label, darkMode }) => {
   if (!row) return null;
 
   const series = row.__history || [];
-  const first = series[0];
-  const last = series[series.length - 1];
-  const deltas =
-    first && last
-      ? {
-          cost: last.predictedCostOverrun - first.predictedCostOverrun,
-          delay: last.predictedTimeDelay - first.predictedTimeDelay,
-          issues: last.totalOpenIssues - first.totalOpenIssues,
-        }
-      : { cost: 0, delay: 0, issues: 0 };
+  const deltas = getPeriodDeltas(series);
 
   const contributor = getStableRiskContributorKey(series);
 
@@ -554,20 +559,11 @@ export default function ProjectRiskProfileOverview() {
                 {filteredProjects.map(project => {
                   const s = project.historyFiltered;
                   const currentData = s[s.length - 1];
-                  const prevData = s.length > 1 ? s[s.length - 2] : s[0];
+                  const deltas = getPeriodDeltas(s);
 
-                  const costTrend = getTrendIndicator(
-                    currentData.predictedCostOverrun,
-                    prevData?.predictedCostOverrun,
-                  );
-                  const issueTrend = getTrendIndicator(
-                    currentData.totalOpenIssues,
-                    prevData?.totalOpenIssues,
-                  );
-                  const timeTrend = getTrendIndicator(
-                    currentData.predictedTimeDelay,
-                    prevData?.predictedTimeDelay,
-                  );
+                  const costTrend = getTrendIndicator(deltas.cost);
+                  const issueTrend = getTrendIndicator(deltas.issues);
+                  const timeTrend = getTrendIndicator(deltas.delay);
 
                   return (
                     <div key={project.projectName} className={styles.trendCard}>
@@ -652,10 +648,11 @@ export default function ProjectRiskProfileOverview() {
                 <tbody>
                   {filteredProjects.map(p => {
                     const s = p.historyFiltered;
-                    const costDelta =
-                      s[s.length - 1].predictedCostOverrun - s[0].predictedCostOverrun;
-                    const delayDelta = s[s.length - 1].predictedTimeDelay - s[0].predictedTimeDelay;
-                    const issuesDelta = s[s.length - 1].totalOpenIssues - s[0].totalOpenIssues;
+                    const {
+                      cost: costDelta,
+                      delay: delayDelta,
+                      issues: issuesDelta,
+                    } = getPeriodDeltas(s);
                     const contributor = getStableRiskContributorKey(s);
 
                     return (
