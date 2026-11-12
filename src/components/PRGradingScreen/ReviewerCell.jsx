@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import styles from './PRGradingScreen.module.css';
@@ -19,26 +20,20 @@ const ReviewerCell = ({
     <div
       className={`${styles['reviewer-cell']} ${styles['pr-grading-screen-reviewer-info']} ${dm}`}
     >
-      {/* Display the reviewer name */}
-      <span
-        role={onSelectReviewer ? 'button' : undefined}
-        tabIndex={onSelectReviewer ? 0 : undefined}
-        onClick={onSelectReviewer ? () => onSelectReviewer(reviewer.id) : undefined}
-        onKeyDown={
-          onSelectReviewer
-            ? e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelectReviewer(reviewer.id);
-                }
-              }
-            : undefined
-        }
-        style={onSelectReviewer ? { cursor: 'pointer' } : undefined}
-        className={`${styles['pr-grading-screen-reviewer-name']} ${dm}`}
-      >
-        {reviewer.reviewer}
-      </span>
+      {/* Display the reviewer name: Use a semantic <button> when clickable, or a <span> otherwise */}
+      {onSelectReviewer ? (
+        <button
+          type="button"
+          onClick={() => onSelectReviewer(reviewer.id)}
+          className={`${styles['pr-grading-screen-reviewer-name']} ${styles['reviewer-name-button']} ${dm}`}
+        >
+          {reviewer.reviewer}
+        </button>
+      ) : (
+        <span className={`${styles['pr-grading-screen-reviewer-name']} ${dm}`}>
+          {reviewer.reviewer}
+        </span>
+      )}
 
       {reviewer.role && (
         <span className={`${styles['pr-grading-screen-reviewer-role']} ${dm}`}>
