@@ -1,13 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, useLocation } from 'react-router-dom';
 import styles from './TaskDetails.module.css';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import CommentBox from '../Tasks/CommentBox';
+import CommentList from '../Tasks/CommentList';
+import {
+  getStudentTaskComments,
+  postTaskComment,
+  deleteTaskComment,
+} from '../../../services/educationService';
 
 const TaskDetails = () => {
   const { id } = useParams();
   const location = useLocation();
   const darkMode = useSelector(state => state.theme?.darkMode);
+  const authUser = useSelector(state => state.auth?.user);
+  const currentUserId = authUser?.userid || null;
 
   const clickedTask = location.state?.task;
 
@@ -39,6 +48,56 @@ const TaskDetails = () => {
   }, [id]);
 
   const task = clickedTask ?? fallbackTask;
+  const taskId = task.id;
+
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsError, setCommentsError] = useState(null);
+
+  const mapApiComment = c => ({
+    id: c.commentId,
+    content: c.commentText,
+    author: c.userId === currentUserId ? 'You' : c.userId,
+    userId: c.userId,
+    createdAt: new Date(c.created_at),
+  });
+
+  const fetchComments = useCallback(async () => {
+    if (!taskId) return;
+    setCommentsLoading(true);
+    setCommentsError(null);
+    try {
+      const data = await getStudentTaskComments(taskId);
+      setComments(data.map(mapApiComment));
+    } catch (err) {
+      setCommentsError('Failed to load comments.');
+    } finally {
+      setCommentsLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskId, currentUserId]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
+
+  const handleCommentSubmit = async content => {
+    try {
+      await postTaskComment(taskId, content);
+      await fetchComments();
+    } catch (err) {
+      setCommentsError('Failed to post comment.');
+    }
+  };
+
+  const handleDeleteComment = async commentId => {
+    try {
+      await deleteTaskComment(taskId, commentId);
+      await fetchComments();
+    } catch (err) {
+      setCommentsError('Failed to delete comment.');
+    }
+  };
 
   const chartData = [
     { name: 'Unit 1: Social Sciences Paper Draft', value: 40 },
@@ -136,6 +195,20 @@ const TaskDetails = () => {
             />
           </div>
         </div>
+
+        <section className={styles.commentsSection}>
+          {commentsError && <p style={{ color: 'red' }}>{commentsError}</p>}
+          <CommentBox
+            onSubmit={handleCommentSubmit}
+            placeholder="Please enter your comments/Queries here"
+          />
+          <CommentList
+            comments={comments}
+            loading={commentsLoading}
+            onDeleteComment={handleDeleteComment}
+            currentUserId={currentUserId}
+          />
+        </section>
       </div>
     </div>
   );
