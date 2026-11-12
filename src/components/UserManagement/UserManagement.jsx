@@ -25,6 +25,7 @@ import {
   enableEditUserInfo,
   disableEditUserInfo,
   updateUserPauseStatus,
+  resetUserProfileEdit
 } from '../../actions/userManagement';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
@@ -142,6 +143,9 @@ class UserManagement extends React.PureComponent {
 
   componentDidMount() {
     document.body.classList.add('no-global-theme');
+    this.props.resetUserProfileEdit();
+    this.props.getAllUserProfile();
+    this.props.getAllTimeOffRequests();
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
     void this.loadQuestionnaireCompletion();
@@ -165,6 +169,8 @@ class UserManagement extends React.PureComponent {
     document.body.classList.remove('no-global-theme');
     window.removeEventListener('resize', this.handleResize);
     this.debouncedApplyWildCardSearch.cancel();
+
+    this.props.resetUserProfileEdit();
   }
 
   loadQuestionnaireCompletion = async () => {
@@ -406,7 +412,6 @@ class UserManagement extends React.PureComponent {
     rolesPermissions,
     timeOffRequests,
     darkMode,
-    editUser,
     isMobile,
     mobileFontSize,
   ) => {
@@ -416,7 +421,6 @@ class UserManagement extends React.PureComponent {
         rolesPermissions,
         timeOffRequests,
         darkMode,
-        editUser,
         isMobile,
         mobileFontSize,
       ),
@@ -978,9 +982,10 @@ const mapDispatchToProps = (dispatch) => ({
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   deleteUser: (...args) => dispatch(deleteUser(...args)),
   getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
-  enableEditUserInfo: () => dispatch(enableEditUserInfo()),
-  disableEditUserInfo: () => dispatch(disableEditUserInfo()),
+  enableEditUserInfo: value => dispatch(enableEditUserInfo(value)),
+  disableEditUserInfo: value => dispatch(disableEditUserInfo(value)),
   getAllRoles: () => dispatch(getAllRoles()),
+  resetUserProfileEdit: () => dispatch(resetUserProfileEdit()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserManagement);
