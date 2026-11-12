@@ -14,8 +14,16 @@ function QuickSetupCodes({
   return (
     <div className="mt-3" id="qsc-outer-wrapper" style={{display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '4px'}}>
       {titles.map(title => {
-       const titleTeamCode = title.teamCode?.trim();
-       const isTeamCodeInList =!titleTeamCode||teamCodes.some(code => code.value?.trim() === titleTeamCode);
+        const normalizeTeamCode = (value) =>
+          typeof value === 'string' ? value.trim().toLowerCase() : '';
+
+        const titleTeamCode = normalizeTeamCode(title.teamCode);
+        const isTeamCodeInList =
+          !titleTeamCode ||
+          teamCodes.some(
+            (code) => normalizeTeamCode(code.value) === titleTeamCode
+          );
+
         return (
           // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
           <div
