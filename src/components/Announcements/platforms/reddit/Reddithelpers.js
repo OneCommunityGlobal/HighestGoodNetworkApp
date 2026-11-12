@@ -171,16 +171,29 @@ const SUBREDDIT_FLAIR_MAP = {
   javascript: ['Question', 'Discussion', 'News'],
   programming: ['Discussion', 'News', 'Tutorial'],
   webdev: ['Showcase', 'Tutorial', 'Question'],
+  learnprogramming: ['Question', 'Tutorial', 'Discussion'],
+  cscareerquestions: ['Question', 'Discussion', 'News'],
 };
 
 export const extractFlairSuggestions = (title, body, subreddit = '') => {
-  const text = `${title} ${body}`.toLowerCase();
-  const normalizedSubreddit = subreddit.toLowerCase();
+  // Validate input
+  const trimmedTitle = (title || '').trim();
+  const trimmedBody = (body || '').trim();
 
+  // If both title and body are empty, return empty suggestions
+  if (!trimmedTitle && !trimmedBody) {
+    return [];
+  }
+
+  const text = `${trimmedTitle} ${trimmedBody}`.toLowerCase();
+  const normalizedSubreddit = (subreddit || '').toLowerCase().trim();
+
+  // Try subreddit-specific mappings first
   if (SUBREDDIT_FLAIR_MAP[normalizedSubreddit]) {
     return SUBREDDIT_FLAIR_MAP[normalizedSubreddit];
   }
 
+  // Match against general rules
   const matchedFlairs = [];
   for (const rule of FLAIR_RULES) {
     if (rule.patterns.some(p => p.test(text)) && !matchedFlairs.includes(rule.flair)) {
@@ -190,13 +203,16 @@ export const extractFlairSuggestions = (title, body, subreddit = '') => {
 
   if (matchedFlairs.length > 0) return matchedFlairs;
 
-  // Fallback: keyword extraction
+  // Fallback: keyword extraction - extract meaningful keywords
   const words = text.match(/[a-z0-9']+/g) || [];
-  return words
+  const keywords = words
     .map(word => word.replaceAll("'", ''))
     .filter(word => word.length >= 4 && !STOP_WORDS.has(word))
     .filter((word, index, arr) => arr.indexOf(word) === index)
     .slice(0, 3);
+
+  // If we have keywords, capitalize them as generic flair suggestions
+  return keywords.length > 0 ? keywords : ['General'];
 };
 
 // ─── Style utilities ──────────────────────────────────────────────────────────

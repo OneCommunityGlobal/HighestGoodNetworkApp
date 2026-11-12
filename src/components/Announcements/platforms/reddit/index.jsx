@@ -262,9 +262,20 @@ function RedditAutoPoster({ platform }) {
   };
 
   const handleSuggestFlair = () => {
+    // Check if both title and body are empty
+    if (!trimmedTitle && !trimmedBody) {
+      toast.warning('Please enter a title or body content first to get flair suggestions.');
+      return;
+    }
+
     const suggestions = extractFlairSuggestions(title, body, subreddit);
     setFlairSuggestions(suggestions);
-    if (suggestions.length === 0) toast.info('No flair suggestions found.');
+
+    if (suggestions.length === 0) {
+      toast.info('No flair suggestions available. Try adding more content.');
+    } else {
+      toast.success(`Found ${suggestions.length} flair suggestion(s). Click to select.`);
+    }
   };
 
   const handleClearFlair = () => {
@@ -491,18 +502,52 @@ function RedditAutoPoster({ platform }) {
                 </button>
               </div>
               {flairSuggestions.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '14px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    marginTop: '14px',
+                    padding: '12px',
+                    borderRadius: '6px',
+                    background: darkMode ? '#1a2332' : '#f8f9fa',
+                    border: `1px solid ${darkMode ? '#2b3b55' : '#e0e0e0'}`,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '100%',
+                      fontSize: '0.85rem',
+                      fontWeight: '600',
+                      color: darkMode ? '#a8b5d4' : '#666',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    Suggested Flairs:
+                  </span>
                   {flairSuggestions.map(item => (
                     <button
                       key={item}
                       type="button"
                       onClick={() => setFlair(item)}
                       style={{
-                        borderRadius: '999px',
-                        padding: '6px 12px',
-                        border: darkMode ? '1px solid #444' : '1px solid #ddd',
-                        background: darkMode ? '#1f2937' : '#f3f4f6',
+                        borderRadius: '20px',
+                        padding: '6px 14px',
+                        border: darkMode ? '1px solid #5a7a99' : '1px solid #ff4500',
+                        background: darkMode ? '#253347' : '#fff0eb',
+                        color: darkMode ? '#e8eef5' : '#c2410c',
                         cursor: 'pointer',
+                        fontWeight: '500',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = darkMode ? '#2f3f53' : '#ffe8df';
+                        e.currentTarget.style.borderColor = darkMode ? '#7a9abb' : '#ff6b4a';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = darkMode ? '#253347' : '#fff0eb';
+                        e.currentTarget.style.borderColor = darkMode ? '#5a7a99' : '#ff4500';
                       }}
                     >
                       {item}
