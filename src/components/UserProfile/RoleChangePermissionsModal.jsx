@@ -82,7 +82,6 @@ function RoleChangePermissionsModal(props) {
         permissions: {
           frontPermissions: keptFrontPermissions,
           removedDefaultPermissions: keptRemovedPermissions,
-          defaultPermissions: roleNameToDefaults[selectedRole],
         },
       };
 
@@ -94,7 +93,8 @@ function RoleChangePermissionsModal(props) {
 
       // Ensures a change log with reason and user's modified permissions when their role is changed
       const permissionData = {
-        reason: `Role Changed to **${selectedRole}**.`,
+        previousRole: userProfile?.role,
+        newRole: selectedRole,
         permissions: updated.permissions,
         requestor: requestor,
       };

@@ -27,7 +27,8 @@ import styles from './usermanagement.module.css';
 /**
  * The header row of the user table.
  */
-const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
+const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
+    const authRole = authUser?.role;
     const dispatch = useDispatch();
     const defaultEditFlags = {
        first: 1,
@@ -43,12 +44,48 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
+        const requestor = authUser;
+        const roleUpdateData = updatedUserData.filter(change => change.item === 'role')
+        const allUpdatedUsers = await Promise.all(
+          roleUpdateData.map(async roleUpdate =>
+            axios.get(ENDPOINTS.USER_PROFILE(roleUpdate.user_id)),
+          ),
+        );
         const response = await axios.patch(
           ENDPOINTS.USER_PROFILE_UPDATE,
           updatedData
         );
 
         if (response.status >= 200 && response.status < 300) {
+          await Promise.all(
+            roleUpdateData.map(async roleUpdate => {
+              const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${roleUpdate.user_id}`;
+              const user = allUpdatedUsers.find(( user ) => user?.data?._id === roleUpdate.user_id)
+              const permissions = {
+                frontPermissions: user.data?.permissions.frontPermissions,
+                removedDefaultPermissions: user.data.permissions?.removedDefaultPermissions,
+              };
+              const permissionData = {
+                previousRole: user.data.role,
+                newRole: roleUpdate.value,
+                permissions: permissions,
+                requestor: requestor,
+              }
+              try {
+                await axios.patch(permissionURL, permissionData)
+              } catch (err) {
+                try {
+                  // Idea for now, unsure whether this would work though
+                  // Rollback changes made to specific user that making a change log fails
+                  // But would not prevent or undo changes made to others in the same group.
+                  // await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData)
+                } catch (rollbackError) {
+                  toast.error('Error occurring during rollback attempt, so some user states may be inconsistent')
+                }
+              }
+            }),
+          );
+
           const toastId = toast.success('Saving Data...', { autoClose: false });
 
           // Clear pending edits only after a successful save.
@@ -353,7 +390,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
   };
 
 UserTableHeaderComponent.propTypes = {
-  authRole: PropTypes.string.isRequired,
+  authUser: PropTypes.object.isRequired,
   roleSearchText: PropTypes.string,
   darkMode: PropTypes.bool,
   editUser: PropTypes.object,
