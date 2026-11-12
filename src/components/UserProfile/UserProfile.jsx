@@ -53,7 +53,11 @@ import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateCompany } from '~/utils/formatDate';
 import { fetchAllProjects } from '../../actions/projects';
-import { toggleVisibility, updateRehireableStatus } from '../../actions/userManagement';
+import {
+  toggleVisibility,
+  updateRehireableStatus,
+  updateStatusNote,
+} from '../../actions/userManagement';
 import { updateUserProfile } from "../../actions/userProfile";
 import BlueSquareLayout from './BlueSquareLayout';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
@@ -1184,6 +1188,24 @@ setUpdatedTasks(prev => {
     }
   };
 
+  const handleSaveStatusNote = async statusNote => {
+    try {
+      const savedUserProfile = await dispatch(updateStatusNote(userProfile, statusNote));
+      const noteFields = {
+        statusNote: savedUserProfile.statusNote,
+        statusNoteHistory: savedUserProfile.statusNoteHistory,
+      };
+      // Only the note fields change, so unsaved profile edits are kept
+      setUserProfile(prev => ({ ...prev, ...noteFields }));
+      setOriginalUserProfile(prev => (prev ? { ...prev, ...noteFields } : prev));
+      toast.success(statusNote.trim() ? 'Note saved.' : 'Note deleted.');
+      return true;
+    } catch (error) {
+      toast.error('Unable to save the note.');
+      return false;
+    }
+  };
+
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
@@ -1356,6 +1378,9 @@ setUpdatedTasks(prev => {
         }}
         onCancelScheduledDeactivation={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
         onReactivateUser={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
+        statusNote={userProfile.statusNote || ''}
+        statusNoteHistory={userProfile.statusNoteHistory || []}
+        onSaveStatusNote={handleSaveStatusNote}
       />
 
       <SetUpFinalDayPopUp
@@ -1539,6 +1564,7 @@ setUpdatedTasks(prev => {
                 user={userProfile}
                 endDate={userProfile.endDate}
                 reactivationDate={userProfile.reactivationDate}
+                statusNote={userProfile.statusNote}
                 canChange={canChangeUserStatus}
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {

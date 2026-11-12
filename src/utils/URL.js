@@ -12,6 +12,7 @@ export const ENDPOINTS = {
   USER_PAUSE: userId => `${APIEndpoint}/userProfile/${userId}/pause`,
   VERIFY_PRODUCTION_IDENTITY: `${APIEndpoint}/production-identity/verify`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
+  UPDATE_STATUS_NOTE: userId => `${APIEndpoint}/userProfile/${userId}/statusNote`,
   TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,

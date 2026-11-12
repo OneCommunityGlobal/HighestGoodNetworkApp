@@ -25,7 +25,8 @@ import {
   enableEditUserInfo,
   disableEditUserInfo,
   updateUserPauseStatus,
-  resetUserProfileEdit
+  resetUserProfileEdit,
+  updateStatusNote,
 } from '../../actions/userManagement';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
@@ -293,6 +294,9 @@ class UserManagement extends React.PureComponent {
           }}
           onCancelScheduledDeactivation={this.reactivateUser}
           onReactivateUser={this.reactivateUser}
+          statusNote={this.state.selectedUser?.statusNote || ''}
+          statusNoteHistory={this.state.selectedUser?.statusNoteHistory || []}
+          onSaveStatusNote={this.saveStatusNote}
         />
         <SetUpFinalDayPopUp
           open={this.state.finalDayPopupOpen}
@@ -501,6 +505,20 @@ class UserManagement extends React.PureComponent {
     }
   };
   
+  saveStatusNote = async statusNote => {
+    const user = this.state.selectedUser;
+    if (!user) return false;
+    try {
+      const updatedUser = await this.props.dispatch(updateStatusNote(user, statusNote));
+      this.setState({ selectedUser: updatedUser });
+      toast.success(statusNote.trim() ? 'Note saved.' : 'Note deleted.');
+      return true;
+    } catch (error) {
+      toast.error('Unable to save the note.');
+      return false;
+    }
+  };
+
   reactivateUser = async (user = this.state.selectedUser) => {
   await activateUserAction(
     this.props.dispatch,

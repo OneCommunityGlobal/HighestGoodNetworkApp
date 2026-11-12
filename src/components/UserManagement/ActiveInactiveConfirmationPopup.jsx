@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import {
@@ -10,6 +10,7 @@ import {
 } from 'reactstrap';
 import '../Header/index.module.css';
 import { InactiveReason } from '../../utils/enums.js';
+import StatusNoteSection from './StatusNoteSection';
 
 const ActiveInactiveConfirmationPopup = React.memo((props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -25,7 +26,25 @@ const ActiveInactiveConfirmationPopup = React.memo((props) => {
     onScheduleFinalDay,
     onCancelScheduledDeactivation,
     onReactivateUser,
+    statusNote = '',
+    statusNoteHistory = [],
+    onSaveStatusNote,
   } = props;
+
+  const [noteMode, setNoteMode] = useState('view');
+  const [noteDraft, setNoteDraft] = useState('');
+  const [noteError, setNoteError] = useState('');
+  const [noteSaving, setNoteSaving] = useState(false);
+
+  // Start from the saved note each time the popup opens
+  useEffect(() => {
+    if (open) {
+      setNoteMode('view');
+      setNoteDraft('');
+      setNoteError('');
+      setNoteSaving(false);
+    }
+  }, [open]);
 
   const isScheduled =
     isActive &&
@@ -41,6 +60,36 @@ const ActiveInactiveConfirmationPopup = React.memo((props) => {
     inactiveReason === InactiveReason.SEPARATED;
 
   const isInactive = !isActive;
+
+  const saveNote = async note => {
+    setNoteSaving(true);
+    setNoteError('');
+    try {
+      const saved = await onSaveStatusNote(note);
+      if (saved === false) {
+        setNoteError('The note could not be saved. Please try again.');
+        return false;
+      }
+      setNoteMode('view');
+      setNoteDraft('');
+      return true;
+    } finally {
+      setNoteSaving(false);
+    }
+  };
+
+  const hasUnsavedNote =
+    noteMode === 'edit' && noteDraft.trim() !== '' && noteDraft.trim() !== statusNote.trim();
+
+  // A note typed before choosing a status action is saved first, so it isn't lost
+  const runStatusAction = async action => {
+    if (hasUnsavedNote && onSaveStatusNote) {
+      const saved = await saveNote(noteDraft);
+      if (!saved) return;
+    }
+    action();
+    onClose();
+  };
 
   return (
     <Modal
@@ -77,6 +126,35 @@ const ActiveInactiveConfirmationPopup = React.memo((props) => {
             This user is inactive.
           </p>
         )}
+
+        {onSaveStatusNote && (
+          <StatusNoteSection
+            statusNote={statusNote || ''}
+            statusNoteHistory={Array.isArray(statusNoteHistory) ? statusNoteHistory : []}
+            mode={noteMode}
+            draft={noteDraft}
+            error={noteError}
+            saving={noteSaving}
+            darkMode={darkMode}
+            onDraftChange={setNoteDraft}
+            onStartEdit={() => {
+              setNoteDraft(statusNote || '');
+              setNoteError('');
+              setNoteMode('edit');
+            }}
+            onCancel={() => {
+              setNoteDraft('');
+              setNoteError('');
+              setNoteMode('view');
+            }}
+            onSave={() => saveNote(noteDraft)}
+            onStartDelete={() => {
+              setNoteError('');
+              setNoteMode('confirmDelete');
+            }}
+            onConfirmDelete={() => saveNote('')}
+          />
+        )}
       </ModalBody>
 
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -84,10 +162,8 @@ const ActiveInactiveConfirmationPopup = React.memo((props) => {
         {isScheduled && (
           <Button
             color="success"
-            onClick={() => {
-              onCancelScheduledDeactivation();
-              onClose();
-            }}
+            disabled={noteSaving}
+            onClick={() => runStatusAction(onCancelScheduledDeactivation)}
           >
             Cancel Final Day
           </Button>
@@ -97,10 +173,8 @@ const ActiveInactiveConfirmationPopup = React.memo((props) => {
         {isActive && (
           <Button
             color="danger"
-            onClick={() => {
-              onDeactivateImmediate();
-              onClose();
-            }}
+            disabled={noteSaving}
+            onClick={() => runStatusAction(onDeactivateImmediate)}
           >
             Deactivate Immediately
           </Button>
@@ -110,10 +184,8 @@ const ActiveInactiveConfirmationPopup = React.memo((props) => {
         {isActive && !isScheduled && (
           <Button
             color="warning"
-            onClick={() => {
-              onScheduleFinalDay();
-              onClose();
-            }}
+            disabled={noteSaving}
+            onClick={() => runStatusAction(onScheduleFinalDay)}
           >
             Set Final Day
           </Button>
@@ -123,10 +195,8 @@ const ActiveInactiveConfirmationPopup = React.memo((props) => {
         {isInactive && (
           <Button
             color="success"
-            onClick={() => {
-              onReactivateUser();
-              onClose();
-            }}
+            disabled={noteSaving}
+            onClick={() => runStatusAction(onReactivateUser)}
           >
             Reactivate User
           </Button>
