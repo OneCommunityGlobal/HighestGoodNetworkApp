@@ -486,7 +486,6 @@ export default function ProjectRiskProfileOverview() {
                     angle={-45}
                     textAnchor="end"
                     height={120}
-                    interval={0}
                     axisLine={{ stroke: chartColors.axisLine, strokeWidth: 1.5 }}
                     tickLine={{ stroke: chartColors.axisLine }}
                   />
