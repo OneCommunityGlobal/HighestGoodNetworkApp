@@ -533,7 +533,7 @@
 }
 
 /* Responsive adjustments */
-@media (width <= 768px) {
+@media (width <=768px) {
   .pr-grading-screen-title {
     font-size: 1.5rem;
   }
@@ -744,9 +744,9 @@
 
 .pr-grading-screen-promote-btn.dark-mode:hover:not(:disabled),
 .pr-grading-screen-promote-btn.dark-mode:focus:not(:disabled) {
-  background-color: #ffc107;
-  border-color: #ffc107;
-  color: #1b2a41;
+  background-color: #3a506b;
+  border-color: #5a6b88;
+  color: #fff;
 }
 
 .pr-grading-screen-table.dark-mode .pr-grading-screen-pr-input {
@@ -1183,18 +1183,15 @@
   scrollbar-color: #666 #2b2b2b;
 }
 
-.pr-grading-inline-summary-container.dark-mode
-  .pr-grading-inline-table-scroll::-webkit-scrollbar-track {
+.pr-grading-inline-summary-container.dark-mode .pr-grading-inline-table-scroll::-webkit-scrollbar-track {
   background-color: #1f1f1f;
 }
 
-.pr-grading-inline-summary-container.dark-mode
-  .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb {
+.pr-grading-inline-summary-container.dark-mode .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb {
   background-color: #666;
 }
 
-.pr-grading-inline-summary-container.dark-mode
-  .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb:hover {
+.pr-grading-inline-summary-container.dark-mode .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb:hover {
   background-color: #888;
 }
 
@@ -1277,7 +1274,7 @@
   accent-color: #59359a;
 }
 
-@media (width <= 480px) {
+@media (width <=480px) {
   .pr-grading-inline-summary-cell {
     padding: 6px 8px 12px !important;
   }

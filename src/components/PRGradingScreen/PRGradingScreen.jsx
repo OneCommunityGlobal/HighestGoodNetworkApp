@@ -28,6 +28,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const [activeInput, setActiveInput] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
+  const [selectedReviewerId, setSelectedReviewerId] = useState(null);
   const [showGradingModal, setShowGradingModal] = useState(null);
   const [isFinalized, setIsFinalized] = useState(false);
   const [isLoadingSaved, setIsLoadingSaved] = useState(true);
@@ -160,9 +161,15 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     setInputError('');
   };
 
+  const handleSelectReviewer = reviewerId => {
+    if (isLoadingSaved || loadError) return;
+    setSelectedReviewerId(prev => (prev === reviewerId ? null : reviewerId));
+  };
+
   const handlePRNumberClick = reviewerId => {
     if (isFinalized || isLoadingSaved || loadError) return;
     setGradeError('');
+    setSelectedReviewerId(reviewerId);
     setShowGradingModal(reviewerId);
   };
 
@@ -235,6 +242,8 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       onInputSubmit={handleInputSubmit}
       onCancelInput={handleCancelInput}
       onPRNumberClick={handlePRNumberClick}
+      selectedReviewerId={selectedReviewerId}
+      onSelectReviewer={handleSelectReviewer}
       promotingReviewer={promotingReviewer}
       onConfirmPromotion={handleConfirmPromotion}
       onCancelPromotion={handleCancelPromotion}

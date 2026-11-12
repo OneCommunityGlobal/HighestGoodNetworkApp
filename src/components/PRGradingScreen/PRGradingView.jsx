@@ -34,6 +34,8 @@ const PRGradingView = ({
   onInputSubmit,
   onCancelInput,
   onPRNumberClick,
+  selectedReviewerId,
+  onSelectReviewer,
   promotingReviewer,
   onConfirmPromotion,
   onCancelPromotion,
@@ -154,6 +156,7 @@ const PRGradingView = ({
                                   reviewer={reviewer}
                                   isPromoted={isPromoted}
                                   onPromoteClick={onPromoteClick}
+                                  onSelectReviewer={onSelectReviewer}
                                   darkMode={darkMode}
                                 />
                               </td>
@@ -256,13 +259,15 @@ const PRGradingView = ({
                                 )}
                               </td>
                             </tr>
-                            {/* Render inline summary component below each reviewer row for state synchronization and unit tests */}
-                            <InlinePRSummary
-                              reviewer={reviewer}
-                              onGradeChange={onGradeChange}
-                              isFinalized={isFinalized || isSavingGrade}
-                              darkMode={darkMode}
-                            />
+                            {/* Only render inline PR grading summary when data loading is complete and this reviewer is selected */}
+                            {!isLoadingSaved && selectedReviewerId === reviewer.id && (
+                              <InlinePRSummary
+                                reviewer={reviewer}
+                                onGradeChange={onGradeChange}
+                                isFinalized={isFinalized || isSavingGrade}
+                                darkMode={darkMode}
+                              />
+                            )}
                           </React.Fragment>
                         );
                       })
@@ -396,6 +401,8 @@ PRGradingView.propTypes = {
   onInputSubmit: PropTypes.func.isRequired,
   onCancelInput: PropTypes.func.isRequired,
   onPRNumberClick: PropTypes.func.isRequired,
+  selectedReviewerId: PropTypes.string,
+  onSelectReviewer: PropTypes.func,
   promotingReviewer: PropTypes.object,
   onConfirmPromotion: PropTypes.func.isRequired,
   onCancelPromotion: PropTypes.func.isRequired,
@@ -403,6 +410,15 @@ PRGradingView.propTypes = {
   onCloseGradingModal: PropTypes.func.isRequired,
   gradingReviewer: PropTypes.object,
   onGradeChange: PropTypes.func.isRequired,
+};
+
+PRGradingView.defaultProps = {
+  activeInput: null,
+  selectedReviewerId: null,
+  onSelectReviewer: undefined,
+  promotingReviewer: null,
+  showGradingModal: null,
+  gradingReviewer: null,
 };
 
 export default PRGradingView;
