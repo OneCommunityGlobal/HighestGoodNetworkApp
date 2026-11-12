@@ -119,6 +119,69 @@ beforeEach(() => {
 });
 
 describe('job role and questionnaire binding', () => {
+  it.each([false, true])(
+    'keeps a saved mixed-case role selected instead of its static alias, darkMode=%s',
+    async darkMode => {
+      const form = { ...general, title: 'General' };
+      catalog = [form];
+      details.set(ENDPOINTS.GET_JOB_FORM(form._id), form);
+      mount({ darkMode });
+      await ready(form.title);
+      const role = screen.getByRole('combobox', { name: 'Job role' });
+      expect(role).toHaveValue(form.title);
+      expect(role.selectedOptions[0]).toHaveTextContent(form.title);
+      expect(
+        [...role.options].filter(option => option.value.toLowerCase() === 'general'),
+      ).toHaveLength(1);
+    },
+  );
+
+  it.each([false, true])(
+    'keeps the loaded title selected when its casing differs from the catalog, darkMode=%s',
+    async darkMode => {
+      catalog = [general];
+      details.set(ENDPOINTS.GET_JOB_FORM(general._id), { ...general, title: 'General' });
+      mount({ darkMode });
+      await ready('General');
+      expect(screen.getByRole('combobox', { name: 'Job role' })).toHaveValue('General');
+      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.GET_JOB_FORM(general._id));
+    },
+  );
+
+  it.each([false, true])(
+    'keeps one role option while duplicate forms retain their own casing and save target, darkMode=%s',
+    async darkMode => {
+      const mixed = { ...general, title: 'General' };
+      const upper = { ...general, _id: 'general-upper-id', title: 'GENERAL' };
+      catalog = [mixed, upper, software];
+      details.set(ENDPOINTS.GET_JOB_FORM(mixed._id), mixed);
+      details.set(ENDPOINTS.GET_JOB_FORM(upper._id), upper);
+      mount({ darkMode });
+      await ready(software.title);
+      select('GENERAL');
+      const picker = await screen.findByRole('combobox', { name: 'Saved questionnaire' });
+      for (const form of [mixed, upper]) {
+        fireEvent.change(picker, { target: { value: form._id } });
+        await ready(form.title);
+        const role = screen.getByRole('combobox', { name: 'Job role' });
+        expect(role).toHaveValue(form.title);
+        expect(
+          [...role.options].filter(option => option.value.toLowerCase() === 'general'),
+        ).toHaveLength(1);
+        fireEvent.click(screen.getByRole('button', { name: 'Save Form' }));
+        await waitFor(() =>
+          expect(axios.put).toHaveBeenLastCalledWith(
+            ENDPOINTS.UPDATE_JOB_FORM,
+            expect.objectContaining({ formId: form._id, title: form.title }),
+          ),
+        );
+        await waitFor(() =>
+          expect(screen.getByRole('button', { name: 'Save Form' })).toBeEnabled(),
+        );
+      }
+    },
+  );
+
   it('regression: dropdown selection replaces the previous questionnaire', async () => {
     mount();
     await screen.findByText('1.) Electrical question');

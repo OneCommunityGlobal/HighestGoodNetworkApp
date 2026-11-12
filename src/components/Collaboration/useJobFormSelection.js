@@ -118,10 +118,11 @@ export default function useJobFormSelection({ enabled, onReset, onLoad }) {
 
   const options = [
     ...new Map(
-      [...forms.map(form => form.title), ...JOB_FORM_POSITION_OPTIONS].map(title => [
-        titleKey(title),
-        title,
-      ]),
+      // Saved spelling takes precedence over built-ins. Keep the exact loaded
+      // title selectable even when duplicate questionnaires use different casing.
+      [...JOB_FORM_POSITION_OPTIONS, ...forms.map(form => form.title), selectedTitle]
+        .filter(title => titleKey(title))
+        .map(title => [titleKey(title), title]),
     ).values(),
   ];
   return {
