@@ -259,8 +259,8 @@
   font-size: 1.2rem;
 }
 
-.darkModeItem strong {
-  color: #93c5fd !important;
+.activityItem.darkModeItem strong {
+  color: #93c5fd;
 }
 
 .activityList.darkActivityList li strong {
