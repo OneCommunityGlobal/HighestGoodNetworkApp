@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import DropOffTracking from '../DropOffTracking';
@@ -15,6 +15,15 @@ vi.mock('../mockData', () => ({
       eventTime: '10:00 AM',
       noShowRate: '5%',
       dropOffRate: '2%',
+    },
+    {
+      id: 2,
+      eventName: 'Yoga Class',
+      eventType: 'Yoga Class',
+      eventDate: new Date().toISOString(),
+      eventTime: '11:00 AM',
+      noShowRate: '40%',
+      dropOffRate: '10%',
     },
   ],
 }));
@@ -50,23 +59,23 @@ describe('DropOffTracking', () => {
     renderWithStore(<DropOffTracking />);
 
     // 1. Target the table cell specifically to avoid the dropdown option conflict
-    const tableCell = screen.getByRole('cell', { name: /yoga class/i });
+    const tableCell = screen.getAllByRole('cell', { name: /yoga class/i })[0];
     expect(tableCell).toBeInTheDocument();
 
     // 2. Alternatively, if you want to check the specific text inside the table:
     // (Using selector to ensure we only look inside the table body)
-    const yogaRow = screen.getByText('Yoga Class', { selector: 'td' });
+    const yogaRow = screen.getAllByText('Yoga Class', { selector: 'td' })[0];
     expect(yogaRow).toBeInTheDocument();
 
     const buttons = screen.getAllByRole('button', { name: /get no-show list/i });
-    expect(buttons.length).toBe(1);
+    expect(buttons.length).toBe(2);
   });
 
   it('opens and closes the modal correctly', () => {
     renderWithStore(<DropOffTracking />);
 
     // Open Modal
-    const button = screen.getByRole('button', { name: /get no-show list/i });
+    const button = screen.getAllByRole('button', { name: /get no-show list/i })[0];
     fireEvent.click(button);
     expect(screen.getByText(/No-show list/i)).toBeInTheDocument();
 
@@ -87,5 +96,23 @@ describe('DropOffTracking', () => {
 
     // Check that the Yoga Class row is removed from the document
     expect(screen.queryByRole('cell', { name: /yoga class/i })).not.toBeInTheDocument();
+  });
+
+  it('sorts rows by rate columns in ascending then descending order', () => {
+    renderWithStore(<DropOffTracking />);
+    const getRates = col =>
+      screen
+        .getAllByRole('row')
+        .slice(1)
+        .map(row => within(row).getAllByRole('cell')[col].textContent);
+
+    fireEvent.click(screen.getByText(/No-show rate/i, { selector: 'span' }));
+    expect(getRates(1)).toEqual(['5%', '40%']);
+
+    fireEvent.click(screen.getByText(/No-show rate/i, { selector: 'span' }));
+    expect(getRates(1)).toEqual(['40%', '5%']);
+
+    fireEvent.click(screen.getByText(/Drop-off rate/i, { selector: 'span' }));
+    expect(getRates(2)).toEqual(['2%', '10%']);
   });
 });
