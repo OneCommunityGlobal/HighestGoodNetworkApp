@@ -1,4 +1,31 @@
 /* Container for the Paid Labor Cost card */
+.legendTaskToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.legendTaskToggle[aria-pressed='false'] {
+  opacity: 0.4;
+}
+
+.legendTaskToggle:disabled {
+  cursor: default;
+}
+
+.legendTaskToggle:focus-visible {
+  outline: 2px solid #0d55b3;
+  outline-offset: 2px;
+}
+
+.darkMode .legendTaskToggle:focus-visible {
+  outline-color: #e8a71c;
+}
+
 .viewControls {
   display: flex;
   flex-wrap: wrap;

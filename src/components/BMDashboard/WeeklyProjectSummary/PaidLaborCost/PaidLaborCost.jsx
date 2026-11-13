@@ -25,6 +25,13 @@ import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const formatCompactCurrency = value => {
+  const magnitude = Math.abs(value);
+  if (magnitude >= 1e6) return `$${Number((value / 1e6).toFixed(1))}M`;
+  if (magnitude >= 1e3) return `$${Number((value / 1e3).toFixed(1))}k`;
+  return `$${value.toLocaleString()}`;
+};
+
 const updateTaskLabelRotation = (chart, width) => {
   const spacePerTask = (width - 70) / Math.max(chart.data.labels.length, 1);
   const longestLabel = Math.max(0, ...chart.data.labels.map(label => String(label).length * 7));
@@ -56,8 +63,7 @@ const barValueLabelPlugin = {
         if (meta.hidden || !meta.data[index]) return [];
         const value = dataset.data[index];
         if (!Number.isFinite(value)) return [];
-        const label =
-          value >= 1000 ? `$${Number((value / 1000).toFixed(1))}k` : `$${value.toLocaleString()}`;
+        const label = formatCompactCurrency(value);
         const { x, y } = meta.data[index].getProps(['x', 'y'], true);
         return [
           {
@@ -328,7 +334,7 @@ const MultiValue = () => null;
 
 const ValueContainer = ({ children, ...props }) => {
   const length = props.getValue().length;
-  const color = props.selectProps?.styles?.singleValue?.color || 'inherit';
+  const color = props.getStyles('singleValue', props).color || 'inherit';
   return (
     <components.ValueContainer {...props}>
       {length > 0 && (
@@ -344,13 +350,7 @@ const ValueContainer = ({ children, ...props }) => {
 ValueContainer.propTypes = {
   children: PropTypes.node,
   getValue: PropTypes.func.isRequired,
-  selectProps: PropTypes.shape({
-    styles: PropTypes.shape({
-      singleValue: PropTypes.shape({
-        color: PropTypes.string,
-      }),
-    }),
-  }),
+  getStyles: PropTypes.func.isRequired,
 };
 
 const Option = props => {
@@ -470,7 +470,7 @@ const buildChartOptions = (textColor, darkMode, totalCost, totalBudget, onDrillD
         maxTicksLimit: 6,
         font: { size: 12 },
         color: textColor,
-        callback: value => (value >= 1000 ? `$${value / 1000}k` : `$${value}`),
+        callback: formatCompactCurrency,
       },
     },
   },
@@ -488,6 +488,11 @@ export default function PaidLaborCost() {
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
   const [viewMode, setViewMode] = useState('tasks');
   const [sortOrder, setSortOrder] = useState('highest');
+  const [hiddenTasks, setHiddenTasks] = useState([]);
+  const toggleTaskVisibility = task =>
+    setHiddenTasks(previous =>
+      previous.includes(task) ? previous.filter(item => item !== task) : [...previous, task],
+    );
   const breakdownRef = useRef(null);
   const [drillDownRequest, setDrillDownRequest] = useState(0);
 
@@ -584,7 +589,14 @@ export default function PaidLaborCost() {
       darkMode,
       allAvailableTasks,
     );
-    if (viewMode === 'tasks') return datasets;
+    if (viewMode === 'tasks') {
+      return datasets.map(dataset => ({
+        ...dataset,
+        data: dataset.data.map((value, index) =>
+          hiddenTasks.includes(sortedTasks[index]) ? null : value,
+        ),
+      }));
+    }
     return datasets.map(dataset => ({
       ...dataset,
       data: [dataset.costType === 'actual' ? displayTotalCost : displayTotalBudget],
@@ -600,6 +612,7 @@ export default function PaidLaborCost() {
     viewMode,
     displayTotalCost,
     displayTotalBudget,
+    hiddenTasks,
   ]);
 
   const legendRef = useRef(null);
@@ -799,15 +812,27 @@ export default function PaidLaborCost() {
                         className={styles.chartLegendValue}
                         aria-label={`${task} ${dataset.label}`}
                       >
-                        <span
-                          aria-hidden="true"
-                          className={styles.taskLegendSwatch}
-                          style={{
-                            backgroundColor: dataset.backgroundColor[index],
-                            borderColor: dataset.borderColor[index],
-                            borderWidth: darkMode ? 1 : 0,
-                          }}
-                        />
+                        <button
+                          type="button"
+                          className={styles.legendTaskToggle}
+                          disabled={viewMode !== 'tasks'}
+                          aria-label={`${
+                            hiddenTasks.includes(task) ? 'Show' : 'Hide'
+                          } ${task} bars (${dataset.label})`}
+                          aria-pressed={!hiddenTasks.includes(task)}
+                          onClick={() => toggleTaskVisibility(task)}
+                          title={hiddenTasks.includes(task) ? `Show ${task}` : `Hide ${task}`}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className={styles.taskLegendSwatch}
+                            style={{
+                              backgroundColor: dataset.backgroundColor[index],
+                              borderColor: dataset.borderColor[index],
+                              borderWidth: darkMode ? 1 : 0,
+                            }}
+                          />
+                        </button>
                       </li>
                     ))}
                   </ul>

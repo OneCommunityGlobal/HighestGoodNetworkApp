@@ -451,4 +451,35 @@ describe('Paid Labor Cost', () => {
       screen.getByRole('button', { name: 'View task breakdown of Total Actual' }),
     ).toBeDisabled();
   });
+
+  it('preserves upstream legend toggling without changing filtered totals or task shares', async () => {
+    render(<PaidLaborCost />);
+    await screen.findByLabelText('Chart results');
+    await userEvent.click(screen.getByRole('button', { name: 'Hide Deployment bars (Actual)' }));
+    expect(readChart().datasets.map(dataset => dataset.data)).toEqual([
+      [null, 26000],
+      [null, 24000],
+    ]);
+    expect(
+      screen.getByRole('button', { name: 'View task breakdown of Total Actual' }),
+    ).toHaveTextContent('86,000.00');
+    expect(
+      within(screen.getByRole('list', { name: 'Task cost contributions' })).getAllByRole(
+        'listitem',
+      )[0],
+    ).toHaveTextContent('69.8%');
+    fireEvent.change(screen.getByLabelText('Sort tasks by cost'), { target: { value: 'lowest' } });
+    expect(readChart().datasets[0].data).toEqual([26000, null]);
+    await userEvent.click(screen.getByRole('button', { name: 'Show Deployment bars (Budget)' }));
+    expect(readChart().datasets[0].data).toEqual([26000, 60000]);
+    await userEvent.click(screen.getByRole('button', { name: 'Aggregate', exact: true }));
+    expect(readChart().datasets[0].data).toEqual([86000]);
+  });
+
+  it('retains upstream compact currency formatting for million-dollar axes', async () => {
+    render(<PaidLaborCost />);
+    await screen.findByLabelText('Chart results');
+    expect(chartCapture.props.options.scales.y.ticks.callback(1200000)).toBe('$1.2M');
+    expect(chartCapture.props.options.scales.y.ticks.callback(1500)).toBe('$1.5k');
+  });
 });
