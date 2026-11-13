@@ -16,21 +16,8 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
-<<<<<<< HEAD
   TASKS_TRENDS: () => `${APIEndpoint}/tasks/trends`,
   TASKS_SUMMARY: () => `${APIEndpoint}/tasks/summary`,
-=======
-  TOP_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate
-      ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
-      : ''
-    }`,
-  LEAST_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${startDate && endDate
-      ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
-      : ''
-    }`,
->>>>>>> fba8489d2 (fix(BMDashboard): resolve injury chart API 404 error and add trend data endpoint)
 
   TOP_CONVERTED: (limit, startDate, endDate) => {
     const dateParams =
@@ -458,12 +445,9 @@ export const ENDPOINTS = {
   BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
   BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
   BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
-<<<<<<< HEAD
   BM_INJURY_TREND: `${APIEndpoint}/bm/injuries/trend-data`,
+  BM_INJURY_TREND_DATA: `${APIEndpoint}/bm/injuries/trend-data`,
   BM_INJURY_OVER_TIME: `${APIEndpoint}/bm/injuries/over-time`,
-=======
-  BM_INJURY_TREND_DATA: `${APIEndpoint}/bm/injuries/trend-data`, // <--- 新增的趋势数据端点
->>>>>>> fba8489d2 (fix(BMDashboard): resolve injury chart API 404 error and add trend data endpoint)
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
