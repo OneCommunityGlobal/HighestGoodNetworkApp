@@ -1,7 +1,7 @@
 /* eslint-disable testing-library/no-node-access */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -16,6 +16,9 @@ import { permissions } from '~/utils/constants';
 import appStyles from '~/App.module.css';
 
 vi.mock('axios');
+vi.mock('@tinymce/tinymce-react', () => ({
+  Editor: ({ value }) => <textarea aria-label="Mock Editor" value={value} readOnly />,
+}));
 const mockStore = configureMockStore([thunk]);
 
 const ownerAuthState = {
@@ -61,6 +64,7 @@ const ownerAuthState = {
   editableInfo: {
     loading: false,
   },
+  infoCollections: { infos: [] },
 };
 
 describe('PermissionsManagement', () => {
@@ -206,6 +210,74 @@ describe('PermissionsManagement', () => {
       await renderComponent();
       expect(screen.queryByText('Admin')).not.toBeInTheDocument();
       expect(screen.queryByText('User')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('blue info icon on the title', () => {
+    const ICON_TITLE = 'Click for information about this';
+
+    // the role rows have the same icon, so look next to the title only
+    const openTitleInfo = () => {
+      const titleRow = screen.getByRole('heading', { name: 'User Roles' }).parentElement;
+      fireEvent.click(within(titleRow).getByTitle(ICON_TITLE));
+      return screen.getByRole('dialog');
+    };
+
+    it('opens the Permissions Management box with the whole list', async () => {
+      await renderComponent();
+
+      const box = openTitleInfo();
+
+      expect(
+        within(box).getByText('Welcome to the Permissions Management Information Page!'),
+      ).toBeInTheDocument();
+      expect(within(box).getAllByRole('listitem')).toHaveLength(18);
+      expect(box.querySelector('.modal-body')).toHaveClass('text-light');
+    });
+
+    it('lets the signed-in Owner edit and save it, whoever the profile in the store is', async () => {
+      axios.post.mockResolvedValueOnce({ status: 201 });
+      store = mockStore({ ...ownerAuthState, userProfile: { role: 'Volunteer', loading: false } });
+      await renderComponent();
+
+      const box = openTitleInfo();
+      fireEvent.click(within(box).getByText(/^This page gives access/));
+      fireEvent.click(within(box).getByText('Save'));
+
+      await waitFor(() => {
+        expect(axios.post).toHaveBeenCalledWith(
+          ENDPOINTS.INFO_COLLECTIONS,
+          expect.objectContaining({ infoName: 'Permission Page: user roles Info' }),
+        );
+      });
+    });
+
+    it('shows a non-Owner the text but no edit control', async () => {
+      store = mockStore({
+        ...ownerAuthState,
+        auth: {
+          ...ownerAuthState.auth,
+          user: { ...ownerAuthState.auth.user, role: 'Administrator' },
+        },
+      });
+      await renderComponent();
+
+      const box = openTitleInfo();
+      fireEvent.click(within(box).getByText(/^This page gives access/));
+
+      expect(within(box).getByText(/^This page gives access/)).toBeInTheDocument();
+      expect(within(box).queryByLabelText('Mock Editor')).not.toBeInTheDocument();
+      expect(within(box).queryByText('Save')).not.toBeInTheDocument();
+    });
+
+    it('asks the server for the info texts once, for the title and all the role rows', async () => {
+      await renderComponent();
+
+      expect(screen.getAllByTitle(ICON_TITLE)).toHaveLength(4);
+      const infoRequests = axios.get.mock.calls.filter(
+        ([url]) => url === ENDPOINTS.INFO_COLLECTIONS,
+      );
+      expect(infoRequests).toHaveLength(1);
     });
   });
 
