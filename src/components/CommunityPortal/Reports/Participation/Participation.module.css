@@ -622,9 +622,9 @@
   color: #ff9494;
 }
 
-/* Global `body.dark-mode * { color: #fff !important }` and `.insightsDark .insightItem *` would otherwise win */
+/* text-fill-color paints over the global `body.dark-mode * { color: #fff !important }` without needing !important */
 .insightsDark .insightItem .insightsPercentageDark {
-  color: #ff9494 !important;
+  -webkit-text-fill-color: #ff9494;
 }
 
 /* ---------- PDF/Print helpers ---------- */
@@ -2138,5 +2138,14 @@
 
   .cardStats {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .engagementCard,
+  .navigationCard,
+  .valueCard,
+  .insightFill {
+    transition: none;
   }
 }
