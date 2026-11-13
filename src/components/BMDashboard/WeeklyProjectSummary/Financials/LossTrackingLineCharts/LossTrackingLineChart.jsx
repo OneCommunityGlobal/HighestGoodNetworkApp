@@ -12,21 +12,65 @@ import {
 import MonthPicker from './MonthPicker';
 import styles from './LossTrackingLineChart.module.css';
 
-const colors = {
-  '2022-Metal': '#008080',
-  '2022-Plastic': '#20b2aa',
-  '2022-Glass': '#48d1cc',
-  '2023-Metal': '#ff69b4',
-  '2023-Plastic': '#ff1493',
-  '2023-Glass': '#db7093',
-  '2024-Metal': '#ffd700',
-  '2024-Plastic': '#ffa500',
-  '2024-Glass': '#ff8c00',
+// Each year keeps its own color family (teal 2022, pink 2023, yellow 2024) and each material
+// gets a clearly different shade plus its own line style, so every line can be told apart.
+// Light mode uses darker shades and dark mode lighter ones, so all lines stay visible.
+const YEAR_SHADES = {
+  light: {
+    2022: { Metal: '#004d40', Plastic: '#00897b', Glass: '#4db6ac' },
+    2023: { Metal: '#880e4f', Plastic: '#d81b60', Glass: '#f06292' },
+    2024: { Metal: '#8d6e00', Plastic: '#c79100', Glass: '#f2b705' },
+  },
+  dark: {
+    2022: { Metal: '#1fa394', Plastic: '#4fd1c1', Glass: '#9ae8de' },
+    2023: { Metal: '#e04a83', Plastic: '#f27aa8', Glass: '#f9b3cf' },
+    2024: { Metal: '#f0a500', Plastic: '#ffc933', Glass: '#ffe680' },
+  },
 };
 
-// Custom tooltip: line colors shown as swatches, text in the theme's text color so every
-// row is readable in light and dark mode; rows sorted from highest to lowest loss.
-function LossTooltip({ active, payload, label }) {
+export const MATERIAL_DASH = { Metal: '', Plastic: '8 4', Glass: '2 4' };
+
+const FALLBACK_COLOR = { light: '#6c757d', dark: '#adb5bd' };
+
+export function getSeriesStyle(year, material, darkMode) {
+  const theme = darkMode ? 'dark' : 'light';
+  return {
+    color: YEAR_SHADES[theme][year]?.[material] ?? FALLBACK_COLOR[theme],
+    dash: MATERIAL_DASH[material] ?? '',
+  };
+}
+
+// Small line sample used in the legend and tooltip, so they show the same color and style as the chart
+function LineSample({ color, dash, testId, label }) {
+  return (
+    <svg
+      className={styles.lineSample}
+      width="28"
+      height="10"
+      viewBox="0 0 28 10"
+      aria-hidden="true"
+      data-testid={testId}
+      data-label={label}
+      data-color={color}
+      data-dash={dash}
+    >
+      <line
+        x1="1"
+        y1="5"
+        x2="27"
+        y2="5"
+        stroke={color}
+        strokeWidth="3"
+        strokeDasharray={dash || undefined}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// Custom tooltip: each row shows the line's color and style, text in the theme's text color so
+// every row is readable in light and dark mode; rows sorted from highest to lowest loss.
+function LossTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload?.length) return null;
   const rows = payload
     .filter(item => Number.isFinite(item.value))
@@ -35,17 +79,17 @@ function LossTooltip({ active, payload, label }) {
   return (
     <div className={styles.tooltip}>
       <div className={styles.tooltipTitle}>{label}</div>
-      {rows.map(item => (
-        <div key={item.dataKey} className={styles.tooltipRow}>
-          <span
-            className={styles.tooltipSwatch}
-            style={{ backgroundColor: item.color }}
-            aria-hidden="true"
-          />
-          <span className={styles.tooltipLabel}>{item.name}</span>
-          <span className={styles.tooltipValue}>{item.value}%</span>
-        </div>
-      ))}
+      {rows.map(item => {
+        const [lineYear, lineMaterial] = String(item.dataKey).split('-');
+        const { color, dash } = getSeriesStyle(lineYear, lineMaterial, darkMode);
+        return (
+          <div key={item.dataKey} className={styles.tooltipRow}>
+            <LineSample color={color} dash={dash} />
+            <span className={styles.tooltipLabel}>{item.name}</span>
+            <span className={styles.tooltipValue}>{item.value}%</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -286,9 +330,9 @@ export default function LossTrackingLineChart() {
       filteredLines.map(line => ({
         key: `${line.year}-${line.material}`,
         label: `${line.year} - ${line.material}`,
-        color: colors[`${line.year}-${line.material}`],
+        ...getSeriesStyle(line.year, line.material, darkMode),
       })),
-    [filteredLines],
+    [filteredLines, darkMode],
   );
 
   const handleReset = () => {
@@ -393,31 +437,36 @@ export default function LossTrackingLineChart() {
                       }}
                     />
                     <Tooltip
-                      content={<LossTooltip />}
+                      content={<LossTooltip darkMode={darkMode} />}
                       cursor={{ stroke: gridColor, strokeWidth: 2 }}
                     />
-                    {filteredLines.map(line => (
-                      <Line
-                        key={`${line.year}-${line.material}`}
-                        type="monotone"
-                        dataKey={`${line.year}-${line.material}`}
-                        stroke={colors[`${line.year}-${line.material}`]}
-                        strokeWidth={2}
-                        dot={{ r: 3 }}
-                        activeDot={{ r: 5 }}
-                        name={`${line.year} - ${line.material}`}
-                      />
-                    ))}
+                    {filteredLines.map(line => {
+                      const { color, dash } = getSeriesStyle(line.year, line.material, darkMode);
+                      return (
+                        <Line
+                          key={`${line.year}-${line.material}`}
+                          type="monotone"
+                          dataKey={`${line.year}-${line.material}`}
+                          stroke={color}
+                          strokeDasharray={dash || undefined}
+                          strokeWidth={2.5}
+                          dot={{ r: 3, fill: color, strokeDasharray: '' }}
+                          activeDot={{ r: 5 }}
+                          name={`${line.year} - ${line.material}`}
+                        />
+                      );
+                    })}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
               <div className={styles.customLegend}>
                 {legendItems.map(item => (
                   <span key={item.key} className={styles.legendItem}>
-                    <span
-                      className={styles.legendSwatch}
-                      style={{ backgroundColor: item.color }}
-                      aria-hidden="true"
+                    <LineSample
+                      color={item.color}
+                      dash={item.dash}
+                      testId="legend-line-sample"
+                      label={item.label}
                     />
                     <span>{item.label}</span>
                   </span>
