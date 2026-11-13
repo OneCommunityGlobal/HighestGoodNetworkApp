@@ -63,6 +63,9 @@ vi.mock('./Financials/CostBreakDown/CostBreakDown', () => ({
 vi.mock('./ExpenditureChart/FinancialsTrackingSection', () => ({
   default: () => <div>Financials Tracking</div>,
 }));
+vi.mock('./Financials/FinancialOverview', () => ({
+  default: () => <div>Financial Overview</div>,
+}));
 vi.mock('../InteractiveMap/InteractiveMap', () => ({ default: () => <div>Interactive Map</div> }));
 vi.mock('./Financials/LossTrackingLineCharts/LossTrackingLineChart', () => ({
   default: () => <div>Loss Tracking</div>,

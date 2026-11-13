@@ -367,7 +367,7 @@
   grid-column: span 1;
 }
 
-.weekly-project-summary-card.financial-big {
+:global(.weekly-project-summary-card.financial-big) {
   grid-column: span 4;
   min-height: 600px;
   height: auto;
@@ -375,11 +375,11 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-  overflow: hidden;
+  overflow: visible;
   margin-bottom: 20px;
 }
 
-.weekly-project-summary-card.financial-big h2 {
+:global(.weekly-project-summary-card.financial-big) h2 {
   color: #333;
   margin: 0;
   font-weight: normal;
@@ -405,8 +405,10 @@
 }
 
 .normalCard {
-  width: 100%;
-  min-height: 200px;
+  width: 100%; /* Let content determine height instead of forcing 250px */
+  max-width: 100%;
+  min-height: 250px;
+  box-sizing: border-box;
 }
 
 .mapCard {
@@ -475,9 +477,14 @@
   display: contents;
 }
 
+/* Adjust grid columns based on section size */
 .darkMode .weeklyProjectSummaryDashboardCategoryContent {
   background-color: var(--section-bg);
   border-top: 1px solid rgb(255 255 255 / 20%);
+}
+
+.weeklyProjectSummaryDashboardSection.full .weeklyProjectSummaryDashboardCategoryContent {
+  grid-template-columns: 1fr;
 }
 
 .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
@@ -491,14 +498,11 @@
   gap: 15px;
 }
 
-/* ---------------- LESSONS LEARNED SECTION ---------------- */
-.lessonsLearnedGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  width: 100%;
-  align-items: stretch;
-  min-height: 600px;
+/* Stack cards vertically on tablet and mobile screens */
+@media (width <= 1024px) {
+  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: 1fr;
+  }
 }
 
 .lessonsCard {
@@ -559,12 +563,11 @@
 :root {
   --bg-color: #fff;
   --text-color: #000;
-  --text-secondary: #666;
-  --card-bg: #fff;
+  --card-bg: #fafafa;
   --card-shadow: rgb(0 0 0 / 10%);
-  --section-bg: #fff;
-  --section-title-bg: #f8fafc;
-  --section-title-hover: #f1f5f9;
+  --section-bg: white;
+  --section-title-bg: white;
+  --section-title-hover: #e0e0e0;
   --button-bg: black;
   --button-hover: #333;
   --border-color: #e5e7eb;
@@ -579,7 +582,6 @@
 .darkMode {
   --bg-color: #1b2a41;
   --text-color: #fff;
-  --text-secondary: #94a3b8;
   --card-bg: #2b3e59;
   --card-shadow: rgb(255 255 255 / 10%);
   --section-bg: #253342;
@@ -603,6 +605,18 @@
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle:hover {
   background: #3a506b;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle span {
+  color: #fff;
+}
+
+.darkMode * {
+  color: inherit;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle * {
+  color: #fff;
 }
 
 .darkMode .weeklySummaryHeaderContainer {
@@ -953,8 +967,22 @@
   }
 }
 
-/* Small Screens */
-@media (width <=768px) {
+.materialConsumptionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  align-items: start;
+}
+
+/* Tablet Screens — collapse Material Consumption chart grid to single column for readability */
+@media (width <= 1080px) {
+  .materialConsumptionGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small Screens - Make Dropdowns Vertical */
+@media (width <= 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: center;
@@ -990,6 +1018,30 @@
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 
+  .toolsTrackingLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .toolsDonutWrap {
+    grid-column: span 1;
+  }
+
+  .financialsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .financialsGrid .financialBig {
+    grid-column: span 1;
+  }
+
+  .laborTimeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .financialsTrackingGrid {
+    grid-template-columns: 1fr;
+  }
+
   .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: 1fr;
   }
@@ -1012,27 +1064,7 @@
     min-height: 500px;
   }
 
-  .toolsTrackingLayout {
-    grid-template-columns: 1fr;
-  }
-
-  .toolsDonutWrap {
-    grid-column: span 1;
-  }
-
-  .financialsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .financialsGrid .financialBig {
-    grid-column: span 1;
-  }
-
-  .laborTimeGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .financialsTrackingGrid {
+  .materialConsumptionGrid {
     grid-template-columns: 1fr;
   }
 }
@@ -1113,10 +1145,6 @@
 
 .darkMode .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
-}
-
-.darkMode * {
-  color: inherit;
 }
 
 .darkMode .lessonsCard {

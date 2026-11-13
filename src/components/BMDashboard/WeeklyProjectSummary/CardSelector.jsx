@@ -9,7 +9,13 @@ export const CARD_PRESETS = [
   {
     id: 'finance',
     label: 'Finance Focus',
-    keys: ['Financials', 'Financials Tracking', 'Loss Tracking', 'Material Consumption'],
+    keys: [
+      'Financials',
+      'Financials: Overview',
+      'Financials Tracking',
+      'Loss Tracking',
+      'Material Consumption',
+    ],
   },
   {
     id: 'schedule',
