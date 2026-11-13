@@ -175,39 +175,34 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
     <Modal
       isOpen={isOpen}
       toggle={busy ? undefined : onClose}
-      className={darkMode ? 'text-light hgn-themed-modal--dark' : 'hgn-themed-modal'}
+      // Local dark styles (module) — avoid hgn-themed-modal--dark, which Header forces to light text.
+      className={darkMode ? styles.darkModal : 'hgn-themed-modal'}
       aria-label="Job Application Email Settings"
     >
-      <ModalHeader
-        toggle={busy ? undefined : onClose}
-        className={darkMode ? 'bg-space-cadet text-white' : ''}
-      >
-        Job Application Email Settings
-      </ModalHeader>
+      <ModalHeader toggle={busy ? undefined : onClose}>Job Application Email Settings</ModalHeader>
 
-      <ModalBody className={darkMode ? 'bg-yinmn-blue text-white' : ''}>
-        <p>
-          Manage CC addresses for new job application notifications. Every submitted application is
-          emailed to onecommunityglobal@gmail.com (same staff inbox as blue-square / weekly-summary
-          mail); the applicant and addresses listed here are carbon copied on that same message.
-        </p>
-
+      <ModalBody>
         {error && (
-          <div role="alert" className={`alert alert-danger ${styles.dangerAlert}`}>
+          <div role="alert" className={styles.dangerAlert}>
             {error}
           </div>
         )}
 
-        {success && (
-          <output className={`alert alert-success d-block ${styles.successAlert}`}>
-            {success}
-          </output>
-        )}
+        {success && <output className={styles.successAlert}>{success}</output>}
 
-        {recipientsPanel}
+        <div className={darkMode ? styles.bodyCopy : undefined}>
+          <p>
+            Manage CC addresses for new job application notifications. Every submitted application
+            is emailed to onecommunityglobal@gmail.com (same staff inbox as blue-square /
+            weekly-summary mail); the applicant and addresses listed here are carbon copied on that
+            same message.
+          </p>
+
+          {recipientsPanel}
+        </div>
       </ModalBody>
 
-      <ModalFooter className={darkMode ? 'bg-yinmn-blue text-white' : ''}>
+      <ModalFooter>
         <Button type="button" color="secondary" onClick={onClose} disabled={busy}>
           Cancel
         </Button>
