@@ -43,7 +43,7 @@ const CPProtectedRoute = ({ component: Component, render, auth, fallback, ...res
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }
-        if (auth.user.access && !auth.user.access.canAccessBMPortal) {
+        if (auth.user?.access?.canAccessBMPortal !== true) {
           return (
             <Redirect
               to={{ pathname: '/communityportal/login', state: { from: props.location } }}
