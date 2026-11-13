@@ -59,14 +59,11 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
+    // Usage Record always opens the usage chart; the chart shows a message when there is no project
     if (isMaterialsView && type === 'UsageRecord') {
-      const projectId = data.project?._id || data.projectId;
-
-      if (projectId) {
-        setChartProjectId(projectId);
-        setShowChartModal(true);
-        return;
-      }
+      setChartProjectId(data.project?._id || data.projectId || null);
+      setShowChartModal(true);
+      return;
     }
 
     setModal(true);
@@ -122,7 +119,7 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
-      {showChartModal && chartProjectId && (
+      {showChartModal && (
         <MaterialUsageChart
           projectId={chartProjectId}
           toggle={() => setShowChartModal(false)}
