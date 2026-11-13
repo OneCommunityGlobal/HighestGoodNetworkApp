@@ -292,6 +292,11 @@
                 "description": "Lets the user add tasks and subtasks to any WBS with 'Add Task' (Other Links > Projects > WBS > choose a WBS)."
               },
               {
+                "label": "Import Tasks",
+                "key": "importTask",
+                "description": "Lets the user add tasks to a WBS from an Excel (.xlsx) file with 'Import Tasks' on the WBS page."
+              },
+              {
                 "label": "Edit Task",
                 "key": "updateTask",
                 "description": "Lets the user edit any task directly (WBS > EDIT > Edit) and approve suggested task changes from the header."
@@ -378,6 +383,11 @@
     "label": "TIMELOG MANAGEMENT",
     "description": "Category for all permissions related to timelog management",
     "subperms": [
+      {
+        "label": "Delete Any Time Entry",
+        "key": "deleteTimeEntry",
+        "description": "Lets the user delete any time entry, own or others'. The Time Log trash icon also needs Delete Time Entry (Own) or (Others)."
+      },
       {
         "label": "Toggle Tangible Time Self",
         "key": "toggleTangibleTime",

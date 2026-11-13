@@ -25,7 +25,6 @@ const LEGACY_OR_EXTRA_KEYS = [
   'announcements_manage',
   'assignBadgeOthers',
   'createPopup',
-  'deleteTimeEntry',
   'deleteUserProfile',
   'editProject',
   'editSummaryHoursCount',
