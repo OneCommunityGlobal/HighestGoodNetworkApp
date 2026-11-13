@@ -208,7 +208,7 @@
   background: lawngreen;
   color: #111 !important;
   border-radius: 50px; /* Adapts from a circle to a clean pill shape as text length increases */
-  
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -241,12 +241,12 @@
 
 .suggestion-button {
   display: block;
-  width: 100%; 
-  padding: 10px; 
-  text-align: left; 
-  background: none; 
-  border: none; 
-  cursor: pointer; 
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .suggestion-button:hover {

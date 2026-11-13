@@ -7,6 +7,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ReturnedLateChart.module.css';
 import datePickerStyles from './RentalDatePicker.module.css';
+import { getCurrentYearRange, stripProjectPrefix } from './rentalChartUtils';
 import { Select } from 'antd';
 import {
   Chart as ChartJS,
@@ -81,10 +82,7 @@ export default function ReturnedLateChart() {
   const [allToolsData, setAllToolsData] = useState([]);
   const [selectedProject, setSelectedProject] = useState('All');
   const [selectedTools, setSelectedTools] = useState([]);
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(2020, 0, 1),
-    endDate: new Date(2025, 11, 31),
-  });
+  const [dateRange, setDateRange] = useState(getCurrentYearRange);
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const [rawToolsData, setRawToolsData] = useState([]);
   const [selectedToolDetail, setSelectedToolDetail] = useState(null);
@@ -97,13 +95,16 @@ export default function ReturnedLateChart() {
   // Tools are picked per project, so the list only has the selected project's tools
   const availableTools = useMemo(() => {
     if (isMultiProjectView) return [];
-    const tools = allToolsData
-      .filter(item => item.projectId === selectedProject)
-      .map(item => item.toolName)
-      .filter(Boolean);
-    return [...new Set(tools)]
-      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
-      .map(tool => ({ label: tool, value: tool }));
+    // The value stays the saved name, since the API filters on it; only the label is shortened
+    const toolOptions = new Map();
+    allToolsData
+      .filter(item => item.projectId === selectedProject && item.toolName)
+      .forEach(item => {
+        toolOptions.set(item.toolName, stripProjectPrefix(item.toolName, item.projectName));
+      });
+    return [...toolOptions]
+      .map(([value, label]) => ({ label, value }))
+      .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
   }, [allToolsData, isMultiProjectView, selectedProject]);
   const visibleDatasets = useMemo(
     () =>
@@ -223,7 +224,10 @@ export default function ReturnedLateChart() {
         });
         const data = getArrayPayload(res.data);
         const normalized = data.map(item => ({
-          toolName: item.toolName || item.toolNameName || item.name || '',
+          toolName: stripProjectPrefix(
+            item.toolName || item.toolNameName || item.name || '',
+            item.projectName,
+          ),
           percentLate: Number(item.percentLate || item.percent || item.value || 0),
           projectId: item.projectId || '',
           projectName: item.projectName || '',
@@ -268,6 +272,9 @@ export default function ReturnedLateChart() {
                   backgroundColor: projectColor.background,
                   borderColor: projectColor.border,
                   borderWidth: 1,
+                  // Without this, each project keeps an empty slot under every tool,
+                  // so a tool's bar sits off to one side of its label
+                  skipNull: true,
                 };
               })
             : [
@@ -376,6 +383,10 @@ export default function ReturnedLateChart() {
       interaction: {
         mode: 'nearest',
         intersect: true,
+      },
+      // Keeps a tool with a single bar from stretching across its whole slot
+      datasets: {
+        bar: { maxBarThickness: 64 },
       },
       plugins: {
         legend: {

@@ -13,6 +13,7 @@ import { ModalContext } from '~/context/ModalContext';
 import PermissionsManagement from '../PermissionsManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { permissions } from '~/utils/constants';
+import appStyles from '~/App.module.css';
 
 vi.mock('axios');
 const mockStore = configureMockStore([thunk]);
@@ -175,7 +176,7 @@ describe('PermissionsManagement', () => {
 
   it('applies dark-mode styles when darkMode is true', async () => {
     const { container } = await renderComponent({ darkMode: true });
-    expect(container.firstChild).toHaveClass('bg-oxford-blue');
+    expect(container.firstChild).toHaveClass(appStyles['bg-oxford-blue']);
     expect(container.firstChild).toHaveClass('text-light');
   });
 

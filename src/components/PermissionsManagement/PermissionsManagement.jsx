@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 
 import { Button, Modal, ModalBody, ModalHeader, Spinner } from 'reactstrap';
+import appStyles from '~/App.module.css';
 import styles from './PermissionsManagement.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -114,7 +115,7 @@ function PermissionsManagement({
 
   return (
     <div
-      className={darkMode ? 'bg-oxford-blue text-light' : ''}
+      className={darkMode ? `${appStyles['bg-oxford-blue']} text-light` : ''}
       style={{ minHeight: '100%', border: '1px solid #1B2A41' }}
     >
       <div
@@ -220,18 +221,18 @@ function PermissionsManagement({
             isOpen={isNewRolePopUpOpen}
             toggle={togglePopUpNewRole}
             id={styles['modal-content__new-role']}
-            className={darkMode ? styles['dark-mode text-light'] : ''}
+            className={darkMode ? 'text-light dark-mode' : ''}
           >
             <ModalHeader
               toggle={togglePopUpNewRole}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet' : ''}
+              className={darkMode ? `${appStyles['bg-space-cadet']} text-light` : ''}
             >
               Create New Role
             </ModalHeader>
             <ModalBody
               id={styles['modal-body_new-role--padding']}
-              className={darkMode ? 'bg-yinmn-blue' : ''}
+              className={darkMode ? `${appStyles['bg-yinmn-blue']} text-light` : ''}
             >
               <CreateNewRolePopup
                 toggle={togglePopUpNewRole}
@@ -249,13 +250,13 @@ function PermissionsManagement({
             <ModalHeader
               toggle={togglePopUpUserPermissions}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-oxford-blue text-light' : ''}
+              className={darkMode ? `${appStyles['bg-oxford-blue']} text-light` : ''}
             >
               Manage User Permissions
             </ModalHeader>
             <ModalBody
               id={styles['modal-body_new-role--padding']}
-              className={darkMode ? 'bg-yinmn-blue-light' : ''}
+              className={darkMode ? `${appStyles['bg-yinmn-blue-light']} text-light` : ''}
             >
               <UserPermissionsPopUp
                 toggle={togglePopUpUserPermissions}

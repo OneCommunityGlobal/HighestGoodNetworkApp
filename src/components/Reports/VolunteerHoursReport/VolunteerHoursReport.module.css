@@ -1,0 +1,250 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.container :global(.card),
+
+.container :global(.card-body) {
+  overflow: visible ;
+}
+
+.dateRangeContainer {
+  position: relative;
+}
+
+.dateButton {
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+
+.datePickerInput {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 60px;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+
+.tableContainer {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.hoursCell {
+  text-align: center;
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.totalRow {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.totalRow td {
+  border-top: 2px solid #dee2e6;
+}
+
+/* Dark mode styles */
+
+:global(.bg-dark).form-control[type='date'] {
+  background-color: #212529 ;
+  color: #fff ;
+  border-color: #6c757d ;
+  color-scheme: dark;
+}
+
+:global(.bg-dark) .form-control[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+:global(.bg-dark) .totalRow {
+  background-color: #495057;
+}
+
+:global(.dark-mode) :global(.react-datepicker) {
+  background-color: #000 ;
+  border-color: #000 ;
+  color: #fff ;
+  overflow: visible ;
+}
+
+:global(.dark-mode) :global(.react-datepicker__header) {
+  background-color: #000 ;
+  border-bottom-color: #000 ;
+}
+
+:global(.dark-mode) :global(.react-datepicker__current-month),
+:global(.dark-mode) :global(.react-datepicker__day-name),
+:global(.dark-mode) :global(.react-datepicker__day) {
+  color: #fff ;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day:hover) {
+  background-color: #2c2c2c ;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day--selected),
+:global(.dark-mode) :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #0d22e4 ;
+  color: #fff ;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day--disabled),
+:global(.dark-mode) :global(.react-datepicker__day--disabled:hover) {
+  color: #6b7280 ;
+  background-color: transparent ;
+}
+
+:global(.dark-mode) .datePickerInput {
+  background-color: #000 ;
+  color: #fff ;
+  border-color: #000 ;
+}
+
+/* Responsive design */
+@media (width <= 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .datePicker {
+    min-width: 280px;
+  }
+  
+  .tableContainer {
+    max-height: 400px;
+  }
+}
+
+@media (width <= 576px) {
+  .dateButton {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  
+  .hoursCell {
+    min-width: 80px;
+    font-size: 14px;
+  }
+}
+
+.reportTable th,
+.reportTable td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Dark mode table */
+.reportTable:global(.table-dark) {
+  background-color: #343a40 ;
+  color: #fff ;
+}
+
+/* Dark mode table header */
+.reportTable:global(.table-dark) thead th {
+  background-color: #343a40 ;
+  color: #fff ;
+  border-color: #495057 ;
+  text-align: center ;
+  vertical-align: middle ;
+  user-select: none;
+}
+
+.reportTable:global(.table-dark) thead th:hover {
+  background-color: #343a40 ;
+  color: #fff ;
+}
+
+/* Keep header exactly the same when hovering */
+.reportTable:global(.table-dark) thead tr:hover,
+.reportTable:global(.table-dark) thead tr:hover th,
+
+/* Dark mode table body */
+.reportTable:global(.table-dark) tbody td {
+  background-color: #212529 ;
+  color: #fff ;
+  border-color: #495057 ;
+}
+
+/* Total row */
+.reportTable:global(.table-dark) .totalRow td {
+  background-color: #343a40 ;
+  color: #fff ;
+}
+
+/* Body hover */
+.reportTable:global(.table-dark) tbody tr:hover td {
+  background-color: #343a40 ;
+  color: #fff ;
+}
+
+.refreshButtonContainer {
+  padding-top: 0;
+  display: flex;
+  align-items: flex-end;
+  min-width: 150px;
+  box-sizing: border-box;
+}
+
+.refreshButton {
+  max-width: 115px;
+  min-width: 50px;
+  height: 55px;
+  white-space: nowrap;
+  box-sizing: border-box;
+  text-wrap:pretty;
+}
+
+.reportTypePicker {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+.darkModeText {
+  color: #fff;
+}
+
+
+/* Keep filter columns from exceeding their parent */
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  row-gap: 12px;
+}
+
+.filterColumn {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Keep labels consistently positioned */
+.filterColumn label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+@media (width<=768px) {
+  .refreshButton {
+    max-width: none;
+  }
+
+  .refreshButtonContainer {
+    width: 100%;
+  }
+}
