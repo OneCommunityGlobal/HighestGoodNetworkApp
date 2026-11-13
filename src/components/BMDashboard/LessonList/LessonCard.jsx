@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
+import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
+import { faHeart as filledHeart } from '@fortawesome/free-solid-svg-icons';
 import ReactHtmlParser from 'html-react-parser';
 import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
@@ -22,11 +23,30 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   const auth = useSelector(state => state.auth);
   const currentUserId = auth.user.userid;
   const lessons = useSelector(state => state.lessons.lessons);
+  const pendingLikes = useSelector(state => state.lessons.pendingLikes || {});
+
+  useEffect(() => {
+    const remaining = new Set((filteredLessons || []).map(lesson => lesson._id));
+    setExpandedCards(previous => {
+      const next = previous.filter(id => remaining.has(id));
+      return next.length === previous.length ? previous : next;
+    });
+    if (editableLessonId && !remaining.has(editableLessonId)) {
+      setEditableLessonId(null);
+      setEditableLessonSummary('');
+      setValidationError('');
+    }
+    if (lessonToDeleteId && !remaining.has(lessonToDeleteId)) {
+      setShowDeletePopup(false);
+      setLessonToDeleteId(null);
+    }
+  }, [filteredLessons, editableLessonId, lessonToDeleteId]);
 
   const getLikeStatus = lessonId => {
     const lesson = lessons.find(l => l._id === lessonId);
     return {
-      isLiked: lesson?.likes?.includes(currentUserId),
+      isLiked: typeof lesson?.isLiked === 'boolean' ? lesson.isLiked : undefined,
+      pending: Boolean(pendingLikes[lessonId]),
       totalLikes: lesson?.totalLikes || 0,
     };
   };
@@ -41,9 +61,10 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
     setEditableLessonSummary('');
   };
 
-  const handleSaveEdit = lessonId => {
+  const handleSaveEdit = async lessonId => {
     if (editableLessonSummary.trim() !== '') {
-      onEditLessonSummary(lessonId, editableLessonSummary);
+      const saved = await onEditLessonSummary(lessonId, editableLessonSummary);
+      if (!saved) return;
       setEditableLessonId(null);
       setEditableLessonSummary('');
       setValidationError('');
@@ -76,7 +97,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   };
 
   const lessonCards = (filteredLessons || []).map(lesson => {
-    const { isLiked, totalLikes } = getLikeStatus(lesson._id);
+    const { isLiked, totalLikes, pending } = getLikeStatus(lesson._id);
 
     return (
       <Card key={lesson._id} className={`${styles.lessonCard} ${darkMode ? styles.darkCard : ''}`}>
@@ -192,27 +213,27 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                 )}
 
                 <div>
-                  <span
-                    role="button"
-                    tabIndex="0"
-                    onClick={() => handleLikeCount(lesson._id, currentUserId)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') handleLikeCount(lesson._id, currentUserId);
+                  <button
+                    type="button"
+                    aria-disabled={pending}
+                    aria-busy={pending}
+                    aria-pressed={isLiked}
+                    aria-label={`${
+                      isLiked === undefined ? 'Toggle like' : isLiked ? 'Unlike' : 'Like'
+                    } for ${lesson.title}`}
+                    onClick={() => {
+                      // Keep the focused button mounted/focusable while synchronizing.
+                      if (!pending) handleLikeCount(lesson._id, currentUserId);
                     }}
-                    style={{ outline: 'none' }}
+                    className={`${styles.likeButton} ${isLiked === true ? styles.likedButton : ''}`}
                   >
                     <FontAwesomeIcon
-                      className="ml-2"
-                      icon={faHeart}
-                      size="sm"
-                      style={{
-                        color: isLiked ? '#ff4d4d' : '#7A7D81',
-                        cursor: 'pointer',
-                        fill: isLiked ? '#ff4d4d' : 'none',
-                      }}
+                      icon={isLiked === true ? filledHeart : outlineHeart}
+                      aria-hidden="true"
                     />
-                    Like: {totalLikes}
-                  </span>
+                    {isLiked === true ? 'Liked' : isLiked === false ? 'Like' : 'Toggle like'}:{' '}
+                    {totalLikes}
+                  </button>
                 </div>
               </div>
             </Card.Footer>
@@ -234,8 +255,8 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   }
 
   return (
-    <div>
-      <div style={{ textAlign: 'right' }}>
+    <div className={styles.lessonList}>
+      <div className={styles.expandControls}>
         <button
           type="submit"
           onClick={() => expandAll()}

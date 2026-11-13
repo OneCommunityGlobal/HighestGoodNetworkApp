@@ -4,10 +4,23 @@ import {
   DELETE_LESSON,
   BM_LESSON_LIKES,
   SET_LESSON,
+  BM_LESSONS_REQUEST,
+  BM_LESSONS_FAILURE,
+  BM_LESSONS_CANCEL,
+  BM_LESSON_LIKE_SUCCEEDED,
+  BM_LESSON_LIKE_FINISHED,
 } from '../../constants/bmdashboard/lessonConstants';
 
 const initialState = {
   lessons: [],
+  loading: false,
+  error: null,
+  requestId: null,
+  query: {},
+  queryKey: '',
+  resultQueryKey: null,
+  pagination: null,
+  tagMetadataVersion: 0,
   pendingLikes: {}, // Track optimistic updates
 };
 
@@ -15,12 +28,40 @@ const initialState = {
 export const lessonsReducer = (state = initialState, action) => {
   // console.log('Reducer received action:', action.type, action.payload);
   switch (action.type) {
-    case GET_BM_LESSONS:
+    case BM_LESSONS_REQUEST:
       return {
         ...state,
+        loading: true,
+        error: null,
+        requestId: action.requestId,
+        query: action.query,
+        queryKey: action.queryKey,
+      };
+    case BM_LESSONS_FAILURE:
+    case BM_LESSONS_CANCEL:
+      if (state.requestId !== action.requestId) return state;
+      return { ...state, loading: false, error: action.error || null };
+    case GET_BM_LESSONS:
+      if (action.requestId !== undefined && state.requestId !== action.requestId) return state;
+      return {
+        ...state,
+        // Server order and counts are authoritative, even if another mutation is pending.
         lessons: action.payload || [],
+        resultQueryKey: state.queryKey,
+        pendingLikes: Object.fromEntries(
+          Object.entries(state.pendingLikes).map(([id, pending]) => [
+            id,
+            pending ? { ...pending, optimistic: false } : pending,
+          ]),
+        ),
+        loading: false,
+        error: null,
+        pagination: action.pagination || null,
       };
 
+    // Successful mutations invalidate only metadata, never active filter settings.
+    case 'POST_LESSON_SUCCESS':
+      return { ...state, tagMetadataVersion: (state.tagMetadataVersion || 0) + 1 };
     case UPDATE_LESSON: {
       const index = state.lessons.findIndex(lesson => lesson._id === action.lessonId);
 
@@ -32,6 +73,7 @@ export const lessonsReducer = (state = initialState, action) => {
 
         return {
           ...state,
+          tagMetadataVersion: (state.tagMetadataVersion || 0) + 1,
           lessons: [
             ...state.lessons.slice(0, index),
             updatedLesson,
@@ -40,12 +82,13 @@ export const lessonsReducer = (state = initialState, action) => {
         };
       }
 
-      return state;
+      return { ...state, tagMetadataVersion: (state.tagMetadataVersion || 0) + 1 };
     }
 
     case DELETE_LESSON:
       return {
         ...state,
+        tagMetadataVersion: (state.tagMetadataVersion || 0) + 1,
         lessons: state.lessons.filter(lesson => lesson._id !== action.lessonId),
       };
 
@@ -58,50 +101,86 @@ export const lessonsReducer = (state = initialState, action) => {
       };
 
     case 'OPTIMISTIC_LIKE_UPDATE': {
-      const { lessonId, userId } = action.payload;
-      const lesson = state.lessons.find(l => l._id === lessonId);
-
-      if (!lesson) return state;
-
-      const isLiked = lesson.likes?.includes(userId);
-      const updatedLesson = {
-        ...lesson,
-        totalLikes: isLiked ? lesson.totalLikes - 1 : lesson.totalLikes + 1,
-        likes: isLiked
-          ? lesson.likes.filter(id => id !== userId)
-          : [...(lesson.likes || []), userId],
-      };
-
+      const { lessonId } = action.payload;
+      if (state.pendingLikes[lessonId]) return state;
+      const lesson = state.lessons.find(item => item._id === lessonId);
+      // `likes` contains Like-record IDs. Only an explicit per-user flag can give direction.
+      const optimistic = typeof lesson?.isLiked === 'boolean';
       return {
         ...state,
         pendingLikes: {
           ...state.pendingLikes,
-          [lessonId]: { previousState: lesson, timestamp: Date.now() },
+          [lessonId]: {
+            previousState: lesson
+              ? { totalLikes: lesson.totalLikes, isLiked: lesson.isLiked }
+              : null,
+            optimistic,
+            phase: 'updating',
+          },
         },
-        lessons: state.lessons.map(l => (l._id === lessonId ? updatedLesson : l)),
+        lessons: optimistic
+          ? state.lessons.map(item =>
+              item._id === lessonId
+                ? {
+                    ...item,
+                    totalLikes: Math.max(0, (item.totalLikes || 0) + (item.isLiked ? -1 : 1)),
+                    isLiked: !item.isLiked,
+                  }
+                : item,
+            )
+          : state.lessons,
       };
     }
-
     case 'REVERT_LIKE_UPDATE': {
       const { lessonId } = action.payload;
-      const pendingUpdate = state.pendingLikes[lessonId];
-
-      if (!pendingUpdate) return state;
-
-      const { previousState } = pendingUpdate;
-
+      const pending = state.pendingLikes[lessonId];
+      const pendingLikes = { ...state.pendingLikes };
+      delete pendingLikes[lessonId];
+      return {
+        ...state,
+        pendingLikes,
+        lessons:
+          pending?.optimistic && pending.previousState
+            ? state.lessons.map(item =>
+                item._id === lessonId ? { ...item, ...pending.previousState } : item,
+              )
+            : state.lessons,
+      };
+    }
+    case BM_LESSON_LIKE_SUCCEEDED: {
+      const { lessonId, lesson } = action.payload;
+      const pending = state.pendingLikes[lessonId];
+      if (!pending) return state;
+      const authoritative = lesson?._id === lessonId && Number.isFinite(lesson.totalLikes);
       return {
         ...state,
         pendingLikes: {
           ...state.pendingLikes,
-          [lessonId]: undefined,
+          [lessonId]: { ...pending, optimistic: false, phase: 'refreshing' },
         },
-        lessons: state.lessons.map(l => (l._id === lessonId ? previousState : l)),
+        lessons: authoritative
+          ? state.lessons.map(item =>
+              item._id === lessonId
+                ? {
+                    ...item,
+                    totalLikes: lesson.totalLikes,
+                    ...(Array.isArray(lesson.likes) ? { likes: lesson.likes } : {}),
+                    ...(typeof lesson.isLiked === 'boolean' ? { isLiked: lesson.isLiked } : {}),
+                  }
+                : item,
+            )
+          : state.lessons,
       };
+    }
+    case BM_LESSON_LIKE_FINISHED: {
+      const pendingLikes = { ...state.pendingLikes };
+      delete pendingLikes[action.payload.lessonId];
+      return { ...state, pendingLikes };
     }
 
     case BM_LESSON_LIKES: {
       const updatedLesson = action.payload;
+      if (!updatedLesson?._id) return state;
       return {
         ...state,
         pendingLikes: {
@@ -109,7 +188,18 @@ export const lessonsReducer = (state = initialState, action) => {
           [updatedLesson._id]: undefined,
         },
         lessons: state.lessons.map(lesson =>
-          lesson._id === updatedLesson._id ? updatedLesson : lesson,
+          lesson._id === updatedLesson._id
+            ? {
+                ...lesson,
+                ...(Array.isArray(updatedLesson.likes) ? { likes: updatedLesson.likes } : {}),
+                ...(Number.isFinite(updatedLesson.totalLikes)
+                  ? { totalLikes: updatedLesson.totalLikes }
+                  : {}),
+                ...(typeof updatedLesson.isLiked === 'boolean'
+                  ? { isLiked: updatedLesson.isLiked }
+                  : {}),
+              }
+            : lesson,
         ),
       };
     }

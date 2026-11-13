@@ -1,5 +1,10 @@
 /* stylelint-disable  */
 .formContainer {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+
   .formControl {
     max-width: unset !important;
     font-size: small !important;
@@ -37,6 +42,7 @@
 
 .formSelectContainer {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   justify-content: flex-start;
   font-size: small;
@@ -93,6 +99,9 @@
 }
 
 .tag {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   background-color: #e3f2fd;
@@ -233,6 +242,8 @@
 }
 
 .tagDropdownItem {
+  white-space: normal;
+  overflow-wrap: anywhere;
   padding: 8px 12px;
   cursor: pointer;
   border: none;
@@ -316,4 +327,130 @@
 .darkMode select option {
   background-color: #2c3e50;
   color: #e9ecef;
+}
+
+/* stylelint-enable */
+.picker {
+  position: relative;
+  width: 100%;
+}
+
+.picker .tagDropdown {
+  width: 100%;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 5;
+}
+
+.activeSuggestion {
+  background-color: #e3f2fd;
+}
+
+.darkMode .activeSuggestion {
+  background-color: #34495e;
+}
+
+.noSuggestions {
+  padding: 0.5rem;
+}
+
+/* Let nested flex children fit the page instead of using their content's minimum width. */
+.mainContainer,
+.formSelectContainer > div,
+.tagsInputContainer,
+.deleteInputWrapper,
+.tagContainer,
+.picker {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.mainContainer,
+.deleteInputWrapper,
+.tagContainer {
+  width: 100%;
+}
+
+.formContainer .picker .formControl {
+  min-width: 0;
+  width: 100%;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.tag span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.picker .tagDropdown {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+@media (width <= 570px) {
+  .mainContainer {
+    padding: 1rem 0.75rem;
+  }
+
+  .lightMode .formContainer,
+  .darkMode .formContainer {
+    padding: 0.75rem;
+  }
+
+  .formSelectContainer {
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .formSelectContainer > div,
+  .singleForm {
+    width: 100%;
+  }
+
+  .singleForm {
+    min-width: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+
+  .singleFormSelect {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    min-height: 44px;
+  }
+
+  .exportGroup :global(.form-label) {
+    display: none;
+  }
+
+  .formSelectContainer > :global(button) {
+    width: 100%;
+  }
+
+  .formContainer :global(button),
+  .picker input,
+  .formContainer :global(.form-check-inline) {
+    min-height: 44px;
+    max-width: 100%;
+  }
+
+  .formContainer :global(button) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .tag .buttonClose {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .buttonClose:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+  }
 }

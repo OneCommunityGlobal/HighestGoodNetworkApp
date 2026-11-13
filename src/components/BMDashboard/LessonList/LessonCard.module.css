@@ -8,6 +8,9 @@
 
 /* Card Header */
 .lessonCardHeader {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   background-color: var(--primary-bg, #78bdda) !important;
   padding: 0.3rem 1.25rem !important;
   color: var(--primary-text) !important;
@@ -36,6 +39,8 @@
 
 /* Expanded Scrollable Section */
 .scrollableCardBody {
+  min-width: 0;
+  max-width: 100%;
   max-height: 400px;
   overflow-y: auto;
   background-color: var(--module-bg) !important;
@@ -304,5 +309,124 @@
   .tagItem {
     display: block;
     margin-top: 5px;
+  }
+}
+
+/* The label and icon distinguish liked state without relying on color alone. */
+.likeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  max-width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #495057;
+  font: inherit;
+  cursor: pointer;
+}
+
+.likeButton.likedButton {
+  border-color: currentcolor;
+  color: #b42336;
+  font-weight: 600;
+}
+
+.darkCard .likeButton {
+  color: #ccc;
+}
+
+.darkCard .likeButton.likedButton {
+  color: #ff9aa7;
+}
+
+.likeButton:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+}
+
+.likeButton:disabled,
+.likeButton[aria-disabled='true'] {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.likeButton:hover:not(:disabled, [aria-disabled='true']) {
+  text-decoration: underline;
+}
+
+.lessonList,
+.lessonCard,
+.lessonCardNav,
+.lessonCardNav > div,
+.navTitleAndDate,
+.lessonCardNavItem,
+.lessonCardFooter > div,
+.lessonCardFooterItems > div {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.lessonList,
+.lessonCard {
+  width: 100%;
+}
+
+.lessonCardNavItem,
+.cardTagAndFile,
+.lessonSummary,
+.footerItemsAuthorAndFrom {
+  overflow-wrap: anywhere;
+}
+
+.lessonSummary textarea,
+.lessonSummary img,
+.lessonSummary video {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.lessonSummary textarea {
+  min-width: 0;
+  width: 100%;
+}
+
+.lessonSummary pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.expandControls {
+  min-width: 0;
+  text-align: right;
+}
+
+@media (width <= 570px) {
+  .lessonCardFooterItems,
+  .expandControls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .expandControls {
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+  }
+
+  .lessonCardFooter button,
+  .expandLessons {
+    min-height: 44px;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .expandControls .expandLessons {
+    margin: 0;
   }
 }
