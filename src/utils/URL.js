@@ -63,6 +63,8 @@ export const ENDPOINTS = {
   USER_ALL_TEAM_CODE: `${APIEndpoint}/userProfile/teamCode/list`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
+  PROJECTS_COMMITTED_HOURS: `${APIEndpoint}/projects/committed-hours`,
+  TEAMS_COMMITTED_HOURS: `${APIEndpoint}/team/committed-hours`,
   ARCHIVEDPROJECTS: `${APIEndpoint}/archivedProjects`,
   TEAM: `${APIEndpoint}/team`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
@@ -89,6 +91,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
 
   // Questionnaire endpoints
+  QUESTIONNAIRE_CHECK_MODAL: userId => `${APIEndpoint}/dashboard/questionaire/checkModal/${userId}`,
   QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
   QUESTIONNAIRE_CLOSE_PERMANENTLY: () =>
     `${APIEndpoint}/dashboard/questionaire/checkUserFoundHelpSomewhere`,
@@ -258,11 +261,9 @@ export const ENDPOINTS = {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     if (groupBy) params.append('groupBy', groupBy);
-
     const queryString = params.toString();
     return queryString ? `${url}?${queryString}` : url;
   },
-
   INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
@@ -393,9 +394,11 @@ export const ENDPOINTS = {
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
   BM_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS: `${APIEndpoint}/bm/weekly-project-summary/project-status`,
+  BM_WEEKLY_PROJECT_SUMMARY_FINANCIAL_OVERVIEW: `${APIEndpoint}/bm/weekly-project-summary/financial-overview`,
   BM_DELETE_INVENTORTY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
+  BM_MATERIAL_COST_CORRELATION: `${APIEndpoint}/bm/materials/cost-correlation`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -452,6 +455,8 @@ export const ENDPOINTS = {
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
+  BM_RENTAL_COST_OVER_TIME: `${APIEndpoint}/bm/rentals/cost-over-time`,
+  BM_TOOLS_COST_BREAKDOWN: `${APIEndpoint}/bm/tools/cost-breakdown`,
   BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
   BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
 

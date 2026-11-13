@@ -237,6 +237,11 @@
   border: none;
 }
 
+.riTeamMemberCount {
+  font-size: 0.8em;
+  font-weight: normal;
+}
+
 /* Shared */
 .riGraph {
   border: 1px solid #ccc;
