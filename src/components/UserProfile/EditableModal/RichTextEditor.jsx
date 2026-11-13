@@ -15,6 +15,10 @@ const RichTextEditor = ({ disabled, value, onEditorChange, darkMode }) => (
       autoresize_bottom_margin: 1,
       skin: darkMode ? 'oxide-dark' : 'oxide',
       content_css: darkMode ? 'dark' : 'default',
+      // Write only &nbsp; as a named entity, like DOMPurify does, so the editor's HTML equals the
+      // cleaned value kept in state and TinyMCE does not roll back letters while someone types
+      entity_encoding: 'named',
+      entities: '160,nbsp',
     }}
     disabled={disabled}
     value={value}
