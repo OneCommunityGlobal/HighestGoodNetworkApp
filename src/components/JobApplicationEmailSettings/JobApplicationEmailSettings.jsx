@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../../services/httpService';
+import styles from './JobApplicationEmailSettings.module.css';
 
 const EMAIL_PATTERN = /^(?!.*\.\.)[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/;
 
@@ -192,22 +193,13 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
         </p>
 
         {error && (
-          <div
-            role="alert"
-            className="alert alert-danger"
-            // Keep Bootstrap danger colors; parent modal uses text-white in dark mode.
-            style={darkMode ? { color: '#721c24' } : undefined}
-          >
+          <div role="alert" className={`alert alert-danger ${styles.dangerAlert}`}>
             {error}
           </div>
         )}
 
         {success && (
-          <output
-            className="alert alert-success d-block"
-            // Keep Bootstrap success colors; parent modal uses text-white in dark mode.
-            style={darkMode ? { color: '#155724' } : undefined}
-          >
+          <output className={`alert alert-success d-block ${styles.successAlert}`}>
             {success}
           </output>
         )}

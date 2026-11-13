@@ -1,0 +1,15 @@
+/* Dark-mode Header CSS sets .hgn-themed-modal--dark .modal-body { color: #f8f9fa !important }.
+   That inherited light color makes Bootstrap success/danger alerts unreadable. Force contrast. */
+.successAlert,
+:global(body.dark-mode) :global(.modal-dialog.hgn-themed-modal--dark) :global(.modal-body) .successAlert {
+  color: #0b2e13 !important;
+  background-color: #d1e7dd !important;
+  border-color: #a3cfbb !important;
+}
+
+.dangerAlert,
+:global(body.dark-mode) :global(.modal-dialog.hgn-themed-modal--dark) :global(.modal-body) .dangerAlert {
+  color: #58151c !important;
+  background-color: #f8d7da !important;
+  border-color: #f1aeb5 !important;
+}
