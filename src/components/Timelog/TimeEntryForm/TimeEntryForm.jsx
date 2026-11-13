@@ -48,6 +48,20 @@ const customImageUploadHandler = () =>
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
 
+// A Timer-sourced submission computes its own hours/minutes from the server's resync
+// (see submitTimerTimeEntry) instead of going through validateForm, which only ever
+// checks the form's own input fields - so it needs the same 1-minute-minimum/5-hour-
+// maximum bounds applied explicitly before that computed time is saved.
+const TIMER_MAX_HOURS = 5;
+const isElapsedTimeWithinBounds = (hours, minutes) => {
+  // hours/minutes can fall back to the form's OWN input values (see submitTimerTimeEntry),
+  // which are strings - '1' + '43' / 60 silently string-concatenates instead of adding,
+  // so these must be coerced to numbers before the arithmetic bounds check below.
+  const h = Number(hours) || 0;
+  const m = Number(minutes) || 0;
+  return (h > 0 || m > 0) && h + m / 60 <= TIMER_MAX_HOURS;
+};
+
 /**
  * Modal used to submit and edit tangible and intangible time entries.
  * There are several use cases:
@@ -91,11 +105,14 @@ function TimeEntryForm(props) {
   const { authUser } = props;
   const dispatch = useDispatch();
 
-  // Once a Timer-sourced submit gets a server-confirmed stop, its elapsed hours/minutes are
-  // cached here. A retry after a failed save must reuse them instead of re-running
-  // GET_TIMER/STOP_TIMER - the server already stopped the session on the first attempt, so a
-  // fresh GET_TIMER on retry would read back started:false and the retry would be mistaken
-  // for "stopped elsewhere", discarding the time that only failed to *save*.
+  // Set as soon as a Timer-sourced submit computes its authoritative elapsed hours/minutes -
+  // BEFORE sendStop() is even called, not only once it resolves true. sendStop() gives up and
+  // resolves false after a flat timeout (see Timer.jsx), even when the server actually
+  // processed STOP_TIMER just after that window closed - without caching this early, a timed-
+  // out-but-actually-successful stop had nothing cached, so a retry re-ran the GET_TIMER check
+  // below, read back the server's now-stopped state, and discarded the time as "stopped
+  // elsewhere" instead of retrying the save. Also read by the `data` sync effect further down,
+  // to stop the live Timer countdown from clobbering the Hours/Minutes fields mid-retry.
   const confirmedStopRef = useRef(null);
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
@@ -370,10 +387,11 @@ function TimeEntryForm(props) {
     let authoritativeMinutes;
 
     if (confirmedStopRef.current) {
-      // A prior attempt in this same form session already got a server-confirmed stop,
-      // but its save failed - reuse that elapsed time and skip straight to saving. Re-running
-      // GET_TIMER here would read back the server's now-stopped state and be mistaken for
-      // "stopped elsewhere" (see below), discarding time that only failed to *save*.
+      // A prior attempt in this same form session already computed its authoritative elapsed
+      // time and sent (or tried to send) STOP_TIMER, whether or not that stop was confirmed in
+      // time - reuse it and skip straight to saving. Re-running GET_TIMER here would read back
+      // the server's now-stopped state and be mistaken for "stopped elsewhere" (see below),
+      // discarding time that only failed to *save* or whose stop ack simply arrived late.
       ({ hours: authoritativeHours, minutes: authoritativeMinutes } = confirmedStopRef.current);
     } else {
       const resynced = sendGetTimerAndConfirm ? await sendGetTimerAndConfirm() : null;
@@ -411,12 +429,27 @@ function TimeEntryForm(props) {
         authoritativeMinutes = Math.floor((elapsedMs % 3600000) / 60000);
       }
 
+      // Bypasses validateForm (which only checks the form's own input fields), so the
+      // same 1-minute/5-hour bounds are enforced here before this gets anywhere near
+      // sendStop()/postTimeEntry.
+      if (!isElapsedTimeWithinBounds(authoritativeHours, authoritativeMinutes)) {
+        toast.error(
+          `Could not log an invalid elapsed time (${authoritativeHours}h ${authoritativeMinutes}m). Please refresh and try again.`,
+        );
+        return 'failed';
+      }
+
+      // Cache BEFORE calling sendStop(), not after it resolves true - sendStop() gives up
+      // and resolves false after a flat timeout even if the server actually processed
+      // STOP_TIMER just after that window closed. Caching early means a retry after that
+      // kind of timeout still has the authoritative elapsed time to fall back on.
+      confirmedStopRef.current = { hours: authoritativeHours, minutes: authoritativeMinutes };
+
       const timerStopped = await sendStop();
       if (!timerStopped) {
         toast.error('Could not confirm the timer stopped - your time was NOT logged. Please try again.');
-        return 'failed'; // form stays open with hours/minutes intact for retry
+        return 'failed'; // cached above - a retry skips this branch and saves directly
       }
-      confirmedStopRef.current = { hours: authoritativeHours, minutes: authoritativeMinutes };
     }
     timeEntry.hours = authoritativeHours;
     timeEntry.minutes = authoritativeMinutes;
@@ -456,6 +489,54 @@ function TimeEntryForm(props) {
       }),
     );
     return 'saved';
+  };
+
+  // Extracted out of submitTimeEntry to keep that function's cognitive complexity down
+  // (SonarQube S3776) - runs the from-specific side effects (refresh lists, bump the task's
+  // tracked time, etc.) after a non-Timer save has already gone through.
+  const runPostSubmitActions = async (timeEntry, formHours, formMinutes, personId, taskId, isTangible) => {
+    switch (from) {
+      case 'WeekEnd':
+        // Handle week-end time log completion
+        if (props.onComplete) {
+          await props.onComplete(timeEntry);
+        }
+        clearForm();
+        break;
+      case 'TimeLog': {
+        const date = moment(formValues.dateOfWork);
+        const today = moment().tz('America/Los_Angeles');
+        const offset = today.week() - date.week();
+        props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
+        clearForm();
+
+        if (isTangible) {
+          dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: formHours, minutes: formMinutes },
+              taskId,
+              personId,
+            }),
+          );
+        }
+        break;
+      }
+      case 'WeeklyTab':
+        await Promise.all([
+          props.getUserProfile(timeEntryUserId),
+          props.getTimeEntriesForWeek(timeEntryUserId, tab),
+        ]);
+        break;
+      default:
+        break;
+    }
+
+    if (from !== 'WeekEnd' && !reminder.editLimitNotification) {
+      setReminder(r => ({
+        ...r,
+        editLimitNotification: !r.editLimitNotification,
+      }));
+    }
   };
 
   const submitTimeEntry = async () => {
@@ -508,51 +589,6 @@ function TimeEntryForm(props) {
       return;
     }
 
-    const handlePostSubmitActions = async () => {
-      switch (from) {
-        case 'WeekEnd':
-          // Handle week-end time log completion
-          if (props.onComplete) {
-            await props.onComplete(timeEntry);
-          }
-          clearForm();
-          break;
-        case 'TimeLog': {
-          const date = moment(formValues.dateOfWork);
-          const today = moment().tz('America/Los_Angeles');
-          const offset = today.week() - date.week();
-          props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
-          clearForm();
-
-          if(isTangible) {
-            dispatch(
-              updateIndividualTaskTime({
-                newTime: { hours: formHours, minutes: formMinutes },
-                taskId,
-                personId,
-              }),
-            );
-          }
-          break;
-        }
-        case 'WeeklyTab':
-          await Promise.all([
-            props.getUserProfile(timeEntryUserId),
-            props.getTimeEntriesForWeek(timeEntryUserId, tab),
-          ]);
-          break;
-        default:
-          break;
-      }
-
-      if (from !== 'WeekEnd' && !reminder.editLimitNotification) {
-        setReminder(r => ({
-          ...r,
-          editLimitNotification: !r.editLimitNotification,
-        }));
-      }
-    };
-
     try {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
@@ -560,7 +596,7 @@ function TimeEntryForm(props) {
         await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
       }
 
-      await handlePostSubmitActions();
+      await runPostSubmitActions(timeEntry, formHours, formMinutes, personId, taskId, isTangible);
       handleFormReset();
     } catch (error) {
       handleError(error);
@@ -778,7 +814,22 @@ function TimeEntryForm(props) {
   }, [actualDate, edit]);
 
   useEffect(() => {
-    setFormValues(prev => ({ ...prev, ...data }));
+    setFormValues(prev => {
+      const next = { ...prev, ...data };
+      // Once a Timer-sourced stop has been computed/sent for THIS submission attempt,
+      // the authoritative elapsed time lives in confirmedStopRef, not in this live `data`
+      // prop. Timer.jsx's logTimer keeps recalculating from the live countdown, so the
+      // moment a late STOP_TIMER ack lands the leftover/zeroed session time flows back
+      // down here as a new `data` object - overwriting the Hours/Minutes fields with 0
+      // right while the form sits open waiting for the user to retry a failed save, and
+      // (since those fields are disabled for Timer entries) leaving them with no way to
+      // fix it back and nothing to resubmit.
+      if (confirmedStopRef.current) {
+        next.hours = prev.hours;
+        next.minutes = prev.minutes;
+      }
+      return next;
+    });
   }, [data]);
 
   const fontColor = darkMode ? 'text-light' : '';
