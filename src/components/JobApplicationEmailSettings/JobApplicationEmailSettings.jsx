@@ -187,8 +187,8 @@ export default function JobApplicationEmailSettings({ isOpen, onClose, darkMode 
       <ModalBody className={darkMode ? 'bg-yinmn-blue text-white' : ''}>
         <p>
           Manage CC addresses for new job application notifications. Every submitted application is
-          emailed to the default inbox configured on the server; the applicant and addresses listed
-          here are carbon copied on that same message.
+          emailed to onecommunityglobal@gmail.com (same staff inbox as blue-square / weekly-summary
+          mail); the applicant and addresses listed here are carbon copied on that same message.
         </p>
 
         {error && (
