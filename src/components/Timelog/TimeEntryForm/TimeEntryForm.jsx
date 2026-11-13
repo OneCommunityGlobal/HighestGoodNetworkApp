@@ -563,7 +563,7 @@ export function TimeEntryForm(props) {
     if (closed === true && isOpen) toggle();
   };
 
-  const submitTimeEntry = async ({ retryPayload, allowDuplicate = false } = {}) => {
+  const submitTimeEntry = async (notesOverride, { retryPayload, allowDuplicate = false } = {}) => {
     if (!edit && postRequestInFlightRef.current) return;
     if (!edit) {
       postRequestInFlightRef.current = true;
@@ -578,7 +578,10 @@ export function TimeEntryForm(props) {
       return;
     }
 
-    const timeEntry = { ...(retryPayload || formValues) };
+    const timeEntry = {
+      ...(retryPayload || formValues),
+      ...(notesOverride !== undefined ? { notes: notesOverride } : {}),
+    };
     const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = timeEntry;
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
@@ -738,7 +741,7 @@ export function TimeEntryForm(props) {
     restoreFocusAfterDuplicateEditRef.current = false;
     setDuplicateModalVisible(false);
     setSubmitting(true);
-    await submitTimeEntry({ retryPayload: payload, allowDuplicate: true });
+    await submitTimeEntry(undefined, { retryPayload: payload, allowDuplicate: true });
   };
 
   const handleSubmit = async event => {
@@ -775,13 +778,16 @@ export function TimeEntryForm(props) {
   };
   
 
-  const handleTangibleTimelogConfirm = async () => {
-    setTimelogConfirmationModalVisible(false);
-    await submitTimeEntry();
-  };
-
   const handleTangibleTimelogCancel = () => {
     setTimelogConfirmationModalVisible(false);
+  };
+
+  const handleIntangibleReasonSubmit = async (reason, dateBelongsOn) => {
+    const formattedDate = moment(dateBelongsOn).format('dddd, DD/MM/YY');
+    const updatedNotes = `${formValues.notes}<p>Reason: ${reason}</p><p>Date this belongs on: ${formattedDate}</p>`;
+    setFormValues(fv => ({ ...fv, notes: updatedNotes }));
+    setTimelogConfirmationModalVisible(false);
+    await submitTimeEntry(updatedNotes);
   };
 
   const tangibleInfoModalToggle = e => {
@@ -1211,9 +1217,8 @@ export function TimeEntryForm(props) {
       <TimeLogConfirmationModal
         isOpen={isTimelogConfirmationModalVisible}
         toggleModal={handleTangibleTimelogCancel}
-        onConfirm={handleTangibleTimelogConfirm}
-        onReject={handleTangibleTimelogCancel}
-        onIntangible={handleTangibleTimelogConfirm}
+        onBack={handleTangibleTimelogCancel}
+        onSubmit={handleIntangibleReasonSubmit}
         darkMode={darkMode}
       />
       <DuplicateTimeLogModal

@@ -395,7 +395,12 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     await userEvent.click(submitButton());
 
     expect(screen.getByText(/If you are logging Intangible Time/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: /Yep, totally did that! Please proceed/ }));
+    fireEvent.change(screen.getByPlaceholderText(/Detailed reason/), {
+      target: { value: 'This is a sufficiently detailed reason with more than ten words in it' },
+    });
+    await userEvent.click(
+      screen.getByRole('button', { name: /I've added all the specifics, submit!/ }),
+    );
     await waitFor(() => expect(postTimeEntry).toHaveBeenCalledTimes(1));
     expect(screen.getByText(DUPLICATE_WARNING)).toBeInTheDocument();
     await userEvent.click(duplicateButton('proceed'));
