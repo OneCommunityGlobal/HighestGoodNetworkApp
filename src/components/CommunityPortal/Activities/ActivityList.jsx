@@ -79,9 +79,17 @@ function ActivityList() {
   // Unique locations matching the typed text
   const getLocationSuggestions = useCallback(
     query => {
-      if (!query) return [];
+      const normalizedQuery = query.trim().toLowerCase();
+      if (!normalizedQuery) return [];
       const uniqueLocations = Array.from(new Set(activities.map(a => a.location).filter(Boolean)));
-      return uniqueLocations.filter(location => fuzzySearch(location, query, 0.5));
+      const prefixMatches = uniqueLocations.filter(location =>
+        location.toLowerCase().startsWith(normalizedQuery),
+      );
+      // Keep typo tolerance as a fallback without mixing unrelated matches into prefix results.
+      const matches = prefixMatches.length
+        ? prefixMatches
+        : uniqueLocations.filter(location => fuzzySearch(location, normalizedQuery, 0.5));
+      return matches.slice(0, 10);
     },
     [activities],
   );
@@ -268,12 +276,16 @@ function ActivityList() {
 
               {showSuggestions && locationSuggestions.length > 0 && (
                 <select
-                  size={Math.min(locationSuggestions.length, 5)} /* Controls visible rows */
+                  defaultValue=""
+                  size={Math.max(2, Math.min(locationSuggestions.length, 5))}
                   className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}
                   aria-label="Location suggestions"
                   onChange={e => handleSuggestionClick(e.target.value)}
                   style={{ position: 'absolute', width: '100%', zIndex: 10 }}
                 >
+                  <option value="" disabled hidden>
+                    Choose a location
+                  </option>
                   {locationSuggestions.map(location => (
                     <option key={location} value={location}>
                       {location}
