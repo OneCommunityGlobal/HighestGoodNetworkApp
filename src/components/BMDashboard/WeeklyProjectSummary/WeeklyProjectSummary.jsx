@@ -7,6 +7,7 @@ import { UncontrolledTooltip } from 'reactstrap';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
+import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import CardSelector from './CardSelector';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
@@ -26,6 +27,11 @@ import ExpenseBarChart from './Financials/ExpenseBarChart';
 import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import MostWastedMaterials from '../../MostWastedMaterials/MostWastedMaterials';
+import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
+import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
@@ -33,7 +39,7 @@ import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
+import { MaterialConsumptionCards, QuantityOfMaterialsUsed } from './MaterialConsumption/MaterialConsumption';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
@@ -423,16 +429,28 @@ function WeeklyProjectSummary() {
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'large',
-        // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
-        content: (
-          <MaterialConsumptionCards
-            quantityOfMaterialsUsedData={quantityOfMaterialsUsedData}
-            comparisonMode={comparisonPeriodFilter}
-            currentDateRange={currentDateRange}
-            comparisonDateRange={comparisonDateRange}
-          />
-        ),
+        className: 'full',
+        content: [1, 2, 3].map((_, index) => {
+          let content;
+          if (index === 0) {
+            content = <MostWastedMaterials />;
+          } else if (index === 1) {
+            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+          } else if (index === 2) {
+            content = <TotalMaterialCostPerProject />;
+          } else {
+            content = <p>📊 Card</p>;
+          }
+          const uniqueId = uuidv4();
+          return (
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {content}
+            </div>
+          );
+        }),
       },
       {
         title: 'Issue Tracking',
@@ -738,10 +756,6 @@ function WeeklyProjectSummary() {
           height: auto !important;
           page-break-inside: avoid !important;
         }
-        * {
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
       `;
 
       clonedContent.prepend(styleElem);
@@ -811,8 +825,6 @@ function WeeklyProjectSummary() {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('PDF generation failed:', err);
-      // eslint-disable-next-line no-alert
-      alert('Failed to generate PDF. Please try again.');
       // Dismiss loading toast
       toast.dismiss(loadingToastId);
 
@@ -824,10 +836,6 @@ function WeeklyProjectSummary() {
         position: 'top-right',
         autoClose: 5000,
       });
-
-      // Log error for debugging
-      // eslint-disable-next-line no-console
-      console.error('PDF generation failed:', err);
 
       // Clean up PDF container if it exists
       const pdfContainer = document.getElementById('pdf-export-container');
@@ -843,9 +851,8 @@ function WeeklyProjectSummary() {
   return (
     <div
       ref={containerRef}
-      className={`weekly-project-summary-container ${styles.weeklyProjectSummaryContainer} ${
-        darkMode ? styles.darkMode : ''
-      } ${darkMode ? 'dark-mode' : ''}`}
+      className={`weekly-project-summary-container ${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''
+        } ${darkMode ? 'dark-mode' : ''}`}
       data-testid="weekly-project-summary-container"
     >
       <WeeklyProjectSummaryHeader

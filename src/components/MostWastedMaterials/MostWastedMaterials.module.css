@@ -4,12 +4,19 @@
 /* Light mode (default) */
 .container {
   width: 100%;
+<<<<<<< HEAD
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
   background-color: #f9fafb;
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
+=======
+  background-color: #fff;
+  box-sizing: border-box;
+  padding-bottom: 20px;
+  min-height: 100%;
+>>>>>>> b3ed98d14 (fix(BMDashboard): fix injury chart 404 error and restore most wasted materials chart)
 }
 
 .darkMode {
@@ -30,6 +37,7 @@
   transition: color 0.3s ease;
 }
 
+<<<<<<< HEAD
 .darkMode .title {
   color: #e2e8f0;
 }
@@ -46,14 +54,22 @@
 }
 
 .card {
+=======
+.mostWastedMaterialsCard {
+>>>>>>> b3ed98d14 (fix(BMDashboard): fix injury chart 404 error and restore most wasted materials chart)
   background-color: #fff;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   padding: 24px;
+<<<<<<< HEAD
   margin-bottom: 24px;
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 
+=======
+  margin-bottom: 32px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+>>>>>>> b3ed98d14 (fix(BMDashboard): fix injury chart 404 error and restore most wasted materials chart)
 }
 
 .darkMode .card {
@@ -183,7 +199,10 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background-color: #fff;
+<<<<<<< HEAD
   cursor: pointer;
+=======
+>>>>>>> b3ed98d14 (fix(BMDashboard): fix injury chart 404 error and restore most wasted materials chart)
   color: #374151;
   font-size: 14px;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
@@ -199,9 +218,20 @@
   background-color: #f3f4f6;
 }
 
+<<<<<<< HEAD
 .darkMode .actionButton:hover {
   background-color: #5a6578;
 
+=======
+.chartWrapper {
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+  padding: 14px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  height: 500px;
+>>>>>>> b3ed98d14 (fix(BMDashboard): fix injury chart 404 error and restore most wasted materials chart)
 }
 
 .chartContainer {
@@ -227,10 +257,17 @@
   stroke: #4a5568;
 }
 
+<<<<<<< HEAD
 .darkMode .recharts-x-axis .recharts-cartesian-axis-tick-value,
 .darkMode .recharts-y-axis .recharts-cartesian-axis-tick-value {
   fill: #cbd5e0;
 
+=======
+.darkMode .mostWastedMaterialsCard {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+>>>>>>> b3ed98d14 (fix(BMDashboard): fix injury chart 404 error and restore most wasted materials chart)
 }
 
 .darkMode .recharts-x-axis .recharts-cartesian-axis-line,
@@ -247,7 +284,41 @@
   color: #e2e8f0 !important;
 }
 
+<<<<<<< HEAD
 .darkMode .recharts-default-tooltip {
   background-color: #2d3748 !important;
   border: 1px solid #4a5568 !important;
 }
+=======
+.darkMode .actionButton {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.darkMode .actionButton:hover {
+  background-color: #4b5563;
+}
+
+.darkMode .chartWrapper {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+}
+
+.darkMode .chartGrid {
+  stroke: #374151;
+}
+
+.darkMode :global(.recharts-bar-rectangle) {
+  fill: #3b82f6;
+}
+
+.darkMode :global(.recharts-bar-rectangle:hover) {
+  fill: #93c5fd !important;
+}
+
+.darkMode :global(.recharts-label-list) text {
+  fill: #fff;
+}
+>>>>>>> b3ed98d14 (fix(BMDashboard): fix injury chart 404 error and restore most wasted materials chart)
