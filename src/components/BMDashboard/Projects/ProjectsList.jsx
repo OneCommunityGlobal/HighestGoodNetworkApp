@@ -4,6 +4,7 @@ import { Row, Col } from 'reactstrap';
 import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
 import styles from '../BMDashboard.module.css';
+import summaryStyles from './ProjectSummary.module.css';
 
 function ProjectsList() {
   const projects = useSelector(state => state.bmProjects) || [];
@@ -115,10 +116,10 @@ function ProjectsList() {
           classNamePrefix="react-select"
         />
       </Col>
-      <Col xs="12">
+      <Col xs="12" className={summaryStyles.summaryListContainer}>
         {filteredProjects.length ? (
           <ul
-            className={`${styles.projectsList} ${
+            className={`${styles.projectsList} ${summaryStyles.summaryList} ${
               darkMode ? styles.darkProjectsList : styles.lightProjectsList
             }`}
           >

@@ -1,0 +1,146 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 9.5rem;
+  padding: 1.25rem;
+  border: 1px solid #c9d8e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #172b3a;
+}
+
+.darkCard {
+  border-color: #70869a;
+  background: #1b2a41;
+  color: #fff;
+}
+
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 3rem;
+  gap: 0.5rem;
+}
+
+.title {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.value {
+  margin-top: 0.5rem;
+  overflow-wrap: anywhere;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.unit,
+.comparison {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.warning,
+.critical {
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid currentcolor;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.warning {
+  background: #fff1c2;
+  color: #533900;
+}
+
+.critical {
+  background: #ffe0e0;
+  color: #801b1b;
+}
+
+.darkCard .warning {
+  background: #604900;
+  color: #fff;
+}
+
+.darkCard .critical {
+  background: #782525;
+  color: #fff;
+}
+
+.infoButton {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 1070;
+  top: 0;
+  left: 0;
+  max-width: min(250px, 90vw);
+  padding: 0.5rem;
+  border: 1px solid #70869a;
+  border-radius: 4px;
+  background: #172b3a;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.sparkline {
+  width: 100%;
+  height: 48px;
+  margin-top: 0.5rem;
+}
+
+.details {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: #075b77;
+  text-decoration: underline;
+}
+
+.darkCard .details {
+  color: #9de8ff;
+}
+
+.skeleton {
+  width: 65%;
+  height: 1.75rem;
+  margin-top: 0.75rem;
+  border-radius: 4px;
+  background: #dce5eb;
+}
+
+.darkCard .skeleton {
+  background: #5a7185;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

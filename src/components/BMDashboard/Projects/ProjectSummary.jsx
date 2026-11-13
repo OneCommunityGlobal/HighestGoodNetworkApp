@@ -1,123 +1,66 @@
-import { Row, Col, Label } from 'reactstrap';
-import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import ProjectKpiCard from './ProjectKpiCard';
 import styles from './ProjectSummary.module.css';
 
 function ProjectSummary({ project }) {
-  const {
-    hoursWorked,
-    totalMaterialsCost,
-    totalEquipmentCost,
-    mostMaterialWaste,
-    members,
-    mostMaterialBought,
-    leastMaterialAvailable,
-  } = project;
-
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const darkMode = useSelector(state => state.theme.darkMode);
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const summaryLabelCol = windowWidth < 700 ? 12 : 4;
-  const summaryValueCol = windowWidth < 700 ? 12 : 8;
-  const summaryLabelColShort = windowWidth < 700 ? 6 : 4;
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
+  const cards = [
+    {
+      title: 'Hours',
+      unavailableReason: 'Reliable total project hours are not available.',
+    },
+    {
+      title: 'Materials Cost',
+      unavailableReason: 'Actual materials costs are not available.',
+    },
+    {
+      title: 'Equipment Cost',
+      unavailableReason: 'Actual equipment costs are not available.',
+    },
+    {
+      title: 'Waste %',
+      unavailableReason: 'A waste percentage formula has not been established.',
+    },
+    {
+      title: 'Members',
+      value: Array.isArray(project.members) ? project.members.length : null,
+      unavailableReason: 'Project member data is not available.',
+    },
+    {
+      title: 'Rentals',
+      unavailableReason: 'Reliable rental and due-date information is not available.',
+    },
+    {
+      title: 'Most-Bought Material',
+      unavailableReason: 'A reliable comparison across material units is not available.',
+    },
+    {
+      title: 'Stock Health',
+      unavailableReason: 'Inventory reorder thresholds are not available.',
+    },
+  ];
 
   return (
-    <div
-      className={`${darkMode ? styles.darkProjectSummaryContent : styles.projectSummaryContent}`}
+    <section
+      className={darkMode ? styles.darkProjectSummaryContent : styles.projectSummaryContent}
+      aria-label={`${project.name} Summary`}
     >
-      <Row className={`${styles.projectSummaryHeader} mx-auto`}>
-        <h2>{project.name} Summary</h2>
-      </Row>
-
-      <Row className={`${styles.projectSummaryItem} mx-auto`}>
-        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
-          <Label className={styles.projectSummaryLabel}>Total hours of work done:</Label>
-        </Col>
-        <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>{hoursWorked}</span>
-        </Col>
-      </Row>
-
-      <Row className={`${styles.projectSummaryItem} mx-auto`}>
-        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
-          <Label className={styles.projectSummaryLabel}>Total cost of materials:</Label>
-        </Col>
-        <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>{totalMaterialsCost} USD</span>
-        </Col>
-      </Row>
-
-      <Row className={`${styles.projectSummaryItem} mx-auto`}>
-        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
-          <Label className={styles.projectSummaryLabel}>Total cost of equipment:</Label>
-        </Col>
-        <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>{totalEquipmentCost} USD</span>
-        </Col>
-      </Row>
-
-      <Row className={`${styles.projectSummaryItem} mx-auto`}>
-        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
-          <Label className={styles.projectSummaryLabel}>Waste:</Label>
-        </Col>
-        <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>
-            {mostMaterialWaste?.stockWasted} {mostMaterialWaste?.itemType.unit} of{' '}
-            {mostMaterialWaste?.itemType.name} has been wasted!
-          </span>
-        </Col>
-      </Row>
-
-      <Row className={`${styles.projectSummaryItem} mx-auto`}>
-        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
-          <Label className={styles.projectSummaryLabel}>Total members:</Label>
-        </Col>
-        <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>{members.length}</span>
-        </Col>
-      </Row>
-
-      <Row className={`${styles.projectSummaryItem} mx-auto`}>
-        <Col xs={summaryLabelCol} sm={summaryLabelColShort}>
-          <Label className={styles.projectSummaryLabel}>Rentals:</Label>
-        </Col>
-        <Col xs={summaryValueCol} sm={8}>
-          <span className={styles.projectSummarySpan}>Excavator 2 rental ends in 72 hours!</span>
-        </Col>
-      </Row>
-
-      <Row className={`${styles.projectSummaryItem} mx-auto`}>
-        <Col xs={summaryLabelCol} sm={summaryLabelColShort}>
-          <Label className={styles.projectSummaryLabel}>Most material bought:</Label>
-        </Col>
-        <Col xs={summaryValueCol} sm={8}>
-          <span className={styles.projectSummarySpan}>
-            {mostMaterialBought?.stockBought} {mostMaterialBought?.itemType.unit} of{' '}
-            {mostMaterialBought?.itemType.name} purchased for this project
-          </span>
-        </Col>
-      </Row>
-
-      <Row className={`${styles.projectSummaryItem} mx-auto`}>
-        <Col xs={summaryLabelCol} sm={summaryLabelColShort}>
-          <Label className={styles.projectSummaryLabel}>Stock:</Label>
-        </Col>
-        <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>
-            {leastMaterialAvailable?.itemType.name} is nearly out of stock (
-            {leastMaterialAvailable?.stockAvailable} {leastMaterialAvailable?.itemType.unit}{' '}
-            remaining)
-          </span>
-        </Col>
-      </Row>
-    </div>
+      <h2 className={styles.projectSummaryHeader}>{project.name} Summary</h2>
+      <div className={styles.kpiGrid} role="group" aria-label="Project KPI cards">
+        {cards.map(card => (
+          <ProjectKpiCard key={card.title} {...card} darkMode={darkMode} />
+        ))}
+      </div>
+    </section>
   );
 }
+
+ProjectSummary.propTypes = {
+  project: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    members: PropTypes.array,
+  }).isRequired,
+};
 
 export default ProjectSummary;
