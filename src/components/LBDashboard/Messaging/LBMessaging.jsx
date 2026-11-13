@@ -32,14 +32,11 @@ export default function LBMessaging() {
   const [messageText, setMessageText] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [placeholder, setPlaceholder] = useState('Search Contacts...');
-  const [mobileView, setMobileView] = useState(false);
-  const [mobileHamMenu, setMobileHamMenu] = useState(false);
 
   const [bellDropdownActive, setBellDropdownActive] = useState(false);
   const [showContacts, setShowContacts] = useState(false);
   const [selectedOption, setSelectedOption] = useState({});
   const messageListRef = useRef(null);
-  const menuRef = useRef(null);
   const appliedListingSelectionRef = useRef(null);
 
   const users = useSelector(state => state.allUserProfilesBasicInfo);
@@ -149,19 +146,6 @@ export default function LBMessaging() {
       });
     }
   }, [dispatch, currentUserId, selectedUser.userId]);
-
-  useEffect(() => {
-    const handleClickOutside = event => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMobileHamMenu(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   const updateSelection = useCallback(
     user => {
@@ -296,14 +280,9 @@ export default function LBMessaging() {
     return window.innerWidth <= 870 ? 'Search' : 'Search Contacts...';
   }
 
-  function getView() {
-    return window.innerWidth <= 720;
-  }
-
   useEffect(() => {
     const handleResize = () => {
       setPlaceholder(getPlaceholder());
-      setMobileView(getView());
     };
 
     handleResize();
@@ -334,7 +313,7 @@ export default function LBMessaging() {
         }}
       />
       <div className={styles.lbMessagingContactInfo}>
-        <div className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''}`}>
+        <div className={styles.lbMessagingContactName}>
           {user.firstName} {user.lastName}
         </div>
       </div>
@@ -351,7 +330,6 @@ export default function LBMessaging() {
     return sidebarContacts.map(user =>
       renderContactButton(user.userId || user._id, user, () => {
         updateSelection(user);
-        setMobileHamMenu(false);
       }),
     );
   };
@@ -410,123 +388,63 @@ export default function LBMessaging() {
             <img src={logo} alt="One Community Logo" />
           </div>
           <div className={styles.contentContainer}>
-            {mobileView ? (
-              <div className={`${styles.containerTop} ${styles.msg}`}>
-                <div className={styles.lbMobileMessagingMenu}>
-                  <div className={styles.lbMobileHeader}>
-                    <button
-                      type="button"
-                      className={styles.lbHamBtn}
-                      onClick={() => setMobileHamMenu(prev => !prev)}
-                    >
-                      ☰
-                    </button>
-                    {mobileHamMenu && (
-                      <div className={styles.lbMobileHamMenu} ref={menuRef}>
-                        <div className={styles.lbMobileHamMenuHeader}>
-                          <div className={styles.lbMobilePanelTopBar}>
-                            <button
-                              type="button"
-                              className={styles.lbMobileCloseBtn}
-                              onClick={() => setMobileHamMenu(false)}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                          {showContacts ? (
-                            <div className={styles.lbMessagingContactsHeaderMobile}>
-                              <input
-                                type="text"
-                                placeholder={placeholder}
-                                className={styles.lbSearchInput}
-                                value={searchQuery}
-                                onChange={handleSearchChange}
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setShowContacts(prev => !prev)}
-                                className={styles.lbMsgIconBtn}
-                                aria-label="Close search"
-                              >
-                                <FontAwesomeIcon icon={faTimes} aria-hidden="true" />
-                              </button>
-                            </div>
-                          ) : (
-                            <div className={styles.lbMessagingContactsHeaderMobile}>
-                              <h3 className={styles.lbContactMsgs}>Messages</h3>
-                              <div className={styles.lbMessagingSearchIconsMobile}>
-                                <FontAwesomeIcon
-                                  icon={faSearch}
-                                  className={styles.lbMsgIconMobile}
-                                  onClick={() => setShowContacts(prev => !prev)}
-                                />
-                              </div>
-                            </div>
-                          )}
-                          <div
-                            className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
-                          >
-                            {showContacts
-                              ? safeSearchResults.map(user =>
-                                  renderContactButton(user.userId, user, () => {
-                                    updateSelection(user);
-                                    setMobileHamMenu(false);
-                                  }),
-                                )
-                              : renderContacts()}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ) : null}
             <div className={styles.containerMainMsg}>
               {/* Contacts Section */}
-              {!mobileView && (
-                <div className={styles.lbMessagingContacts}>
-                  {showContacts ? (
-                    <div className={styles.lbMessagingContactsHeader}>
-                      <input
-                        type="text"
-                        placeholder={placeholder}
-                        className={styles.lbSearchInput}
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowContacts(prev => !prev)}
-                        className={styles.lbMsgIconBtn}
-                        aria-label="Close search"
-                      >
-                        <FontAwesomeIcon icon={faTimes} aria-hidden="true" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className={styles.lbMessagingContactsHeader}>
-                      <h3 className={styles.lbContactMsgs}>Messages</h3>
-                      <div className={styles.lbMessagingSearchIcons}>
-                        <FontAwesomeIcon
-                          icon={faSearch}
-                          className={styles.lbMsgIcon}
-                          onClick={() => setShowContacts(prev => !prev)}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  <div
-                    className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
-                  >
-                    {showContacts
-                      ? safeSearchResults.map(user =>
-                          renderContactButton(user._id, user, () => updateSelection(user)),
-                        )
-                      : renderContacts()}
+
+              <div className={styles.lbMessagingContacts}>
+                {showContacts ? (
+                  <div className={styles.lbMessagingContactsHeader}>
+                    <input
+                      type="text"
+                      aria-label="Search contacts"
+                      placeholder={placeholder}
+                      className={styles.lbSearchInput}
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowContacts(prev => !prev)}
+                      className={styles.lbMsgIconBtn}
+                      aria-label="Close search"
+                    >
+                      <FontAwesomeIcon icon={faTimes} aria-hidden="true" />
+                    </button>
                   </div>
+                ) : (
+                  <div className={styles.lbMessagingContactsHeader}>
+                    <h3 className={styles.lbContactMsgs}>Messages</h3>
+                    <button
+                      type="button"
+                      className={styles.lbMsgIconBtn}
+                      aria-label="Search contacts"
+                      onClick={() => setShowContacts(prev => !prev)}
+                    >
+                      <FontAwesomeIcon icon={faSearch} aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
+                {showContacts && (
+                  <p className={styles.searchHint}>
+                    {searchQuery.trim()
+                      ? `${safeSearchResults.length} contacts found${
+                          safeSearchResults.length > 2 ? ' — scroll below to browse' : ''
+                        }`
+                      : 'Search by name, then select a contact below.'}
+                  </p>
+                )}
+                <div
+                  className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
+                  role="region"
+                  aria-label={showContacts ? 'Contact search results' : 'Conversations'}
+                >
+                  {showContacts
+                    ? safeSearchResults.map(user =>
+                        renderContactButton(user._id, user, () => updateSelection(user)),
+                      )
+                    : renderContacts()}
                 </div>
-              )}
+              </div>
 
               {/* Chat Window Section */}
               <div className={styles.lbMessagingMessageWindow}>
@@ -611,6 +529,7 @@ export default function LBMessaging() {
                 <div className={styles.lbMessaingMessageWindowFooter}>
                   <textarea
                     type="text"
+                    aria-label="Message"
                     placeholder="Type a message..."
                     value={messageText}
                     onChange={e => setMessageText(e.target.value)}
