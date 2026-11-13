@@ -1,4 +1,5 @@
 import httpService from '../services/httpService';
+import { ENDPOINTS } from '../utils/URL';
 import { toast } from 'react-toastify';
 
 // Action Types
@@ -15,7 +16,7 @@ export const fetchEmails = () => async (dispatch) => {
   try {
     dispatch({ type: EMAIL_OUTBOX_ACTIONS.FETCH_EMAILS_START });
 
-    const response = await httpService.get('/api/email-outbox');
+    const response = await httpService.get(ENDPOINTS.EMAIL_OUTBOX);
 
     if (response.data.success) {
       // Backend returns data as array directly
@@ -60,7 +61,7 @@ export const resendEmail = (emailId, recipientOption, specificRecipients = []) =
       role: currentUser.role,
     };
 
-    const response = await httpService.post('/api/resend-email', {
+    const response = await httpService.post(ENDPOINTS.RESEND_EMAIL, {
       emailId,
       recipientOption,
       specificRecipients: Array.isArray(specificRecipients) ? specificRecipients : [],

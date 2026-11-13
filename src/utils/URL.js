@@ -285,6 +285,11 @@ export const ENDPOINTS = {
   // emails endpoint
   POST_EMAILS: `${APIEndpoint}/send-emails`,
   BROADCAST_EMAILS: `${APIEndpoint}/broadcast-emails`,
+  EMAIL_OUTBOX: `${APIEndpoint}/email-outbox`,
+  EMAIL_OUTBOX_BY_ID: emailId => `${APIEndpoint}/email-outbox/${emailId}`,
+  RESEND_EMAIL: `${APIEndpoint}/resend-email`,
+  RETRY_EMAIL: emailId => `${APIEndpoint}/retry-email/${emailId}`,
+  PROCESS_PENDING_AND_STUCK_EMAILS: `${APIEndpoint}/process-pending-and-stuck-emails`,
   UPDATE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/update-email-subsriptions`,
   NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
