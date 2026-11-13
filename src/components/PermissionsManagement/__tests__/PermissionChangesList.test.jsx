@@ -15,10 +15,6 @@ import RolePermissions from '../RolePermissions';
 import UserPermissionsPopUp from '../UserPermissionsPopUp';
 
 // ---- Local, file-scoped mocks ----
-vi.mock('@tinymce/tinymce-react', () => ({
-  Editor: ({ value }) => <textarea aria-label="Mock Editor" value={value} readOnly />,
-}));
-
 vi.mock('axios', () => {
   const mock = {
     get: vi.fn(),
@@ -31,17 +27,6 @@ vi.mock('axios', () => {
   mock.create.mockReturnValue(mock);
   return { default: mock };
 });
-
-vi.mock('react-toastify', () => ({
-  __esModule: true,
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
-  },
-  ToastContainer: () => null,
-}));
 
 const mockStore = configureMockStore([thunk]);
 
