@@ -8,6 +8,14 @@
   align-items: center;
 }
 
+.badgeBoxShadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+.badgeBoxShadowDark {
+  box-shadow: 2px 2px 4px 1px black;
+}
+
 .title {
   font-size: 1.5rem;
   font-weight: 600;
@@ -48,7 +56,6 @@
   padding: 1.2rem;
   text-align: center;
   box-shadow: 2px 2px 6px rgb(0 0 0 / 15%);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   width: 190px;
   height: 210px;
   display: flex;
@@ -83,7 +90,6 @@
   border-radius: 50%;
   object-fit: contain;
   margin-bottom: 10px; /* 👈 ensures space between image and label */
-  transition: transform 0.2s ease;
 }
 
 .badge_image_container img:hover,
@@ -223,31 +229,41 @@
    which isn't currently wired into this component.
    ========================================================= */
 :global(body.dark-mode) .card {
-  background-color: #1c2541 !important;
-  color: #fff !important;
-  border: 1px solid #2e3d55 !important;
-  box-shadow: 2px 2px 6px rgb(0 0 0 / 35%) !important;
+  background-color: #1c2541;
+  color: #fff;
+  border: 1px solid #2e3d55;
+  box-shadow: 2px 2px 6px rgb(0 0 0 / 35%);
 }
 
 :global(body.dark-mode) .cardHeader {
-  background-color: #3a506b !important;
-  color: #fff !important;
-  border-bottom: 1px solid #2e3d55 !important;
+  background-color: #3a506b;
+  color: #fff;
+  border-bottom: 1px solid #2e3d55;
 }
 
 :global(body.dark-mode) .badgeName,
 :global(body.dark-mode) .badgeDesc,
 :global(body.dark-mode) .badgeLabel {
-  color: #fff !important;
+  color: #fff;
 }
 
 :global(body.dark-mode) .icon {
-  filter: none !important;
-  box-shadow: 0 0 4px rgb(0 0 0 / 40%) !important;
-  background-color: #1c2541 !important;
+  filter: none;
+  box-shadow: 0 0 4px rgb(0 0 0 / 40%);
+  background-color: #1c2541;
 }
 
 :global(body.dark-mode) .unearned {
-  opacity: 0.55 !important;
-  filter: grayscale(100%) !important;
+  opacity: 0.55;
+  filter: grayscale(100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .icon {
+    transition: transform 0.2s ease;
+  }
 }

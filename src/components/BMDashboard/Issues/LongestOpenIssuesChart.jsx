@@ -22,9 +22,7 @@ function IssuesCharts({ bmProjects = [] }) {
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [dateRange, setDateRange] = useState({ start: null, end: null });
 
-  const { longestOpenIssues = [], mostExpensiveIssues = [] } = useSelector(
-    state => state.issue || {},
-  );
+  const { longestOpenIssues, mostExpensiveIssues } = useSelector(state => state.issue || {});
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -41,7 +39,8 @@ function IssuesCharts({ bmProjects = [] }) {
     }
   }, [graphType, selectedProjects, dateRange.start, dateRange.end, dispatch]);
 
-  const chartData = graphType === 'Longest Open' ? longestOpenIssues : mostExpensiveIssues;
+  const rawChartData = graphType === 'Longest Open' ? longestOpenIssues : mostExpensiveIssues;
+  const chartData = Array.isArray(rawChartData) ? rawChartData : [];
 
   const data = {
     labels: chartData.map(issue => truncateLabel(issue.title || String(issue.issueId))),
