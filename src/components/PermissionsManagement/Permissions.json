@@ -22,7 +22,7 @@
       {
         "label": "See Analytics Reports",
         "key": "getReports",
-        "description": "Lets the user open Reports > Reports and People Reports."
+        "description": "Lets the user open Reports > Reports and People Reports, and see pending promotions in Reports > PR Promotions."
       },
       {
         "label": "See Weekly Summaries",
@@ -37,12 +37,12 @@
       {
         "label": "Edit Total Valid Weekly Summaries",
         "key": "totalValidWeeklySummaries",
-        "description": "Lets the user change each person's 'Total Valid Weekly Summaries' count on the Weekly Summaries Report."
+        "description": "Lets the user change each person's 'Total Valid Weekly Summaries' on the Weekly Summaries Report. Also needs 'See Weekly Summaries'."
       },
       {
         "label": "See Highlight for Bios Eligible to be Posted",
         "key": "highlightEligibleBios",
-        "description": "Shows the 'Bio Status' filter and highlights in yellow who is eligible for a bio on the Weekly Summaries Report."
+        "description": "Shows the 'Bio Status' filter and highlights bio-eligible people on the Weekly Summaries Report. Also needs 'See Weekly Summaries'."
       },
       {
         "label": "Toggle Request Bio",
@@ -57,17 +57,17 @@
       {
         "label": "Edit Team Codes",
         "key": "editTeamCode",
-        "description": "Lets the user change team codes on the profile Teams tab, or on the Weekly Summaries Report one by one or in bulk."
+        "description": "Lets the user change team codes on profiles, or singly or in bulk on the Weekly Summaries Report (also needs 'See Weekly Summaries')."
       },
       {
         "label": "Create, Edit and Delete Weekly Summaries Filter",
         "key": "manageSummariesFilters",
-        "description": "Lets the user create, edit and delete saved filters on the Weekly Summaries Report."
+        "description": "Lets the user create, edit and delete saved filters on the Weekly Summaries Report. Also needs 'See Weekly Summaries'."
       },
       {
         "label": "See Job Analytics Reports",
         "key": "getJobReports",
-        "description": "Lets the user open Reports > Job Analytics Report."
+        "description": "Lets the user open Reports > Job Analytics Report. Also needs 'See Analytics Reports' or 'See Weekly Summaries'."
       }
     ]
   },
@@ -93,7 +93,7 @@
       {
         "label": "Change User Status",
         "key": "changeUserStatus",
-        "description": "Lets the user activate or deactivate users with the green/red status dot."
+        "description": "Lets the user activate or deactivate users with the green/red status dot. Also needs 'Set Final Day'."
       },
       {
         "label": "Toggle Invisibility Permission Self and Others",
@@ -103,27 +103,27 @@
       {
         "label": "Interact with Pause User button",
         "key": "interactWithPauseUserButton",
-        "description": "Lets the user pause a user until a chosen date, or resume them, from User Management or their profile."
+        "description": "Lets the user pause a user until a date, or resume them, in User Management or on a profile (also needs 'Edit User Profile')."
       },
       {
         "label": "Assign Blue Squares",
         "key": "addInfringements",
-        "description": "Lets the user give any user a blue square with the '+' in the Blue Squares section of their profile."
+        "description": "Lets the user give any user a blue square with the '+' in the Blue Squares section of their profile. Also needs 'Edit User Profile'."
       },
       {
         "label": "Edit Blue Squares",
         "key": "editInfringements",
-        "description": "Lets the user change the date and summary of any user's blue square from their profile."
+        "description": "Lets the user change the date and summary of any user's blue square from their profile. Also needs 'Edit User Profile'."
       },
       {
         "label": "Delete Blue Squares",
         "key": "deleteInfringements",
-        "description": "Lets the user delete any user's blue square from their profile."
+        "description": "Lets the user delete any user's blue square from their profile. Also needs 'Edit User Profile'."
       },
       {
         "label": "Modify Important User Info",
         "key": "putUserProfileImportantInfo",
-        "description": "Lets the user change protected profile fields like role, hours, dates, teams and status. Also needs 'Edit User Profile'."
+        "description": "Lets the user change protected profile fields like role, weekly hours and start/end dates. Also needs 'Edit User Profile'."
       },
       {
         "label": "Edit Summary Submit Requirement (Others)",
@@ -133,7 +133,7 @@
       {
         "label": "Update Password (Others)",
         "key": "updatePassword",
-        "description": "Lets the user reset another user's password with 'Reset Password' in User Management or on their profile."
+        "description": "Lets the user reset others' passwords on profiles, or in User Management (also needs 'See All Users (User List and User Management)')."
       },
       {
         "label": "Manage Time Off Requests",
@@ -148,7 +148,7 @@
       {
         "label": "Set Final Day",
         "key": "setFinalDay",
-        "description": "Lets the user set or remove a user's final day, which schedules their deactivation."
+        "description": "Lets the user set or remove a user's final day, which schedules their deactivation. Also needs 'Change User Status'."
       },
       {
         "label": "HGN People +/- Setup",
@@ -174,7 +174,7 @@
       {
         "label": "Issue a Blue Square",
         "key": "issueBlueSquare",
-        "description": "Lets the user issue a blue square from a tracking warning."
+        "description": "Lets the user issue a blue square from a tracking warning. Also needs 'Issue Tracking Warnings' and 'Assign Blue Squares'."
       },
       {
         "label": "Delete a Single Warning",
@@ -184,7 +184,7 @@
       {
         "label": "Add a New Warning Tracker",
         "key": "addWarningTracker",
-        "description": "Lets the user add warning trackers (rows of tracking dots for everyone) with '+/-' on Dashboard > Tasks."
+        "description": "Lets the user add, rename and reorder warning trackers (rows of tracking dots for everyone) with '+/-' on Dashboard > Tasks."
       },
       {
         "label": "Deactivate a Warning Tracker",
@@ -199,7 +199,7 @@
       {
         "label": "Delete a Warning Tracker (and All Its Warnings)",
         "key": "deleteWarningTracker",
-        "description": "Lets the user permanently delete a warning tracker ('x' in the '+/-' window on Dashboard > Tasks) and its warnings for everyone."
+        "description": "Lets the user rename, reorder and permanently delete ('x') warning trackers, with everyone's warnings, in '+/-' on Dashboard > Tasks."
       }
     ]
   },
@@ -210,7 +210,7 @@
       {
         "label": "See Badges",
         "key": "seeBadges",
-        "description": "Shows Other Links > Badge Management (view only) and 'Load Badges'/'Load Trophies' on the Weekly Summaries Report."
+        "description": "Shows Badge Management (view only) and the Weekly Summaries Report's 'Load Badges'/'Load Trophies' (also needs 'See Weekly Summaries')."
       },
       {
         "label": "Create Badges",
@@ -230,12 +230,12 @@
       {
         "label": "Modify Badge Amount",
         "key": "modifyBadgeAmount",
-        "description": "Lets the user change badge counts in a person's badge history (profile > 'Select Featured')."
+        "description": "Lets the user change badge counts in a person's badge history (profile > 'Select Featured'). Also needs 'Assign Badges'."
       },
       {
         "label": "Assign Badges",
         "key": "assignBadges",
-        "description": "Lets the user give badges to people (Other Links > Badge Management > Badge Assignment, or 'Assign Badges' on a profile)."
+        "description": "Lets the user give badges on a profile, or on 'Badge Assignment' (also needs 'See All Users (User List and User Management)')."
       }
     ]
   },
@@ -266,7 +266,7 @@
       {
         "label": "Assign Project to Users",
         "key": "assignProjectToUsers",
-        "description": "Lets the user add or remove people on any project from its Members page on Other Links > Projects."
+        "description": "Lets the user add or remove members on Projects. Also needs 'See All Users (User List and User Management)' and 'See User in Project'."
       },
       {
         "label": "WORK BREAKDOWN STRUCTURES",
@@ -309,7 +309,7 @@
               {
                 "label": "Resolve Tasks",
                 "key": "resolveTask",
-                "description": "Lets the user mark a person's task as done with the green check on Dashboard > Tasks."
+                "description": "Lets the user mark a person's task as done with the green check on Dashboard > Tasks. Also needs 'Edit Task'."
               },
               {
                 "label": "Suggest Changes on a task",
@@ -373,7 +373,7 @@
           {
             "label": "Assign Users to Team",
             "key": "assignTeamToUsers",
-            "description": "Lets the user open Other Links > Teams and add or remove team members, there or on a user's profile."
+            "description": "Lets the user add or remove team members. Also needs 'See All Users (User List and User Management)' or 'Edit User Profile'."
           }
         ]
       }
@@ -411,7 +411,7 @@
           {
             "label": "Add Time Entry (Others)",
             "key": "postTimeEntry",
-            "description": "Lets the user add time entries to other people's Time Logs."
+            "description": "Lets the user add time entries for others. Also needs 'Modify Important User Info' and 'Edit Timelog Description (Self and Others)'."
           },
           {
             "label": "Delete Time Entry (Others)",
@@ -466,12 +466,12 @@
       {
         "label": "Add Roles",
         "key": "postRole",
-        "description": "Lets the user create a new role with chosen permissions, using 'Add New Role' in Permissions Management."
+        "description": "Lets the user create a new role with chosen permissions, using 'Add New Role' in Permissions Management. Also needs 'Edit Roles'."
       },
       {
         "label": "Delete Roles",
         "key": "deleteRole",
-        "description": "Lets the user delete a role, if they also have 'Edit Roles'. Everyone in that role becomes a Volunteer; this cannot be undone."
+        "description": "Lets the user delete a role. Everyone in that role becomes a Volunteer; this cannot be undone. Also needs 'Edit Roles'."
       },
       {
         "label": "Edit Roles",
@@ -503,17 +503,17 @@
       {
         "label": "Add New Title",
         "key": "addNewTitle",
-        "description": "Lets the user create new Quick Setup Titles and change their order on a user's profile page."
+        "description": "Lets the user create new Quick Setup Titles and change their order on a user's profile. Also needs 'See Weekly Summaries' to create."
       },
       {
         "label": "Assign Title",
         "key": "assignTitle",
-        "description": "Lets the user apply a Quick Setup Title on a profile, setting the person's teams, project and links."
+        "description": "Lets the user apply a Quick Setup Title (teams, project, links). Also needs 'Modify Important User Info' and 'Edit Team Codes'."
       },
       {
         "label": "Edit Titles",
         "key": "editTitle",
-        "description": "Lets the user change existing Quick Setup Titles with the Edit button on a user's profile."
+        "description": "Lets the user change existing Quick Setup Titles with the Edit button on a user's profile. Also needs 'See Weekly Summaries'."
       }
     ]
   },
@@ -524,7 +524,7 @@
       {
         "label": "Access HGN Skills Dashboard",
         "key": "accessHgnSkillsDashboard",
-        "description": "Lets the user open another member's HGN Skills profile page."
+        "description": "Lets the user open another member's HGN Skills profile page. Also needs 'See All Users (User List and User Management)'."
       },
       {
         "label": "Access PM Resource Dashboard",
@@ -539,7 +539,7 @@
       {
         "label": "Manage User State Indicator",
         "key": "manage_user_state_indicator",
-        "description": "Lets the user set a person's state indicator on the Weekly Summaries Report."
+        "description": "Lets the user set a person's state indicator on the Weekly Summaries Report. Also needs 'See Weekly Summaries'."
       }
     ]
   },
@@ -576,7 +576,7 @@
       {
         "label": "Manage Job Forms",
         "key": "manageJobForms",
-        "description": "Lets the user create or delete job forms and see applicants' answers in the Job Question Set Builder."
+        "description": "Lets the user open the Job Question Set Builder, create or delete job forms, and see applicants' answers."
       }
     ]
   },
