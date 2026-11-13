@@ -584,10 +584,10 @@
   transition: width 0.3s ease-in-out;
 }
 
-.insightPercentage {
+.insightsPercentage {
   font-size: 0.9rem;
-  font-weight: bold;
-  color: #333;
+  font-weight: 500;
+  color: #d32f2f;
 }
 
 /* Header Section Styles */
@@ -745,8 +745,8 @@
 
 .insightsPercentageDark {
   font-size: 0.9rem;
-  font-weight: bold;
-  color: var(--color-text-dark);
+  font-weight: 500;
+  color: #ff6b6b;
 }
 
 /* ---------- PDF/Print helpers ---------- */
