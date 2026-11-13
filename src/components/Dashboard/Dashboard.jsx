@@ -1,7 +1,9 @@
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 import { useEffect, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Button, Col, Container, Row } from 'reactstrap';
+import { Col, Container, Row } from 'reactstrap';
 import { updateSummaryBarData } from '~/actions/dashboardActions';
 import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
@@ -22,11 +24,13 @@ export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
+
   const { match, authUser, location, history } = props;
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
 
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+
   const [displayUserId, setDisplayUserId] = useState(
     match.params.userId || viewingUser?.userId || authUser.userid,
   );
@@ -50,6 +54,7 @@ export function Dashboard(props) {
 
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
+
       if (elem) {
         elem.scrollIntoView();
       }
@@ -58,33 +63,61 @@ export function Dashboard(props) {
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
+
     setViewingUser(sessionStorageData || false);
     setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
   };
 
+  const [questionnaireEligible, setQuestionnaireEligible] = useState(false);
   const [questionnaireCompleted, setQuestionnaireCompleted] = useState(null);
   const [questionnaireLoading, setQuestionnaireLoading] = useState(true);
-  const [questionnaireError, setQuestionnaireError] = useState(false);
 
-  const checkQuestionnaireStatus = async () => {
+  const checkQuestionnaireStatus = async userIdToCheck => {
+    if (!userIdToCheck) {
+      setQuestionnaireLoading(false);
+      return;
+    }
+
     setQuestionnaireLoading(true);
-    setQuestionnaireError(false);
 
     try {
-      const data = await getQuestionnaireStatus();
-      setQuestionnaireCompleted(data.completed);
-    } catch {
-      setQuestionnaireError(true);
+      // Check whether the user has active or invited Dropbox access.
+      const accessResponse = await axios.get(ENDPOINTS.DROPBOX_CHECK_ACCESS, {
+        params: {
+          userId: userIdToCheck,
+        },
+      });
+
+      const eligible = accessResponse.data?.eligible === true;
+
+      setQuestionnaireEligible(eligible);
+
+      // Check questionnaire completion only for eligible users.
+      if (eligible) {
+        const data = await getQuestionnaireStatus(userIdToCheck);
+        setQuestionnaireCompleted(data.completed);
+      } else {
+        setQuestionnaireCompleted(null);
+      }
+    } catch (error) {
+      console.error(
+        'Error checking Dropbox eligibility or questionnaire status:',
+        error.response?.data || error.message,
+      );
+
+      // API errors must not restrict Dashboard access.
+      setQuestionnaireEligible(false);
+      setQuestionnaireCompleted(null);
     } finally {
       setQuestionnaireLoading(false);
     }
   };
 
   useEffect(() => {
-    if (authUser?.userid) {
-      void checkQuestionnaireStatus();
+    if (displayUserId) {
+      void checkQuestionnaireStatus(displayUserId);
     }
-  }, [authUser?.userid]);
+  }, [displayUserId]);
 
   useEffect(() => {
     window.addEventListener('storage', handleStorageEvent);
@@ -116,25 +149,22 @@ export function Dashboard(props) {
     });
   }, [history, location]);
 
-  // if (questionnaireLoading) {
-  //   return <Container fluid>Loading dashboard...</Container>;
-  // }
-
-  if (questionnaireError) {
+  // Wait while checking Dropbox eligibility and questionnaire status.
+  if (questionnaireLoading) {
     return (
       <Container fluid className="text-center mt-5">
-        <p>Unable to verify your questionnaire completion status.</p>
-        <Button color="primary" onClick={checkQuestionnaireStatus}>
-          Try Again
-        </Button>
+        <p>Loading dashboard...</p>
       </Container>
     );
   }
 
-  if (!questionnaireCompleted) {
+  // Show the questionnaire reminder only to eligible users
+  // who have not completed the questionnaire.
+  if (questionnaireEligible && questionnaireCompleted === false) {
     return <QuestionnaireReminder onComplete={() => history.push('/hgnform')} />;
   }
 
+  // All other users can access the normal Dashboard.
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
       {/* <FeedbackModal /> */}
