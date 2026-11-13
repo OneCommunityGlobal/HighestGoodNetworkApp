@@ -1,0 +1,422 @@
+/* HGN sign-in: Horizon band. Tokens live on .page so light/dark follow the app's darkMode toggle. */
+.page {
+  --font: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ground: #f3f7f7;
+  --surface: #fff;
+  --ink: #12313a;
+  --ink-2: #4a6670;
+  --field-bg: #fff;
+  --field-border: #7a949c;
+  --accent: #1d6c77;
+  --accent-hover: #165860;
+  --on-accent: #fff;
+  --link: #1d6c77;
+  --focus: #2f7fb0;
+  --error: #b3261e;
+  --error-bg: #fcefee;
+  --error-line: #e7b4b0;
+  --band: #12313a;
+  --spectrum: linear-gradient(90deg, #5b9cc9 0%, #5fb0a9 50%, #6ab98a 100%);
+  --shadow: 0 1px 2px rgb(18 49 58 / 6%), 0 12px 32px -8px rgb(18 49 58 / 18%);
+  --radius-field: 10px;
+  --radius-panel: 16px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+}
+
+.page[data-appearance='dark'] {
+  --ground: #111a2d;
+  --surface: #1a2440;
+  --ink: #e6eef0;
+  --ink-2: #a9bcc4;
+  --field-bg: #111a2d;
+  --field-border: #6a7fa3;
+  --accent: #74c7c1;
+  --accent-hover: #8fd5cf;
+  --on-accent: #0c2226;
+  --link: #8fd3ce;
+  --focus: #8cc4ea;
+  --error: #ffa39b;
+  --error-bg: #3a1e28;
+  --error-line: #6e3440;
+  --band: #0b1222;
+  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 16px 40px -10px rgb(0 0 0 / 55%);
+
+  color-scheme: dark;
+}
+
+.page ::selection {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.band {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 46vh;
+  min-height: 320px;
+  padding-top: 56px;
+  background: var(--band);
+}
+
+.logo {
+  display: block;
+  width: 300px;
+  height: auto;
+}
+
+.stage {
+  display: grid;
+  justify-items: center;
+  margin-top: calc(-46vh + 172px);
+  padding: 0 16px 40px;
+}
+
+.panel {
+  width: min(440px, 100%);
+  overflow: hidden;
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+/* The spectrum rule doubles as the progress indicator while signing in. */
+.rule {
+  position: relative;
+  height: 4px;
+  overflow: hidden;
+  background: var(--spectrum);
+}
+
+.rule::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 85%), transparent);
+  transform: translateX(-100%);
+}
+
+.panel[data-busy='true'] .rule::after {
+  opacity: 1;
+  animation: sweep 1.1s var(--ease-out) infinite;
+}
+
+.form {
+  padding: 32px 36px 36px;
+}
+
+.title {
+  margin: 0 0 4px;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  margin: 0 0 28px;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.field {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.control {
+  position: relative;
+}
+
+.page .input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-field);
+  background: var(--field-bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.page .input:hover {
+  border-color: var(--ink-2);
+}
+
+.page .input:focus {
+  border-color: var(--focus);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent);
+}
+
+.page .input[aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+.page .input[aria-invalid='true']:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 25%, transparent);
+}
+
+.page .withToggle {
+  padding-right: 52px;
+}
+
+.toggle {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  color: var(--ink);
+}
+
+.error,
+.note {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+.error {
+  color: var(--error);
+}
+
+.note {
+  color: var(--ink-2);
+}
+
+.forgot {
+  margin: 10px 0 0;
+  font-size: 15px;
+}
+
+.link {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.link:hover {
+  color: var(--link);
+  text-decoration-thickness: 2px;
+}
+
+.forgot .link {
+  display: inline-block;
+  padding: 4px 0;
+}
+
+.alert {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--error-line);
+  border-radius: var(--radius-field);
+  background: var(--error-bg);
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.alertIcon {
+  flex: none;
+  margin-top: 3px;
+  color: var(--error);
+  font-size: 18px;
+}
+
+.submit {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 48px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: var(--radius-field);
+  background: var(--accent);
+  color: var(--on-accent);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 140ms var(--ease-out);
+}
+
+.submit:hover {
+  background: var(--accent-hover);
+}
+
+.submit:active {
+  transform: scale(0.98);
+}
+
+.submit[aria-busy='true'] {
+  cursor: progress;
+}
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: rotate 0.6s linear infinite;
+}
+
+.netlify {
+  margin-top: 28px;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.netlifyLink {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.netlifyLink:hover {
+  color: var(--ink);
+}
+
+.link:focus-visible,
+.netlifyLink:focus-visible,
+.toggle:focus-visible,
+.submit:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/*
+ * The app's global dark theme sets `body.dark-mode * { color: #fff !important }` and restyles
+ * every input. Inside this page, descendants inherit instead, and each role sets its own colour.
+ */
+.page[data-appearance='dark'],
+.page[data-appearance='dark'] .title,
+.page[data-appearance='dark'] .label,
+.page[data-appearance='dark'] .alert,
+.page[data-appearance='dark'] .input {
+  color: var(--ink) !important;
+}
+
+.page[data-appearance='dark'] * {
+  color: inherit !important;
+}
+
+.page[data-appearance='dark'] .lede,
+.page[data-appearance='dark'] .note,
+.page[data-appearance='dark'] .netlify,
+.page[data-appearance='dark'] .toggle {
+  color: var(--ink-2) !important;
+}
+
+.page[data-appearance='dark'] .error,
+.page[data-appearance='dark'] .alertIcon {
+  color: var(--error) !important;
+}
+
+.page[data-appearance='dark'] .link {
+  color: var(--link) !important;
+}
+
+.page[data-appearance='dark'] .submit {
+  color: var(--on-accent) !important;
+}
+
+.page[data-appearance='dark'] .toggle:hover,
+.page[data-appearance='dark'] .netlifyLink:hover {
+  color: var(--ink) !important;
+}
+
+@keyframes sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (height <= 700px) {
+  .stage {
+    margin-top: -148px;
+  }
+}
+
+@media (width <= 560px) {
+  .band {
+    height: 196px;
+    min-height: 0;
+    padding-top: 36px;
+  }
+
+  .logo {
+    width: 228px;
+  }
+
+  .stage {
+    margin-top: -72px;
+  }
+
+  .form {
+    padding: 26px 20px 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel[data-busy='true'] .rule::after {
+    opacity: 0.5;
+    transform: none;
+    animation: none;
+  }
+
+  .spinner {
+    animation-duration: 1.6s;
+  }
+
+  .submit:active {
+    transform: none;
+  }
+}
