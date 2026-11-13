@@ -11,12 +11,26 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { getPresetsByRole, createNewPreset } from '~/actions/rolePermissionPresets';
 import PermissionsPresetsModal from './PermissionsPresetsModal';
 import { ENDPOINTS } from '~/utils/URL';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import { updateRole, getAllRoles } from '../../actions/role';
 import { permissions as permissionKeys } from '../../utils/constants';
 import hasPermission from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
 import styles from './RolePermissions.module.css';
+
+// Starting texts of the two blue icons; once an Owner saves a text, the saved one is shown
+const SAVE_INFO = `<p>Here you can create new presets and save your changes.</p>
+<ul>
+<li><strong>Create New Preset:</strong> Click this button to save the current settings as a new preset that can be accessed with the "Load Presets" button.</li>
+<li><strong>Save:</strong> Click this button to save any changes you've made.</li>
+</ul>`;
+
+const DELETE_ROLE_INFO = `<p>Here you can load saved presets and delete the current role.</p>
+<ul>
+<li><strong>Load Presets:</strong> Click this button to see all saved presets for this role. From there, you can choose one to load and replace the current set of permissions. Clicking Apply saves it right away, so you don't need to click Save.</li>
+<li><strong>Delete Role:</strong> Click this button to delete the current Role. Everyone on this Role will become a Volunteer. <strong>WARNING: This action cannot be undone.</strong></li>
+</ul>`;
 
 function RolePermissions(props) {
   const { darkMode } = props;
@@ -32,51 +46,8 @@ function RolePermissions(props) {
   const history = useHistory();
   const userProfile = useSelector(state => state.userProfile);
 
-  const [infoRoleModal, setinfoRoleModal] = useState(false);
-  const [modalContent, setContent] = useState(null);
-
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
-  const handleModalOpen = description => {
-    let content = '';
-    if (description === 'save') {
-      content = (
-        <div className={styles.modalInfoContent}>
-          <p>Here you can create new presets and save your changes</p>
-          <ul>
-            <li>
-              <b>Create New Presets:</b> Click this button to save the current settings as a new
-              preset that can be accessed with the “Load Presets” button.
-            </li>
-            <li>
-              <b>Save:</b> Click this button to save any changes you’ve made.
-            </li>
-          </ul>
-        </div>
-      );
-    } else if (description === 'delete') {
-      content = (
-        <div className={styles.modalInfoContent}>
-          <p>Here you can load saved presets and delete the current role.</p>
-          <ul>
-            <li>
-              <b>Load Presets:</b> Click this button to see all previously saved presets. From
-              there, you can choose one to load and replace the current set of permissions. Remember
-              to “Save” if you do this.
-            </li>
-            <li>
-              <b>Delete Role:</b> Click this button to delete the current Role.{' '}
-              <b>WARNING: This action cannot be undone.</b>
-            </li>
-          </ul>
-        </div>
-      );
-    }
-    setContent(content);
-    setinfoRoleModal(true);
-  };
-
-  const toggleInfoRoleModal = () => setinfoRoleModal(prev => !prev);
   const toggleDeleteRoleModal = () => setDeleteRoleModal(prev => !prev);
   const toggleEditRoleNameModal = () => setEditRoleNameModal(prev => !prev);
 
@@ -204,14 +175,17 @@ function RolePermissions(props) {
                     Save
                   </Button>
 
-                  <button
-                    type="button"
-                    className={styles.infoIconBtn}
-                    aria-label="Info about saving and presets"
-                    onClick={() => handleModalOpen('save')}
-                  >
-                    <i className="fa fa-info-circle" aria-hidden="true" />
-                  </button>
+                  {/* role = the signed-in person, not the role on this page. The PermissionList
+                      below fetches the texts once */}
+                  <EditableInfoModal
+                    role={props.auth.user.role}
+                    areaName="Permission Page: save Info"
+                    areaTitle="Save and Presets"
+                    initialInfoHtml={SAVE_INFO}
+                    skipFetch
+                    fontSize={18}
+                    darkMode={darkMode}
+                  />
                 </div>
 
                 <div className={`${styles.btnWithInfo} ${styles.dangerGroup}`}>
@@ -225,14 +199,15 @@ function RolePermissions(props) {
                     Delete Role
                   </Button>
 
-                  <button
-                    type="button"
-                    className={styles.infoIconBtn}
-                    aria-label="Info about deleting roles"
-                    onClick={() => handleModalOpen('delete')}
-                  >
-                    <i className="fa fa-info-circle" aria-hidden="true" />
-                  </button>
+                  <EditableInfoModal
+                    role={props.auth.user.role}
+                    areaName="Permission Page: delete role Info"
+                    areaTitle="Load Presets and Delete Role"
+                    initialInfoHtml={DELETE_ROLE_INFO}
+                    skipFetch
+                    fontSize={18}
+                    darkMode={darkMode}
+                  />
                 </div>
               </div>
             </div>
@@ -334,22 +309,6 @@ function RolePermissions(props) {
             onApply={perms => setPermissions(perms)}
           />
         </ModalBody>
-      </Modal>
-
-      {/* Info Modal */}
-      <Modal
-        isOpen={infoRoleModal}
-        toggle={toggleInfoRoleModal}
-        id="modal2-body_new-role--padding"
-        className={darkMode ? 'text-light dark-mode' : ''}
-      >
-        <ModalHeader toggle={toggleInfoRoleModal}>Role Info</ModalHeader>
-        <ModalBody>{modalContent}</ModalBody>
-        <ModalFooter>
-          <Button onClick={toggleInfoRoleModal} color="secondary">
-            Ok
-          </Button>
-        </ModalFooter>
       </Modal>
     </div>
   );
