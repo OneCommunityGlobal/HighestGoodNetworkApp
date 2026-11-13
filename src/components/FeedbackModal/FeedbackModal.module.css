@@ -153,13 +153,13 @@
   color: #4da6ff;
 }
 
-.darkMode .removeEntryBtn {
+.removeEntryBtn.removeEntryBtnDark {
   background-color: #34495e;
   border-color: #2c3e50;
   color: #ecf0f1;
 }
 
-.darkMode .removeEntryBtn:hover {
+.removeEntryBtn.removeEntryBtnDark:hover {
   background-color: #e74c3c;
   border-color: #c0392b;
   color: white;
