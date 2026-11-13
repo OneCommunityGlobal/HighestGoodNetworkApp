@@ -118,11 +118,12 @@ function GlobalVolunteerMap({ locations = [], isLoading, darkMode = false, error
     );
   }
 
+  const mapContainerClass = darkMode
+    ? ['map-container', 'dark-mode', styles.volunteerMapDark].join(' ')
+    : 'map-container';
+
   return (
-    <div
-      className={`map-container ${darkMode ? `dark-mode ${styles.volunteerMapDark}` : ''}`}
-      style={{ marginTop: '20px' }}
-    >
+    <div className={mapContainerClass} style={{ marginTop: '20px' }}>
       {/* Dark theme styles for Leaflet attribution badge & controls */}
       {darkMode && (
         <style>{`
