@@ -51,7 +51,7 @@ export function getProjectStatusUnavailableReason(metric) {
 }
 
 function getProjectStatusComparisonUnavailableText(comparisonPeriodFilter) {
-  return `No ${comparisonPeriodFilter.toLowerCase()} comparison available`;
+  return `No comparison data available for ${comparisonPeriodFilter}`;
 }
 
 export function formatProjectStatusChange(metric, comparisonPeriodFilter) {
@@ -72,7 +72,7 @@ export function formatProjectStatusChange(metric, comparisonPeriodFilter) {
 
   const percent = Math.round(percentageChange * 100);
   const prefix = percent > 0 ? '+' : '';
-  return `${prefix}${percent}% ${comparisonPeriodFilter.toLowerCase()}`;
+  return `${prefix}${percent}% vs ${comparisonPeriodFilter}`;
 }
 
 export function getProjectStatusChangeColor(metric) {

@@ -282,7 +282,7 @@ function UserPermissionsPopUp({
                       }
                     }}
                   >
-                    {user.firstName} {user.lastName}
+                    {`${user.firstName} ${user.lastName}`}
                   </div>
                 ))
               ) : (

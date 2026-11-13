@@ -35,7 +35,7 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
+import { parseWeeklySummaryDateRange } from './comparisonDateUtils';
 import { StatusCardGrid, buildStatusCards, toCardButtons } from './StatusCards';
 import FinancialOverview from './Financials/FinancialOverview';
 import styles from './WeeklyProjectSummary.module.css';
