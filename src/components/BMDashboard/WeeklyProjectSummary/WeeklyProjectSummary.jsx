@@ -3,7 +3,6 @@
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { UncontrolledTooltip } from 'reactstrap';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
@@ -40,6 +39,8 @@ import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
+import { StatusCardGrid, buildStatusCards, toCardButtons } from './StatusCards';
+import FinancialOverview from './Financials/FinancialOverview';
 
 const projectStatusButtonData = [
   ['Total Projects', 'totalProjects', '#F0FFEE', '#BAF0B6', '#328D1B'],
@@ -55,89 +56,9 @@ const projectStatusButtonData = [
   ['Material Wasted', 'materialWasted', '#EFBABB', '#F79395', '#328D1B'],
 ];
 
-const projectStatusButtons = projectStatusButtonData.map(
-  ([title, metricKey, bgColor, buttonColor, textColor]) => ({
-    title,
-    metricKey,
-    bgColor,
-    buttonColor,
-    textColor,
-  }),
-);
+const projectStatusButtons = toCardButtons(projectStatusButtonData);
 
-const PERIOD_COMPARABLE = 'PERIOD_COMPARABLE';
-const UNAVAILABLE = 'UNAVAILABLE';
 const EMPTY_PROJECT_STATUS_METRICS = {};
-
-function formatProjectStatusValue(metric) {
-  if (!metric || metric.comparisonType === UNAVAILABLE || metric.value === null) {
-    return 'N/A';
-  }
-
-  if (metric.unit === 'USD') {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(metric.value);
-  }
-
-  if (metric.unit === 'hrs') {
-    return `${metric.value} hrs`;
-  }
-
-  if (typeof metric.value === 'number') {
-    return new Intl.NumberFormat('en-US').format(metric.value);
-  }
-
-  return metric.value;
-}
-
-function getProjectStatusUnavailableReason(metric) {
-  if (!metric || (metric.comparisonType !== UNAVAILABLE && metric.value !== null)) {
-    return null;
-  }
-
-  return metric.unavailableReason || 'Data does not exist for the selected period.';
-}
-
-function getProjectStatusComparisonUnavailableText(comparisonPeriodFilter) {
-  return `No ${comparisonPeriodFilter.toLowerCase()} comparison available`;
-}
-
-function formatProjectStatusChange(metric, comparisonPeriodFilter) {
-  const percentageChange = metric?.percentageChange;
-
-  if (comparisonPeriodFilter === 'No Comparison') {
-    return null;
-  }
-
-  if (
-    metric?.comparisonType !== PERIOD_COMPARABLE ||
-    percentageChange === null ||
-    percentageChange === undefined ||
-    typeof percentageChange === 'string'
-  ) {
-    return getProjectStatusComparisonUnavailableText(comparisonPeriodFilter);
-  }
-
-  const percent = Math.round(percentageChange * 100);
-  const prefix = percent > 0 ? '+' : '';
-  return `${prefix}${percent}% ${comparisonPeriodFilter.toLowerCase()}`;
-}
-
-function getProjectStatusChangeColor(metric) {
-  if (typeof metric?.percentageChange !== 'number') {
-    return '#C82F2F';
-  }
-
-  if (metric.percentageChange === 0) {
-    return '#000';
-  }
-
-  return metric.percentageChange > 0 ? '#328D1B' : '#C82F2F';
-}
 
 function getProjectStatusErrorMessage(error) {
   return (
@@ -298,17 +219,7 @@ function WeeklyProjectSummary() {
       : EMPTY_PROJECT_STATUS_METRICS;
 
   const projectStatusCards = useMemo(
-    () =>
-      projectStatusButtons.map(button => {
-        const metric = projectStatusMetrics[button.metricKey];
-        return {
-          ...button,
-          value: formatProjectStatusValue(metric),
-          unavailableReason: getProjectStatusUnavailableReason(metric),
-          change: formatProjectStatusChange(metric, comparisonPeriodFilter),
-          changeColor: getProjectStatusChangeColor(metric),
-        };
-      }),
+    () => buildStatusCards(projectStatusButtons, projectStatusMetrics, comparisonPeriodFilter),
     [comparisonPeriodFilter, projectStatusMetrics],
   );
 
@@ -334,69 +245,11 @@ function WeeklyProjectSummary() {
             {projectStatusDisplayError && (
               <div role="alert">{getProjectStatusErrorMessage(projectStatusDisplayError)}</div>
             )}
-            <div className={`${styles.projectStatusGrid}`}>
-              {projectStatusCards.map(button => {
-                const unavailableTooltipId = `project-status-unavailable-${button.metricKey}`;
-                return (
-                  <div
-                    key={button.metricKey}
-                    className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                    style={{ backgroundColor: button.bgColor }}
-                  >
-                    <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
-                    <div
-                      className={`${styles.weeklyStatusButton}`}
-                      style={{ backgroundColor: button.buttonColor }}
-                    >
-                      <span className={`${styles.weeklyStatusValue}`}>
-                        {button.value}
-                        {button.unavailableReason && (
-                          <>
-                            <span
-                              id={unavailableTooltipId}
-                              className={styles.projectStatusUnavailableInfo}
-                            >
-                              <button
-                                type="button"
-                                className={styles.projectStatusUnavailableButton}
-                                aria-label={button.unavailableReason}
-                              >
-                                i
-                              </button>
-                            </span>
-                            <UncontrolledTooltip
-                              placement="top"
-                              target={unavailableTooltipId}
-                              trigger="hover focus"
-                              className={styles.projectStatusUnavailableTooltip}
-                              container="body"
-                              autohide={false}
-                              modifiers={{
-                                offset: { offset: '0, 12' },
-                                preventOverflow: { boundariesElement: 'viewport' },
-                              }}
-                            >
-                              {button.unavailableReason}
-                            </UncontrolledTooltip>
-                          </>
-                        )}
-                      </span>
-                    </div>
-                    {showProjectStatusComparison && button.change && (
-                      <div
-                        className="weekly-status-change"
-                        style={{
-                          color: button.changeColor,
-                          '--project-status-change-color': button.changeColor,
-                        }}
-                      >
-                        {button.change}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <StatusCardGrid
+              cards={projectStatusCards}
+              showComparison={showProjectStatusComparison}
+              idPrefix="project-status"
+            />
           </>
         ),
       },
@@ -424,7 +277,7 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
-        // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
+        // Shared with /bmdashboard/issuechart so the PR-required four-card grouping stays in sync.
         content: (
           <MaterialConsumptionCards
             quantityOfMaterialsUsedData={quantityOfMaterialsUsedData}
@@ -629,6 +482,17 @@ function WeeklyProjectSummary() {
         ),
       },
       {
+        title: 'Financials: Overview',
+        key: 'Financials: Overview',
+        className: 'full',
+        content: (
+          <FinancialOverview
+            requestParams={projectStatusRequestParams}
+            comparisonPeriodFilter={comparisonPeriodFilter}
+          />
+        ),
+      },
+      {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
@@ -649,6 +513,7 @@ function WeeklyProjectSummary() {
       showProjectStatusComparison,
       currentDateRange,
       comparisonDateRange,
+      projectStatusRequestParams,
     ],
   );
 
