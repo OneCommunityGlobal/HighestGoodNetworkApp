@@ -1,6 +1,8 @@
+/* stylelint-disable no-descending-specificity -- legacy file, selector reordering would change the cascade */
+
 /* ---------- CSS Variables for Dark Mode ---------- */
 :root {
-  --color-text-dark: #ffffff;
+  --color-text-dark: #fff;
   --color-border-dark: #4a5a77;
 }
 
@@ -133,7 +135,7 @@
   color: #fff;
   border-radius: 10px;
   border: 1px solid var(--color-border-dark);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -185,7 +187,7 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
@@ -395,7 +397,7 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
@@ -617,7 +619,12 @@
 .insightsPercentageDark {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #ff6b6b;
+  color: #ff9494;
+}
+
+/* Global `body.dark-mode * { color: #fff !important }` and `.insightsDark .insightItem *` would otherwise win */
+.insightsDark .insightItem .insightsPercentageDark {
+  color: #ff9494 !important;
 }
 
 /* ---------- PDF/Print helpers ---------- */
