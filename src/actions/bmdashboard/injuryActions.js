@@ -189,7 +189,7 @@ export const getInjuryData = async (projectId, startDate, endDate, projectIds = 
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
 
-  const response = await axios.get(ENDPOINTS.INJURIES, { params });
+  const response = await axios.get(ENDPOINTS.BM_INJURY_TREND_DATA, { params });
   return response.data;
 };
 
