@@ -45,11 +45,15 @@
 
 /* For larger square images - using a different class name */
 .largeSquareImage {
-  width: 280px;
-  height: 280px;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  aspect-ratio: 1;
   object-fit: cover;
   border-radius: 8px;
-  border: 2px solid #dee2e6 !important;
+  border: 2px solid #dee2e6;
   box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
@@ -103,8 +107,7 @@
     color: #e9ecef !important;
   }
   
-  .squareImage,
-  .largeSquareImage {
+  .squareImage {
     border-color: #444 !important;
     box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
   }
@@ -235,4 +238,76 @@
 
 :global(.dark-mode) .form-control::placeholder {
   color: #b0b7c0 !important;
+}
+
+/* stylelint-enable */
+.fields {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.metadataMessage {
+  padding: 1rem;
+}
+
+.statusForm {
+  overflow-wrap: anywhere;
+}
+
+.statusForm small {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.statusForm :global(.invalid-feedback) {
+  font-weight: 600;
+}
+
+.dark :global(.invalid-feedback) {
+  color: #ffb4b4;
+}
+
+/* Own the layout even when unrelated pages load global .alert styles. */
+.successAlert:global(.alert) {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  justify-content: normal;
+  gap: 0.75rem;
+}
+
+.successIcon {
+  margin-top: 0.25rem;
+}
+
+.successMessage {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.successAction {
+  min-width: 0;
+  max-width: 15rem;
+}
+
+.successLink:global(.btn) {
+  display: block;
+  max-width: 100%;
+  padding: 0;
+  white-space: normal;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+@media screen and (width <= 600px) {
+  .successAlert:global(.alert) {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .successAction {
+    grid-column: 2;
+    max-width: 100%;
+  }
 }
