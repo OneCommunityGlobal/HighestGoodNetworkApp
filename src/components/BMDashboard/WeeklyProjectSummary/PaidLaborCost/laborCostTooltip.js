@@ -1,4 +1,6 @@
-const formatCost = value =>
+import { formatHours } from './laborHours';
+
+export const formatCost = value =>
   `$${value.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -18,8 +20,18 @@ export const buildLaborCostTooltip = (context, totalCost, totalBudget) => {
   const lines = [`${isBudget ? 'Budget' : 'Actual'}: ${formatCost(cost)}`];
 
   if (!isBudget) {
-    lines.push('Hours worked: Unavailable');
-    lines.push('Hourly rate: Unavailable');
+    const details = context.dataset.laborDetails?.[context.dataIndex];
+    if (
+      Number.isFinite(details?.hoursWorked) ||
+      (details?.hoursStatus === 'incomplete' && Number.isFinite(details.knownHours))
+    ) {
+      lines.push(`Hours worked: ${formatHours(details)}`);
+    }
+    const rateLabel = details?.rateLabel || 'Hourly rate';
+    const rate = details?.hourlyRate;
+    if (Number.isFinite(rate)) lines.push(`${rateLabel}: ${formatCost(rate)}/hr`);
+    if (details?.calculated)
+      lines.push('Hours/rate calculated from recorded cost and hours or rate.');
   }
 
   if (!Number.isFinite(total) || total <= 0) {

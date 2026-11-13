@@ -102,15 +102,14 @@
   margin-bottom: 8px;
 }
 
-.taskBreakdown ol {
-  list-style: none;
+.contributionScroll {
   display: block;
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
   padding: 0;
   margin: 0;
-  max-height: 220px;
+  max-height: 320px;
   max-width: 100%;
   overflow: scroll auto;
   scrollbar-gutter: stable;
@@ -118,50 +117,139 @@
   scrollbar-color: #64748b #e2e8f0;
 }
 
-.taskBreakdown ol::-webkit-scrollbar {
+.contributionTable {
+  display: table;
+  width: 720px;
+  min-width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: inherit;
+  font-size: 13px;
+}
+
+.contributionTable caption {
+  padding: 8px;
+  color: inherit;
+  text-align: left;
+  caption-side: top;
+}
+
+.taskNameColumn {
+  width: 120px;
+}
+
+.costOnlyTable {
+  width: 440px;
+}
+
+.dataAvailability {
+  font-size: 12px;
+}
+
+.contributionTable th,
+.contributionTable td {
+  padding: 9px 10px;
+  text-align: right;
+  vertical-align: top;
+  border-bottom: 1px solid #94a3b8;
+  overflow-wrap: anywhere;
+}
+
+.contributionTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #eef2f7;
+}
+
+.contributionTable th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: left;
+  background: #fff;
+}
+
+.contributionTable thead th:first-child {
+  z-index: 3;
+}
+
+.contributionTable tfoot {
+  font-weight: 600;
+}
+
+.sortHeaderButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sortHeaderButton:focus-visible {
+  outline: 2px solid #0d55b3;
+  outline-offset: 3px;
+}
+
+.darkMode .sortHeaderButton:focus-visible {
+  outline-color: #e8a71c;
+}
+
+.sortArrows {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 0.85;
+  font-size: 11px;
+}
+
+.sortArrows span {
+  opacity: 0.4;
+}
+
+.sortArrows span[data-active='true'] {
+  opacity: 1;
+}
+
+.darkMode .contributionTable thead th {
+  background: #1e293b;
+}
+
+.darkMode .contributionTable th:first-child {
+  background: #253342;
+}
+
+.contributionScroll::-webkit-scrollbar {
   display: block;
   width: 12px;
   height: 12px;
 }
 
-.taskBreakdown ol::-webkit-scrollbar-track {
+.contributionScroll::-webkit-scrollbar-track {
   background: #e2e8f0;
 }
 
-.taskBreakdown ol::-webkit-scrollbar-thumb {
+.contributionScroll::-webkit-scrollbar-thumb {
   border: 2px solid #e2e8f0;
   border-radius: 6px;
   background: #64748b;
 }
 
-.taskBreakdown li {
-  display: grid;
-  grid-template-columns: minmax(120px, 1fr) auto minmax(80px, auto);
-  min-width: 320px;
-  box-sizing: border-box;
-  gap: 12px;
-  padding: 6px 12px 6px 0;
-  border-bottom: 1px solid #94a3b8;
-}
-
-.taskBreakdown li span:first-child {
-  overflow-wrap: anywhere;
-}
-
-.taskBreakdown li span:last-child {
-  text-align: right;
-  white-space: nowrap;
-}
-
-.darkMode .taskBreakdown ol {
+.darkMode .contributionScroll {
   scrollbar-color: #94a3b8 #253342;
 }
 
-.darkMode .taskBreakdown ol::-webkit-scrollbar-track {
+.darkMode .contributionScroll::-webkit-scrollbar-track {
   background: #253342;
 }
 
-.darkMode .taskBreakdown ol::-webkit-scrollbar-thumb {
+.darkMode .contributionScroll::-webkit-scrollbar-thumb {
   border-color: #253342;
   background: #94a3b8;
 }

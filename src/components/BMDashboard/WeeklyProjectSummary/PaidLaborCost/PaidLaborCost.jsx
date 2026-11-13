@@ -20,7 +20,8 @@ import logger from '../../../../services/logService';
 import config from '../../../../config.json';
 import { ENDPOINTS } from '../../../../utils/URL';
 import { MOCK_DB } from './mockLaborCostData';
-import { buildLaborCostTooltip, getCostPercentage } from './laborCostTooltip';
+import { buildLaborCostTooltip, getCostPercentage, formatCost } from './laborCostTooltip';
+import { summarizeLaborHours, formatHours } from './laborHours';
 import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -169,7 +170,8 @@ const formatApiData = apiData => {
       const taskName =
         typeof item.task === 'object' ? item.task?.name || item.task?.taskName : item.task;
       const itemCost = Number(item.cost) || 0;
-      const itemBudget = item.budget || itemCost * 0.9;
+      const itemBudget =
+        item.budget === null || item.budget === undefined ? itemCost * 0.9 : Number(item.budget);
       return {
         ...item,
         project: projName || 'Unknown Project',
@@ -211,7 +213,7 @@ function aggregateData(data, taskFilter, projectFilter, dateRange) {
   const tasksToInclude = distinctTasks;
 
   tasksToInclude.forEach(t => {
-    aggregation[label].tasks[t] = { cost: 0, budget: 0 };
+    aggregation[label].tasks[t] = { cost: 0, budget: 0, entries: [] };
   });
 
   validData.forEach(item => {
@@ -220,8 +222,15 @@ function aggregateData(data, taskFilter, projectFilter, dateRange) {
     if (tasksToInclude.includes(item.task)) {
       aggregation[label].tasks[item.task].cost += item.cost;
       aggregation[label].tasks[item.task].budget += item.budget;
+      aggregation[label].tasks[item.task].entries.push(item);
     }
   });
+
+  tasksToInclude.forEach(task => {
+    const totals = aggregation[label].tasks[task];
+    totals.laborDetails = summarizeLaborHours(totals.entries);
+  });
+  aggregation[label].laborDetails = summarizeLaborHours(validData);
 
   return { labels: [label], aggregation, tasksToInclude };
 }
@@ -390,6 +399,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode, allTa
     {
       label: 'Actual',
       costType: 'actual',
+      laborDetails: tasksToInclude.map(task => totals?.tasks[task]?.laborDetails),
       backgroundColor: actualColors,
       borderColor: outlines,
       borderWidth: darkMode ? 1 : 0,
@@ -479,6 +489,7 @@ const buildChartOptions = (textColor, darkMode, totalCost, totalBudget, onDrillD
 export default function PaidLaborCost() {
   const [data, setData] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [usingSampleData, setUsingSampleData] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const textColor = darkMode ? '#ffffff' : '#333';
@@ -488,6 +499,13 @@ export default function PaidLaborCost() {
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
   const [viewMode, setViewMode] = useState('tasks');
   const [sortOrder, setSortOrder] = useState('highest');
+  const [sortColumn, setSortColumn] = useState('cost');
+  const handleColumnSort = column => {
+    setSortOrder(current =>
+      sortColumn === column && current === 'highest' ? 'lowest' : 'highest',
+    );
+    setSortColumn(column);
+  };
   const [hiddenTasks, setHiddenTasks] = useState([]);
   const toggleTaskVisibility = task =>
     setHiddenTasks(previous =>
@@ -520,6 +538,7 @@ export default function PaidLaborCost() {
       } catch (error) {
         if (error.name === 'AbortError') return;
         if (isDevelopmentEnvironment()) {
+          setUsingSampleData(true);
           setData(formatApiData({ data: MOCK_DB }));
         } else {
           logger.logError(error);
@@ -552,12 +571,24 @@ export default function PaidLaborCost() {
     () =>
       [...tasksToInclude].sort((first, second) => {
         const totals = aggregation[labels[0]]?.tasks;
-        const difference = (totals?.[first]?.cost || 0) - (totals?.[second]?.cost || 0);
+        const firstCost = totals?.[first]?.cost || 0;
+        const secondCost = totals?.[second]?.cost || 0;
+        const difference =
+          sortColumn === 'share'
+            ? getCostPercentage(firstCost, displayTotalCost) -
+              getCostPercentage(secondCost, displayTotalCost)
+            : firstCost - secondCost;
         return (sortOrder === 'highest' ? -difference : difference) || first.localeCompare(second);
       }),
-    [tasksToInclude, aggregation, labels, sortOrder],
+    [tasksToInclude, aggregation, labels, sortOrder, sortColumn, displayTotalCost],
   );
   const displayedLabels = viewMode === 'tasks' ? sortedTasks : labels;
+  const showHours = tasksToInclude.some(
+    task => aggregation[labels[0]]?.tasks[task]?.laborDetails.hoursStatus !== 'unavailable',
+  );
+  const showRates = tasksToInclude.some(
+    task => aggregation[labels[0]]?.tasks[task]?.laborDetails.hourlyRate !== null,
+  );
 
   const { absoluteVariance, variancePercentage, varianceClass } = useMemo(
     () => calculateVarianceMetrics(displayTotalCost, displayTotalBudget, styles),
@@ -602,6 +633,7 @@ export default function PaidLaborCost() {
       data: [dataset.costType === 'actual' ? displayTotalCost : displayTotalBudget],
       backgroundColor: [dataset.costType === 'actual' ? '#2878b5' : '#9bc5e5'],
       borderColor: [darkMode ? '#e2e8f0' : '#2878b5'],
+      laborDetails: [aggregation[labels[0]]?.laborDetails],
     }));
   }, [
     sortedTasks,
@@ -652,6 +684,9 @@ export default function PaidLaborCost() {
   return (
     <div className={`${styles.paidLaborCostContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
+      {usingSampleData && (
+        <p role="status">Showing development sample data. Database records are not loaded.</p>
+      )}
       <div className={styles.filtersGrid}>
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel} htmlFor="task-filter">
@@ -762,7 +797,13 @@ export default function PaidLaborCost() {
         {viewMode === 'tasks' && (
           <label className={styles.sortControl}>
             Sort tasks by cost
-            <select value={sortOrder} onChange={event => setSortOrder(event.target.value)}>
+            <select
+              value={sortOrder}
+              onChange={event => {
+                setSortColumn('cost');
+                setSortOrder(event.target.value);
+              }}
+            >
               <option value="highest">Highest to lowest</option>
               <option value="lowest">Lowest to highest</option>
             </select>
@@ -847,30 +888,125 @@ export default function PaidLaborCost() {
           <h5 id="labor-task-breakdown-title" ref={breakdownRef} tabIndex={-1}>
             Task contributions
           </h5>
-          <p>Share of actual labor cost for the selected filters.</p>
-          <ol aria-label="Task cost contributions">
-            {sortedTasks.map(task => {
-              const cost = aggregation[labels[0]].tasks[task].cost;
-              const percentage = getCostPercentage(cost, displayTotalCost);
-              let share = 'Unavailable';
-              if (displayTotalCost > 0) {
-                share = `${percentage > 0 && percentage < 0.1 ? '<0.1' : percentage.toFixed(1)}%`;
-              }
-              return (
-                <li key={task}>
-                  <span>{task}</span>
-                  <span>
-                    $
-                    {cost.toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
-                  <span>{share}</span>
-                </li>
-              );
-            })}
-          </ol>
+          <p>Actual labor cost and percentage of the total for the selected filters.</p>
+          {(showHours || showRates) && (
+            <p className={styles.dataAvailability}>
+              Average rates are weighted by hours. Partial hours exclude entries without recorded
+              hours.
+            </p>
+          )}
+          <div
+            className={styles.contributionScroll}
+            role="region"
+            aria-label="Scrollable task cost breakdown"
+          >
+            <table
+              className={`${styles.contributionTable} ${
+                !showHours && !showRates ? styles.costOnlyTable : ''
+              }`}
+              aria-label="Task cost contributions"
+            >
+              <caption>Task-level paid labor breakdown</caption>
+              <colgroup>
+                <col className={styles.taskNameColumn} />
+                {showHours && <col />}
+                {showRates && <col />}
+                <col />
+                <col />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col">Task</th>
+                  {showHours && <th scope="col">Hours worked</th>}
+                  {showRates && <th scope="col">Rate ($/hr)</th>}
+                  {[
+                    { column: 'cost', label: 'Actual cost' },
+                    { column: 'share', label: 'Share of total' },
+                  ].map(({ column, label }) => (
+                    <th
+                      key={column}
+                      scope="col"
+                      aria-sort={
+                        sortColumn === column
+                          ? sortOrder === 'highest'
+                            ? 'descending'
+                            : 'ascending'
+                          : 'none'
+                      }
+                    >
+                      <button
+                        type="button"
+                        className={styles.sortHeaderButton}
+                        onClick={() => handleColumnSort(column)}
+                        title={`Sort ${label.toLowerCase()} ${
+                          sortColumn === column && sortOrder === 'highest'
+                            ? 'ascending'
+                            : 'descending'
+                        }`}
+                      >
+                        {label}
+                        <span aria-hidden="true" className={styles.sortArrows}>
+                          <span data-active={sortColumn === column && sortOrder === 'lowest'}>
+                            ↑
+                          </span>
+                          <span data-active={sortColumn === column && sortOrder === 'highest'}>
+                            ↓
+                          </span>
+                        </span>
+                      </button>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {sortedTasks.map(task => {
+                  const cost = aggregation[labels[0]].tasks[task].cost;
+                  const details = aggregation[labels[0]].tasks[task].laborDetails;
+                  const percentage = getCostPercentage(cost, displayTotalCost);
+                  let share = 'Unavailable';
+                  if (displayTotalCost > 0) {
+                    share = `${
+                      percentage > 0 && percentage < 0.1 ? '<0.1' : percentage.toFixed(1)
+                    }%`;
+                  }
+                  return (
+                    <tr key={task}>
+                      <th scope="row" title={task}>
+                        {task}
+                      </th>
+                      {showHours && <td>{formatHours(details)}</td>}
+                      {showRates && (
+                        <td>
+                          {details.hourlyRate === null
+                            ? 'Unavailable'
+                            : `${formatCost(details.hourlyRate)}${
+                                details.rateLabel === 'Average hourly rate' ? ' (avg.)' : ''
+                              }`}
+                        </td>
+                      )}
+                      <td>{formatCost(cost)}</td>
+                      <td>{share}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row">Filtered total</th>
+                  {showHours && <td>{formatHours(aggregation[labels[0]].laborDetails)}</td>}
+                  {showRates && (
+                    <td>
+                      {aggregation[labels[0]].laborDetails.hourlyRate === null
+                        ? 'Unavailable'
+                        : `${formatCost(aggregation[labels[0]].laborDetails.hourlyRate)} (avg.)`}
+                    </td>
+                  )}
+                  <td>{formatCost(displayTotalCost)}</td>
+                  <td>{displayTotalCost > 0 ? '100%' : 'Unavailable'}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </section>
       )}
       <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
@@ -893,6 +1029,7 @@ export default function PaidLaborCost() {
             onClick={drillDown}
             disabled={labels.length === 0}
             aria-label="View task breakdown of Total Actual"
+            title="View task cost breakdown"
           >
             $
             {displayTotalCost.toLocaleString('en-US', {
