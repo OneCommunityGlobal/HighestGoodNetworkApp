@@ -483,7 +483,7 @@ export function TimeEntryForm(props) {
     if (closed === true && isOpen) toggle();
   };
 
-  const submitTimeEntry = async () => {
+  const submitTimeEntry = async notesOverride => {
     // Prevent submission when logging timer time but timer is disconnected
     if (from === 'Timer' && timerConnected === false) {
       toast.error('Cannot log time entry while timer is disconnected. Please wait for connection to be restored or refresh the page.');
@@ -492,7 +492,10 @@ export function TimeEntryForm(props) {
     }
 
     const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = formValues;
-    const timeEntry = { ...formValues };
+    const timeEntry = {
+      ...formValues,
+      ...(notesOverride !== undefined ? { notes: notesOverride } : {}),
+    };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
     if (!validateForm(isTimeModified)) {
@@ -632,13 +635,16 @@ export function TimeEntryForm(props) {
   };
   
 
-  const handleTangibleTimelogConfirm = async () => {
-    setTimelogConfirmationModalVisible(false);
-    await submitTimeEntry();
-  };
-
   const handleTangibleTimelogCancel = () => {
     setTimelogConfirmationModalVisible(false);
+  };
+
+  const handleIntangibleReasonSubmit = async (reason, dateBelongsOn) => {
+    const formattedDate = moment(dateBelongsOn).format('dddd, DD/MM/YY');
+    const updatedNotes = `${formValues.notes}<p>Reason: ${reason}</p><p>Date this belongs on: ${formattedDate}</p>`;
+    setFormValues(fv => ({ ...fv, notes: updatedNotes }));
+    setTimelogConfirmationModalVisible(false);
+    await submitTimeEntry(updatedNotes);
   };
 
   const tangibleInfoModalToggle = e => {
@@ -1058,9 +1064,8 @@ export function TimeEntryForm(props) {
       <TimeLogConfirmationModal
         isOpen={isTimelogConfirmationModalVisible}
         toggleModal={handleTangibleTimelogCancel}
-        onConfirm={handleTangibleTimelogConfirm}
-        onReject={handleTangibleTimelogCancel}
-        onIntangible={handleTangibleTimelogConfirm}
+        onBack={handleTangibleTimelogCancel}
+        onSubmit={handleIntangibleReasonSubmit}
         darkMode={darkMode}
       />
     </>
