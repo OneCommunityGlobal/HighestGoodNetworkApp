@@ -17,6 +17,7 @@ import { permissions as permissionKeys } from '../../utils/constants';
 import hasPermission from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import PermissionChangesList from './PermissionChangesList';
+import { hasPermissionListChanged } from './permissionChanges';
 import permissionLabel from './PermissionsConst';
 import styles from './RolePermissions.module.css';
 
@@ -40,7 +41,6 @@ function RolePermissions(props) {
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
   const [roleName, setRoleName] = useState('');
-  const [changed, setChanged] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [showPresetModal, setShowPresetModal] = useState(false);
 
@@ -101,7 +101,6 @@ function RolePermissions(props) {
       await props.updateRole(id, { ...updatedRole, ...userProfile });
       history.push('/permissionsmanagement');
       toast.success('Role updated successfully');
-      setChanged(false);
     } catch (error) {
       toast.error('Error updating role');
     }
@@ -123,9 +122,12 @@ function RolePermissions(props) {
       ? `Role name changed from ${props.role} to ${roleName}`
       : '';
 
+  const hasUnsavedChanges =
+    hasPermissionListChanged(props.permissions, permissions) || !!renameLine;
+
   return (
     <div className={styles.wrapper}>
-      {changed && (
+      {hasUnsavedChanges && (
         <Alert
           color="warning"
           className={`${styles.unsavedAlert} ${darkMode ? 'bg-dark border-warning' : ''}`}
@@ -259,10 +261,7 @@ function RolePermissions(props) {
                 style={boxStyling}
                 color="success"
                 disabled={disabled}
-                onClick={() => {
-                  toggleEditRoleNameModal();
-                  setChanged(true);
-                }}
+                onClick={toggleEditRoleNameModal}
               >
                 Confirm
               </Button>
@@ -279,7 +278,6 @@ function RolePermissions(props) {
           permissionsList={permissionLabel}
           editable={canEditRole}
           setPermissions={setPermissions}
-          onChange={() => setChanged(true)}
           darkMode={darkMode}
         />
       </div>

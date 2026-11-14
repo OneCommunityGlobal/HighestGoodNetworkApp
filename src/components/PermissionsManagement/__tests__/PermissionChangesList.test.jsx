@@ -142,17 +142,15 @@ describe('unsaved changes list on the role page', () => {
     expect(screen.queryByTestId('permissions-added')).not.toBeInTheDocument();
   });
 
-  it('keeps the alert after an undo and says there are no permission changes', () => {
+  it('hides the alert again after an undo', () => {
     renderRolePage();
 
     clickRow('manageFAQs', 'Add');
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+
     clickRow('manageFAQs', 'Delete');
 
-    const alert = screen.getByRole('alert');
-    expect(alert).toHaveTextContent(/you have unsaved changes/i);
-    expect(within(alert).getByText('No permission changes')).toBeInTheDocument();
-    expect(screen.queryByTestId('permissions-added')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('permissions-removed')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('lists each permission once after a heading Add', () => {
@@ -182,8 +180,7 @@ describe('unsaved changes list on the role page', () => {
 
     renameRole('');
 
-    const alert = screen.getByRole('alert');
-    expect(within(alert).getByText('No permission changes')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.queryByText(/role name changed/i)).not.toBeInTheDocument();
   });
 
