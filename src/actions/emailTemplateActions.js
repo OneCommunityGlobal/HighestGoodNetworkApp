@@ -41,6 +41,8 @@ export const EMAIL_TEMPLATE_ACTIONS = {
   CLEAR_CURRENT_TEMPLATE: 'CLEAR_CURRENT_TEMPLATE',
 };
 
+const createEmailTemplateError = (message, details = {}) => Object.assign(new Error(message), details);
+
 // Action Creators
 
 // Fetch all email templates with pagination and sorting
@@ -268,7 +270,10 @@ export const previewEmailTemplate = (id, variables = {}) => async (dispatch, get
       payload: { message: errorMessage, errors: errorDetails, missing: missingVariables },
     });
 
-    throw { message: errorMessage, errors: errorDetails, missing: missingVariables };
+    throw createEmailTemplateError(errorMessage, {
+      errors: errorDetails,
+      missing: missingVariables,
+    });
   }
 };
 
@@ -318,6 +323,6 @@ export const validateEmailTemplate = id => async (dispatch, getState) => {
       payload: { message: errorMessage, errors: errorDetails },
     });
 
-    throw { message: errorMessage, errors: errorDetails };
+    throw createEmailTemplateError(errorMessage, { errors: errorDetails });
   }
 };
