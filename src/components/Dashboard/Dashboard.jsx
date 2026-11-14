@@ -13,6 +13,7 @@ import '../../App.module.css';
 import FeedbackModal from '../FeedbackModal/FeedbackModal';
 import Leaderboard from '../LeaderBoard';
 import SummaryBar from '../SummaryBar/SummaryBar';
+import styles from './Dashboard.module.css';
 import Timelog from '../Timelog/Timelog';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
@@ -117,6 +118,10 @@ export function Dashboard(props) {
               />
             </div>
           </div>
+        </Col>
+      </Row>
+      <Row className="w-100 ml-1">
+        <Col lg={5} className={`order-lg-2 order-2 ${styles.leaderboardCol}`}>
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
