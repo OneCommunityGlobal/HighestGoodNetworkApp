@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { Button, Table, Card, CardBody, CardHeader, Row, Col, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Table, Card, CardBody, CardHeader, FormGroup, Label, Input } from 'reactstrap';
 import moment from 'moment-timezone';
 import { getUsersTotalHoursForSpecifiedPeriod } from '../../../actions/timeEntries';
 import { getAllUserTeams } from '../../../actions/allTeamsAction';
