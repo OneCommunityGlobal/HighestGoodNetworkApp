@@ -264,7 +264,8 @@
 }
 
 .addTeamButtons button#submit-button:hover:not(:disabled) {
-  background-color: #2e7d32;
+  background-color: #1b5e20;
+  border-color: #1b5e20;
 }
 
 .addTeamButtons button#cancel-button {
@@ -468,4 +469,81 @@
   -webkit-box-shadow: 0 0 0 1000px #2e5061 inset !important;
   -webkit-text-fill-color: #fff !important;
   caret-color: #fff;
+}
+
+/* ========== Character counter (over the limit) ========== */
+
+/* Separate class (not combined with .helperText) so no !important is needed in dark mode */
+.helperTextOver {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+:global(body.dark-mode) .helperTextOver,
+:global(body.bm-dashboard-dark) .helperTextOver {
+  color: #ff6b6b;
+}
+
+/* ========== Help icon buttons ========== */
+
+/* Higher specificity than ".addTeamContainer button" so the icon stays round */
+.addTeamContainer .tooltipIcon {
+  border: none;
+  padding: 0;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+/* ========== Standardized button states ========== */
+.addBtn:active:not(:disabled),
+.addTeamButtons button:active:not(:disabled),
+.bulkRemoveBtn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.addBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.addTeamButtons button:disabled,
+.addTeamButtons button#cancel-button:disabled {
+  cursor: not-allowed;
+}
+
+/* Visible keyboard focus for all actions and help icons */
+.addBtn:focus-visible,
+.bulkRemoveBtn:focus-visible,
+.addTeamButtons button:focus-visible,
+.tooltipIcon:focus-visible,
+.badgeRemove:focus-visible {
+  outline: 2px solid #1a73e8;
+  outline-offset: 2px;
+}
+
+:global(body.dark-mode) .addBtn:disabled,
+:global(body.bm-dashboard-dark) .addBtn:disabled {
+  opacity: 0.5;
+}
+
+/* Dark mode hover uses a filter so it works over the existing dark background rule */
+:global(body.dark-mode) .addTeamButtons button#submit-button:hover:not(:disabled),
+:global(body.bm-dashboard-dark) .addTeamButtons button#submit-button:hover:not(:disabled) {
+  filter: brightness(0.85);
+}
+
+:global(body.dark-mode) .addBtn:focus-visible,
+:global(body.dark-mode) .bulkRemoveBtn:focus-visible,
+:global(body.dark-mode) .addTeamButtons button:focus-visible,
+:global(body.dark-mode) .tooltipIcon:focus-visible,
+:global(body.dark-mode) .badgeRemove:focus-visible,
+:global(body.bm-dashboard-dark) .addBtn:focus-visible,
+:global(body.bm-dashboard-dark) .bulkRemoveBtn:focus-visible,
+:global(body.bm-dashboard-dark) .addTeamButtons button:focus-visible,
+:global(body.bm-dashboard-dark) .tooltipIcon:focus-visible,
+:global(body.bm-dashboard-dark) .badgeRemove:focus-visible {
+  outline-color: #8ab4f8;
 }
