@@ -1109,6 +1109,10 @@
   background-color: #4a607b;
 }
 
+.caseListItem.caseListItemDark:hover {
+  background-color: #4a607b;
+}
+
 /* ---------- Attendees Hover (Light Mode) ---------- */
 .attendeesCount:hover {
   background-color: #e8f1ff;
@@ -1186,5 +1190,72 @@
 
   .caseCard:hover {
     transform: none;
+  }
+}
+
+/* ---------- Small mobile (e.g. 375px) ---------- */
+@media (width <= 480px) {
+  .myCasesPage,
+  .myCasesPageDark {
+    padding: 12px;
+  }
+
+  .headerActions {
+    width: 100%;
+  }
+
+  .sectionTitle,
+  .sectionTitleDark {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .viewSwitcher,
+  .viewSwitcherDarkMode {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .viewSwitcher button,
+  .viewSwitcherDarkMode button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 8px 4px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .filterWrapper,
+  .createNew,
+  .createNewDarkMode,
+  .moreBtn {
+    width: 100%;
+  }
+
+  .moreBtn {
+    text-align: center;
+  }
+
+  .caseCards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .caseListItem,
+  .caseListItemDark {
+    grid-template-columns: 1fr auto;
+    gap: 4px 10px;
+    padding: 12px;
+  }
+
+  .caseListItem span,
+  .caseListItemDark span {
+    margin-right: 0;
+  }
+
+  .calendarView,
+  .calendarViewDark {
+    padding: 12px;
+    font-size: 14px;
   }
 }

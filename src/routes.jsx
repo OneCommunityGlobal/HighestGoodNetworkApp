@@ -93,6 +93,8 @@ import ResolvedTasks from './components/ResolvedTasks/ResolvedTasks';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import Demographics from './components/CommunityPortal/Reports/Participation/Demographics';
+import Personalization from './components/CommunityPortal/Reports/Participation/Personalization';
 import VirtualVsInPerson from './components/CommunityPortal/Reports/Participation/VirtualVsInPerson';
 import EventValue from './components/CommunityPortal/Reports/Participation/EventValue';
 import ParticipationTrends from './components/CommunityPortal/Reports/Participation/ParticipationTrends';
@@ -958,6 +960,16 @@ export default (
           path="/communityportal/reports/participation/performance"
           exact
           component={EventPerformance}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/demographics"
+          exact
+          component={Demographics}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/personalization"
+          exact
+          component={Personalization}
         />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"

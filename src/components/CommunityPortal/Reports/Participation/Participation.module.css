@@ -2302,3 +2302,479 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ----- Actionable Insights ----- */
+.actionableSection {
+  margin-top: 30px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+}
+
+.actionableSectionDark {
+  background: #1c2541;
+  border: 1px solid #333;
+  color: #fff;
+}
+
+.actionableHeader {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #333;
+}
+
+.actionableSectionDark .actionableHeader {
+  color: #fff;
+}
+
+.actionableGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 15px;
+}
+
+.actionCard {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid #ddd;
+}
+
+.actionCard:hover {
+  background: #f1f1f1;
+}
+
+.actionableSectionDark .actionCard {
+  background: #3a506b;
+  border: 1px solid #555;
+  color: #fff;
+}
+
+.actionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.actionDescription {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.actionableSectionDark .actionDescription {
+  color: #e0e0e0;
+}
+
+.actionTrendUp {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.actionTrendDown {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+/* ---------- Demographics Page ---------- */
+.demographicsPage {
+  padding: 20px;
+  background: #fff;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.demographicsPageDark {
+  background: #1c2541;
+  color: #fff;
+}
+
+.demographicsHeader {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.demographicsHeaderDark {
+  color: #fff;
+}
+
+.demographicsContent {
+  display: flex;
+  justify-content: center;
+}
+
+.placeholderBox {
+  width: 100%;
+  padding: 20px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  text-align: center;
+  color: #555;
+}
+
+.demographicsPageDark .placeholderBox,
+.demographicsPageDark .placeholderBox p {
+  border-color: #888;
+  color: #ddd;
+}
+
+.subPageNav {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.subPageBtn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f1f1f1;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+}
+
+.subPageBtn:hover {
+  background: #e1e1e1;
+}
+
+.subPageBtnDark {
+  background: #2b3a55;
+  border-color: #666;
+  color: #fff;
+}
+
+.subPageBtnDark:hover {
+  background: #3a4b66;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f1f1f1;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+}
+
+.backBtn:hover {
+  background: #e1e1e1;
+}
+
+.backBtnDark {
+  background: #2b3a55;
+  border-color: #666;
+  color: #fff;
+}
+
+.backBtnDark:hover {
+  background: #3a4b66;
+}
+
+/* ---------- Personalization Page ---------- */
+.personalizationPage {
+  padding: 20px;
+  background: #fff;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.personalizationPageDark {
+  background: #1c2541;
+  color: #fff;
+}
+
+.personalizationHeader {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.personalizationHeaderDark {
+  color: #fff;
+}
+
+.personalizationContent {
+  display: flex;
+  justify-content: center;
+}
+
+.personalizationPageDark .placeholderBox,
+.personalizationPageDark .placeholderBox p {
+  border-color: #888;
+  color: #ddd;
+}
+
+/* ---------- Insights tabs, sort and export controls ---------- */
+.insightsTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.insightsTabsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.insightsTabsContainer .insightsTabs .insightsTab {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+
+.icons {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sortIcon {
+  flex-shrink: 0;
+}
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.tooltipWrapper:hover .tooltip {
+  opacity: 1;
+}
+
+.insightsTabsDarkMode {
+  border: 1px solid #555;
+  background-color: #1e293b;
+}
+
+.insightsTabDarkMode {
+  color: #ddd;
+  background-color: #1e293b;
+}
+
+.insightsTabDarkMode:not(:last-child) {
+  border-right: 1px solid #555;
+}
+
+.insightsTabDarkMode:hover {
+  background-color: #374151;
+}
+
+.activeTabDarkMode {
+  background-color: #1d4ed8;
+  color: #fff;
+  font-weight: bold;
+}
+
+.insightsFiltersDark {
+  display: flex;
+  gap: 10px;
+}
+
+.insightsFilters.insightsFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.insightsFilters.insightsFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+/* ---------- Export and no-show list modals ---------- */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 45%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal,
+.modalContent {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: #fff;
+  color: #333;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 20%);
+}
+
+.modalDark,
+.modalContentDark {
+  background: #1e293b;
+  color: #fff;
+}
+
+.modalDark .modalClose,
+.modalDark .modalTitle,
+.modalContent.modalContentDark h4 {
+  color: #fff;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.exportOptionsButtonsDark {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #2d3748;
+  border: 1px solid #4a5568;
+  color: #fff;
+}
+
+.exportOptionsButtonsDark:hover {
+  background: #3a506b;
+}
+
+.exportOptionsButtonsDark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.modalSubHeader {
+  font-size: 14px;
+  opacity: 0.85;
+  margin-bottom: 12px;
+}
+
+.modalList {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.selectAll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.userRow {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  margin: 0;
+}
+
+.userEmail {
+  grid-column: 3;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sendEmailBtn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #1d4ed8;
+  color: #fff;
+  cursor: pointer;
+}
+
+.sendEmailBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- Tracking and insights headers on small screens ---------- */
+@media (width <= 480px) {
+  .trackingHeader,
+  .trackingHeaderDark,
+  .insightsHeader,
+  .insightsHeaderDark {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .trackingHeader h3,
+  .trackingHeaderDark h3 {
+    white-space: normal;
+  }
+
+  .trackingFilters,
+  .insightsFilters {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .trackingFilters select,
+  .insightsFilters select {
+    flex: 1 1 0;
+    min-width: 0;
+    margin-left: 0;
+  }
+
+  .insightsTabsContainer .insightsTabs {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  .insightsTabsContainer .insightsTabs .insightsTab {
+    flex: 1 1 0;
+    padding: 8px 4px;
+  }
+}
