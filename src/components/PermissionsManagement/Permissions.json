@@ -91,6 +91,11 @@
         "description": "Gives the user permission to edit all the information of any user on the user profile page."
       },
       {
+        "label": "Delete User Profile",
+        "key": "deleteUserProfile",
+        "description": "Gives the user permission to ONLY delete users on the \"Other Links\" -> \"User Management\" page (trash button). No creating or editing access. Give \"See All Users\" too, or the user list will be empty."
+      },
+      {
         "label": "Change User Status",
         "key": "changeUserStatus",
         "description": "Gives the user permission to change the status of any user on the user profile page or User Management Page. \"User Profile\" -> \"Green round button\""
