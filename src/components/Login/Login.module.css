@@ -34,6 +34,7 @@
 }
 
 .page[data-appearance='dark'] {
+  --fg: var(--ink);
   --ground: #111a2d;
   --surface: #1a2440;
   --ink: #e6eef0;
@@ -332,10 +333,6 @@
  * -webkit-text-fill-color and icons with SVG fill instead; the global rule touches neither.
  * Each role sets --fg, and every descendant paints with the --fg it inherits.
  */
-.page[data-appearance='dark'] {
-  --fg: var(--ink);
-}
-
 .page[data-appearance='dark'] .lede,
 .page[data-appearance='dark'] .note,
 .page[data-appearance='dark'] .netlify,
