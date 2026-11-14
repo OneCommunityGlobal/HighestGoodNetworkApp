@@ -97,7 +97,7 @@ export function Login({
       history.push(`/forcePasswordUpdate/${auth.user.userId}`);
     } else if (auth?.isAuthenticated) {
       const redirectPath = location?.state?.from?.pathname;
-      history.push(redirectPath && redirectPath.includes('/hgnform') ? redirectPath : '/dashboard');
+      history.push(redirectPath?.includes('/hgnform') ? redirectPath : '/dashboard');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth]);
@@ -172,7 +172,7 @@ export function Login({
     try {
       const formattedEmail = email.replace(/[A-Z]/g, char => char.toLowerCase());
       const result = await login({ email: formattedEmail, password: values.password });
-      if (mounted.current && result && result.success === false) {
+      if (mounted.current && result?.success === false) {
         setServerError(describeLoginError(result.errors));
       }
     } finally {

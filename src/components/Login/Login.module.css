@@ -327,44 +327,53 @@
 }
 
 /*
- * The app's global dark theme sets `body.dark-mode * { color: #fff !important }` and restyles
- * every input. Inside this page, descendants inherit instead, and each role sets its own colour.
+ * The app's global dark theme forces `color: #fff` with an important flag on every element, which
+ * no normal declaration can override. Inside this page, text is painted with
+ * -webkit-text-fill-color and icons with SVG fill instead; the global rule touches neither.
+ * Each role sets --fg, and every descendant paints with the --fg it inherits.
  */
-.page[data-appearance='dark'],
-.page[data-appearance='dark'] .title,
-.page[data-appearance='dark'] .label,
-.page[data-appearance='dark'] .alert,
-.page[data-appearance='dark'] .input {
-  color: var(--ink) !important;
-}
-
-.page[data-appearance='dark'] * {
-  color: inherit !important;
+.page[data-appearance='dark'] {
+  --fg: var(--ink);
 }
 
 .page[data-appearance='dark'] .lede,
 .page[data-appearance='dark'] .note,
 .page[data-appearance='dark'] .netlify,
 .page[data-appearance='dark'] .toggle {
-  color: var(--ink-2) !important;
+  --fg: var(--ink-2);
 }
 
 .page[data-appearance='dark'] .error,
 .page[data-appearance='dark'] .alertIcon {
-  color: var(--error) !important;
+  --fg: var(--error);
 }
 
 .page[data-appearance='dark'] .link {
-  color: var(--link) !important;
+  --fg: var(--link);
 }
 
 .page[data-appearance='dark'] .submit {
-  color: var(--on-accent) !important;
+  --fg: var(--on-accent);
 }
 
 .page[data-appearance='dark'] .toggle:hover,
 .page[data-appearance='dark'] .netlifyLink:hover {
-  color: var(--ink) !important;
+  --fg: var(--ink);
+}
+
+.page[data-appearance='dark'],
+.page[data-appearance='dark'] * {
+  -webkit-text-fill-color: var(--fg);
+  text-decoration-color: var(--fg);
+}
+
+.page[data-appearance='dark'] svg path {
+  fill: var(--fg);
+}
+
+.page[data-appearance='dark'] .spinner {
+  border-color: var(--on-accent);
+  border-right-color: transparent;
 }
 
 @keyframes sweep {
