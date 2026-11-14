@@ -20,10 +20,13 @@ const Btn = ({ to, color, children }) => (
 /* --------------------------------------------
     1️⃣  DAILY LOGGING BUTTONS
 --------------------------------------------- */
-export const LoggingButtons = ({ darkMode }) => {
+export const LoggingButtons = ({ darkMode, projectId }) => {
   return (
     <>
-      <Btn to="/bmdashboard/timelog" color="green">
+      <Btn
+        to={projectId ? `/bmdashboard/timelog/${projectId}` : '/bmdashboard/timelog'}
+        color="green"
+      >
         Time
       </Btn>
       <Btn to="/bmdashboard/materials/add" color="green">
