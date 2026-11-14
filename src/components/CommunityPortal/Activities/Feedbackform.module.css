@@ -197,12 +197,12 @@
 }
 
 .Feedback-form-container-dark .cancel-button {
-  background-color: #3a4863;
+  background-color: #4a5a7d;
   color: #e2e8f0;
 }
 
 .Feedback-form-container-dark .cancel-button:hover {
-  background-color: #4a5a7d;
+  background-color: #3a4863;
 }
 
 .star-rating {
@@ -222,7 +222,7 @@
 }
 
 .Feedback-form-container-dark .star {
-  color: #4a5568;
+  color: #4a5568 !important;
 }
 
 .star:hover {
@@ -234,7 +234,7 @@
 }
 
 .Feedback-form-container-dark .selected {
-  color: #f59e0b;
+  color: gold !important;
 }
 
 .star:focus {
