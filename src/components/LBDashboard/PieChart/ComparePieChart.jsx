@@ -193,7 +193,7 @@ const LISTING_OPTIONS = {
 };
 
 // Metrics that require bidding functionality
-const BIDDING_ONLY_METRICS = ['numBids', 'avgBid', 'finalPrice'];
+const BIDDING_ONLY_METRICS = new Set(['numBids', 'avgBid', 'finalPrice']);
 
 // Sample data indexed by [comparisonType][listingType]
 const SAMPLE_DATA = {
@@ -393,7 +393,7 @@ export function ComparePieChart({
   }, [parentListingType]);
 
   // Auction-only metrics can't be shown for Listing
-  const isBiddingMetric = BIDDING_ONLY_METRICS.includes(selectedMetricKey);
+  const isBiddingMetric = BIDDING_ONLY_METRICS.has(selectedMetricKey);
   // Top filter is Listing -> auctioned properties are out of scope
   const isTopListing = parentListingType === LISTING_OPTIONS.LISTING;
 
@@ -726,5 +726,4 @@ ComparePieChart.propTypes = {
   ),
   showFilters: PropTypes.bool,
   listingType: PropTypes.oneOf(['all', 'listing', 'bidding']),
-  disabledBidding: PropTypes.bool,
 };
