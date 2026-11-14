@@ -2145,6 +2145,8 @@
   .engagementCard,
   .navigationCard,
   .valueCard,
+  .trendCard,
+  .performanceCard,
   .insightFill {
     transition: none;
   }
