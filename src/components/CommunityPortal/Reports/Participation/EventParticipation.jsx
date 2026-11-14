@@ -10,6 +10,8 @@ import AnalyticsNavigation from './AnalyticsNavigation';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
+import EventPopularityBreakdown from './EventPopularityBreakdown';
+import EngagementVisuals from './EngagementVisuals';
 import styles from './Participation.module.css';
 
 function EventParticipation() {
@@ -55,6 +57,11 @@ function EventParticipation() {
         <DropOffTracking />
         <NoShowInsights />
       </div>
+
+      <EventPopularityBreakdown />
+
+      <EngagementVisuals />
+
       <AnalyticsNavigation />
 
       {/* Print-only footer note */}

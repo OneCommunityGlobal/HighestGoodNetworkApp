@@ -65,6 +65,7 @@ import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import toolAvailabilityReducer from './bmdashboard/toolAvailabilityReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import materialCostCorrelationReducer from './bmdashboard/materialCostCorrelationReducer';
 
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
@@ -84,11 +85,7 @@ import userSkillsReducer from './userSkillsReducer';
 // community portalgit
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
-import {
-  FetchEventReducer,
-  CreateEventReducer,
-  FetchCalendarEventReducer,
-} from './communityPortal/EventActivityReducer';
+import { CreateEventReducer } from './communityPortal/EventActivityReducer';
 
 import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
@@ -202,6 +199,7 @@ const localReducers = {
   villageDetails: villageDetailsReducer,
 
   bmissuechart: issueReducer,
+  materialCostCorrelation: materialCostCorrelationReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,
 
@@ -253,9 +251,7 @@ const localReducers = {
   form: formReducer,
 
   // community portal
-  fetchEvent: FetchEventReducer,
   createEvent: CreateEventReducer,
-  fetchCalendarEvent: FetchCalendarEventReducer,
 };
 
 const sessionReducers = {

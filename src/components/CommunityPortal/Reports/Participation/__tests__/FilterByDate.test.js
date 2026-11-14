@@ -4,7 +4,7 @@ import { filterEventsByDate } from '../FilterByDate';
 describe('filterEventsByDate', () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-11-02T12:00:00-05:00'));
+    vi.setSystemTime(new Date(2026, 10, 2, 12));
   });
 
   afterEach(() => {
@@ -15,21 +15,21 @@ describe('filterEventsByDate', () => {
     const events = [
       {
         id: 'multi-day',
-        eventDate: '2026-11-01T20:00:00-05:00',
-        startTime: '2026-11-01T20:00:00-05:00',
-        endTime: '2026-11-03T09:00:00-05:00',
+        eventDate: '2026-11-01T20:00:00',
+        startTime: '2026-11-01T20:00:00',
+        endTime: '2026-11-03T09:00:00',
       },
       {
         id: 'midnight',
-        eventDate: '2026-11-02T23:30:00-05:00',
-        startTime: '2026-11-02T23:30:00-05:00',
-        endTime: '2026-11-03T00:30:00-05:00',
+        eventDate: '2026-11-02T23:30:00',
+        startTime: '2026-11-02T23:30:00',
+        endTime: '2026-11-03T00:30:00',
       },
       {
         id: 'different-day',
-        eventDate: '2026-11-04T10:00:00-05:00',
-        startTime: '2026-11-04T10:00:00-05:00',
-        endTime: '2026-11-04T11:00:00-05:00',
+        eventDate: '2026-11-04T10:00:00',
+        startTime: '2026-11-04T10:00:00',
+        endTime: '2026-11-04T11:00:00',
       },
     ];
 
