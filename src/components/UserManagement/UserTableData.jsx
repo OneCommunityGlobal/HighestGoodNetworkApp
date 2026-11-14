@@ -182,6 +182,7 @@ const UserTableDataComponent = props => {
         isActive={props.user.isActive}
         endDate={props.user.endDate}
         reactivationDate={props.user.reactivationDate}
+        statusNote={props.user.statusNote}
         canChange={canChangeUserStatus}
         key={`active_cell${props.index}`}
         index={props.index}
