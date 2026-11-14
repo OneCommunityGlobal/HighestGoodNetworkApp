@@ -1,6 +1,6 @@
 import cs from 'classnames';
 import moment from 'moment';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import {
   BsArrowCounterclockwise,
@@ -56,6 +56,16 @@ export default function Countdown({
   const [initialMinutes, setInitialMinutes] = useState(moment.duration(initialGoal).minutes());
   const hourRef = useRef(null);
   const minRef = useRef(null);
+
+  // initialHours/initialMinutes only seeded initialGoal once, at mount, so they went
+  // stale whenever initialGoal changed afterwards (e.g. the idle +/- buttons now
+  // moving the baseline, or another tab/the pop-out saving a new goal). Skip the
+  // sync while the user is actively editing so it doesn't clobber their input.
+  useEffect(() => {
+    if (editing) return;
+    setInitialHours(moment.duration(initialGoal).hours());
+    setInitialMinutes(moment.duration(initialGoal).minutes());
+  }, [initialGoal, editing]);
 
   const remainingHours = moment.duration(remaining).hours();
   const remainingMinutes = moment.duration(remaining).minutes();

@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+
 import styles from './InjuryCategoryBarChart.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -20,7 +20,7 @@ import {
   fetchInjuryTypes,
   fetchInjuryProjects,
 } from '../../../../actions/bmdashboard/injuryActions';
-
+import 'react-datepicker/dist/react-datepicker.css';
 // YYYY-MM-DD (no tz shift)
 const toYMD = d =>
   d instanceof Date && !isNaN(d)
@@ -47,6 +47,7 @@ function InjuryCategoryBarChart() {
   const [injuryTypeFilter, setInjuryTypeFilter] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [unfilteredProjects, setUnfilteredProjects] = useState([]);
 
   // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
   const [chartKey, setChartKey] = useState(0);
@@ -70,18 +71,47 @@ function InjuryCategoryBarChart() {
   const projects = Array.isArray(injuryProjects) ? injuryProjects : [];
   const sevList = Array.isArray(severities) ? severities : [];
   const typeList = Array.isArray(injuryTypes) ? injuryTypes : [];
+  const hasProjectListFilters =
+    severityFilter.length > 0 || injuryTypeFilter.length > 0 || startDate || endDate;
+
+  useEffect(() => {
+    if (!hasProjectListFilters && projects.length) {
+      // Keep the original project set so duplicate-name labels do not change after filtering.
+      setUnfilteredProjects(projects);
+    }
+  }, [hasProjectListFilters, projects]);
+
+  const projectLabelById = useMemo(() => {
+    const labelSourceProjects = unfilteredProjects.length ? unfilteredProjects : projects;
+    const nameCounts = new Map();
+    for (const p of labelSourceProjects) {
+      const name = p?.name ?? '';
+      if (name) nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
+    }
+
+    const labels = new Map();
+    for (const p of labelSourceProjects) {
+      const name = p?.name ?? '';
+      const id = String(p?._id ?? '');
+      if (!name || !id) continue;
+
+      // Use project identity from the unfiltered set so duplicate labels stay stable.
+      labels.set(id, nameCounts.get(name) > 1 ? `${name} (${id.slice(0, 6)})` : name);
+    }
+    return labels;
+  }, [projects, unfilteredProjects]);
 
   const projectNameOptions = useMemo(() => {
-    const seen = new Set();
     const opts = [];
     for (const p of projects) {
-      const name = p?.name ?? '';
-      if (!name || seen.has(name)) continue;
-      seen.add(name);
-      opts.push({ value: name, label: name });
+      const id = String(p?._id ?? '');
+      // Reuse the stable label when filtered options are rebuilt from project IDs.
+      const label = projectLabelById.get(id);
+      if (!id || !label) continue;
+      opts.push({ value: id, label });
     }
     return opts.sort((a, b) => a.label.localeCompare(b.label));
-  }, [projects]);
+  }, [projects, projectLabelById]);
 
   useEffect(() => {
     if (!projectNameFilter.length) return;
@@ -95,7 +125,7 @@ function InjuryCategoryBarChart() {
 
   useEffect(() => {
     const params = {
-      projectNames: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
+      projectIds: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
       startDate: toYMD(startDate),
       endDate: toYMD(endDate),
       severities: severityFilter.map(s => s.value).join(','),
@@ -130,19 +160,42 @@ function InjuryCategoryBarChart() {
     const set = new Set(data.map(d => String(d?.projectId ?? 'unknown')));
     return Array.from(set);
   }, [data]);
+  const allSeriesProjectIds = useMemo(() => {
+    const set = new Set(projects.map(p => String(p._id)));
+    // Include projects that have bars but are missing from the project list, so the legend matches the chart
+    for (const pid of seriesProjectIds) set.add(pid);
+    return Array.from(set);
+  }, [projects, seriesProjectIds]);
+  const colorProjectIds = useMemo(() => {
+    const source = unfilteredProjects.length ? unfilteredProjects : projects;
+    const set = new Set(source.map(project => String(project._id)));
+    // Every project shown (current list or bars) needs a palette color; otherwise it renders black,
+    // which is invisible on the dark-mode chart background
+    for (const p of projects) set.add(String(p._id));
+    for (const pid of seriesProjectIds) set.add(pid);
+    return Array.from(set);
+  }, [unfilteredProjects, projects, seriesProjectIds]);
 
   const showLabels = seriesProjectIds.length <= 4;
 
   const COLOR_PALETTE = [
     '#34D399', // green
-    '#60A5FA', // blue
+    '#2563EB', // blue
     '#F472B6', // pink
     '#FBBF24', // amber
     '#A78BFA', // purple
-    '#4ADE80', // light green
+    '#FB923C', // orange
     '#F87171', // red
     '#38BDF8', // cyan
   ];
+
+  const projectColorById = new Map();
+  [...colorProjectIds]
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((pid, index) => {
+      // Sort by project ID so colors do not depend on API or filter response order.
+      projectColorById.set(pid, COLOR_PALETTE[index % COLOR_PALETTE.length]);
+    });
 
   // Force a resize/reflow after data/filter changes so chart draws immediately (no hover needed)
   useEffect(() => {
@@ -168,44 +221,70 @@ function InjuryCategoryBarChart() {
     endDate,
   ]);
 
-  const selectStyles = darkMode && {
-    control: base => ({
-      ...base,
-      backgroundColor: '#2b3e59',
-      color: 'white',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: '#2b3e59',
-      color: 'white',
-    }),
-    option: (base, state) => ({
-      ...base,
-      color: 'white',
-      backgroundColor: state.isSelected
-        ? 'rgba(255, 255, 255, 0.15)'
-        : state.isFocused
-        ? 'rgba(255, 255, 255, 0.1)'
-        : 'transparent',
-      '&:active': {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  // Theme-aware react-select styles for both modes. Styling lives here instead of global
+  // CSS overrides so it cannot leak into other dropdowns in the app.
+  const selectStyles = useMemo(() => {
+    const textColor = darkMode ? '#ffffff' : '#111827';
+    const mutedColor = darkMode ? '#cbd5e1' : '#6b7280';
+    const surfaceColor = darkMode ? '#2b3e59' : '#ffffff';
+    const borderColor = darkMode ? '#6b7280' : '#d1d5db';
+
+    return {
+      control: (base, state) => ({
+        ...base,
+        backgroundColor: surfaceColor,
+        borderColor: state.isFocused ? '#3b82f6' : borderColor,
+        boxShadow: state.isFocused ? '0 0 0 1px #3b82f6' : 'none',
+        '&:hover': { borderColor: '#3b82f6' },
+      }),
+      placeholder: base => ({ ...base, color: mutedColor }),
+      // Typed search text stays readable in dark mode (was black on dark before)
+      input: base => ({ ...base, color: textColor }),
+      singleValue: base => ({ ...base, color: textColor }),
+      multiValue: base => ({ ...base, backgroundColor: darkMode ? '#375071' : '#e5e7eb' }),
+      multiValueLabel: base => ({ ...base, color: textColor }),
+      multiValueRemove: base => ({
+        ...base,
+        color: textColor,
+        ':hover': { backgroundColor: '#0d55b3', color: '#ffffff' },
+      }),
+      indicatorSeparator: base => ({ ...base, backgroundColor: borderColor }),
+      dropdownIndicator: base => ({ ...base, color: mutedColor, ':hover': { color: textColor } }),
+      clearIndicator: base => ({ ...base, color: mutedColor, ':hover': { color: textColor } }),
+      menu: base => ({ ...base, backgroundColor: surfaceColor, zIndex: 5 }),
+      option: (base, state) => {
+        let backgroundColor = surfaceColor;
+        if (state.isFocused) backgroundColor = darkMode ? '#334155' : '#e2e8f0';
+        if (state.isSelected) backgroundColor = darkMode ? '#1d4ed8' : '#dbeafe';
+        return {
+          ...base,
+          backgroundColor,
+          color: textColor,
+          ':active': { backgroundColor: darkMode ? '#0d55b3' : '#bfdbfe' },
+        };
       },
-    }),
-    singleValue: base => ({
-      ...base,
-      color: 'white',
-    }),
-  };
-  // : {};
+      noOptionsMessage: base => ({ ...base, color: mutedColor }),
+    };
+  }, [darkMode]);
+
+  const containerClassName = `${styles.injuryChartContainer} ${
+    darkMode ? styles.injuryChartDark : ''
+  }`;
+  // Applied to the calendar popup itself so dark styles don't depend on global classes
+  const calendarClassName = darkMode ? styles.injuryDarkCalendar : undefined;
 
   return (
-    <div className={`injury-chart-container ${darkMode && 'darkMode'}`}>
-      <div className="injury-chart-header">
-        <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
+    <div className={containerClassName}>
+      <div className={styles.injuryChartHeader}>
+        <h3 className={styles.injuryChartTitle}>Injury Severity by Category of Worker Injured</h3>
 
-        <div className="injury-chart-filters">
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="project-names-select">
+        <div className={styles.injuryChartFilters}>
+          <div className={styles.injuryFilter}>
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="project-names-select"
+            >
               Projects
             </label>
             <Select
@@ -220,8 +299,12 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="severities-select">
+          <div className={styles.injuryFilter}>
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="severities-select"
+            >
               Severities
             </label>
             <Select
@@ -236,8 +319,12 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="injury-types-select">
+          <div className={styles.injuryFilter}>
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="injury-types-select"
+            >
               Injury types
             </label>
             <Select
@@ -252,12 +339,17 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="start-date">
+          <div className={styles.injuryFilter}>
+            {/* Unique id: "start-date" is also used by Most Frequent Keywords on the same page */}
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="injury-category-start-date"
+            >
               Start date
             </label>
             <DatePicker
-              id="start-date"
+              id="injury-category-start-date"
               selected={startDate}
               onChange={setStartDate}
               selectsStart
@@ -265,16 +357,22 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               maxDate={endDate || undefined}
               placeholderText="Start date"
-              className="injury-date-input"
+              className={styles.injuryDateInput}
+              wrapperClassName={styles.injuryDateWrapper}
+              calendarClassName={calendarClassName}
             />
           </div>
 
-          <div className="filter injury-filter">
-            <label style={{ pointerEvents: 'none' }} htmlFor="end-date">
+          <div className={styles.injuryFilter}>
+            <label
+              className={styles.injuryFilterLabel}
+              style={{ pointerEvents: 'none' }}
+              htmlFor="injury-category-end-date"
+            >
               End date
             </label>
             <DatePicker
-              id="end-date"
+              id="injury-category-end-date"
               selected={endDate}
               onChange={setEndDate}
               selectsEnd
@@ -282,95 +380,121 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               minDate={startDate || undefined}
               placeholderText="End date"
-              className="injury-date-input"
+              className={styles.injuryDateInput}
+              wrapperClassName={styles.injuryDateWrapper}
+              calendarClassName={calendarClassName}
             />
           </div>
         </div>
       </div>
 
-      {loading && <p>Loading…</p>}
-      {!loading && error && <p className="error">Error: {String(error)}</p>}
+      {loading && <p className={styles.injuryStatusText}>Loading…</p>}
+      {!loading && error && <p className={styles.injuryErrorText}>Error: {String(error)}</p>}
 
       {!loading && !error && chartData.length > 0 && (
-        <ResponsiveContainer key={chartKey} width="100%" height={420}>
-          <BarChart
-            data={chartData}
-            margin={{ top: 16, right: 24, bottom: 8, left: 8 }}
-            style={{
-              backgroundColor: darkMode ? '#1e2a3a' : '#fff',
-              borderRadius: '8px',
-              padding: '8px',
-            }}
-          >
-            <XAxis
-              dataKey="workerCategory"
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-            />
-            <YAxis
-              allowDecimals={false}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-            />
-            <Tooltip
-              //tooltip only; no shaded hover overlay across the chart
-              cursor={false}
-              contentStyle={{
-                backgroundColor: darkMode ? '#2b3e59' : '#fff',
-                border: `1px solid ${darkMode ? '#4a5568' : '#cccccc'}`,
-                color: darkMode ? '#fff' : '#000',
+        <div className={styles.chartArea}>
+          <ResponsiveContainer key={chartKey} width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
+              style={{
+                backgroundColor: darkMode ? '#1e2a3a' : '#fff',
+                borderRadius: '8px',
+                padding: '8px',
               }}
-              labelStyle={{
-                color: darkMode ? '#fff' : '#000',
-              }}
-              formatter={(value, name) => [
-                value,
-                projectNameById.get(String(name)) || 'Unknown Project',
-              ]}
-            />
-            <Legend
-              wrapperStyle={{
-                maxHeight: 72,
-                overflowY: 'auto',
-                color: darkMode ? '#fff' : '#000',
-              }}
-              payload={seriesProjectIds.map((pid, index) => ({
-                id: pid,
-                type: 'square',
-                color: COLOR_PALETTE[index % COLOR_PALETTE.length],
-                value: projectNameById.get(pid) || 'Unknown Project',
-              }))}
-            />
-            {seriesProjectIds.map((pid, index) => (
-              <Bar
-                key={pid}
-                dataKey={pid}
-                fill={COLOR_PALETTE[index % COLOR_PALETTE.length]}
-                stroke={darkMode ? '#E5E7EB' : '#ffffff'}
-                strokeWidth={1}
-              >
-                {showLabels && (
-                  <LabelList
-                    dataKey={pid}
-                    position="top"
-                    formatter={v => (v > 0 ? v : '')}
-                    // fill={darkMode ? '#fff' : '#000'}
-                  />
-                )}
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+            >
+              <XAxis
+                dataKey="workerCategory"
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                tick={{ fill: darkMode ? '#fff' : '#000' }}
+                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+              />
+              <YAxis
+                allowDecimals={false}
+                tick={{ fill: darkMode ? '#fff' : '#000' }}
+                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+              />
+              <Tooltip
+                //tooltip only; no shaded hover overlay across the chart
+                cursor={false}
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+
+                  return (
+                    <div
+                      style={{
+                        backgroundColor: darkMode ? '#2b3e59' : '#fff',
+                        border: darkMode ? '1px solid #555' : '1px solid #ccc',
+                        padding: 10,
+                      }}
+                    >
+                      <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
+                      {payload.map(entry => {
+                        const projectId = String(entry.dataKey);
+                        const projectColor =
+                          projectColorById.get(projectId) || entry.color || '#000';
+                        const projectLabel =
+                          projectLabelById.get(projectId) ||
+                          projectNameById.get(projectId) ||
+                          'Unknown Project';
+
+                        return (
+                          <div
+                            key={projectId}
+                            className={styles.tooltipSeriesRow}
+                            style={{ '--tooltip-series-color': projectColor }}
+                          >
+                            {projectLabel} : {entry.value}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }}
+              />
+              <Legend
+                wrapperStyle={{
+                  color: darkMode ? '#fff' : '#000',
+                  paddingBottom: 10,
+                }}
+                payload={allSeriesProjectIds.map(pid => ({
+                  id: pid,
+                  type: 'square',
+                  color: projectColorById.get(pid),
+                  value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
+                }))}
+              />
+              {seriesProjectIds.map(pid => (
+                <Bar
+                  key={pid}
+                  dataKey={pid}
+                  fill={projectColorById.get(pid)}
+                  stroke={darkMode ? '#E5E7EB' : '#ffffff'}
+                  strokeWidth={1}
+                >
+                  {showLabels && (
+                    <LabelList
+                      dataKey={pid}
+                      position="top"
+                      formatter={v => (v > 0 ? v : '')}
+                      // Readable value labels in both themes (were dim gray in dark mode)
+                      fill={darkMode ? '#f3f4f6' : '#374151'}
+                    />
+                  )}
+                </Bar>
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
       {!loading && !error && chartData.length === 0 && (
-        <div className="empty">No data for selected filters.</div>
+        <div className={styles.injuryEmptyText}>No data for selected filters.</div>
       )}
     </div>
   );

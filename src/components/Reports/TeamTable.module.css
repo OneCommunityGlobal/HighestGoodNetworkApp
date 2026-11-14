@@ -19,3 +19,18 @@
   min-width: 8em;
   max-width: 13em;
 }
+
+.team-name-cell {
+  width: 40%;
+  max-width: 350px;
+  white-space: normal;
+}
+
+.team-name-link {
+  display: inline-block;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+

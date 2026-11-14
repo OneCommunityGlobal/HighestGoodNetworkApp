@@ -139,6 +139,7 @@ function copyLiveCanvasesToClone(liveCanvases, clonedCanvases) {
 function adjustTitleRowForPDF(clonedContent) {
   const titleRow = clonedContent.querySelector('[data-pdf-title-row]');
   if (!titleRow) return;
+  titleRow.style.setProperty('background-color', '#fff', 'important');
   const titleCol = titleRow.querySelector('[data-pdf-title-col]');
   if (titleCol) titleCol.style.width = '100%';
   const mainTitle = titleRow.querySelector('h3');
@@ -146,7 +147,8 @@ function adjustTitleRowForPDF(clonedContent) {
     mainTitle.style.fontSize = '24pt';
     mainTitle.style.fontWeight = 'bold';
     mainTitle.style.textAlign = 'left';
-    mainTitle.style.color = '#000';
+    mainTitle.style.setProperty('color', '#000', 'important');
+    mainTitle.style.setProperty('text-shadow', 'none', 'important');
     mainTitle.style.margin = '0';
   }
 }
@@ -223,7 +225,7 @@ function buildPDFStyles(darkMode) {
     img, svg { max-width: 100% !important; height: auto !important; page-break-inside: avoid !important; }
     .recharts-wrapper { width: 100% !important; height: auto !important; }
     table { page-break-inside: avoid !important; }
-    .Collapsible__trigger {
+    .Collapsible__trigger:not(.org-section-header) {
       background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
       color: ${darkMode ? '#fff' : '#000'} !important;
     }
@@ -285,6 +287,28 @@ async function fetchOrgStats(props, selectedComparison, currentFromDate, current
   return { ...volunteerStatsResponse.data, taskAndProjectStats: taskAndProjectStatsResponse };
 }
 
+// Mentors card must match the TOTAL MENTORS donut: same source
+// (top-level mentorNumberStats) and same total (sum of the donut segments).
+function getMentorDonutTotal(mentorNumberStats) {
+  if (!mentorNumberStats) return null;
+  const { donutChartData, activeMentors, newMentors, deactivatedMentors } = mentorNumberStats;
+  if (donutChartData?.existingActive !== undefined) {
+    return (
+      (donutChartData.existingActive?.count || 0) +
+      (donutChartData.newActive?.count || 0) +
+      (donutChartData.deactivated?.count || 0)
+    );
+  }
+  return (activeMentors?.count || 0) + (newMentors?.count || 0) + (deactivatedMentors?.count || 0);
+}
+
+function buildMentorsCardValue(mentorNumberStats, fallbackMentors) {
+  const total = getMentorDonutTotal(mentorNumberStats);
+  if (total === null) return fallbackMentors;
+  const base = mentorNumberStats.totalMentors || fallbackMentors;
+  return base && typeof base === 'object' ? { ...base, count: total } : total;
+}
+
 async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoading }) {
   if (!validatePDFPrerequisites(volunteerStats, isLoading)) return;
   await new Promise(resolve => setTimeout(resolve, 5000));
@@ -293,6 +317,7 @@ async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoadin
   );
   const originalCanvases = replaceCanvasesWithImages(chartCanvases);
   const pdfContainer = buildPDFContainer();
+  pdfContainer.classList.toggle('bg-oxford-blue', darkMode);
   const clonedContent = rootRef.current.cloneNode(true);
   clonedContent
     .querySelectorAll('[data-pdf-hide], .controls, .no-print')
@@ -456,22 +481,15 @@ function TotalOrgSummary(props) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  /*
-    BUG FIX: fromDate/toDate now correctly represent the CURRENT week (see
-    calculateStartDate/calculateEndDate above). Since the default label here
-    is 'Previous Week', the initial currentFromDate/currentToDate must be
-    computed via getPreviousWeekDates(fromDate, toDate) - matching what the
-    "Previous Week" dropdown option itself computes - rather than reusing
-    fromDate/toDate directly, which would (after the fix above) describe the
-    CURRENT week instead and mismatch the 'Previous Week' label on first
-    render.
+
+  /* BUG FIX:
+  fromDate/toDate are already the previous week (computed above via getPreviousWeekDates() above).
+  Use them directly as the initial date range to match the 'Previous Week' default label.
   */
-  const [currentFromDate, setCurrentFromDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).start,
-  );
-  const [currentToDate, setCurrentToDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).end,
-  );
+
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
+
   const rootRef = useRef(null);
   const cacheRef = useRef({});
 
@@ -633,19 +651,30 @@ function TotalOrgSummary(props) {
           onApply={handleDatePickerSubmit}
         />
         <hr />
-        <AccordianWrapper title="Volunteer Status">
+        <AccordianWrapper title="Volunteer Status" section="volunteer-status">
           <Row>
             <Col lg={{ size: 12 }}>
               <VolunteerStatus
                 isLoading={isLoading}
-                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                volunteerNumberStats={
+                  volunteerStats?.volunteerNumberStats
+                    ? {
+                        ...volunteerStats.volunteerNumberStats,
+                        mentors: buildMentorsCardValue(
+                          volunteerStats.mentorNumberStats,
+                          volunteerStats.volunteerNumberStats?.mentors,
+                        ),
+                      }
+                    : null
+                }
                 totalHoursWorked={volunteerStats?.totalHoursWorked}
+                mentorNumberStats={volunteerStats?.mentorNumberStats}
                 comparisonType={selectedComparison}
               />
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Activities">
+        <AccordianWrapper title="Volunteer Activities" section="volunteer-activities">
           <Row>
             <Col lg={{ size: 12 }}>
               <VolunteerActivities
@@ -660,7 +689,10 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
+        <AccordianWrapper
+          title="Global Distribution and Volunteer Status Overview"
+          section="global-distribution"
+        >
           <Row>
             <Col lg={{ size: 6 }}>
               <div
@@ -670,12 +702,25 @@ function TotalOrgSummary(props) {
                 <div
                   className={clsx(
                     styles.totalOrgChartTitle,
+                    styles.mapTitle,
                     darkMode && styles.totalOrgChartTitleDark,
                   )}
                   data-pdf-title
                 >
                   <p>Global Volunteer Network: Uniting Communities Worldwide</p>
                 </div>
+                {!isLoading && volunteerStats?.countryCounts && (
+                  <div className={styles.countryCounts} aria-label="Volunteer country counts">
+                    <p>
+                      All-time contributing countries:{' '}
+                      <strong>{volunteerStats.countryCounts.allTime}</strong>
+                    </p>
+                    <p>
+                      Currently active countries:{' '}
+                      <strong>{volunteerStats.countryCounts.active}</strong>
+                    </p>
+                  </div>
+                )}
                 <GlobalVolunteerMap
                   isLoading={isLoading}
                   locations={volunteerStats?.userLocations}
@@ -706,12 +751,16 @@ function TotalOrgSummary(props) {
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
                   mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
+        <AccordianWrapper
+          title="Volunteer Workload and Task Completion Analysis"
+          section="volunteer-workload"
+        >
           <Row>
             <Col lg={{ size: 12 }}>
               <div
@@ -741,14 +790,12 @@ function TotalOrgSummary(props) {
                       }
                       totalHoursData={volunteerStats?.totalHoursWorked}
                       title="Actual Hours Worked"
-                      legendTitle="Actual Hours Worked"
                     />
                     <VolunteerHoursDistribution
                       isLoading={isLoading}
                       darkMode={darkMode}
                       hoursData={volunteerStats?.volunteerCommittedHoursStats}
                       title="Weekly Committed Hours"
-                      legendTitle="Weekly Committed Hours"
                       centerLabelLines={['TOTAL', 'VOLUNTEERS']}
                       useBucketCounts
                     />
@@ -910,7 +957,7 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Teams and Blue Squares">
+        <AccordianWrapper title="Teams and Blue Squares" section="teams-blue-squares">
           <Row>
             <Col lg={{ size: 6 }}>
               <div

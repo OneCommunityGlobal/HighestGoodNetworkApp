@@ -82,14 +82,15 @@ class ResetPasswordButton extends React.PureComponent {
             ''
           )}
           <Button
-            outline={!this.props.darkMode}
-            color="primary"
-            className={`${styles.userManagementCellControl} btn  btn-outline-success mr-1${this.props.isSmallButton ? ' btn-sm' : ''}`}
-            style={
-              this.props.darkMode
-                ? { boxShadow: '0 0 0 0', minWidth: '115px', fontWeight: 'bold', backgroundColor: '#3a506b' }
-                : { ...boxStyle, minWidth: '115px' }
-            }
+            outline
+            color="success"
+            className={`${styles.userManagementCellControl} btn-outline-success mr-1${this.props.isSmallButton ? ' btn-sm' : ''}`}
+            style={{
+              boxShadow: '0 0 0 0',
+              minWidth: '115px',
+              fontWeight: 'bold',
+              ...(!this.props.darkMode ? boxStyle : {}),
+            }}
             onClick={this.onResetClick}
             id={`btn-reset-password-${this.props.user._id}`}
             disabled={!this.props.canUpdatePassword}

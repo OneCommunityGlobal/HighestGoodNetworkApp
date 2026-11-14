@@ -13,6 +13,7 @@ import {
 } from '../../../actions/information';
 import { boxStyle, boxStyleDark } from '~/styles';
 import RichTextEditor from './RichTextEditor';
+import appStyles from '~/App.module.css';
 import styles from './EditableInfoModal.module.css';
 
 const options = [
@@ -77,7 +78,7 @@ export class EditableInfoModal extends Component {
 
   // ✅ Centralized: derive modal state from collections + props
   deriveFromCollections = infoCollections => {
-    const { role, areaName, fontSize, isPermissionPage } = this.props;
+    const { role, areaName, fontSize, isPermissionPage, initialInfo, initialInfoHtml } = this.props;
 
     let content = '';
     let visible = '0';
@@ -100,13 +101,17 @@ export class EditableInfoModal extends Component {
       (visible === '2' && role !== 'Volunteer');
 
     const CanEdit = role === 'Owner';
-
+    const contentToDisplay = () => {
+      if (content) return content;
+      if (initialInfoHtml) return this.sanitizeHTML(initialInfoHtml);
+      return initialInfo ? this.sanitizeText(initialInfo) : 'Please input information!';
+    };
     return {
       infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
       fetchError: this.props.fetchError,
       loading: this.props.loading,
       infoName: areaName,
-      infoContent: content || 'Please input information!',
+      infoContent: contentToDisplay(),
       visibility: visible,
       CanRead,
       CanEdit,
@@ -119,7 +124,10 @@ export class EditableInfoModal extends Component {
     this._isMounted = true;
 
     // Fire fetch; do NOT assume await means props have data (depends on thunk impl)
-    this.props.getInfoCollections();
+    // skipFetch: the parent already asked for all info texts once (e.g. the permission list)
+    if (!this.props.skipFetch) {
+      this.props.getInfoCollections();
+    }
 
     // Initialize from whatever we currently have (maybe empty)
     if (this._isMounted) {
@@ -243,9 +251,17 @@ export class EditableInfoModal extends Component {
     this.props.getInfoCollections();
   };
 
+  // Close = cancel: while editing, throw away unsaved typing and the unsaved 'Who can view' choice
   handleClose = () => {
-    this.toggleEditableModal();
-    this.handleEdit(false);
+    if (!this.state.editing) {
+      this.setState({ editableModalOpen: false });
+      return;
+    }
+    this.setState({
+      ...this.deriveFromCollections(this.props.infoCollections),
+      editableModalOpen: false,
+      editing: false,
+    });
   };
 
   handleSave = async event => {
@@ -257,6 +273,7 @@ export class EditableInfoModal extends Component {
   render() {
     const { infoContent, editableModalOpen, fontSize, CanRead, CanEdit } = this.state;
     const { darkMode } = this.props;
+    const headerDarkClass = darkMode ? `${appStyles['bg-space-cadet']} text-light` : '';
 
     const sanitizedContent = infoContent;
 
@@ -280,11 +297,11 @@ export class EditableInfoModal extends Component {
               size="lg"
               className={darkMode ? 'text-light' : ''}
             >
-              <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>
+              <ModalHeader className={`d-flex justify-content-center ${headerDarkClass}`}>
                 Welcome to the {this.sanitizeText(this.props.areaTitle)} Information Page!
               </ModalHeader>
 
-              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ padding: '20px 40px' }}>
+              <ModalBody className={darkMode ? `${appStyles['bg-yinmn-blue']} text-light` : ''} style={{ padding: '20px 40px' }}>
                 {this.state.editing ? (
                   <RichTextEditor
                     disabled={!this.state.editing}
@@ -302,7 +319,7 @@ export class EditableInfoModal extends Component {
                 )}
               </ModalBody>
 
-              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <ModalFooter className={darkMode ? `${appStyles['bg-yinmn-blue']} text-light` : ''}>
                 <div
                   style={{
                     display: 'flex',
@@ -365,7 +382,10 @@ EditableInfoModal.propTypes = {
   areaName: PropTypes.string,
   fontSize: PropTypes.number,
   isPermissionPage: PropTypes.bool,
+  initialInfo: PropTypes.string,
+  initialInfoHtml: PropTypes.string,
   darkMode: PropTypes.bool,
+  skipFetch: PropTypes.bool,
 };
 
 EditableInfoModal.defaultProps = {
@@ -377,6 +397,9 @@ EditableInfoModal.defaultProps = {
   fontSize: 24,
   isPermissionPage: false,
   darkMode: false,
+  skipFetch: false,
+  initialInfo: '',
+  initialInfoHtml: '',
 };
 
 const mapStateToProps = ({ infoCollections }) => ({

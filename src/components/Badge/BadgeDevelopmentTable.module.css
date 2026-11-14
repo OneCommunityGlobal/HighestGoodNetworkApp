@@ -1,3 +1,31 @@
+.reportCheckbox {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reportCheckboxChecked {
+  background-color: #007bff;
+}
+
+.reportCheckboxUnchecked {
+  background-color: transparent;
+}
+
+.badgeCardTitle {
+  font-weight: bold;
+  font-size: 18px;
+  color: #285739;
+  margin-bottom: 15px;
+}
+
+.reportCell {
+  text-align: center;
+}
+
 .tableDark tbody tr:hover,
 .tableDark tbody tr:hover td {
   background-color: #2b3553 !important;

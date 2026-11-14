@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 
 import Select from 'react-select';
 import PropTypes from 'prop-types';
+import { Form, FormGroup, Label } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
 import { getReactSelectStyles } from './selectStyles.js';
@@ -42,24 +43,24 @@ export default function SelectForm({
   };
 
   return (
-    <div className={`${styles.filterItem} ${styles.filterItemSelect}`}>
-      <label htmlFor="select-project" style={{ fontWeight: 'bold' }}>
-        Project:
-      </label>
-      <Select
-        inputId="select-project"
-        isMulti
-        isSearchable
-        isClearable
-        options={projectOptions}
-        value={localValues}
-        onChange={handleChange}
-        isDisabled={!items?.length}
-        placeholder="Search or select projects..."
-        classNamePrefix="react-select"
-        styles={getReactSelectStyles(darkMode)}
-      />
-    </div>
+    <Form className={styles.filterForm} onSubmit={e => e.preventDefault()}>
+      <FormGroup className={styles.filterGroup}>
+        <Label htmlFor="select-project">Project:</Label>
+        <Select
+          inputId="select-project"
+          isMulti
+          isSearchable
+          isClearable
+          options={projectOptions}
+          value={localValues}
+          onChange={handleChange}
+          isDisabled={!items?.length}
+          placeholder="Search or select projects..."
+          classNamePrefix="react-select"
+          styles={getReactSelectStyles(darkMode)}
+        />
+      </FormGroup>
+    </Form>
   );
 }
 
