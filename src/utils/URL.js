@@ -504,6 +504,7 @@ export const ENDPOINTS = {
   // bm time logger endpoints
   TIME_LOGGER_START: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/start`,
+  TIME_LOGGER_BULK_START: projectId => `${APIEndpoint}/bm/timelogger/${projectId}/bulk-start`,
   TIME_LOGGER_PAUSE: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/pause`,
   TIME_LOGGER_STOP: (projectId, memberId) =>
