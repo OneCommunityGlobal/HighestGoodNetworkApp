@@ -9,6 +9,8 @@ import {
   ResponsiveContainer,
   LabelList,
   Label,
+  Cell,
+  ReferenceLine,
 } from 'recharts';
 import { useDispatch, useSelector } from 'react-redux';
 import { Input } from 'reactstrap';
@@ -44,14 +46,27 @@ const getDateRangeOptions = () => {
   ];
 };
 
-const CustomTooltip = ({ active, payload, label }) => {
+const performanceColor = (value, target, minimum) => {
+  if (value >= target) return '#2e9b50';
+  return value >= minimum ? '#e5b325' : '#d64545';
+};
+
+export const CustomTooltip = ({ active, payload, label, target = 90 }) => {
   if (active && payload && payload.length) {
+    const difference = Number((payload[0].value - target).toFixed(2));
+    const { totalDeliveries } = payload[0].payload || {};
     return (
       <div className={styles['supplier-performance-tooltip']}>
         <p className={styles['supplier-performance-tooltip-label']}>{label}</p>
-        <p style={{ margin: 0, color: '#4CAF50', fontWeight: 'bold' }}>
-          On-Time Delivery: {payload[0].value}%
+        <p style={{ margin: 0, fontWeight: 'bold' }}>On-Time Delivery: {payload[0].value}%</p>
+        <p>
+          {difference === 0
+            ? 'At target'
+            : `${Math.abs(difference)} percentage points ${
+                difference > 0 ? 'above' : 'below'
+              } target`}
         </p>
+        {Number.isFinite(totalDeliveries) && <p>Total deliveries: {totalDeliveries}</p>}
       </div>
     );
   }
@@ -61,6 +76,29 @@ const CustomTooltip = ({ active, payload, label }) => {
 const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const role = useSelector(state => state.auth?.user?.role);
+  const canConfigure = role === 'Administrator' || role === 'Owner';
+  const [target, setTarget] = useState(90);
+  const [minimum, setMinimum] = useState(80);
+  const [targetInput, setTargetInput] = useState('90');
+  const [minimumInput, setMinimumInput] = useState('80');
+  const validSettings =
+    targetInput.trim() !== '' &&
+    minimumInput.trim() !== '' &&
+    Number.isFinite(Number(targetInput)) &&
+    Number.isFinite(Number(minimumInput)) &&
+    Number(minimumInput) >= 0 &&
+    Number(targetInput) <= 100 &&
+    Number(minimumInput) < Number(targetInput);
+
+  const applySettings = event => {
+    event.preventDefault();
+    if (canConfigure && validSettings) {
+      setTarget(Number(targetInput));
+      setMinimum(Number(minimumInput));
+    }
+  };
 
   const [supplierData, setSupplierData] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -74,7 +112,6 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
     axisColor: darkMode ? '#a0a0a0' : '#666',
     // UPDATE: Set a lighter grey for dark mode so grid lines are clearly visible
     gridColor: darkMode ? '#9CA3AF' : '#E2E8F0',
-    barColor: '#4CAF50',
     labelFill: darkMode ? '#ffffff' : '#333',
   };
 
@@ -124,6 +161,18 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
     fetchData();
   }, [dispatch, selectedDateRange, selectedProject, onDataLoaded]);
 
+  const aboveTarget = supplierData.filter(item => item.onTimeDeliveryPercentage >= target).length;
+  const best = supplierData.reduce(
+    (result, item) =>
+      !result || item.onTimeDeliveryPercentage > result.onTimeDeliveryPercentage ? item : result,
+    null,
+  );
+  const worst = supplierData.reduce(
+    (result, item) =>
+      !result || item.onTimeDeliveryPercentage < result.onTimeDeliveryPercentage ? item : result,
+    null,
+  );
+
   return (
     <div
       className={`${styles['supplier-performance-card']} ${
@@ -172,6 +221,84 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
         </div>
       </div>
 
+      {canConfigure && (
+        <form onSubmit={applySettings} className={styles['supplier-performance-filters']}>
+          <div className={styles['supplier-performance-filter-group']}>
+            <label htmlFor="supplier-target">Target (%)</label>
+            <Input
+              id="supplier-target"
+              type="number"
+              min="0.01"
+              max="100"
+              step="any"
+              value={targetInput}
+              onChange={event => setTargetInput(event.target.value)}
+              className={styles['supplier-performance-select']}
+            />
+          </div>
+          <div className={styles['supplier-performance-filter-group']}>
+            <label htmlFor="supplier-minimum">Minimum acceptable SLA (%)</label>
+            <Input
+              id="supplier-minimum"
+              type="number"
+              min="0"
+              max="100"
+              step="any"
+              value={minimumInput}
+              onChange={event => setMinimumInput(event.target.value)}
+              className={styles['supplier-performance-select']}
+            />
+          </div>
+          <button type="submit" disabled={!validSettings} className="btn btn-primary">
+            Apply
+          </button>
+          {!validSettings && (
+            <p role="alert">Enter percentages from 0 to 100 with minimum SLA below target.</p>
+          )}
+          <small>Settings apply to this chart while it is open.</small>
+        </form>
+      )}
+      <div className={styles['supplier-performance-legend']} aria-label="Performance thresholds">
+        <span>
+          <i style={{ background: performanceColor(target, target, minimum) }} />
+          Meets target: ? {target}%
+        </span>
+        <span>
+          <i style={{ background: performanceColor(minimum, target, minimum) }} />
+          Warning: ? {minimum}% and &lt; {target}%
+        </span>
+        <span>
+          <i style={{ background: '#d64545' }} />
+          Below SLA: &lt; {minimum}%
+        </span>
+      </div>
+      {!loading && !error && supplierData.length > 0 && (
+        <dl
+          className={styles['supplier-performance-summary']}
+          aria-label="Supplier performance summary"
+        >
+          <div>
+            <dt>At or above target</dt>
+            <dd>{aboveTarget}</dd>
+          </div>
+          <div>
+            <dt>Below target</dt>
+            <dd>{supplierData.length - aboveTarget}</dd>
+          </div>
+          <div>
+            <dt>Best-performing supplier</dt>
+            <dd>
+              {best.supplierName} ({best.onTimeDeliveryPercentage}%)
+            </dd>
+          </div>
+          <div>
+            <dt>Worst-performing supplier</dt>
+            <dd>
+              {worst.supplierName} ({worst.onTimeDeliveryPercentage}%)
+            </dd>
+          </div>
+        </dl>
+      )}
       {/* Chart Content */}
       <div className={styles['supplier-performance-content']}>
         {loading && <div className={styles['supplier-performance-loading']}>Loading...</div>}
@@ -230,16 +357,33 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
               </YAxis>
 
               <Tooltip
-                content={<CustomTooltip />}
+                content={<CustomTooltip target={target} />}
                 cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
               />
 
+              <ReferenceLine
+                y={target}
+                stroke={darkMode ? '#93c5fd' : '#1d4ed8'}
+                strokeWidth={2}
+                strokeDasharray="6 3"
+                label={{
+                  value: `Target ${target}%`,
+                  position: 'insideTopRight',
+                  fill: chartTheme.textColor,
+                }}
+              />
               <Bar
                 dataKey="onTimeDeliveryPercentage"
-                fill={chartTheme.barColor}
+                fill="#2e9b50"
                 maxBarSize={60}
                 radius={[4, 4, 0, 0]}
               >
+                {supplierData.map(item => (
+                  <Cell
+                    key={item.supplierName}
+                    fill={performanceColor(item.onTimeDeliveryPercentage, target, minimum)}
+                  />
+                ))}
                 <LabelList
                   dataKey="onTimeDeliveryPercentage"
                   position="top"
