@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './ActivityComments.module.css';
 import StatusBadge from './StatusBadge';
@@ -423,6 +423,38 @@ function ActivityComments() {
     }
   };
 
+  const toggleSortType = () => {
+    setSortType(prev => (prev === 'Newest' ? 'Oldest' : 'Newest'));
+  };
+
+  const sortedComments = useMemo(
+    () =>
+      [...comments].sort((a, b) => {
+        if (sortType === 'Newest') return new Date(b.createdAt) - new Date(a.createdAt);
+        if (sortType === 'Oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+        return 0;
+      }),
+    [comments, sortType],
+  );
+  const handleVote = (commentId, direction) => {
+    setComments(prevComments =>
+      prevComments.map(comment => {
+        if (comment.id !== commentId) return comment;
+
+        const previousVote = comment.userVote ?? null;
+        const userVote = previousVote === direction ? null : direction;
+
+        return {
+          ...comment,
+          upvotes: comment.upvotes - Number(previousVote === 'up') + Number(userVote === 'up'),
+          downvotes:
+            comment.downvotes - Number(previousVote === 'down') + Number(userVote === 'down'),
+          userVote,
+        };
+      }),
+    );
+  };
+
   const handlePostComment = () => {
     if (!commentInput.trim()) return;
 
@@ -518,9 +550,17 @@ function ActivityComments() {
 
   const handleHelpfulClick = feedbackId => {
     setFeedbacks(prevFeedbacks =>
-      prevFeedbacks.map(feedback =>
-        feedback.id === feedbackId ? { ...feedback, helpful: feedback.helpful + 1 } : feedback,
-      ),
+      prevFeedbacks.map(feedback => {
+        if (feedback.id !== feedbackId) return feedback;
+
+        const hasLiked = feedback.hasLiked ?? false;
+
+        return {
+          ...feedback,
+          helpful: hasLiked ? feedback.helpful - 1 : feedback.helpful + 1,
+          hasLiked: !hasLiked,
+        };
+      }),
     );
   };
 
@@ -717,13 +757,13 @@ function ActivityComments() {
         <div className={styles.calendar}>
           {/* Calendar Header with Navigation */}
           <div className={styles.calendarHeader}>
-            <button onClick={handlePrevMonth} className={styles.calendarNavBtn}>
+            <button type="button" onClick={handlePrevMonth} className={styles.calendarNavBtn}>
               &#8249;
             </button>
             <div className={styles.calendarMonth}>
               {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </div>
-            <button onClick={handleNextMonth} className={styles.calendarNavBtn}>
+            <button type="button" onClick={handleNextMonth} className={styles.calendarNavBtn}>
               &#8250;
             </button>
           </div>
@@ -792,24 +832,28 @@ function ActivityComments() {
       {/* Tabs */}
       <div className={styles.tabs}>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === 'Description' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('Description')}
         >
           Description
         </button>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === 'Analysis' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('Analysis')}
         >
           Analysis
         </button>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === 'Resource' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('Resource')}
         >
           Resource
         </button>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === 'Engagement' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('Engagement')}
         >
@@ -828,6 +872,7 @@ function ActivityComments() {
         <div>
           <div className={styles.commentTabs}>
             <button
+              type="button"
               className={`${styles.commentTabBtn} ${
                 commentTab === 'Comment' ? styles.commentTabBtnActive : ''
               }`}
@@ -836,6 +881,7 @@ function ActivityComments() {
               Comment
             </button>
             <button
+              type="button"
               className={`${styles.commentTabBtn} ${
                 commentTab === 'Feedback' ? styles.commentTabBtnActive : ''
               }`}
@@ -852,8 +898,8 @@ function ActivityComments() {
                 <span className={styles.commentCount}>
                   Comment <span className={styles.commentCountNumber}>{comments.length}</span>
                 </span>
-                <button className={styles.sortBtn}>
-                  <span style={{ fontSize: '1.1em' }}>⇅</span> Sort
+                <button type="button" className={styles.sortBtn} onClick={toggleSortType}>
+                  <span style={{ fontSize: '1.1em' }}>⇅</span> {sortType}
                 </button>
               </div>
               <div className={styles.commentBox}>
@@ -865,12 +911,12 @@ function ActivityComments() {
                   value={commentInput}
                   onChange={e => setCommentInput(e.target.value)}
                 />
-                <button className={styles.postBtn} onClick={handlePostComment}>
+                <button type="button" className={styles.postBtn} onClick={handlePostComment}>
                   Post
                 </button>
               </div>
               <div className={styles.commentsList}>
-                {comments.map(comment => (
+                {sortedComments.map(comment => (
                   <div key={comment.id} className={styles.commentItem}>
                     <div className={styles.commentTopRow}>
                       <img
@@ -886,13 +932,28 @@ function ActivityComments() {
                     </div>
                     <div className={styles.commentText}>{comment.text}</div>
                     <div className={styles.commentActionsRow}>
-                      <button className={styles.upvoteBtn}>
+                      <button
+                        type="button"
+                        aria-label="Upvote comment"
+                        aria-pressed={comment.userVote === 'up'}
+                        onClick={() => handleVote(comment.id, 'up')}
+                        className={styles.upvoteBtn}
+                      >
                         <span style={{ fontSize: '1.1em' }}>↑</span>
-                      </button>
-                      <button className={styles.downvoteBtn}>
-                        <span style={{ fontSize: '1.1em' }}>↓</span>
+                        <span className={styles.voteCount}>{comment.upvotes}</span>
                       </button>
                       <button
+                        type="button"
+                        aria-label="Downvote comment"
+                        aria-pressed={comment.userVote === 'down'}
+                        onClick={() => handleVote(comment.id, 'down')}
+                        className={styles.downvoteBtn}
+                      >
+                        <span style={{ fontSize: '1.1em' }}>↓</span>
+                        <span className={styles.voteCount}>{comment.downvotes}</span>
+                      </button>
+                      <button
+                        type="button"
                         className={styles.replyBtn}
                         onClick={() => handleReplyClick(comment.id)}
                       >
@@ -917,12 +978,14 @@ function ActivityComments() {
                             onChange={e => setReplyInput(e.target.value)}
                           />
                           <button
+                            type="button"
                             className={styles.replySubmitBtn}
                             onClick={() => handlePostReply(comment.id)}
                           >
                             Reply
                           </button>
                           <button
+                            type="button"
                             className={styles.replyCancelBtn}
                             onClick={() => setReplyingTo(null)}
                           >
@@ -958,6 +1021,7 @@ function ActivityComments() {
               </div>
               {hasMoreComments && (
                 <button
+                  type="button"
                   className={styles.loadMoreBtn}
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
@@ -1074,7 +1138,10 @@ function ActivityComments() {
                       <div className={styles.commentText}>{feedback.text}</div>
                       <div className={styles.commentActionsRow}>
                         <button
+                          type="button"
                           className={styles.upvoteBtn}
+                          aria-label="Helpful"
+                          aria-pressed={Boolean(feedback.hasLiked)}
                           title="Helpful"
                           onClick={() => handleHelpfulClick(feedback.id)}
                         >
@@ -1084,6 +1151,7 @@ function ActivityComments() {
                           </span>
                         </button>
                         <button
+                          type="button"
                           className={styles.replyBtn}
                           title="Report"
                           onClick={() => handleFlagClick(feedback.id)}
