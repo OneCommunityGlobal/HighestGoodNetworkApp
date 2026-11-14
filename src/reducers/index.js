@@ -92,6 +92,7 @@ import emailOutboxReducer from './emailOutboxReducer';
 import emailTemplateReducer from './emailTemplateReducer';
 import wishListReducer from './listBidDashboard/wishListItemReducer';
 import villageDetailsReducer from './listBidDashboard/villageDetailsReducer';
+import { lbUserManagementReducer } from './listBidDashboard/userManagementReducer';
 
 import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
 
@@ -208,6 +209,7 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  lbUserManagement: lbUserManagementReducer,
   emailTemplates: emailTemplateReducer,
   emailOutbox: emailOutboxReducer,
 
