@@ -1,0 +1,16 @@
+/* Turns the light OpenStreetMap tiles into a dark map. Only the tile layer is filtered,
+   so the volunteer markers and the heat map keep their colors. */
+.volunteerMapDarkTiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
+}
+
+/* The zoom buttons had white symbols on a white background in dark mode */
+.volunteerMapDark :global(.leaflet-bar a) {
+  background-color: #1e293b;
+  border-bottom-color: #334155;
+  color: #e2e8f0;
+}
+
+.volunteerMapDark :global(.leaflet-bar a:hover) {
+  background-color: #334155;
+}

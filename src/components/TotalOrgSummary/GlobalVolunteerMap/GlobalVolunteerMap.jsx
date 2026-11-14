@@ -5,18 +5,18 @@ import { MapContainer, TileLayer, useMap, CircleMarker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
 import Loading from '~/components/common/Loading';
+import styles from './GlobalVolunteerMap.module.css';
 
 const volunteerColors = {
   active: '#4CAF50',
 };
 
-const LIGHT_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const LIGHT_TILE_ATTRIBUTION =
+// Both themes use the OpenStreetMap tiles, which need no API key. Dark mode darkens them with
+// a CSS filter. The old dark tiles came from Stadia Maps, which needs a key on any site other
+// than localhost, so the live site showed "401 Invalid Authentication" tiles in dark mode.
+const TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const TILE_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-
-const DARK_TILE_URL = 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png';
-const DARK_TILE_ATTRIBUTION =
-  '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a>';
 
 function HeatMap({ points }) {
   const map = useMap();
@@ -118,8 +118,12 @@ function GlobalVolunteerMap({ locations = [], isLoading, darkMode = false, error
     );
   }
 
+  const mapContainerClass = darkMode
+    ? ['map-container', 'dark-mode', styles.volunteerMapDark].join(' ')
+    : 'map-container';
+
   return (
-    <div className={`map-container ${darkMode ? 'dark-mode' : ''}`} style={{ marginTop: '20px' }}>
+    <div className={mapContainerClass} style={{ marginTop: '20px' }}>
       {/* Dark theme styles for Leaflet attribution badge & controls */}
       {darkMode && (
         <style>{`
@@ -147,8 +151,9 @@ function GlobalVolunteerMap({ locations = [], isLoading, darkMode = false, error
       >
         <TileLayer
           key={darkMode ? 'dark-tiles' : 'light-tiles'}
-          url={darkMode ? DARK_TILE_URL : LIGHT_TILE_URL}
-          attribution={darkMode ? DARK_TILE_ATTRIBUTION : LIGHT_TILE_ATTRIBUTION}
+          url={TILE_URL}
+          attribution={TILE_ATTRIBUTION}
+          className={darkMode ? styles.volunteerMapDarkTiles : ''}
         />
         <HeatMap points={heatMapPoints} />
 
