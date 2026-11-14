@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logStudentTaskHours } from '../../../actions/studentTasks';
@@ -8,6 +8,7 @@ const HoursLogPanel = ({ task, darkMode, onClose }) => {
   const dispatch = useDispatch();
   const [inputHours, setInputHours] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const submissionPending = useRef(false);
 
   const logged = task.logged_hours ?? 0;
   const total = task.suggested_total_hours ?? 0;
@@ -26,11 +27,16 @@ const HoursLogPanel = ({ task, darkMode, onClose }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (inputHours <= 0) return;
+    if (submissionPending.current || inputHours <= 0) return;
+    submissionPending.current = true;
     setSubmitting(true);
-    await dispatch(logStudentTaskHours(task.id || task._id, inputHours));
-    setSubmitting(false);
-    setInputHours(1);
+    try {
+      const success = await dispatch(logStudentTaskHours(task.id || task._id, inputHours));
+      if (success === true) onClose();
+    } finally {
+      submissionPending.current = false;
+      setSubmitting(false);
+    }
   };
 
   return (
