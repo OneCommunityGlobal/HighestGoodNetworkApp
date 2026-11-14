@@ -178,12 +178,16 @@ export default function ToolStatusDonutChart() {
       ? toolsFromDropdown
       : toolslist || [];
 
-  // Get all unique projects from the combined data
+  // One entry per project name, like the Tools List project filter. The backend counts every
+  // project record with the selected one's name, so either duplicate id gives the same chart.
   const uniqueProjects = Array.from(
     new Map(
       allAvailableTools
         .filter(t => t?.projectId)
-        .map(t => [t.projectId, { id: t.projectId, name: t.projectName || 'Unnamed Project' }]),
+        .map(t => [
+          t.projectName || t.projectId,
+          { id: t.projectId, name: t.projectName || 'Unnamed Project' },
+        ]),
     ).values(),
   );
 
