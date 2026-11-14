@@ -89,7 +89,7 @@ function IssuesCharts({ bmProjects = [] }) {
           callbacks: {
             title: items => {
               const issue = chartData[items[0]?.dataIndex];
-              if (!issue) return '';
+              if (!issue) return [];
 
               const title = issue.title?.trim() || 'Untitled';
               const words = title.split(' ');
@@ -111,7 +111,7 @@ function IssuesCharts({ bmProjects = [] }) {
             },
             label: context => {
               const issue = chartData[context.dataIndex];
-              if (!issue) return '';
+              if (!issue) return [];
 
               const project = bmProjects.find(p => String(p._id) === String(issue.projectId));
               const projectName = project?.name || 'Unknown Project';
