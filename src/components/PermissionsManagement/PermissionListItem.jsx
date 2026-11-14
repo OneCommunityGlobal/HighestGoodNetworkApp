@@ -3,6 +3,8 @@
 import { useState, useContext, useEffect } from 'react';
 import { Button } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
@@ -25,8 +27,13 @@ function PermissionListItem(props) {
     setRemovedDefaultPermissions,
     removedDefaultPermissions,
     editPermission,
+    // the outer list's closed heading labels, and its function to open or close one
+    closedHeadings,
+    onToggleHeading = () => {},
   } = props;
   const isCategory = !!subperms;
+  // a heading is open unless its label is in the Set (no Set at all means open)
+  const isOpen = !closedHeadings?.has(label);
   const [isMobile, setIsMobile] = useState(false);
   const hasThisPermission =
     rolePermissions.includes(permission) ||
@@ -190,7 +197,21 @@ function PermissionListItem(props) {
           }}
           className={styles.permissionLabel}
         >
-          {label}
+          {/* A heading name opens or closes the rows under it. That is not a permission change,
+              so it never calls onChange or updateModalStatus */}
+          {isCategory ? (
+            <button
+              type="button"
+              className={styles.headingToggle}
+              aria-expanded={isOpen}
+              onClick={() => onToggleHeading(label)}
+            >
+              <FontAwesomeIcon icon={isOpen ? faChevronDown : faChevronRight} fixedWidth />
+              {label}
+            </button>
+          ) : (
+            label
+          )}
         </p>
         <div className={styles.iconButtonContainer}>
           <div className="infos">
@@ -260,7 +281,8 @@ function PermissionListItem(props) {
           )}
         </div>
       </li>
-      {isCategory ? (
+      {/* a closed heading's rows are not drawn; its Add/Delete still covers all of them */}
+      {isCategory && isOpen ? (
         <li
           className={styles.userRoleTabPermissionList}
           style={{
@@ -283,6 +305,9 @@ function PermissionListItem(props) {
             darkMode={darkMode}
             removedDefaultPermissions={removedDefaultPermissions}
             setRemovedDefaultPermissions={setRemovedDefaultPermissions}
+            // the outer list remembers which headings are closed
+            closedHeadings={closedHeadings}
+            onToggleHeading={onToggleHeading}
           />
         </li>
       ) : null}
