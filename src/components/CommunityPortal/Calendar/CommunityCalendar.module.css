@@ -1967,3 +1967,29 @@
 .selectedEventTitleDark {
   color: #f7fafc;
 }
+
+/* Filter icons (inside each filter box, on the left) */
+.filterField {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.filterIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.filterField .filterSelectWithIcon {
+  padding-left: 2rem;
+}
+
+.calendarFiltersDarkMode .filterIcon {
+  color: #cbd5e1;
+}
