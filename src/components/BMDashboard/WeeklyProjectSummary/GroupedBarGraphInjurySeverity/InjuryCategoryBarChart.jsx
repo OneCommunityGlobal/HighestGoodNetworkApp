@@ -137,7 +137,10 @@ function InjuryCategoryBarChart() {
   }, [knownProjects, data, resolveKey]);
   const labelFor = key => projectLabelByKey.get(key) || 'Unknown Project';
 
-  const seriesKeys = useMemo(() => Array.from(new Set(data.map(resolveKey))), [data, resolveKey]);
+  const seriesKeys = useMemo(() => Array.from(new Set(data.map(row => resolveKey(row)))), [
+    data,
+    resolveKey,
+  ]);
 
   // Colors come from the unfiltered project set so they stay put when filters change
   const seriesMeta = useMemo(() => {
