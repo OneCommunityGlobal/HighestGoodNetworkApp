@@ -71,6 +71,8 @@ export function ItemListView({
   };
 
   const isMaterialsView = itemType === 'Materials';
+  const pluralLabel = itemType.toLowerCase();
+  const singularLabel = pluralLabel.endsWith('s') ? pluralLabel.slice(0, -1) : pluralLabel;
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -354,7 +356,7 @@ export function ItemListView({
           </div>
 
           <div className={styles.foundCount}>
-            {totalItems} {totalItems === 1 ? 'material' : 'materials'} found
+            {totalItems} {totalItems === 1 ? singularLabel : pluralLabel} found
           </div>
         </div>
 
