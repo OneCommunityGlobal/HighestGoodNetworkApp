@@ -459,6 +459,16 @@ export const ENDPOINTS = {
 
   // Project cost tracking endpoints
   PROJECT_COST_IDS: `${APIEndpoint}/bm/projects-cost/ids`,
+  BM_PROJECT_COST_ENTRIES: (projectId, category, startDate, endDate) => {
+    let url = `${APIEndpoint}/bm/project-cost-entries`;
+    const params = [];
+    if (projectId) params.push(`projectId=${projectId}`);
+    if (category) params.push(`category=${encodeURIComponent(category)}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
   PROJECT_COSTS_BY_ID: (projectId, categories, fromDate, toDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/costs`;
     const params = [];
