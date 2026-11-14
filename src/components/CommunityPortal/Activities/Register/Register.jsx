@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import CalendarWidget from 'react-calendar';
@@ -82,7 +82,7 @@ const formatTimeOnly = value => {
 
 function Register() {
   const { activityId } = useParams();
-
+  const history = useHistory();
   const darkMode = useSelector(state => state.theme?.darkMode);
   const userProfile = useSelector(state => state.userProfile);
   const authUser = useSelector(state => state.auth?.user);
@@ -270,7 +270,13 @@ function Register() {
           >
             {isRegistering ? 'Registering...' : 'Register'}
           </button>
-
+          <button
+            type="button"
+            className={styles['register-button']}
+            onClick={() => history.push(`/communityportal/activity/${activityId}/attendance`)}
+          >
+            Attendance
+          </button>
           <ShareAvailability
             activity={activity}
             availability={availability}

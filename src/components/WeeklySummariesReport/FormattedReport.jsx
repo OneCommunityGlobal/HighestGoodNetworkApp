@@ -554,10 +554,14 @@ function TeamCodeRow({
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
 
     try {
-      await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
-      handleTeamCodeChange(userProfileSummary._id, newStatus, {
-        [userProfileSummary._id]: true,
-      }); // Update the team code dynamically
+      const response = await axios.patch(url, {
+        userIds: [userProfileSummary._id],
+        replaceCode: newStatus,
+      });
+      const updatedUser = response.data?.updatedUsers?.find(
+        user => user.userId === userProfileSummary._id,
+      );
+      handleTeamCodeChange(userProfileSummary._id, newStatus, updatedUser?.teamCodeWarning);
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -854,19 +858,26 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   const badgeIdThisWeek = [];
   const badgeThisWeek = [];
   summary.badgeCollection.forEach(badge => {
-    if (badge.earnedDate) {
-      const { length } = badge.earnedDate;
-      const earnedDate = moment(badge.earnedDate[length - 1]);
-      if (earnedDate.isBetween(badgeStartDate, badgeEndDate, 'days', '[]')) {
-        badgeIdThisWeek.push(badge.badge);
-      }
-    } else {
+    const earnedDates = Array.isArray(badge.earnedDate) ? badge.earnedDate : [];
+
+    const earnedThisWeek = earnedDates.some(date => {
+      const earnedDate = moment.tz(date, [moment.ISO_8601, 'MMM-DD-YY', 'MMM-D-YY'], true, TZ);
+      const earnedDay = earnedDate.format('YYYY-MM-DD');
+
+      return earnedDate.isValid() && earnedDay >= badgeStartDate && earnedDay <= badgeEndDate;
+    });
+
+    if (earnedThisWeek) {
+      badgeIdThisWeek.push(badge.badge);
+    } else if (earnedDates.length === 0 && badge.lastModified) {
       const modifiedDate = badge.lastModified.substring(0, 10);
+
       if (modifiedDate <= badgeEndDate && modifiedDate >= badgeStartDate) {
         badgeIdThisWeek.push(badge.badge);
       }
     }
   });
+
   if (badgeIdThisWeek.length > 0) {
     badgeIdThisWeek.forEach(badgeId => {
       // eslint-disable-next-line no-shadow
