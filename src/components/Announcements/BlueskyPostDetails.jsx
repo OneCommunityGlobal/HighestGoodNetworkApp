@@ -3,8 +3,10 @@ import { Alert, Button, Card, Container, Form, Modal, Spinner } from 'react-boot
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './BlueskyPostDetails.module.css';
+import { ENDPOINTS } from '~/utils/URL';
 
-const API_BASE_URL = 'http://localhost:4500/api/bluesky';
+const API_BASE_URL = `${ENDPOINTS.APIEndpoint()}/bluesky`;
+
 const SUCCESS_PREFIX = '[OK]';
 const ERROR_PREFIX = '[ERROR]';
 const INFO_PREFIX = '[INFO]';
