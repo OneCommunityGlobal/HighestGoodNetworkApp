@@ -212,9 +212,13 @@ export default function ToolStatusDonutChart() {
     outerRadius = 50;
     chartHeight = 200;
   } else {
-    innerRadius = 35;
-    outerRadius = 60;
-    chartHeight = 220;
+    // This card renders in a grid column that's typically 300-600px+ wide on desktop (see
+    // WeeklyProjectSummary's Tools and Equipment Tracking section), but these values were
+    // fixed regardless of that, so the donut looked tiny against all the surrounding card
+    // space. Scaled up, keeping roughly the same inner:outer ratio.
+    innerRadius = 55;
+    outerRadius = 100;
+    chartHeight = 320;
   }
 
   const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;
