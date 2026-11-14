@@ -326,7 +326,8 @@ describe('UserPermissionsPopup component', () => {
       </Provider>,
     );
 
-    // Select user
+    // Select user (list opens on click/typing only)
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test2 Manager'));
 
     // Wait for initial "Add" buttons to appear
@@ -401,6 +402,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalProvider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     await flushAllPromises();
     expect(screen.queryByText(REMINDER)).not.toBeInTheDocument();
@@ -425,6 +427,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     await flushAllPromises();
     // A real change first, so the flag is on when Submit is pressed
@@ -446,6 +449,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     fireEvent.click(screen.getByText('Submit'));
 
@@ -461,6 +465,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     await flushAllPromises();
     fireEvent.change(screen.getByPlaceholderText('Shows only ACTIVE users'), {

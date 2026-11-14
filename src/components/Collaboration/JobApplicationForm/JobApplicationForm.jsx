@@ -478,14 +478,16 @@ export function buildInitialSelection({
   notifyInitialFormSelection(navTitle, formMatch, chosen, managementFamilySoftMatch);
 
   // Show a real position or form title, never the raw query / slug: near-miss titles select the
-  // matched position, and unmatched ones (e.g. "Applied through site", /apply/<unknown>) select
-  // the default form they fell back to instead of adding a fake dropdown option.
+  // matched position. If the listing has no linked form (fallback to default software), select
+  // that form's title so the dropdown/page heading match the questionnaire on screen.
+  const usedDefaultFormFallback = Boolean(navTitle) && !formMatch && Boolean(chosen);
   const matchedTitle = formMatch ? formMatch.title : chosen?.title;
-  const bannerTitle =
-    matchPositionOption(baseOptions, navTitle) ||
-    matchPositionOption(baseOptions, matchedTitle) ||
-    matchedTitle ||
-    '';
+  const bannerTitle = usedDefaultFormFallback
+    ? matchPositionOption(baseOptions, matchedTitle) || matchedTitle || ''
+    : matchPositionOption(baseOptions, navTitle) ||
+      matchPositionOption(baseOptions, matchedTitle) ||
+      matchedTitle ||
+      '';
   const options = ensurePositionOption(baseOptions, bannerTitle);
   const initial = getInitialFormState(chosen, bannerTitle);
   const selected =
@@ -1269,7 +1271,13 @@ function JobApplicationForm() {
     let form = findFormForJobTitle(forms, selectedJob);
     if (!form) {
       form = findDefaultSoftwareForm(forms);
-      if (form) warnDefaultFormFallback(selectedJob, form);
+      if (form) {
+        warnDefaultFormFallback(selectedJob, form);
+        // Keep dropdown / page title aligned with the questionnaire actually shown.
+        setSelectedJob(form.title);
+        setBannerJobTitle(form.title);
+        setJobTitleInput(form.title);
+      }
     }
     if (!form) return;
     setFilteredForm(form);
@@ -1327,10 +1335,10 @@ function JobApplicationForm() {
 
     if (positionMatch || form) {
       if (usedDefaultSoftware && form) {
-        // Load the default software form, but keep the typed query in the UI and toast.
+        // Load the default software form and select that title so the UI matches the questions.
         setSelectedJob(form.title);
-        setBannerJobTitle(raw);
-        setJobTitleInput(raw);
+        setBannerJobTitle(form.title);
+        setJobTitleInput(form.title);
         warnDefaultFormFallback(raw, form);
       } else {
         const dropdownJob = positionMatch || form.title;
