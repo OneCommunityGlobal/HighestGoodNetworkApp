@@ -693,10 +693,14 @@ function TotalOrgSummary(props) {
           title="Global Distribution and Volunteer Status Overview"
           section="global-distribution"
         >
-          <Row>
+          <Row className={styles.globalDistributionRow}>
             <Col lg={{ size: 6 }}>
               <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
+                className={clsx(
+                  styles.componentContainer,
+                  styles.componentBorder,
+                  styles.globalDistributionPanel,
+                )}
                 data-pdf-block
               >
                 <div
@@ -734,6 +738,7 @@ function TotalOrgSummary(props) {
                   styles.componentContainer,
                   styles.componentBorder,
                   styles.componentBorderLoose,
+                  styles.globalDistributionPanel,
                 )}
                 data-pdf-block
               >

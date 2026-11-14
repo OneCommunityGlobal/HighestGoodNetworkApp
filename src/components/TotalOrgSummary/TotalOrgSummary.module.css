@@ -66,10 +66,19 @@
 
 /* Ensure all images, svg, and charts are responsive */
 .containerTotalOrgWrapper img,
-.containerTotalOrgWrapper svg,
-.containerTotalOrgWrapper canvas {
+.containerTotalOrgWrapper svg {
   max-width: 100% !important;
   height: auto !important;
+}
+
+/*
+ * Canvas max-width comes from `.containerTotalOrgWrapper *` below (no !important).
+ * Volunteer/mentor donuts fill their Chart.js wrapper — do not set height: auto on
+ * these canvases (that fought Chart.js sizing).
+ */
+.containerTotalOrgWrapper :global([data-chart='volunteer-status']) canvas,
+.containerTotalOrgWrapper :global([data-chart='mentor-status']) canvas {
+  height: 100%;
 }
 
 /* Ensure hr doesn't cause overflow */
@@ -437,6 +446,61 @@
   overflow: visible;
 }
 
+/* Global Distribution row: equal-height cards, responsive stacking.
+ * Combined with Bootstrap .row so this beats generic flex utilities without !important. */
+.globalDistributionRow:global(.row) {
+  align-items: stretch;
+}
+
+.globalDistributionRow > :global([class*='col']) {
+  display: flex;
+  flex-direction: column;
+}
+
+.globalDistributionPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  min-height: 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.globalDistributionPanel .totalOrgChartTitle {
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+/* Title size comes from .totalOrgChartTitle p (+ its media queries); only tighten weight/spacing here. */
+.globalDistributionPanel .totalOrgChartTitle p {
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.globalDistributionPanel :global(.map-container) {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.globalDistributionPanel :global(.leaflet-container) {
+  height: 380px;
+  min-height: 320px;
+  max-height: 420px;
+}
+
+@media (width <= 991px) {
+  .globalDistributionPanel :global(.leaflet-container) {
+    height: 320px;
+    min-height: 280px;
+  }
+}
+
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
   background-color: #1c2541 !important;
   border: 1.5px solid #2f4157 !important;
@@ -678,7 +742,15 @@
   .componentContainer :global(canvas),
   .componentBorder :global(canvas) {
     max-width: 100% !important;
-    height: auto !important;
+    height: auto;
+  }
+
+  /* More specific than the rule above — status donuts fill their wrappers */
+  .componentContainer :global([data-chart='volunteer-status']) canvas,
+  .componentContainer :global([data-chart='mentor-status']) canvas,
+  .componentBorder :global([data-chart='volunteer-status']) canvas,
+  .componentBorder :global([data-chart='mentor-status']) canvas {
+    height: 100%;
   }
 
   /* Ensure Row and Col don't cause overflow */
@@ -764,7 +836,14 @@
   .componentContainer :global(canvas),
   .componentBorder :global(canvas) {
     max-width: 100% !important;
-    height: auto !important;
+    height: auto;
+  }
+
+  .componentContainer :global([data-chart='volunteer-status']) canvas,
+  .componentContainer :global([data-chart='mentor-status']) canvas,
+  .componentBorder :global([data-chart='volunteer-status']) canvas,
+  .componentBorder :global([data-chart='mentor-status']) canvas {
+    height: 100%;
   }
 
   :global(.row) {

@@ -39,6 +39,11 @@ describe('DonutChart center hole', () => {
     renderDonut('Week Over Week');
     expect(lastDoughnutProps.options.cutout).toBe('70%');
   });
+
+  it('opts out of ProjectStatus centerText so labels do not leak onto this chart', () => {
+    renderDonut('No Comparison');
+    expect(lastDoughnutProps.options.plugins.centerText).toBe(false);
+  });
 });
 
 describe('formatLegendLabel', () => {
