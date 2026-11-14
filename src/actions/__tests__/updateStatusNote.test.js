@@ -1,7 +1,7 @@
 import axios from 'axios';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { updateStatusNote } from '../userManagement';
+import { updateStatusNote, getStatusNoteErrorMessage } from '../userManagement';
 import { ENDPOINTS } from '../../utils/URL';
 import { USER_PROFILE_UPDATE } from '../../constants/userManagement';
 
@@ -51,5 +51,26 @@ describe('updateStatusNote', () => {
 
     await expect(store.dispatch(updateStatusNote(user, 'Note'))).rejects.toThrow('Forbidden');
     expect(store.getActions()).toEqual([]);
+  });
+});
+
+describe('getStatusNoteErrorMessage', () => {
+  it('adds the reason the backend sends as { error }', () => {
+    const error = { response: { data: { error: 'The note must be 2000 characters or less' } } };
+    expect(getStatusNoteErrorMessage(error)).toBe(
+      'Unable to save the note: The note must be 2000 characters or less',
+    );
+  });
+
+  it('adds the reason the backend sends as plain text', () => {
+    const error = { response: { data: 'You are not authorized to change notes for this user' } };
+    expect(getStatusNoteErrorMessage(error)).toBe(
+      'Unable to save the note: You are not authorized to change notes for this user',
+    );
+  });
+
+  it('falls back to the short message when there is no reason', () => {
+    expect(getStatusNoteErrorMessage(new Error('Network Error'))).toBe('Unable to save the note.');
+    expect(getStatusNoteErrorMessage(undefined)).toBe('Unable to save the note.');
   });
 });

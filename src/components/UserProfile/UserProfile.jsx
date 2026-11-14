@@ -57,6 +57,7 @@ import {
   toggleVisibility,
   updateRehireableStatus,
   updateStatusNote,
+  getStatusNoteErrorMessage,
 } from '../../actions/userManagement';
 import { updateUserProfile } from "../../actions/userProfile";
 import BlueSquareLayout from './BlueSquareLayout';
@@ -1201,7 +1202,7 @@ setUpdatedTasks(prev => {
       toast.success(statusNote.trim() ? 'Note saved.' : 'Note deleted.');
       return true;
     } catch (error) {
-      toast.error('Unable to save the note.');
+      toast.error(getStatusNoteErrorMessage(error));
       return false;
     }
   };

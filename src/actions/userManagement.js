@@ -341,6 +341,13 @@ export const updateRehireableStatus = (user, isRehireable, notRehireableReason =
  * @param{*} user - the user the note belongs to
  * @param{string} statusNote - the new note; an empty string deletes it
  */
+// Shows why a note could not be saved; the backend sends { error } or, for 403, a plain string
+export const getStatusNoteErrorMessage = error => {
+  const data = error?.response?.data;
+  const reason = typeof data === 'string' ? data : data?.error;
+  return reason ? `Unable to save the note: ${reason}` : 'Unable to save the note.';
+};
+
 export const updateStatusNote = (user, statusNote) => {
   return async (dispatch, getState) => {
     const note = typeof statusNote === 'string' ? statusNote.trim() : '';

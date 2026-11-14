@@ -27,6 +27,7 @@ import {
   updateUserPauseStatus,
   resetUserProfileEdit,
   updateStatusNote,
+  getStatusNoteErrorMessage,
 } from '../../actions/userManagement';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
@@ -514,7 +515,7 @@ class UserManagement extends React.PureComponent {
       toast.success(statusNote.trim() ? 'Note saved.' : 'Note deleted.');
       return true;
     } catch (error) {
-      toast.error('Unable to save the note.');
+      toast.error(getStatusNoteErrorMessage(error));
       return false;
     }
   };
