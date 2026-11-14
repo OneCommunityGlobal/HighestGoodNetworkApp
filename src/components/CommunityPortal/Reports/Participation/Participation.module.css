@@ -2327,59 +2327,59 @@
 @media print {
   :global(html),
   :global(body) {
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
+    height: auto;
+    max-height: none;
+    overflow: visible;
   }
 
   .participationLandingPage,
   .participationLandingPageDark {
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-    height: auto !important;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    height: auto;
   }
 
   .savePdfBtn {
-    display: none !important;
+    display: none;
   }
 
   .headerContent {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 12px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .headerTitle {
-    width: 100% !important;
-    margin-right: 0 !important;
+    width: 100%;
+    margin-right: 0;
   }
 
   .headerNavigation {
-    width: 100% !important;
+    width: 100%;
   }
 
   .metricsSummary {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .chartsRow {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .engagementCards {
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 12px !important;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .engagementCard {
-    min-width: 0 !important;
-    break-inside: avoid !important;
+    min-width: 0;
+    break-inside: avoid;
   }
 }
