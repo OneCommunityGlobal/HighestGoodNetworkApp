@@ -660,6 +660,7 @@ export const ENDPOINTS = {
 
   DROPBOX_DELETE: `${APIEndpoint}/dropbox/delete-folder`,
   DROPBOX_TEAM_FOLDERS: `${APIEndpoint}/dropbox/team-folders`,
+  DROPBOX_CHECK_ACCESS: `${APIEndpoint}/dropbox/check-access`,
   GITHUB_REMOVE: `${APIEndpoint}/github/remove`,
   SENTRY_REMOVE: `${APIEndpoint}/sentry/remove`,
 
