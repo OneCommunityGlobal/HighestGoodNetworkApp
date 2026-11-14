@@ -185,3 +185,54 @@
     gap: 12px;
   }
 }
+
+.supplier-performance-card {
+  min-width: 0;
+}
+.supplier-performance-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+  color: #333;
+}
+.supplier-performance-summary > div {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+.supplier-performance-summary dt {
+  font-size: 12px;
+}
+.supplier-performance-summary dd {
+  margin: 6px 0 0;
+}
+.supplier-performance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: #333;
+}
+.supplier-performance-legend i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+}
+.supplier-performance-filters small {
+  flex-basis: 100%;
+}
+.supplier-performance-dark-mode {
+  background-color: var(--card-bg, #1b2434);
+  color: #e0e0e0;
+}
+.supplier-performance-dark-mode .supplier-performance-summary,
+.supplier-performance-dark-mode .supplier-performance-legend,
+.supplier-performance-dark-mode .supplier-performance-tooltip {
+  color: #e0e0e0;
+}
+.supplier-performance-dark-mode .supplier-performance-summary > div {
+  border-color: #555;
+}
