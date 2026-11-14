@@ -575,6 +575,10 @@ describe('FormattedReport requested week off notice', () => {
       vi.setSystemTime(new Date('2026-09-19T12:00:00-07:00'));
     });
 
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it.each([
       ['earlier entry in a multi-week history', ['Sep-12-26', 'Sep-19-26'], 1, true],
       ['unpadded writer output', ['Sep-6-26', 'Sep-19-26'], 1, true],
@@ -633,5 +637,42 @@ describe('FormattedReport requested week off notice', () => {
         }),
       ).toHaveLength(visible ? 1 : 0);
     });
+  });
+});
+
+describe('FormattedReport incomplete questionnaire indicator', () => {
+  const INDICATOR = 'incomplete-questionnaire-indicator';
+  const renderReport = completedQuestionnaireUserIds =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            completedQuestionnaireUserIds={completedQuestionnaireUserIds}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+  it('shows the indicator right after the name when the person has not completed it', async () => {
+    renderReport(new Set(['someone-else']));
+    const indicator = screen.getByTestId(INDICATOR);
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(screen.getByText(/John Doe/).nextElementSibling).toBe(indicator);
+
+    fireEvent.mouseOver(indicator);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'This person has not completed their questionnaire yet.',
+    );
+  });
+
+  it('hides the indicator when the person has completed it', () => {
+    renderReport(new Set(['1']));
+    expect(screen.queryByTestId(INDICATOR)).toBeNull();
+  });
+
+  it('hides the indicator while completion status is unknown', () => {
+    renderReport(null);
+    expect(screen.queryByTestId(INDICATOR)).toBeNull();
   });
 });
