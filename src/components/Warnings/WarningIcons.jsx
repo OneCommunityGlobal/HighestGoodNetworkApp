@@ -6,6 +6,7 @@ import hasPermission from '../../utils/permissions';
 import WarningIcon from './WarningIcon';
 import styles from './Warnings.module.css';
 
+import { permissions } from '../../utils/constants';
 function WarningIcons({
   handleWarningIconClicked,
   warnings,
@@ -18,9 +19,9 @@ function WarningIcons({
   const filledWarnings = warnings.concat(Array.from({ length: Math.max(8 - warnings.length, 0) }));
   const dispatch = useDispatch();
 
-  const canIssueTrackingWarnings = dispatch(hasPermission('issueTrackingWarnings'));
-  const canIssueBlueSquare = dispatch(hasPermission('issueBlueSquare'));
-  const canDeleteWarning = dispatch(hasPermission('deleteWarning'));
+  const canIssueTrackingWarnings = dispatch(hasPermission(permissions.issueTrackingWarnings));
+  const canIssueBlueSquare = dispatch(hasPermission(permissions.issueBlueSquare));
+  const canDeleteWarning = dispatch(hasPermission(permissions.deleteWarning));
 
   return (
     <div className={`${styles['warning-icons']}`}>

@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import BadgeTypes from './BadgeTypes';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
+import hasPermission from '../../utils/permissions';
+import { permissions } from '../../utils/constants';
 import '../Header/index.module.css';
 import styles from './BadgeDevelopment.module.css';
 
@@ -25,6 +28,7 @@ function getDark(darkMode, darkClass, lightClass = '') {
 
 function BadgeDevelopment(props) {
   const { darkMode, allBadgeData = [] } = props;
+  const canCreateBadges = props.hasPermission(permissions.createBadges);
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
   const [isAddFiltersOpen, setAddFiltersOpen] = useState(false);
   const [searchType, setSearchType] = useState('');
@@ -32,7 +36,10 @@ function BadgeDevelopment(props) {
   const [chooseRankFilter, setChooseRankFilter] = useState('');
   const [searchName, setSearchName] = useState('');
 
-  const toggle = () => setCreateNewBadgePopupOpen(prevIsOpen => !prevIsOpen);
+  const toggle = () => {
+    if (!canCreateBadges) return;
+    setCreateNewBadgePopupOpen(prevIsOpen => !prevIsOpen);
+  };
   const toggleFilters = () => setAddFiltersOpen(prevState => !prevState);
 
   const chooseRankFilterNumber = chooseRankFilter ? Number(chooseRankFilter) : null;
@@ -49,6 +56,7 @@ function BadgeDevelopment(props) {
       <Button
         className={`btn--dark-sea-green ${getDark(darkMode, styles.btnDark, styles.btn)}`}
         onClick={toggle}
+        disabled={!canCreateBadges}
       >
         Create New Badge
       </Button>
@@ -136,4 +144,8 @@ function BadgeDevelopment(props) {
   );
 }
 
-export default BadgeDevelopment;
+const mapDispatchToProps = dispatch => ({
+  hasPermission: permission => dispatch(hasPermission(permission)),
+});
+
+export default connect(null, mapDispatchToProps)(BadgeDevelopment);

@@ -3,6 +3,7 @@ import { Component } from 'react';
 import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import ReportTableSearchPanel from '../ReportTableSearchPanel';
+import styles from '../reportsPage.module.css';
 
 class ReportFilter extends Component {
   constructor(props) {
@@ -37,52 +38,54 @@ class ReportFilter extends Component {
   render() {
     const { darkMode } = this.props;
     return (
-       <div style={{ color: darkMode ? '#fff' : 'inherit' }}>
-        <div>
+       <div className={styles['report-filter-panel']} style={{ color: darkMode ? '#fff' : 'inherit' }}>
+        <div className={styles['report-filter-header-row']}>
           <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#007bff', textDecoration: 'none' }}>
             Select a Filter
           </button>
+          <Button
+            onClick={() => window.location.reload()}
+            color="danger"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Clear All
+          </Button>
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', color: darkMode ? '#fff' : 'inherit' }}>
-          <label style={{ display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', marginRight: '12px' }}>
+        <div className={styles['report-filter-options-row']} style={{ color: darkMode ? '#fff' : 'inherit' }}>
+          <label>
             <input
               name="radio"
               type="radio"
-              style={{ margin: '8px 8px 8px 0' }}
               value="active"
               checked={this.props.filterStatus === 'active'}
               onChange={this.setActive}
             />
             Active
           </label>
-          <label style={{ display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', marginRight: '12px' }}>
+          <label>
             <input
               name="radio"
               type="radio"
-              style={{ margin: '8px 8px 8px 0' }}
               value="inactive"
               checked={this.props.filterStatus === 'inactive'}
               onChange={this.setInActive}
             />
             Inactive
           </label>
-          <label style={{ display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', marginRight: '12px' }}>
+          <label>
             <input
               name="radio"
               type="radio"
-              style={{ margin: '8px 8px 8px 0' }}
               value="all"
               checked={this.props.filterStatus === 'all'}
               onChange={this.setAll}
             />
             All
           </label>
-          <label style={{ display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+          <label>
             <input
               name="radio"
               type="radio"
-              style={{ margin: '8px 8px 8px 0' }}
               value="tenHour"
               checked={this.props.filterStatus === 'tenHour'}
               onChange={this.setTenHourFilter}
@@ -90,15 +93,7 @@ class ReportFilter extends Component {
             10+ hours
           </label>
         </div>
-        <Button
-            onClick={() => window.location.reload()}
-            color="danger"
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Clear All
-        </Button>
-        </div>
-        <div className="mt-4">
+        <div>
           <ReportTableSearchPanel
             onSearch={this.onWildCardSearch}
             wildCardSearchText={this.props.wildCardSearchText}

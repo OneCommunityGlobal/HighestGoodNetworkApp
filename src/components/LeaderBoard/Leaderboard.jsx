@@ -28,6 +28,7 @@ import {
 } from '~/utils/leaderboardPermissions';
 import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 import hasPermission from '~/utils/permissions';
+import { permissions } from '../../utils/constants';
 // import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
@@ -92,8 +93,8 @@ function LeaderBoard({
   usersOnFutureTimeOff,
 }) {
   const userId = displayUserId;
-  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+  const hasSummaryIndicatorPermission = hasPermission(permissions.seeSummaryIndicator); // ??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission(permissions.seeVisibilityIcon); // ??? this permission doesn't exist?
   const todaysDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -760,7 +761,11 @@ function LeaderBoard({
                 </tr>
               </thead>
               <tbody className="my-custome-scrollbar responsive-font-size">
-                <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
+                <tr
+                  className={
+                    darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
+                  }
+                >
                   {isAbbreviatedView ? (
                     <td colSpan={2}>
                       <div className="leaderboard-totals-container text-center">
@@ -841,26 +846,8 @@ function LeaderBoard({
                   return (
                     <tr
                       key={item.personId}
-                      className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
-                      onMouseEnter={
-                        darkMode
-                          ? e => {
-                              e.currentTarget.querySelectorAll('td, th, span, p, a').forEach(el => {
-                                el.style.color = '#000';
-                                el.style.backgroundColor = '#fff';
-                              });
-                            }
-                          : undefined
-                      }
-                      onMouseLeave={
-                        darkMode
-                          ? e => {
-                              e.currentTarget.querySelectorAll('td, th, span, p, a').forEach(el => {
-                                el.style.color = '';
-                                el.style.backgroundColor = '';
-                              });
-                            }
-                          : undefined
+                      className={
+                        darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
                       }
                     >
                       <td className="align-middle">
