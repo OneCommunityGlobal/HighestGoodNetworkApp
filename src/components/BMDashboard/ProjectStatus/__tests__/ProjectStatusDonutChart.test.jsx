@@ -2,7 +2,8 @@ import { cloneElement, isValidElement } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { MemoryRouter } from 'react-router-dom';
+import createMockStore from 'redux-mock-store';
 import ProjectStatusDonutChart from '../ProjectStatusDonutChart';
 import { fetchProjectStatusSummary } from '~/services/projectStatusService';
 
@@ -38,13 +39,15 @@ vi.mock('recharts', () => ({
   Legend: () => <div data-testid="legend" />,
 }));
 
-const mockStore = configureStore([]);
+const mockStore = createMockStore([]);
 
 const renderComponent = (darkMode = false) => {
   const store = mockStore({ theme: { darkMode } });
   return render(
     <Provider store={store}>
-      <ProjectStatusDonutChart />
+      <MemoryRouter>
+        <ProjectStatusDonutChart />
+      </MemoryRouter>
     </Provider>,
   );
 };

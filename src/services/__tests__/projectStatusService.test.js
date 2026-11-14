@@ -46,6 +46,14 @@ describe('projectStatusService', () => {
       );
     });
 
+    it('preserves calendar years below 100 in date-only inputs', async () => {
+      httpService.get.mockResolvedValue({ data: {} });
+      await fetchProjectStatusSummary({ startDate: '0001-01-01', endDate: '0099-12-31' });
+      expect(httpService.get).toHaveBeenCalledWith(
+        `${summaryUrl}?startDate=0001-01-01&endDate=0099-12-31`,
+      );
+    });
+
     it('formats dates to YYYY-MM-DD regardless of the input format', async () => {
       httpService.get.mockResolvedValue({ data: {} });
       await fetchProjectStatusSummary({

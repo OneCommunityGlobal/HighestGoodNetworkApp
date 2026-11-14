@@ -83,7 +83,9 @@ describe('BMDashboard Tests', () => {
   it('Renders BMDashboard and checks for header', () => {
     render(
       <Provider store={store}>
-        <BMDashboard />
+        <BrowserRouter>
+          <BMDashboard />
+        </BrowserRouter>
       </Provider>,
     );
     expect(screen.getByText('Building and Inventory Management Dashboard')).toBeInTheDocument();

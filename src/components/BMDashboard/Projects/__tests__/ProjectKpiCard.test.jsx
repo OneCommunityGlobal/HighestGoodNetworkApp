@@ -20,10 +20,11 @@ vi.mock('recharts', () => ({
 }));
 
 vi.mock('react-select', () => ({
-  default: ({ options, onChange }) => (
+  default: ({ options, onChange, value }) => (
     <select
       aria-label="Select projects"
       multiple
+      value={value.map(option => option.value)}
       onChange={event => {
         const selected = Array.from(event.target.selectedOptions, option => option.value);
         onChange(options.filter(option => selected.includes(option.value)));

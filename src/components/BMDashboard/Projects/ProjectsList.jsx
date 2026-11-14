@@ -1,25 +1,37 @@
-import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Row, Col } from 'reactstrap';
 import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
 import styles from '../BMDashboard.module.css';
 import summaryStyles from './ProjectSummary.module.css';
+import { PROJECT_PARAM, readProjectIds, updateDashboardQuery } from '../dashboardQuery';
 
 function ProjectsList() {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme?.darkMode || false);
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const history = useHistory();
+  const { search } = useLocation();
+  const hasProjectSelection = new URLSearchParams(search).has(PROJECT_PARAM);
+  const selectedIds = readProjectIds(search);
   const projectOptions = projects.map(project => ({
     value: project._id,
     label: project.name,
   }));
 
   const handleSelectChange = selectedOptions => {
-    setSelectedProjects(selectedOptions || []);
+    const nextIds = (selectedOptions || []).map(option => option.value);
+    if (
+      nextIds.length === selectedProjects.length &&
+      nextIds.every(id => selectedProjects.some(option => option.value === id))
+    ) {
+      return;
+    }
+    updateDashboardQuery(history, { [PROJECT_PARAM]: nextIds });
   };
 
-  const filteredProjects = selectedProjects.length
+  const selectedProjects = projectOptions.filter(option => selectedIds.includes(option.value));
+  const filteredProjects = hasProjectSelection
     ? projects.filter(project => selectedProjects.some(selected => selected.value === project._id))
     : projects;
 
@@ -110,6 +122,7 @@ function ProjectsList() {
         <Select
           isMulti
           options={projectOptions}
+          value={selectedProjects}
           onChange={handleSelectChange}
           placeholder="Select Projects"
           styles={selectStyles}
@@ -132,6 +145,20 @@ function ProjectsList() {
               </li>
             ))}
           </ul>
+        ) : hasProjectSelection ? (
+          <div>
+            <p role="status">
+              Selected projects are unavailable or still loading. Clear the selection to show all
+              projects.
+            </p>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => updateDashboardQuery(history, { [PROJECT_PARAM]: [] })}
+            >
+              Clear project selection
+            </button>
+          </div>
         ) : (
           <p className={darkMode ? 'text-light' : ''}>No projects data</p>
         )}
