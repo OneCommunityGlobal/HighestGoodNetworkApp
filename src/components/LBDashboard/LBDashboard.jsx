@@ -28,6 +28,7 @@ import styles from './LBDashboard.module.css';
 import UserManagementSection from './UserManagement/UserManagement';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 import { randomInt } from './lbUtils';
+import { ComparePieChart } from './PieChart/ComparePieChart';
 
 const METRIC_OPTIONS = {
   DEMAND: [
@@ -654,7 +655,15 @@ export function LBDashboard() {
             </Col>
 
             <Col>
-              <GraphCard title="Comparing Villages" metricLabel={metricLabel} darkMode={darkMode} />
+              <ComparePieChart
+                title="Comparing Villages"
+                darkMode={darkMode}
+                showFilters={true}
+                showMetricPill={false}
+                metricLabel={metricLabel}
+                selectedMetricKey={selectedMetricKey}
+                listingType={listingBiddingFilter}
+              />
             </Col>
           </Row>
         </AnalysisSection>
