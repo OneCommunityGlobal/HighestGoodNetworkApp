@@ -179,6 +179,30 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     expect.soft(submitButton()).toBeEnabled();
   };
 
+  it.each([
+    ['project', { projectId: MOCK_TASK.projectId }, MOCK_TASK.projectId],
+    [
+      'task',
+      { projectId: MOCK_TASK.projectId, wbsId: MOCK_TASK.wbsId, taskId: MOCK_TASK._id },
+      TASK_VALUE,
+    ],
+  ])('restores the original %s selection when editing', async (_label, selection, expected) => {
+    renderWithProvider(
+      <TimeEntryForm
+        from="WeeklyTab"
+        edit
+        data={{ ...data, ...selection, personId: authMock.user.userid, isTangible: true }}
+        toggle={toggle}
+        isOpen
+      />,
+      { store },
+    );
+    await screen.findByRole('option', { name: /Mock Task/ });
+    expect(screen.getByLabelText(/project\/task/i)).toHaveValue(expected);
+    expect(screen.getByText('Tangible', { selector: 'span' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+  });
+
   it('preserves the normal successful submission lifecycle', async () => {
     respondWithStatus(200);
     await fillAndSubmit();
@@ -277,7 +301,7 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     const [hours, minutes] = screen.getAllByRole('spinbutton');
     expect(hours).toHaveValue(1);
     expect(minutes).toHaveValue(30);
-    expect(screen.getByRole('checkbox')).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: /tangible/i })).toBeChecked();
   });
 
   it('allows a revised description to be resubmitted after EDIT', async () => {

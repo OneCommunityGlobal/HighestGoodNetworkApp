@@ -1362,6 +1362,7 @@ function Timer({ authUser, darkMode, isPopout, history }) {
               message={message}
               toggleTimer={() => globalThis.close()}
               handleRefreshTimer={handleRefreshTimer}
+              reconnectExhausted={reconnectExhausted}
             />
           )}
         </div>
@@ -1406,16 +1407,18 @@ function Timer({ authUser, darkMode, isPopout, history }) {
           </button>
         ) : (
           <div className={css.disconnected}>
-            <span>Disconnected</span>
-            <button
-              type="button"
-              onClick={handleRefreshTimer}
-              className={css.disconnectedRefreshBtn}
-              aria-label="Reload timer"
-              title="Reload timer"
-            >
-              <BsArrowClockwise />
-            </button>
+            <span>{reconnectExhausted ? 'Disconnected' : 'Reconnecting...'}</span>
+            {reconnectExhausted && (
+              <button
+                type="button"
+                onClick={handleRefreshTimer}
+                className={css.disconnectedRefreshBtn}
+                aria-label="Reload timer"
+                title="Reload timer"
+              >
+                <BsArrowClockwise />
+              </button>
+            )}
           </div>
         )}
       </div>

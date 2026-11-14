@@ -971,7 +971,7 @@ export function TimeEntryForm(props) {
           darkMode={darkMode}
           viewingUser={viewingUser}
           isAsyncDataLoaded={isAsyncDataLoaded}
-          toggle={toggle}
+          toggle={toggleForm}
           aboutModalToggle={aboutModalToggle}
           headerBg={headerBg}
         />
@@ -1079,7 +1079,7 @@ export function TimeEntryForm(props) {
                 id="projectOrTask"
                 value={projectOrTaskId || 'defaultProject'}
                 onChange={handleProjectOrTaskChange}
-                className={darkInputClass}
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               >
                 {/* static placeholder always in the DOM */}
                 <option value="defaultProject" disabled>
