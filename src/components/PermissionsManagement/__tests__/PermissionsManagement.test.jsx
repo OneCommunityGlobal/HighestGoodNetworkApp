@@ -366,6 +366,8 @@ describe('PermissionsManagement', () => {
 
     const pickUser = async user => {
       await openUserPermissions();
+      // the user list only opens after a click in the search box
+      await userEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
       await userEvent.click(screen.getByText(`${user.firstName} ${user.lastName}`));
       await settle(); // let the user's saved profile load
     };

@@ -374,6 +374,11 @@ describe('UserPermissionsPopup unsaved changes', () => {
     axios.get.mockResolvedValue({ status: 200, data: savedUser });
   });
 
+  // the user list only opens after a click in the search box
+  const openUserList = () => {
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
+  };
+
   // The signed-in user may edit user permissions, so the Add/Delete buttons are enabled
   const allowEditing = () => {
     const state = store.getState();
@@ -401,6 +406,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalProvider>
       </Provider>,
     );
+    openUserList();
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     await flushAllPromises();
     expect(screen.queryByText(REMINDER)).not.toBeInTheDocument();
@@ -425,6 +431,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    openUserList();
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     await flushAllPromises();
     // A real change first, so the flag is on when Submit is pressed
@@ -446,6 +453,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    openUserList();
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     fireEvent.click(screen.getByText('Submit'));
 
@@ -461,6 +469,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    openUserList();
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     await flushAllPromises();
     fireEvent.change(screen.getByPlaceholderText('Shows only ACTIVE users'), {
