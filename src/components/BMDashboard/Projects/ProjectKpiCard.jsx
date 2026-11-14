@@ -18,6 +18,7 @@ function ProjectKpiCard({
   alertDescription,
   tooltip,
   detailsTo,
+  detailsContext,
   darkMode,
 }) {
   const tooltipId = useId();
@@ -198,6 +199,7 @@ function ProjectKpiCard({
           {detailsTo && (
             <Link className={styles.details} to={detailsTo}>
               View Details <span className={styles.srOnly}>for {title}</span>
+              {detailsContext && <span> ({detailsContext})</span>}
             </Link>
           )}
         </>
@@ -221,6 +223,7 @@ ProjectKpiCard.propTypes = {
   alertDescription: PropTypes.string,
   tooltip: PropTypes.string,
   detailsTo: PropTypes.string,
+  detailsContext: PropTypes.string,
   darkMode: PropTypes.bool,
 };
 

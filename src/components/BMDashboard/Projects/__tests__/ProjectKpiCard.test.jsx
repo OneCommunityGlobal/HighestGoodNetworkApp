@@ -288,6 +288,86 @@ describe('ProjectKpiCard', () => {
 });
 
 describe('Project summaries', () => {
+  it('links to existing destinations while identifying their scope and retaining unavailable states', () => {
+    renderWithStore(<ProjectSummary project={{ _id: 'alpha', name: 'Alpha', members: [] }} />);
+    const destinations = [
+      ['Hours', '/bmdashboard/timelog', 'select project'],
+      ['Materials Cost', '/bmdashboard/materials', 'materials, all projects'],
+      ['Equipment Cost', '/bmdashboard/equipment', 'equipment, all projects'],
+      ['Members', '/bmdashboard/projects/alpha/teams', 'project teams'],
+      ['Rentals', '/bmdashboard/rentalchart', 'rental costs, all projects'],
+      ['Most-Bought Material', '/bmdashboard/materials', 'materials, all projects'],
+      ['Stock Health', '/bmdashboard/materials', 'materials, all projects'],
+    ];
+    destinations.forEach(([title, path, context]) => {
+      const card = screen.getByRole('article', { name: title });
+      expect(
+        within(card).getByRole('link', { name: `View Details for ${title} (${context})` }),
+      ).toHaveAttribute('href', path);
+      if (title !== 'Members') expect(within(card).getByText('N/A')).toBeInTheDocument();
+    });
+    expect(
+      within(screen.getByRole('article', { name: 'Waste %' })).queryByRole('link'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('omits the teams link if the project ID is missing or blank', () => {
+    const { rerender } = renderWithStore(<ProjectSummary project={{ name: 'Alpha' }} />);
+    expect(
+      within(screen.getByRole('article', { name: 'Members' })).queryByRole('link'),
+    ).not.toBeInTheDocument();
+    rerender(
+      <Provider store={mockStore({ theme: { darkMode: false } })}>
+        <MemoryRouter>
+          <ProjectSummary project={{ _id: '  ', name: 'Alpha' }} />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(
+      within(screen.getByRole('article', { name: 'Members' })).queryByRole('link'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('provides project-specific team links for multiple project summaries', () => {
+    const projects = [
+      { _id: 'alpha', name: 'Alpha', members: [{}] },
+      { _id: 'beta', name: 'Beta', members: [{}, {}] },
+    ];
+    renderWithStore(<ProjectsList />, { bmProjects: projects });
+    projects.forEach(project => {
+      const region = screen.getByRole('region', { name: `${project.name} Summary` });
+      const members = within(region).getByRole('article', { name: 'Members' });
+      expect(within(members).getByText(String(project.members.length))).toBeInTheDocument();
+      expect(within(members).getByRole('link')).toHaveAttribute(
+        'href',
+        `/bmdashboard/projects/${project._id}/teams`,
+      );
+    });
+  });
+
+  it('navigates from an unavailable KPI using the keyboard', async () => {
+    function CurrentLocation() {
+      return <div>{useLocation().pathname}</div>;
+    }
+
+    renderWithStore(
+      <>
+        <ProjectSummary project={{ _id: 'alpha', name: 'Alpha' }} />
+        <CurrentLocation />
+      </>,
+    );
+    const hours = screen.getByRole('article', { name: 'Hours' });
+    expect(within(hours).getByText('N/A')).toBeInTheDocument();
+    await userEvent.tab();
+    await userEvent.tab();
+    const link = within(hours).getByRole('link', {
+      name: 'View Details for Hours (select project)',
+    });
+    expect(link).toHaveFocus();
+    await userEvent.type(link, '{enter}', { skipClick: true });
+    expect(screen.getByText('/bmdashboard/timelog')).toBeInTheDocument();
+  });
+
   it('renders all eight cards without using unreliable legacy values', () => {
     const project = {
       name: 'Alpha',

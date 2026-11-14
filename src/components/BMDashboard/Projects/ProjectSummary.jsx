@@ -5,18 +5,25 @@ import styles from './ProjectSummary.module.css';
 
 function ProjectSummary({ project }) {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
+  const projectId = typeof project._id === 'string' ? project._id.trim() : '';
   const cards = [
     {
       title: 'Hours',
       unavailableReason: 'Reliable total project hours are not available.',
+      detailsTo: '/bmdashboard/timelog',
+      detailsContext: 'select project',
     },
     {
       title: 'Materials Cost',
       unavailableReason: 'Actual materials costs are not available.',
+      detailsTo: '/bmdashboard/materials',
+      detailsContext: 'materials, all projects',
     },
     {
       title: 'Equipment Cost',
       unavailableReason: 'Actual equipment costs are not available.',
+      detailsTo: '/bmdashboard/equipment',
+      detailsContext: 'equipment, all projects',
     },
     {
       title: 'Waste %',
@@ -26,18 +33,26 @@ function ProjectSummary({ project }) {
       title: 'Members',
       value: Array.isArray(project.members) ? project.members.length : null,
       unavailableReason: 'Project member data is not available.',
+      detailsTo: projectId ? `/bmdashboard/projects/${encodeURIComponent(projectId)}/teams` : null,
+      detailsContext: 'project teams',
     },
     {
       title: 'Rentals',
       unavailableReason: 'Reliable rental and due-date information is not available.',
+      detailsTo: '/bmdashboard/rentalchart',
+      detailsContext: 'rental costs, all projects',
     },
     {
       title: 'Most-Bought Material',
       unavailableReason: 'A reliable comparison across material units is not available.',
+      detailsTo: '/bmdashboard/materials',
+      detailsContext: 'materials, all projects',
     },
     {
       title: 'Stock Health',
       unavailableReason: 'Inventory reorder thresholds are not available.',
+      detailsTo: '/bmdashboard/materials',
+      detailsContext: 'materials, all projects',
     },
   ];
 
@@ -59,6 +74,7 @@ function ProjectSummary({ project }) {
 ProjectSummary.propTypes = {
   project: PropTypes.shape({
     name: PropTypes.string.isRequired,
+    _id: PropTypes.string,
     members: PropTypes.array,
   }).isRequired,
 };
