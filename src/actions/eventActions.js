@@ -8,19 +8,29 @@ import { ENDPOINTS } from '~/utils/URL';
  * @param {string} params.type - Filter by event type
  * @param {string} params.location - Filter by location
  * @param {number} params.page - Page number
- * @param {number} params.limit - Items per page
+ * @param {number|null} params.limit - Items per page, or null to request all events
  * @param {string} params.sortBy - Sort field
  * @returns {Promise} API response
  */
 export async function getEvents(params = {}) {
   try {
-    const { type = '', location = '', page = 1, limit = 9, sortBy = 'date', sortOrder = 'asc', userId = '' } = params;
+    const {
+      type = '',
+      location = '',
+      page = 1,
+      limit = 9,
+      sortBy = 'date',
+      sortOrder = 'asc',
+      userId = '',
+    } = params;
     const queryParams = new URLSearchParams();
     if (userId) queryParams.append('userId', userId);
     if (type) queryParams.append('type', type);
     if (location) queryParams.append('location', location);
-    queryParams.append('page', page);
-    queryParams.append('limit', limit);
+    if (limit !== null) {
+      queryParams.append('page', page);
+      queryParams.append('limit', limit);
+    }
     queryParams.append('sortBy', sortBy);
     queryParams.append('sortOrder', sortOrder);
 

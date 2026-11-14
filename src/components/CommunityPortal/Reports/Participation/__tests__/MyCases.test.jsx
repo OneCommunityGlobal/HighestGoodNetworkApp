@@ -63,6 +63,11 @@ describe('MyCases event views', () => {
     renderCases(Array.from({ length: 11 }, (_, index) => makeEvent(index + 1)));
 
     await screen.findByText('Event 1');
+    expect(getEventsMock).toHaveBeenCalledWith({
+      limit: null,
+      sortBy: 'date',
+      sortOrder: 'desc',
+    });
     const headingControls = screen.getByRole('group', { name: 'Upcoming Events controls' });
     const moreButton = within(headingControls).getByRole('button', { name: 'More' });
     expect(screen.queryByText('Event 11')).not.toBeInTheDocument();

@@ -26,8 +26,7 @@ function MyCases() {
   const loadEvents = useCallback(async () => {
     try {
       const response = await getEvents({
-        page: 1,
-        limit: 200,
+        limit: null,
         sortBy: 'date',
         sortOrder: 'desc',
       });
