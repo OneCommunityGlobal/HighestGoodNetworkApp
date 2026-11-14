@@ -3,8 +3,10 @@ import { Alert, Button, Card, Container, Form, Modal, Spinner } from 'react-boot
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './BlueskyPostDetails.module.css';
+import { ENDPOINTS } from '~/utils/URL';
 
-const API_BASE_URL = 'http://localhost:4500/api/bluesky';
+const API_BASE_URL = `${ENDPOINTS.APIEndpoint()}/bluesky`;
+
 const SUCCESS_PREFIX = '[OK]';
 const ERROR_PREFIX = '[ERROR]';
 const INFO_PREFIX = '[INFO]';
@@ -355,6 +357,7 @@ PostsCard.propTypes = {
 
 function BlueskyPostDetails() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const token = localStorage.getItem('token');
   const [handle, setHandle] = useState('');
   const [appPassword, setAppPassword] = useState('');
   const [isConnected, setIsConnected] = useState(false);
@@ -382,6 +385,9 @@ function BlueskyPostDetails() {
   const checkSession = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/session`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
       });
       const result = await response.json();
@@ -508,6 +514,7 @@ function BlueskyPostDetails() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -538,6 +545,9 @@ function BlueskyPostDetails() {
       setStatus(`${INFO_PREFIX} Disconnecting...`);
       const response = await fetch(`${API_BASE_URL}/disconnect`, {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
       });
       const result = await response.json();
@@ -561,6 +571,9 @@ function BlueskyPostDetails() {
     setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/posts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
       });
       const result = await response.json();
@@ -613,6 +626,9 @@ function BlueskyPostDetails() {
 
       const response = await fetch(`${API_BASE_URL}/post`, {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
         body: formData,
       });
@@ -651,6 +667,9 @@ function BlueskyPostDetails() {
       setStatus(`${INFO_PREFIX} Deleting post...`);
       const response = await fetch(`${API_BASE_URL}/post/${encodeURIComponent(postToDelete)}`, {
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
       });
       const result = await response.json();
@@ -725,7 +744,6 @@ function BlueskyPostDetails() {
           {status.replace(/^\[(OK|ERROR|INFO)\]\s*/, '')}
         </Alert>
       )}
-
       {isConnected ? (
         <>
           {/* Connected header bar */}
@@ -826,7 +844,6 @@ function BlueskyPostDetails() {
           onConnect={connectToBluesky}
         />
       )}
-
       <Modal show={showDeleteModal} onHide={cancelDelete} centered>
         <Modal.Header closeButton className={styles['modal-header']}>
           <Modal.Title>Delete Post</Modal.Title>
