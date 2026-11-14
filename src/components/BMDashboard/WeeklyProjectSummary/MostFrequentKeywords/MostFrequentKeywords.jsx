@@ -56,6 +56,69 @@ function wrapLabel(text) {
   return best.lines;
 }
 
+/* ------------------------------------------------------------------ */
+/* Label measuring / fitting helpers                                   */
+/* The bubble is an ellipse (rx = r, ry = 0.6r), so a line of text     */
+/* near the top or bottom has far less horizontal room than a line in  */
+/* the middle. We measure real text widths and check the corners of    */
+/* every text line against the ellipse equation.                       */
+/* ------------------------------------------------------------------ */
+
+const LABEL_FONT_FAMILY = 'Inter, -apple-system, BlinkMacSystemFont, sans-serif';
+const ELLIPSE_RATIO = 0.6; // ry = ELLIPSE_RATIO * rx
+const TEXT_WIDTH_SAFETY = 1.08; // headroom for font/browser differences
+const LABEL_PADDING = 5; // breathing room between text and the ellipse border
+
+let measureContext = null;
+function getMeasureContext() {
+  if (measureContext) return measureContext;
+  try {
+    if (typeof document !== 'undefined') {
+      measureContext = document.createElement('canvas').getContext('2d');
+    }
+  } catch {
+    measureContext = null;
+  }
+  return measureContext;
+}
+
+// Width of a bold (600) label in px. Falls back to an estimate if canvas isn't available.
+function measureTextWidth(text, fontSize, weight = 600) {
+  const ctx = getMeasureContext();
+  if (ctx) {
+    ctx.font = `${weight} ${fontSize}px ${LABEL_FONT_FAMILY}`;
+    const measured = ctx.measureText(text).width;
+    if (measured > 0) return measured * TEXT_WIDTH_SAFETY;
+  }
+  return text.length * fontSize * 0.65 * TEXT_WIDTH_SAFETY;
+}
+
+// Smallest ellipse radius (rx) that fully contains the wrapped label + count.
+function getRequiredRadius(lines, fontSize, countFontSize, count) {
+  const lineHeight = fontSize * 1.2;
+  const total = lines.length * lineHeight + countFontSize * 1.3;
+  const top = -total / 2;
+
+  let needed = 0;
+
+  // A rectangle corner (halfWidth, yFar) is inside the ellipse when
+  // (halfWidth / r)^2 + (yFar / (0.6 r))^2 <= 1  =>  r >= hypot(halfWidth, yFar / 0.6)
+  const fitLine = (width, yCenter, halfHeight) => {
+    const yFar = Math.abs(yCenter) + halfHeight;
+    needed = Math.max(needed, Math.hypot(width / 2, yFar / ELLIPSE_RATIO));
+  };
+
+  lines.forEach((line, i) => {
+    const yCenter = top + lineHeight * (i + 0.5);
+    fitLine(measureTextWidth(line, fontSize, 600), yCenter, fontSize * 0.55);
+  });
+
+  const countCenter = top + lines.length * lineHeight + countFontSize * 0.65;
+  fitLine(measureTextWidth(String(count), countFontSize, 500), countCenter, countFontSize * 0.55);
+
+  return needed + LABEL_PADDING;
+}
+
 const formatCalendarMonth = date =>
   date.toLocaleString('en-US', {
     month: 'long',
@@ -817,35 +880,32 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     [getResponsiveSizes],
   );
 
-  // Decide lines, font size and bubble radius so the full label always fits.
+  // Decide lines, font size and bubble radius so the full label ALWAYS fits inside the ellipse.
+  // Uses real measured text widths and checks every text line against the ellipse equation
+  // (top/bottom lines have less room than the middle one).
   const getLabelLayout = useCallback(
-    (tag, baseR) => {
+    (tag, count, baseR) => {
       const sizes = getResponsiveSizes();
-      const cw = isMobile ? 0.55 : 0.6; // avg char width / font size
       const lines = wrapLabel(tag);
-      const longest = Math.max(...lines.map(l => l.length));
       const countFs = sizes.countFontSize;
 
       let fontSize = Math.max(8, Math.min(sizes.maxFontSize, 11));
-      const neededR = fs =>
-        Math.max(
-          (longest * fs * cw) / 1.7, // width: text must fit inside ~1.7r
-          ((lines.length * fs * 1.2 + countFs * 1.3) / 2 + 3) / 0.6, // height: ry = 0.6r
-        );
+      let r = Math.max(baseR, getRequiredRadius(lines, fontSize, countFs, count));
 
-      let r = Math.max(baseR, neededR(fontSize));
-
-      // Safety cap so one long word can't produce a giant bubble: shrink font instead.
+      // Safety cap so one long word can't produce a giant bubble: shrink the font instead
+      // until the text fits inside the capped bubble.
       const rMax = sizes.maxBubbleSize * 1.35;
       if (r > rMax) {
         r = rMax;
-        const byWidth = (r * 1.7) / (longest * cw);
-        const byHeight = ((0.6 * r - 3) * 2 - countFs * 1.3) / (lines.length * 1.2);
-        fontSize = Math.max(7, Math.min(fontSize, byWidth, byHeight));
+        const minFontSize = 6;
+        while (fontSize > minFontSize && getRequiredRadius(lines, fontSize, countFs, count) > r) {
+          fontSize -= 0.25;
+        }
+        fontSize = Math.max(minFontSize, fontSize);
       }
       return { lines, fontSize, r };
     },
-    [getResponsiveSizes, isMobile],
+    [getResponsiveSizes],
   );
 
   // Position calculation with collision avoidance (logic lives in the helpers above)
@@ -855,7 +915,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
 
       const sizes = getResponsiveSizes();
       const counts = tags.map(t => t.count);
-      const layouts = tags.map((t, i) => getLabelLayout(t.tag, getBubbleSize(counts[i], counts)));
+      const layouts = tags.map((t, i) =>
+        getLabelLayout(t.tag, t.count, getBubbleSize(counts[i], counts)),
+      );
       const maxBubbleRadius = Math.max(...layouts.map(l => l.r), sizes.minBubbleSize);
 
       const center = { x: centerX, y: centerY };
