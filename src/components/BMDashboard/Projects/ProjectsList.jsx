@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Row, Col } from 'reactstrap';
@@ -6,12 +7,18 @@ import ProjectSummary from './ProjectSummary';
 import styles from '../BMDashboard.module.css';
 import summaryStyles from './ProjectSummary.module.css';
 import { PROJECT_PARAM, readProjectIds, updateDashboardQuery } from '../dashboardQuery';
+import { exportProjectSummaries } from './exportProjectSummaries';
 
 function ProjectsList() {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme?.darkMode || false);
   const history = useHistory();
   const { search } = useLocation();
+  const listRef = useRef(null);
+  const exportingRef = useRef(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportMessage, setExportMessage] = useState('');
+  const [exportError, setExportError] = useState('');
   const hasProjectSelection = new URLSearchParams(search).has(PROJECT_PARAM);
   const selectedIds = readProjectIds(search);
   const projectOptions = projects.map(project => ({
@@ -34,6 +41,34 @@ function ProjectsList() {
   const filteredProjects = hasProjectSelection
     ? projects.filter(project => selectedProjects.some(selected => selected.value === project._id))
     : projects;
+
+  const handleExport = async format => {
+    if (exportingRef.current) return;
+    const summaries = Array.from(listRef.current?.querySelectorAll('section[aria-label]') || []);
+    if (!summaries.length) {
+      setExportError('No project summaries are available to export.');
+      return;
+    }
+    exportingRef.current = true;
+    setExporting(true);
+    setExportError('');
+    setExportMessage(`Preparing ${format.toUpperCase()} export...`);
+    const selectionContext = hasProjectSelection
+      ? `Selected project summaries: ${summaries.length}${
+          selectedIds.length > selectedProjects.length ? ' (unavailable selections omitted)' : ''
+        }`
+      : `All displayed project summaries: ${summaries.length}`;
+    try {
+      await exportProjectSummaries({ summaries, selectionContext, format });
+      setExportMessage(`${format.toUpperCase()} export created; download started.`);
+    } catch (error) {
+      setExportMessage('');
+      setExportError(`Export failed: ${error.message || 'Please try again.'}`);
+    } finally {
+      exportingRef.current = false;
+      setExporting(false);
+    }
+  };
 
   // Custom styles for react-select in dark mode
   const selectStyles = {
@@ -129,9 +164,34 @@ function ProjectsList() {
           classNamePrefix="react-select"
         />
       </Col>
+      <Col xs="12" className="mb-3">
+        <div role="group" aria-label="Export project summaries">
+          <button
+            type="button"
+            className="btn btn-secondary mr-2"
+            disabled={exporting || !filteredProjects.length}
+            onClick={() => handleExport('pdf')}
+          >
+            Export PDF
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            disabled={exporting || !filteredProjects.length}
+            onClick={() => handleExport('png')}
+          >
+            Export PNG
+          </button>
+        </div>
+        <p role="status" aria-live="polite">
+          {exportMessage}
+        </p>
+        {exportError && <p role="alert">{exportError}</p>}
+      </Col>
       <Col xs="12" className={summaryStyles.summaryListContainer}>
         {filteredProjects.length ? (
           <ul
+            ref={listRef}
             className={`${styles.projectsList} ${summaryStyles.summaryList} ${
               darkMode ? styles.darkProjectsList : styles.lightProjectsList
             }`}
