@@ -15,6 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import styles from './InteractiveMap.module.css';
 import { MapConfig } from './MapSharedComponents';
+import { createProjectClusterIcon, MapViewportUpdater } from './ProjectMapPresentation';
 
 const MapDateInput = forwardRef(({ darkMode, className, ...props }, ref) => (
   <input
@@ -152,7 +153,7 @@ const reverseGeocode = async (latitude, longitude) => {
   try {
     // Using OpenStreetMap Nominatim API for reverse geocoding
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=3&addressdetails=1`,
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=3&addressdetails=1&accept-language=en`,
       {
         headers: {
           'User-Agent': 'ProjectMapApp/1.0', // Required by Nominatim usage policy
@@ -499,6 +500,7 @@ export default function InteractiveMap() {
               keyboard={false}
             >
               <MapThemeUpdater darkMode={darkMode} />
+              <MapViewportUpdater />
               <TileLayer
                 noWrap
                 bounds={[
@@ -510,7 +512,11 @@ export default function InteractiveMap() {
                 minZoom={2}
                 maxZoom={15}
               />
-              <MarkerClusterGroup maxClusterRadius={70} chunkedLoading>
+              <MarkerClusterGroup
+                maxClusterRadius={70}
+                chunkedLoading
+                iconCreateFunction={createProjectClusterIcon}
+              >
                 {filteredOrgs.map(org => (
                   <CircleMarker
                     key={org.orgId}
