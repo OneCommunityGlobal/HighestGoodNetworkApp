@@ -1,13 +1,14 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
-import { useState, useEffect, useMemo } from 'react';
+// eslint-disable-next-line no-alert
+import { useState, useEffect, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { Prompt } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'react-toastify';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
-import hasPermission from '~/utils/permissions';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
@@ -27,7 +28,8 @@ import {
   stripLeadingQuestionNumber,
 } from './jobFormQuestionUtils';
 import { hasUnsavedJobFormChanges } from './jobFormDirtyState';
-
+import hasPermission from '../../utils/permissions';
+import generateReferralLink from './ReferralLinkGenerator';
 import { permissions } from '../../utils/constants';
 function JobFormBuilder() {
   const dispatch = useDispatch();
@@ -43,21 +45,97 @@ function JobFormBuilder() {
   ]);
 
   const getRequestor = () => buildJobFormRequestor(auth?.user);
+  const { role } = useSelector(state => state.auth.user);
   const [formFields, setFormFields] = useState([]);
-  const [initialFormFields, setInitialFormFields] = useState([]);
-  const [templateName, setTemplateName] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('');
-  const [currentFormId, setCurrentFormId] = useState(null);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [newField, setNewField] = useState({
     questionText: '',
     questionType: 'textbox',
-    options: [],
+    options: [], // For checkbox, radio, and dropdown input types
     visible: true,
-    isRequired: false,
-    required: false,
   });
 
+  // Dynamic Form ID Management
+  const [currentFormId, setCurrentFormId] = useState(null);
+
+  const [jobTitle, setJobTitle] = useState('Please Choose an option');
+  const [initialJobTitle, setInitialJobTitle] = useState('Please Choose an option');
+  const [referralSource, setReferralSource] = useState('');
+  const [referralLink, setReferralLink] = useState('');
+  const referralInputRef = useRef(null);
+  const jobPositions = [
+    'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
+    'APPLIED THROUGH SITE - GENERAL',
+    'APPLIED THROUGH SITE - ADMINISTRATIVE ASSISTANT',
+    'APPLIED THROUGH SITE - GRAPHIC DESIGNER',
+    'SEEKING SOFTWARE POSITION',
+    'SEEKING ADMINISTRATIVE ASSISTANT',
+    'EARTHBAG 4-DOME CLUSTER PLUMBING DESIGNS',
+    'PLUMBING ENGINEER/MEP FOR EARTHBAG VILLAGE',
+    'CIVIL ENGINEER FOR COST ANALYSIS OF FOOD PRODUCTION STRUCTURES',
+    'CIVIL ENGINEER TO FINALIZE TEST MATERIALS AND EQUIPMENT FOR FOOD PRODUCTION STRUCTURES',
+    'MECHANICAL ENGINEER FOR HVAC FOR FOOD PRODUCTION STRUCTURES',
+    'CITY CENTER PLUMBING DESIGNS',
+    'ELECTRICAL DESIGNER FOR EARTHBAG VILLAGE',
+    'ELECTRICAL DESIGNER FOR STRAW BALE CLASSROOM',
+    'ELECTRICAL ENGINEER/DESIGNER FOR DUPLICABLE CITY CENTER',
+    'CITY CENTER GEODESIC DOME AUTODESK INVENTOR SIMULATIONS',
+    '4-DOME CLUSTER ELECTRICAL DESIGN',
+    'PHOTOSHOP/GRAPHIC DESIGNER',
+    'PASSIVE GREENHOUSE DESIGN',
+    'LANDSCAPE ARCHITECT FOR AQUAPINI/WALIPINI STRUCTURES',
+    'SEEKING VIRTUAL ASSISTANT',
+    'FUNDRAISING HELP',
+    'STRAW BALE CLASSROOM STRUCTURAL',
+    'PERMACULTURALIST FOR SOIL AMENDMENT',
+    'NUTRITIONIST FOR NUTRITION CALCULATIONS AND MENU PLANNING',
+    'CHEF OR CULINARY PROFESSIONAL FOR MENU IMPLEMENTATION TUTORIALS',
+    'CHEF OR CULINARY PROFESSIONAL TO HELP WITH REMOTE/DISASTER KITCHEN SUPPLY AND STORAGE PLAN',
+    'LUMION 2024.1.1 OR HIGHER FOR CITY CENTER',
+    'GENERAL',
+    'VERMICULTURE',
+    'MASTER CARPENTER',
+    'FINAL CUT PRO VIDEO EDITOR',
+    'INDUSTRIAL DESIGNER FOR DORMER',
+    'LANDSCAPE ARCHITECT FOR SKETCHUP AND LUMION RENDER HELP',
+    'T.A.S.T. - NEED RESUME & WORK SAMPLES',
+    'T.A.S.T. - ENGINEER/ARCHITECT OFFERING POSITION',
+    'T.A.S.T. - HGN',
+    'ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER',
+    'ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER - APPLIED THROUGH SITE',
+    'DATA ANALYST APPLICATION',
+  ];
+
+  // Update referral link when jobTitle or referralSource changes
+  useEffect(() => {
+    if (jobTitle && jobTitle !== 'Please Choose an option') {
+      setReferralLink(generateReferralLink(jobTitle, referralSource));
+    } else {
+      setReferralLink('');
+    }
+  }, [jobTitle, referralSource]);
+
+  const handleCopyReferralLink = async () => {
+    if (referralInputRef.current) {
+      try {
+        await navigator.clipboard.writeText(referralInputRef.current.value);
+        toast.success('Referral link copied!');
+        console.log('Referral link copied!');
+      } catch (err) {
+        toast.error('Failed to copy referral link.');
+        console.error('Failed to copy referral link:', err);
+      }
+    }
+  };
+
+  const [newOption, setNewOption] = useState('');
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [initialFormFields, setInitialFormFields] = useState([]);
+  const [templateName, setTemplateName] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const initialNewField = {
     questionText: '',
     questionType: 'textbox',
@@ -66,16 +144,6 @@ function JobFormBuilder() {
     isRequired: false,
     required: false,
   };
-
-  const [jobTitle, setJobTitle] = useState('Please Choose an option');
-  const [initialJobTitle, setInitialJobTitle] = useState('Please Choose an option');
-  const jobPositions = JOB_FORM_POSITION_OPTIONS;
-
-  const [newOption, setNewOption] = useState('');
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState(null);
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const markAsSaved = (fields, savedJobTitle) => {
     setInitialFormFields(structuredClone(fields));
@@ -115,10 +183,9 @@ function JobFormBuilder() {
     const loadFirstAvailableForm = async () => {
       try {
         const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
-        const forms = response.data?.forms ?? (Array.isArray(response.data) ? response.data : []);
 
-        if (forms.length > 0) {
-          const firstForm = forms[0];
+        if (response.data && response.data.length > 0) {
+          const firstForm = response.data[0];
           const formId = firstForm._id || firstForm.id;
 
           setCurrentFormId(formId);
@@ -158,6 +225,30 @@ function JobFormBuilder() {
   }, [formFields, initialFormFields, newField, templateName, jobTitle, initialJobTitle]);
 
   // CRUD Functions with Dynamic Form ID
+  const cloneField = async (field, index) => {
+    const clonedField = JSON.parse(JSON.stringify(field));
+
+    // Update local state immediately
+    const newFields = [
+      ...formFields.slice(0, index + 1),
+      clonedField,
+      ...formFields.slice(index + 1),
+    ];
+    setFormFields(newFields);
+
+    // Sync with backend if form exists
+    if (currentFormId) {
+      try {
+        await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
+          question: clonedField,
+          position: index + 1,
+        });
+      } catch (error) {
+        console.error('Error cloning question on server:', error);
+      }
+    }
+  };
+
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
 
@@ -176,9 +267,7 @@ function JobFormBuilder() {
           await axios.put(ENDPOINTS.REORDER_QUESTIONS(currentFormId), {
             fromIndex: index,
             toIndex: newIndex,
-            requestor: getRequestor(),
           });
-          markAsSaved(newFields);
         } catch (error) {
           console.error('Error reordering questions on server:', error);
         }
@@ -195,10 +284,7 @@ function JobFormBuilder() {
     // Sync with backend if form exists
     if (currentFormId) {
       try {
-        await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index), {
-          data: { requestor: getRequestor() },
-        });
-        markAsSaved(newFields);
+        await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index));
         console.log('Question deleted successfully');
       } catch (error) {
         console.error('Error deleting question on server:', error);
@@ -212,7 +298,7 @@ function JobFormBuilder() {
       label: stripLeadingQuestionNumber(field.questionText),
       type: field.questionType,
       options: field.options,
-      required: isFieldRequired(field),
+      required: field.required || false,
       placeholder: field.placeholder || '',
     };
 
@@ -222,16 +308,14 @@ function JobFormBuilder() {
   };
 
   const handleSaveEditedQuestion = async editedQuestion => {
-    const isRequired = Boolean(editedQuestion.required || editedQuestion.isRequired);
-    const updatedField = normalizeQuestionForApi({
+    const updatedField = {
       ...formFields[editingIndex],
       questionText: editedQuestion.label,
       questionType: editedQuestion.type,
       options: editedQuestion.options || [],
-      isRequired,
-      required: isRequired,
+      required: editedQuestion.required,
       placeholder: editedQuestion.placeholder,
-    });
+    };
 
     // Update local state immediately
     const updatedFields = [...formFields];
@@ -241,11 +325,7 @@ function JobFormBuilder() {
     // Sync with backend if form exists
     if (currentFormId) {
       try {
-        await axios.put(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), {
-          ...updatedField,
-          requestor: getRequestor(),
-        });
-        markAsSaved(updatedFields);
+        await axios.put(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), updatedField);
         console.log('Question updated successfully');
       } catch (error) {
         console.error('Error updating question on server:', error);
@@ -266,7 +346,7 @@ function JobFormBuilder() {
 
   // Import questions from template
   const importQuestions = questions => {
-    setFormFields(normalizeLoadedQuestions(questions));
+    setFormFields(questions);
   };
 
   const handleAddOption = () => {
@@ -308,31 +388,23 @@ function JobFormBuilder() {
     if (currentFormId) {
       try {
         await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-          question: fieldToAdd,
+          question: newField,
           position: formFields.length,
-          requestor: getRequestor(),
         });
-        markAsSaved(updatedFields);
       } catch (error) {
         console.error('Error adding question to server:', error);
       }
     }
 
-    setNewField({
-      questionText: '',
-      questionType: 'textbox',
-      options: [],
-      visible: true,
-      isRequired: false,
-      required: false,
-    });
+    setNewField({ questionText: '', questionType: 'textbox', options: [], visible: true });
   };
 
   const changeVisiblity = (event, field) => {
-    const updatedFields = formFields.map(item =>
-      item.questionText === field.questionText && item.questionType === field.questionType
-        ? { ...item, visible: event.target.checked }
-        : item,
+    const updatedFields = formFields.map(
+      item =>
+        item.questionText === field.questionText && item.questionType === field.questionType
+          ? { ...item, visible: event.target.checked } // Return the updated item
+          : item, // Return the unchanged item
     );
     setFormFields(updatedFields);
   };
@@ -340,18 +412,14 @@ function JobFormBuilder() {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    if (!currentFormId) {
-      alert('No form loaded to save. Please refresh or select a job position.');
-      return;
-    }
+    const formIdToUse = currentFormId || '6753982566fcf3275f129eb4';
 
     try {
       await axios.put(ENDPOINTS.UPDATE_JOB_FORM, {
-        formId: currentFormId,
+        formId: formIdToUse,
         title: jobTitle,
-        questions: formFields.map(normalizeQuestionForApi),
+        questions: formFields,
         description: '',
-        requestor: getRequestor(),
       });
 
       markAsSaved(formFields, jobTitle);
@@ -359,11 +427,7 @@ function JobFormBuilder() {
       alert('Form saved successfully!');
     } catch (error) {
       console.error('Error updating form:', error);
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.error?.message ||
-        'Failed to save form. Please try again.';
-      alert(message);
+      alert('Failed to save form. Please try again.');
     }
   };
 
@@ -400,6 +464,44 @@ function JobFormBuilder() {
                 </option>
               ))}
             </select>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              minWidth: '220px',
+              maxWidth: '100%',
+            }}
+          >
+            <label className={styles.jbformLabel} htmlFor="referralSource">
+              Source Identifier (e.g., LN, FB):
+            </label>
+            <input
+              id="referralSource"
+              type="text"
+              value={referralSource}
+              onChange={event => setReferralSource(event.target.value)}
+              className={styles.jobformInput}
+              placeholder="Enter source identifier"
+              maxLength={10}
+            />
+            {referralLink && (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  value={referralLink}
+                  readOnly
+                  ref={referralInputRef}
+                  className={styles.jobformInput}
+                  title={referralLink}
+                  aria-label="Generated referral link"
+                />
+                <button type="button" onClick={handleCopyReferralLink} className={styles.goButton}>
+                  Copy Link
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <h1 className={styles.jobformTitle}>Job Question Set Builder</h1>
@@ -616,44 +718,13 @@ function JobFormBuilder() {
                 </div>
               )}
 
-              <div>
-                <label className={styles.jbformLabel}>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(newField.isRequired || newField.required)}
-                    onChange={e =>
-                      setNewField(prev => ({
-                        ...prev,
-                        isRequired: e.target.checked,
-                        required: e.target.checked,
-                      }))
-                    }
-                  />{' '}
-                  Required field
-                </label>
-              </div>
-
               <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
                 Add Field
               </button>
             </div>
-
-            <div className={styles.previewSection}>
-              <button
-                type="button"
-                className={styles.previewTextButton}
-                onClick={() => setShowPreviewModal(true)}
-              >
-                Preview Form
-              </button>
-            </div>
-
-            <div className={styles.saveSection}>
-              <button type="button" className={styles.jobSubmitButton} onClick={handleSubmit}>
-                Save Form
-              </button>
-            </div>
-
+            <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
+              Proceed to Submit with Details
+            </button>
             {editModalOpen && editingQuestion && (
               <QuestionEditModal
                 question={editingQuestion}
@@ -663,25 +734,7 @@ function JobFormBuilder() {
               />
             )}
           </div>
-        ) : (
-          <div className={styles.customForm}>
-            <div className="alert alert-warning" role="alert">
-              <h4 className="alert-heading">Access restricted</h4>
-              <p>
-                You do not have permission to manage job application forms. An Owner can grant
-                &quot;Manage Job Forms&quot; or related job form permissions in Permissions
-                Management.
-              </p>
-            </div>
-          </div>
-        )}
-        <FormPreviewModal
-          isOpen={showPreviewModal}
-          onClose={() => setShowPreviewModal(false)}
-          formFields={formFields}
-          jobTitle={jobTitle}
-          darkMode={darkMode}
-        />
+        ) : null}
       </div>
     </div>
   );
