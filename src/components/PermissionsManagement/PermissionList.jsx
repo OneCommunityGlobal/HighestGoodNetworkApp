@@ -1,7 +1,9 @@
-import { connect } from 'react-redux';
+import { useEffect } from 'react';
+import { connect, useDispatch } from 'react-redux';
 // eslint-disable-next-line import/no-cycle
 import PermissionListItem from './PermissionListItem';
 import permissionLabel from './PermissionsConst';
+import { getInfoCollections } from '../../actions/information';
 
 function PermissionList(props) {
   const {
@@ -27,7 +29,21 @@ function PermissionList(props) {
     setRemovedDefaultPermissions = () => {},
 
     editPermission,
+    // true only for the sub-list that PermissionListItem draws under a heading
+    isNested = false,
   } = props;
+
+  const dispatch = useDispatch();
+
+  // Ask the server for all saved info texts ONCE per list (the row icons use skipFetch
+  // and read the texts from the store). Decided by isNested, not by depth: on mobile,
+  // sub-lists keep depth 0.
+  useEffect(() => {
+    if (!isNested) {
+      dispatch(getInfoCollections());
+    }
+  }, [dispatch, isNested]);
+
   return (
     <div className="user-role-tab__permissionList" data-testid="permission-list">
       {' '}
