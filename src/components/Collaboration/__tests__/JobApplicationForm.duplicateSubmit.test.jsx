@@ -90,6 +90,8 @@ describe('JobApplicationForm duplicate application handling', () => {
     });
     renderForm();
     await fillValidApplication();
+    // Check submission feedback separately from the resume-selection confirmation.
+    toast.success.mockClear();
     await submit();
 
     await waitFor(() =>
@@ -101,8 +103,6 @@ describe('JobApplicationForm duplicate application handling', () => {
       .map(call => String(call[0]))
       .join('\n');
     expect(shown).not.toContain('You already applied for this position.');
-    expect(toast.success).not.toHaveBeenCalledWith(
-      'Application submitted successfully. A confirmation email will be sent.',
-    );
+    expect(toast.success).not.toHaveBeenCalled();
   });
 });
