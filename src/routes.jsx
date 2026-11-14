@@ -237,6 +237,7 @@ import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import ProjectStatus from './components/ProjectStatus/ProjectStatus';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
+import WeeklyProgressDashboard from './components/WeeklyProgress/WeeklyProgressDashboard';
 
 // High Good Education
 import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGallery';
@@ -459,6 +460,14 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
+          routePermissions={RoutePermissions.weeklySummariesReport}
+        />
+        {/* Weekly Progress (Phase 2) */}
+        <ProtectedRoute
+          path="/weeklyprogress"
+          exact
+          component={WeeklyProgressDashboard}
+          fallback
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute
