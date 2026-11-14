@@ -49,6 +49,74 @@ const customImageUploadHandler = () =>
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
 
+function getInitialProjectOrTaskId(edit, projectId, wbsId, taskId) {
+  if (!edit) return 'defaultProject';
+  const wbsSuffix = wbsId ? `/${wbsId}` : '';
+  const taskSuffix = taskId ? `/${taskId}` : '';
+  return projectId + wbsSuffix + taskSuffix;
+}
+
+function getEditorOptions(darkMode) {
+  return {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: 'Description (10-word minimum) and reference link',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 250,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
+    images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
+}
+
+function TimeEntryFormHeader({
+  edit,
+  isTangible,
+  darkMode,
+  viewingUser,
+  isAsyncDataLoaded,
+  toggle,
+  aboutModalToggle,
+  headerBg,
+}) {
+  return (
+    <ModalHeader toggle={toggle} className={`${headerBg}`}>
+      <div>
+        {edit ? 'Edit ' : 'Add '}
+        {isTangible ? (
+          <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
+        ) : (
+          <span style={{ color: 'orange' }}>Intangible </span>
+        )}
+        Time Entry
+        {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
+        <i
+          className={`fa fa-info-circle ${styles.customStyle}`}
+          data-tip
+          data-for="registerTip"
+          aria-hidden="true"
+          title="timeEntryTip"
+          onClick={aboutModalToggle}
+        />
+        {!isAsyncDataLoaded && <span> Loading Data...</span>}
+      </div>
+      <ReactTooltip id="registerTip" place="bottom" effect="solid">
+        Click this icon to learn about this time entry form
+      </ReactTooltip>
+    </ModalHeader>
+  );
+}
+
 /**
  * Modal used to submit and edit tangible and intangible time entries.
  * There are several use cases:
@@ -113,26 +181,7 @@ function TimeEntryForm(props) {
     ...data,
   };
 
-  const TINY_MCE_INIT_OPTIONS = {
-    license_key: 'gpl',
-    menubar: false,
-    placeholder: 'Description (10-word minimum) and reference link',
-    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
-    toolbar:
-      // eslint-disable-next-line no-multi-str
-      'bold italic underline link removeformat | bullist numlist outdent indent |\
-                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                      subscript superscript charmap  | help',
-    branding: false,
-    toolbar_mode: 'sliding',
-    min_height: 250,
-    max_height: 300,
-    autoresize_bottom_margin: 1,
-    content_style: 'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
-    images_upload_handler: customImageUploadHandler,
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
+  const TINY_MCE_INIT_OPTIONS = getEditorOptions(darkMode);
 
   const timeEntryUserId = from === 'Timer' ? viewingUser.userId ?? authUser.userid : data.personId;
 
@@ -147,11 +196,12 @@ function TimeEntryForm(props) {
     isTangible: initialIsTangible,
   } = initialFormValues;
 
-  const timeEntryInitialProjectOrTaskId = edit
-    ? initialProjectId +
-      (initialwbsId ? `/${initialwbsId}` : '') +
-      (initialTaskId ? `/${initialTaskId}` : '')
-    : 'defaultProject';
+  const timeEntryInitialProjectOrTaskId = getInitialProjectOrTaskId(
+    edit,
+    initialProjectId,
+    initialwbsId,
+    initialTaskId,
+  );
 
   const initialReminder = {
     openModal: false,
@@ -755,6 +805,8 @@ function TimeEntryForm(props) {
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+  const darkInputClass = darkMode ? 'bg-darkmode-liblack text-light border-0' : '';
+  const footerButtonStyle = darkMode ? boxStyleDark : boxStyle;
 
   return (
     <>
@@ -765,30 +817,16 @@ function TimeEntryForm(props) {
         data-testid="timeEntryFormModal"
         style={darkMode ? boxStyleDark : {}}
       >
-        <ModalHeader toggle={toggle} className={`${headerBg}`}>
-          <div>
-            {edit ? 'Edit ' : 'Add '}
-            {formValues.isTangible ? (
-              <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
-            ) : (
-              <span style={{ color: 'orange' }}>Intangible </span>
-            )}
-            Time Entry
-            {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
-            <i
-              className={`fa fa-info-circle ${styles.customStyle}`}
-              data-tip
-              data-for="registerTip"
-              aria-hidden="true"
-              title="timeEntryTip"
-              onClick={aboutModalToggle}
-            />
-            {!isAsyncDataLoaded && <span> Loading Data...</span>}
-          </div>
-          <ReactTooltip id="registerTip" place="bottom" effect="solid">
-            Click this icon to learn about this time entry form
-          </ReactTooltip>
-        </ModalHeader>
+        <TimeEntryFormHeader
+          edit={edit}
+          isTangible={formValues.isTangible}
+          darkMode={darkMode}
+          viewingUser={viewingUser}
+          isAsyncDataLoaded={isAsyncDataLoaded}
+          toggle={toggle}
+          aboutModalToggle={aboutModalToggle}
+          headerBg={headerBg}
+        />
         <ModalBody className={bodyBg}>
           <Form>
             <FormGroup>
@@ -828,7 +866,7 @@ function TimeEntryForm(props) {
                   value={formValues.hours}
                   onChange={handleInputChange}
                   disabled={!canChangeTime}
-                  className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  className={darkInputClass}
                 />
                 </Col>
                 <Col>
@@ -848,7 +886,7 @@ function TimeEntryForm(props) {
                     }}
                     onKeyDown={allowOnlyNumbersKeyDown}
                     disabled={!canChangeTime}
-                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                    className={darkInputClass}
                   />
                 </Col>
               </Row>
@@ -868,7 +906,7 @@ function TimeEntryForm(props) {
                 id="projectOrTask"
                 value={projectOrTaskId || 'defaultProject'}
                 onChange={handleProjectOrTaskChange}
-                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                className={darkInputClass}
               >
                 {/* static placeholder always in the DOM */}
                 <option value="defaultProject" disabled>
@@ -954,13 +992,13 @@ function TimeEntryForm(props) {
         </ModalBody>
         <ModalFooter className={bodyBg}>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger" style={darkMode ? boxStyleDark : boxStyle}>
+          <Button onClick={clearForm} color="danger" style={footerButtonStyle}>
             Clear Form
           </Button>
           <Button
             color="primary"
             onClick={handleSubmit}
-            style={darkMode ? boxStyleDark : boxStyle}
+            style={footerButtonStyle}
             disabled={!actualDate || submitting}
           >
             {(() => {
