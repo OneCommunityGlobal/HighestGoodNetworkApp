@@ -20,6 +20,7 @@ import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import CircularProgress from '@mui/material/CircularProgress';
 import ReminderModal from './ReminderModal';
+import PermissionChangesList from './PermissionChangesList';
 import { hasUserPermissionChanges } from './permissionChanges';
 import appStyles from '~/App.module.css';
 
@@ -67,6 +68,23 @@ function UserPermissionsPopUp({
   useEffect(() => {
     if (modalStatus && !isDirty) updateModalStatus(false);
   }, [modalStatus, isDirty]);
+
+  const roleDefaults = actualUserRolePermission || [];
+  // Role defaults minus removed ones, plus the user's own extras
+  const whatUserCanDo = (front, removedDefaults) => [
+    ...roleDefaults.filter(permission => !(removedDefaults || []).includes(permission)),
+    ...(front || []),
+  ];
+
+  const changesListProps = {
+    saved: whatUserCanDo(
+      actualUserProfile?.permissions?.frontPermissions,
+      actualUserProfile?.permissions?.removedDefaultPermissions,
+    ),
+    draft: whatUserCanDo(userPermissions, userRemovedDefaultPermissions),
+    roleDefaults,
+    emptyText: 'No change to what this user can do',
+  };
 
   const setToDefault = () => {
     setUserPermissions([]);
@@ -195,7 +213,9 @@ function UserPermissionsPopUp({
           updateProfileOnSubmit={updateProfileOnSubmit}
           changedAccount={selectedAccount}
           darkMode={darkMode}
-        />
+        >
+          <PermissionChangesList {...changesListProps} scrollable />
+        </ReminderModal>
       )}
       <Form
         id={styles['manage__user-permissions']}
@@ -314,6 +334,7 @@ function UserPermissionsPopUp({
             />
           </ul>
         </div>
+        {isDirty && <PermissionChangesList {...changesListProps} />}
         <Button
           type="submit"
           id="manage__user-permissions"
