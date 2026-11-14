@@ -1,3 +1,5 @@
+import { BARCODE_FORMAT_ERROR, normalizeBarcode } from './KIInventoryBarcode';
+
 const requiredTextFields = ['name', 'type', 'unit', 'location'];
 const requiredNumericFields = ['presentQuantity', 'storedQuantity', 'reorderAt', 'monthlyUsage'];
 const optionalNumericFields = ['nextHarvestQuantity'];
@@ -35,6 +37,10 @@ export function validateInventoryItemForm(formData) {
       errors[field] = `${fieldLabels[field]} is required.`;
     }
   });
+
+  if (formData.barcode?.trim() && !normalizeBarcode(formData.barcode)) {
+    errors.barcode = BARCODE_FORMAT_ERROR;
+  }
 
   requiredNumericFields.forEach(field => {
     const numericValue = toNumber(formData[field]);
