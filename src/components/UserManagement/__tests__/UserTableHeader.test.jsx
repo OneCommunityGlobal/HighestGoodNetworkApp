@@ -1,6 +1,7 @@
 // import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
+import axios from 'axios';
 import { rootReducers } from '../../../store';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -27,6 +28,8 @@ vi.mock('../../../utils/userTableDataPermissions', () => ({
   __esModule: true,
   default: vi.fn(),
 }));
+
+vi.mock('axios');
 
 describe('UserTableHeader', () => {
   const authRole = 'admin'; // example role, change as necessary for tests
@@ -100,5 +103,43 @@ describe('UserTableHeader', () => {
     // Since you are querying by test id, make sure your component has 'data-testid' set on elements
     const deleteColumn = screen.queryByRole('columnheader', { name: /delete user/i });
     expect(deleteColumn).not.toBeInTheDocument();
+  });
+
+  it('exits edit mode without calling the API when no data was changed', () => {
+    const editUser = {
+      first: 1,
+      last: 1,
+      role: 1,
+      jobTitle: 1,
+      email: 1,
+      weeklycommittedHours: 1,
+      startDate: 1,
+      endDate: 1,
+    };
+    const enableEditUserInfo = vi.fn();
+    const disableEditUserInfo = vi.fn();
+
+    render(
+      <Provider store={store}>
+        <table>
+          <thead>
+            <UserTableHeader
+              authRole="Owner"
+              roleSearchText=""
+              editUser={editUser}
+              enableEditUserInfo={enableEditUserInfo}
+              disableEditUserInfo={disableEditUserInfo}
+            />
+          </thead>
+        </table>
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByLabelText('Edit first name'));
+    fireEvent.click(screen.getByLabelText('Save first name'));
+
+    expect(enableEditUserInfo).toHaveBeenCalledWith({ ...editUser, first: 0 });
+    expect(disableEditUserInfo).toHaveBeenCalledWith({ ...editUser, first: 1 });
+    expect(axios.patch).not.toHaveBeenCalled();
   });
 });
