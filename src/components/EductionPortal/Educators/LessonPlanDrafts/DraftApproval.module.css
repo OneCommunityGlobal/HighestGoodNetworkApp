@@ -1,0 +1,130 @@
+.pageLayout {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 24px;
+}
+
+.pageLayoutDark {
+  background: #0b1220;
+  color: #e5e7eb;
+}
+
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px 32px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.contentDark {
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+}
+
+.errorText {
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.emptyText {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.draftList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.draftCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.draftSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.editPanel {
+  margin-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+}
+
+.editPanel label {
+  display: block;
+  font-weight: 600;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px;
+  font-family: inherit;
+}
+
+.assessmentFormRow {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.assessmentFormRow input {
+  flex: 1;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.actionRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.primaryButton {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primaryButton:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+}

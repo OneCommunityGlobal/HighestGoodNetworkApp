@@ -1,0 +1,149 @@
+.pageLayout {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 24px;
+}
+
+.pageLayoutDark {
+  background: #0b1220;
+  color: #e5e7eb;
+}
+
+.content {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px 32px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.contentDark {
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+}
+
+.stepIndicator {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  margin-bottom: 12px;
+}
+
+.stepDot {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+.stepDotActive {
+  background: #2563eb;
+  color: #fff;
+}
+
+.stepDotDone {
+  background: #10b981;
+  color: #fff;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 0;
+}
+
+.stepSection {
+  margin-bottom: 24px;
+}
+
+.stepHint {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.reviewBlock ul {
+  margin: 4px 0 12px;
+  padding-left: 20px;
+}
+
+.emptyText {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.errorText {
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.navRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}
+
+.primaryButton {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primaryButton:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background: transparent;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.secondaryButton:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.confirmationBox {
+  max-width: 480px;
+  margin: 80px auto;
+  text-align: center;
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.confirmationBoxDark {
+  background: #111827;
+  color: #e5e7eb;
+}
