@@ -18,6 +18,7 @@ import styles from './Announcements.module.css';
 import EmailPanel from './platforms/email';
 import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
+import LiveJournalAutoPoster from './platforms/livejournal';
 import SocialMediaComposer from './platforms/social/SocialMediaComposer';
 
 function Announcements({ title, email: initialEmail }) {
@@ -245,6 +246,9 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'reddit':
                 PlatformComposer = RedditAutoPoster;
+                break;
+              case 'livejournal':
+                PlatformComposer = LiveJournalAutoPoster;
                 break;
               default:
                 PlatformComposer = SocialMediaComposer;
