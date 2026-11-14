@@ -401,9 +401,10 @@ function Collaboration() {
 
   const navigateToJobApplication = (ad, jobTitle, jobCategory) => {
     try {
-      const pathname = buildApplyPath(jobTitle);
+      // Route by the ad's unique id so same-title ads get distinct, shareable URLs.
+      const pathname = ad?._id ? `/job-application/${ad._id}` : buildApplyPath(jobTitle);
       if (history && typeof history.push === 'function') {
-        const search = jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
+        const search = !ad?._id && jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
         history.push({
           pathname,
           search,
