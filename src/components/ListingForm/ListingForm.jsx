@@ -164,39 +164,43 @@ function ListingForm() {
           </div>
 
           {/* Image Previews */}
-          <div key={index} className="me-2 mb-2 position-relative text-center">
-            <img
-              src={URL.createObjectURL(file)}
-              alt="preview"
-              width="80"
-              height="80"
-              className="border rounded"
-            />
-            <div className="btn-group mt-1">
-              <button
-                type="button"
-                className="btn btn-outline-secondary btn-sm"
-                disabled={index === 0}
-                onClick={() => reorderImages(index, index - 1)}
-              >
-                ↑
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline-secondary btn-sm"
-                disabled={index === formData.propertyImages.length - 1}
-                onClick={() => reorderImages(index, index + 1)}
-              >
-                ↓
-              </button>
-            </div>
-            <button
-              type="button"
-              className="btn btn-danger btn-sm position-absolute top-0 start-100 translate-middle"
-              onClick={() => removeImage(index)}
-            >
-              ✕
-            </button>
+          <div className="d-flex flex-wrap">
+            {formData.propertyImages.map((file, index) => (
+              <div key={index} className="me-2 mb-2 position-relative text-center">
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt="preview"
+                  width="80"
+                  height="80"
+                  className="border rounded"
+                />
+                <div className="btn-group mt-1">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm"
+                    disabled={index === 0}
+                    onClick={() => reorderImages(index, index - 1)}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm"
+                    disabled={index === formData.propertyImages.length - 1}
+                    onClick={() => reorderImages(index, index + 1)}
+                  >
+                    ↓
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-danger btn-sm position-absolute top-0 start-100 translate-middle"
+                  onClick={() => removeImage(index)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
           </div>
 
           {/* Submit Button */}
