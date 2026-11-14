@@ -1185,11 +1185,6 @@
   color: #fff;
 }
 
-.myCasesPageDark .moreBtn:hover {
-  background-color: #5a6b7d;
-  color: #fff;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .caseCard {
     transition: none;
