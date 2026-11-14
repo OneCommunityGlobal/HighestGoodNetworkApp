@@ -1,0 +1,23 @@
+/* Header: navigation links + the user's profile picture on the right */
+.navWithAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.profileAvatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 2px solid rgb(255 255 255 / 85%);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+  object-fit: cover;
+}
+
+.profileAvatarDark {
+  border-color: rgb(255 255 255 / 60%);
+}
