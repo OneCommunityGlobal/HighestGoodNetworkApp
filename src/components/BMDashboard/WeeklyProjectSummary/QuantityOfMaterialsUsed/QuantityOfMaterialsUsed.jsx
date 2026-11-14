@@ -1096,10 +1096,9 @@ function QuantityOfMaterialsUsed({
       )}
       {showModal && selectedMaterialKey && (
         <div className={`${styles.quantityModalOverlay}`}>
-          <div
+          <dialog
+            open
             className={`${styles.quantityModalContent}`}
-            role="dialog"
-            aria-modal="true"
             aria-labelledby="quantity-usage-details-title"
           >
             <div className={`${styles.quantityModalHeader}`}>
@@ -1146,7 +1145,7 @@ function QuantityOfMaterialsUsed({
                 </>
               );
             })()}
-          </div>
+          </dialog>
         </div>
       )}
     </div>

@@ -4,14 +4,14 @@
   font-size: medium;
   font-weight: bold;
   color: var(--text-color);
-  margin: 0;    
+  margin: 0;
 }
 
 .chartTitleContainer {
   position: relative;
   text-align: center;
   margin-bottom: 5px;
-  padding-right: 30px;   
+  padding-right: 30px;
 }
 
 /* Chart Container */
@@ -373,6 +373,10 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 }
 
 .quantityModalContent {
+  /* It is a native <dialog>, so undo the browser's own dialog position, margin and border */
+  position: static;
+  margin: 0;
+  border: none;
   background: var(--card-bg);
   color: var(--text-color);
   padding: 20px;
