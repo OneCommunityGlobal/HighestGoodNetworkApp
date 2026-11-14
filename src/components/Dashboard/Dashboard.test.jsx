@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import { vi } from 'vitest';
@@ -60,6 +60,42 @@ describe('Dashboard', () => {
     expect(screen.getByTestId('timelog')).toBeInTheDocument();
     expect(screen.getByTestId('timeoff')).toBeInTheDocument();
     // expect(screen.getByTestId('feedbackmodal')).toBeInTheDocument()
+  });
+
+  it('toggles the Weekly Summary with mouse, Enter, and Space', () => {
+    render(
+      <Provider store={store}>
+        <ConnectedDashboard match={match} />
+      </Provider>,
+    );
+
+    const toggleControl = screen.getByRole('button');
+    expect(screen.getAllByTestId('weeklysummary')).toHaveLength(1);
+
+    fireEvent.click(toggleControl);
+    expect(screen.getAllByTestId('weeklysummary')).toHaveLength(2);
+
+    fireEvent.keyDown(toggleControl, { key: 'Enter' });
+    expect(screen.getAllByTestId('weeklysummary')).toHaveLength(1);
+
+    fireEvent.keyDown(toggleControl, { key: ' ' });
+    expect(screen.getAllByTestId('weeklysummary')).toHaveLength(2);
+  });
+
+  it.each([
+    ['Meta+Shift+4', { key: '4', metaKey: true, shiftKey: true }],
+    ['Control+Shift+4', { key: '4', ctrlKey: true, shiftKey: true }],
+    ['ArrowDown', { key: 'ArrowDown' }],
+  ])('does not toggle the Weekly Summary for %s', (_, keyboardEvent) => {
+    render(
+      <Provider store={store}>
+        <ConnectedDashboard match={match} />
+      </Provider>,
+    );
+
+    fireEvent.keyDown(screen.getByRole('button'), keyboardEvent);
+
+    expect(screen.getAllByTestId('weeklysummary')).toHaveLength(1);
   });
 
   it('shows and clears the PM Resource Dashboard permission denied toast state', async () => {

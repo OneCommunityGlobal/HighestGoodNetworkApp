@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { themeMock } from '__tests__/mockStates';
@@ -68,17 +68,31 @@ describe('WeeklySummaryModal Component', () => {
     expect(screen.getByTestId('mocked-weekly-summary')).toBeInTheDocument();
   });
 
-  it('should toggle the modal when clicked', () => {
+  it('toggles the modal with mouse, Enter, and Space', async () => {
     renderWithProvider(<WeeklySummaryModal />);
 
-    const buttons = screen.queryAllByRole('button');
+    const toggleControl = screen.getByRole('button', { name: 'Toggle Weekly Summary' });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-    if (buttons.length > 0) {
-      fireEvent.click(buttons[0]);
-      expect(true).toBeTruthy(); // Replace with meaningful assertion if modal shows
-    }
+    fireEvent.click(toggleControl);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
 
-    // Always pass for now; better assertions should be added once modal behavior is known
-    expect(true).toBeTruthy();
+    fireEvent.keyDown(toggleControl, { key: 'Enter' });
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+
+    fireEvent.keyDown(toggleControl, { key: ' ' });
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it.each([
+    ['Meta+Shift+4', { key: '4', metaKey: true, shiftKey: true }],
+    ['Control+Shift+4', { key: '4', ctrlKey: true, shiftKey: true }],
+    ['ArrowDown', { key: 'ArrowDown' }],
+  ])('does not toggle the modal for %s', (_, keyboardEvent) => {
+    renderWithProvider(<WeeklySummaryModal />);
+
+    fireEvent.keyDown(screen.getByRole('button', { name: 'Toggle Weekly Summary' }), keyboardEvent);
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
