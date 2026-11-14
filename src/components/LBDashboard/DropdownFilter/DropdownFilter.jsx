@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getVillageDropdownFilterData } from '~/actions/lbdashboard/villageDetailsAction';
 import { FIXED_VILLAGES } from '../Home/data.jsx';
 import styles from './DropdownFilter.module.css';
 
 export default function VillageDropdownFilter() {
-  const [selected, setSelected] = useState('all');
   const history = useHistory();
   const dispatch = useDispatch();
   const villages = useSelector(state => state.villageDetails.villages || []);
@@ -21,18 +20,33 @@ export default function VillageDropdownFilter() {
       ? villages.map(v => ({ id: v._id, name: v.name }))
       : FIXED_VILLAGES.map(v => ({ id: null, name: v }));
 
+  const location = useLocation();
+
+  const selected = useMemo(() => {
+    const match = location.pathname.match(/^\/lbdashboard\/village\/([^/]+)/);
+    if (!match) return 'all'; // not on a village page
+
+    const slug = decodeURIComponent(match[1]);
+    const idFromQuery = new URLSearchParams(location.search).get('id');
+
+    const current = displayVillages.find(v =>
+      idFromQuery ? v.id === idFromQuery : v.name.replace(/\s+/g, '-') === slug,
+    );
+    return current ? `${current.id}|${current.name}` : 'all';
+  }, [location.pathname, location.search, displayVillages]);
+
   const handleSelect = e => {
     const value = e.target.value;
-    setSelected(value);
-    if (value !== 'all') {
-      const [id, villageName] = value.split('|');
-      const slug = villageName.replace(/\s+/g, '-');
-      const path =
-        id && id !== 'null'
-          ? `/lbdashboard/village/${slug}?id=${id}`
-          : `/lbdashboard/village/${slug}`;
-      history.push(path);
-    }
+    if (value === 'all') return;
+    const [id, villageName] = value.split('|');
+    const slug = villageName.replace(/\s+/g, '-');
+    const path =
+      id && id !== 'null'
+        ? `/lbdashboard/village/${slug}?id=${id}`
+        : `/lbdashboard/village/${slug}`;
+    const onVillagePage = location.pathname.startsWith('/lbdashboard/village/');
+    if (onVillagePage) history.replace(path);
+    else history.push(path);
   };
 
   return (
