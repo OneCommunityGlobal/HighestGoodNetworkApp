@@ -221,7 +221,11 @@ function FollowupQuestions() {
         navigate.push('/hgnform/page6');
       }
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error submitting form. Please try again.');
+      if (error.response?.status === 403) {
+        toast.error('You are not authorized to submit this questionnaire.');
+      } else {
+        toast.error(error.response?.data?.error || 'Error submitting form. Please try again.');
+      }
     }
   };
 
