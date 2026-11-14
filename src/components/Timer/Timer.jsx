@@ -617,13 +617,13 @@ function Timer({ authUser, darkMode, isPopout, history }) {
    */
   useEffect(() => {
     // Exclude heartbeat message and timelog event messages
-    if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
+    if (lastJsonMessage?.heartbeat === 'pong') {
       isWSOpenRef.current = 0;
       return;
     }
 
     // Ignore TIMELOG_EVENT messages - they're for the timestamps tab, not the timer
-    if (lastJsonMessage && lastJsonMessage.type === 'TIMELOG_EVENT') {
+    if (lastJsonMessage?.type === 'TIMELOG_EVENT') {
       return;
     }
     if (
@@ -636,7 +636,7 @@ function Timer({ authUser, darkMode, isPopout, history }) {
       resolve(lastJsonMessage.started === false);
     }
     // Handle explicit week close pause action messages
-    if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
+    if (lastJsonMessage?.action === 'WEEK_CLOSE_PAUSE') {
       handleWeekEndPause();
       return; // Exit early to prevent other modal logic
     }
@@ -646,7 +646,6 @@ function Timer({ authUser, darkMode, isPopout, history }) {
       forcedPause: forcedPauseLJM,
       started: startedLJM,
       chiming: chimingLJM,
-      weekEndPause: weekEndPauseLJM,
     } = lastJsonMessage || defaultMessage;
 
     // console.log('DEBUG WS TIMER RECEIVED', {
