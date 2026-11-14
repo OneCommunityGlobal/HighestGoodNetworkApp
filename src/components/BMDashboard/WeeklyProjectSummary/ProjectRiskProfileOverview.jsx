@@ -19,82 +19,55 @@ import { Container } from 'reactstrap';
 import httpService from '../../../services/httpService';
 import styles from './ProjectRiskProfileOverview.module.css';
 
-function hashString(str) {
-  let h = 2166136261;
-  for (let i = 0; i < str.length; i += 1) {
-    h ^= str.codePointAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return Math.abs(h);
-}
-
 function formatDateISO(d) {
   return d.toISOString().slice(0, 10);
 }
 
-function buildDateRange(endDateISO, days) {
-  const end = new Date(endDateISO);
-  const dates = [];
-  for (let i = days - 1; i >= 0; i -= 1) {
-    const dt = new Date(end);
-    dt.setDate(end.getDate() - i);
-    dates.push(formatDateISO(dt));
-  }
-  return dates;
-}
-
-// The API only provides one current snapshot per project. Build an
-// illustrative trend that ENDS at the real current values (walking backwards
-// in time), so the bars always show the real numbers. Values are floored at 0
-// only - there is no artificial upper cap.
-function generateSyntheticHistory(projectName, snapshot, days, endDateISO) {
-  const seed = hashString(projectName);
-  const dates = buildDateRange(endDateISO, days);
-  let cost = Number(snapshot.predictedCostOverrun ?? 0);
-  let delay = Number(snapshot.predictedTimeDelay ?? 0);
-  const issues = Number(snapshot.totalOpenIssues ?? 0);
-  const r1 = ((seed % 97) / 97 - 0.5) * 2;
-  const r2 = (((seed >> 3) % 89) / 89 - 0.5) * 2;
-
-  const points = new Array(dates.length);
-  for (let idx = dates.length - 1; idx >= 0; idx -= 1) {
-    points[idx] = {
-      date: dates[idx],
-      predictedCostOverrun: Number(cost.toFixed(2)),
-      predictedTimeDelay: Number(delay.toFixed(2)),
-      totalOpenIssues: issues,
-    };
-    cost = Math.max(0, cost - (r1 * 1.2 + Math.sin((idx + seed) / 5) * 0.6));
-    delay = Math.max(0, delay - (r2 * 0.4 + Math.cos((idx + seed) / 6) * 0.2));
-  }
-  return points;
-}
+const toNullableNumber = value =>
+  value === null || value === undefined || value === '' ? null : Number(value);
 
 function getArrow(delta) {
+  if (delta === null || delta === undefined) return 'N/A';
   if (delta > 0) return '↑';
   if (delta < 0) return '↓';
   return '→';
 }
 
+function getNullableDelta(current, previous) {
+  if (current === null || current === undefined || previous === null || previous === undefined) {
+    return null;
+  }
+  return current - previous;
+}
+
+const formatDelta = (value, digits = 2) =>
+  value === null || value === undefined ? 'N/A' : value.toFixed(digits);
+
 function getStableRiskContributorKey(series) {
   if (!series || series.length === 0) return null;
-  const avg = series.reduce(
-    (acc, p) => {
-      acc.cost += p.predictedCostOverrun || 0;
-      acc.delay += p.predictedTimeDelay || 0;
-      acc.issues += p.totalOpenIssues || 0;
-      return acc;
-    },
-    { cost: 0, delay: 0, issues: 0 },
-  );
-  avg.cost /= series.length;
-  avg.delay /= series.length;
-  avg.issues /= series.length;
-  const scores = [
-    { key: 'Cost overrun', score: avg.cost },
-    { key: 'Time delay', score: avg.delay },
-    { key: 'Issues', score: avg.issues * 10 },
-  ];
+  const costValues = series
+    .map(point => point.predictedCostOverrun)
+    .filter(value => value !== null && value !== undefined);
+  const delayValues = series
+    .map(point => point.predictedTimeDelay)
+    .filter(value => value !== null && value !== undefined);
+  const issueAverage =
+    series.reduce((sum, point) => sum + (point.totalOpenIssues || 0), 0) / series.length;
+  const scores = [];
+  if (costValues.length) {
+    scores.push({
+      key: 'Cost overrun',
+      score: costValues.reduce((sum, value) => sum + value, 0) / costValues.length,
+    });
+  }
+  if (delayValues.length) {
+    scores.push({
+      key: 'Time delay',
+      score: delayValues.reduce((sum, value) => sum + value, 0) / delayValues.length,
+    });
+  }
+  if (issueAverage > 0) scores.push({ key: 'Issues', score: issueAverage * 10 });
+  if (!scores.length) return null;
   scores.sort((a, b) => b.score - a.score);
   return scores[0]?.key ?? null;
 }
@@ -107,7 +80,8 @@ const getTrendIndicator = (current, previous) => {
 };
 
 const formatPercent = (value, digits = 2) => {
-  const num = Number(value) || 0;
+  if (value === null || value === undefined || value === '') return 'N/A';
+  const num = Number(value);
   return `${Number.isInteger(num) ? num : num.toFixed(digits)}%`;
 };
 
@@ -122,8 +96,8 @@ const RiskTooltip = ({ active, payload, label, darkMode }) => {
   const deltas =
     first && last
       ? {
-          cost: last.predictedCostOverrun - first.predictedCostOverrun,
-          delay: last.predictedTimeDelay - first.predictedTimeDelay,
+          cost: getNullableDelta(last.predictedCostOverrun, first.predictedCostOverrun),
+          delay: getNullableDelta(last.predictedTimeDelay, first.predictedTimeDelay),
           issues: last.totalOpenIssues - first.totalOpenIssues,
         }
       : { cost: 0, delay: 0, issues: 0 };
@@ -246,25 +220,24 @@ export default function ProjectRiskProfileOverview() {
         const hist = p.history
           .map(h => ({
             date: h.date || h.day || h.createdAt || h.timestamp || null,
-            predictedCostOverrun: Number(h.predictedCostOverrun ?? h.costOverrun ?? 0),
-            predictedTimeDelay: Number(h.predictedTimeDelay ?? h.timeDelay ?? 0),
-            totalOpenIssues: Number(h.totalOpenIssues ?? h.issues ?? 0),
+            predictedCostOverrun: toNullableNumber(h.predictedCostOverrun ?? h.costOverrun),
+            predictedTimeDelay: toNullableNumber(h.predictedTimeDelay ?? h.timeDelay),
+            totalOpenIssues: toNullableNumber(h.totalOpenIssues ?? h.issues),
           }))
           .filter(h => h.date);
         return { ...p, history: hist };
       }
-      const snapshot = {
-        predictedCostOverrun: p.predictedCostOverrun,
-        predictedTimeDelay: p.predictedTimeDelay,
-        totalOpenIssues: p.totalOpenIssues,
+      return {
+        ...p,
+        history: [
+          {
+            date: endISO,
+            predictedCostOverrun: toNullableNumber(p.predictedCostOverrun),
+            predictedTimeDelay: toNullableNumber(p.predictedTimeDelay),
+            totalOpenIssues: toNullableNumber(p.totalOpenIssues),
+          },
+        ],
       };
-      const hist = generateSyntheticHistory(
-        p.projectName,
-        snapshot,
-        effectiveWindow.days || 30,
-        endISO,
-      );
-      return { ...p, history: hist };
     });
   }, [rawProjects, effectiveWindow.start, effectiveWindow.end, effectiveWindow.days]);
 
@@ -584,7 +557,7 @@ export default function ProjectRiskProfileOverview() {
                             {costTrend.symbol}
                           </span>
                         )}
-                        <span>{currentData.predictedCostOverrun || 0}%</span>
+                        <span>{formatPercent(currentData.predictedCostOverrun)}</span>
                       </div>
                       <div className={styles.trendRow}>
                         <span>Issues:</span>
@@ -610,7 +583,7 @@ export default function ProjectRiskProfileOverview() {
                             {timeTrend.symbol}
                           </span>
                         )}
-                        <span>{currentData.predictedTimeDelay || 0}%</span>
+                        <span>{formatPercent(currentData.predictedTimeDelay)}</span>
                       </div>
 
                       {project.status && (
@@ -652,9 +625,14 @@ export default function ProjectRiskProfileOverview() {
                 <tbody>
                   {filteredProjects.map(p => {
                     const s = p.historyFiltered;
-                    const costDelta =
-                      s[s.length - 1].predictedCostOverrun - s[0].predictedCostOverrun;
-                    const delayDelta = s[s.length - 1].predictedTimeDelay - s[0].predictedTimeDelay;
+                    const costDelta = getNullableDelta(
+                      s[s.length - 1].predictedCostOverrun,
+                      s[0].predictedCostOverrun,
+                    );
+                    const delayDelta = getNullableDelta(
+                      s[s.length - 1].predictedTimeDelay,
+                      s[0].predictedTimeDelay,
+                    );
                     const issuesDelta = s[s.length - 1].totalOpenIssues - s[0].totalOpenIssues;
                     const contributor = getStableRiskContributorKey(s);
 
@@ -677,7 +655,7 @@ export default function ProjectRiskProfileOverview() {
                                 </LineChart>
                               </ResponsiveContainer>
                             </div>
-                            <span className={styles.deltaText}>{costDelta.toFixed(2)}</span>
+                            <span className={styles.deltaText}>{formatDelta(costDelta)}</span>
                           </div>
                         </td>
                         <td className={styles.td}>
@@ -696,7 +674,7 @@ export default function ProjectRiskProfileOverview() {
                                 </LineChart>
                               </ResponsiveContainer>
                             </div>
-                            <span className={styles.deltaText}>{delayDelta.toFixed(2)}</span>
+                            <span className={styles.deltaText}>{formatDelta(delayDelta)}</span>
                           </div>
                         </td>
                         <td className={styles.td}>
