@@ -108,6 +108,8 @@ export const fetchAllMaterials = () => {
       .then(res => {
         const updatedMaterials = res.data.map(material => ({
           ...material,
+          // Preserve the server value for investigation; the list uses a calculated balance.
+          storedStockAvailable: material.stockAvailable,
           stockAvailable: material.stockBought - material.stockUsed - material.stockWasted,
         }));
         dispatch(setMaterials(updatedMaterials));

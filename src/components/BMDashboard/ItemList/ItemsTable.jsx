@@ -10,6 +10,7 @@ import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
 import StockHealthIndicator from '../MaterialList/StockHealthIndicator';
 import UsagePercentageBar from '../MaterialList/UsagePercentageBar';
 import styles from './ItemListView.module.css';
+import { formatMaterialAvailable, getMaterialDataIssues } from '../../../utils/materialDataQuality';
 
 const rowsPerPageOptions = [25, 50, 100];
 
@@ -207,10 +208,32 @@ export default function ItemsTable({
                     .join(' ')}
                   onClick={isMaterials ? () => onRowSelect?.(el) : undefined}
                 >
-                  <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
-                  <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
+                  <td style={{ verticalAlign: 'middle' }}>
+                    {el.project?.name?.trim() ||
+                      (isMaterialsView ? 'Missing project' : el.project?.name)}
+                  </td>
+                  <td style={{ verticalAlign: 'middle' }}>
+                    {el.itemType?.name?.trim() ||
+                      (isMaterialsView ? 'Missing name' : el.itemType?.name)}
+                    {isMaterialsView && getMaterialDataIssues(el).length > 0 && (
+                      <div className="text-danger" role="note">
+                        <strong>Needs investigation</strong>
+                        <ul className="mb-0 pl-3">
+                          {getMaterialDataIssues(el).map(issue => (
+                            <li key={issue}>{issue}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </td>
                   {filteredDynamicColumns.map(({ label, key }) => {
                     const value = getNestedValue(el, key);
+                    let displayValue = value;
+                    if (isMaterialsView && key === 'stockAvailable') {
+                      displayValue = formatMaterialAvailable(value);
+                    } else if (isMaterialsView && key === 'unit' && !String(value ?? '').trim()) {
+                      displayValue = 'Missing unit';
+                    }
                     if (
                       key === 'stockAvailable' &&
                       value !== null &&
@@ -227,13 +250,13 @@ export default function ItemsTable({
                           >
                             Low
                           </Badge>
-                          {value}
+                          {displayValue}
                         </td>
                       );
                     }
                     return (
                       <td key={label || key} style={getColumnStyle(key)}>
-                        {value}
+                        {displayValue}
                       </td>
                     );
                   })}
