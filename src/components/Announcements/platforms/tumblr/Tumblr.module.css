@@ -1,0 +1,617 @@
+.tumblr-autoposter {
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+}
+
+.tumblr-autoposter.dark {
+  color: #dbe6ff;
+}
+
+.tumblr-autoposter.dark label,
+.tumblr-autoposter.dark p {
+  color: #dbe6ff;
+}
+
+/* ── Buttons (replaces inline buttonStyle) ── */
+.tumblr-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background: #fff;
+  color: #555;
+}
+
+.tumblr-btn:focus-visible {
+  outline: 2px solid #00b8ff;
+  outline-offset: 2px;
+}
+
+.tumblr-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tumblr-btn--primary {
+  background: #00b8ff;
+  color: #fff;
+}
+
+.tumblr-btn--primary:hover:not(:disabled) {
+  background: #00a3e0;
+}
+
+.tumblr-btn--outline {
+  background: #fff;
+  border-color: #c7d1e5;
+}
+
+.tumblr-btn--outline:hover:not(:disabled) {
+  background: #f1f6ff;
+}
+
+.tumblr-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+.tumblr-btn--ghost:hover:not(:disabled) {
+  background: rgb(0 0 0 / 6%);
+}
+
+.tumblr-autoposter.dark .tumblr-btn {
+  background: #0f1c2d;
+  color: #cdd8f6;
+}
+
+.tumblr-autoposter.dark .tumblr-btn--primary {
+  background: #00b8ff;
+  color: #fff;
+}
+
+.tumblr-autoposter.dark .tumblr-btn--primary:hover:not(:disabled) {
+  background: #33c6ff;
+}
+
+.tumblr-autoposter.dark .tumblr-btn--outline {
+  border-color: #2b3b55;
+}
+
+.tumblr-autoposter.dark .tumblr-btn--outline:hover:not(:disabled) {
+  background: #1a2c47;
+}
+
+.tumblr-autoposter.dark .tumblr-btn--ghost {
+  background: transparent;
+}
+
+.tumblr-autoposter.dark .tumblr-btn--ghost:hover:not(:disabled) {
+  background: rgb(255 255 255 / 8%);
+}
+
+/* ── Connection bar ── */
+.tumblr-connection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tumblr-connection__blog {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 260px;
+}
+
+.tumblr-error-text {
+  margin: 8px 0 0;
+  color: #c62828;
+  font-size: 0.9rem;
+}
+
+.tumblr-autoposter.dark .tumblr-error-text {
+  color: #ff9a9a;
+}
+
+/* ── Sub-tabs ── */
+.tumblr-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #ccd4e0;
+}
+
+.tumblr-subtab {
+  padding: 9px 16px;
+  border-radius: 6px 6px 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: #d9d9d9;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tumblr-subtab:hover {
+  background: #cfcfcf;
+}
+
+.tumblr-subtab:focus-visible {
+  outline: 2px solid #00b8ff;
+  outline-offset: 2px;
+}
+
+.tumblr-subtab.active {
+  background: #e6f7ff;
+  color: #0077b3;
+  border-color: #99dcff;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 60%);
+}
+
+.tumblr-autoposter.dark .tumblr-subtab {
+  background: #2d3c53;
+  color: #cdd8f6;
+  border-color: transparent;
+}
+
+.tumblr-autoposter.dark .tumblr-subtab.active {
+  background: #00334d;
+  border-color: #005c8a;
+  color: #6cf;
+}
+
+/* ── Cards & Grid ── */
+.tumblr-card {
+  background: #fff;
+  border: 1px solid #d6dde7;
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: 0 10px 24px rgb(15 37 80 / 8%);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tumblr-autoposter.dark .tumblr-card {
+  background: #14233a;
+  border-color: #25354d;
+  box-shadow: none;
+}
+
+.tumblr-card--wide {
+  grid-column: 1 / -1;
+}
+
+.tumblr-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* ── Fields & Inputs ── */
+.tumblr-field__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.tumblr-field__meta {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.tumblr-field__hint {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.tumblr-autoposter.dark .tumblr-field__meta,
+.tumblr-autoposter.dark .tumblr-field__hint {
+  color: #9aa9c6;
+}
+
+.tumblr-field__input {
+  width: 100%;
+  border: 1px solid #c7d1e5;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  background: #fff;
+  color: #1b1f29;
+  box-sizing: border-box;
+}
+
+/* Context overrides: keep these between the base rule and the dark rule
+   so selector specificity only ever ascends (no-descending-specificity). */
+.tumblr-connection__blog .tumblr-field__input {
+  max-width: 320px;
+}
+
+.tumblr-schedule-field .tumblr-field__input {
+  padding: 7px 10px;
+}
+
+.tumblr-autoposter.dark .tumblr-field__input {
+  background: #0f1c2d;
+  border-color: #2b3b55;
+  color: #e4edff;
+}
+
+/* ── Body Composer ── */
+.tumblr-composer-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.tumblr-composer-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 18px 0;
+  background: #fff;
+}
+
+.tumblr-autoposter.dark .tumblr-composer-header {
+  background: #14233a;
+}
+
+.tumblr-composer-toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.tumblr-tool-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+  padding: 0;
+  opacity: 0.9;
+}
+
+.tumblr-tool-btn:hover {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
+.tumblr-tool-btn:focus-visible {
+  outline: 2px solid #00b8ff;
+  outline-offset: 3px;
+}
+
+.tumblr-tool-photo {
+  color: #ff492f;
+}
+
+.tumblr-tool-gif {
+  background-color: #ffca00;
+  color: #000;
+  font-weight: 900;
+  font-size: 0.7rem;
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+.tumblr-tool-link {
+  color: #00b853;
+}
+
+.tumblr-tool-audio {
+  color: #7c52ff;
+}
+
+.tumblr-tool-video {
+  color: #ff4081;
+}
+
+.tumblr-composer__textarea {
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 16px 22px;
+  resize: vertical;
+  min-height: 140px;
+  font-size: 1.05rem;
+  box-shadow: none !important;
+}
+
+.tumblr-composer__textarea--compact {
+  min-height: 72px;
+}
+
+.tumblr-composer__textarea:focus {
+  outline: none;
+}
+
+/* ── Embed preview (base rule first, then scoped, then dark) ── */
+.tumblr-embed-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 22px 12px;
+  padding: 8px 12px;
+  background: #eef7ff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+/* ── Content blocks (media interleaved with text) ── */
+.tumblr-block {
+  position: relative;
+  margin: 0 22px 12px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.tumblr-block .tumblr-embed-preview {
+  flex: 1;
+  margin: 0;
+  padding-right: 40px;
+  word-break: break-all;
+}
+
+.tumblr-autoposter.dark .tumblr-embed-preview {
+  background: #0f2742;
+}
+
+.tumblr-block-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgb(0 0 0 / 60%);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tumblr-block-remove:focus-visible {
+  outline: 2px solid #00b8ff;
+  outline-offset: 2px;
+}
+
+.tumblr-video-preview {
+  max-width: 100%;
+  max-height: 260px;
+  border-radius: 8px;
+}
+
+/* ── Inline Tag Pill ── */
+.tumblr-composer-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px 22px 18px;
+  background: #fff;
+}
+
+.tumblr-autoposter.dark .tumblr-composer-footer {
+  background: #14233a;
+}
+
+.tumblr-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tumblr-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 6px 5px 12px;
+  background: #e6f7ff;
+  color: #0077b3;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.tumblr-tag-chip__text {
+  overflow-wrap: anywhere;
+}
+
+.tumblr-tag-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.tumblr-tag-chip__remove:hover {
+  background: rgb(0 0 0 / 12%);
+}
+
+.tumblr-tag-chip__remove:focus-visible {
+  outline: 2px solid #00b8ff;
+  outline-offset: 1px;
+}
+
+.tumblr-autoposter.dark .tumblr-tag-chip {
+  background: #00334d;
+  color: #6cf;
+}
+
+.tumblr-autoposter.dark .tumblr-tag-chip__remove:hover {
+  background: rgb(255 255 255 / 14%);
+}
+
+.tumblr-tag-input {
+  background: #f1f3f5;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  color: #1b1f29;
+  width: auto;
+  min-width: 140px;
+}
+
+.tumblr-tag-input:focus {
+  outline: 2px solid #00b8ff;
+}
+
+.tumblr-autoposter.dark .tumblr-tag-input {
+  background: #2a3546;
+  color: #dbe6ff;
+}
+
+.tumblr-autoposter.dark .tumblr-tag-input::placeholder {
+  color: #8c97a6;
+}
+
+/* ── Media Previews ── */
+.tumblr-media-preview-item {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #d6dde7;
+}
+
+.tumblr-media-preview-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Actions row ── */
+.tumblr-preview__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tumblr-actions {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tumblr-schedule-field {
+  display: grid;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.tumblr-schedule-input {
+  color-scheme: light;
+}
+
+.tumblr-schedule-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+.tumblr-autoposter.dark .tumblr-schedule-input {
+  color-scheme: dark;
+}
+
+.tumblr-autoposter.dark .tumblr-schedule-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* ── Scheduled list ── */
+.tumblr-scheduled-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.tumblr-scheduled-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #d6dde7;
+  border-radius: 8px;
+}
+
+.tumblr-autoposter.dark .tumblr-scheduled-item {
+  border-color: #25354d;
+}
+
+/* ── Modal ── */
+.tumblr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.tumblr-modal {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 20%);
+}
+
+.tumblr-autoposter.dark .tumblr-modal {
+  background: #14233a;
+  color: #e4edff;
+}
+
+.tumblr-modal h4 {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.tumblr-modal-content {
+  padding: 0;
+}
+
+.tumblr-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tumblr-btn,
+  .tumblr-subtab,
+  .tumblr-tool-btn,
+  .tumblr-card {
+    transition: none;
+  }
+}
