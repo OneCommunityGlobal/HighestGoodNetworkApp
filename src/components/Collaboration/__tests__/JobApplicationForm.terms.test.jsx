@@ -60,6 +60,9 @@ function fillProfile() {
   fireEvent.change(screen.getByRole('textbox', { name: /^Phone/i }), {
     target: { value: '+12133734253' },
   });
+  fireEvent.change(screen.getByLabelText('Choose file'), {
+    target: { files: [new File(['resume'], 'resume.pdf', { type: 'application/pdf' })] },
+  });
 }
 
 beforeEach(() => {

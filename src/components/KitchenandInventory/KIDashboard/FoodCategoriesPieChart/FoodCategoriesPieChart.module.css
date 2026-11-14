@@ -1,0 +1,304 @@
+.container {
+  color-scheme: light;
+  --fc-bg: #fff;
+  --fc-muted-bg: #f5f7fb;
+  --fc-text: #1f1f1f;
+  --fc-muted-text: #555;
+  --fc-border: #d3d7df;
+  --fc-title: #2f4a34;
+  --fc-accent: #4d7c2f;
+  --fc-icon: #4c566f;
+  --fc-reset-bg: #e53935;
+  --fc-reset-hover: #c62828;
+  --fc-reset-text: #fff;
+  --fc-error: #dc3545;
+  --fc-control-height: 44px;
+  --tooltip-bg: #f6f7f9;
+  --text-color: #1f1f1f;
+  --border-color: #d3d7df;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--fc-bg);
+  color: var(--fc-text);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 8%);
+}
+
+.darkMode {
+  color-scheme: dark;
+  --fc-bg: #0f1522;
+  --fc-muted-bg: #111a2b;
+  --fc-text: #f1f3f7;
+  --fc-muted-text: #c9ced8;
+  --fc-border: #555;
+  --fc-title: #b9d9a0;
+  --fc-accent: #9ccc65;
+  --fc-icon: #d8dfef;
+  --fc-reset-bg: #ff6b5e;
+  --fc-reset-hover: #ff4a3a;
+  --fc-reset-text: #0f1522;
+  --fc-error: #ff6b6b;
+  --tooltip-bg: #1b2a41;
+  --text-color: #f1f3f7;
+  --border-color: #555;
+}
+
+/* ---------- Filter bar ---------- */
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem 1rem;
+  align-items: end;
+  padding: 0.9rem;
+  background-color: var(--fc-muted-bg);
+  border: 1px solid var(--fc-border);
+  border-radius: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.fieldLabel {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--fc-text);
+}
+
+/* One shared look for all controls (inputs, selects) */
+.control,
+input.control,
+select.control {
+  width: 100%;
+  height: var(--fc-control-height);
+  margin: 0;
+  padding: 0 0.85rem;
+  box-sizing: border-box;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  color: var(--fc-text);
+  background-color: var(--fc-bg);
+  border: 1px solid var(--fc-border);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.control:hover {
+  border-color: var(--fc-accent);
+}
+
+.control:focus,
+.control:focus-visible {
+  border-color: var(--fc-accent);
+  box-shadow: 0 0 0 3px rgb(77 124 47 / 25%);
+}
+
+/* Custom dropdown arrow */
+select.control {
+  padding-right: 2.25rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%234c566f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+}
+
+.darkMode select.control {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23d8dfef' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+
+/* ---------- Date inputs with custom calendar icon ---------- */
+.dateWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.dateInput {
+  padding-right: 2.6rem;
+  cursor: pointer;
+  color-scheme: light;
+}
+
+/* Overrides global input background/colors in dark mode (higher specificity, no !important) */
+.container.darkMode .dateInput[type='date'] {
+  color-scheme: dark;
+  background-color: var(--fc-bg);
+  color: var(--fc-text);
+  border-color: var(--fc-border);
+}
+
+/* Ensure WebKit internal text segments remain visible */
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-fields-wrapper,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-text,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-month-field,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-day-field,
+.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-year-field {
+  color: var(--fc-text);
+}
+
+/* Confine native picker icon to the right side and make it an invisible hit-box */
+.dateInput::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2.5rem;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* React Calendar Icon */
+.dateIcon {
+  position: absolute;
+  right: 0.9rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--fc-icon);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dateInput:hover ~ .dateIcon,
+.dateInput:focus ~ .dateIcon {
+  color: var(--fc-accent);
+}
+
+/* ---------- Reset button ---------- */
+.buttonCell {
+  display: flex;
+  align-items: flex-end;
+}
+
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--fc-control-height);
+  margin: 0;
+  padding: 0 1.25rem;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--fc-reset-text);
+  background-color: var(--fc-reset-bg);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.resetBtn:hover:not(:disabled) {
+  background-color: var(--fc-reset-hover);
+}
+
+.resetBtn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.resetBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dateRangeError {
+  grid-column: 1 / -1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--fc-error);
+}
+
+/* ---------- Chart ---------- */
+.chartTitle {
+  margin: 0;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--fc-title);
+}
+
+.chartWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: clamp(380px, 55vh, 640px);
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: var(--fc-muted-bg);
+  border: 1px solid var(--fc-border);
+  border-radius: 10px;
+}
+
+.pieBox {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  margin-top: 12px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.legendSwatch {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.noDataMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--fc-muted-text);
+  border: 2px dashed var(--fc-border);
+  border-radius: 8px;
+}
+
+@media (width <= 400px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .buttonCell,
+  .resetBtn {
+    width: 100%;
+  }
+}
