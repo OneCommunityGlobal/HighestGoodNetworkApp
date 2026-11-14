@@ -13,6 +13,12 @@ const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 const darkModeClass = "bg-darkmode-liblack text-light border-0";
 
+const blurHoursOnWheel = event => {
+  // Scrolling toward Save must not step a focused number input's hours.
+  // Blur instead of cancelling the event so the page can still scroll.
+  event.currentTarget.blur();
+};
+
 const startEndDateValidation = props => {
   return (
     props.userProfile.startDate > props.userProfile.endDate && props.userProfile.endDate !== ''
@@ -194,6 +200,7 @@ const WeeklyCommittedHours = props => {
       id="weeklycommittedHours"
       data-testid="weeklycommittedHours"
       value={props.userProfile.weeklycommittedHours}
+      onWheel={blurHoursOnWheel}
       onChange={e => handleChange(e)}
       placeholder="Weekly Committed Hours"
       className={darkMode ? darkModeClass : ''}
@@ -214,6 +221,7 @@ const MissedHours = props => {
       id="missedHours"
       data-testid="missedHours"
       value={props.userProfile.missedHours ?? 0}
+      onWheel={blurHoursOnWheel}
       className={darkMode ? darkModeClass : ''}
       onChange={e => {
         props.setUserProfile({
@@ -240,6 +248,7 @@ const TotalIntangibleHours = props => {
       step=".01"
       data-testid="totalIntangibleHours"
       value={props.userProfile.totalIntangibleHrs ?? 0}
+      onWheel={blurHoursOnWheel}
       className={darkMode ? darkModeClass : ''}
       onChange={e => {
         const newValue = Math.max(Number(e.target.value), 0).toFixed(2);
@@ -560,6 +569,7 @@ const ViewTab = props => {
                     min="0"
                     className={darkMode ? darkModeClass : ''}
                     value={roundToTwo(userProfile.hoursByCategory[key])}
+                    onWheel={blurHoursOnWheel}
                     onChange={e => handleOnChangeHours(e, key)}
                     placeholder={`Total Tangible ${capitalize(key)} Hours`}
                   />

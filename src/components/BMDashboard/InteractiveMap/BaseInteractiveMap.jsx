@@ -1,6 +1,13 @@
 import { MapContainer, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
-import { MapThemeUpdater, ProjectMarkers, MapLegend, ProjectCounter } from './MapSharedComponents';
+import {
+  MapThemeUpdater,
+  ProjectMarkers,
+  MapLegend,
+  ProjectCounter,
+  MapConfig,
+} from './MapSharedComponents';
+import styles from './InteractiveMap.module.css';
 
 function BaseInteractiveMap({
   orgs = [],
@@ -38,6 +45,7 @@ function BaseInteractiveMap({
 
   return (
     <div
+      className={darkMode ? styles.darkMap : ''}
       style={{
         width: '100%',
         height: '100%',
@@ -84,11 +92,7 @@ function BaseInteractiveMap({
         <TileLayer
           noWrap={false}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={
-            darkMode
-              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-              : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-          }
+          url={MapConfig.tileUrl}
           minZoom={minZoom}
           maxZoom={15}
         />

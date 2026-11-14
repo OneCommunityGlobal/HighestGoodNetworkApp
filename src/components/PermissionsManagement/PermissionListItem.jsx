@@ -1,11 +1,12 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable no-nested-ternary */
 import { useState, useContext, useEffect } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import hasPermission from '../../utils/permissions';
 import styles from './UserRoleTab.module.css';
 
@@ -26,8 +27,6 @@ function PermissionListItem(props) {
     editPermission,
   } = props;
   const isCategory = !!subperms;
-  const [infoRoleModal, setinfoRoleModal] = useState(false);
-  const [modalContent, setContent] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const hasThisPermission =
     rolePermissions.includes(permission) ||
@@ -65,15 +64,6 @@ function PermissionListItem(props) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const handleModalOpen = () => {
-    setContent(description);
-    setinfoRoleModal(true);
-  };
-
-  const toggleInfoRoleModal = () => {
-    setinfoRoleModal(!infoRoleModal);
-  };
   const togglePermission = permissionKey => {
     // Block specific restricted permission if user doesn't have it
     if (shouldDisableForRestriction) {
@@ -204,14 +194,20 @@ function PermissionListItem(props) {
         </p>
         <div className={styles.iconButtonContainer}>
           <div className="infos">
-            <i
-              data-toggle="tooltip"
-              data-placement="center"
-              title="Click for more information"
-              aria-hidden="true"
-              className="fa fa-info-circle"
-              onClick={handleModalOpen}
-              style={{ color: darkMode ? 'white' : 'black' }}
+            {/* Owner-editable info text; the outer PermissionList fetches the texts once.
+                Headings have no key, so they save under their lower-case label */}
+            <EditableInfoModal
+              role={currentUserRole}
+              areaName={
+                isCategory
+                  ? `Permission Heading: ${label.toLowerCase()} Info`
+                  : `Permission: ${permission} Info`
+              }
+              areaTitle={label}
+              initialInfo={description}
+              skipFetch
+              fontSize={24}
+              darkMode={darkMode}
             />
           </div>
           {!editable ? (
@@ -273,6 +269,8 @@ function PermissionListItem(props) {
           }}
         >
           <PermissionList
+            // the outer list already asked for the info texts
+            isNested
             rolePermissions={rolePermissions}
             permissionsList={subperms}
             immutablePermissions={immutablePermissions}
@@ -288,23 +286,6 @@ function PermissionListItem(props) {
           />
         </li>
       ) : null}
-      <Modal
-        isOpen={infoRoleModal}
-        toggle={toggleInfoRoleModal}
-        id="#modal2-body_new-role--padding"
-        className={darkMode ? 'text-light dark-mode' : ''}
-      >
-        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
-          Permission Info
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalContent}</ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
-            {' '}
-            Ok{' '}
-          </Button>
-        </ModalFooter>
-      </Modal>
     </>
   );
 }

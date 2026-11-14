@@ -173,6 +173,8 @@ import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPa
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
+import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
+import PRGradingScreenContainer from './components/PRGradingScreen';
 // Kicthen and Inventory Portal
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
@@ -181,6 +183,7 @@ import GardenManagement from './components/KitchenandInventory/GardenManagement/
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import KitchenReports from './components/KitchenandInventory/KitchenReports/KitchenReports';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 
@@ -215,11 +218,11 @@ import BookingPage from './components/Booking/BookingPage';
 import BookingConfirmPage from './components/Booking/BookingConfirmPage';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
+
 import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
 import PopularPRChart from './components/Analytics/PopularPRChart';
 import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
-import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
-import PRGradingScreen from './components/PRGradingScreen';
+
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
@@ -1129,6 +1132,7 @@ export default (
           exact
           component={GardenManagement}
         />
+        <ProtectedRoute path="/kitchenandinventory/reports" exact component={KitchenReports} />
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
@@ -1211,7 +1215,6 @@ export default (
         />
         <ProtectedRoute path="/actual-cost-breakdown" component={ActualCostBreakdown} fallback />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
-        <ProtectedRoute path="/pr-grading-screen" exact component={PRGradingScreen} />
         <ProtectedRoute path="/pr-grading-test" exact component={PRGradingTest} />
         {/* //temporary route for testing - delete after testing */}
         <ProtectedRoute path="/" exact component={Dashboard} />
@@ -1266,6 +1269,12 @@ export default (
           exact
           component={PRGradingDashboard}
           routePermissions={RoutePermissions.prDashboard}
+        />
+        <ProtectedRoute
+          path="/pr-grading-screen"
+          exact
+          component={PRGradingScreenContainer}
+          fallback
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
