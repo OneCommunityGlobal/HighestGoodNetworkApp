@@ -26,6 +26,46 @@ function formatDateISO(d) {
 const toNullableNumber = value =>
   value === null || value === undefined || value === '' ? null : Number(value);
 
+function niceStep(rawStep) {
+  if (!(rawStep > 0)) return 1;
+  const magnitude = 10 ** Math.floor(Math.log10(rawStep));
+  const residual = rawStep / magnitude;
+  let nice = 10;
+  if (residual <= 1) nice = 1;
+  else if (residual <= 2) nice = 2;
+  else if (residual <= 2.5) nice = 2.5;
+  else if (residual <= 5) nice = 5;
+  return nice * magnitude;
+}
+
+function buildTicks(lo, hi, step) {
+  const ticks = [];
+  for (let t = lo; t <= hi + step / 1e6; t += step) ticks.push(Number(t.toFixed(6)));
+  return ticks;
+}
+
+// Percent values and issue counts live on very different scales, so Issues get
+// their own axis. Both axes share the same zero line so all bars grow from it.
+function computeAlignedScales(percentValues, issueValues) {
+  const pctMin = Math.min(0, ...percentValues);
+  const pctMax = Math.max(0, ...percentValues);
+  const pctStep = niceStep((pctMax - pctMin) / 5);
+  const pctLo = Math.floor(pctMin / pctStep) * pctStep;
+  const pctHi = Math.max(pctStep, Math.ceil(pctMax / pctStep) * pctStep);
+
+  const issuesMax = Math.max(0, ...issueValues);
+  const issuesStep = Math.max(1, Math.ceil(niceStep(issuesMax / 5)));
+  const issuesHi = Math.max(issuesStep, Math.ceil(issuesMax / issuesStep) * issuesStep);
+  const issuesLo = (pctLo / pctHi) * issuesHi;
+
+  return {
+    percentDomain: [pctLo, pctHi],
+    percentTicks: buildTicks(pctLo, pctHi, pctStep),
+    issuesDomain: [issuesLo, issuesHi],
+    issuesTicks: buildTicks(0, issuesHi, issuesStep),
+  };
+}
+
 function getArrow(delta) {
   if (delta === null || delta === undefined) return 'N/A';
   if (delta > 0) return '↑';
@@ -266,6 +306,18 @@ export default function ProjectRiskProfileOverview() {
     });
   }, [filteredProjects]);
 
+  const axisScales = useMemo(
+    () =>
+      computeAlignedScales(
+        barChartData.flatMap(d => [
+          Number(d.predictedCostOverrun) || 0,
+          Number(d.predictedTimeDelay) || 0,
+        ]),
+        barChartData.map(d => Number(d.totalOpenIssues) || 0),
+      ),
+    [barChartData],
+  );
+
   const chartColors = {
     text: darkMode ? '#dbe3f0' : '#333333',
     grid: darkMode ? '#3f4652' : '#e8e8e8',
@@ -443,8 +495,9 @@ export default function ProjectRiskProfileOverview() {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barChartData} margin={{ top: 30, right: 40, left: 20, bottom: 80 }}>
+                <BarChart data={barChartData} margin={{ top: 30, right: 40, left: 20, bottom: 10 }}>
                   <CartesianGrid
+                    yAxisId="percent"
                     strokeDasharray="3 3"
                     horizontal={true}
                     vertical={false}
@@ -455,22 +508,47 @@ export default function ProjectRiskProfileOverview() {
                     tick={{ fontSize: 13, fill: chartColors.text, fontWeight: 500 }}
                     angle={-45}
                     textAnchor="end"
-                    height={100}
+                    height={190}
                     axisLine={{ stroke: chartColors.axisLine, strokeWidth: 1.5 }}
                     tickLine={{ stroke: chartColors.axisLine }}
                   />
                   <YAxis
-                    tickFormatter={val => (Number.isInteger(val) ? val : val.toFixed(0))}
+                    yAxisId="percent"
+                    domain={axisScales.percentDomain}
+                    ticks={axisScales.percentTicks}
+                    tickFormatter={val => `${Number.isInteger(val) ? val : val.toFixed(0)}%`}
                     tick={{ fontSize: 12, fill: chartColors.text, fontWeight: 500 }}
                     axisLine={{ stroke: chartColors.axisLine, strokeWidth: 1.5 }}
                     tickLine={{ stroke: chartColors.axisLine }}
+                  />
+                  <YAxis
+                    yAxisId="issues"
+                    domain={axisScales.issuesDomain}
+                    ticks={axisScales.issuesTicks}
+                    allowDecimals={false}
+                    width={50}
+                    tick={{ fontSize: 12, fill: '#EA4335', fontWeight: 500 }}
+                    axisLine={{ stroke: '#EA4335', strokeWidth: 1.5 }}
+                    tickLine={{ stroke: '#EA4335' }}
+                    label={{
+                      value: 'Issues',
+                      angle: -90,
+                      position: 'insideLeft',
+                      style: {
+                        textAnchor: 'middle',
+                        fill: '#EA4335',
+                        fontSize: 12,
+                        fontWeight: 600,
+                      },
+                    }}
                   />
                   <Tooltip
                     content={<RiskTooltip darkMode={darkMode} />}
                     cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
                   />
-                  <Legend wrapperStyle={{ marginTop: 20, color: chartColors.text }} />
+                  <Legend wrapperStyle={{ paddingTop: 10, color: chartColors.text }} />
                   <Bar
+                    yAxisId="percent"
                     dataKey="predictedCostOverrun"
                     name="Predicted Cost Overrun (%)"
                     fill="#4285F4"
@@ -486,6 +564,7 @@ export default function ProjectRiskProfileOverview() {
                     />
                   </Bar>
                   <Bar
+                    yAxisId="issues"
                     dataKey="totalOpenIssues"
                     name="Issues"
                     fill="#EA4335"
@@ -501,6 +580,7 @@ export default function ProjectRiskProfileOverview() {
                     />
                   </Bar>
                   <Bar
+                    yAxisId="percent"
                     dataKey="predictedTimeDelay"
                     name="Predicted Time Delay (%)"
                     fill="#FBBC05"
