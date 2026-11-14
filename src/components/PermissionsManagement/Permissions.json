@@ -249,9 +249,9 @@
         "description": "Lets the user create new projects with 'Add New Project' on Other Links > Projects."
       },
       {
-        "label": "Delete Project",
+        "label": "Archive or Unarchive Project",
         "key": "deleteProject",
-        "description": "Lets the user archive or unarchive projects on Other Links > Projects."
+        "description": "Lets the user archive or unarchive projects on Other Links > Projects. Also needs 'Edit Project Category or Status'."
       },
       {
         "label": "Edit Project Category or Status",
@@ -400,7 +400,7 @@
           {
             "label": "Delete Time Entry (Own)",
             "key": "deleteTimeEntryOwn",
-            "description": "Lets the user delete their own time entries with the trash icon on their Time Log."
+            "description": "Shows the trash icon on time entries. Also needs 'Delete Any Time Entry' to delete, except the user's own entries dated today."
           }
         ]
       },
@@ -416,7 +416,7 @@
           {
             "label": "Delete Time Entry (Others)",
             "key": "deleteTimeEntryOthers",
-            "description": "Lets the user delete other people's time entries."
+            "description": "Shows the trash icon on time entries. Also needs 'Delete Any Time Entry' to delete other people's entries."
           },
           {
             "label": "EDITING TIME ENTRIES",
