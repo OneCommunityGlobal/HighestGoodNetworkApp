@@ -5,10 +5,12 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
 import styles from './ToolStatusDonutChart.module.css';
 
+// Keyed by the uppercased status the backend returns (same statuses as the Tools List).
 const COLORS = {
   AVAILABLE: '#220F57',
   USED: '#2B73B6',
-  MAINTENANCE: '#6DC5DA',
+  'NEEDS REPLACEMENT': '#6DC5DA',
+  'YET TO RECEIVE': '#F4A261',
 };
 
 const RADIAN = Math.PI / 180;
