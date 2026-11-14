@@ -88,7 +88,7 @@ function LBLogin(props) {
     // Dispatch login action
     const res = await dispatch(loginBMUser({ email: enteredEmail, password: enteredPassword }));
 
-    if (res.statusText !== 'OK') {
+    if (res.status !== 200) {
       // Handle backend errors
       if (res.status === 422 && res.data?.label) {
         setFieldErrors(prev => ({
