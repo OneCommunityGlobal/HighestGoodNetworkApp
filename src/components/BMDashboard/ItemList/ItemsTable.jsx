@@ -216,9 +216,14 @@ export default function ItemsTable({
                     {el.itemType?.name?.trim() ||
                       (isMaterialsView ? 'Missing name' : el.itemType?.name)}
                     {isMaterialsView && getMaterialDataIssues(el).length > 0 && (
-                      <div className="text-danger" role="note">
+                      <div
+                        className={`${styles.materialDataWarning} ${
+                          darkMode ? styles.darkMaterialDataWarning : ''
+                        }`}
+                        role="note"
+                      >
                         <strong>Needs investigation</strong>
-                        <ul className="mb-0 pl-3">
+                        <ul>
                           {getMaterialDataIssues(el).map(issue => (
                             <li key={issue}>{issue}</li>
                           ))}
@@ -248,7 +253,7 @@ export default function ItemsTable({
                             className="me-2"
                             style={{ marginRight: '8px' }}
                           >
-                            Low
+                            {isMaterialsView && Number(value) < 0 ? 'Negative' : 'Low'}
                           </Badge>
                           {displayValue}
                         </td>

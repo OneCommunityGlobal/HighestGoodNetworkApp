@@ -1053,6 +1053,31 @@ table td {
   }
 }
 
+.materialDataWarning {
+  max-width: 22rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid #b45309;
+  border-radius: 0.25rem;
+  background-color: #fffbeb;
+  color: #78350f;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.materialDataWarning ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1rem;
+}
+
+.darkMaterialDataWarning {
+  border-left-color: #fbbf24;
+  background-color: #342b1b;
+  color: #fde68a;
+}
+
 @media (width <= 480px) {
   .pageButtons button {
     min-width: 28px;
