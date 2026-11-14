@@ -311,6 +311,15 @@
   box-shadow: 0 2px 5px rgb(255 255 255 / 10%);
 }
 
+/* Tools cards stack in a flex column, where the shared 250px flex-basis became a fixed
+   height and overflow-x: hidden made each card a scroll box with a hidden scrollbar.
+   Size to content instead; clip only horizontally (clip does not create a scroll container). */
+.toolsTrackingCard {
+  flex: 0 0 auto;
+  height: auto;
+  overflow: clip visible;
+}
+
 .toolReplacementCard {
   grid-column: 1 / -1;
   min-width: 0;
