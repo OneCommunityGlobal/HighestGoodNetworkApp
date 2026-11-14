@@ -445,6 +445,36 @@
 /* ----------------------------------
    CLUSTERS
 ---------------------------------- */
+.projectCluster {
+  cursor: pointer;
+}
+
+.projectCluster > div {
+  width: 44px;
+  height: 44px;
+  padding: 6px;
+  box-sizing: border-box;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 55%);
+}
+
+.projectCluster span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border-radius: 50%;
+  background: #fff;
+  color: #172536;
+  font: bold 13px/1 Arial, sans-serif;
+}
+
+.darkMap .projectCluster span {
+  background: #1c2541;
+  color: #fff;
+}
+
 :global(.marker-cluster) {
   cursor: pointer;
   transition: transform 0.2s ease;
