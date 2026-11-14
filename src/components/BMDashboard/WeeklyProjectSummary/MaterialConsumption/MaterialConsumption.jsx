@@ -7,6 +7,7 @@ import TotalMaterialCostPerProject from '../TotalMaterialCostPerProject/TotalMat
 import styles from '../WeeklyProjectSummary.module.css';
 import materialStyles from './MaterialConsumption.module.css';
 import MaterialCostCorrelationChart from '../../MaterialCostCorrelation';
+import MostWastedMaterials from '../../../MostWastedMaterials/MostWastedMaterials';
 
 function useMaterialConsumptionData(quantityOfMaterialsUsedData) {
   const dispatch = useDispatch();
@@ -32,6 +33,14 @@ function renderMaterialCard(
   currentDateRange,
   comparisonDateRange,
 ) {
+  if (cardKey === 'mostWasted') {
+    return (
+      <div className={materialStyles.materialConsumptionContent}>
+        <MostWastedMaterials />
+      </div>
+    );
+  }
+
   if (cardKey === 'correlation') {
     return (
       <div className={materialStyles.materialConsumptionContent}>
@@ -84,7 +93,7 @@ export function MaterialConsumptionCards({
   const materialData = useMaterialConsumptionData(quantityOfMaterialsUsedData);
   const darkMode = useSelector(state => state.theme.darkMode);
   // Keep this order aligned with the PR requirement for the Material Consumption section and route.
-  const cards = ['correlation', 'quantity', 'issue', 'totalCost'];
+  const cards = ['mostWasted', 'correlation', 'quantity', 'issue', 'totalCost'];
   const cardClassNames = {
     issue: materialStyles.issueCard,
   };
