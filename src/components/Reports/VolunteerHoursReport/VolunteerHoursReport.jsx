@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { Button, Table, Card, CardBody, CardHeader, Row, Col, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Table, Card, CardBody, CardHeader, FormGroup, Label, Input } from 'reactstrap';
 import moment from 'moment-timezone';
 import { getUsersTotalHoursForSpecifiedPeriod } from '../../../actions/timeEntries';
 import { getAllUserTeams } from '../../../actions/allTeamsAction';
@@ -224,9 +224,9 @@ const handleRefreshReport = () => {
           <p className="text-muted">Track total volunteer hours for nonprofit reporting</p>
         </CardHeader>
         <CardBody>
-          {/* Report Type Selection */}
-          <Row className={styles.filterRow}>
-            <Col md={3} className={styles.filterColumn}>
+         <div className={styles.filterRow}>
+            {/* Report Type */}
+            <div className={styles.filterColumn}>
               <FormGroup>
                 <Label for="reportType">Report Type</Label>
                 <Input
@@ -241,10 +241,8 @@ const handleRefreshReport = () => {
                   <option value="project">By Project</option>
                 </Input>
               </FormGroup>
-            </Col>
-            <Col md={6} className={styles.filterColumn}>
-              <Row className={styles.filterRow}>
-                <Col md={6} className={styles.filterColumn}>
+            </div>
+              <div className={styles.filterColumn}>
                   <FormGroup>
                     <Label for="fromDate">From Date</Label>
                     <DatePicker
@@ -253,15 +251,17 @@ const handleRefreshReport = () => {
                       selected={dateRange.startDate}
                       minDate={moment('2010-01-01').toDate()}
                       maxDate={dateRange.endDate}
-                      onChange={(date) => setDateRange({
-                        ...dateRange,
-                        startDate: date
-                      })}
+                      onChange={(date) =>
+                        setDateRange({
+                          ...dateRange,
+                          startDate: date,
+                        })
+                      }
                       dateFormat="yyyy-MM-dd"
                     />
                   </FormGroup>
-                </Col>
-                <Col md={6} className={styles.filterColumn}>
+                </div>
+                 <div className={styles.filterColumn}>
                   <FormGroup>
                     <Label for="toDate">To Date</Label>
                     <DatePicker
@@ -277,13 +277,9 @@ const handleRefreshReport = () => {
                       dateFormat="yyyy-MM-dd"
                     />
                   </FormGroup>
-                </Col>
-              </Row>
-            </Col>
-            <Col md={2} className={styles.filterColumn}>
-              <FormGroup>
+                  </div>
 
-             <Col md={6} className={styles.refreshButtonContainer}>
+            <div className={styles.refreshButtonContainer}>
               <Button
                 color="success"
                 className={styles.refreshButton}
@@ -292,10 +288,8 @@ const handleRefreshReport = () => {
               >
                 {loading ? 'Refreshing...' : 'Refresh Report'}
               </Button>
-                </Col>
-              </FormGroup>
-            </Col>
-          </Row>
+            </div>
+            </div>
           {validationError && (
             <div className="text-danger mb-3" role="alert">
               {validationError}
