@@ -42,6 +42,13 @@
   color: #000000 !important;
 }
 
+/* Same override for the late "Summary Submitted On" date; a lighter fuchsia stays readable
+   on the dark card */
+:global(body.dark-mode) .lateSubmissionDate,
+:global(body.bm-dashboard-dark) .lateSubmissionDate {
+  color: #ff77ff !important;
+}
+
 .nameInfo {
   display: flex;
 }
