@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
 
-function EventParticipationHeader() {
+function EventParticipationHeader({ onSaveAsPDF, isExporting }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const eventMetrics = {
@@ -24,8 +24,16 @@ function EventParticipationHeader() {
             Central hub for accessing event participation data and analytics
           </p>
         </div>
-
         <div className={styles.headerNavigation}>
+          <button
+            type="button"
+            className={`${styles.savePdfBtn} ${darkMode ? styles.savePdfBtnDark : ''}`}
+            onClick={onSaveAsPDF}
+            disabled={isExporting}
+          >
+            {isExporting ? 'Preparing PDF...' : 'Save as PDF'}
+          </button>
+
           <nav className={styles.navLinks}>
             <a
               href="/communityportal/reports/participation/virtual-vs-inperson"

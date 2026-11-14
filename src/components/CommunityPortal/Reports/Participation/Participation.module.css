@@ -660,9 +660,9 @@
 }
 
 /* Use :global for data attributes and print styles */
-:global(html[data-exporting='true'][data-exporting='true']) .caseCards:global(.expanded),
-:global(html[data-exporting='true'][data-exporting='true']) .caseList:global(.expanded),
-:global(html[data-exporting='true'][data-exporting='true']) .trackingListContainer {
+:global(html[data-exporting='true']) .caseCards:global(.expanded),
+:global(html[data-exporting='true']) .caseList:global(.expanded),
+:global(html[data-exporting='true']) .trackingListContainer {
   max-height: none;
   overflow: visible;
   -webkit-overflow-scrolling: auto;
@@ -673,7 +673,7 @@
   transition: none;
 }
 
-:global(html[data-exporting='true'][data-exporting='true']) .participationLandingPageDark {
+:global(html[data-exporting='true']) .participationLandingPageDark {
   background-color: #1b2a41;
 }
 
@@ -690,6 +690,26 @@
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.5px;
+}
+
+.savePdfBtn {
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.savePdfBtn:hover {
+  background-color: #f1f5f9;
+}
+
+.savePdfBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .savePdfBtnDark {
@@ -721,6 +741,7 @@
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
 .mainTitle {
@@ -2300,5 +2321,65 @@
 @media (width <= 768px) {
   .navigationGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  :global(html),
+  :global(body) {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .participationLandingPage,
+  .participationLandingPageDark {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    height: auto;
+  }
+
+  .savePdfBtn {
+    display: none;
+  }
+
+  .headerContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .headerTitle {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .headerNavigation {
+    width: 100%;
+  }
+
+  .metricsSummary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .chartsRow {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .engagementCards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .engagementCard {
+    min-width: 0;
+    break-inside: avoid;
   }
 }
