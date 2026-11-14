@@ -357,6 +357,7 @@ PostsCard.propTypes = {
 
 function BlueskyPostDetails() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const token = localStorage.getItem('token');
   const [handle, setHandle] = useState('');
   const [appPassword, setAppPassword] = useState('');
   const [isConnected, setIsConnected] = useState(false);
@@ -384,6 +385,9 @@ function BlueskyPostDetails() {
   const checkSession = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/session`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
       });
       const result = await response.json();
@@ -510,6 +514,7 @@ function BlueskyPostDetails() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -540,6 +545,9 @@ function BlueskyPostDetails() {
       setStatus(`${INFO_PREFIX} Disconnecting...`);
       const response = await fetch(`${API_BASE_URL}/disconnect`, {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
       });
       const result = await response.json();
@@ -563,6 +571,9 @@ function BlueskyPostDetails() {
     setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/posts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
       });
       const result = await response.json();
@@ -615,6 +626,9 @@ function BlueskyPostDetails() {
 
       const response = await fetch(`${API_BASE_URL}/post`, {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
         body: formData,
       });
@@ -653,6 +667,9 @@ function BlueskyPostDetails() {
       setStatus(`${INFO_PREFIX} Deleting post...`);
       const response = await fetch(`${API_BASE_URL}/post/${encodeURIComponent(postToDelete)}`, {
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: 'include',
       });
       const result = await response.json();
