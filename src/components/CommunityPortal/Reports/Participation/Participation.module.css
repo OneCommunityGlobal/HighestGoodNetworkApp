@@ -2302,3 +2302,135 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Keep participation analytics readable on phones without changing desktop layout. */
+@media (width <= 480px) {
+  .pieChartSection,
+  .barChartSection,
+  .trackingContainer,
+  .trackingContainerDark {
+    padding: 1rem;
+  }
+
+  .pieChartContainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .pieChart {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .pieChart svg {
+    width: min(200px, 100%);
+    height: auto;
+  }
+
+  .pieChartLegend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .legendItem {
+    align-items: flex-start;
+    margin-bottom: 0;
+    min-width: 0;
+  }
+
+  .legendColor {
+    flex: 0 0 16px;
+  }
+
+  .legendText {
+    min-width: 0;
+  }
+
+  .legendLabel,
+  .legendValue {
+    overflow-wrap: anywhere;
+  }
+
+  .chartSummary {
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+  }
+
+  .trackingHeader,
+  .trackingHeaderDark {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .trackingHeader h3,
+  .trackingHeaderDark h3 {
+    line-height: 1.35;
+    white-space: normal;
+  }
+
+  .trackingFilters {
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .trackingFilters select {
+    flex: 1 1 0;
+    margin-left: 0;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .chartArea {
+    gap: 0.25rem;
+    padding-left: 0;
+  }
+
+  .yAxis {
+    min-width: 40px;
+    padding-left: 12px;
+  }
+
+  .yAxisLabel {
+    left: -52px;
+  }
+
+  .barsContainer {
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .bar {
+    width: 10px;
+  }
+
+  .chartLegend {
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .chartInsights {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .chartInsights .insightItem {
+    align-items: flex-start;
+    gap: 0.25rem;
+    justify-content: flex-start;
+  }
+
+  .chartInsights .insightLabel {
+    flex: 0 0 auto;
+    margin-right: 0;
+  }
+
+  .chartInsights .insightValue {
+    overflow-wrap: anywhere;
+  }
+}
