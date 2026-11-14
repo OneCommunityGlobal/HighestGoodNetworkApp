@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './BiddingOverview.module.css';
+import { useSelector } from 'react-redux';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 
 import logo from '../../../assets/images/logo2.png';
+import Header from '../Header';
 
 function BiddingOverview() {
   const [rentingFrom, setRentingFrom] = useState('');
@@ -10,6 +13,8 @@ function BiddingOverview() {
   const [name, setName] = useState('');
   const [biddingPrice, setBiddingPrice] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
 
   const unitDetails = {
     unitNumber: '405',
@@ -50,6 +55,8 @@ function BiddingOverview() {
     }
   };
 
+  const closeZoom = () => setIsZoomOpen(false);
+
   const handleBiddingPriceChange = ({ target: { value } }) => {
     // Allow only empty string or digits
     if (value === '' || /^\d+$/.test(value)) {
@@ -76,47 +83,12 @@ function BiddingOverview() {
   };
 
   return (
-    <div className={`${styles.biddingPage}`}>
+    <div className={`${styles.biddingPage} ${darkMode ? styles.biddingPageDark : ''}`}>
       <div className={`${styles.topLogoContainer}`}>
         <img src={logo} alt="One Community Logo" className={`${styles.topLogo}`} />
       </div>
       <div className={`${styles.boxContainer}`}>
-        <header className={`${styles.biddingHeader}`}>
-          <div className={`${styles.headerLeft}`}>
-            <div className="village-selector">
-              <select
-                id="village"
-                className={`${styles.villageSelect}`}
-                aria-label="Choose your Village"
-              >
-                <option value="">Choose your Village</option>
-                <option value="earthbag">Earthbag Village</option>
-                <option value="strawbale">Straw Bale Village</option>
-                <option value="cob">Cob Village</option>
-              </select>
-            </div>
-            <button type="button" className={`${styles.goButton}`}>
-              Go
-            </button>
-          </div>
-
-          <div className={`${styles.headerRight}`}>
-            <span className={`${styles.welcomeText}`}>WELCOME USER_NAME</span>
-            {/* Replace USER_NAME */}
-            <div className={`${styles.iconContainer}`}>
-              <div className={`${styles.iconBadge}`}>
-                <i className={`fa fa-comment ${styles.messageIcon}`} />
-                <span className={`${styles.badge}`} />
-              </div>
-              <div className={`${styles.iconBadge}`}>
-                <i className={`fa fa-bell ${styles.notificationIcon}`} />
-                <span className={`${styles.badge}`} />
-              </div>
-              <i className={`fa fa-user ${styles.userIcon}`} />
-            </div>
-          </div>
-        </header>
-
+        <Header />
         <main className={`${styles.biddingContainer}`}>
           <div className={`${styles.biddingCard}`}>
             <div className={`${styles.biddingLeft}`}>
@@ -124,10 +96,21 @@ function BiddingOverview() {
                 Current bid: {unitDetails.currentBid} /night
               </div>
               <div className={`${styles.biddingImage}`}>
-                <img
-                  src={unitDetails.images[currentImageIndex]}
-                  alt={`Unit ${unitDetails.unitNumber} ${unitDetails.villageName}`}
-                />
+                <button
+                  type="button"
+                  className={`${styles.zoomTrigger}`}
+                  onClick={() => setIsZoomOpen(true)}
+                  aria-label="Enlarge image"
+                >
+                  <img
+                    src={unitDetails.images[currentImageIndex]}
+                    alt={`Unit ${unitDetails.unitNumber} ${unitDetails.villageName}`}
+                  />
+                  <span className={`${styles.zoomHint}`} aria-hidden="true">
+                    <i className="fa fa-search-plus" />
+                  </span>
+                </button>
+
                 <button
                   type="button"
                   className={`${styles.imageNavButton} ${styles.leftNav}`}
@@ -261,7 +244,7 @@ function BiddingOverview() {
                   />
                 </div>
 
-                <div className="submit-button-container">
+                <div className={`${styles.submitButtonContainer}`}>
                   <button type="submit" className={`${styles.submitButton1}`}>
                     Proceed to submit with details{' '}
                   </button>
@@ -283,6 +266,45 @@ function BiddingOverview() {
           </div>
         </main>
       </div>
+      <Modal
+        isOpen={isZoomOpen}
+        toggle={closeZoom}
+        size="xl"
+        centered
+        contentClassName={darkMode ? styles.zoomModalDark : ''}
+      >
+        <ModalHeader toggle={closeZoom}>
+          Unit {unitDetails.unitNumber}, {unitDetails.villageName} ({currentImageIndex + 1} of{' '}
+          {unitDetails.images.length})
+        </ModalHeader>
+        <ModalBody className={`${styles.zoomBody}`}>
+          <img
+            src={unitDetails.images[currentImageIndex]}
+            alt={`Unit ${unitDetails.unitNumber} ${unitDetails.villageName}, enlarged`}
+            className={`${styles.zoomImage}`}
+          />
+          {unitDetails.images.length > 1 && (
+            <>
+              <button
+                type="button"
+                className={`${styles.imageNavButton} ${styles.leftNav}`}
+                onClick={() => navigateImages('prev')}
+                aria-label="Previous image"
+              >
+                <i className="fa fa-chevron-left" />
+              </button>
+              <button
+                type="button"
+                className={`${styles.imageNavButton} ${styles.rightNav}`}
+                onClick={() => navigateImages('next')}
+                aria-label="Next image"
+              >
+                <i className="fa fa-chevron-right" />
+              </button>
+            </>
+          )}
+        </ModalBody>
+      </Modal>
     </div>
   );
 }
