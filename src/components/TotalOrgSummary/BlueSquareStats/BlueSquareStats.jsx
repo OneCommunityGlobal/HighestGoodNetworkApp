@@ -15,25 +15,53 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode 
     );
   }
 
+  // Handle undefined/null data safely
+  if (!blueSquareStats) {
+    return (
+      <section className={styles.blueSquareStats}>
+        <div className={donutStyles.donutNoData}>
+          <p className={donutStyles.noDataText}>No Blue Square data available for this period.</p>
+        </div>
+      </section>
+    );
+  }
+
   const {
-    totalBlueSquares,
-    missingHours,
-    missingSummary,
-    missingHoursAndSummary,
-    vacationTime,
-    other,
+    totalBlueSquares = {},
+    missingHours = {},
+    missingSummary = {},
+    missingHoursAndSummary = {},
+    vacationTime = {},
+    other = {},
   } = blueSquareStats;
 
   const data = [
-    { label: 'Missing Hours', value: missingHours.count },
-    { label: 'Missing Summary', value: missingSummary.count },
-    { label: 'Missing Both Hours & Summary', value: missingHoursAndSummary.count },
-    { label: 'Vacation Time', value: vacationTime.count },
-    { label: 'Other', value: other.count },
+    {
+      label: 'Missing Hours',
+      value: missingHours?.count ?? 0,
+    },
+    {
+      label: 'Missing Summary',
+      value: missingSummary?.count ?? 0,
+    },
+    {
+      label: 'Missing Both Hours & Summary',
+      value: missingHoursAndSummary?.count ?? 0,
+    },
+    {
+      label: 'Vacation Time',
+      value: vacationTime?.count ?? 0,
+    },
+    {
+      label: 'Other',
+      value: other?.count ?? 0,
+    },
   ];
 
-  const hasData = data.some(item => item.value !== 0);
-  const pctChange = totalBlueSquares.comparisonPercentage ?? totalBlueSquares.percentageChange ?? 0;
+  const hasData = data.some(item => item.value > 0);
+
+  const pctChange =
+    totalBlueSquares?.comparisonPercentage ?? totalBlueSquares?.percentageChange ?? 0;
 
   if (!hasData) {
     return (
@@ -50,7 +78,7 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode 
       <div className={styles.blueSquareStatsPieChart}>
         <DonutChart
           title="TOTAL BLUE SQUARES"
-          totalCount={totalBlueSquares.count}
+          totalCount={totalBlueSquares?.count ?? 0}
           percentageChange={Number(pctChange)}
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}

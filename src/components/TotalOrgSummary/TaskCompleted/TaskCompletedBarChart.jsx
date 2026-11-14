@@ -2,67 +2,66 @@
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
-export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
-  const active = data?.active || {};
-  const complete = data?.complete || {};
-  const raw = data?.raw || {};
+export const normalizeTaskCompletedStats = data => {
+  const assigned = data?.active || data?.assigned || {};
+  const completed = data?.complete || data?.completed || {};
 
-  const stats = [
+  return [
     {
       name: 'Assigned',
-      amount: active.current || 0,
-      change: active.percentage || 0,
+      amount: assigned.current || 0,
+      change: assigned.percentage || 0,
     },
     {
       name: 'Completed',
-      amount: complete.current || 0,
-      change: complete.percentage || 0,
+      amount: completed.current || 0,
+      change: completed.percentage || 0,
     },
   ];
-  const total = stats.reduce((sum, item) => sum + item.amount, 0);
-  const chartData = stats.map(item => {
+};
+
+export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
+  const stats = normalizeTaskCompletedStats(data);
+
+  const chartData = stats.map((item, index) => {
     let fontcolor = 'red';
+
     if (item.change >= 0) {
       fontcolor = darkMode ? 'lightgreen' : 'green';
     }
+
     return {
       name: item.name,
       amount: item.amount,
-      percentage: total > 0 ? `${((item.amount / total) * 100).toFixed(2)}%` : '0%',
       change: `${item.change >= 0 ? '+' : ''}${item.change}%`,
       fontcolor,
-      color: ['#8e44ad', '#3498db'],
+      color: index === 0 ? '#8e44ad' : '#3498db',
     };
   });
 
-  const maxY =
-    Math.ceil(Math.max(...stats.map(s => s.amount))) +
-    Math.floor(Math.max(...stats.map(s => s.amount)) / 10);
-  const tickInterval = Math.floor(maxY / 10) || 1;
+  const maxValue = Math.max(...stats.map(item => item.amount), 0);
+
+  const maxY = maxValue + Math.floor(maxValue / 10) + 1;
+
+  const tickInterval = Math.max(Math.floor(maxY / 10), 1);
 
   const renderCustomizedLabel = props => {
     const { x, y, width, value, index } = props;
-    const { percentage, change, fontcolor } = chartData[index];
+
+    const { change, fontcolor } = chartData[index];
+
     return (
       <g>
         <text
           x={x + width / 2}
-          y={y - 40}
+          y={y - 25}
           fill={darkMode ? 'white' : 'black'}
           fontWeight="bold"
           textAnchor="middle"
         >
           {value}
         </text>
-        <text
-          x={x + width / 2}
-          y={y - 25}
-          fill={darkMode ? 'white' : 'black'}
-          fontSize="0.8em"
-          textAnchor="middle"
-        >
-          ({percentage})
-        </text>
+
         <text x={x + width / 2} y={y - 10} fill={fontcolor} fontSize="0.8em" textAnchor="middle">
           {change}
         </text>
@@ -70,36 +69,48 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
     );
   };
 
-  // --- Export CSV helper ---
   const exportCSV = () => {
-    if (!raw?.current?.length && !raw?.comparison?.length) {
-      // eslint-disable no-alert
+    const raw = data?.raw || {};
+    const hasRawEntries = value =>
+      Array.isArray(value)
+        ? value.length > 0
+        : value !== null && typeof value === 'object' && Object.keys(value).length > 0;
+
+    if (!hasRawEntries(raw.current) && !hasRawEntries(raw.comparison)) {
       alert('No raw data available to export.');
       return;
     }
 
     let csv = 'Range,Status,Count\n';
 
-    if (raw.current) {
-      raw.current.forEach(item => {
-        csv += `Current,${item._id},${item.count}\n`;
-      });
-    }
+    const appendRows = (range, entries) => {
+      if (Array.isArray(entries)) {
+        entries.forEach(item => {
+          csv += `${range},${item._id},${item.count}\n`;
+        });
+        return;
+      }
 
-    if (raw.comparison) {
-      raw.comparison.forEach(item => {
-        csv += `Comparison,${item._id},${item.count}\n`;
+      Object.entries(entries || {}).forEach(([status, count]) => {
+        csv += `${range},${status},${count}\n`;
       });
-    }
+    };
 
-    const blob = new Blob([csv], { type: 'text/csv' });
+    appendRows('Current', raw.current);
+    appendRows('Comparison', raw.comparison);
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
     const url = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'task-stats.csv';
-    // eslint-disable-next-line testing-library/no-node-access
-    a.click();
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = 'task-stats.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
   };
@@ -114,8 +125,12 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
         flexDirection: 'column',
       }}
     >
-      {/* Export button */}
-      <div style={{ textAlign: 'right', marginBottom: '8px' }}>
+      <div
+        style={{
+          textAlign: 'right',
+          marginBottom: '8px',
+        }}
+      >
         <button
           onClick={exportCSV}
           style={{
@@ -141,7 +156,7 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
         ) : (
           <TinyBarChart
             chartData={chartData}
-            maxY={maxY + 1}
+            maxY={maxY}
             tickInterval={tickInterval}
             renderCustomizedLabel={renderCustomizedLabel}
             darkMode={darkMode}
