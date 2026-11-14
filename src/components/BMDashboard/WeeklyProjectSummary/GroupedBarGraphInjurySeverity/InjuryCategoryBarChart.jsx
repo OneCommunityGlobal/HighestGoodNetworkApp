@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   BarChart,
   Bar,
@@ -20,6 +20,16 @@ import {
   fetchInjuryTypes,
   fetchInjuryProjects,
 } from '../../../../actions/bmdashboard/injuryActions';
+import {
+  INJURY_SERIES_COLORS,
+  UNKNOWN_PROJECT_KEY,
+  buildChartData,
+  buildIdToKeys,
+  buildProjectOptions,
+  buildSeriesMeta,
+  projectNameKey,
+  resolveRowKey,
+} from './injuryChartUtils';
 import 'react-datepicker/dist/react-datepicker.css';
 // YYYY-MM-DD (no tz shift)
 const toYMD = d =>
@@ -76,42 +86,13 @@ function InjuryCategoryBarChart() {
 
   useEffect(() => {
     if (!hasProjectListFilters && projects.length) {
-      // Keep the original project set so duplicate-name labels do not change after filtering.
+      // Keep the original project set so colors do not change after filtering.
       setUnfilteredProjects(projects);
     }
   }, [hasProjectListFilters, projects]);
 
-  const projectLabelById = useMemo(() => {
-    const labelSourceProjects = unfilteredProjects.length ? unfilteredProjects : projects;
-    const nameCounts = new Map();
-    for (const p of labelSourceProjects) {
-      const name = p?.name ?? '';
-      if (name) nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
-    }
-
-    const labels = new Map();
-    for (const p of labelSourceProjects) {
-      const name = p?.name ?? '';
-      const id = String(p?._id ?? '');
-      if (!name || !id) continue;
-
-      // Use project identity from the unfiltered set so duplicate labels stay stable.
-      labels.set(id, nameCounts.get(name) > 1 ? `${name} (${id.slice(0, 6)})` : name);
-    }
-    return labels;
-  }, [projects, unfilteredProjects]);
-
-  const projectNameOptions = useMemo(() => {
-    const opts = [];
-    for (const p of projects) {
-      const id = String(p?._id ?? '');
-      // Reuse the stable label when filtered options are rebuilt from project IDs.
-      const label = projectLabelById.get(id);
-      if (!id || !label) continue;
-      opts.push({ value: id, label });
-    }
-    return opts.sort((a, b) => a.label.localeCompare(b.label));
-  }, [projects, projectLabelById]);
+  // Projects are keyed by name: legacy injury rows share one projectId across several names.
+  const projectNameOptions = useMemo(() => buildProjectOptions(projects), [projects]);
 
   useEffect(() => {
     if (!projectNameFilter.length) return;
@@ -125,7 +106,7 @@ function InjuryCategoryBarChart() {
 
   useEffect(() => {
     const params = {
-      projectIds: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
+      projectNames: projectNameFilter.map(p => p.label).join(','),
       startDate: toYMD(startDate),
       endDate: toYMD(endDate),
       severities: severityFilter.map(s => s.value).join(','),
@@ -134,68 +115,59 @@ function InjuryCategoryBarChart() {
     dispatch(fetchInjuryData(params));
   }, [dispatch, projectNameFilter, severityFilter, injuryTypeFilter, startDate, endDate]);
 
-  const projectNameById = useMemo(() => {
+  const knownProjects = useMemo(() => [...unfilteredProjects, ...projects], [
+    unfilteredProjects,
+    projects,
+  ]);
+  const idToKeys = useMemo(() => buildIdToKeys(knownProjects), [knownProjects]);
+  const resolveKey = useCallback(row => resolveRowKey(row, idToKeys), [idToKeys]);
+
+  const projectLabelByKey = useMemo(() => {
     const m = new Map();
-    for (const p of projects) m.set(String(p._id), p.name);
+    for (const p of knownProjects) {
+      const key = projectNameKey(p?.name);
+      if (key && !m.has(key)) m.set(key, String(p.name).trim());
+    }
+    // Bars whose project is missing from the project list still need a readable label
     for (const r of data) {
-      const pid = String(r?.projectId ?? 'unknown');
-      if (!m.has(pid) && r?.projectName) m.set(pid, r.projectName);
+      const key = resolveKey(r);
+      if (key !== UNKNOWN_PROJECT_KEY && !m.has(key)) m.set(key, String(r.projectName).trim());
     }
     return m;
-  }, [projects, data]);
+  }, [knownProjects, data, resolveKey]);
+  const labelFor = key => projectLabelByKey.get(key) || 'Unknown Project';
 
-  const chartData = useMemo(() => {
-    const acc = Object.create(null);
-    for (const r of data) {
-      const workerCategory = r?.workerCategory ?? 'Unknown';
-      const pid = String(r?.projectId ?? 'unknown');
-      const total = Number(r?.totalInjuries) || 0;
-      if (!acc[workerCategory]) acc[workerCategory] = { workerCategory };
-      acc[workerCategory][pid] = (acc[workerCategory][pid] || 0) + total;
-    }
-    return Object.values(acc);
-  }, [data]);
+  const seriesKeys = useMemo(() => Array.from(new Set(data.map(resolveKey))), [data, resolveKey]);
 
-  const seriesProjectIds = useMemo(() => {
-    const set = new Set(data.map(d => String(d?.projectId ?? 'unknown')));
-    return Array.from(set);
-  }, [data]);
-  const allSeriesProjectIds = useMemo(() => {
-    const set = new Set(projects.map(p => String(p._id)));
-    // Include projects that have bars but are missing from the project list, so the legend matches the chart
-    for (const pid of seriesProjectIds) set.add(pid);
-    return Array.from(set);
-  }, [projects, seriesProjectIds]);
-  const colorProjectIds = useMemo(() => {
-    const source = unfilteredProjects.length ? unfilteredProjects : projects;
-    const set = new Set(source.map(project => String(project._id)));
-    // Every project shown (current list or bars) needs a palette color; otherwise it renders black,
-    // which is invisible on the dark-mode chart background
-    for (const p of projects) set.add(String(p._id));
-    for (const pid of seriesProjectIds) set.add(pid);
-    return Array.from(set);
-  }, [unfilteredProjects, projects, seriesProjectIds]);
+  // Colors come from the unfiltered project set so they stay put when filters change
+  const seriesMeta = useMemo(() => {
+    const palette = darkMode ? INJURY_SERIES_COLORS.dark : INJURY_SERIES_COLORS.light;
+    const projectKeys = knownProjects.map(p => projectNameKey(p?.name)).filter(Boolean);
+    return buildSeriesMeta([...projectKeys, ...seriesKeys], palette);
+  }, [darkMode, knownProjects, seriesKeys]);
 
-  const showLabels = seriesProjectIds.length <= 4;
+  const keyByDataKey = useMemo(() => {
+    const m = new Map();
+    for (const [key, meta] of seriesMeta) m.set(meta.dataKey, key);
+    return m;
+  }, [seriesMeta]);
 
-  const COLOR_PALETTE = [
-    '#34D399', // green
-    '#2563EB', // blue
-    '#F472B6', // pink
-    '#FBBF24', // amber
-    '#A78BFA', // purple
-    '#FB923C', // orange
-    '#F87171', // red
-    '#38BDF8', // cyan
-  ];
+  const chartData = useMemo(() => buildChartData(data, resolveKey, seriesMeta), [
+    data,
+    resolveKey,
+    seriesMeta,
+  ]);
 
-  const projectColorById = new Map();
-  [...colorProjectIds]
-    .sort((a, b) => a.localeCompare(b))
-    .forEach((pid, index) => {
-      // Sort by project ID so colors do not depend on API or filter response order.
-      projectColorById.set(pid, COLOR_PALETTE[index % COLOR_PALETTE.length]);
-    });
+  // Palette order, so adjacent bars use adjacent (validated) colors
+  const byPaletteOrder = (a, b) =>
+    Number(seriesMeta.get(a)?.dataKey.slice(1)) - Number(seriesMeta.get(b)?.dataKey.slice(1));
+  const orderedSeriesKeys = [...seriesKeys].sort(byPaletteOrder);
+  // Legend covers listed projects and any project that has bars, each exactly once
+  const legendKeys = Array.from(
+    new Set([...projects.map(p => projectNameKey(p?.name)).filter(Boolean), ...seriesKeys]),
+  ).sort(byPaletteOrder);
+
+  const showLabels = seriesKeys.length <= 4;
 
   // Force a resize/reflow after data/filter changes so chart draws immediately (no hover needed)
   useEffect(() => {
@@ -213,7 +185,7 @@ function InjuryCategoryBarChart() {
     error,
     darkMode,
     chartData.length,
-    seriesProjectIds.length,
+    seriesKeys.length,
     projectNameFilter,
     severityFilter,
     injuryTypeFilter,
@@ -435,17 +407,13 @@ function InjuryCategoryBarChart() {
                     >
                       <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
                       {payload.map(entry => {
-                        const projectId = String(entry.dataKey);
-                        const projectColor =
-                          projectColorById.get(projectId) || entry.color || '#000';
-                        const projectLabel =
-                          projectLabelById.get(projectId) ||
-                          projectNameById.get(projectId) ||
-                          'Unknown Project';
+                        const key = keyByDataKey.get(String(entry.dataKey));
+                        const projectColor = seriesMeta.get(key)?.color || entry.color;
+                        const projectLabel = labelFor(key);
 
                         return (
                           <div
-                            key={projectId}
+                            key={String(entry.dataKey)}
                             className={styles.tooltipSeriesRow}
                             style={{ '--tooltip-series-color': projectColor }}
                           >
@@ -462,24 +430,25 @@ function InjuryCategoryBarChart() {
                   color: darkMode ? '#fff' : '#000',
                   paddingBottom: 10,
                 }}
-                payload={allSeriesProjectIds.map(pid => ({
-                  id: pid,
+                payload={legendKeys.map(key => ({
+                  id: key,
                   type: 'square',
-                  color: projectColorById.get(pid),
-                  value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
+                  color: seriesMeta.get(key)?.color,
+                  value: labelFor(key),
                 }))}
               />
-              {seriesProjectIds.map(pid => (
+              {orderedSeriesKeys.map(key => (
                 <Bar
-                  key={pid}
-                  dataKey={pid}
-                  fill={projectColorById.get(pid)}
+                  key={key}
+                  dataKey={seriesMeta.get(key).dataKey}
+                  name={labelFor(key)}
+                  fill={seriesMeta.get(key).color}
                   stroke={darkMode ? '#E5E7EB' : '#ffffff'}
                   strokeWidth={1}
                 >
                   {showLabels && (
                     <LabelList
-                      dataKey={pid}
+                      dataKey={seriesMeta.get(key).dataKey}
                       position="top"
                       formatter={v => (v > 0 ? v : '')}
                       // Readable value labels in both themes (were dim gray in dark mode)
