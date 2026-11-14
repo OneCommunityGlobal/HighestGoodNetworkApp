@@ -295,89 +295,17 @@ function ApplicantVolunteerRatio() {
   // Apply dark mode
   useEffect(() => {
     if (darkMode) {
-      document.body.classList.add('dark-mode-body');
+      document.body.classList.add('applicant-volunteer-dark-body');
     } else {
-      document.body.classList.remove('dark-mode-body');
+      document.body.classList.remove('applicant-volunteer-dark-body');
     }
 
     return () => {
-      document.body.classList.remove('dark-mode-body');
+      document.body.classList.remove('applicant-volunteer-dark-body');
     };
   }, [darkMode]);
 
   const legendTextColor = darkMode ? '#e0e0e0' : '#333';
-  const roleSelectStyles = useMemo(
-    () => ({
-      control: (base, state) => {
-        // Sonar fix: extracted nested ternary from original line 173
-        let borderColor = base.borderColor;
-        if (state.isFocused) {
-          borderColor = '#60a5fa';
-        } else if (darkMode) {
-          borderColor = '#52677d';
-        }
-
-        return {
-          ...base,
-          backgroundColor: darkMode ? '#243b55' : base.backgroundColor,
-          borderColor,
-          boxShadow: state.isFocused ? '0 0 0 1px #60a5fa' : base.boxShadow,
-          ':hover': {
-            borderColor: darkMode ? '#60a5fa' : '#2684ff',
-          },
-        };
-      },
-      menu: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#243b55' : base.backgroundColor,
-        border: darkMode ? '1px solid #52677d' : base.border,
-      }),
-      menuPortal: base => ({ ...base, zIndex: 10000 }),
-      option: (base, state) => {
-        // Sonar fix: extracted nested ternaries from original lines 188 and 191
-        let optionBackgroundColor = base.backgroundColor;
-        if (state.isSelected && darkMode) {
-          optionBackgroundColor = '#2563eb';
-        } else if (state.isFocused && darkMode) {
-          optionBackgroundColor = '#3a506b';
-        }
-
-        return {
-          ...base,
-          backgroundColor: optionBackgroundColor,
-          color: darkMode ? '#f9fafb' : base.color,
-          ':active': {
-            backgroundColor: darkMode ? '#1d4ed8' : base[':active']?.backgroundColor,
-          },
-        };
-      },
-      multiValue: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#3a506b' : base.backgroundColor,
-      }),
-      multiValueLabel: base => ({
-        ...base,
-        color: darkMode ? '#f9fafb' : base.color,
-      }),
-      multiValueRemove: base => ({
-        ...base,
-        color: darkMode ? '#dbeafe' : base.color,
-        ':hover': {
-          backgroundColor: darkMode ? '#dc2626' : '#ffbdad',
-          color: '#fff',
-        },
-      }),
-      input: base => ({ ...base, color: darkMode ? '#f9fafb' : base.color }),
-      placeholder: base => ({ ...base, color: darkMode ? '#9ca3af' : base.color }),
-      dropdownIndicator: base => ({ ...base, color: darkMode ? '#cbd5e1' : base.color }),
-      indicatorSeparator: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#52677d' : base.backgroundColor,
-      }),
-    }),
-    [darkMode],
-  );
-
   if (error) {
     return (
       <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
@@ -442,8 +370,7 @@ function ApplicantVolunteerRatio() {
             onChange={setSelectedRoles}
             components={roleSelectComponents}
             placeholder="Select roles..."
-            classNamePrefix="applicant-role-select"
-            styles={roleSelectStyles}
+            classNamePrefix="applicantVolunteerSelect"
             menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
             menuPosition="fixed"
           />

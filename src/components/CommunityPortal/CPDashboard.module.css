@@ -1,4 +1,5 @@
-:global(body) {
+/* stylelint-disable no-descending-specificity */
+:global(body.cp-dashboard-body) {
   font-family: Poppins, sans-serif;
   background: #fff;
   margin: 0;

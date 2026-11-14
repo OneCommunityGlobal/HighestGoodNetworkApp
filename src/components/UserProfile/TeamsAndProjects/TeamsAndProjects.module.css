@@ -9,14 +9,6 @@
     padding: 0;
   }
 
-  .container {
-    padding: 0;
-  }
-
-  .row {
-    margin-left: 0;
-  }
-
   .teamtable-container .container,
   .projecttable-container .container {
     padding: 0;

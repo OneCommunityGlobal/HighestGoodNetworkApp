@@ -341,6 +341,7 @@ const PopularityTimelineChart = () => {
                     showMonthYearPicker
                     isClearable
                     className={styles['pt-date-picker']}
+                    calendarClassName={darkMode ? styles.reactDatepickerDark : undefined}
                   />
                 </div>
                 <div>
@@ -360,6 +361,7 @@ const PopularityTimelineChart = () => {
                     showMonthYearPicker
                     isClearable
                     className={styles['pt-date-picker']}
+                    calendarClassName={darkMode ? styles.reactDatepickerDark : undefined}
                   />
                 </div>
               </div>

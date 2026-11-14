@@ -50,25 +50,7 @@ function ProjectSelectForm() {
           ))}
         </Input>
 
-        <Button
-          onClick={handleGo}
-          disabled={!selectedProject}
-          style={
-            darkMode
-              ? {
-                  whiteSpace: 'nowrap',
-                  backgroundColor: '#00ffff',
-                  borderColor: '#00ffff',
-                  color: '#000',
-                }
-              : {
-                  whiteSpace: 'nowrap',
-                  backgroundColor: '#2F4F4F',
-                  borderColor: '#2F4F4F',
-                  color: '#fff',
-                }
-          }
-        >
+        <Button onClick={handleGo} disabled={!selectedProject} style={buttonStyles}>
           Go to Project Dashboard
         </Button>
       </Col>

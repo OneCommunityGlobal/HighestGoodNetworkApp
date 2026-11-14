@@ -163,17 +163,8 @@
   border-color:  #404040 !important;
 }
 
-:global(.dark-mode .btn.btn-secondary) {
-  background-color: #218838 !important;
-  border-color: #218838 !important;
-}
-
-:global(.dark-mode .btn.btn-secondary:hover) {
-  background-color: #218838 !important;
-  border-color: #218838 !important;
-}
-
-:global(body.dark-mode .error), :global(.dashboard-dark .error){
+:global(.dark-mode) .errorText,
+:global(.dashboard-dark) .errorText {
   color: #dc3545 !important;
 }
 

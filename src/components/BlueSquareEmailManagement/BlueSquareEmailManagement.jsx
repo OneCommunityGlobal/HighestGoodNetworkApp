@@ -91,7 +91,7 @@ const BlueSquareEmailManagement = ({
 
   return (
     <div
-      className={darkMode ? 'bg-oxford-blue' : ''}
+      className={`${styles.blueSquareEmailManagement} ${darkMode ? 'bg-oxford-blue' : ''}`}
       style={{
         padding: '5px 20px',
         minHeight: '100%',
@@ -168,7 +168,11 @@ const BlueSquareEmailManagement = ({
       </div>
 
       {/* Blue Square Email Confirmation Modal */}
-      <Modal isOpen={blueSquareModalOpen} toggle={() => setBlueSquareModalOpen(false)}>
+      <Modal
+        isOpen={blueSquareModalOpen}
+        toggle={() => setBlueSquareModalOpen(false)}
+        contentClassName={styles.blueSquareEmailModal}
+      >
         <ModalHeader toggle={() => setBlueSquareModalOpen(false)}>
           Confirm Blue Square Email Resend
         </ModalHeader>
@@ -196,7 +200,11 @@ const BlueSquareEmailManagement = ({
       </Modal>
 
       {/* Weekly Summary Email Confirmation Modal */}
-      <Modal isOpen={weeklySummaryModalOpen} toggle={() => setWeeklySummaryModalOpen(false)}>
+      <Modal
+        isOpen={weeklySummaryModalOpen}
+        toggle={() => setWeeklySummaryModalOpen(false)}
+        contentClassName={styles.blueSquareEmailModal}
+      >
         <ModalHeader toggle={() => setWeeklySummaryModalOpen(false)}>
           <i className="fas fa-chart-bar text-info me-2"></i>
           Confirm Weekly Summary Email Resend

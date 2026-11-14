@@ -1,5 +1,5 @@
-:global(td > input),
-:global(select) {
+.tableFilterWrapper :global(td > input),
+.tableFilterWrapper :global(select) {
   width: 100%;
 }
 
