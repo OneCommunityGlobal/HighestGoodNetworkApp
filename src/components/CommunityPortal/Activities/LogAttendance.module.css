@@ -514,6 +514,13 @@
   font-size: 0.95rem;
 }
 
+.emptyState {
+  text-align: center;
+  padding: 24px;
+  color: #64748b;
+  font-style: italic;
+}
+
 .sortButton {
   border: none;
   background: transparent;
@@ -548,6 +555,14 @@
 .statusDanger {
   background: #fee2e2;
   color: #b91c1c;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.statusCancelled {
+  background: #e2e8f0;
+  color: #475569;
   padding: 6px 14px;
   border-radius: 999px;
   font-weight: 600;
@@ -592,6 +607,56 @@
   .summaryGrid {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
+}
+
+.page.darkMode .shareBtn {
+  background: #334155;
+  color: #fff;
+}
+
+.page.darkMode .finishedBadge {
+  background: #4338ca;
+  color: #fff;
+}
+
+.page.darkMode .statusBadge {
+  color: #fff;
+}
+
+.page.darkMode .avatarStack span {
+  background: #475569;
+  color: #fff;
+}
+
+.darkMode .statusCancelled {
+  background: #475569;
+  color: #fff;
+}
+
+.darkMode .controls select {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #475569;
+}
+
+.darkMode .controls select option {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.darkMode .statusSuccess {
+  background: #166534;
+  color: #fff;
+}
+
+.darkMode .statusPending {
+  background: #854d0e;
+  color: #fff;
+}
+
+.darkMode .statusDanger {
+  background: #991b1b;
+  color: #fff;
 }
 
 .darkMode thead {

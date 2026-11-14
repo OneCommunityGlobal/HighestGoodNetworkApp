@@ -22,7 +22,20 @@ const hasDuplicatePR = (gradedPrs, value) => {
   );
 };
 
-const PRGradingScreen = ({ teamData, reviewers }) => {
+const PRGradingScreen = ({
+  teamData,
+  reviewers,
+  teamOptions = [],
+  selectedTeamName = '',
+  weekOptions = [],
+  selectedWeek = '',
+  onTeamChange,
+  onWeekChange,
+  onSave,
+  onRemoveReviewer,
+  saveStatus,
+  onDismissSaveStatus,
+}) => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [reviewerData, setReviewerData] = useState(reviewers || []);
   const [activeInput, setActiveInput] = useState(null);
@@ -37,7 +50,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const [loadError, setLoadError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
-
+  const [showAddReviewer, setShowAddReviewer] = useState(false);
+  const [newReviewerName, setNewReviewerName] = useState('');
+  const [addReviewerError, setAddReviewerError] = useState('');
   const {
     promotingReviewer,
     promotedReviewerIds,
@@ -203,11 +218,63 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   };
 
   if (!teamData || !reviewers) return <div>Error: Missing required props</div>;
+  const handleAddReviewer = () => {
+    const name = newReviewerName.trim();
 
+    if (!name) {
+      setAddReviewerError('Reviewer name cannot be empty');
+      return;
+    }
+
+    if (reviewerData.some(r => r.reviewer.toLowerCase() === name.toLowerCase())) {
+      setAddReviewerError('Reviewer already exists');
+      return;
+    }
+
+    const newReviewer = {
+      id: uuidv4(),
+      reviewer: name,
+      prsNeeded: 10,
+      prsReviewed: 0,
+      gradedPrs: [],
+    };
+
+    setReviewerData(prev => [...prev, newReviewer]);
+    setNewReviewerName('');
+    setAddReviewerError('');
+    setShowAddReviewer(false);
+  };
+
+  const handleRemoveReviewer = async reviewerName => {
+    setReviewerData(prev => prev.filter(r => r.reviewer !== reviewerName));
+
+    if (onRemoveReviewer) {
+      await onRemoveReviewer(reviewerName);
+    }
+  };
   return (
     <PRGradingView
       darkMode={darkMode}
       teamData={teamData}
+      teamOptions={teamOptions}
+      selectedTeamName={selectedTeamName}
+      weekOptions={weekOptions}
+      selectedWeek={selectedWeek}
+      onTeamChange={onTeamChange}
+      onWeekChange={onWeekChange}
+      onSave={onSave}
+      showAddReviewer={showAddReviewer}
+      onToggleAddReviewer={() => setShowAddReviewer(prev => !prev)}
+      newReviewerName={newReviewerName}
+      onNewReviewerNameChange={value => {
+        setNewReviewerName(value);
+        setAddReviewerError('');
+      }}
+      addReviewerError={addReviewerError}
+      onAddReviewer={handleAddReviewer}
+      onRemoveReviewer={handleRemoveReviewer}
+      saveStatus={saveStatus}
+      onDismissSaveStatus={onDismissSaveStatus}
       isFinalized={isFinalized}
       onFinalize={() => setIsFinalized(true)}
       searchTerm={searchTerm}
@@ -269,6 +336,26 @@ PRGradingScreen.propTypes = {
       ).isRequired,
     }),
   ).isRequired,
+  teamOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      teamName: PropTypes.string.isRequired,
+    }),
+  ),
+  selectedTeamName: PropTypes.string,
+  weekOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+    }),
+  ),
+  selectedWeek: PropTypes.string,
+  onTeamChange: PropTypes.func,
+  onWeekChange: PropTypes.func,
+  onSave: PropTypes.func,
+  onRemoveReviewer: PropTypes.func,
+  saveStatus: PropTypes.oneOf(['success', 'error', null]),
+  onDismissSaveStatus: PropTypes.func,
 };
 
 export default PRGradingScreen;
