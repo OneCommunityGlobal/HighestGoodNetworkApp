@@ -943,12 +943,15 @@ export class WeeklySummary extends Component {
                   <Row className="w-100 ml-1">
                     <Col>
                       <FormGroup>
-                        <Label for={summaryName} className={styles['summary-instructions-row']}>
-                          <div className={`${fontColor} responsive-font-size`}>
+                        <div className={styles['summary-instructions-row']}>
+                          <Label
+                            for={summaryName}
+                            className={`${styles['summary-instructions-copy']} ${fontColor} responsive-font-size`}
+                          >
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
-                          </div>
-                          <div className="d-flex flex-column text-right">
+                          </Label>
+                          <div className={styles['summary-actions']}>
                             <CurrentPromptModal
                               userRole={userRole}
                               userId={displayUserId}
@@ -1008,7 +1011,7 @@ export class WeeklySummary extends Component {
                             <WriteItForMeModal pasteResponse={this.pasteResponse} />
                           </div> */}
                           </div>
-                        </Label>
+                        </div>
                         <Editor
                           tinymceScriptSrc="/tinymce/tinymce.min.js"
                           init={TINY_MCE_INIT_OPTIONS}
