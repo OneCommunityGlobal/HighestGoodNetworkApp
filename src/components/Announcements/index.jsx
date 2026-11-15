@@ -105,6 +105,8 @@ function Announcements({ title, email: initialEmail }) {
         return '#E91E63';
       case 'weeklyreport':
         return '#00C853';
+      case 'email':
+        return '#0077b5';
       default:
         return undefined;
     }
@@ -185,7 +187,12 @@ function Announcements({ title, email: initialEmail }) {
                 ) : (
                   <FontAwesomeIcon
                     icon={icon}
-                    style={{ width: '100%', height: '100%', color: getIconColor(id) }}
+                    className={styles.fontAwesomeIcon}
+                    style={{
+                      '--icon-color': getIconColor(id),
+                      width: '100%',
+                      height: '100%',
+                    }}
                   />
                 )}
               </div>

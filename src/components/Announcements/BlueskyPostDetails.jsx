@@ -782,7 +782,13 @@ function BlueskyPostDetails() {
                     style={{ width: `${charsPercent}%`, background: charColor }}
                   />
                 </div>
-                <span style={{ color: charColor, fontWeight: charsLeft <= 20 ? '700' : '400' }}>
+                <span
+                  className={styles['char-counter-text']}
+                  style={{
+                    '--char-color': charColor,
+                    fontWeight: charsLeft <= 20 ? '700' : '400',
+                  }}
+                >
                   {charsLeft < 0 ? `${Math.abs(charsLeft)} over limit` : `${charsLeft} remaining`}
                 </span>
               </div>
