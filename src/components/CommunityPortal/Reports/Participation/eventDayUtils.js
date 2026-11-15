@@ -32,13 +32,27 @@ export const getEventDayKeys = event => {
   const range = getEventRange(event);
   if (!range) return [];
   const keys = [];
-  const cursor = startOfDay(range.start);
+  const first = startOfDay(range.start);
   const last = startOfDay(range.end);
-  while (cursor <= last && keys.length < MAX_EVENT_SPAN_DAYS) {
-    keys.push(cursor.toDateString());
-    cursor.setDate(cursor.getDate() + 1);
+  for (let i = 0; i < MAX_EVENT_SPAN_DAYS; i += 1) {
+    const day = new Date(first.getFullYear(), first.getMonth(), first.getDate() + i);
+    if (day > last) break;
+    keys.push(day.toDateString());
   }
   return keys;
+};
+
+export const formatDayLabel = date =>
+  date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+// The calendar shows today until a day is picked
+export const getCalendarDay = selectedDate => selectedDate || new Date();
+
+// Empty state for the Card and List views
+export const getEmptyMessage = (selectedDate, filter) => {
+  if (selectedDate) return `No events on ${formatDayLabel(selectedDate)}.`;
+  if (filter && filter !== 'All Time') return `No upcoming events for ${filter.toLowerCase()}.`;
+  return 'No upcoming events.';
 };
 
 const byStart = (a, b) => getEventRange(a).start - getEventRange(b).start;

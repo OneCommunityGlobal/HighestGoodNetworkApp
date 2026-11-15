@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { eventOccursOn, getEventDayKeys, getEventRange, getVisibleEvents } from '../eventDayUtils';
+import {
+  eventOccursOn,
+  getEmptyMessage,
+  getEventDayKeys,
+  getEventRange,
+  getVisibleEvents,
+} from '../eventDayUtils';
 
 const at = (y, m, d, h = 0, min = 0) => new Date(y, m, d, h, min).toISOString();
 const NOW = new Date(2026, 10, 14, 15, 0); // Nov 14 2026, 3pm
@@ -88,5 +94,25 @@ describe('getVisibleEvents', () => {
   it('shows upcoming events from today onward under "All Time", without past days', () => {
     const result = getVisibleEvents(events, { filter: 'All Time', selectedDate: null, now: NOW });
     expect(ids(result)).toEqual(['a', 'b', 'c', 'd']);
+  });
+});
+
+describe('getEventDayKeys across a month boundary', () => {
+  it('rolls over from Nov 30 to Dec 1', () => {
+    const event = { startTime: at(2026, 10, 30, 20), endTime: at(2026, 11, 1, 2) };
+    expect(getEventDayKeys(event)).toEqual([
+      new Date(2026, 10, 30).toDateString(),
+      new Date(2026, 11, 1).toDateString(),
+    ]);
+  });
+});
+
+describe('getEmptyMessage', () => {
+  it('names the picked day, the range, or falls back to upcoming', () => {
+    expect(getEmptyMessage(new Date(2026, 10, 18), 'All Time')).toBe(
+      'No events on November 18, 2026.',
+    );
+    expect(getEmptyMessage(null, 'This Week')).toBe('No upcoming events for this week.');
+    expect(getEmptyMessage(null, 'All Time')).toBe('No upcoming events.');
   });
 });

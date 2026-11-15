@@ -23,6 +23,54 @@ const DEMOGRAPHIC_FIELDS = {
   'User Segment': 'userSegment',
 };
 
+const CATEGORY_DESCRIPTIONS = {
+  'Event type': 'event types',
+  Time: 'time periods',
+  Location: 'locations',
+};
+
+// Grouping key for an event under the active tab
+const getInsightKey = (event, activeTab, demographicType) => {
+  switch (activeTab) {
+    case 'Event type':
+      return event.eventType;
+    case 'Time':
+      return event.eventTime?.split(' ')[0];
+    case 'Location':
+      return event.location;
+    default:
+      return event[DEMOGRAPHIC_FIELDS[demographicType]];
+  }
+};
+
+const getCategoryDescription = (activeTab, demographicType) =>
+  CATEGORY_DESCRIPTIONS[activeTab] || `${demographicType.toLowerCase()} groups`;
+
+const getViewLabel = (activeTab, demographicType) =>
+  activeTab === 'Demographics' ? `Demographics: ${demographicType}` : activeTab;
+
+// Average no-show rate per group
+const calculateStats = (events, activeTab, demographicType) => {
+  const statsMap = new Map();
+
+  events.forEach(event => {
+    const key = getInsightKey(event, activeTab, demographicType);
+    if (!key) return;
+
+    const percentage = parseInt(event.noShowRate, 10);
+    const existing = statsMap.get(key) || { totalPercentage: 0, count: 0 };
+    statsMap.set(key, {
+      totalPercentage: existing.totalPercentage + percentage,
+      count: existing.count + 1,
+    });
+  });
+
+  return Array.from(statsMap.entries()).map(([key, value]) => ({
+    label: key,
+    percentage: Math.round(value.totalPercentage / value.count),
+  }));
+};
+
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('This Week');
   const [scopeFilter, setScopeFilter] = useState('My Event');
@@ -47,47 +95,13 @@ function NoShowInsights() {
 
   const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
 
-  const getTooltipContent = () => {
-    let categoryDescription;
-    if (activeTab === 'Event type') categoryDescription = 'event types';
-    else if (activeTab === 'Time') categoryDescription = 'time periods';
-    else if (activeTab === 'Location') categoryDescription = 'locations';
-    else categoryDescription = `${demographicType.toLowerCase()} groups`;
+  const getTooltipContent = () =>
+    `Percentages represent the average no-show rate for each ${getCategoryDescription(
+      activeTab,
+      demographicType,
+    )} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
 
-    return `Percentages represent the average no-show rate for each ${categoryDescription} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
-  };
-
-  const calculateStats = filteredEvents => {
-    const statsMap = new Map();
-
-    filteredEvents.forEach(event => {
-      let key;
-      if (activeTab === 'Event type') key = event.eventType;
-      else if (activeTab === 'Time') key = event.eventTime.split(' ')[0];
-      else if (activeTab === 'Location') key = event.location;
-      else if (activeTab === 'Demographics') key = event[DEMOGRAPHIC_FIELDS[demographicType]];
-      if (!key) return;
-
-      const percentage = parseInt(event.noShowRate, 10);
-
-      if (statsMap.has(key)) {
-        const existing = statsMap.get(key);
-        statsMap.set(key, {
-          totalPercentage: existing.totalPercentage + percentage,
-          count: existing.count + 1,
-        });
-      } else {
-        statsMap.set(key, { totalPercentage: percentage, count: 1 });
-      }
-    });
-
-    return Array.from(statsMap.entries()).map(([key, value]) => ({
-      label: key,
-      percentage: Math.round(value.totalPercentage / value.count),
-    }));
-  };
-
-  const viewLabel = activeTab === 'Demographics' ? `Demographics: ${demographicType}` : activeTab;
+  const viewLabel = getViewLabel(activeTab, demographicType);
 
   const renderStats = () => {
     const dateFilteredEvents = filterEventsByDate(mockEvents, dateFilter);
@@ -96,7 +110,7 @@ function NoShowInsights() {
       scopeFilter === 'My Event'
         ? dateFilteredEvents.filter(event => event.id % 2 === 0)
         : dateFilteredEvents;
-    const stats = calculateStats(filteredEvents);
+    const stats = calculateStats(filteredEvents, activeTab, demographicType);
     const finalStats =
       sortOrder === 'none'
         ? stats

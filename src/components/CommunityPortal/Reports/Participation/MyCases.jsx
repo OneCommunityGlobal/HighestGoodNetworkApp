@@ -8,10 +8,25 @@ import styles from './MyCases.module.css';
 import upcomingStyles from './UpcomingEvents.module.css';
 import { getEvents } from '../../../../actions/eventActions';
 import CreateEventModal from './CreateEventModal';
-import { getEventDayKeys, getVisibleEvents } from './eventDayUtils';
+import {
+  formatDayLabel,
+  getCalendarDay,
+  getEmptyMessage,
+  getEventDayKeys,
+  getVisibleEvents,
+} from './eventDayUtils';
 
-const formatDayLabel = date =>
-  date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+const MAX_COLLAPSED_EVENTS = 10;
+
+// Adds the dark-mode class when dark mode is on
+const withDark = (darkMode, base, dark) => (darkMode ? `${base} ${dark}` : base);
+
+// More only applies to the capped Card and List views
+const shouldShowMore = (view, eventCount, isExporting) =>
+  view !== 'calendar' && eventCount > MAX_COLLAPSED_EVENTS && !isExporting;
+
+// Card and List show which calendar day they are filtered to
+const shouldShowDayBar = (selectedDate, view) => Boolean(selectedDate) && view !== 'calendar';
 
 function MyCases() {
   const [events, setEvents] = useState([]);
@@ -85,9 +100,7 @@ function MyCases() {
     setExpanded(false);
   };
 
-  let emptyMessage = 'No upcoming events.';
-  if (selectedDate) emptyMessage = `No events on ${formatDayLabel(selectedDate)}.`;
-  else if (filter !== 'All Time') emptyMessage = `No upcoming events for ${filter.toLowerCase()}.`;
+  const emptyMessage = getEmptyMessage(selectedDate, filter);
 
   const handleEventCreated = createdEvent => {
     if (!createdEvent) return;
@@ -121,7 +134,7 @@ function MyCases() {
   let visibleEvents = filteredEvents;
 
   if (!isExporting) {
-    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, 10);
+    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, MAX_COLLAPSED_EVENTS);
   }
 
   const FALLBACK_IMG =
@@ -143,7 +156,7 @@ function MyCases() {
   }, [events]);
 
   // The calendar shows today until a day is picked
-  const calendarDay = selectedDate || new Date();
+  const calendarDay = getCalendarDay(selectedDate);
   const selectedDateEvents = eventCacheByDate.get(calendarDay.toDateString()) || [];
 
   // Handle date selection in calendar
@@ -325,7 +338,7 @@ function MyCases() {
           classes.push(styles.hasEvents);
         }
         // Today stays highlighted until a day is picked
-        if (date.toDateString() === (selectedDate || new Date()).toDateString()) {
+        if (date.toDateString() === getCalendarDay(selectedDate).toDateString()) {
           classes.push(styles.selectedDate);
         }
         return classes.join(' ');
@@ -414,12 +427,14 @@ function MyCases() {
           <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
             Upcoming Events
           </h2>
-          {view !== 'calendar' && filteredEvents.length > 10 && !isExporting && (
+          {shouldShowMore(view, filteredEvents.length, isExporting) && (
             <button
               type="button"
-              className={`more-btn-global ${upcomingStyles.moreBtn} ${
-                darkMode ? upcomingStyles.moreBtnDark : ''
-              }`}
+              className={`more-btn-global ${withDark(
+                darkMode,
+                upcomingStyles.moreBtn,
+                upcomingStyles.moreBtnDark,
+              )}`}
               onClick={() => setExpanded(!expanded)}
               aria-expanded={expanded}
             >
@@ -481,11 +496,13 @@ function MyCases() {
       </header>
 
       <main className={styles.content}>
-        {selectedDate && view !== 'calendar' && (
+        {shouldShowDayBar(selectedDate, view) && (
           <div
-            className={`${upcomingStyles.selectedDayBar} ${
-              darkMode ? upcomingStyles.selectedDayBarDark : ''
-            }`}
+            className={withDark(
+              darkMode,
+              upcomingStyles.selectedDayBar,
+              upcomingStyles.selectedDayBarDark,
+            )}
           >
             <span>Showing events on {formatDayLabel(selectedDate)}</span>
             <button
