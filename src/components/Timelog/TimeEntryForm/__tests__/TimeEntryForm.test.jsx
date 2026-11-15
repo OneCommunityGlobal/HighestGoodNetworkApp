@@ -153,11 +153,14 @@ it('should change Project with user input', async () => {
   expect(select).toHaveValue(toSelect.projectId);
   expect(select).toHaveDisplayValue(toSelect.projectName);
 });
-it('pauses on timer submit and clears after successful logging', async () => {
+it('pauses on timer submit and stops after successful logging', async () => {
   const sendPause = vi.fn();
-  const sendClear = vi.fn();
+  const sendStop = vi.fn().mockResolvedValue(true);
+
   store.dispatch.mockImplementation(action =>
-    typeof action === 'function' ? action(store.dispatch, store.getState) : action,
+    typeof action === 'function'
+      ? action(store.dispatch, store.getState)
+      : action,
   );
 
   renderWithProvider(
@@ -168,7 +171,7 @@ it('pauses on timer submit and clears after successful logging', async () => {
       toggle={toggle}
       isOpen
       sendPause={sendPause}
-      sendClear={sendClear}
+      sendStop={sendStop}
       timerConnected
     />,
     { store },
@@ -178,16 +181,16 @@ it('pauses on timer submit and clears after successful logging', async () => {
 
   await waitFor(() => {
     expect(sendPause).toHaveBeenCalledTimes(1);
-    expect(sendClear).toHaveBeenCalledTimes(1);
+    expect(sendStop).toHaveBeenCalledTimes(1);
   });
 
   expect(sendPause.mock.invocationCallOrder[0]).toBeLessThan(
-    sendClear.mock.invocationCallOrder[0],
+    sendStop.mock.invocationCallOrder[0],
   );
 });
-it('keeps timer paused and does not clear when time logging fails', async () => {
+it('keeps timer paused and does not stop when time logging fails', async () => {
   const sendPause = vi.fn();
-  const sendClear = vi.fn();
+  const sendStop = vi.fn().mockResolvedValue(true);
 
   store.dispatch.mockImplementation(action =>
     typeof action === 'function' ? action(store.dispatch, store.getState) : action,
@@ -204,7 +207,7 @@ it('keeps timer paused and does not clear when time logging fails', async () => 
       toggle={toggle}
       isOpen
       sendPause={sendPause}
-      sendClear={sendClear}
+      sendStop={sendStop}
       timerConnected
     />,
     { store },
@@ -216,7 +219,37 @@ it('keeps timer paused and does not clear when time logging fails', async () => 
     expect(sendPause).toHaveBeenCalledTimes(1);
   });
 
-  expect(sendClear).not.toHaveBeenCalled();
+  expect(sendStop).not.toHaveBeenCalled();
   expect(toggle).not.toHaveBeenCalled();
+});
+it('warns when the timer stop cannot be confirmed', async () => {
+  const sendPause = vi.fn();
+  const sendStop = vi.fn().mockResolvedValue(false);
+
+  store.dispatch.mockImplementation(action =>
+    typeof action === 'function'
+      ? action(store.dispatch, store.getState)
+      : action,
+  );
+
+  renderWithProvider(
+    <TimeEntryForm
+      from="Timer"
+      data={data}
+      edit={false}
+      toggle={toggle}
+      isOpen
+      sendPause={sendPause}
+      sendStop={sendStop}
+      timerConnected
+    />,
+    { store },
+  );
+
+  await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+  await waitFor(() => {
+    expect(sendStop).toHaveBeenCalledTimes(1);
+  });
 });
 });

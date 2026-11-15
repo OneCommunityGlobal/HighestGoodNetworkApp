@@ -815,7 +815,7 @@ function Timer({ authUser, darkMode, isPopout }) {
         isOpen={logTimeEntryModal}
         data={logTimer}
         sendPause={sendPause}
-        sendClear={sendClear}
+        sendStop={wsJsonMessageHandler.sendStop}
         timerConnected={customReadyState === ReadyState.OPEN}
         onTimeSubmitted={handleTimeSubmitted}
         sessionId={sessionId}
