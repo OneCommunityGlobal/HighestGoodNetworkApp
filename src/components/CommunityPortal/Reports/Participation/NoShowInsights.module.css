@@ -1,0 +1,17 @@
+/* The shared tab strip (max-width: 60%, zero side padding) was sized for three tabs;
+   with Demographics added it clipped labels on narrower screens. Size tabs to their text
+   and wrap onto a second row when the card is too narrow. */
+.tabsFit {
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.tabFit {
+  flex: 1 0 auto;
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+
+.demographicSelect {
+  margin: 8px 0 4px;
+}

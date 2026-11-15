@@ -8,12 +8,26 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
+import tabStyles from './NoShowInsights.module.css';
 import { filterEventsByDate } from './FilterByDate';
+
+const INSIGHT_TABS = ['Demographics', 'Event type', 'Time', 'Location'];
+
+// Demographic breakdown -> field on each event
+const DEMOGRAPHIC_FIELDS = {
+  Age: 'ageGroup',
+  Gender: 'gender',
+  Income: 'incomeLevel',
+  Occupation: 'occupation',
+  Education: 'educationLevel',
+  'User Segment': 'userSegment',
+};
 
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('This Week');
   const [scopeFilter, setScopeFilter] = useState('My Event');
-  const [activeTab, setActiveTab] = useState('Event type');
+  const [activeTab, setActiveTab] = useState(INSIGHT_TABS[0]);
+  const [demographicType, setDemographicType] = useState('Age');
   const [sortOrder, setSortOrder] = useState('none');
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -37,7 +51,8 @@ function NoShowInsights() {
     let categoryDescription;
     if (activeTab === 'Event type') categoryDescription = 'event types';
     else if (activeTab === 'Time') categoryDescription = 'time periods';
-    else categoryDescription = 'locations';
+    else if (activeTab === 'Location') categoryDescription = 'locations';
+    else categoryDescription = `${demographicType.toLowerCase()} groups`;
 
     return `Percentages represent the average no-show rate for each ${categoryDescription} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
   };
@@ -50,6 +65,8 @@ function NoShowInsights() {
       if (activeTab === 'Event type') key = event.eventType;
       else if (activeTab === 'Time') key = event.eventTime.split(' ')[0];
       else if (activeTab === 'Location') key = event.location;
+      else if (activeTab === 'Demographics') key = event[DEMOGRAPHIC_FIELDS[demographicType]];
+      if (!key) return;
 
       const percentage = parseInt(event.noShowRate, 10);
 
@@ -69,6 +86,8 @@ function NoShowInsights() {
       percentage: Math.round(value.totalPercentage / value.count),
     }));
   };
+
+  const viewLabel = activeTab === 'Demographics' ? `Demographics: ${demographicType}` : activeTab;
 
   const renderStats = () => {
     const dateFilteredEvents = filterEventsByDate(mockEvents, dateFilter);
@@ -186,7 +205,7 @@ function NoShowInsights() {
 
       await navigator.share({
         title: 'No-show rate insights',
-        text: `Insights (${scopeFilter}, ${dateFilter}, ${activeTab})`,
+        text: `Insights (${scopeFilter}, ${dateFilter}, ${viewLabel})`,
         files: [file],
       });
 
@@ -236,7 +255,7 @@ function NoShowInsights() {
                   <strong>Filter:</strong> {dateFilter}
                 </div>
                 <div>
-                  <strong>View:</strong> {activeTab}
+                  <strong>View:</strong> {viewLabel}
                 </div>
               </div>
 
@@ -311,13 +330,17 @@ function NoShowInsights() {
         </div>
 
         <div className={styles.insightsTabsContainer}>
-          <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDarkMode : ''}`}>
-            {['Event type', 'Time', 'Location'].map(tab => (
+          <div
+            className={`${styles.insightsTabs} ${tabStyles.tabsFit} ${
+              darkMode ? styles.insightsTabsDarkMode : ''
+            }`}
+          >
+            {INSIGHT_TABS.map(tab => (
               <button
                 key={tab}
                 type="button"
                 className={`
-                ${styles.insightsTab} 
+                ${styles.insightsTab} ${tabStyles.tabFit}
                 ${darkMode ? styles.insightsTabDarkMode : ''} 
                 ${
                   activeTab === tab ? (darkMode ? styles.activeTabDarkMode : styles.activeTab) : ''
@@ -350,6 +373,26 @@ function NoShowInsights() {
             </div>
           </div>
         </div>
+
+        {activeTab === 'Demographics' && (
+          <div
+            className={`${styles.insightsFilters} ${tabStyles.demographicSelect} ${
+              darkMode ? styles.insightsFiltersDark : ''
+            }`}
+          >
+            <select
+              aria-label="Demographic breakdown"
+              value={demographicType}
+              onChange={e => setDemographicType(e.target.value)}
+            >
+              {Object.keys(DEMOGRAPHIC_FIELDS).map(type => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className={styles.insightsContent}>{renderStats()}</div>
       </div>

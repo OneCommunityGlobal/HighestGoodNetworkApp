@@ -33,6 +33,24 @@ const formatDisplayTime = date =>
     year: 'numeric',
   });
 
+// Demographic groups for the No-show Rate Insights "Demographics" tab
+const demographicGroups = {
+  ageGroup: ['18-25', '26-35', '36-50', '50+'],
+  gender: ['Male', 'Female', 'Other'],
+  incomeLevel: ['Low', 'Medium', 'High'],
+  occupation: ['Student', 'Engineer', 'Doctor', 'Business', 'Other'],
+  educationLevel: ['High School', 'Bachelor', 'Master', 'PhD'],
+  userSegment: ['New', 'Returning'],
+};
+
+const randomDemographics = () =>
+  Object.fromEntries(
+    Object.entries(demographicGroups).map(([field, groups]) => [
+      field,
+      groups[secureRandInt(0, groups.length - 1)],
+    ]),
+  );
+
 const mockEvents = [];
 let id = 1;
 
@@ -52,6 +70,7 @@ for (let month = 0; month < 12; month++) {
         dropOffRate: `${secureRandInt(10, 79)}%`,
         location: locations[(id + t) % locations.length],
         capacity: secureRandInt(1, 40),
+        ...randomDemographics(),
       });
     }
   }
@@ -79,6 +98,7 @@ for (let t = 0; t < 13; t++) {
     dropOffRate: `${secureRandInt(10, 79)}%`,
     location: locations[id % locations.length],
     capacity: secureRandInt(1, 40),
+    ...randomDemographics(),
   });
 }
 
@@ -93,6 +113,7 @@ mockEvents.push({
   dropOffRate: '40%',
   location: 'Chicago',
   capacity: 0,
+  ...randomDemographics(),
 });
 
 export default mockEvents;
