@@ -818,12 +818,8 @@ function Timer({ authUser, darkMode, isPopout }) {
       return; // Exit early to prevent other modal logic
     }
 
-    const {
-      paused: pausedLJM,
-      forcedPause: forcedPauseLJM,
-      started: startedLJM,
-      chiming: chimingLJM,
-    } = lastJsonMessage || defaultMessage;
+    const { paused: pausedLJM, forcedPause: forcedPauseLJM, started: startedLJM } =
+      lastJsonMessage || defaultMessage;
 
     setMessage(lastJsonMessage);
     setRunning(startedLJM && !pausedLJM);
