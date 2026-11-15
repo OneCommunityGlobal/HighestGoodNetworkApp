@@ -56,10 +56,14 @@ function dateNumberClass(isCurrentMonth, darkMode) {
 }
 
 function DateCell({ date, isAvailable, isSelected, darkMode, onDateSelect }) {
-  const availableClass = isAvailable
-    ? `${styles.availableDate} ${darkMode ? styles.availableDateDark : ''}`
-    : '';
-  const cellClass = `${styles.dateCell} ${availableClass} ${isSelected ? styles.selectedDate : ''}`;
+  const cellClass = [
+    styles.dateCell,
+    isAvailable && styles.availableDate,
+    isAvailable && darkMode && styles.availableDateDark,
+    isSelected && styles.selectedDate,
+  ]
+    .filter(Boolean)
+    .join(' ');
   const numberClass = `${styles.dateNumber} ${dateNumberClass(date.isCurrentMonth, darkMode)}`;
   const inner = (
     <>
