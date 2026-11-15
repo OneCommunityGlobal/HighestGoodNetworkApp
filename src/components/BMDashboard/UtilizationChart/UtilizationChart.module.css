@@ -1,3 +1,5 @@
+/* ============ PAGE BACKGROUND ============ */
+
 .utilizationChartPage {
   min-height: 100vh;
   padding: 2rem 1rem;
@@ -8,6 +10,8 @@
 .darkPage {
   background-color: #0d1b2a;
 }
+
+/* ============ BASE CONTAINER ============ */
 
 .utilizationChartContainer {
   padding: 2rem;
@@ -64,14 +68,14 @@
 }
 
 .utilizationChartContainer:not(.darkMode) .select {
-  background-color: #fff !important;
-  color: #000 !important;
-  border-color: #ccc !important;
+  background-color: #fff;
+  color: #000;
+  border-color: #ccc;
 }
 
 .utilizationChartContainer:not(.darkMode) .select option {
-  background-color: #fff !important;
-  color: #000 !important;
+  background-color: #fff;
+  color: #000;
 }
 
 .datepickerWrapper::placeholder {
@@ -92,18 +96,107 @@
 }
 
 .activeButton {
-  background-color: #4caf50 !important;
-  color: #1a1a1a !important;
+  background-color: #4caf50;
+  color: #1a1a1a;
   border: none;
 }
 
 .activeButton:hover {
-  background-color: #43a047 !important;
+  background-color: #43a047;
 }
 
 .inactiveButton {
   background-color: var(--button-bg, #000);
   color: var(--button-text, #fff);
+}
+
+/* ============ DATE RANGE FILTERS ============ */
+
+.utilizationChartContainer .datepickerWrapper {
+  background-color: var(--input-bg, #fff);
+  color: var(--text-color, #333);
+  border-color: var(--border-color, #ccc);
+  color-scheme: light;
+  font-family: inherit;
+}
+
+.utilizationChartContainer.darkMode .select,
+.utilizationChartContainer.darkMode .datepickerWrapper {
+  background-color: #1b263b;
+  color: #fff;
+  border: 1px solid #4a5a77;
+}
+
+.utilizationChartContainer.darkMode .select option {
+  background-color: #1b263b;
+  color: #fff;
+}
+
+.utilizationChartContainer.darkMode .datepickerWrapper {
+  color-scheme: dark;
+}
+
+.utilizationChartContainer.darkMode .datepickerWrapper::placeholder {
+  color: #e2e8f0;
+  opacity: 1;
+}
+
+.utilizationChartContainer.darkMode .datepickerWrapper:focus {
+  border-color: #e8a71c;
+  outline: 2px solid #e8a71c;
+  outline-offset: 1px;
+}
+
+/* ============ DATE PICKER CALENDAR ============ */
+
+.utilizationCalendar {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.utilizationCalendarPopper {
+  z-index: 20;
+}
+
+.darkPage .utilizationCalendar {
+  background-color: #253342;
+  color: #fff;
+  border-color: #4a5a77;
+}
+
+.darkPage .utilizationCalendar :global(.react-datepicker__header) {
+  background-color: #334155;
+  border-bottom-color: #4a5a77;
+}
+
+.darkPage .utilizationCalendar :global(.react-datepicker__current-month),
+.darkPage .utilizationCalendar :global(.react-datepicker__day-name),
+.darkPage .utilizationCalendar :global(.react-datepicker__day),
+.darkPage .utilizationCalendar :global(.react-datepicker__navigation-icon)::before {
+  color: #fff;
+}
+
+.darkPage .utilizationCalendar :global(.react-datepicker__day:hover) {
+  background-color: #475569;
+}
+
+.darkPage .utilizationCalendar :global(.react-datepicker__day--selected),
+.darkPage .utilizationCalendar :global(.react-datepicker__day--keyboard-selected),
+.darkPage .utilizationCalendar :global(.react-datepicker__day--in-range),
+.darkPage .utilizationCalendar :global(.react-datepicker__day--in-selecting-range) {
+  background-color: #e8a71c;
+  color: #000;
+}
+
+.darkPage .utilizationCalendar :global(.react-datepicker__day--outside-month) {
+  color: #cbd5e1;
+}
+
+.darkPage .utilizationCalendar :global(.react-datepicker__day--disabled) {
+  color: #94a3b8;
+  background-color: transparent;
+  cursor: not-allowed;
 }
 
 /* ============ DOWNLOAD DROPDOWN ============ */
@@ -227,41 +320,75 @@
 /* ============ FORECAST MODE TOGGLE ============ */
 .forecastToggle {
   display: flex;
-  border: 1px solid var(--border-color, #ccc);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 1.5rem;
   justify-content: center;
+  margin-bottom: 1.5rem;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
 }
 
-.toggleButton {
+/* Shared styling for all forecast tabs */
+
+.utilizationChartContainer .toggleButton {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
+  font-family: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
   border: none;
   background-color: var(--input-bg, #fff);
   color: var(--text-color, #333);
-  cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease;
-  white-space: nowrap;
 }
 
-.toggleButton:not(:last-child) {
+/* Separator between adjacent tabs */
+
+.utilizationChartContainer .toggleButton:not(:last-child) {
   border-right: 1px solid var(--border-color, #ccc);
 }
 
-.toggleButtonActive {
+/* Keyboard focus accessibility */
+
+.utilizationChartContainer .toggleButton:focus-visible {
+  outline: 2px solid var(--focus-border-color, #3b82f6);
+  outline-offset: -2px;
+}
+
+/* Dark-mode base styling */
+
+.utilizationChartContainer.darkMode .toggleButton {
+  background-color: #1b263b;
+  color: #fff;
+  border-color: #4a5a77;
+}
+
+/* Selected tab styling in light mode */
+
+.utilizationChartContainer .toggleButton.toggleButtonActive {
   background-color: var(--button-bg, #000);
   color: var(--button-text, #fff);
   font-weight: 600;
 }
 
-.toggleButton:focus-visible {
-  outline: 2px solid var(--focus-border-color, #3b82f6);
-  outline-offset: -2px;
+/* Selected tab styling in dark mode */
+
+.utilizationChartContainer.darkMode .toggleButton.toggleButtonActive {
+  background-color: #e8a71c;
+  color: #111827;
+  font-weight: 600;
 }
 
-.toggleButton:hover:not(.toggleButtonActive) {
+/* Hover styling for inactive tabs */
+
+.utilizationChartContainer .toggleButton:hover:not(.toggleButtonActive) {
   background-color: var(--hover-bg, #f3f4f6);
+}
+
+/* Dark-mode hover styling for inactive tabs */
+
+.utilizationChartContainer.darkMode .toggleButton:hover:not(.toggleButtonActive) {
+  background-color: #334155;
 }
 
 /* ============ WARNING BANNER ============ */
@@ -570,48 +697,6 @@
   --hover-bg: #334155;
   --panel-bg: #253342;
   --panel-border: #4a5a77;
-}
-
-.utilizationChartContainer.darkMode .datepickerWrapper::placeholder {
-  color: #fff;
-}
-
-.utilizationChartContainer.darkMode :global(.react-datepicker) {
-  background-color: #333;
-  color: #e0e0e0;
-  border: 1px solid #555;
-}
-
-.utilizationChartContainer.darkMode :global(.react-datepicker__header) {
-  background-color: #444;
-  border-bottom: 1px solid #555;
-}
-
-.utilizationChartContainer.darkMode :global(.react-datepicker__current-month),
-.utilizationChartContainer.darkMode :global(.react-datepicker__day-name),
-.utilizationChartContainer.darkMode :global(.react-datepicker__day) {
-  color: #e0e0e0;
-}
-
-.utilizationChartContainer.darkMode :global(.react-datepicker__day:hover) {
-  background-color: #555;
-}
-
-.utilizationChartContainer.darkMode :global(.react-datepicker__day--selected),
-.utilizationChartContainer.darkMode :global(.react-datepicker__day--in-selecting-range),
-.utilizationChartContainer.darkMode :global(.react-datepicker__day--in-range) {
-  background-color: #e8a71c;
-  color: #000;
-}
-
-.utilizationChartContainer.darkMode :global(.react-datepicker__day--disabled) {
-  color: #6b7280 !important;
-  cursor: not-allowed !important;
-  background-color: transparent !important;
-}
-
-.darkMode .forecastToggle {
-  border: none;
 }
 
 .darkMode .warningBanner {
