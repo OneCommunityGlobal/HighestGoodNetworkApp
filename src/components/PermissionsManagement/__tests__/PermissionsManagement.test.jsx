@@ -1,7 +1,7 @@
 /* eslint-disable testing-library/no-node-access */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -9,12 +9,63 @@ import thunk from 'redux-thunk';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import axios from 'axios';
-import { ModalContext } from '~/context/ModalContext';
+import { ModalContext, ModalProvider } from '~/context/ModalContext';
 import PermissionsManagement from '../PermissionsManagement';
 import { ENDPOINTS } from '~/utils/URL';
+import { permissions } from '~/utils/constants';
+import appStyles from '~/App.module.css';
 
 vi.mock('axios');
+vi.mock('@tinymce/tinymce-react', () => ({
+  Editor: ({ value }) => <textarea aria-label="Mock Editor" value={value} readOnly />,
+}));
 const mockStore = configureMockStore([thunk]);
+
+const ownerAuthState = {
+  role: {
+    roles: [
+      {
+        roleName: 'Owner',
+        permissions: [
+          permissions.postRole,
+          permissions.putRole,
+          permissions.putUserProfilePermissions,
+        ],
+      },
+      { roleName: 'Admin', permissions: [permissions.putRole] },
+      { roleName: 'User', permissions: [] },
+    ],
+  },
+  auth: {
+    user: {
+      userid: '123',
+      role: 'Owner',
+      permissions: {
+        frontPermissions: [
+          permissions.postRole,
+          permissions.putRole,
+          permissions.putUserProfilePermissions,
+        ],
+        removedDefaultPermissions: [],
+      },
+    },
+    permissions: [],
+  },
+  userProfile: {
+    role: 'Owner',
+    loading: false,
+  },
+  theme: {
+    darkMode: true,
+  },
+  allUserProfiles: {
+    userProfiles: [],
+  },
+  editableInfo: {
+    loading: false,
+  },
+  infoCollections: { infos: [] },
+};
 
 describe('PermissionsManagement', () => {
   const history = createMemoryHistory();
@@ -36,31 +87,10 @@ describe('PermissionsManagement', () => {
   };
 
   beforeEach(() => {
-    store = mockStore({
-      role: {
-        roles: [{ roleName: 'Admin' }, { roleName: 'User' }],
-      },
-      auth: {
-        user: { userid: '123' },
-        permissions: [],
-      },
-      userProfile: {
-        role: 'Admin',
-        loading: false,
-      },
-      theme: {
-        darkMode: true,
-      },
-      allUserProfiles: {
-        userProfiles: [],
-      },
-      editableInfo: {
-        // Add this section
-        loading: false,
-      },
-    });
+    store = mockStore(ownerAuthState);
 
     vi.clearAllMocks();
+    mockFunctions.hasPermission.mockImplementation(() => true);
     axios.get.mockImplementation(url => {
       if (url.includes('/permission-change-logs')) {
         return Promise.resolve({ data: [] });
@@ -91,7 +121,6 @@ describe('PermissionsManagement', () => {
               getAllUsers={mockFunctions.getAllUsers}
               addNewRole={mockFunctions.addNewRole}
               getUserRole={mockFunctions.getUserRole}
-              hasPermission={mockFunctions.hasPermission}
             />
           </ModalContext.Provider>
         </Router>
@@ -151,7 +180,7 @@ describe('PermissionsManagement', () => {
 
   it('applies dark-mode styles when darkMode is true', async () => {
     const { container } = await renderComponent({ darkMode: true });
-    expect(container.firstChild).toHaveClass('bg-oxford-blue');
+    expect(container.firstChild).toHaveClass(appStyles['bg-oxford-blue']);
     expect(container.firstChild).toHaveClass('text-light');
   });
 
@@ -163,9 +192,92 @@ describe('PermissionsManagement', () => {
 
   describe('Permission-based Rendering', () => {
     it('hides role management UI without putRole permission', async () => {
-      mockFunctions.hasPermission.mockImplementation(action => action !== 'putRole');
+      store = mockStore({
+        ...ownerAuthState,
+        auth: {
+          ...ownerAuthState.auth,
+          user: {
+            ...ownerAuthState.auth.user,
+            role: 'Volunteer',
+            permissions: { frontPermissions: [], removedDefaultPermissions: [] },
+          },
+        },
+        role: {
+          roles: [{ roleName: 'Volunteer', permissions: [] }],
+        },
+      });
+
       await renderComponent();
-      expect(screen.queryByTestId('role-name-container')).not.toBeInTheDocument();
+      expect(screen.queryByText('Admin')).not.toBeInTheDocument();
+      expect(screen.queryByText('User')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('blue info icon on the title', () => {
+    const ICON_TITLE = 'Click for information about this';
+
+    // the role rows have the same icon, so look next to the title only
+    const openTitleInfo = () => {
+      const titleRow = screen.getByRole('heading', { name: 'User Roles' }).parentElement;
+      fireEvent.click(within(titleRow).getByTitle(ICON_TITLE));
+      return screen.getByRole('dialog');
+    };
+
+    it('opens the Permissions Management box with the whole list', async () => {
+      await renderComponent();
+
+      const box = openTitleInfo();
+
+      expect(
+        within(box).getByText('Welcome to the Permissions Management Information Page!'),
+      ).toBeInTheDocument();
+      expect(within(box).getAllByRole('listitem')).toHaveLength(18);
+      expect(box.querySelector('.modal-body')).toHaveClass('text-light');
+    });
+
+    it('lets the signed-in Owner edit and save it, whoever the profile in the store is', async () => {
+      axios.post.mockResolvedValueOnce({ status: 201 });
+      store = mockStore({ ...ownerAuthState, userProfile: { role: 'Volunteer', loading: false } });
+      await renderComponent();
+
+      const box = openTitleInfo();
+      fireEvent.click(within(box).getByText(/^This page gives access/));
+      fireEvent.click(within(box).getByText('Save'));
+
+      await waitFor(() => {
+        expect(axios.post).toHaveBeenCalledWith(
+          ENDPOINTS.INFO_COLLECTIONS,
+          expect.objectContaining({ infoName: 'Permission Page: user roles Info' }),
+        );
+      });
+    });
+
+    it('shows a non-Owner the text but no edit control', async () => {
+      store = mockStore({
+        ...ownerAuthState,
+        auth: {
+          ...ownerAuthState.auth,
+          user: { ...ownerAuthState.auth.user, role: 'Administrator' },
+        },
+      });
+      await renderComponent();
+
+      const box = openTitleInfo();
+      fireEvent.click(within(box).getByText(/^This page gives access/));
+
+      expect(within(box).getByText(/^This page gives access/)).toBeInTheDocument();
+      expect(within(box).queryByLabelText('Mock Editor')).not.toBeInTheDocument();
+      expect(within(box).queryByText('Save')).not.toBeInTheDocument();
+    });
+
+    it('asks the server for the info texts once, for the title and all the role rows', async () => {
+      await renderComponent();
+
+      expect(screen.getAllByTitle(ICON_TITLE)).toHaveLength(4);
+      const infoRequests = axios.get.mock.calls.filter(
+        ([url]) => url === ENDPOINTS.INFO_COLLECTIONS,
+      );
+      expect(infoRequests).toHaveLength(1);
     });
   });
 
@@ -182,6 +294,184 @@ describe('PermissionsManagement', () => {
           expect(button.className).toMatch(/text-light/);
         }
       });
+    });
+  });
+
+  describe('Manage User Permissions pop-up', () => {
+    const REMINDER = 'Remember to Save Your Changes!';
+
+    // The real ModalProvider, as in App.jsx, so the shared "unsaved changes" flag
+    // behaves as it does in the browser.
+    const renderWithModalProvider = () =>
+      render(
+        <Provider store={store}>
+          <Router history={history}>
+            <ModalProvider>
+              <PermissionsManagement />
+            </ModalProvider>
+          </Router>
+        </Provider>,
+      );
+
+    const renderWithModalContext = contextValue =>
+      render(
+        <Provider store={store}>
+          <Router history={history}>
+            <ModalContext.Provider value={contextValue}>
+              <PermissionsManagement />
+            </ModalContext.Provider>
+          </Router>
+        </Provider>,
+      );
+
+    // One active user in the store; their saved profile loads when they are picked.
+    const renderWithUser = (user, extraRoles = []) => {
+      store = mockStore({
+        ...ownerAuthState,
+        role: { roles: [...ownerAuthState.role.roles, ...extraRoles] },
+        allUserProfiles: { userProfiles: [user] },
+      });
+      axios.get.mockImplementation(url => {
+        if (url.includes('/permission-change-logs')) return Promise.resolve({ data: [] });
+        if (url === ENDPOINTS.USER_PROFILE(user._id)) return Promise.resolve({ data: user });
+        return Promise.resolve({ data: {} });
+      });
+      renderWithModalProvider();
+    };
+
+    const makeUser = (_id, role, lastName) => ({
+      _id,
+      isActive: true,
+      role,
+      firstName: 'Test',
+      lastName,
+      email: `test.${lastName.toLowerCase()}@example.com`,
+      permissions: { frontPermissions: [], removedDefaultPermissions: [] },
+    });
+
+    const openUserPermissions = async () => {
+      await userEvent.click(screen.getByRole('button', { name: 'Manage User Permissions' }));
+      return screen.findByRole('heading', { name: 'Manage User Permissions' });
+    };
+
+    // Lets pending requests and effects finish. The app (createRoot) runs a click's effects right
+    // away; this test renderer does not, so a test waits before its next click.
+    const settle = () =>
+      act(
+        () =>
+          new Promise(resolve => {
+            setTimeout(resolve, 0);
+          }),
+      );
+
+    const pickUser = async user => {
+      await openUserPermissions();
+      await userEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
+      await userEvent.click(screen.getByText(`${user.firstName} ${user.lastName}`));
+      await settle(); // let the user's saved profile load
+    };
+
+    const postRoleButton = name =>
+      within(screen.getByTestId('postRole')).getByRole('button', { name });
+
+    // The X in the pop-up's header (the reminder box has its own 'Close' button).
+    const clickDialogClose = () =>
+      userEvent.click(
+        within(
+          screen.getByRole('heading', { name: 'Manage User Permissions' }).parentElement,
+        ).getByRole('button', { name: 'Close' }),
+      );
+
+    // reactstrap removes the 'show' class as soon as a modal starts to close, so this checks
+    // "still open" right away instead of waiting out the 300 ms close animation.
+    const expectStillOpen = () => expect(screen.getByRole('dialog')).toHaveClass('show');
+
+    it('opens after a permission was added in the New Role pop-up, without a page refresh', async () => {
+      axios.post.mockResolvedValue({ status: 201, data: {} });
+      renderWithModalProvider();
+
+      // Add New Role -> add one permission -> Create
+      await userEvent.click(screen.getByRole('button', { name: 'Add New Role' }));
+      const newRoleDialog = await screen.findByRole('dialog');
+      await userEvent.type(
+        within(newRoleDialog).getByPlaceholderText('Please enter a new role name'),
+        'Test Role',
+      );
+      await userEvent.click(within(newRoleDialog).getAllByRole('button', { name: 'Add' })[0]);
+      await userEvent.click(within(newRoleDialog).getByRole('button', { name: 'Create' }));
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+
+      expect(await openUserPermissions()).toBeInTheDocument();
+    });
+
+    it('opens even if another screen left the flag on, and the flag gets cleared', async () => {
+      const updateModalStatus = vi.fn();
+      renderWithModalContext({ modalStatus: true, updateModalStatus });
+
+      expect(await openUserPermissions()).toBeInTheDocument();
+      expect(updateModalStatus).toHaveBeenCalledWith(false);
+    });
+
+    it('closes on X when there are no unsaved changes', async () => {
+      renderWithModalProvider();
+      await openUserPermissions();
+
+      await clickDialogClose();
+
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    });
+
+    it('stays open on X and Esc while there are unsaved changes, until the reminder is closed', async () => {
+      const user = makeUser('u1', 'Volunteer', 'Volunteer');
+      renderWithUser(user);
+      await pickUser(user);
+
+      await userEvent.click(postRoleButton('Add'));
+      expect(await screen.findByText(REMINDER)).toBeInTheDocument();
+      await waitFor(expectStillOpen); // opening animation finished
+
+      await clickDialogClose();
+      expectStillOpen();
+      fireEvent.keyUp(screen.getByRole('dialog'), { key: 'Escape', keyCode: 27 });
+      expectStillOpen();
+      expect(screen.getByText(REMINDER)).toBeInTheDocument();
+
+      // The reminder's own 'Close' turns the flag off, so X closes again (as before this fix)
+      const reminderBox = screen.getByText(REMINDER).closest('div').parentElement;
+      await userEvent.click(within(reminderBox).getByRole('button', { name: 'Close' }));
+      await clickDialogClose();
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    });
+
+    it('closes on X again once an added permission is removed (nothing left to save)', async () => {
+      const user = makeUser('u1', 'Volunteer', 'Volunteer');
+      renderWithUser(user);
+      await pickUser(user);
+
+      await userEvent.click(postRoleButton('Add'));
+      expect(await screen.findByText(REMINDER)).toBeInTheDocument();
+
+      await userEvent.click(postRoleButton('Delete'));
+      await waitFor(() => expect(screen.queryByText(REMINDER)).not.toBeInTheDocument());
+
+      await clickDialogClose();
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    });
+
+    it('closes on X after a category Delete that changed nothing (the role gives those permissions)', async () => {
+      // 'Popup Management' only holds updatePopup, which this user's role already gives, so the
+      // category shows 'Delete' but there is nothing in the user's own lists to remove.
+      const user = makeUser('u2', 'Administrator', 'Admin');
+      renderWithUser(user, [{ roleName: 'Administrator', permissions: [permissions.updatePopup] }]);
+      await pickUser(user);
+
+      const popupCategory = screen.getByText(/^popup management$/i).closest('li');
+      await userEvent.click(await within(popupCategory).findByRole('button', { name: 'Delete' }));
+      await settle();
+      expect(screen.queryByText(REMINDER)).not.toBeInTheDocument();
+
+      await clickDialogClose();
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     });
   });
 });

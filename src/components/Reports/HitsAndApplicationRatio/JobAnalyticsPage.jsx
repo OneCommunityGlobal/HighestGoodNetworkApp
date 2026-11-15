@@ -5,6 +5,7 @@ import httpService from '~/services/httpService';
 import { getDateRange, dateOptions } from './filters';
 import ConvertedApplicationGraph from './ConvertedApplicationGraph';
 import NonConvertedApplicationsGraph from './NonConvertedApplicationsGraph';
+import styles from '../JobAnalytics/JobAnalyticsPage.module.css';
 
 function JobAnalyticsPage() {
   const [convertedData, setConvertedData] = useState([]);
@@ -79,48 +80,50 @@ function JobAnalyticsPage() {
         }
       >
         {/* FILTERS */}
-        <div className="w-full flex justify-center mt-6 mb-8">
-          <div className="flex flex-wrap items-center justify-center gap-6">
+        <div className={styles.jobAnalyticsFilters}>
+          {/* Date Range */}
+          <div className={styles.filterGroup}>
+            <label
+              htmlFor="date-range"
+              className={`${styles.filterText} ${isDark ? styles.darkFilterText : ''}`}
+            >
+              Date Range:
+            </label>
 
-            {/* Date Range */}
-            <div className="flex items-center gap-2">
-              <span className={isDark ? 'text-azure font-semibold' : 'font-semibold'}>
-                Date Range:
-              </span>
+            <select
+              id="date-range"
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+              className={`${styles.dateRangeSelect} ${
+                isDark ? styles.darkSelect : styles.lightSelect
+              }`}
+            >
+              {dateOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
 
-              <select
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-                className={`rounded px-2 py-1 ${
-                  isDark
-                    ? 'bg-space-cadet text-light border border-yinmn-blue'
-                    : 'bg-white text-gray-900 border border-gray-300'
-                }`}
-              >
-                {dateOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Show % */}
+          <div className={styles.checkboxGroup}>
+            <input
+              type="checkbox"
+              id="toggle-percentage"
+              checked={usePercentage}
+              onChange={(e) => setUsePercentage(e.target.checked)}
+              className={styles.percentageCheckbox}
+            />
 
-            {/* Show % */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="toggle-percentage"
-                checked={usePercentage}
-                onChange={() => setUsePercentage(!usePercentage)}
-              />
-              <label
-                htmlFor="toggle-percentage"
-                className={isDark ? 'text-light cursor-pointer' : 'text-gray-900 cursor-pointer'}
-              >
-                Show %
-              </label>
-            </div>
-
+            <label
+              htmlFor="toggle-percentage"
+              className={`${styles.checkboxLabel} ${
+                isDark ? styles.darkFilterText : ''
+              }`}
+            >
+              Show %
+            </label>
           </div>
         </div>
 
@@ -138,12 +141,16 @@ function JobAnalyticsPage() {
                 data={convertedData}
                 usePercentage={usePercentage}
                 isDark={isDark}
+                dateRange={dateRange}
               />
+
+              <div className={`my-8 border-t ${isDark ? 'border-yinmn-blue' : 'border-gray-200'}`} />
 
               <NonConvertedApplicationsGraph
                 data={nonConvertedData}
                 usePercentage={usePercentage}
                 isDark={isDark}
+                dateRange={dateRange}
               />
             </>
           )}

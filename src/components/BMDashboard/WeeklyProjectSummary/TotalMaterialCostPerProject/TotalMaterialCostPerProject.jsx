@@ -58,6 +58,18 @@ function TotalMaterialCostPerProject() {
         position: 'top',
         labels: { color: textColor },
       },
+      // Keep bar value labels readable when the globally registered datalabels plugin runs.
+      datalabels: {
+        // Match label color to the active theme so values stay visible on light and dark charts.
+        color: darkMode ? '#ffffff' : '#000000',
+        // Emphasize the displayed values without changing label position or chart data.
+        font: { weight: 'bold' },
+        // Round only the displayed label text; keep the chart data unchanged.
+        formatter: value => {
+          const numericValue = Number(value);
+          return Number.isFinite(numericValue) ? numericValue.toFixed(3) : '0.000';
+        },
+      },
       title: { display: false },
     },
     scales: {
@@ -73,7 +85,7 @@ function TotalMaterialCostPerProject() {
         },
       },
       y: {
-        grid: { color: '#ccc' },
+        grid: { color: darkMode ? '#8b949e' : '#ccc' },
         ticks: { color: textColor },
       },
     },
@@ -103,7 +115,8 @@ function TotalMaterialCostPerProject() {
           );
         }
         const projectCostsData = costResponse.data.reduce((acc, item) => {
-          acc[item.project] = item.totalCostK;
+          const cost = Number(item.totalCostK);
+          acc[item.project] = Number.isFinite(cost) ? cost : 0;
           return acc;
         }, {});
         setProjectCosts(projectCostsData);
@@ -126,7 +139,10 @@ function TotalMaterialCostPerProject() {
       datasets: [
         {
           label: 'Total Material Cost (*1000$)',
-          data: selectedProjects.map(p => projectCosts[p.value]),
+          data: selectedProjects.map(p => {
+            const cost = Number(projectCosts[p.value]);
+            return Number.isFinite(cost) ? cost : 0;
+          }),
           backgroundColor: 'rgb(23, 154, 197)',
           borderRadius: 10,
         },
@@ -145,8 +161,6 @@ function TotalMaterialCostPerProject() {
         minHeight: 38,
         boxShadow: 'none',
         borderRadius: 8,
-        overflowX: 'auto',
-        whiteSpace: 'nowrap',
       }),
       menu: base => ({
         ...base,
@@ -183,14 +197,16 @@ function TotalMaterialCostPerProject() {
         borderRadius: 6,
         fontSize: 12,
         marginRight: 4,
-        maxWidth: 'none',
-        flexShrink: 0,
+        maxWidth: '100%',
       }),
       multiValueLabel: base => ({
         ...base,
         color: darkMode ? '#fff' : '#333',
         fontSize: 12,
         padding: '2px 6px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
       }),
       multiValueRemove: base => ({
         ...base,
@@ -202,17 +218,17 @@ function TotalMaterialCostPerProject() {
         borderRadius: 4,
         padding: 2,
       }),
+      // Chips wrap onto up to two rows, then scroll vertically, so every selected
+      // project stays visible instead of being cut off on one hidden-scrollbar row.
       valueContainer: provided => ({
         ...provided,
-        overflowX: 'auto',
-        flexWrap: 'nowrap',
-        display: 'flex',
+        flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        whiteSpace: 'nowrap',
+        maxHeight: 64,
+        overflowY: 'auto',
         maxWidth: '100%',
         position: 'relative',
-        scrollbarWidth: 'none',
       }),
     }),
     [darkMode],

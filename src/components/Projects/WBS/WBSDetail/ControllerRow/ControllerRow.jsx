@@ -23,13 +23,14 @@ import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import styles from '../wbs.module.css';
 
+import { permissions } from '../../../../../utils/constants';
 function ControllerRow(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
   // permissions
-  const canDeleteTask = props.hasPermission('deleteTask');
-  const canPostTask = props.hasPermission('postTask');
+  const canDeleteTask = props.hasPermission(permissions.deleteTask);
+  const canPostTask = props.hasPermission(permissions.postTask);
 
   // props from store
   const { role, userPermissions, roles, popupContent, darkMode, tasks } = props;

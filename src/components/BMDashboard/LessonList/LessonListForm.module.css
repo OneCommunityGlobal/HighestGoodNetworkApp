@@ -43,15 +43,30 @@
 }
 
 .singleForm {
+  /* Align each filter label with its dropdown within a consistent group width. */
   display: flex !important;
+  align-items: center;
   gap: 5px;
   text-align: center !important;
   margin-right: 40px;
-  width: 200px;
+  width: 320px;
+  max-width: 100%;
+}
+
+/* Keep the Filter and Sort labels the same width beside their matching selects. */
+.singleForm :global(.form-label) {
+  flex: 0 0 50px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 0;
+  text-align: left;
 }
 
 .singleFormSelect {
+  /* Keep the Filter and Sort dropdowns at the same compact width. */
   background-color: #f2f2f266 !important;
+  width: 200px;
+  max-width: 100%;
 }
 
 .tagContainer {
@@ -149,12 +164,12 @@
 
 /* Dark mode */
 .darkMode {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #f8f9fa;
 }
 
 .darkMode .formContainer {
-  background-color: #1C2541;
+  background-color: #1c2541;
   border-radius: 8px;
   padding: 1rem;
 }
@@ -180,8 +195,8 @@
 }
 
 .tagContainerDark {
-  background-color: #1C2541;
-  border: 1px solid #3A506B;
+  background-color: #1c2541;
+  border: 1px solid #3a506b;
   border-radius: 6px;
 }
 
@@ -238,9 +253,18 @@
 }
 
 .lightMode {
-  background-color: #ffffff;
+  background-color: #e8f4f9;
   color: #212529;
 }
+
+/* Match the dark-mode page container with a distinct light dashboard surface. */
+.lightMode .formContainer {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
 .lightMode label {
   color: #212529 !important;
 }

@@ -65,12 +65,14 @@ import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import toolAvailabilityReducer from './bmdashboard/toolAvailabilityReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import materialCostCorrelationReducer from './bmdashboard/materialCostCorrelationReducer';
 
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import dashboardReducer from './dashboardReducer';
 import HGNFormReducer from './hgnFormReducers';
 import injuriesReducer from './injuries';
+import knowledgeEvolutionReducer from './bmdashboard/knowledgeEvolutionReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
@@ -82,11 +84,6 @@ import userPreferencesReducer from './listBidDashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portalgit
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
-import {
-  FetchEventReducer,
-  CreateEventReducer,
-  FetchCalendarEventReducer,
-} from './communityPortal/EventActivityReducer';
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 
 import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
@@ -113,12 +110,16 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { JobsHitsApplicationsReducer } from './jobAnalytics/JobsHitsApplicationsReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { jobExperienceBreakdownReducer } from './jobAnalytics/jobExperienceBreakdownReducer';
 import { toolReplacementReducer } from './toolReplacementReducer';
 
 // Education Dashboard Reducers
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
 import { atomReducer } from './educationPortal/atomReducer';
 import browseLessonPlanReducer from './educationPortal/broweLPReducer';
+
+// Members list in community portal
+import { MembersListReducer } from './communityPortal/activities/activityId/MembersListReducer';
 import formReducer from './formReducer';
 import KIInventoryReducer from './KIInventoryReducer';
 import { studentReducer } from './studentProfileReducer';
@@ -188,6 +189,8 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  issue: issueReducer,
+  knowledgeEvolution: knowledgeEvolutionReducer,
   costBreakdown: costBreakdownReducer,
 
   // lbdashboard
@@ -195,11 +198,9 @@ const localReducers = {
   villageDetails: villageDetailsReducer,
 
   bmissuechart: issueReducer,
+  materialCostCorrelation: materialCostCorrelationReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,
-  fetchEvent: FetchEventReducer,
-  createEvent: CreateEventReducer,
-  fetchCalendarEvent: FetchCalendarEventReducer,
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
@@ -221,6 +222,7 @@ const localReducers = {
 
   // job analytics
   hoursPledged: hoursPledgedReducer,
+  jobExperienceBreakdown: jobExperienceBreakdownReducer,
   jobsHitsApplications: JobsHitsApplicationsReducer,
 
   // student tasks
@@ -233,6 +235,9 @@ const localReducers = {
 
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
+
+  // Members list in community portal
+  membersList: MembersListReducer,
   kiInventory: KIInventoryReducer,
 
   // enchanced popularity analytics

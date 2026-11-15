@@ -352,12 +352,14 @@
   .taskListItem {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.875rem;
+    padding: 1rem;
   }
 
   .actionIcons {
-    flex-direction: row;
+    flex-flow: row wrap;
     align-self: flex-end;
+    gap: 0.5rem;
   }
 
   .intermediateTaskItem {
@@ -366,6 +368,17 @@
 
   .markIntermediateDoneButton {
     width: 100%;
+  }
+}
+
+@media (width <= 480px) {
+  .taskListItem {
+    padding: 0.875rem;
+    border-radius: 8px;
+  }
+
+  .taskTitle {
+    font-size: 1rem;
   }
 }
 
@@ -441,6 +454,7 @@
   color: #d1d5db;
 }
 
+/* stylelint-disable-next-line no-descending-specificity */
 :global(.dark-mode) .markDoneButton {
   background-color: #2563eb;
   color: #fff;
@@ -531,6 +545,7 @@
   color: #fbbf24;
 }
 
+/* stylelint-disable-next-line no-descending-specificity */
 :global(.dark-mode) .markIntermediateDoneButton {
   background-color: #2d2d2d;
   border-color: #404040;

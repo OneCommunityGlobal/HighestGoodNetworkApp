@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -14,6 +14,17 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import styles from './InteractiveMap.module.css';
+import { MapConfig } from './MapSharedComponents';
+
+const MapDateInput = forwardRef(({ darkMode, className, ...props }, ref) => (
+  <input
+    {...props}
+    ref={ref}
+    className={`${styles.dateInput} ${
+      darkMode ? styles.dateInputDark : styles.dateInputLight
+    } ${className || ''}`}
+  />
+));
 
 /* -----------------------------------------------------
    APPLY DARK MODE STYLING TO MAP
@@ -45,10 +56,12 @@ function FloatingLegend({ darkMode, mapAreaRef }) {
     const div = legendRef.current;
     if (!div || !mapAreaRef.current) return;
 
+    // Start in the bottom-left corner (open ocean at the default view) so the legend
+    // doesn't cover project markers; users can still drag it anywhere.
     if (pos.left === null && pos.top === null) {
       const mapRect = mapAreaRef.current.getBoundingClientRect();
       setPos({
-        left: mapRect.width - div.offsetWidth - 20,
+        left: 20,
         top: mapRect.height - div.offsetHeight - 20,
       });
     }
@@ -59,8 +72,8 @@ function FloatingLegend({ darkMode, mapAreaRef }) {
       let newLeft = origRef.current.x + (e.clientX - startRef.current.x);
       let newTop = origRef.current.y + (e.clientY - startRef.current.y);
 
-      newLeft = Math.max(0, Math.min(newLeft, mapRect.width - 160));
-      newTop = Math.max(0, Math.min(newTop, mapRect.height - 180));
+      newLeft = Math.max(0, Math.min(newLeft, mapRect.width - div.offsetWidth));
+      newTop = Math.max(0, Math.min(newTop, mapRect.height - div.offsetHeight));
 
       setPos({ left: newLeft, top: newTop });
     };
@@ -86,14 +99,6 @@ function FloatingLegend({ darkMode, mapAreaRef }) {
 
   const statuses = ['active', 'delayed', 'completed'];
   const colors = ['#DE6A6A', '#E3D270', '#6ACFDE'];
-
-  if (pos.left === null && pos.top === null && mapAreaRef.current) {
-    const mapRect = mapAreaRef.current.getBoundingClientRect();
-    setPos({
-      left: mapRect.width - 160 - 20,
-      top: mapRect.height - 180 - 20,
-    });
-  }
 
   return (
     <div
@@ -419,9 +424,14 @@ export default function InteractiveMap() {
             <DatePicker
               selected={startDate}
               onChange={date => setStartDate(date)}
-              className={`${styles.dateInput} ${darkMode ? styles.dateInputDark : ''}`}
+              customInput={<MapDateInput darkMode={darkMode} />}
+              wrapperClassName={`${styles.datePickerWrapper} ${
+                darkMode ? styles.datePickerWrapperDark : styles.datePickerWrapperLight
+              }`}
               placeholderText="Start Date"
               calendarClassName={darkMode ? styles.calendarDark : styles.calendarLight}
+              popperClassName={styles.datePickerPopper}
+              popperPlacement="bottom-start"
               dateFormat="MM/dd/yyyy"
               isClearable
               selectsStart
@@ -431,9 +441,14 @@ export default function InteractiveMap() {
             <DatePicker
               selected={endDate}
               onChange={date => setEndDate(date)}
-              className={`${styles.dateInput} ${darkMode ? styles.dateInputDark : ''}`}
+              customInput={<MapDateInput darkMode={darkMode} />}
+              wrapperClassName={`${styles.datePickerWrapper} ${
+                darkMode ? styles.datePickerWrapperDark : styles.datePickerWrapperLight
+              }`}
               placeholderText="End Date"
               calendarClassName={darkMode ? styles.calendarDark : styles.calendarLight}
+              popperClassName={styles.datePickerPopper}
+              popperPlacement="bottom-start"
               dateFormat="MM/dd/yyyy"
               isClearable
               selectsEnd
@@ -444,7 +459,9 @@ export default function InteractiveMap() {
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className={`${styles.dateInput} ${darkMode ? styles.dateInputDark : ''}`}
+              className={`${styles.dateInput} ${styles.statusSelect} ${
+                darkMode ? styles.dateInputDark : styles.dateInputLight
+              }`}
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
@@ -469,18 +486,29 @@ export default function InteractiveMap() {
               key={mapKey}
               center={[40, 0]}
               zoom={3}
+              minZoom={2}
+              maxZoom={15}
+              maxBounds={[
+                [-85, -180],
+                [85, 180],
+              ]}
+              maxBoundsViscosity={1.0}
+              worldCopyJump={false}
               scrollWheelZoom
-              zoomControl={false}
               className={styles.mapContainer}
               keyboard={false}
             >
               <MapThemeUpdater darkMode={darkMode} />
               <TileLayer
-                url={
-                  darkMode
-                    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                }
+                noWrap
+                bounds={[
+                  [-85, -180],
+                  [85, 180],
+                ]}
+                url={MapConfig.tileUrl}
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                minZoom={2}
+                maxZoom={15}
               />
               <MarkerClusterGroup maxClusterRadius={70} chunkedLoading>
                 {filteredOrgs.map(org => (

@@ -9,6 +9,9 @@ import {
   FETCH_LONGEST_OPEN_ISSUES_REQUEST,
   FETCH_LONGEST_OPEN_ISSUES_SUCCESS,
   FETCH_LONGEST_OPEN_ISSUES_FAILURE,
+  FETCH_MOST_EXPENSIVE_ISSUES_REQUEST,
+  FETCH_MOST_EXPENSIVE_ISSUES_SUCCESS,
+  FETCH_MOST_EXPENSIVE_ISSUES_FAILURE,
   SET_DATE_FILTER,
   SET_PROJECT_FILTER,
 } from '../../constants/bmdashboard/issueConstants';
@@ -16,8 +19,10 @@ import {
 const initialState = {
   loading: false,
   issues: [],
-  issueTypes: [], // Store for issue types
-  years: [], // Store for years
+  issueTypes: [],
+  years: [],
+  longestOpenIssues: [],
+  mostExpensiveIssues: [],
   error: null,
   selectedDates: [],
   selectedProjects: [],
@@ -33,7 +38,6 @@ const issueReducer = (state = initialState, action) => {
     case FETCH_ISSUES_BARCHART_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
-    // New cases for fetching issue types and years
     case FETCH_ISSUE_TYPES_YEARS_REQUEST:
       return { ...state, loading: true };
     case FETCH_ISSUE_TYPES_YEARS_SUCCESS:
@@ -45,37 +49,29 @@ const issueReducer = (state = initialState, action) => {
       };
     case FETCH_ISSUE_TYPES_YEARS_FAILURE:
       return { ...state, loading: false, error: action.payload };
+
     case SET_ISSUES:
       return { ...state, loading: false, issues: action.payload };
+
     case FETCH_LONGEST_OPEN_ISSUES_REQUEST:
-      return {
-        ...state,
-        loading: true,
-        error: null,
-      };
+      return { ...state, loading: true, error: null };
     case FETCH_LONGEST_OPEN_ISSUES_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        issues: action.payload,
-        error: null,
-      };
+      return { ...state, loading: false, longestOpenIssues: action.payload.data };
     case FETCH_LONGEST_OPEN_ISSUES_FAILURE:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
+      return { ...state, loading: false, error: action.payload };
+
+    case FETCH_MOST_EXPENSIVE_ISSUES_REQUEST:
+      return { ...state, loading: true, error: null };
+    case FETCH_MOST_EXPENSIVE_ISSUES_SUCCESS:
+      return { ...state, loading: false, mostExpensiveIssues: action.payload.data };
+    case FETCH_MOST_EXPENSIVE_ISSUES_FAILURE:
+      return { ...state, loading: false, error: action.payload };
+
     case SET_DATE_FILTER:
-      return {
-        ...state,
-        selectedDates: action.payload,
-      };
+      return { ...state, selectedDates: action.payload };
     case SET_PROJECT_FILTER:
-      return {
-        ...state,
-        selectedProjects: action.payload,
-      };
+      return { ...state, selectedProjects: action.payload };
+
     default:
       return state;
   }

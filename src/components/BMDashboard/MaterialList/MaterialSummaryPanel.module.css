@@ -1,0 +1,99 @@
+/* Material Summary Panel Styles */
+/* Displays key material metrics in a responsive grid of cards */
+
+.summaryPanel {
+  margin: 1.5rem 0;
+  padding: 1rem 0;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Summary card styling with gradient background and hover effects */
+.summaryCard {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8ecf8 100%);
+  border: 1px solid #d4dce8;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.summaryCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.cardLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
+.cardValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.cardCount {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #7f8c8d;
+  margin-top: 0.25rem;
+}
+
+/* Dark Mode Styles */
+.darkMode .summaryCard {
+  background: linear-gradient(135deg, #2f4157 0%, #1f2e45 100%);
+  border-color: #3f5269;
+}
+
+.darkMode .summaryCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.darkMode .cardLabel {
+  color: #a0b0c8;
+}
+
+.darkMode .cardValue {
+  color: #e8edf4;
+}
+
+.darkMode .cardCount {
+  color: #7a8a9e;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryCard {
+    padding: 1rem;
+  }
+
+  .cardValue {
+    font-size: 1.5rem;
+  }
+}
