@@ -34,13 +34,11 @@ const LEGACY_OR_EXTRA_KEYS = [
   'manageAdminLinks',
   'postTeam', // still used for create-team UI; may nest under Teams in Permissions.json
   'rescheduleEvent',
-  'scheduleMeetings',
   'seeProjectManagement',
   'seeQSC',
   'seeSummaryIndicator',
   'seeVisibilityIcon',
   'unassignUserInProject',
-  'updateUserSkillsProfileFollowUp',
 ];
 
 const allKeys = [...new Set([...collectKeys(permissionLabels), ...LEGACY_OR_EXTRA_KEYS])].sort(

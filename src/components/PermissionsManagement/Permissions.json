@@ -460,6 +460,17 @@
     ]
   },
   {
+    "label": "MEETINGS",
+    "description": "Category to arrange meetings",
+    "subperms": [
+      {
+        "label": "Schedule Meetings",
+        "key": "scheduleMeetings",
+        "description": "Lets the user schedule meetings from Other Links > Schedule Meeting. Also needs 'See All Users (User List and User Management)'."
+      }
+    ]
+  },
+  {
     "label": "PERMISSIONS MANAGEMENT",
     "description": "Category for all permissions related to permissions management",
     "subperms": [
@@ -525,6 +536,11 @@
         "label": "Access HGN Skills Dashboard",
         "key": "accessHgnSkillsDashboard",
         "description": "Lets the user open another member's HGN Skills profile page. Also needs 'See All Users (User List and User Management)'."
+      },
+      {
+        "label": "Edit Skills Profile Additional Info (Others)",
+        "key": "updateUserSkillsProfileFollowUp",
+        "description": "Lets the user edit Work Experience and Additional Info on another member's Skills profile. Also needs 'Access HGN Skills Dashboard'."
       },
       {
         "label": "Access PM Resource Dashboard",
