@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import MonthPicker from './MonthPicker';
 import styles from './LossTrackingLineChart.module.css';
 
 const colors = {
@@ -159,6 +160,12 @@ const rawData = [
     ],
   },
 ];
+
+// Selectable date bounds, derived from the data itself
+const allDates = rawData.flatMap(l => l.data.map(d => d.date)).sort((a, b) => a.localeCompare(b));
+const MIN_DATE = allDates[0]; // e.g. '2022-01'
+const MAX_DATE = allDates.at(-1); // e.g. '2024-06'
+
 const DEFAULTS = { material: 'All', year: 'All', startDate: '', endDate: '' };
 
 export default function LossTrackingLineChart() {
@@ -228,12 +235,6 @@ export default function LossTrackingLineChart() {
     });
   }, [material, year, startDate, endDate]);
 
-  // Enforces valid boundary limitations on HTML pickers dynamically
-  const dateBounds = useMemo(() => {
-    if (year === 'All') return { min: '2022-01-01', max: '2024-12-31' };
-    return { min: `${year}-01-01`, max: `${year}-12-31` };
-  }, [year]);
-
   // Clears date pickers gracefully if they don't belong to the newly active year selection
   const handleYearChange = newYear => {
     setYear(newYear);
@@ -277,7 +278,9 @@ export default function LossTrackingLineChart() {
     startDate === DEFAULTS.startDate &&
     endDate === DEFAULTS.endDate;
 
+  // The pickers already prevent an invalid range; kept as a safety net.
   const isDateRangeValid = !startDate || !endDate || startDate <= endDate;
+
   const legendItems = useMemo(
     () =>
       filteredLines.map(line => ({
@@ -323,32 +326,29 @@ export default function LossTrackingLineChart() {
               ))}
             </select>
           </label>
-          <label>
+
+          <div className={styles.field}>
             <span>Start Date</span>
-            <div className={styles.monthInputWrapper}>
-              <input
-                className={styles.monthInput}
-                type="date"
-                value={startDate}
-                min={dateBounds.min} // Locks the lower bounds dynamically
-                max={dateBounds.max} // Locks the upper bounds dynamically
-                onChange={e => setStartDate(e.target.value)}
-              />
-            </div>
-          </label>
-          <label>
+            <MonthPicker
+              ariaLabel="Start date"
+              value={startDate}
+              onChange={setStartDate}
+              min={MIN_DATE}
+              max={endDate || MAX_DATE}
+            />
+          </div>
+
+          <div className={styles.field}>
             <span>End Date</span>
-            <div className={styles.monthInputWrapper}>
-              <input
-                className={styles.monthInput}
-                type="date"
-                value={endDate}
-                min={dateBounds.min} // Locks the lower bounds dynamically
-                max={dateBounds.max} // Locks the upper bounds dynamically
-                onChange={e => setEndDate(e.target.value)}
-              />
-            </div>
-          </label>
+            <MonthPicker
+              ariaLabel="End date"
+              value={endDate}
+              onChange={setEndDate}
+              min={startDate || MIN_DATE}
+              max={MAX_DATE}
+            />
+          </div>
+
           <button className={styles.resetBtn} onClick={handleReset} disabled={isDefaultFilters}>
             Reset Filters
           </button>
