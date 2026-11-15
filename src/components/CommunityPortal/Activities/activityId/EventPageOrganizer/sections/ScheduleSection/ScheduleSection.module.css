@@ -115,16 +115,60 @@
 .availableDate {
   cursor: pointer;
   border-radius: 4px;
+  min-height: 28px;
+  background-color: #cfe0ff;
+  border: 2px solid #003f87;
+}
+
+.availableDate .dateNumber {
+  color: #0b2a5b;
+  font-weight: 600;
+}
+
+.availableDateDark {
+  background-color: #35609f;
+  border-color: #9ec1ff;
+}
+
+.availableDateDark .dateNumber {
+  color: #fff;
+}
+
+.availableDateButton:hover,
+.availableDateButton:focus-visible {
+  background-color: #a9c6ff;
+}
+
+.availableDateDark.availableDateButton:hover,
+.availableDateDark.availableDateButton:focus-visible {
+  background-color: #416cae;
 }
 
 .dateCellButton {
-  background: none;
-  border: none;
   padding: 0;
 }
 
 .availableDate:hover .dateNumber {
   text-decoration: underline;
+}
+
+.availableDate.selectedDate {
+  background-color: #003f87;
+  border-color: #003f87;
+  cursor: default;
+}
+
+.availableDate.selectedDate .dateNumber {
+  color: #fff;
+}
+
+.availableDateDark.selectedDate {
+  background-color: #ffd54f;
+  border-color: #ffd54f;
+}
+
+.availableDateDark.selectedDate .dateNumber {
+  color: #0b1a30;
 }
 
 .selectedDate {

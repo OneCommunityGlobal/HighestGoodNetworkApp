@@ -56,9 +56,10 @@ function dateNumberClass(isCurrentMonth, darkMode) {
 }
 
 function DateCell({ date, isAvailable, isSelected, darkMode, onDateSelect }) {
-  const cellClass = `${styles.dateCell} ${isAvailable ? styles.availableDate : ''} ${
-    isSelected ? styles.selectedDate : ''
-  }`;
+  const availableClass = isAvailable
+    ? `${styles.availableDate} ${darkMode ? styles.availableDateDark : ''}`
+    : '';
+  const cellClass = `${styles.dateCell} ${availableClass} ${isSelected ? styles.selectedDate : ''}`;
   const numberClass = `${styles.dateNumber} ${dateNumberClass(date.isCurrentMonth, darkMode)}`;
   const inner = (
     <>
@@ -75,7 +76,7 @@ function DateCell({ date, isAvailable, isSelected, darkMode, onDateSelect }) {
     return (
       <button
         type="button"
-        className={`${cellClass} ${styles.dateCellButton}`}
+        className={`${cellClass} ${styles.dateCellButton} ${styles.availableDateButton}`}
         onClick={() => onDateSelect(date.iso)}
         aria-label={date.iso}
         aria-pressed={isSelected}
