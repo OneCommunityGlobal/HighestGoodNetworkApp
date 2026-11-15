@@ -530,7 +530,7 @@ function BlueskyPostDetails() {
 
       if (result.success) {
         setIsConnected(true);
-        setStatus(`${SUCCESS_PREFIX} Connected to Bluesky! DID: ${result.did}`);
+        setStatus(`${SUCCESS_PREFIX} Successfully connected to Bluesky!`);
         return;
       }
 
