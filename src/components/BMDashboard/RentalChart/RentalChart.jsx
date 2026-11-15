@@ -2,11 +2,12 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import styles from './RentalChart.module.css';
 import datePickerStyles from './RentalDatePicker.module.css';
+import { getCurrentYearRange } from './rentalChartUtils';
 import { toast } from 'react-toastify';
 import {
   Chart as ChartJS,
@@ -14,12 +15,22 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 const PROJECT_COLORS = [
   { borderColor: 'rgb(53, 162, 235)', backgroundColor: 'rgba(53, 162, 235, 0.5)' },
@@ -205,13 +216,12 @@ export default function RentalChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const bmProjects = useSelector(state => state.bmProjects);
 
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(2024, 0, 1),
-    endDate: new Date(2024, 11, 31),
-  });
+  const [dateRange, setDateRange] = useState(getCurrentYearRange);
 
   const [fallbackProjectNames, setFallbackProjectNames] = useState(new Map());
   const [rawData, setRawData] = useState([]);
+  const [rentalCostData, setRentalCostData] = useState([]);
+  const [costBreakdownData, setCostBreakdownData] = useState([]);
 
   // Only list projects that have rental data; prefer names from the BM projects list
   const availableProjects = useMemo(() => {
@@ -247,19 +257,100 @@ export default function RentalChart() {
     }
   }, [availableTools, selectedTool]);
 
-  const chartData = useMemo(() => {
-    const filteredData = filterRentalData(rawData, selectedProject, selectedTool, dateRange);
-    const { labels, monthsInRange, totalMonths } = buildMonthsRange(dateRange);
-    const groupMap = aggregateDataByProject(
-      filteredData,
-      monthsInRange,
-      totalMonths,
-      chartType,
-      availableProjects,
-    );
-    return { labels, datasets: buildDatasetsFromGroupMap(groupMap) };
-  }, [rawData, selectedProject, selectedTool, dateRange, chartType, availableProjects]);
+  const chartData = useMemo(
+    () => ({
+      labels: rentalCostData.map(item => item.date),
+      datasets: [
+        {
+          label: 'Total Rental Cost',
+          data: rentalCostData.map(item => item.value),
+          borderColor: 'rgb(53, 162, 235)',
+          backgroundColor: 'rgba(53, 162, 235, 0.5)',
+          tension: 0.4,
+          fill: false,
+        },
+      ],
+    }),
+    [rentalCostData],
+  );
 
+  const stackedBarData = useMemo(
+    () => ({
+      labels: costBreakdownData.map(item => item.projectName),
+      datasets: [
+        {
+          label: 'Tools costs due to owned tools',
+          data: costBreakdownData.map(item => item.ownedToolsCost),
+          backgroundColor: 'rgba(53, 162, 235, 0.7)',
+        },
+        {
+          label: 'Tools costs due to rented tools',
+          data: costBreakdownData.map(item => item.rentedToolsCost),
+          backgroundColor: 'rgba(255, 99, 132, 0.7)',
+        },
+      ],
+    }),
+    [costBreakdownData],
+  );
+
+  const stackedBarOptions = useMemo(() => {
+    const textColor = darkMode ? '#ffffff' : '#000000';
+    const gridColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            color: textColor,
+          },
+        },
+        title: {
+          display: true,
+          text: 'How Much of Tools Costs Are Due to Rentals?',
+          color: textColor,
+        },
+        datalabels: {
+          display: true,
+          color: textColor,
+          formatter: value => `$${Number(value).toFixed(2)}`,
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          title: {
+            display: true,
+            text: 'Projects',
+            color: textColor,
+          },
+          ticks: {
+            color: textColor,
+          },
+          grid: {
+            color: gridColor,
+          },
+        },
+        y: {
+          stacked: true,
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Cost',
+            color: textColor,
+          },
+          ticks: {
+            color: textColor,
+          },
+          grid: {
+            color: gridColor,
+          },
+        },
+      },
+    };
+  }, [darkMode]);
   useEffect(() => {
     const fetchRentalData = async () => {
       try {
@@ -314,6 +405,85 @@ export default function RentalChart() {
     // Errors are handled inside fetchRentalData
     fetchRentalData().catch(() => {});
   }, []);
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const headers = {
+          Authorization: localStorage.getItem('token'),
+        };
+
+        const params = {
+          startDate: dateRange.startDate.toISOString(),
+          endDate: dateRange.endDate.toISOString(),
+        };
+
+        if (selectedProject !== FILTER_ALL) {
+          params.projectId = selectedProject;
+        }
+
+        const breakdownParams = {
+          startDate: dateRange.startDate.toISOString(),
+          endDate: dateRange.endDate.toISOString(),
+        };
+
+        if (selectedProject !== FILTER_ALL) {
+          breakdownParams.projects = selectedProject;
+        }
+
+        const [rentalResult, breakdownResult, projectsResult] = await Promise.allSettled([
+          axios.get(ENDPOINTS.BM_RENTAL_COST_OVER_TIME, {
+            headers,
+            params,
+          }),
+          axios.get(ENDPOINTS.BM_TOOLS_COST_BREAKDOWN, {
+            headers,
+            params: breakdownParams,
+          }),
+          axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, {
+            headers,
+          }),
+        ]);
+        if (rentalResult.status === 'rejected') {
+          toast.error('Error fetching rental cost chart data');
+          setError('Error loading rental cost chart data');
+          return;
+        }
+
+        const rentalData =
+          rentalResult.status === 'fulfilled' && Array.isArray(rentalResult.value.data)
+            ? rentalResult.value.data
+            : [];
+
+        const breakdownData =
+          breakdownResult.status === 'fulfilled' && Array.isArray(breakdownResult.value.data)
+            ? breakdownResult.value.data
+            : [];
+
+        const projects =
+          projectsResult.status === 'fulfilled' && Array.isArray(projectsResult.value.data?.data)
+            ? projectsResult.value.data.data
+            : [];
+
+        const projectNames = new Map(
+          projects.map(project => [project.projectId, project.projectName]),
+        );
+
+        const breakdownWithNames = breakdownData.map(item => ({
+          ...item,
+          projectName: projectNames.get(item.projectId) || item.projectName || 'Unknown Project',
+        }));
+
+        setRentalCostData(rentalData);
+        setCostBreakdownData(breakdownWithNames);
+        setError(null);
+      } catch {
+        toast.error('Error fetching rental cost chart data');
+        setError('Error loading rental cost chart data');
+      }
+    };
+
+    void fetchChartData();
+  }, [selectedProject, dateRange]);
 
   // Track the chart area's width so fonts and labels can shrink on small screens
   useEffect(() => {
@@ -489,7 +659,7 @@ export default function RentalChart() {
       );
     }
 
-    if (chartData.datasets.length === 0) {
+    if (rentalCostData.length === 0) {
       return (
         <div className={`${styles['no-data']} ${darkMode ? styles['text-light'] : ''}`}>
           No data available for the selected filters
@@ -621,6 +791,15 @@ export default function RentalChart() {
         className={`${styles['chart-wrapper']} ${darkMode ? styles['dark-chart'] : ''}`}
       >
         {renderChartContent()}
+      </div>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles['dark-chart'] : ''}`}>
+        {costBreakdownData.length > 0 ? (
+          <Bar data={stackedBarData} options={stackedBarOptions} plugins={[ChartDataLabels]} />
+        ) : (
+          <div className={`${styles['no-data']} ${darkMode ? styles['text-light'] : ''}`}>
+            No tool cost breakdown data available for the selected filters
+          </div>
+        )}
       </div>
     </div>
   );
