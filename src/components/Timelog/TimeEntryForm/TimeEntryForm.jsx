@@ -146,11 +146,18 @@ function TimeEntryForm(props) {
     isTangible: initialIsTangible,
   } = initialFormValues;
 
-  const timeEntryInitialProjectOrTaskId = edit
-    ? initialProjectId +
-      (initialwbsId ? `/${initialwbsId}` : '') +
-      (initialTaskId ? `/${initialTaskId}` : '')
-    : 'defaultProject';
+  let timeEntryInitialProjectOrTaskId = 'defaultProject';
+  if (edit) {
+    timeEntryInitialProjectOrTaskId = initialProjectId;
+
+    if (initialwbsId) {
+      timeEntryInitialProjectOrTaskId += `/${initialwbsId}`;
+    }
+
+    if (initialTaskId) {
+      timeEntryInitialProjectOrTaskId += `/${initialTaskId}`;
+    }
+  }
 
   const initialReminder = {
     openModal: false,
