@@ -216,6 +216,23 @@
   color: #c62828;
 }
 
+.fieldError {
+  margin: 4px 0 8px;
+  color: #c62828;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.jobformInputError {
+  border-color: #ef5350;
+}
+
+.jobformInputError:focus {
+  outline-color: #ef5350;
+  box-shadow: 0 0 0 2px rgb(239 83 80 / 25%);
+}
+
 .standardApplicantSection {
   margin-bottom: 20px;
   padding: 16px;
@@ -229,6 +246,62 @@
   font-size: 0.95rem;
   color: #555;
   line-height: 1.5;
+}
+
+.fixedFieldsToggles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.fixedFieldsToggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fafafa;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.fixedFieldsToggle input {
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.fixedFieldsToggleHint {
+  display: block;
+  margin-top: 2px;
+  color: #666;
+  font-weight: 400;
+  font-size: 0.82rem;
+}
+
+.frontendOnlyTermsPreview {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed #d0d0d0;
+}
+
+.frontendOnlyTermsLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: #555;
+  cursor: default;
+}
+
+.frontendOnlyTermsLabel input {
+  margin-top: 3px;
+  flex-shrink: 0;
 }
 
 .standardApplicantGrid {
@@ -433,8 +506,6 @@
 
 .darkMode .jobformSelect {
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   padding-right: 2.5rem;
   background-image: url("data:image/svg+xml;utf8,<svg fill='lightgray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
@@ -472,6 +543,24 @@
   color: #90a4ae;
 }
 
+.darkMode .fixedFieldsToggle {
+  background: #2a3448;
+  border-color: #5a6a84;
+  color: #f1f1f1;
+}
+
+.darkMode .fixedFieldsToggleHint {
+  color: #b0bec5;
+}
+
+.darkMode .frontendOnlyTermsPreview {
+  border-top-color: #5a6a84;
+}
+
+.darkMode .frontendOnlyTermsLabel {
+  color: #cfd8dc;
+}
+
 .darkMode .formField {
   background: transparent;
 }
@@ -487,6 +576,16 @@
 
 .darkMode .requiredMark {
   color: #ff8a80;
+}
+
+.darkMode .fieldError,
+.darkMode .newFieldSection .fieldError,
+.darkMode .optionsSection .fieldError {
+  color: #ff8a80 !important; /* NOSONAR */
+}
+
+.darkMode .jobformInputError {
+  border-color: #ef5350;
 }
 
 .darkMode .optionItem label {

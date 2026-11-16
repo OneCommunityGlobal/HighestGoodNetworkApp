@@ -10,6 +10,13 @@ const initialNewField = {
   required: false,
 };
 
+const defaultFixedFields = {
+  includePersonalInfo: true,
+  includeBasicInfo: true,
+  includeExperience: true,
+  includeAvailability: true,
+};
+
 function getState(overrides = {}) {
   return {
     formFields: [{ questionText: 'Why?' }],
@@ -19,6 +26,8 @@ function getState(overrides = {}) {
     templateName: '',
     jobTitle: 'Software Engineer',
     initialJobTitle: 'Software Engineer',
+    fixedFields: defaultFixedFields,
+    initialFixedFields: defaultFixedFields,
     ...overrides,
   };
 }
@@ -50,5 +59,15 @@ describe('hasUnsavedJobFormChanges', () => {
 
   it('tracks an unsaved template name', () => {
     expect(hasUnsavedJobFormChanges(getState({ templateName: 'Engineering form' }))).toBe(true);
+  });
+
+  it('tracks changed fixedFields', () => {
+    expect(
+      hasUnsavedJobFormChanges(
+        getState({
+          fixedFields: { ...defaultFixedFields, includePersonalInfo: false },
+        }),
+      ),
+    ).toBe(true);
   });
 });

@@ -46,6 +46,7 @@ export const TIMELOG = 'Timelog';
 export const UPDATE_PASSWORD = 'Update Password';
 export const USER_MANAGEMENT = 'User Management';
 export const BADGE_MANAGEMENT = 'Badge Management';
+export const JOB_FORM_BUILDER = 'Job Form Builder';
 export const VIEW_PROFILE = 'View Profile';
 export const WBS = 'WBS';
 export const WELCOME = 'Welcome';
