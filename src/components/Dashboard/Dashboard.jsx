@@ -12,6 +12,7 @@ import {
 } from '~/utils/constants';
 import { cantUpdateDevAdminDetails } from '~/utils/permissions';
 import '../../App.module.css';
+import FeedbackModal from '../FeedbackModal/FeedbackModal';
 import Leaderboard from '../LeaderBoard';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import Timelog from '../Timelog/Timelog';
@@ -167,7 +168,7 @@ export function Dashboard(props) {
   // All other users can access the normal Dashboard.
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
-      {/* <FeedbackModal /> */}
+      <FeedbackModal />
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
