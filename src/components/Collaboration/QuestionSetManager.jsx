@@ -55,7 +55,9 @@ function QuestionSetManager({
 
     if (!append && formFields.length > 0) {
       const confirmLoad = await showConfirm?.(
-        `Load questions for "${formOptionLabel(selectedForm)}"? This will replace the questions currently on screen.`,
+        `Load questions for "${formOptionLabel(
+          selectedForm,
+        )}"? This will replace the questions currently on screen.`,
         { title: 'Load job form', confirmLabel: 'Load form' },
       );
       if (!confirmLoad) return;
