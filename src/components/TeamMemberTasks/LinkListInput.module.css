@@ -1,0 +1,150 @@
+/* Link list used in the Submit for Review and Edit Link modals. Inherits the modal's text color. */
+.group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+
+  --link-error: #b3261e;
+  --link-accent: #1f5f8b;
+  --link-focus: #1f5f8b;
+}
+
+.dark {
+  --link-error: #ff9a93;
+  --link-accent: #9cc9ec;
+  --link-focus: #9cc9ec;
+}
+
+.legend {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  width: auto;
+}
+
+.hint {
+  font-size: 0.875rem;
+  margin: 0 0 0.75rem;
+  opacity: 0.8;
+}
+
+.list {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.row {
+  min-width: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.inputLine {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.inputLine > input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* The global dark-mode rule forces all text white, so validation text needs to win over it */
+.group .error {
+  color: var(--link-error) !important;
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0;
+}
+
+.remove,
+.add {
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 150ms ease-out, transform 150ms ease-out, opacity 150ms ease-out;
+}
+
+.remove {
+  flex: 0 0 auto;
+  width: 44px;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgb(127 127 127 / 55%);
+  border-radius: 0.25rem;
+  opacity: 0.85;
+}
+
+.add {
+  min-height: 44px;
+  padding: 0 0.25rem;
+  color: var(--link-accent);
+  background: transparent;
+  border: 0;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.add:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  text-decoration: none;
+}
+
+.limit {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.remove:focus-visible,
+.add:focus-visible {
+  outline: 2px solid var(--link-focus);
+  outline-offset: 2px;
+}
+
+.remove:active,
+.add:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .remove:hover {
+    opacity: 1;
+    background-color: rgb(127 127 127 / 18%);
+  }
+
+  .add:hover:not(:disabled) {
+    background-color: rgb(127 127 127 / 14%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remove,
+  .add {
+    transition: none;
+  }
+
+  .remove:active,
+  .add:active:not(:disabled) {
+    transform: none;
+  }
+}

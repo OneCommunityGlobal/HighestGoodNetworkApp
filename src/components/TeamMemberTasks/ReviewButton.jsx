@@ -10,7 +10,6 @@ import {
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
-  Input,
   Spinner,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,13 +26,23 @@ import { ApiEndpoint } from '~/utils/URL';
 import hasPermission from '~/utils/permissions';
 
 import { permissions } from '../../utils/constants';
+import LinkListInput from './LinkListInput';
+import {
+  expandLinks,
+  getLinkError,
+  linkLabel,
+  validURL,
+  validateAllowedDomainTypes,
+} from './reviewLinkUtils';
+
 function ReviewButton({ user, task, updateTask, onTimeOff }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
-  const [link, setLink] = useState('');
+  const [links, setLinks] = useState(['']);
+  const [showLinkErrors, setShowLinkErrors] = useState(false);
   const [verifyModal, setVerifyModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
   const canReview = dispatch(hasPermission(permissions.putReviewStatus));
@@ -41,15 +50,11 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
   const [editLinkState, setEditLinkState] = useState({
     isOpen: false,
-    link: '',
+    links: [''],
+    showErrors: false,
     isEditing: false,
     isSuccess: false,
     error: null,
-  });
-  const [invalidDomainModal, setInvalidDomainModal] = useState({
-    isOpen: false,
-    errorType: null,
-    errorMessage: '',
   });
 
   // XSS Protection sanitizer
@@ -83,6 +88,7 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
     setModal(!modal);
     if (!modal) {
       setEditLinkState(prev => ({ ...prev, error: null }));
+      setShowLinkErrors(false);
     }
   };
 
@@ -106,35 +112,26 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
       isEditing: false,
     }));
     if (!editLinkState.isOpen) {
-      // When opening the modal, find the link associated with this user
-      const userLink = task.relatedWorkLinks?.[task.relatedWorkLinks.length - 1] || '';
-      const sanitizedUserLink = sanitizeUrl(userLink);
-      setEditLinkState(prev => ({ ...prev, link: sanitizedUserLink, error: null }));
+      // When opening the modal, list every stored link (old "link;link" entries show as separate rows)
+      const storedLinks = expandLinks(task.relatedWorkLinks).map(sanitizeUrl);
+      setEditLinkState(prev => ({
+        ...prev,
+        links: storedLinks.length > 0 ? storedLinks : [''],
+        showErrors: false,
+        error: null,
+      }));
     }
   };
 
-  const toggleInvalidDomainModal = (errorType = null) => {
-    if (!invalidDomainModal.isOpen && errorType) {
-      let errorMessage =
-        'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, Figma design, or One Community webpage.';
+  // Error text for each link row, shown only after the first failed attempt to submit
+  const getRowErrors = (rows, show) =>
+    show ? rows.map(row => getLinkError(sanitizeUrl(row))) : [];
 
-      if (errorType === 'invalid_dropbox_link') {
-        errorMessage =
-          'Oops! That link\'s about as helpful as a screen door on a submarine. Please use the "Share" or "Copy link to" option to create a DropBox link that works for people other than just you.';
-      }
-
-      setInvalidDomainModal({
-        isOpen: true,
-        errorType,
-        errorMessage,
-      });
-    } else {
-      setInvalidDomainModal({
-        isOpen: false,
-        errorType: null,
-        errorMessage: '',
-      });
-    }
+  // After a failed attempt, move focus to the first link that needs fixing
+  const focusFirstInvalid = (inputId, rows) => {
+    const index = rows.findIndex(row => getLinkError(sanitizeUrl(row)));
+    if (index < 0) return;
+    setTimeout(() => document.getElementById(`${inputId}-${index}`)?.focus(), 0);
   };
 
   // helper right above the return (or inline if you prefer)
@@ -155,133 +152,16 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
       );
     }
 
-    return 'Update Link';
-  };
-
-  const validURL = url => {
-    try {
-      if (!url || url.trim() === '') return false;
-
-      // Check minimum length requirement
-      if (url.length < 20) return false;
-
-      // Secure URL validation pattern that prevents catastrophic backtracking
-      // Split validation into parts to avoid nested quantifiers
-      const protocolPattern = /^https?:\/\//;
-      const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
-      const pathPattern = /^[\/\w\-._~:?#[\]@!$&'()*+,;=%]*$/;
-
-      // If URL doesn't start with http/https, add https:// for validation
-      const urlToTest = url.startsWith('http') ? url : `https://${url}`;
-
-      // Test protocol
-      if (!protocolPattern.test(urlToTest)) return false;
-
-      // Extract domain and path parts
-      const urlWithoutProtocol = urlToTest.replace(protocolPattern, '');
-      const slashIndex = urlWithoutProtocol.indexOf('/');
-      const domain =
-        slashIndex === -1 ? urlWithoutProtocol : urlWithoutProtocol.substring(0, slashIndex);
-      const path = slashIndex === -1 ? '' : urlWithoutProtocol.substring(slashIndex);
-
-      // Validate domain and path separately
-      if (!domainPattern.test(domain)) return false;
-      if (path && !pathPattern.test(path)) return false;
-
-      // Additional validation using URL constructor
-      try {
-        new URL(urlToTest);
-        return true;
-      } catch (e) {
-        return false;
-      }
-    } catch (err) {
-      return false;
-    }
-  };
-
-  const handleLink = e => {
-    const url = sanitizeUrl(e.target.value);
-    setLink(url);
-    if (!url) {
-      setEditLinkState(prev => ({ ...prev, error: 'A valid URL is required for review' }));
-    } else if (!validURL(url)) {
-      setEditLinkState(prev => ({
-        ...prev,
-        error: "Please enter a valid URL starting with 'https://'.",
-      }));
-    } else {
-      setEditLinkState(prev => ({ ...prev, error: null }));
-    }
-  };
-
-  /**
-   * Validates if the provided URL is one of the accepted domain types
-   * @param {string} url - The URL to validate
-   * @returns {object} - { isValid: boolean, errorType: string|null }
-   */
-  const validateAllowedDomainTypes = url => {
-    if (!url) {
-      return { isValid: false, errorType: 'missing_url' };
-    }
-
-    // Normalize the URL
-    const normalizedUrl = url.toLowerCase();
-
-    // 1. Google Doc check
-    if (normalizedUrl.includes('docs.google.com')) {
-      if (
-        normalizedUrl.includes('/document/d/') ||
-        normalizedUrl.includes('/spreadsheets/d/') ||
-        normalizedUrl.includes('/presentation/d/') ||
-        normalizedUrl.includes('/forms/d/')
-      ) {
-        return { isValid: true, errorType: null };
-      }
-      return { isValid: false, errorType: 'general_invalid' };
-    }
-
-    // 2. Dropbox check
-    if (normalizedUrl.includes('dropbox.com')) {
-      if (normalizedUrl.includes('dropbox.com/s/') || normalizedUrl.includes('dropbox.com/scl/')) {
-        return { isValid: true, errorType: null };
-      }
-      return { isValid: false, errorType: 'invalid_dropbox_link' };
-    }
-
-    // 3. GitHub PR check
-    if (normalizedUrl.includes('github.com')) {
-      if (normalizedUrl.includes('/pull/')) {
-        return { isValid: true, errorType: null };
-      }
-      return { isValid: false, errorType: 'general_invalid' };
-    }
-
-    // 4. One Community check
-    if (
-      normalizedUrl.includes('onecommunityglobal.org') ||
-      normalizedUrl.includes('onecommunityglobal.com') ||
-      normalizedUrl.includes('onecommunity.org') ||
-      normalizedUrl.includes('onecommunity.com')
-    ) {
-      return { isValid: true, errorType: null };
-    }
-    // 5. Figma design file check
-    if (normalizedUrl.includes('figma.com')) {
-      if (normalizedUrl.includes('/design/')) {
-        return { isValid: true, errorType: null };
-      }
-      return { isValid: false, errorType: 'general_invalid' };
-    }
-
-    // Generic invalid domain
-    return { isValid: false, errorType: 'general_invalid' };
+    return 'Update links';
   };
 
   const reviewStatus = useMemo(() => {
     const resource = task.resources.find(r => r.userID === user.personId);
     return resource ? resource.reviewStatus || 'Unsubmitted' : 'Unsubmitted';
   }, [task, user]);
+
+  // Old entries typed as "link;link" are shown as separate links
+  const storedLinks = useMemo(() => expandLinks(task.relatedWorkLinks), [task.relatedWorkLinks]);
 
   const updReviewStat = newStatus => {
     const resources = [...task.resources];
@@ -297,18 +177,18 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
       taskRelatedWorkLinks = [];
     }
 
-    if (newStatus === 'Submitted' && link) {
-      const sanitizedLink = sanitizeUrl(link);
-      if (validURL(sanitizedLink)) {
-        updatedTask = {
-          ...updatedTask,
-          relatedWorkLinks: [...taskRelatedWorkLinks, sanitizedLink],
-        };
-        setLink('');
-      } else {
+    if (newStatus === 'Submitted') {
+      const cleanedLinks = links.map(sanitizeUrl).filter(Boolean);
+      if (cleanedLinks.length === 0 || cleanedLinks.some(item => getLinkError(item))) {
         setIsSubmitting(false);
         return;
       }
+      updatedTask = {
+        ...updatedTask,
+        relatedWorkLinks: [...taskRelatedWorkLinks, ...cleanedLinks],
+      };
+      setLinks(['']);
+      setShowLinkErrors(false);
     }
     updateTask(task._id, updatedTask);
     setModal(false);
@@ -318,19 +198,9 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
   const submitReviewRequest = event => {
     event.preventDefault();
 
-    const sanitizedLink = sanitizeUrl(link);
-    if (!validURL(sanitizedLink)) {
-      setEditLinkState(prev => ({
-        ...prev,
-        error:
-          'Please enter a valid URL (must start with http:// or https:// and be at least 20 characters)',
-      }));
-      return;
-    }
-
-    const validationResult = validateAllowedDomainTypes(sanitizedLink);
-    if (!validationResult.isValid) {
-      toggleInvalidDomainModal(validationResult.errorType);
+    if (links.map(sanitizeUrl).some(item => getLinkError(item))) {
+      setShowLinkErrors(true);
+      focusFirstInvalid('review-links', links);
       return;
     }
 
@@ -362,36 +232,19 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
   };
 
   const handleEditLink = () => {
-    const sanitizedLink = sanitizeUrl(editLinkState.link);
+    const cleanedLinks = editLinkState.links.map(sanitizeUrl);
 
-    if (!validURL(sanitizedLink)) {
-      setEditLinkState(prev => ({
-        ...prev,
-        error:
-          'Please enter a valid URL (must start with http:// or https:// and be at least 20 characters)',
-      }));
-      return;
-    }
-
-    const validationResult = validateAllowedDomainTypes(sanitizedLink);
-    if (!validationResult.isValid) {
-      toggleInvalidDomainModal(validationResult.errorType);
+    if (cleanedLinks.some(item => getLinkError(item))) {
+      setEditLinkState(prev => ({ ...prev, showErrors: true }));
+      focusFirstInvalid('edit-review-links', editLinkState.links);
       return;
     }
 
     // Set loading state
     setEditLinkState(prev => ({ ...prev, isEditing: true }));
 
-    // Update the task with the new link
-    const updatedTask = { ...task };
-
-    // If there are related work links, replace the last one (assuming it's the one for this user)
-    if (Array.isArray(updatedTask.relatedWorkLinks) && updatedTask.relatedWorkLinks.length > 0) {
-      updatedTask.relatedWorkLinks[updatedTask.relatedWorkLinks.length - 1] = sanitizedLink;
-    } else {
-      // If no related work links exist yet, add this one
-      updatedTask.relatedWorkLinks = [sanitizedLink];
-    }
+    // Save the edited list as the task's links (a new array, the task prop is not changed)
+    const updatedTask = { ...task, relatedWorkLinks: cleanedLinks };
 
     // Call the update function from props
     const result = updateTask(task._id, updatedTask);
@@ -442,14 +295,6 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
     }
   };
 
-  const handleEditLinkChange = e => {
-    // Safely extract and sanitize the value first
-    const rawValue = e && e.target && e.target.value !== undefined ? e.target.value : '';
-    const sanitizedValue = sanitizeUrl(rawValue);
-    // Then use the sanitized value in the state update
-    setEditLinkState(prev => ({ ...prev, link: sanitizedValue }));
-  };
-
   const buttonFormat = () => {
     if (user.personId === myUserId && reviewStatus === 'Unsubmitted') {
       return (
@@ -494,23 +339,21 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
               strategy="fixed"
               className={style['review-button-dropdown']}
             >
-              {task.relatedWorkLinks &&
-                // eslint-disable-next-line no-shadow
-                task.relatedWorkLinks.map(link => (
-                  <DropdownItem
-                    key={sanitizeText(link)}
-                    href={handleSafeLink(link)}
-                    target="_blank"
-                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-                  >
-                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
-                  </DropdownItem>
-                ))}
+              {storedLinks.map((storedLink, index) => (
+                <DropdownItem
+                  key={`${index}-${sanitizeText(storedLink)}`} // eslint-disable-line react/no-array-index-key
+                  href={handleSafeLink(storedLink)}
+                  target="_blank"
+                  className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+                >
+                  <FontAwesomeIcon icon={faExternalLinkAlt} /> View {linkLabel(storedLink)}
+                </DropdownItem>
+              ))}
               <DropdownItem
                 onClick={toggleEditLinkModal}
                 className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
               >
-                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit links
               </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
@@ -537,22 +380,21 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
               strategy="fixed"
               className={style['review-button-dropdown']}
             >
-              {task.relatedWorkLinks &&
-                task.relatedWorkLinks.map(dropLink => (
-                  <DropdownItem
-                    key={sanitizeText(dropLink)}
-                    href={handleSafeLink(dropLink)}
-                    target="_blank"
-                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-                  >
-                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
-                  </DropdownItem>
-                ))}
+              {storedLinks.map((storedLink, index) => (
+                <DropdownItem
+                  key={`${index}-${sanitizeText(storedLink)}`} // eslint-disable-line react/no-array-index-key
+                  href={handleSafeLink(storedLink)}
+                  target="_blank"
+                  className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+                >
+                  <FontAwesomeIcon icon={faExternalLinkAlt} /> View {linkLabel(storedLink)}
+                </DropdownItem>
+              ))}
               <DropdownItem
                 onClick={toggleEditLinkModal}
                 className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
               >
-                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit links
               </DropdownItem>
               <DropdownItem
                 onClick={() => {
@@ -636,11 +478,18 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
           Confirm Submission
         </ModalHeader>
         <ModalBody className={panelClassName}>
-          You are about to submit the following link for review:
-          <div className="mt-2" style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
-            <span>{sanitizeText(link)}</span>
-          </div>
-          Please confirm if this is the correct link.
+          {links.length > 1
+            ? 'You are about to submit these links for review:'
+            : 'You are about to submit this link for review:'}
+          <ul className="mt-2 pl-3" style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
+            {links.map((item, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <li key={index}>{sanitizeText(item)}</li>
+            ))}
+          </ul>
+          {links.length > 1
+            ? 'Please confirm these are the correct links.'
+            : 'Please confirm this is the correct link.'}
         </ModalBody>
         <ModalFooter className={panelClassName}>
           <Button color="primary" onClick={handleFinalSubmit} style={conditionalBoxStyle}>
@@ -663,31 +512,19 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
             : `Are you sure you have completed the review?`}
         </ModalBody>
         <ModalBody className={panelClassName}>
-          Please add link to related work:
-          <Input type="text" required value={link} onChange={handleLink} />
-          {editLinkState.error && (
-            <div className="text-danger">{sanitizeText(editLinkState.error)}</div>
-          )}
+          <LinkListInput
+            id="review-links"
+            label="Links to your work"
+            links={links}
+            errors={getRowErrors(links, showLinkErrors)}
+            onChange={setLinks}
+            darkMode={darkMode}
+          />
         </ModalBody>
         <ModalFooter className={panelClassName}>
           <Button
             onClick={e => {
               e.preventDefault();
-              const sanitizedLink = sanitizeUrl(link);
-              if (!sanitizedLink || !validURL(sanitizedLink)) {
-                setEditLinkState(prev => ({
-                  ...prev,
-                  error: "Please enter a valid URL starting with 'https://'.",
-                }));
-                return;
-              }
-
-              const validationResult = validateAllowedDomainTypes(sanitizedLink);
-              if (!validationResult.isValid) {
-                toggleInvalidDomainModal(validationResult.errorType);
-                return;
-              }
-
               if (reviewStatus === 'Unsubmitted') {
                 submitReviewRequest(e);
               } else {
@@ -709,13 +546,21 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
       {/* Edit Link Modal */}
       <Modal isOpen={editLinkState.isOpen} toggle={toggleEditLinkModal} className={modalClassName}>
         <ModalHeader toggle={toggleEditLinkModal} className={headerClassName}>
-          Edit Submitted Link
+          Edit submitted links
         </ModalHeader>
         <ModalBody className={panelClassName}>
-          <p>Update the link to your submitted work:</p>
-          <Input type="text" required value={editLinkState.link} onChange={handleEditLinkChange} />
+          <LinkListInput
+            id="edit-review-links"
+            label="Links to your submitted work"
+            links={editLinkState.links}
+            errors={getRowErrors(editLinkState.links, editLinkState.showErrors)}
+            onChange={nextLinks => setEditLinkState(prev => ({ ...prev, links: nextLinks }))}
+            darkMode={darkMode}
+          />
           {editLinkState.error && (
-            <div className="text-danger">{sanitizeText(editLinkState.error)}</div>
+            <div className="text-danger" role="alert">
+              {sanitizeText(editLinkState.error)}
+            </div>
           )}
         </ModalBody>
         <ModalFooter className={panelClassName}>
@@ -735,52 +580,6 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
             disabled={editLinkState.isEditing}
           >
             Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-
-      {/* Dynamic Invalid Domain Type Warning Modal */}
-      <Modal
-        isOpen={invalidDomainModal.isOpen}
-        toggle={() => toggleInvalidDomainModal()}
-        className={modalClassName}
-      >
-        <ModalHeader toggle={() => toggleInvalidDomainModal()} className={headerClassName}>
-          Invalid Domain Type
-        </ModalHeader>
-        <ModalBody className={panelClassName}>
-          <div className="text-center mb-3">
-            <span role="img" aria-label="warning" style={{ fontSize: '2rem' }}>
-              ⚠️
-            </span>
-          </div>
-          <p>{sanitizeText(invalidDomainModal.errorMessage)}</p>
-          <div className="mt-3">
-            <strong>Acceptable link types:</strong>
-            <ul className="mt-2" style={{ paddingLeft: '25px' }}>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
-                Google Doc (docs.google.com)
-              </li>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
-                Dropbox shared link (must contain /s/ or /scl/)
-              </li>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
-                GitHub PR link (must contain /pull/)
-              </li>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
-                One Community webpage (onecommunityglobal.org)
-              </li>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>Figma design (figma.com)</li>
-            </ul>
-          </div>
-        </ModalBody>
-        <ModalFooter className={panelClassName}>
-          <Button
-            color="primary"
-            onClick={() => toggleInvalidDomainModal()}
-            style={conditionalBoxStyle}
-          >
-            Got it!
           </Button>
         </ModalFooter>
       </Modal>
