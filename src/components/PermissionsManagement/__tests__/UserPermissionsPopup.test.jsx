@@ -401,6 +401,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalProvider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     await flushAllPromises();
     expect(screen.queryByText(REMINDER)).not.toBeInTheDocument();
@@ -425,6 +426,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     await flushAllPromises();
     // A real change first, so the flag is on when Submit is pressed
@@ -446,6 +448,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     fireEvent.click(screen.getByText('Submit'));
 
@@ -461,6 +464,7 @@ describe('UserPermissionsPopup unsaved changes', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test1 Volunteer'));
     await flushAllPromises();
     fireEvent.change(screen.getByPlaceholderText('Shows only ACTIVE users'), {
