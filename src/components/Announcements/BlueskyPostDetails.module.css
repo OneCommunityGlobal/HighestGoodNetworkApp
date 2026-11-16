@@ -105,6 +105,15 @@
   color: #e2e8f0;
 }
 
+/* Prevent OS dark mode from overriding Bluesky label colors */
+.connection-card .form-label {
+  color: #4a5568 !important;
+}
+
+.dark .connection-card .form-label {
+  color: #e2e8f0 !important;
+}
+
 .form-input {
   border-radius: 8px;
   border: 1.5px solid #e2e8f0;
@@ -217,11 +226,10 @@
   transition: width 0.15s ease, background 0.15s ease;
 }
 
-.char-counter span {
+.char-counter-text {
+  color: var(--char-color);
   font-size: 12px;
   white-space: nowrap;
-  min-width: 100px;
-  text-align: right;
 }
 
 /* ── Image preview ──────────────────────────────────────── */
@@ -577,3 +585,88 @@
   background: #3b516b;
 }
 
+
+/* ── HGN Global Dark Mode Compatibility Overrides ── */
+
+/* Status alert */
+:global(body.dark-mode) .status-alert,
+:global(body.bm-dashboard-dark) .status-alert {
+  color: #155724 !important;
+  background-color: #d4edda !important;
+  border-color: #c3e6cb !important;
+}
+
+:global(body.dark-mode) .status-alert :global(.close span[aria-hidden="true"]),
+:global(body.bm-dashboard-dark) .status-alert :global(.close span[aria-hidden="true"]) {
+  color: #155724 !important;
+}
+
+/* Connected account */
+:global(body.dark-mode) .connected-badge span:not(.connected-dot),
+:global(body.bm-dashboard-dark) .connected-badge span:not(.connected-dot) {
+  color: #9fc5f4 !important;
+}
+
+:global(body.dark-mode) .disconnect-btn,
+:global(body.bm-dashboard-dark) .disconnect-btn {
+  color: #e53e3e !important;
+}
+
+:global(body.dark-mode) .disconnect-btn:hover,
+:global(body.bm-dashboard-dark) .disconnect-btn:hover {
+  color: #fff !important;
+}
+
+/* Character counter */
+:global(body.dark-mode) .char-counter-text,
+:global(body.bm-dashboard-dark) .char-counter-text {
+  color: var(--char-color) !important;
+}
+
+/* Image upload area */
+:global(body.dark-mode) .drop-zone p,
+:global(body.bm-dashboard-dark) .drop-zone p {
+  color: #d1d5db !important;
+}
+
+:global(body.dark-mode) .drop-zone .dark-text-muted,
+:global(body.bm-dashboard-dark) .drop-zone .dark-text-muted {
+  color: #b6c6d8 !important;
+}
+
+/* Your Posts section */
+:global(body.dark-mode) .posts-card .post-text,
+:global(body.bm-dashboard-dark) .posts-card .post-text {
+  color: #e2e8f0 !important;
+}
+
+:global(body.dark-mode) .posts-card .post-stat,
+:global(body.bm-dashboard-dark) .posts-card .post-stat {
+  color: #b6c6d8 !important;
+}
+
+:global(body.dark-mode) .posts-card .post-time,
+:global(body.bm-dashboard-dark) .posts-card .post-time {
+  color: #97abc3 !important;
+}
+
+:global(body.dark-mode) .posts-card .action-btn-view,
+:global(body.bm-dashboard-dark) .posts-card .action-btn-view {
+  color: #e8f3ff !important;
+}
+
+:global(body.dark-mode) .posts-card .action-btn-delete,
+:global(body.bm-dashboard-dark) .posts-card .action-btn-delete {
+  color: #ffd8dd !important;
+}
+
+/* Login Page */
+:global(body.dark-mode) .hint-link,
+:global(body.bm-dashboard-dark) .hint-link {
+  color: #0085ff !important;
+}
+:global(body.dark-mode) .hint-link:hover,
+:global(body.bm-dashboard-dark) .hint-link:hover {
+  color: #339cff !important;
+  text-decoration: underline;
+}

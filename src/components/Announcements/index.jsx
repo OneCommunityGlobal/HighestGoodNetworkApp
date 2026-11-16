@@ -19,6 +19,7 @@ import EmailPanel from './platforms/email';
 import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
 import SocialMediaComposer from './platforms/social/SocialMediaComposer';
+import BlueskyPostDetails from './BlueskyPostDetails';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -104,6 +105,8 @@ function Announcements({ title, email: initialEmail }) {
         return '#E91E63';
       case 'weeklyreport':
         return '#00C853';
+      case 'email':
+        return '#0077b5';
       default:
         return undefined;
     }
@@ -184,7 +187,12 @@ function Announcements({ title, email: initialEmail }) {
                 ) : (
                   <FontAwesomeIcon
                     icon={icon}
-                    style={{ width: '100%', height: '100%', color: getIconColor(id) }}
+                    className={styles.fontAwesomeIcon}
+                    style={{
+                      '--icon-color': getIconColor(id),
+                      width: '100%',
+                      height: '100%',
+                    }}
                   />
                 )}
               </div>
@@ -245,6 +253,9 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'reddit':
                 PlatformComposer = RedditAutoPoster;
+                break;
+              case 'bluesky':
+                PlatformComposer = BlueskyPostDetails;
                 break;
               default:
                 PlatformComposer = SocialMediaComposer;
