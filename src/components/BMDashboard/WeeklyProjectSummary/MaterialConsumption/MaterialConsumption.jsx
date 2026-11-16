@@ -6,6 +6,7 @@ import QuantityOfMaterialsUsed from '../QuantityOfMaterialsUsed/QuantityOfMateri
 import TotalMaterialCostPerProject from '../TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from '../WeeklyProjectSummary.module.css';
 import materialStyles from './MaterialConsumption.module.css';
+import MaterialCostCorrelationChart from '../../MaterialCostCorrelation';
 
 function useMaterialConsumptionData(quantityOfMaterialsUsedData) {
   const dispatch = useDispatch();
@@ -24,19 +25,38 @@ function useMaterialConsumptionData(quantityOfMaterialsUsedData) {
   }, [materials, quantityOfMaterialsUsedData, shouldUseStoreMaterials]);
 }
 
-function renderMaterialCard(cardKey, quantityOfMaterialsUsedData) {
+function renderMaterialCard(
+  cardKey,
+  quantityOfMaterialsUsedData,
+  comparisonMode,
+  currentDateRange,
+  comparisonDateRange,
+) {
+  if (cardKey === 'correlation') {
+    return (
+      <div className={materialStyles.materialConsumptionContent}>
+        <MaterialCostCorrelationChart />
+      </div>
+    );
+  }
+
   if (cardKey === 'quantity') {
     return (
       <div
         className={`${materialStyles.materialConsumptionContent} ${materialStyles.quantityContent}`}
       >
-        <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
+        <QuantityOfMaterialsUsed
+          data={quantityOfMaterialsUsedData}
+          comparisonMode={comparisonMode}
+          currentDateRange={currentDateRange}
+          comparisonDateRange={comparisonDateRange}
+        />
       </div>
     );
   }
 
   if (cardKey === 'issue') {
-    // The issue chart is part of the three-card Material Consumption group on this PR.
+    // The issue chart is part of the four-card Material Consumption group on this PR.
     return (
       <div
         className={`${materialStyles.materialConsumptionContent} ${materialStyles.issueContent}`}
@@ -55,11 +75,16 @@ function renderMaterialCard(cardKey, quantityOfMaterialsUsedData) {
   );
 }
 
-export function MaterialConsumptionCards({ quantityOfMaterialsUsedData }) {
+export function MaterialConsumptionCards({
+  quantityOfMaterialsUsedData,
+  comparisonMode = 'No Comparison',
+  currentDateRange = {},
+  comparisonDateRange = {},
+}) {
   const materialData = useMaterialConsumptionData(quantityOfMaterialsUsedData);
   const darkMode = useSelector(state => state.theme.darkMode);
   // Keep this order aligned with the PR requirement for the Material Consumption section and route.
-  const cards = ['quantity', 'issue', 'totalCost'];
+  const cards = ['correlation', 'quantity', 'issue', 'totalCost'];
   const cardClassNames = {
     issue: materialStyles.issueCard,
   };
@@ -75,7 +100,13 @@ export function MaterialConsumptionCards({ quantityOfMaterialsUsedData }) {
             darkMode ? materialStyles.materialConsumptionCardDark : ''
           }`}
         >
-          {renderMaterialCard(cardKey, materialData)}
+          {renderMaterialCard(
+            cardKey,
+            materialData,
+            comparisonMode,
+            currentDateRange,
+            comparisonDateRange,
+          )}
         </div>
       ))}
     </>

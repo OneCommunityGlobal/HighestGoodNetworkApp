@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  LabelList,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -18,85 +19,55 @@ import { Container } from 'reactstrap';
 import httpService from '../../../services/httpService';
 import styles from './ProjectRiskProfileOverview.module.css';
 
-function clamp(n, min, max) {
-  return Math.max(min, Math.min(max, n));
-}
-
-function hashString(str) {
-  let h = 2166136261;
-  for (let i = 0; i < str.length; i += 1) {
-    h ^= str.codePointAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return Math.abs(h);
-}
-
 function formatDateISO(d) {
   return d.toISOString().slice(0, 10);
 }
 
-function buildDateRange(endDateISO, days) {
-  const end = new Date(endDateISO);
-  const dates = [];
-  for (let i = days - 1; i >= 0; i -= 1) {
-    const dt = new Date(end);
-    dt.setDate(end.getDate() - i);
-    dates.push(formatDateISO(dt));
-  }
-  return dates;
-}
-
-function generateSyntheticHistory(projectName, snapshot, days, endDateISO) {
-  const seed = hashString(projectName);
-  const dates = buildDateRange(endDateISO, days);
-  const baseCost = Number(snapshot.predictedCostOverrun ?? 0);
-  const baseDelay = Number(snapshot.predictedTimeDelay ?? 0);
-  const baseIssues = Number(snapshot.totalOpenIssues ?? 0);
-  let cost = baseCost,
-    delay = baseDelay,
-    issues = baseIssues;
-
-  return dates.map((date, idx) => {
-    const r1 = ((seed % 97) / 97 - 0.5) * 2;
-    const r2 = (((seed >> 3) % 89) / 89 - 0.5) * 2;
-    const r3 = (((seed >> 7) % 83) / 83 - 0.5) * 2;
-    cost = clamp(cost + r1 * 1.2 + Math.sin((idx + seed) / 5) * 0.6, 0, 999);
-    delay = clamp(delay + r2 * 0.4 + Math.cos((idx + seed) / 6) * 0.2, 0, 999);
-    issues = clamp(Math.round(issues + r3 * 0.3 + Math.sin((idx + seed) / 7) * 0.1), 0, 999);
-    return {
-      date,
-      predictedCostOverrun: Number(cost.toFixed(2)),
-      predictedTimeDelay: Number(delay.toFixed(2)),
-      totalOpenIssues: issues,
-    };
-  });
-}
+const toNullableNumber = value =>
+  value === null || value === undefined || value === '' ? null : Number(value);
 
 function getArrow(delta) {
+  if (delta === null || delta === undefined) return 'N/A';
   if (delta > 0) return '↑';
   if (delta < 0) return '↓';
   return '→';
 }
 
+function getNullableDelta(current, previous) {
+  if (current === null || current === undefined || previous === null || previous === undefined) {
+    return null;
+  }
+  return current - previous;
+}
+
+const formatDelta = (value, digits = 2) =>
+  value === null || value === undefined ? 'N/A' : value.toFixed(digits);
+
 function getStableRiskContributorKey(series) {
   if (!series || series.length === 0) return null;
-  const avg = series.reduce(
-    (acc, p) => {
-      acc.cost += p.predictedCostOverrun || 0;
-      acc.delay += p.predictedTimeDelay || 0;
-      acc.issues += p.totalOpenIssues || 0;
-      return acc;
-    },
-    { cost: 0, delay: 0, issues: 0 },
-  );
-  avg.cost /= series.length;
-  avg.delay /= series.length;
-  avg.issues /= series.length;
-  const scores = [
-    { key: 'Cost overrun', score: avg.cost },
-    { key: 'Time delay', score: avg.delay },
-    { key: 'Issues', score: avg.issues * 10 },
-  ];
+  const costValues = series
+    .map(point => point.predictedCostOverrun)
+    .filter(value => value !== null && value !== undefined);
+  const delayValues = series
+    .map(point => point.predictedTimeDelay)
+    .filter(value => value !== null && value !== undefined);
+  const issueAverage =
+    series.reduce((sum, point) => sum + (point.totalOpenIssues || 0), 0) / series.length;
+  const scores = [];
+  if (costValues.length) {
+    scores.push({
+      key: 'Cost overrun',
+      score: costValues.reduce((sum, value) => sum + value, 0) / costValues.length,
+    });
+  }
+  if (delayValues.length) {
+    scores.push({
+      key: 'Time delay',
+      score: delayValues.reduce((sum, value) => sum + value, 0) / delayValues.length,
+    });
+  }
+  if (issueAverage > 0) scores.push({ key: 'Issues', score: issueAverage * 10 });
+  if (!scores.length) return null;
   scores.sort((a, b) => b.score - a.score);
   return scores[0]?.key ?? null;
 }
@@ -106,6 +77,12 @@ const getTrendIndicator = (current, previous) => {
   if (current > previous) return { symbol: '↑', color: '#EA4335', label: 'Increased' };
   if (current < previous) return { symbol: '↓', color: '#34A853', label: 'Decreased' };
   return { symbol: '→', color: '#FBBC05', label: 'Unchanged' };
+};
+
+const formatPercent = (value, digits = 2) => {
+  if (value === null || value === undefined || value === '') return 'N/A';
+  const num = Number(value);
+  return `${Number.isInteger(num) ? num : num.toFixed(digits)}%`;
 };
 
 const RiskTooltip = ({ active, payload, label, darkMode }) => {
@@ -119,8 +96,8 @@ const RiskTooltip = ({ active, payload, label, darkMode }) => {
   const deltas =
     first && last
       ? {
-          cost: last.predictedCostOverrun - first.predictedCostOverrun,
-          delay: last.predictedTimeDelay - first.predictedTimeDelay,
+          cost: getNullableDelta(last.predictedCostOverrun, first.predictedCostOverrun),
+          delay: getNullableDelta(last.predictedTimeDelay, first.predictedTimeDelay),
           issues: last.totalOpenIssues - first.totalOpenIssues,
         }
       : { cost: 0, delay: 0, issues: 0 };
@@ -130,14 +107,14 @@ const RiskTooltip = ({ active, payload, label, darkMode }) => {
   return (
     <div className={`${styles.tooltip} ${darkMode ? styles.tooltipDark : ''}`}>
       <div className={styles.tooltipTitle}>{label}</div>
-      <div>Cost overrun: {row.predictedCostOverrun}</div>
-      <div>Time delay: {row.predictedTimeDelay}</div>
+      <div>Cost overrun: {formatPercent(row.predictedCostOverrun)}</div>
+      <div>Time delay: {formatPercent(row.predictedTimeDelay)}</div>
       <div>Issues: {row.totalOpenIssues}</div>
       <hr className={styles.tooltipDivider} />
       <div className={styles.tooltipSubtitle}>Summary (selected period)</div>
       <div>
-        Key drivers of change: Cost {getArrow(deltas.cost)} {deltas.cost.toFixed(2)}, Delay{' '}
-        {getArrow(deltas.delay)} {deltas.delay.toFixed(2)}, Issues {getArrow(deltas.issues)}{' '}
+        Key drivers of change: Cost {getArrow(deltas.cost)} {formatPercent(deltas.cost)}, Delay{' '}
+        {getArrow(deltas.delay)} {formatPercent(deltas.delay)}, Issues {getArrow(deltas.issues)}{' '}
         {deltas.issues.toFixed(0)}
       </div>
       <div>Largest risk contributor: {contributor || 'N/A'}</div>
@@ -166,6 +143,7 @@ export default function ProjectRiskProfileOverview() {
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const projectWrapperRef = useRef(null);
+  const selectionInitialized = useRef(false);
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -175,37 +153,6 @@ export default function ProjectRiskProfileOverview() {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await httpService.get(
-          `${process.env.REACT_APP_APIENDPOINT}/projects/risk-profile`,
-        );
-        let result = res.data;
-
-        if (!Array.isArray(result)) result = [result];
-
-        const normalized = result.map(p => ({
-          ...p,
-          projectName: p.projectName || p.name || 'Unknown Project',
-          history: Array.isArray(p.history) ? p.history : null,
-        }));
-
-        setRawProjects(normalized);
-        const names = normalized.map(p => p.projectName);
-        setAllProjects(names);
-        setSelectedProjects(names);
-      } catch (err) {
-        setError('Failed to fetch project risk profile data.');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
   }, []);
 
   const effectiveWindow = useMemo(() => {
@@ -228,6 +175,42 @@ export default function ProjectRiskProfileOverview() {
     return { start: formatDateISO(startDate), end, days };
   }, [timeRange, customStart, customEnd]);
 
+  // Reload when the time range changes so range-based counts (e.g. issues)
+  // can come from the API.
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await httpService.get(
+          `${process.env.REACT_APP_APIENDPOINT}/projects/risk-profile?startDate=${effectiveWindow.start}&endDate=${effectiveWindow.end}`,
+        );
+        let result = res.data;
+
+        if (!Array.isArray(result)) result = [result];
+
+        const normalized = result.map(p => ({
+          ...p,
+          projectName: p.projectName || p.name || 'Unknown Project',
+          history: Array.isArray(p.history) ? p.history : null,
+        }));
+
+        setRawProjects(normalized);
+        const names = normalized.map(p => p.projectName);
+        setAllProjects(names);
+        if (selectionInitialized.current === false) {
+          setSelectedProjects(names);
+          selectionInitialized.current = true;
+        }
+      } catch (err) {
+        setError('Failed to fetch project risk profile data.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [effectiveWindow.start, effectiveWindow.end]);
+
   const projectsWithHistory = useMemo(() => {
     if (!rawProjects || rawProjects.length === 0) return [];
     const endISO = effectiveWindow.end;
@@ -237,31 +220,30 @@ export default function ProjectRiskProfileOverview() {
         const hist = p.history
           .map(h => ({
             date: h.date || h.day || h.createdAt || h.timestamp || null,
-            predictedCostOverrun: Number(h.predictedCostOverrun ?? h.costOverrun ?? 0),
-            predictedTimeDelay: Number(h.predictedTimeDelay ?? h.timeDelay ?? 0),
-            totalOpenIssues: Number(h.totalOpenIssues ?? h.issues ?? 0),
+            predictedCostOverrun: toNullableNumber(h.predictedCostOverrun ?? h.costOverrun),
+            predictedTimeDelay: toNullableNumber(h.predictedTimeDelay ?? h.timeDelay),
+            totalOpenIssues: toNullableNumber(h.totalOpenIssues ?? h.issues),
           }))
           .filter(h => h.date);
         return { ...p, history: hist };
       }
-      const snapshot = {
-        predictedCostOverrun: p.predictedCostOverrun,
-        predictedTimeDelay: p.predictedTimeDelay,
-        totalOpenIssues: p.totalOpenIssues,
+      return {
+        ...p,
+        history: [
+          {
+            date: endISO,
+            predictedCostOverrun: toNullableNumber(p.predictedCostOverrun),
+            predictedTimeDelay: toNullableNumber(p.predictedTimeDelay),
+            totalOpenIssues: toNullableNumber(p.totalOpenIssues),
+          },
+        ],
       };
-      const hist = generateSyntheticHistory(
-        p.projectName,
-        snapshot,
-        effectiveWindow.days || 30,
-        endISO,
-      );
-      return { ...p, history: hist };
     });
   }, [rawProjects, effectiveWindow.start, effectiveWindow.end, effectiveWindow.days]);
 
   const filteredProjects = useMemo(() => {
     return projectsWithHistory
-      .filter(p => selectedProjects.length === 0 || selectedProjects.includes(p.projectName))
+      .filter(p => selectedProjects.includes(p.projectName))
       .map(p => {
         const hist = (p.history || []).filter(
           h => h.date >= effectiveWindow.start && h.date <= effectiveWindow.end,
@@ -377,7 +359,7 @@ export default function ProjectRiskProfileOverview() {
   if (error) return <div className={styles.error}>{error}</div>;
 
   return (
-    <Container fluid className="mt-5 pt-5 mb-5">
+    <Container fluid className={styles.riskProfileRoot}>
       <div className={`${styles.wrapper} ${darkMode ? styles.darkMode : ''}`}>
         <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
           <div className={styles.headerRow}>
@@ -454,10 +436,14 @@ export default function ProjectRiskProfileOverview() {
 
           <div className={styles.chartWrapper}>
             {barChartData.length === 0 ? (
-              <div className={styles.emptyState}>No data available for the selected filters.</div>
+              <div className={styles.emptyState}>
+                {selectedProjects.length === 0 && allProjects.length > 0
+                  ? 'No projects selected. Choose at least one project to see its risk profile.'
+                  : 'No data available for the selected filters.'}
+              </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barChartData} margin={{ top: 20, right: 40, left: 20, bottom: 80 }}>
+                <BarChart data={barChartData} margin={{ top: 30, right: 40, left: 20, bottom: 80 }}>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     horizontal={true}
@@ -490,21 +476,45 @@ export default function ProjectRiskProfileOverview() {
                     fill="#4285F4"
                     radius={[3, 3, 0, 0]}
                     barSize={35}
-                  />
+                  >
+                    <LabelList
+                      dataKey="predictedCostOverrun"
+                      position="top"
+                      formatter={value => formatPercent(value, 0)}
+                      fill={chartColors.text}
+                      fontSize={11}
+                    />
+                  </Bar>
                   <Bar
                     dataKey="totalOpenIssues"
                     name="Issues"
                     fill="#EA4335"
                     radius={[3, 3, 0, 0]}
                     barSize={35}
-                  />
+                  >
+                    <LabelList
+                      dataKey="totalOpenIssues"
+                      position="top"
+                      formatter={value => Math.round(Number(value) || 0)}
+                      fill={chartColors.text}
+                      fontSize={11}
+                    />
+                  </Bar>
                   <Bar
                     dataKey="predictedTimeDelay"
                     name="Predicted Time Delay (%)"
                     fill="#FBBC05"
                     radius={[3, 3, 0, 0]}
                     barSize={35}
-                  />
+                  >
+                    <LabelList
+                      dataKey="predictedTimeDelay"
+                      position="top"
+                      formatter={value => formatPercent(value, 0)}
+                      fill={chartColors.text}
+                      fontSize={11}
+                    />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -547,7 +557,7 @@ export default function ProjectRiskProfileOverview() {
                             {costTrend.symbol}
                           </span>
                         )}
-                        <span>{currentData.predictedCostOverrun || 0}%</span>
+                        <span>{formatPercent(currentData.predictedCostOverrun)}</span>
                       </div>
                       <div className={styles.trendRow}>
                         <span>Issues:</span>
@@ -573,7 +583,7 @@ export default function ProjectRiskProfileOverview() {
                             {timeTrend.symbol}
                           </span>
                         )}
-                        <span>{currentData.predictedTimeDelay || 0}%</span>
+                        <span>{formatPercent(currentData.predictedTimeDelay)}</span>
                       </div>
 
                       {project.status && (
@@ -615,9 +625,14 @@ export default function ProjectRiskProfileOverview() {
                 <tbody>
                   {filteredProjects.map(p => {
                     const s = p.historyFiltered;
-                    const costDelta =
-                      s[s.length - 1].predictedCostOverrun - s[0].predictedCostOverrun;
-                    const delayDelta = s[s.length - 1].predictedTimeDelay - s[0].predictedTimeDelay;
+                    const costDelta = getNullableDelta(
+                      s[s.length - 1].predictedCostOverrun,
+                      s[0].predictedCostOverrun,
+                    );
+                    const delayDelta = getNullableDelta(
+                      s[s.length - 1].predictedTimeDelay,
+                      s[0].predictedTimeDelay,
+                    );
                     const issuesDelta = s[s.length - 1].totalOpenIssues - s[0].totalOpenIssues;
                     const contributor = getStableRiskContributorKey(s);
 
@@ -640,7 +655,7 @@ export default function ProjectRiskProfileOverview() {
                                 </LineChart>
                               </ResponsiveContainer>
                             </div>
-                            <span className={styles.deltaText}>{costDelta.toFixed(2)}</span>
+                            <span className={styles.deltaText}>{formatDelta(costDelta)}</span>
                           </div>
                         </td>
                         <td className={styles.td}>
@@ -659,7 +674,7 @@ export default function ProjectRiskProfileOverview() {
                                 </LineChart>
                               </ResponsiveContainer>
                             </div>
-                            <span className={styles.deltaText}>{delayDelta.toFixed(2)}</span>
+                            <span className={styles.deltaText}>{formatDelta(delayDelta)}</span>
                           </div>
                         </td>
                         <td className={styles.td}>
