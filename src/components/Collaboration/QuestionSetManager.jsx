@@ -14,7 +14,14 @@ import {
   findDuplicateQuestions,
 } from './jobFormQuestionUtils';
 
-function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode = false }) {
+function QuestionSetManager({
+  formFields,
+  setFormFields,
+  onImportQuestions,
+  onRestoreOriginal,
+  canRestoreOriginal,
+  darkMode = false,
+}) {
   const { auth } = useSelector(state => state);
   const getRequestor = () => buildJobFormRequestor(auth?.user);
 
@@ -339,6 +346,15 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
     setFormFields([]);
   };
 
+  const handleRestoreOriginal = () => {
+    if (!canRestoreOriginal) return;
+
+    const confirmed = window.confirm(
+      'Restore the original saved questions? Unsaved question changes will be discarded.',
+    );
+    if (confirmed) onRestoreOriginal();
+  };
+
   const handleSaveEditedQuestion = editedQuestion => {
     if (editingIndex !== null) {
       const isRequired = Boolean(editedQuestion.required || editedQuestion.isRequired);
@@ -434,7 +450,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 onClick={() => {
                   if (formFields.length > 0) {
                     const confirmClear = window.confirm(
-                      'Are you sure you want to clear all the fields in this template? This action cannot be undone.',
+                      'Clear all questions from the active form? You can use Restore Original to reload the saved questions.',
                     );
                     if (confirmClear) {
                       handleClearTemplate();
@@ -452,7 +468,24 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 target="clear-template-button"
                 trigger="hover focus"
               >
-                Remove all fields and reset the template to a clean state
+                Clear all questions from the active form. This does not restore the saved questions.
+              </UncontrolledTooltip>
+              <button
+                id="restore-original-button"
+                type="button"
+                onClick={handleRestoreOriginal}
+                className={styles.restoreOriginalButton}
+                disabled={isLoading || !canRestoreOriginal}
+              >
+                Restore Original
+              </button>
+              <UncontrolledTooltip
+                autohide={false}
+                placement="top"
+                target="restore-original-button"
+                trigger="hover focus"
+              >
+                Discard unsaved question changes and restore the last saved questions for this form.
               </UncontrolledTooltip>
               <button
                 id="append-template-button"
@@ -520,6 +553,8 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
+  onRestoreOriginal: PropTypes.func.isRequired,
+  canRestoreOriginal: PropTypes.bool.isRequired,
   darkMode: PropTypes.bool,
 };
 

@@ -269,6 +269,10 @@ function JobFormBuilder() {
     setFormFields(normalizeLoadedQuestions(questions));
   };
 
+  const restoreOriginalQuestions = () => {
+    setFormFields(structuredClone(initialFormFields));
+  };
+
   const handleAddOption = () => {
     if (newOption.trim() === '') {
       alert('Option cannot be empty!');
@@ -413,12 +417,13 @@ function JobFormBuilder() {
             <QuestionSetManager
               formFields={formFields}
               setFormFields={setFormFields}
-              onImportQuestions={fields => {
-                importQuestions(fields);
-                markAsSaved(fields);
-              }}
+              onImportQuestions={importQuestions}
+              onRestoreOriginal={restoreOriginalQuestions}
+              canRestoreOriginal={
+                currentFormId !== null &&
+                JSON.stringify(formFields) !== JSON.stringify(initialFormFields)
+              }
               onTemplateSaved={() => {
-                markAsSaved(formFields);
                 resetBuilderState();
               }}
               darkMode={darkMode}
