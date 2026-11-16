@@ -179,6 +179,13 @@
   accent-color: var(--jfb-lime);
 }
 
+.questionEditModal.darkMode .formGroup input::placeholder,
+.questionEditModal.darkMode .formGroup textarea::placeholder,
+.questionEditModal.darkMode .optionRow input::placeholder {
+  color: #b0bec5;
+  opacity: 1;
+}
+
 .questionEditModal.darkMode .optionsGroup {
   background-color: #333;
   border-color: #555;

@@ -52,3 +52,10 @@ describe('hasUnsavedJobFormChanges', () => {
     expect(hasUnsavedJobFormChanges(getState({ templateName: 'Engineering form' }))).toBe(true);
   });
 });
+
+it('tracks an option draft before it is added', () => {
+  expect(hasUnsavedJobFormChanges(getState({ newOption: 'Draft option' }))).toBe(true);
+});
+it('tracks an unsaved edit modal', () => {
+  expect(hasUnsavedJobFormChanges(getState({ hasModalChanges: true }))).toBe(true);
+});
