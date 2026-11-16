@@ -139,9 +139,10 @@ export const splitJoinedLinks = value => {
   const pieces = String(value)
     .split(PROTOCOL_AHEAD)
     .reduce((parts, piece) => {
-      const previous = parts[parts.length - 1];
-      if (previous !== undefined && !isSeparator(previous[previous.length - 1])) {
-        parts[parts.length - 1] = previous + piece;
+      const previous = parts.at(-1);
+      if (previous !== undefined && !isSeparator(previous.at(-1))) {
+        parts.pop();
+        parts.push(previous + piece);
       } else {
         parts.push(piece);
       }
