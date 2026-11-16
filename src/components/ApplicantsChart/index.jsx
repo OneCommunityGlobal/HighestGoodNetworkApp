@@ -195,8 +195,8 @@ function ApplicantsDashboard() {
   // Extract date picker props
   const getDatePickerProps = () => ({
     dateFormat: 'yyyy/MM/dd',
-    className: darkMode ? 'hgn-datepicker-dark' : '',
-    calendarClassName: darkMode ? 'hgn-datepicker-dark-calendar' : '',
+    className: darkMode ? styles.hgnDatepickerDark : '',
+    calendarClassName: darkMode ? styles.hgnDatepickerDarkCalendar : '',
     wrapperClassName: darkMode ? styles.datePickerWrapper : '',
     style: getDatePickerStyles(),
   });
@@ -257,7 +257,9 @@ function ApplicantsDashboard() {
 
   return (
     <div
-      className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
+      className={`${styles.chartWrapper} ${
+        darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'
+      }`}
       style={{
         padding: 'clamp(10px, 2vw, 20px)',
         paddingBottom: 'clamp(10px, 1.5vw, 15px)',

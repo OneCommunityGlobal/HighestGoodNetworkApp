@@ -1,5 +1,6 @@
 /* stylelint-disable  */
-* {
+.container,
+.container * {
   min-width: 0;
 }
 

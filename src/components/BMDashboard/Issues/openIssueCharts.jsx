@@ -348,7 +348,7 @@ function IssueCharts() {
                 placeholderText="Start Date"
                 isClearable
                 className={filterSelectClass}
-                calendarClassName={darkMode ? 'darkCalendar' : 'lightCalendar'}
+                calendarClassName={darkMode ? styles.darkCalendar : styles.lightCalendar}
               />
             </div>
             <span className={styles.dateRangeSeparator}>to</span>
@@ -367,7 +367,7 @@ function IssueCharts() {
                 placeholderText="End Date"
                 isClearable
                 className={filterSelectClass}
-                calendarClassName={darkMode ? 'darkCalendar' : 'lightCalendar'}
+                calendarClassName={darkMode ? styles.darkCalendar : styles.lightCalendar}
               />
             </div>
           </div>

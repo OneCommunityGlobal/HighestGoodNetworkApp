@@ -2,12 +2,12 @@
 
 /* Announcements.module.css */
 
-:global(h2),
-:global(h3) {
+.announcementsPage :global(h2),
+.announcementsPage :global(h3) {
   color: #4285f4;
 }
 
-:global(label) {
+.announcementsPage :global(label) {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
@@ -23,14 +23,16 @@
 }
 
 .inputTextForAnnouncement,
-:global(textarea) {
+.announcementsPage :global(textarea) {
   margin-top: 5px; /* Space above input fields */
   width: 100%;
   padding: 12px;
+
   /* Increased padding */
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+
   /* Ensures padding is included in width */
 }
 
@@ -44,10 +46,12 @@ button.sendButton {
   border: none;
   border-radius: 4px;
   padding: 12px 24px;
+
   /* Increased padding */
   cursor: pointer;
   margin-top: 20px;
   box-sizing: border-box;
+
   /* Ensures padding is included in width */
 }
 
@@ -55,7 +59,7 @@ button.sendButton:hover {
   background-color: #357ae8;
 }
 
-:global(.ck-editor__editable) {
+.announcementsPage :global(.ck-editor__editable) {
   min-height: 500px;
 }
 
@@ -107,6 +111,7 @@ button.sendButton:hover {
 .emails {
   margin-top: 65px;
   padding: 24px;
+
   /* Increased padding */
   border: solid 1px #cacaca;
   border-radius: 20px;
@@ -170,8 +175,10 @@ button.sendButton:hover {
     width: 100%;
     margin-top: 20px;
     padding: 20px 12px;
+
     /* Adjust padding for smaller screens */
     box-sizing: border-box;
+
     /* Ensures padding is included in width */
   }
   
@@ -179,26 +186,30 @@ button.sendButton:hover {
     width: 100%;
     margin-bottom: 10px;
     padding: 12px;
+
     /* Ensures padding is consistent */
     box-sizing: border-box;
+
     /* Ensures padding is included in width */
   }
   
   .inputTextForAnnouncement,
-  :global(textarea) {
+  .announcementsPage :global(textarea) {
     width: 100%;
     padding: 12px;
+
     /* Ensures padding is consistent */
     box-sizing: border-box;
+
     /* Ensures padding is included in width */
   }
 }
 
-:global(summary) {
+.announcementsPage :global(summary) {
   list-style: none;
 }
 
-:global(summary::-webkit-details-marker) {
+.announcementsPage :global(summary::-webkit-details-marker) {
   display: none;
 }
 
@@ -545,27 +556,29 @@ button.sendButton:hover {
   box-shadow: -2px 0 6px rgb(0 0 0 / 12%), 2px 0 6px rgb(0 0 0 / 12%),
     0 6px 6px rgb(0 0 0 / 20%);
 }
+
 /* Dark mode background fix for entire announcements area */
-.dark-mode {
+:global(.dark-mode) .announcementsPage {
   background-color: #1a1d23 !important;
 }
 
-.dark-mode .bg-oxford-blue,
-.dark-mode .text-light {
+.announcementsPage:global(.bg-oxford-blue),
+.announcementsPage:global(.text-light) {
   background-color: #1a1d23 !important;
 }
 
 /* Remove any white backgrounds in dark mode */
-.dark-mode > div,
-.dark-mode .container-fluid,
-.dark-mode .tab-content {
+:global(.dark-mode) .announcementsPage > div,
+:global(.dark-mode) .announcementsPage :global(.container-fluid),
+:global(.dark-mode) .announcementsPage :global(.tab-content) {
   background-color: #1a1d23 !important;
 }
+
 /* CRITICAL: Remove white padding in dark mode */
-.dark-mode,
-.dark-mode > div,
-.dark-mode .container,
-.dark-mode .container-fluid {
+:global(.dark-mode) .announcementsPage,
+:global(.dark-mode) .announcementsPage > div,
+:global(.dark-mode) .announcementsPage :global(.container),
+:global(.dark-mode) .announcementsPage :global(.container-fluid) {
   background-color: #1a1d23 !important;
   padding-left: 0 !important;
   padding-right: 0 !important;

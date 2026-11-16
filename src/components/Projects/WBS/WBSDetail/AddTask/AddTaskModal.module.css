@@ -48,10 +48,16 @@
   cursor: not-allowed;
 }
 
-:global(.dark-mode) :global(.add_new_task_form-label),
-:global(.dark-mode) :global(.add_new_task_form-input_area),
-:global(.dark-mode) :global(.warning) {
-  color: var(--text-light); 
+:global(.dark-mode) .add_new_task_form-label,
+:global(.dark-mode) .add_new_task_form-input_area,
+:global(.dark-mode) .warning {
+  color: var(--text-light);
+}
+
+:global(.dark-mode) .controlBtn {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #fff !important;
 }
 
 .confirmContentDark {

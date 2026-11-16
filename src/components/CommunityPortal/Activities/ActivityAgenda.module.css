@@ -1,5 +1,6 @@
 /* stylelint-disable no-descending-specificity */
-* {
+.activityAgendaPage,
+.activityAgendaPage * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;

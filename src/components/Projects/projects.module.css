@@ -1,4 +1,5 @@
 /* stylelint-disable  */
+.projectsTable :global(thead),
 .projectsTableHead {
   background: aliceblue;
 }
@@ -109,13 +110,13 @@
   padding-left: 20px;
 }
 
-:global(.search-project-person) {
+.searchProjectPerson {
   position: relative;
   flex: 1 1 280px;
   min-width: 0;
 }
 
-:global(.suggestions-list) {
+.suggestionsList {
   position: absolute;
   background-color: white;
   border: 1px solid #ccc;
@@ -124,29 +125,6 @@
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-:global(.suggestion-item) {
-  padding: 8px;
-  cursor: pointer;
-}
-
-:global(.suggestion-item:hover) {
-  background-color: #f0f0f0;
-}
-
-:global(.suggestion-button) {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  text-align: left;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-:global(.suggestion-button:hover) {
-  background-color: #f0f0f0;
 }
 
 @media (width <= 375px) {
@@ -230,16 +208,16 @@
   margin-top: 0;
 }
 
-.suggestion-item {
+.suggestionItem {
   padding: 8px;
   cursor: pointer;
 }
 
-.suggestion-item:hover {
+.suggestionItem:hover {
   background-color: #f0f0f0;
 }
 
-.suggestion-button {
+.suggestionButton {
   display: block;
   width: 100%;
   padding: 10px;
@@ -249,7 +227,7 @@
   cursor: pointer;
 }
 
-.suggestion-button:hover {
+.suggestionButton:hover {
   background-color: #f0f0f0;
 }
 

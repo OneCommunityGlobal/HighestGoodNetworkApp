@@ -47,7 +47,7 @@ import {
 } from '../../../../actions/emailTemplateActions';
 import '../../EmailManagementShared.module.css';
 import { getTemplateEditorConfig } from '../../shared';
-import './EmailTemplateEditor.module.css';
+import styles from './EmailTemplateEditor.module.css';
 
 const EmailTemplateEditor = ({
   template,
@@ -621,8 +621,8 @@ const EmailTemplateEditor = ({
 
   if (initialLoading && templateId) {
     return (
-      <div className="email-template-editor">
-        <div className="loading-state">
+      <div className={styles['email-template-editor']}>
+        <div className={styles['loading-state']}>
           <FaSpinner className="fa-spin me-2" />
           <div>Loading template...</div>
         </div>
@@ -632,8 +632,8 @@ const EmailTemplateEditor = ({
 
   if (apiError && templateId) {
     return (
-      <div className="email-template-editor">
-        <div className="error-state">
+      <div className={styles['email-template-editor']}>
+        <div className={styles['error-state']}>
           <div className="text-center">
             <h5 className="text-danger">Error Loading Template</h5>
             <p className="text-muted mb-3">{apiError}</p>
@@ -644,7 +644,7 @@ const EmailTemplateEditor = ({
               color="primary"
               onClick={handleManualRetry}
               disabled={isRetrying}
-              className="retry-button"
+              className={styles['retry-button']}
               size="sm"
             >
               {isRetrying ? (
@@ -666,10 +666,10 @@ const EmailTemplateEditor = ({
   }
 
   return (
-    <div className="email-template-editor">
+    <div className={styles['email-template-editor']}>
       {/* COMPACT HEADER - Template Name + Action Buttons */}
       <div
-        className="editor-header"
+        className={styles['editor-header']}
         style={{
           background: 'transparent',
           padding: '1rem 0',
@@ -678,7 +678,7 @@ const EmailTemplateEditor = ({
         }}
       >
         <div
-          className="header-container"
+          className={styles['header-container']}
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -689,7 +689,7 @@ const EmailTemplateEditor = ({
         >
           {/* Template Name Field - LEFT SIDE */}
           <div
-            className="template-name-field"
+            className={styles['template-name-field']}
             style={{
               flex: 1,
               minWidth: '300px',
@@ -726,7 +726,7 @@ const EmailTemplateEditor = ({
 
           {/* Unsaved changes indicator and Action buttons - RIGHT SIDE */}
           <div
-            className="action-buttons-container"
+            className={styles['action-buttons-container']}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -738,7 +738,7 @@ const EmailTemplateEditor = ({
             {/* Unsaved changes indicator */}
             {hasUnsavedChanges && (
               <div
-                className="unsaved-changes-indicator"
+                className={styles['unsaved-changes-indicator']}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -903,9 +903,9 @@ const EmailTemplateEditor = ({
       )}
 
       {/* Main Content */}
-      <div className="template-editor-content">
+      <div className={styles['template-editor-content']}>
         {/* Subject Section */}
-        <div className="basic-info-section">
+        <div className={styles['basic-info-section']}>
           <FormGroup>
             <Label
               htmlFor="template-subject"
@@ -948,7 +948,7 @@ const EmailTemplateEditor = ({
 
         {/* Variables Section - STYLED WITH CHIPS */}
         <div
-          className="variables-section"
+          className={styles['variables-section']}
           style={{
             marginBottom: '1.5rem',
             padding: '1.25rem',
@@ -957,7 +957,7 @@ const EmailTemplateEditor = ({
             border: darkMode ? '1px solid #2d3748' : '1px solid #e9ecef',
           }}
         >
-          <div className="variables-header">
+          <div className={styles['variables-header']}>
             <div className="d-flex justify-content-between align-items-center">
               <h5
                 className="mb-0"
@@ -996,7 +996,7 @@ const EmailTemplateEditor = ({
                   onClick={handleAutoPopulateVariables}
                   disabled={!formData.html_content.trim()}
                   title="Extract variables from HTML content and subject"
-                  className="btn-auto-extract"
+                  className={styles['btn-auto-extract']}
                   size="sm"
                   style={{
                     fontWeight: 500,
@@ -1014,7 +1014,7 @@ const EmailTemplateEditor = ({
           </div>
 
           {formData.variables.length === 0 ? (
-            <div className="empty-variables-state" style={{ padding: '1rem' }}>
+            <div className={styles['empty-variables-state']} style={{ padding: '1rem' }}>
               <div
                 className="text-center border rounded p-4"
                 style={{
@@ -1042,7 +1042,7 @@ const EmailTemplateEditor = ({
             </div>
           ) : (
             <div
-              className="variables-chips"
+              className={styles['variables-chips']}
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -1056,7 +1056,7 @@ const EmailTemplateEditor = ({
               {formData.variables.map((variable, index) => (
                 <div
                   key={index}
-                  className="variable-chip"
+                  className={styles['variable-chip']}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -1083,7 +1083,7 @@ const EmailTemplateEditor = ({
                   }}
                 >
                   <code
-                    className="variable-code"
+                    className={styles['variable-code']}
                     style={{
                       fontFamily: "'Courier New', monospace",
                       background: darkMode ? '#4a5568' : '#e9ecef',
@@ -1099,7 +1099,7 @@ const EmailTemplateEditor = ({
                   </code>
                   <Badge
                     color="secondary"
-                    className="variable-type-badge"
+                    className={styles['variable-type-badge']}
                     size="sm"
                     style={{
                       fontSize: '0.7rem',
@@ -1123,7 +1123,7 @@ const EmailTemplateEditor = ({
                     size="sm"
                     onClick={() => handleEditVariable(index)}
                     title="Edit Variable"
-                    className="chip-action-btn"
+                    className={styles['chip-action-btn']}
                     style={{
                       padding: '0.25rem 0.4rem',
                       fontSize: '0.75rem',
@@ -1145,7 +1145,7 @@ const EmailTemplateEditor = ({
                     size="sm"
                     onClick={() => handleDeleteVariable(index)}
                     title="Delete Variable"
-                    className="chip-action-btn"
+                    className={styles['chip-action-btn']}
                     style={{
                       padding: '0.25rem 0.4rem',
                       fontSize: '0.75rem',
@@ -1169,8 +1169,8 @@ const EmailTemplateEditor = ({
         </div>
 
         {/* HTML Content Section */}
-        <div className="content-section">
-          <FormGroup className="editor-container">
+        <div className={styles['content-section']}>
+          <FormGroup className={styles['editor-container']}>
             <Label
               style={{
                 fontWeight: 600,
@@ -1269,6 +1269,7 @@ const EmailTemplateEditor = ({
           setVariableError('');
         }}
         centered
+        contentClassName={styles.templateEditorModal}
       >
         <ModalHeader
           toggle={() => {
@@ -1277,10 +1278,11 @@ const EmailTemplateEditor = ({
             setNewVariable({ name: '', type: 'text' });
             setVariableError('');
           }}
+          className={styles.templateEditorModalHeader}
         >
           {editingVariableIndex !== null ? 'Edit Variable' : 'Add New Variable'}
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={styles.templateEditorModalBody}>
           {variableError && <Alert color="danger">{variableError}</Alert>}
           <FormGroup>
             <Label for="variableName">Variable Name (e.g., firstName)</Label>
@@ -1311,7 +1313,7 @@ const EmailTemplateEditor = ({
             </Input>
           </FormGroup>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={styles.templateEditorModalFooter}>
           <Button
             size="sm"
             color="secondary"
@@ -1331,9 +1333,20 @@ const EmailTemplateEditor = ({
       </Modal>
 
       {/* Type Selection Modal */}
-      <Modal isOpen={showTypeSelectionModal} toggle={handleCancelTypeSelection} centered size="lg">
-        <ModalHeader toggle={handleCancelTypeSelection}>Select Variable Types</ModalHeader>
-        <ModalBody>
+      <Modal
+        isOpen={showTypeSelectionModal}
+        toggle={handleCancelTypeSelection}
+        centered
+        size="lg"
+        contentClassName={styles.templateEditorModal}
+      >
+        <ModalHeader
+          toggle={handleCancelTypeSelection}
+          className={styles.templateEditorModalHeader}
+        >
+          Select Variable Types
+        </ModalHeader>
+        <ModalBody className={styles.templateEditorModalBody}>
           <p>Please select a type for each new variable:</p>
           <div
             style={{
@@ -1372,7 +1385,7 @@ const EmailTemplateEditor = ({
             </ListGroup>
           </div>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={styles.templateEditorModalFooter}>
           <Button size="sm" color="secondary" onClick={handleCancelTypeSelection}>
             Cancel
           </Button>
