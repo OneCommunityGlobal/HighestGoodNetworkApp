@@ -1,7 +1,18 @@
 export const MAX_REVIEW_LINKS = 10;
 
-const SECOND_LINK_PATTERN = /[;,\s]+https?:\/\//i;
-const JOINED_LINKS_SPLITTER = /[;,\s]+(?=https?:\/\/)/i;
+// Only a lookahead, so splitting stays linear (no backtracking on long input)
+const PROTOCOL_AHEAD = /(?=https?:\/\/)/i;
+const SEPARATORS = new Set([';', ',', ' ', '\t', '\n', '\r']);
+
+const isSeparator = char => SEPARATORS.has(char);
+
+const trimSeparators = value => {
+  let start = 0;
+  let end = value.length;
+  while (start < end && isSeparator(value[start])) start += 1;
+  while (end > start && isSeparator(value[end - 1])) end -= 1;
+  return value.slice(start, end);
+};
 
 export const ACCEPTED_LINKS_HINT =
   'GitHub pull request, Google Doc, Dropbox shared link, Figma design or One Community page.';
@@ -12,35 +23,32 @@ export const ACCEPTED_LINKS_HINT =
  * getLinkError rejects that case.
  */
 export const validURL = url => {
+  if (typeof url !== 'string' || url.trim() === '') return false;
+  if (url.length < 20) return false;
+
+  // Split validation into parts to avoid nested quantifiers
+  const protocolPattern = /^https?:\/\//;
+  const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+  const pathPattern = /^[/\w\-.~:?#[\]@!$&'()*+,;=%]*$/;
+
+  const urlToTest = url.startsWith('http') ? url : `https://${url}`;
+  if (!protocolPattern.test(urlToTest)) return false;
+
+  const urlWithoutProtocol = urlToTest.replace(protocolPattern, '');
+  const slashIndex = urlWithoutProtocol.indexOf('/');
+  const domain =
+    slashIndex === -1 ? urlWithoutProtocol : urlWithoutProtocol.substring(0, slashIndex);
+  const path = slashIndex === -1 ? '' : urlWithoutProtocol.substring(slashIndex);
+
+  if (!domainPattern.test(domain)) return false;
+  if (path && !pathPattern.test(path)) return false;
+
   try {
-    if (!url || url.trim() === '') return false;
-    if (url.length < 20) return false;
-
-    // Split validation into parts to avoid nested quantifiers
-    const protocolPattern = /^https?:\/\//;
-    const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
-    const pathPattern = /^[/\w\-._~:?#[\]@!$&'()*+,;=%]*$/;
-
-    const urlToTest = url.startsWith('http') ? url : `https://${url}`;
-    if (!protocolPattern.test(urlToTest)) return false;
-
-    const urlWithoutProtocol = urlToTest.replace(protocolPattern, '');
-    const slashIndex = urlWithoutProtocol.indexOf('/');
-    const domain =
-      slashIndex === -1 ? urlWithoutProtocol : urlWithoutProtocol.substring(0, slashIndex);
-    const path = slashIndex === -1 ? '' : urlWithoutProtocol.substring(slashIndex);
-
-    if (!domainPattern.test(domain)) return false;
-    if (path && !pathPattern.test(path)) return false;
-
-    try {
-      // eslint-disable-next-line no-new
-      new URL(urlToTest);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  } catch (err) {
+    // eslint-disable-next-line no-new
+    new URL(urlToTest);
+    return true;
+  } catch {
+    // The URL constructor throws for anything it cannot parse, which simply means "not valid"
     return false;
   }
 };
@@ -107,7 +115,7 @@ export const validateAllowedDomainTypes = url => {
 export const getLinkError = value => {
   const url = (value || '').trim();
   if (!url) return 'Enter a link.';
-  if (SECOND_LINK_PATTERN.test(url)) {
+  if (splitJoinedLinks(url).length > 1) {
     return 'Put one link in each row. Use "Add another link" for more.';
   }
   if (!/^https?:\/\//i.test(url) || !validURL(url)) {
@@ -126,10 +134,20 @@ export const getLinkError = value => {
  */
 export const splitJoinedLinks = value => {
   if (!value) return [];
-  return String(value)
-    .split(JOINED_LINKS_SPLITTER)
-    .map(part => part.trim())
-    .filter(Boolean);
+  // Cut before every "http(s)://", then glue back pieces that did not follow a separator,
+  // so a link that carries another URL inside its query string stays whole
+  const pieces = String(value)
+    .split(PROTOCOL_AHEAD)
+    .reduce((parts, piece) => {
+      const previous = parts[parts.length - 1];
+      if (previous !== undefined && !isSeparator(previous[previous.length - 1])) {
+        parts[parts.length - 1] = previous + piece;
+      } else {
+        parts.push(piece);
+      }
+      return parts;
+    }, []);
+  return pieces.map(trimSeparators).filter(Boolean);
 };
 
 /**

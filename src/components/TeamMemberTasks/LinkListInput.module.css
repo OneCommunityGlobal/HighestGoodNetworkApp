@@ -64,9 +64,11 @@
   min-width: 0;
 }
 
-/* The global dark-mode rule forces all text white, so validation text needs to win over it */
+/* public/index.css forces `body.dark-mode * { color: #fff !important }`. text-fill-color paints
+   the glyphs and is not touched by that rule, so the error keeps its red in dark mode too. */
 .group .error {
-  color: var(--link-error) !important;
+  color: var(--link-error);
+  -webkit-text-fill-color: var(--link-error);
   font-size: 0.875rem;
   margin: 0.25rem 0 0;
 }

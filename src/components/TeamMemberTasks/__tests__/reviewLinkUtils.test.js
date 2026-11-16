@@ -93,3 +93,23 @@ describe('linkLabel', () => {
     expect(linkLabel('https://example.com')).toBe('link');
   });
 });
+
+describe('splitJoinedLinks edge cases', () => {
+  it('keeps a link whole when another URL sits inside its query string', () => {
+    const link = 'https://docs.google.com/document/d/abc/edit?redirect=https://example.org/x';
+    expect(splitJoinedLinks(link)).toEqual([link]);
+  });
+
+  it('splits links joined by a semicolon with no spaces', () => {
+    expect(
+      splitJoinedLinks('https://github.com/a/b/pull/1;https://github.com/a/b/pull/2'),
+    ).toEqual(['https://github.com/a/b/pull/1', 'https://github.com/a/b/pull/2']);
+  });
+
+  it('stays fast on long runs of separators', () => {
+    const input = `${';'.repeat(50000)}x`;
+    const start = Date.now();
+    expect(splitJoinedLinks(input)).toEqual(['x']);
+    expect(Date.now() - start).toBeLessThan(500);
+  });
+});
