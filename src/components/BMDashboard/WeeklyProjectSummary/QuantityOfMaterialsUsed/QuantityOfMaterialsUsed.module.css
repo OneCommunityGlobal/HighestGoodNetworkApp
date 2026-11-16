@@ -255,33 +255,6 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   color: var(--text-color) !important;
 }
 
-.quantityOfMaterialsUsedCustomLegendContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 3px;
-  font-size: 8px;
-  color: var(--text-secondary, #555);
-  width: 100%;
-  text-align: center;
-  column-gap: 2px;
-}
-
-.quantityOfMaterialsUsedLegendItem {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  margin: 0 3px;
-}
-
-.quantityOfMaterialsUsedLegendDot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
 .quantityOfMaterialsUsedChartInfoButton {
   position: absolute;
   top: 0;
