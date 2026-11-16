@@ -7,10 +7,9 @@ function JobFormStandardFieldsSection({ fixedFields, visibleStandardFields, onFi
   return (
     <div className={styles.standardApplicantSection}>
       <p className={styles.standardApplicantNote}>
-        Default profile sections are stored on the job form (<code>fixedFields</code>). Toggle which
-        sections applicants see, then Save Form. Custom questions below come from{' '}
-        <code>questions</code>. The &quot;I agree to terms and conditions&quot; checkbox on
-        /job-application is frontend-only (not saved to the backend or this form).
+        These sections appear on the application form for this job. Turn a section off if applicants
+        should not see it. Custom questions are listed below. The Terms &amp; Conditions checkbox on
+        Apply is always shown and is not stored on this form.
       </p>
       <div className={styles.fixedFieldsToggles}>
         {FIXED_FIELD_GROUP_OPTIONS.map(group => {

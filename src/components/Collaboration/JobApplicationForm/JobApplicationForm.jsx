@@ -21,7 +21,6 @@ import JobApplicationProfileFields from './JobApplicationProfileFields';
 import {
   getApplicantVisibleQuestions,
   getQuestionLabelText,
-  isResumeQuestion,
   normalizeFixedFields,
 } from '../jobFormQuestionUtils';
 import { checkEmail } from '../../../utils/emailValidation';
@@ -508,13 +507,6 @@ function getQuestionType(q) {
   return String(q.questionType || q.type || '').toLowerCase();
 }
 
-function formRequiresResumeUpload(form) {
-  if (!form?.questions) return false;
-  return form.questions.some(
-    q => q.visible !== false && isResumeQuestion(q) && isQuestionRequired(q),
-  );
-}
-
 function formatFileSize(bytes) {
   if (bytes == null || bytes === 0) return '';
   if (bytes < 1024) return `${bytes} B`;
@@ -726,6 +718,31 @@ function collectQuestionFieldErrors({ visibleQuestions, answers, questionFiles }
     }
   }
   return errors;
+}
+
+/**
+ * Flat missing-field list used by resume-requirement tests (#5660).
+ * Resume is mandatory for every role, independent of template questions.
+ */
+export function collectMissingRequiredFields({
+  profileErrors,
+  visibleQuestions,
+  answers,
+  questionFiles,
+  resumeFile,
+}) {
+  const missing = Object.values(profileErrors || {});
+  if (!resumeFile) missing.push('Resume');
+  for (const [idx, q] of visibleQuestions.entries()) {
+    const label = getQuestionLabel(q, idx);
+    const requiredLabel = missingRequiredQuestionLabel(q, idx, answers, questionFiles);
+    if (requiredLabel) missing.push(requiredLabel);
+    if (isHoursPerWeekQuestion(label)) {
+      const hoursError = validateHoursPerWeekAnswer(label, answers[idx]);
+      if (hoursError) missing.push(hoursError);
+    }
+  }
+  return missing;
 }
 
 function hasAnyValidationErrors({ profileErrors, questionErrors, resumeError }) {
@@ -1099,12 +1116,13 @@ function JobApplicationForm() {
   }, []);
 
   const visibleQuestions = useMemo(() => getVisibleQuestionsForForm(filteredForm), [filteredForm]);
-  const resumeRequired = useMemo(() => formRequiresResumeUpload(filteredForm), [filteredForm]);
   const profileFixedFields = useMemo(() => normalizeFixedFields(filteredForm?.fixedFields), [
     filteredForm,
   ]);
   const showPersonalInfo = profileFixedFields.includePersonalInfo;
   const showBasicInfo = profileFixedFields.includeBasicInfo;
+  // #5660: resume is mandatory whenever the basic-info section is shown.
+  const resumeRequired = showBasicInfo;
 
   const applyQuestionnairePreFill = data => {
     if (!data) return;
@@ -1537,7 +1555,7 @@ function JobApplicationForm() {
       questionFiles,
     });
 
-    const resumeError = showBasicInfo && resumeRequired && !resumeFile ? 'Resume is required.' : '';
+    const resumeError = resumeRequired && !resumeFile ? 'Resume is required.' : '';
 
     return { profileErrors, questionErrors, resumeError };
   };

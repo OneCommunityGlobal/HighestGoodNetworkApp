@@ -71,6 +71,8 @@ function JobFormDialog({
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- native <dialog> backdrop dismiss
     <dialog
       ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
       className={`${styles.dialog} ${darkMode ? styles.darkMode : ''}`}
       aria-labelledby={titleId}
       onCancel={event => {

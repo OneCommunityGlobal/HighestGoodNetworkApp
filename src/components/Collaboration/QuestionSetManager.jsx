@@ -1,12 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import { UncontrolledTooltip } from 'reactstrap';
+import { ENDPOINTS } from '../../utils/URL';
 import styles from './QuestionSetManager.module.css';
 import { findDuplicateQuestions, normalizeLoadedQuestions } from './jobFormQuestionUtils';
+import questionnaireLabel from './jobFormSelectionLabels';
+
+const titleKey = title =>
+  String(title || '')
+    .trim()
+    .toLowerCase();
 
 /**
- * Loads live job application forms (Collaboration /job-application questions)
- * into the builder. This is intentionally wired to job forms, not /api/templates.
+ * Loads live job application forms into the builder (same forms applicants see on Apply).
  */
 function QuestionSetManager({
   jobForms = [],
@@ -30,6 +37,14 @@ function QuestionSetManager({
   const selectedForm =
     jobForms.find(form => String(form._id || form.id) === String(selectedId)) || null;
 
+  const formOptionLabel = useMemo(() => {
+    return form => {
+      const matches = jobForms.filter(other => titleKey(other.title) === titleKey(form.title));
+      if (matches.length <= 1) return form.title || 'Untitled form';
+      return `${form.title} (${questionnaireLabel(form, matches)})`;
+    };
+  }, [jobForms]);
+
   const loadSelectedForm = async ({ append = false } = {}) => {
     if (!selectedForm) {
       await showAlert?.('Please select a job form to load.', {
@@ -40,7 +55,7 @@ function QuestionSetManager({
 
     if (!append && formFields.length > 0) {
       const confirmLoad = await showConfirm?.(
-        `Load questions for "${selectedForm.title}"? This will replace the questions currently on screen.`,
+        `Load questions for "${formOptionLabel(selectedForm)}"? This will replace the questions currently on screen.`,
         { title: 'Load job form', confirmLabel: 'Load form' },
       );
       if (!confirmLoad) return;
@@ -48,7 +63,14 @@ function QuestionSetManager({
 
     setIsLoading(true);
     try {
-      const incoming = normalizeLoadedQuestions(selectedForm.questions || []);
+      const formId = String(selectedForm._id || selectedForm.id);
+      const response = await axios.get(ENDPOINTS.GET_JOB_FORM(formId));
+      const freshForm = response.data?.form;
+      if (!freshForm || !Array.isArray(freshForm.questions)) {
+        throw new Error('The saved questionnaire could not be loaded.');
+      }
+
+      const incoming = normalizeLoadedQuestions(freshForm.questions || []);
 
       if (append) {
         const duplicates = findDuplicateQuestions(incoming, formFields);
@@ -64,8 +86,14 @@ function QuestionSetManager({
         }
         setFormFields([...formFields, ...questionsToAppend]);
       } else {
-        await onLoadJobForm(selectedForm);
+        await onLoadJobForm(freshForm);
       }
+    } catch (error) {
+      await showAlert?.(
+        error?.message ||
+          `Could not load the questionnaire for "${selectedForm.title}". Please try again.`,
+        { title: 'Load failed' },
+      );
     } finally {
       setIsLoading(false);
     }
@@ -96,9 +124,8 @@ function QuestionSetManager({
     <div className={`${styles.questionSetManager} ${darkMode ? styles.darkMode : ''}`}>
       <h3>Load job form</h3>
       <p className={styles.templateRowLabel}>
-        Choose a Collaboration job title to load its live application questions (same forms used on
-        /job-application). Use Create New Form with the exact job title so applicants can match it.
-        Edit below, then use Save Form. Templates (/api/templates) are not used on apply.
+        Choose a job to load its application questions. Use Create New Form with the exact job title
+        so applicants can find it on Apply. Edit below, then click Save Form.
       </p>
       <div className={styles.templateActions}>
         <div className={styles.templateRow}>
@@ -114,7 +141,7 @@ function QuestionSetManager({
                 const id = String(form._id || form.id);
                 return (
                   <option key={id} value={id}>
-                    {form.title}
+                    {formOptionLabel(form)}
                   </option>
                 );
               })}
@@ -135,8 +162,8 @@ function QuestionSetManager({
                 target="create-job-form-button"
                 trigger="hover focus"
               >
-                Start a new job form. Use the exact Collaboration job title, then Save Form to POST
-                /api/jobforms so it appears on /job-application.
+                Start a new job form. Use the exact Collaboration job title, then Save Form so it
+                appears on Apply.
               </UncontrolledTooltip>
               <button
                 id="load-job-form-button"
@@ -203,6 +230,8 @@ QuestionSetManager.propTypes = {
       _id: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
       title: PropTypes.string,
+      category: PropTypes.string,
+      updatedAt: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
       questions: PropTypes.arrayOf(PropTypes.shape({})),
     }),
   ),

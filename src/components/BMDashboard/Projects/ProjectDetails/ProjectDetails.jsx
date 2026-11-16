@@ -160,7 +160,7 @@ function ProjectDetails() {
                 padding: '10px',
               }}
             >
-              <ProjectLog projectId={projectId} />
+              <ProjectLog projectId={projectId} darkMode={darkMode} />
             </div>
           </div>
         </Col>

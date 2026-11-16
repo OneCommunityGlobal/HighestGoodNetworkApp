@@ -15,6 +15,8 @@ import {
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
   FINISH_USER_INFO_UPDATE,
+  RESET_USER_PROFILE_EDIT,
+  CLEAR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
@@ -209,6 +211,7 @@ export const buildUpdatedUserLifecycleDetails = (user, payload) => {
 };
 
 const buildBackendPayload = (userDetails, action) => {
+  console.log('Building backend payload with:', { userDetails, action });
   switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
@@ -477,6 +480,10 @@ export const updateUserInfomation = value => dispatch => {
   dispatch({ type: START_USER_INFO_UPDATE, payload: value });
 };
 
+export const clearUserInformation = () => dispatch => {
+  dispatch({ type: CLEAR_USER_INFO_UPDATE });
+};
+
 /**
  * Clears the queue of pending user info edits (newUserData) after they have
  * been successfully saved to the backend. Without this, previously-saved
@@ -486,4 +493,8 @@ export const updateUserInfomation = value => dispatch => {
  */
 export const finishUserInfoUpdate = () => dispatch => {
   dispatch({ type: FINISH_USER_INFO_UPDATE });
+};
+
+export const resetUserProfileEdit = () => dispatch => {
+  dispatch({ type: RESET_USER_PROFILE_EDIT });
 };

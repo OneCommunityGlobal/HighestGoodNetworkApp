@@ -256,7 +256,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, fixedFields, 
               {standardFields.length > 0 ? (
                 <div className={styles.previewStandardSection}>
                   <p className={styles.previewStandardNote}>
-                    Default /job-application profile fields (from fixedFields)
+                    Profile sections shown on Apply for this job
                   </p>
                   {standardFields.map(field => (
                     <div key={field.label} className={styles.previewField}>

@@ -210,9 +210,20 @@ function JobFormBuilder() {
     const loadJobForms = async () => {
       try {
         const visibleForms = await refreshJobFormsList();
-        if (visibleForms.length > 0) {
-          applyLoadedJobForm(visibleForms[0], { promptDuplicates: false });
+        if (visibleForms.length === 0) return;
+        const first = visibleForms[0];
+        const formId = first._id || first.id;
+        try {
+          const response = await axios.get(ENDPOINTS.GET_JOB_FORM(formId));
+          const freshForm = response.data?.form;
+          if (freshForm && Array.isArray(freshForm.questions)) {
+            await applyLoadedJobForm(freshForm, { promptDuplicates: false });
+            return;
+          }
+        } catch (fetchError) {
+          console.error('Error fetching first job form by id:', fetchError);
         }
+        await applyLoadedJobForm(first, { promptDuplicates: false });
       } catch (error) {
         console.error('Error loading job forms:', error);
         toast.error('Failed to load job forms. Please refresh and try again.');

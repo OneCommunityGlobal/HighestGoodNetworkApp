@@ -44,9 +44,8 @@ function JobFormBuilderWorkspace({
   return (
     <div className={styles.customForm}>
       <p className={styles.jobformDesc}>
-        Load or create a Collaboration job form. Default profile sections are controlled by this
-        form&apos;s backend <code>fixedFields</code>; custom questions are stored in{' '}
-        <code>questions</code>. Save Form writes to /api/jobforms (not /api/templates).
+        Load or create a job application form. Toggle which profile sections appear on Apply, add
+        custom questions below, then click Save Form.
       </p>
       <QuestionSetManager
         jobForms={jobForms}
