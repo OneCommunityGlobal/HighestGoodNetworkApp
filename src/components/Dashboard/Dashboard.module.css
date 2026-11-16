@@ -1,6 +1,11 @@
-/* stylelint-disable  */
+/* stylelint-disable */
 .tabPane {
   overflow-y: auto;
+}
+
+/* Allow the Leaderboard column to shrink for horizontal table scrolling */
+.leaderboardCol {
+  min-width: 0;
 }
 
 @media screen and (width <= 800px) {
