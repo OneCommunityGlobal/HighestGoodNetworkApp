@@ -90,7 +90,10 @@ function QuantityOfMaterialsUsed({
   const [showModal, setShowModal] = useState(false);
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const comparisonEnabled = comparisonMode !== 'No Comparison';
+  // The chart's own preset periods (e.g. "Last Month vs Before Last Month") always include
+  // the previous period, even when the page-level comparison dropdown is set to No Comparison
+  const comparisonEnabled =
+    comparisonMode !== 'No Comparison' || !['ALL', 'Custom'].includes(selectedDate);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -938,6 +941,9 @@ function QuantityOfMaterialsUsed({
                     },
                   },
                   tooltip: {
+                    // Show both periods (current bar and previous-period dot) for the hovered material
+                    mode: 'index',
+                    intersect: false,
                     bodyColor: '#fff',
                     titleColor: '#fff',
                   },
