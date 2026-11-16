@@ -63,6 +63,8 @@ export const ENDPOINTS = {
   USER_ALL_TEAM_CODE: `${APIEndpoint}/userProfile/teamCode/list`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
+  PROJECTS_COMMITTED_HOURS: `${APIEndpoint}/projects/committed-hours`,
+  TEAMS_COMMITTED_HOURS: `${APIEndpoint}/team/committed-hours`,
   ARCHIVEDPROJECTS: `${APIEndpoint}/archivedProjects`,
   TEAM: `${APIEndpoint}/team`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
@@ -106,6 +108,8 @@ export const ENDPOINTS = {
   TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
+  TIME_ENTRY_SPLIT: () => `${APIEndpoint}/TimeEntry/split`,
+  TIME_ENTRY_SPLIT_RECEIPT: batchId => `${APIEndpoint}/TimeEntry/split/${encodeURIComponent(batchId)}`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   TIMELOG_TRACKING: userId => `${APIEndpoint}/timelogTracking/${userId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
@@ -259,11 +263,9 @@ export const ENDPOINTS = {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     if (groupBy) params.append('groupBy', groupBy);
-
     const queryString = params.toString();
     return queryString ? `${url}?${queryString}` : url;
   },
-
   INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
@@ -393,6 +395,7 @@ export const ENDPOINTS = {
   BM_DELETE_INVENTORTY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
+  BM_MATERIAL_COST_CORRELATION: `${APIEndpoint}/bm/materials/cost-correlation`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -449,6 +452,8 @@ export const ENDPOINTS = {
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
+  BM_RENTAL_COST_OVER_TIME: `${APIEndpoint}/bm/rentals/cost-over-time`,
+  BM_TOOLS_COST_BREAKDOWN: `${APIEndpoint}/bm/tools/cost-breakdown`,
   BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
   BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
 
@@ -765,8 +770,10 @@ export const ENDPOINTS = {
     return `${APIEndpoint}/analytics/review-summary?${params.toString()}`;
   },
   PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
+  PR_GRADING_SYNC_REVIEWERS: `${APIEndpoint}/pr-grading-config/sync-reviewers`,
   WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
+  WEEKLY_GRADING_DELETE_REVIEWER: `${APIEndpoint}/weekly-grading/reviewer`,
 
   PM_EDUCATORS: () => `${APIEndpoint}/pm/educators`,
   PM_EDUCATOR_STUDENTS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/students`,
