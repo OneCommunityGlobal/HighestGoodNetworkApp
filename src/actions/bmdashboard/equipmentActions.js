@@ -97,26 +97,24 @@ export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
     });
 }
 
-export const updateEquipment = (equipmentId, updateData, imageFile = null) => async (dispatch, getState) => {
+// Multipart fields are strings; preserve boolean choices using the API's yes/no values.
+const multipartSelection = value => {
+  if (value === true) return 'yes';
+  if (value === false) return 'no';
+  return value;
+};
+
+const getCurrentUserId = state => {
+  const userId = state?.auth?.user?.userid ||
+    state?.auth?.user?._id || state?.auth?.user?.id || state?.auth?._id || state?.auth?.id;
+  return userId || localStorage.getItem('userId');
+};
+
+export const updateEquipment = (equipmentId, updateData, imageFile = null, options = {}) => async (dispatch, getState) => {
   const url = `${ENDPOINTS.BM_EQUIPMENT_STATUS_UPDATE(equipmentId)}`;
 
   try {
-    const state = getState();
-    let currentUserId = state?.auth?.user?.userid;
-
-    if (!currentUserId) {
-      currentUserId = state?.auth?.user?._id ||
-        state?.auth?.user?.id ||
-        state?.auth?._id ||
-        state?.auth?.id;
-    }
-
-    if (!currentUserId) {
-      const storedUserId = localStorage.getItem('userId');
-      if (storedUserId) {
-        currentUserId = storedUserId;
-      }
-    }
+    const currentUserId = getCurrentUserId(getState());
 
     if (!currentUserId) {
       const errorMsg = 'User not authenticated. Please log in.';
@@ -128,10 +126,11 @@ export const updateEquipment = (equipmentId, updateData, imageFile = null) => as
       condition: updateData.condition,
       lastUsedBy: updateData.lastUsedBy || '',
       lastUsedFor: updateData.lastUsedFor || '',
-      replacementRequired: updateData.replacementRequired || '',
+      replacementRequired: updateData.replacementRequired ?? '',
       description: updateData.description || '',
       notes: updateData.notes || '',
       createdBy: currentUserId,
+      sendNote: updateData.sendNote,
     };
 
     let res;
@@ -141,9 +140,13 @@ export const updateEquipment = (equipmentId, updateData, imageFile = null) => as
       formData.append('createdBy', statusUpdateData.createdBy);
       formData.append('lastUsedBy', statusUpdateData.lastUsedBy);
       formData.append('lastUsedFor', statusUpdateData.lastUsedFor);
-      formData.append('replacementRequired', statusUpdateData.replacementRequired);
+      formData.append('replacementRequired', multipartSelection(statusUpdateData.replacementRequired));
       formData.append('description', statusUpdateData.description);
       formData.append('notes', statusUpdateData.notes);
+      const sendNote = statusUpdateData.sendNote;
+      if (sendNote !== undefined) {
+        formData.append('sendNote', multipartSelection(sendNote));
+      }
       formData.append('image', imageFile);
       // Do NOT set Content-Type — axios sets multipart/form-data with the correct boundary
       res = await axios.put(url, formData);
@@ -151,9 +154,9 @@ export const updateEquipment = (equipmentId, updateData, imageFile = null) => as
       res = await axios.put(url, statusUpdateData);
     }
 
-    dispatch(setEquipment(res.data));
+    if (options.publish !== false) dispatch(setEquipment(res.data));
     toast.success('Equipment status updated successfully!');
-    dispatch(fetchEquipmentById(equipmentId));
+    if (options.refresh !== false) dispatch(fetchEquipmentById(equipmentId));
 
     return res.data;
   } catch (err) {
