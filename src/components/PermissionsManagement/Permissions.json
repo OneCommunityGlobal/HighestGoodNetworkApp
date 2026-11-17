@@ -525,6 +525,11 @@
         "label": "Edit Titles",
         "key": "editTitle",
         "description": "Lets the user change existing Quick Setup Titles with the Edit button on a user's profile. Also needs 'See Weekly Summaries'."
+      },
+      {
+        "label": "Delete Quick Setup Titles",
+        "key": "deleteTitle",
+        "description": "Lets the user delete a Quick Setup Title with 'Delete QSC' in the Assign pop-up on a profile. Also needs 'Assign Title'."
       }
     ]
   },

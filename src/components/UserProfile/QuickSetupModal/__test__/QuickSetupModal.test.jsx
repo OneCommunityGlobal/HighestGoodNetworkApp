@@ -156,4 +156,32 @@ describe('QuickSetupModal Component', () => {
       expect.objectContaining({ teamCode: '17GADCC' }),
     );
   });
+
+  describe('Delete QSC in the Assign pop-up', () => {
+    const openAssignPopUp = async canDeleteTitle => {
+      getAllTitle.mockResolvedValue({
+        data: [{ _id: 't1', titleName: 'Test Title', titleCode: 'TEST' }],
+      });
+      render(
+        <Provider store={store}>
+          <QuickSetupModal
+            userProfile={mockUserProfile}
+            hasPermission={key => (key === 'deleteTitle' ? canDeleteTitle : true)}
+          />
+        </Provider>,
+      );
+      fireEvent.click(await screen.findByText('TEST'));
+    };
+
+    test('shows with Delete Quick Setup Titles', async () => {
+      await openAssignPopUp(true);
+      expect(screen.getByText('Delete QSC')).toBeInTheDocument();
+    });
+
+    test('is hidden without Delete Quick Setup Titles', async () => {
+      await openAssignPopUp(false);
+      expect(screen.getByText('Yes')).toBeInTheDocument();
+      expect(screen.queryByText('Delete QSC')).not.toBeInTheDocument();
+    });
+  });
 });
