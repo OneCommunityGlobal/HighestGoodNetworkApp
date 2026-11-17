@@ -8,6 +8,22 @@ import GRADE_OPTIONS from './gradeOptions';
 const PRGradingView = ({
   darkMode,
   teamData,
+  teamOptions,
+  selectedTeamName,
+  weekOptions,
+  selectedWeek,
+  onTeamChange,
+  onWeekChange,
+  onSave,
+  onRemoveReviewer,
+  saveStatus,
+  onDismissSaveStatus,
+  showAddReviewer,
+  onToggleAddReviewer,
+  newReviewerName,
+  onNewReviewerNameChange,
+  addReviewerError,
+  onAddReviewer,
   isFinalized,
   onFinalize,
   onExport,
@@ -22,6 +38,12 @@ const PRGradingView = ({
   onPromoteClick,
   activeInput,
   inputValue,
+  inputError,
+  loadError,
+  gradeError,
+  isLoadingSaved,
+  isSavingPR,
+  isSavingGrade,
   onInputValueChange,
   onAddNewClick,
   onInputSubmit,
@@ -48,10 +70,67 @@ const PRGradingView = ({
                   <h1 className={`${styles['pr-grading-screen-title']} ${dm}`}>
                     Weekly PR grading screen
                   </h1>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '16px',
+                      flexWrap: 'wrap',
+                      alignItems: 'center',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    {teamOptions?.length > 0 && (
+                      <div className={`${styles['pr-grading-screen-team-selector']} ${dm}`}>
+                        <label
+                          htmlFor="team-selector"
+                          className={`${styles['pr-grading-screen-team-selector-label']} ${dm}`}
+                        >
+                          Team
+                        </label>
+
+                        <select
+                          id="team-selector"
+                          value={selectedTeamName}
+                          onChange={e => onTeamChange?.(e.target.value)}
+                          className={`${styles['pr-grading-screen-team-select']} ${dm}`}
+                        >
+                          {teamOptions.map(team => (
+                            <option key={team._id ?? team.teamName} value={team.teamName}>
+                              {team.teamName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    {weekOptions?.length > 0 && (
+                      <div className={`${styles['pr-grading-screen-team-selector']} ${dm}`}>
+                        <label
+                          htmlFor="week-selector"
+                          className={`${styles['pr-grading-screen-team-selector-label']} ${dm}`}
+                        >
+                          Week
+                        </label>
+
+                        <select
+                          id="week-selector"
+                          value={selectedWeek}
+                          onChange={e => onWeekChange?.(e.target.value)}
+                          className={`${styles['pr-grading-screen-team-select']} ${dm}`}
+                        >
+                          {weekOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+
                   <div className={`${styles['pr-grading-screen-team-info-badge']} ${dm}`}>
-                    <p className={`${styles['pr-grading-screen-team-info']} ${dm}`}>
-                      {teamData.teamName} | {teamData.dateRange.start} to {teamData.dateRange.end}
-                    </p>
+                    {teamData.teamName} — {teamData.dateRange.start} to {teamData.dateRange.end}
                   </div>
                 </div>
                 <fieldset className={styles['pr-grading-screen-header-actions']}>
@@ -60,6 +139,13 @@ const PRGradingView = ({
                   </legend>
                   <Button variant="outline-primary" onClick={onExport} className={dm}>
                     Export to CSV
+                  </Button>
+                  <Button
+                    variant="primary"
+                    disabled={isSavingPR || isSavingGrade}
+                    onClick={() => onSave?.(filteredReviewers)}
+                  >
+                    Save
                   </Button>
                   <Button
                     variant={isFinalized ? 'secondary' : 'outline-dark'}
@@ -71,43 +157,103 @@ const PRGradingView = ({
                   </Button>
                 </fieldset>
               </div>
+              {loadError && (
+                <p role="alert" className={`${styles['pr-grading-screen-error-message']} ${dm}`}>
+                  {loadError}
+                </p>
+              )}
             </Card.Header>
 
             <Card.Body className={dm}>
+              {gradeError && (
+                <p role="alert" className={`${styles['pr-grading-screen-error-message']} ${dm}`}>
+                  {gradeError}
+                </p>
+              )}
               {/* Search and Filter Bar */}
-              <div className={`${styles['pr-grading-screen-search-bar']} ${dm}`}>
-                <input
-                  type="text"
-                  placeholder="Search reviewers by name..."
-                  value={searchTerm}
-                  onChange={e => onSearchTermChange(e.target.value)}
-                  className={`${styles['pr-grading-screen-search-input']} ${dm}`}
-                />
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '16px',
+                  flexWrap: 'wrap',
+                  gap: '10px',
+                }}
+              >
+                <div
+                  className={`${styles['pr-grading-screen-search-bar']} ${dm}`}
+                  style={{ margin: 0, flex: 1 }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Search reviewers by name..."
+                    value={searchTerm}
+                    onChange={e => onSearchTermChange(e.target.value)}
+                    className={`${styles['pr-grading-screen-search-input']} ${dm}`}
+                  />
 
-                {availableRoles.length > 0 && (
-                  <select
-                    value={roleFilter}
-                    onChange={e => onRoleFilterChange(e.target.value)}
-                    className={`${styles['pr-grading-screen-role-select']} ${dm}`}
-                  >
-                    <option value="">All roles</option>
-                    {availableRoles.map(role => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </select>
-                )}
+                  {availableRoles.length > 0 && (
+                    <select
+                      value={roleFilter}
+                      onChange={e => onRoleFilterChange(e.target.value)}
+                      className={`${styles['pr-grading-screen-role-select']} ${dm}`}
+                    >
+                      <option value="">All roles</option>
+                      {availableRoles.map(role => (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                    </select>
+                  )}
 
-                {(searchTerm || roleFilter) && (
-                  <button
-                    onClick={onClearSearch}
-                    className={`${styles['pr-grading-screen-clear-btn']} ${dm}`}
-                  >
-                    ✕ Clear
-                  </button>
-                )}
+                  {(searchTerm || roleFilter) && (
+                    <button
+                      type="button"
+                      onClick={onClearSearch}
+                      className={`${styles['pr-grading-screen-clear-btn']} ${dm}`}
+                    >
+                      ✕ Clear
+                    </button>
+                  )}
+                </div>
+
+                <Button variant="outline-primary" size="sm" onClick={onToggleAddReviewer}>
+                  {showAddReviewer ? 'Cancel' : '+ Add Reviewer'}
+                </Button>
               </div>
+
+              {showAddReviewer && (
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '8px',
+                    alignItems: 'center',
+                    marginBottom: '16px',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Reviewer name"
+                    value={newReviewerName}
+                    onChange={e => onNewReviewerNameChange(e.target.value)}
+                    className={`${styles['pr-grading-screen-pr-number-input']} ${dm}`}
+                    style={{ minWidth: '200px' }}
+                  />
+
+                  <Button variant="success" size="sm" onClick={onAddReviewer}>
+                    Add
+                  </Button>
+
+                  {addReviewerError && (
+                    <span role="alert" style={{ color: '#dc3545', fontSize: '0.85rem' }}>
+                      {addReviewerError}
+                    </span>
+                  )}
+                </div>
+              )}
 
               {/* Reviewer Table */}
               <div className={`${styles['pr-grading-screen-table-container']} ${dm}`}>
@@ -118,6 +264,7 @@ const PRGradingView = ({
                       <th className={styles['pr-grading-screen-th-reviewed']}>PR reviewed</th>
                       <th className={styles['pr-grading-screen-th-needed']}>PRs Needed</th>
                       <th className={styles['pr-grading-screen-th-numbers']}>PR Numbers</th>
+                      <th className={styles['pr-grading-screen-th-actions']}></th>
                     </tr>
                   </thead>
 
@@ -125,7 +272,7 @@ const PRGradingView = ({
                     {filteredReviewers.length === 0 ? (
                       <tr>
                         <td
-                          colSpan={4}
+                          colSpan={5}
                           className={`${styles['pr-grading-screen-no-results']} ${dm}`}
                         >
                           No reviewers found
@@ -207,6 +354,7 @@ const PRGradingView = ({
                                   <Button
                                     variant="success"
                                     size="sm"
+                                    disabled={isLoadingSaved || isSavingPR || Boolean(loadError)}
                                     className={styles['pr-grading-screen-add-btn']}
                                     onClick={() => onAddNewClick(reviewer.id)}
                                   >
@@ -220,24 +368,59 @@ const PRGradingView = ({
                                       <input
                                         type="text"
                                         value={inputValue}
+                                        disabled={isSavingPR}
                                         onChange={e => onInputValueChange(e.target.value)}
                                         className={styles['pr-grading-screen-pr-number-input']}
                                         placeholder="1070 or 1070 + 1256"
                                       />
+                                      {inputError && (
+                                        <span
+                                          role="alert"
+                                          className={`${styles['pr-grading-screen-error-message']} ${dm}`}
+                                        >
+                                          {inputError}
+                                        </span>
+                                      )}
                                     </div>
                                     <div className={styles['pr-grading-screen-input-buttons']}>
                                       <Button
                                         variant="primary"
                                         size="sm"
+                                        disabled={isSavingPR}
                                         onClick={() => onInputSubmit(reviewer.id)}
                                       >
-                                        Add
+                                        {isSavingPR ? 'Adding...' : 'Add'}
                                       </Button>
-                                      <Button variant="secondary" size="sm" onClick={onCancelInput}>
+                                      <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        disabled={isSavingPR}
+                                        onClick={onCancelInput}
+                                      >
                                         Cancel
                                       </Button>
                                     </div>
                                   </div>
+                                )}
+                              </td>
+                              <td>
+                                {!isFinalized && (
+                                  <button
+                                    type="button"
+                                    aria-label={`Remove reviewer ${reviewer.reviewer}`}
+                                    onClick={() => onRemoveReviewer(reviewer.reviewer)}
+                                    style={{
+                                      background: 'none',
+                                      border: '1px solid #dc3545',
+                                      borderRadius: '4px',
+                                      color: '#dc3545',
+                                      cursor: 'pointer',
+                                      padding: '2px 8px',
+                                      fontSize: '0.8rem',
+                                    }}
+                                  >
+                                    Remove
+                                  </button>
                                 )}
                               </td>
                             </tr>
@@ -245,7 +428,7 @@ const PRGradingView = ({
                             <InlinePRSummary
                               reviewer={reviewer}
                               onGradeChange={onGradeChange}
-                              isFinalized={isFinalized}
+                              isFinalized={isFinalized || isSavingGrade}
                               darkMode={darkMode}
                             />
                           </React.Fragment>
@@ -268,6 +451,7 @@ const PRGradingView = ({
               <h3>Grade PR for {gradingReviewer.reviewer}</h3>
               <button
                 className={`${styles['pr-grading-screen-modal-close']} ${dm}`}
+                disabled={isSavingGrade}
                 onClick={onCloseGradingModal}
               >
                 ×
@@ -294,7 +478,7 @@ const PRGradingView = ({
                         <td key={opt.value} className={styles['pr-grading-screen-checkbox-cell']}>
                           <input
                             type="checkbox"
-                            disabled={isFinalized}
+                            disabled={isFinalized || isSavingGrade}
                             checked={pr.grade === opt.value}
                             onChange={() => onGradeChange(gradingReviewer.id, pr.id, opt.value)}
                             className={styles['pr-grading-screen-grade-checkbox']}
@@ -310,6 +494,7 @@ const PRGradingView = ({
               <div className={`${styles['pr-grading-screen-modal-footer']} ${dm}`}>
                 <Button
                   variant="primary"
+                  disabled={isSavingGrade}
                   onClick={onCloseGradingModal}
                   className={`${styles['pr-grading-screen-done-btn']} ${dm}`}
                 >
@@ -398,6 +583,32 @@ PRGradingView.propTypes = {
       end: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
+  teamOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      teamName: PropTypes.string.isRequired,
+    }),
+  ),
+  selectedTeamName: PropTypes.string,
+  weekOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+    }),
+  ),
+  selectedWeek: PropTypes.string,
+  onTeamChange: PropTypes.func,
+  onWeekChange: PropTypes.func,
+  onSave: PropTypes.func,
+  onRemoveReviewer: PropTypes.func,
+  saveStatus: PropTypes.oneOf(['success', 'error', null]),
+  onDismissSaveStatus: PropTypes.func,
+  showAddReviewer: PropTypes.bool,
+  onToggleAddReviewer: PropTypes.func,
+  newReviewerName: PropTypes.string,
+  onNewReviewerNameChange: PropTypes.func,
+  addReviewerError: PropTypes.string,
+  onAddReviewer: PropTypes.func,
   isFinalized: PropTypes.bool.isRequired,
   onFinalize: PropTypes.func.isRequired,
   onExport: PropTypes.func.isRequired,
@@ -423,6 +634,12 @@ PRGradingView.propTypes = {
   onPromoteClick: PropTypes.func.isRequired,
   activeInput: PropTypes.string,
   inputValue: PropTypes.string.isRequired,
+  inputError: PropTypes.string.isRequired,
+  loadError: PropTypes.string.isRequired,
+  gradeError: PropTypes.string.isRequired,
+  isLoadingSaved: PropTypes.bool.isRequired,
+  isSavingPR: PropTypes.bool.isRequired,
+  isSavingGrade: PropTypes.bool.isRequired,
   onInputValueChange: PropTypes.func.isRequired,
   onAddNewClick: PropTypes.func.isRequired,
   onInputSubmit: PropTypes.func.isRequired,

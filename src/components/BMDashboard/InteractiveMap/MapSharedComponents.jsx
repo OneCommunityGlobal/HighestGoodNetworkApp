@@ -504,10 +504,9 @@ export const MapUtils = {
    MAP CONFIGURATION CONSTANTS
 ----------------------------------------------------- */
 export const MapConfig = {
-  tileUrls: {
-    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    light: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  },
+  // One tile source for both themes. CARTO's dark_all tiles now require an API key
+  // (they render "API KEY REQUIRED"), so dark mode darkens these tiles with CSS instead.
+  tileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   maxZoom: 15,
   minZoom: 1,
   clusterSettings: {

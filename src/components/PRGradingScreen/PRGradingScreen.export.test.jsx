@@ -1,8 +1,10 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import axios from 'axios';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PRGradingScreen from './PRGradingScreen';
 import { downloadWeeklyPRGradingCsv } from './csvExport';
 
+vi.mock('axios');
 vi.mock('react-redux', () => ({
   useSelector: selector => selector({ theme: { darkMode: false } }),
 }));
@@ -22,6 +24,8 @@ const reviewers = [
 describe('weekly PR grading Export to CSV button', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    axios.get.mockResolvedValue({ data: [] });
+    axios.post.mockResolvedValue({ data: { status: 'ok' } });
   });
 
   it('exports only reviewers matching the current search and role filters', () => {
@@ -41,14 +45,17 @@ describe('weekly PR grading Export to CSV button', () => {
     expect(downloadWeeklyPRGradingCsv).toHaveBeenCalledExactlyOnceWith([reviewers[0]], dateRange);
   });
 
-  it('exports a newly added PR without requiring Done', () => {
+  it('exports a newly added PR without requiring Done', async () => {
     render(<PRGradingScreen teamData={teamData} reviewers={reviewers} />);
 
-    fireEvent.click(screen.getAllByRole('button', { name: '+ Add new' })[0]);
+    const addNewButton = screen.getAllByRole('button', { name: '+ Add new' })[0];
+    await waitFor(() => expect(addNewButton).toBeEnabled());
+    fireEvent.click(addNewButton);
     fireEvent.change(screen.getByPlaceholderText('1070 or 1070 + 1256'), {
       target: { value: '1234' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+    await screen.findAllByText('1234');
     fireEvent.click(screen.getByRole('button', { name: 'Export to CSV' }));
 
     expect(downloadWeeklyPRGradingCsv).toHaveBeenCalledExactlyOnceWith(
@@ -58,8 +65,8 @@ describe('weekly PR grading Export to CSV button', () => {
           prsReviewed: 1,
           gradedPrs: [expect.objectContaining({ prNumbers: '1234', grade: 'Okay' })],
         }),
-        reviewers[1],
-        reviewers[2],
+        expect.objectContaining(reviewers[1]),
+        expect.objectContaining(reviewers[2]),
       ],
       dateRange,
     );

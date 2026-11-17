@@ -303,7 +303,7 @@ function SkillsTabbedSection({ skillsData }) {
                     <RadarChart outerRadius={160} data={radarData}>
                       <PolarGrid />
                       <PolarAngleAxis dataKey="name" tick={{ fontSize: 9 }} />
-                      <PolarRadiusAxis angle={30} domain={[0, 10]} />
+                      <PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} />
                       <Radar
                         name="Skills"
                         dataKey="value"
