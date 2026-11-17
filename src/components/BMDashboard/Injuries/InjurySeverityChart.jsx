@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
   LabelList,
+  Customized,
   ResponsiveContainer,
 } from 'recharts';
 import { Select, DatePicker, Spin } from 'antd';
@@ -78,6 +79,7 @@ function buildSingleDeptBars(visibleProjects, visibleDepartments) {
     dataKey: project.name,
     name: project.name,
     fill: DEPARTMENT_COLOR_MAP[selectedDepartment] || '#1f77b4',
+    stackId: project.name,
   }));
 }
 
@@ -208,6 +210,47 @@ function CustomTooltip({ active, payload, label, darkMode, visibleDepartments })
   );
 }
 
+function ProjectLabels({ formattedGraphicalItems, visibleProjects, darkMode }) {
+  const bars = formattedGraphicalItems || [];
+  const seen = new Set();
+  const labels = [];
+
+  bars.forEach(item => {
+    const project = visibleProjects.find(p => item.item.props.stackId === p.name);
+    if (!project) return;
+
+    item.props.data.forEach((bar, index) => {
+      const key = `${project._id}-${index}`;
+      if (seen.has(key)) return;
+
+      seen.add(key);
+      labels.push({
+        key,
+        x: bar.x + bar.width / 2,
+        y: bar.background ? bar.background.y + bar.background.height + 15 : bar.y + bar.height + 15,
+        name: project.name,
+      });
+    });
+  });
+
+  return (
+    <g>
+      {labels.map(label => (
+        <text
+          key={label.key}
+          x={label.x}
+          y={label.y}
+          textAnchor="middle"
+          fontSize={11}
+          fill={darkMode ? '#f5f5f5' : '#333333'}
+        >
+          {label.name}
+        </text>
+      ))}
+    </g>
+  );
+}
+
 function InjurySeverityBarChart({
   chartData,
   chartBars,
@@ -219,68 +262,81 @@ function InjurySeverityBarChart({
   const legendPayload = buildLegendPayload(visibleDepartments);
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" />
+    <div style={{ width: '100%', overflowX: 'auto' }}>
+      <div style={{ minWidth: '900px' }}>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
 
-        <XAxis
-          dataKey="severity"
-          height={60}
-          tick={{ fill: axisTextColor }}
-          label={{
-            value: 'Severity',
-            position: 'bottom',
-            dy: 0,
-            fill: axisTextColor,
-          }}
-        />
+            <XAxis
+              dataKey="severity"
+              height={80}
+              tick={{ fill: axisTextColor, dy: 35 }}
+              label={{
+                value: 'Severity',
+                position: 'bottom',
+                dy: 0,
+                fill: axisTextColor,
+              }}
+            />
 
-        <YAxis
-          tick={{ fill: axisTextColor }}
-          label={{
-            value: 'Injury Count',
-            angle: -90,
-            position: 'insideLeft',
-            fill: axisTextColor,
-          }}
-        />
+            <YAxis
+              tick={{ fill: axisTextColor }}
+              label={{
+                value: 'Injury Count',
+                angle: -90,
+                position: 'insideLeft',
+                fill: axisTextColor,
+              }}
+            />
 
-        <Tooltip
-          cursor={false}
-          content={
-            <CustomTooltip
+            <Tooltip
+              cursor={false}
+              content={
+                <CustomTooltip
+                  visibleProjects={visibleProjects}
+                  visibleDepartments={visibleDepartments}
+                  darkMode={darkMode}
+                />
+              }
+            />
+
+            <Legend
+              verticalAlign="bottom"
+              wrapperStyle={{ paddingTop: 30 }}
+              payload={legendPayload}
+            />
+            <Customized
+              component={ProjectLabels}
               visibleProjects={visibleProjects}
-              visibleDepartments={visibleDepartments}
               darkMode={darkMode}
             />
-          }
-        />
 
-        <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: 30 }} payload={legendPayload} />
-
-        {chartBars.map(bar => (
-          <Bar
-            key={bar.key}
-            dataKey={bar.dataKey}
-            name={bar.name}
-            fill={bar.fill}
-            stackId={bar.stackId}
-            legendType={bar.legendType}
-          >
-            <LabelList
-              dataKey={bar.dataKey}
-              position="center"
-              fill="#ffffff"
-              style={{
-                fontSize: '10px',
-                fontWeight: 'bold',
-              }}
-              formatter={formatBarLabel}
-            />
-          </Bar>
-        ))}
-      </BarChart>
-    </ResponsiveContainer>
+            {chartBars.map(bar => (
+              <Bar
+                key={bar.key}
+                dataKey={bar.dataKey}
+                name={bar.name}
+                fill={bar.fill}
+                stackId={bar.stackId}
+                legendType={bar.legendType}
+              >
+                <LabelList
+                  dataKey={bar.dataKey}
+                  position="center"
+                  fill="#ffffff"
+                  style={{
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                  }}
+                  formatter={formatBarLabel}
+                />
+              </Bar>
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }
 
