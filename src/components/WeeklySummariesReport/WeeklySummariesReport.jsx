@@ -145,7 +145,8 @@ const initialState = {
   showOnlyMismatched: false,
   loadedTabs: [navItems[1]],
   summariesByTab: {},
-  tabsLoading: { [navItems[1]]: false },
+  // The first tab is fetched on mount, so it starts out loading.
+  tabsLoading: { [navItems[1]]: true },
   formattedReportLoading: false,
   loadTrophies: false,
   selectedSpecialColors: {
@@ -289,7 +290,7 @@ const CustomIndicatorsContainer = props => {
 
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
-  const { loading, getInfoCollections } = props;
+  const { getInfoCollections } = props;
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const reportResultsRef = useRef(null);
@@ -1640,7 +1641,15 @@ const WeeklySummariesReport = props => {
         return;
       }
 
-      setState(prev => ({ ...prev, loading: true }));
+      // Show the tab's own spinner. The full-page skeleton (state.loading) is only for
+      // the first load, which starts with loading: true in initialState.
+      setState(prev => ({
+        ...prev,
+        tabsLoading: {
+          ...prev.tabsLoading,
+          [activeTab]: true,
+        },
+      }));
 
       try {
         const rawSummaries = await fetchWeeklySummariesForTab(activeTab);
@@ -1678,15 +1687,6 @@ const WeeklySummariesReport = props => {
       isMounted = false;
     };
   }, [state.activeTab]);
-
-  useEffect(() => {
-    if (state.loading !== loading) {
-      setState(prev => ({
-        ...prev,
-        loading,
-      }));
-    }
-  }, [loading, state.loading]);
 
   useEffect(() => {
     if (state.summaries && state.summaries.length > 0) {
