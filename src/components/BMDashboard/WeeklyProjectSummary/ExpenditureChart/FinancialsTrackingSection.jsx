@@ -8,14 +8,17 @@ import styles from './FinancialsTrackingSection.module.css';
 /**
  * FinancialsTrackingSection
  *
- * Owns the stacked / comparison layout toggle for the Financials
- * Tracking section. Renders different card grids based on viewMode:
+ * Owns the view toggle for the Financials Tracking section. Both views show
+ * the Actual and Planned pies side by side; they differ in the Project filter.
+ * (The internal viewMode key 'stacked' is kept for the Individual view.)
  *
- * Stacked (default) — 4 independent cards in a 2×2 grid:
+ * Individual View (default, viewMode 'stacked') — 4 independent cards in a
+ * 2×2 grid, each pie with its own Project filter:
  *   [Actual Expenditure]  [Planned Expenditure]
  *   [Actual vs Planned]   [Placeholder]
  *
- * Comparison — 3 cards (combined card spans full width at top):
+ * Comparison View (Shared Project) — 3 cards, one Project filter drives both
+ * pies (combined card spans full width at top):
  *   [Combined Expenditure Card — shared filter, both pies S-by-S]
  *   [Actual vs Planned]   [Placeholder]
  */
@@ -30,11 +33,12 @@ function FinancialsTrackingSection() {
           type="button"
           className={`${styles.toggleBtn} ${viewMode === 'stacked' ? styles.toggleBtnActive : ''}`}
           aria-pressed={viewMode === 'stacked'}
-          aria-label="Stacked View (Default)"
+          aria-label="Individual View (Default)"
+          title="Each pie has its own Project filter"
           onClick={() => setViewMode('stacked')}
         >
-          <span className={styles.labelFull}>Stacked View (Default)</span>
-          <span className={styles.labelMed}>Stacked View</span>
+          <span className={styles.labelFull}>Individual View (Default)</span>
+          <span className={styles.labelMed}>Individual View</span>
           <span className={styles.labelMin} aria-hidden="true">
             <svg
               width="13"
@@ -49,7 +53,7 @@ function FinancialsTrackingSection() {
               <rect x="0" y="7.5" width="5.5" height="5.5" rx="1" />
               <rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" />
             </svg>
-            Stacked
+            Individual
           </span>
         </button>
         <button
@@ -58,10 +62,11 @@ function FinancialsTrackingSection() {
             viewMode === 'comparison' ? styles.toggleBtnActive : ''
           }`}
           aria-pressed={viewMode === 'comparison'}
-          aria-label="Comparison View (Side-by-Side)"
+          aria-label="Comparison View (Shared Project)"
+          title="One Project filter drives both pies"
           onClick={() => setViewMode('comparison')}
         >
-          <span className={styles.labelFull}>Comparison View (Side-by-Side)</span>
+          <span className={styles.labelFull}>Comparison View (Shared Project)</span>
           <span className={styles.labelMed}>Comparison View</span>
           <span className={styles.labelMin} aria-hidden="true">
             <svg
@@ -81,7 +86,7 @@ function FinancialsTrackingSection() {
       </div>
 
       {viewMode === 'stacked' ? (
-        /* ── Stacked: 2×2 grid of independent cards ─────────────── */
+        /* ── Individual: 2×2 grid of independent cards ──────────── */
         <div className={styles.grid}>
           <SingleExpenditureCard pieType="actual" />
           <SingleExpenditureCard pieType="planned" />
