@@ -80,6 +80,17 @@ function ChartsSection() {
   const pieColors = ['#007bff', '#00b894', '#e17055', '#6c5ce7', '#fdcb6e'];
 
   // Dark-mode-aware tooltip styling so tooltips stay readable in both themes
+  // Show every event type label; tilt them so they still fit on narrow screens.
+  const eventTypeAxisProps = {
+    dataKey: 'eventType',
+    stroke: darkMode ? '#fff' : '#333',
+    interval: 0,
+    angle: -30,
+    textAnchor: 'end',
+    height: 70,
+    tick: { fontSize: 12 },
+  };
+
   const tooltipProps = {
     contentStyle: {
       backgroundColor: darkMode ? '#2c2f33' : '#fff',
@@ -101,11 +112,11 @@ function ChartsSection() {
         <div className={styles.chartBox}>
           <h4>No-show rate by event type</h4>
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={eventTypeStats}>
-              <XAxis dataKey="eventType" stroke={darkMode ? '#fff' : '#333'} />
+            <BarChart data={eventTypeStats} margin={{ top: 5, right: 10, left: 20, bottom: 5 }}>
+              <XAxis {...eventTypeAxisProps} />
               <YAxis stroke={darkMode ? '#fff' : '#333'} />
               <Tooltip {...tooltipProps} />
-              <Bar dataKey="avgNoShow" fill="#FF6B6B" />
+              <Bar dataKey="avgNoShow" name="Avg no-show rate (%)" fill="#FF6B6B" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -114,11 +125,11 @@ function ChartsSection() {
         <div className={styles.chartBox}>
           <h4>Drop-off rate by event type</h4>
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={eventTypeStats}>
-              <XAxis dataKey="eventType" stroke={darkMode ? '#fff' : '#333'} />
+            <BarChart data={eventTypeStats} margin={{ top: 5, right: 10, left: 20, bottom: 5 }}>
+              <XAxis {...eventTypeAxisProps} />
               <YAxis stroke={darkMode ? '#fff' : '#333'} />
               <Tooltip {...tooltipProps} />
-              <Bar dataKey="avgDrop" fill="#4C89FF" />
+              <Bar dataKey="avgDrop" name="Avg drop-off rate (%)" fill="#4C89FF" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -132,7 +143,13 @@ function ChartsSection() {
             <XAxis dataKey="month" stroke={darkMode ? '#fff' : '#333'} />
             <YAxis stroke={darkMode ? '#fff' : '#333'} />
             <Tooltip {...tooltipProps} />
-            <Line type="monotone" dataKey="avgNoShow" stroke="#FF6B6B" strokeWidth={2} />
+            <Line
+              type="monotone"
+              dataKey="avgNoShow"
+              name="Avg no-show rate (%)"
+              stroke="#FF6B6B"
+              strokeWidth={2}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

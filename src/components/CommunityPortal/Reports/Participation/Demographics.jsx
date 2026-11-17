@@ -13,7 +13,7 @@ function Demographics() {
       <button
         type="button"
         className={`${styles.backBtn} ${darkMode ? styles.backBtnDark : ''}`}
-        onClick={() => history.goBack()}
+        onClick={() => history.push('/communityportal/reports/participation')}
       >
         <FontAwesomeIcon icon={faArrowLeft} />
         Back
