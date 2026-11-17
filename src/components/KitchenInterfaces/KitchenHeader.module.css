@@ -1,4 +1,7 @@
 .headerContainer {
+  box-sizing: border-box;
+  width: 100%;
+  gap: 16px;
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
   padding: 0 32px;
@@ -18,6 +21,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .logoImage {
@@ -41,8 +45,8 @@
 
 .brandSubtitle {
   font-size: 11px;
-  color: #888;
-  text-transform: uppercase;
+  color: #6b7280;
+  text-transform: none;
   letter-spacing: 0.5px;
 }
 
@@ -58,9 +62,9 @@
   color: #555;
   font-size: 14px;
   font-weight: 500;
-  padding: 8px 16px;
+  padding: 8px 10px;
   border-radius: 20px;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
 }
 
@@ -72,8 +76,8 @@
 
 /* Active State */
 .activeLink {
-  background-color: #e6f4ea; /* Light green background */
-  color: #2e7d32; /* Darker green text */
+  background-color: #f0fdf4; /* Light green background */
+  color: #15803d; /* Darker green text */
   font-weight: 600;
 }
 
@@ -86,7 +90,7 @@
 .dropdownArrow {
   font-size: 10px;
   margin-left: 4px;
-  color: #777;
+  color: #6b7280;
 }
 
 /* Mobile Menu Button */
@@ -97,6 +101,9 @@
   font-size: 24px;
   color: #333;
   cursor: pointer;
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 /* Background Overlay */
@@ -106,7 +113,7 @@
 
 
 /* Responsive Adjustments */
-@media (width <= 900px) {
+@media (width <= 1100px) {
   .headerContainer {
     padding: 0 16px;
     height: 64px; /* Fixed height again */
@@ -136,13 +143,19 @@
     transition: transform 0.3s ease-in-out;
     z-index: 999;
     align-items: flex-start;
+    box-sizing: border-box;
+    max-height: calc(100dvh - 64px);
+    overflow-y: auto;
+    visibility: hidden;
   }
   
   .navOpen {
       transform: translateY(0);
+      visibility: visible;
   }
   
   .navItem {
+      box-sizing: border-box;
       width: 100%;
       padding: 12px 24px;
       border-radius: 0;
@@ -162,6 +175,26 @@
    /* Prevent horizontal scrolling on container overrides */
   .navContainer::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@media (width <= 360px) {
+  .headerContainer {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .brandSection {
+    gap: 8px;
+  }
+
+  .brandTitle {
+    font-size: 14px;
+  }
+
+  .brandSubtitle {
+    font-size: 10px;
+    letter-spacing: 0;
   }
 }
 
@@ -191,7 +224,7 @@
 }
 
 .darkMode .activeLink {
-  background-color: #2e7d32;
+  background-color: #15803d;
   color: #fff;
 }
 
@@ -203,9 +236,24 @@
   color: #fff;
 }
 
-@media (width <= 900px) {
+@media (width <= 1100px) {
   .darkMode .navContainer {
     background-color: #1c2541;
     box-shadow: 0 4px 6px rgb(0 0 0 / 50%);
   }
+}
+
+.logoTile {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #15803d;
+  color: white;
+  flex-shrink: 0;
+}
+
+.darkMode .dropdownArrow {
+  color: #b0b0b0;
 }
