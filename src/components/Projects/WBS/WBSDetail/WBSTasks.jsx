@@ -97,6 +97,7 @@ function WBSTasks(props) {
 
   // permissions
   const canPostTask = props.hasPermission(permissions.postTask);
+  const canImportTask = props.hasPermission(permissions.importTask);
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
@@ -173,7 +174,7 @@ function WBSTasks(props) {
         />
       )}
 
-      {!isLoading && (
+      {canImportTask && !isLoading && (
         <ImportTask
           wbsId={wbsId}
           projectId={projectId}

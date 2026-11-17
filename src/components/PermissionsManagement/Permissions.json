@@ -294,7 +294,7 @@
               {
                 "label": "Import Tasks",
                 "key": "importTask",
-                "description": "Lets the user add tasks to a WBS from an Excel (.xlsx) file with 'Import Tasks' on the WBS page."
+                "description": "Lets the user add tasks to a WBS from an Excel (.xlsx) file with 'Import Tasks'. Also needs a WBS permission, like 'Add Task'."
               },
               {
                 "label": "Edit Task",
