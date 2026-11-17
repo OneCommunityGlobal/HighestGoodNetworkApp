@@ -1,9 +1,17 @@
-import { Plus } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import PropTypes from 'prop-types';
 import styles from './ReviewerRow.module.css';
 import { useRowSelection } from './SelectionContext';
 
-function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick, darkMode }) {
+function ReviewerRow({
+  grading,
+  onUpdatePRsReviewed,
+  onAddPRClick,
+  onRemoveReviewer,
+  isCurrentWeek,
+  darkMode,
+  canEdit,
+}) {
   const { activeId, selectRow } = useRowSelection();
 
   const handlePRsReviewedChange = e => {
@@ -49,14 +57,29 @@ function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick, darkMode }) {
         <div className={styles.prsNeeded}>{grading.prsNeeded}</div>
       </td>
       <td className={styles.cell}>
-        <button
-          onClick={() => onAddPRClick(grading.reviewer)}
-          className={styles.addButton}
-          type="button"
-        >
-          <Plus className={styles.addButtonIcon} />
-          Add New
-        </button>
+        {isCurrentWeek && canEdit ? (
+          <div className={styles.actionsCell}>
+            <button
+              onClick={() => onAddPRClick(grading.reviewer)}
+              className={styles.addButton}
+              type="button"
+            >
+              <Plus className={styles.addButtonIcon} />
+              Add New
+            </button>
+            <button
+              onClick={() => onRemoveReviewer(grading.reviewer)}
+              className={styles.removeButton}
+              type="button"
+              aria-label={`Remove reviewer ${grading.reviewer}`}
+              title="Remove reviewer"
+            >
+              <Trash2 className={styles.removeButtonIcon} />
+            </button>
+          </div>
+        ) : (
+          <span className={styles.readOnlyLabel}>Read only</span>
+        )}
       </td>
     </tr>
   );
@@ -69,11 +92,16 @@ ReviewerRow.propTypes = {
   }).isRequired,
   onUpdatePRsReviewed: PropTypes.func.isRequired,
   onAddPRClick: PropTypes.func.isRequired,
+  onRemoveReviewer: PropTypes.func.isRequired,
+  isCurrentWeek: PropTypes.bool,
   darkMode: PropTypes.bool,
+  canEdit: PropTypes.bool,
 };
 
 ReviewerRow.defaultProps = {
+  isCurrentWeek: true,
   darkMode: false,
+  canEdit: false,
 };
 
 export default ReviewerRow;

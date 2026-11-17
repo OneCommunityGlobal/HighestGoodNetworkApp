@@ -93,7 +93,7 @@ function SingleTask(props) {
             </nav>
           )}
           <div className='tasks-table table-responsive mb-5'>
-            <table className={`table table-bordered ${darkMode ? 'dark-mode text-light' : ''}`}>
+            <table className={`table table-bordered ${ darkMode ? `dark-mode text-light ${styles.singleTaskTableDark}` : ''}`}>
               <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 <tr>
                   <th scope="col" data-tip="Action" colSpan="1" style={{ textAlign: 'center' }}>

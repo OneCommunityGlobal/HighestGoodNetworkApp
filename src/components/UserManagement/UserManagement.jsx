@@ -25,6 +25,7 @@ import {
   enableEditUserInfo,
   disableEditUserInfo,
   updateUserPauseStatus,
+  resetUserProfileEdit
 } from '../../actions/userManagement';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
@@ -43,6 +44,45 @@ import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
+import { fetchCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
+
+export const matchesNameSearch = (name, searchText) => {
+  // Ignore leading spaces, but preserve trailing spaces because a trailing space changes the search behavior.
+  const trimmedSearch = searchText.trimStart();
+
+  // An empty search should match all names.
+  if (!trimmedSearch) {
+    return true;
+  }
+  
+  const normalizedSearch = trimmedSearch.toLowerCase().replace(/\s+/g, ' ');
+  const normalizedName = name.toLowerCase().replace(/\s+/g, ' ').trim();
+
+  // Without a trailing space, perform the normal substring search. 
+  // For example, "li" matches "Liam", "Olivia", and "Li"
+  if (!/\s$/.test(searchText)) {
+    return normalizedName.includes(normalizedSearch);
+  }
+
+  // A trailing space indicates that the search text should be treated as a complete word or phrase rather than a partial match.
+  // Remove the trailing space so it can be used to check word boundaries.
+  const searchWithoutTrailingSpace = normalizedSearch.trimEnd();
+
+  return (
+
+    // The entire name is an exact match.
+    normalizedName === searchWithoutTrailingSpace ||
+
+    // The search term appears at the beginning of a multi-word name.
+    normalizedName.startsWith(`${searchWithoutTrailingSpace} `) ||
+
+    // The search term appears as a complete word in the middle of the name.
+    normalizedName.includes(` ${searchWithoutTrailingSpace} `) ||
+
+    // The search term appears as a complete word at the end of the name.
+    normalizedName.endsWith(` ${searchWithoutTrailingSpace}`)
+  );
+};
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -83,6 +123,8 @@ class UserManagement extends React.PureComponent {
       activeInactivePopupOpen: false,
       finalDayPopupOpen: false,
       selectedUser: null,
+      // null until loaded (or if the request fails), so no indicator is shown by mistake
+      completedQuestionnaireUserIds: null,
     };
     this.onPauseResumeClick = this.onPauseResumeClick.bind(this);
     this.onLogTimeOffClick = this.onLogTimeOffClick.bind(this);
@@ -101,8 +143,12 @@ class UserManagement extends React.PureComponent {
 
   componentDidMount() {
     document.body.classList.add('no-global-theme');
+    this.props.resetUserProfileEdit();
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
+    this.props.getAllUserProfile();
+    this.props.getAllTimeOffRequests();
+    void this.loadQuestionnaireCompletion();
     const { darkMode } = this.props.state.theme;
     const { userProfiles } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
@@ -123,7 +169,20 @@ class UserManagement extends React.PureComponent {
     document.body.classList.remove('no-global-theme');
     window.removeEventListener('resize', this.handleResize);
     this.debouncedApplyWildCardSearch.cancel();
+
+    this.props.resetUserProfileEdit();
   }
+
+  loadQuestionnaireCompletion = async () => {
+    try {
+      const completedQuestionnaireUserIds = await fetchCompletedQuestionnaireUserIds();
+      this.setState({ completedQuestionnaireUserIds });
+    } catch (error) {
+      // Leave as null so users are not wrongly flagged as incomplete
+      // eslint-disable-next-line no-console
+      console.error('Failed to load questionnaire completion status', error);
+    }
+  };
 
   handleResize = () => {
     this.setState({ isMobile: window.innerWidth <= 750 });
@@ -160,13 +219,16 @@ class UserManagement extends React.PureComponent {
     const userProfilesChanged =
       prevProps.state.allUserProfiles.userProfiles !==
       this.props.state.allUserProfiles.userProfiles;
+    const questionnaireCompletionChanged =
+      prevState.completedQuestionnaireUserIds !== this.state.completedQuestionnaireUserIds;
 
     if (
       prevState.selectedPage !== this.state.selectedPage ||
       prevState.wildCardSearchText !== this.state.wildCardSearchText ||
       searchStateChanged ||
       pageSizeChanged ||
-      userProfilesChanged
+      userProfilesChanged ||
+      questionnaireCompletionChanged
     ) {
       const { darkMode } = this.props.state.theme;
       const { userProfiles } = this.props.state.allUserProfiles;
@@ -334,6 +396,10 @@ class UserManagement extends React.PureComponent {
             isMobile={isMobile}
             mobileFontSize={mobileFontSize}
             onUserUpdate={this.onUserUpdate}
+            questionnaireIncomplete={
+              !!this.state.completedQuestionnaireUserIds &&
+              !this.state.completedQuestionnaireUserIds.has(user._id)
+            }
           />
         ));
     }
@@ -346,7 +412,6 @@ class UserManagement extends React.PureComponent {
     rolesPermissions,
     timeOffRequests,
     darkMode,
-    editUser,
     isMobile,
     mobileFontSize,
   ) => {
@@ -356,7 +421,6 @@ class UserManagement extends React.PureComponent {
         rolesPermissions,
         timeOffRequests,
         darkMode,
-        editUser,
         isMobile,
         mobileFontSize,
       ),
@@ -379,26 +443,8 @@ class UserManagement extends React.PureComponent {
       const lastName = user.lastName.toLowerCase();
       const email = user.email ? user.email.toLowerCase() : '';
 
-      const trimmedFirstNameSearch = firstNameSearch.trim();
-      const trimmedLastNameSearch = lastNameSearch.trim();
-
-      // Remove whitespace from both stored names and search input so typed spaces do not change name matching.
-      const normalizedFirstName = firstName.replaceAll(/\s+/g, '');
-      const normalizedFirstNameSearch = trimmedFirstNameSearch.toLowerCase().replaceAll(/\s+/g, '');
-      const normalizedLastName = lastName.replaceAll(/\s+/g, '');
-      const normalizedLastNameSearch = trimmedLastNameSearch.toLowerCase().replaceAll(/\s+/g, '');
-
-      let firstNameMatches = true;
-      if (trimmedFirstNameSearch) {
-        // Name column filters intentionally use includes() so whitespace-normalized partial searches still work.
-        firstNameMatches = normalizedFirstName.includes(normalizedFirstNameSearch);
-      }
-
-      let lastNameMatches = true;
-      if (trimmedLastNameSearch) {
-        // Name column filters intentionally use includes() so whitespace-normalized partial searches still work.
-        lastNameMatches = normalizedLastName.includes(normalizedLastNameSearch);
-      }
+      const firstNameMatches = matchesNameSearch(user.firstName, firstNameSearch);
+      const lastNameMatches = matchesNameSearch(user.lastName, lastNameSearch);
 
       let wildcardMatches = true;
       if (wildCardSearch) {
@@ -936,9 +982,10 @@ const mapDispatchToProps = (dispatch) => ({
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   deleteUser: (...args) => dispatch(deleteUser(...args)),
   getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
-  enableEditUserInfo: () => dispatch(enableEditUserInfo()),
-  disableEditUserInfo: () => dispatch(disableEditUserInfo()),
+  enableEditUserInfo: value => dispatch(enableEditUserInfo(value)),
+  disableEditUserInfo: value => dispatch(disableEditUserInfo(value)),
   getAllRoles: () => dispatch(getAllRoles()),
+  resetUserProfileEdit: () => dispatch(resetUserProfileEdit()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserManagement);

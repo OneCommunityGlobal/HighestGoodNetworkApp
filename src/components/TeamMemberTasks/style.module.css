@@ -25,6 +25,16 @@
   background-color: white;
   overflow: hidden;
   max-width: 100%;
+  height: 100%;
+}
+
+.team-member-tasks table {
+  height: 100%;
+}
+
+.team-member-tasks tbody,
+.team-member-tasks tr {
+  height: 100%;
 }
 
 .truncateTasksBtn {
@@ -312,10 +322,12 @@
 }
 
 .team-clocks {
-  display: table-cell;
+  display: block;
   text-align: center;
-  vertical-align: top;
-  padding-left: 10px !important;
+  width: 100%;
+  padding: 8px 0;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .team-member-tasks-number {
@@ -446,6 +458,8 @@
 
 .table-row {
   position: relative;
+  height: 100%;
+  vertical-align: stretch !important;
 }
 
 .hidden {
@@ -469,6 +483,14 @@
 .row-content {
   position: relative;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure the remove-padding td (containing row-content) stretches */
+.remove-padding {
+  height: 100% !important;
+  vertical-align: stretch !important;
 }
 
 .no-bottom-margin {
@@ -592,6 +614,8 @@
 .grid-container {
   display: grid;
   grid-template-rows: 1fr auto;
+  height: 100%;
+  min-height: 100%;
 }
 
 .expand-time-off-detail-button {
@@ -1010,6 +1034,7 @@
 
 .container {
   width: 100%;
+  height: 100%;
   margin-left: auto;
   margin-right: auto;
 }

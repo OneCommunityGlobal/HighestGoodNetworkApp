@@ -63,11 +63,17 @@ import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
 import DatabaseDesign from './components/CommunityPortal/DatabaseDesign/DatabaseDesign';
 import Page1 from './components/HGNForm/pages/Page1';
+import HGNFormListPage from './components/HGNForm/pages/HGNFormListPage';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
 import Page4 from './components/HGNForm/pages/Page4';
 import Page5 from './components/HGNForm/pages/Page5';
 import Page6 from './components/HGNForm/pages/Page6';
+import { withQuestionnaireAccess } from './components/HGNForm/access/QuestionnaireAccessGate';
+import {
+  QUESTIONNAIRE_PERMANENT_PATH,
+  QUESTIONNAIRE_START_PATH,
+} from './components/HGNForm/access/questionnaireLink';
 import TSAFormPage1 from './components/TSAForm/pages/TSAFormPage1';
 import TSAFormPage2 from './components/TSAForm/pages/TSAFormPage2';
 import TSAFormPage3 from './components/TSAForm/pages/TSAFormPage3';
@@ -88,6 +94,7 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
+import ResolvedTasks from './components/ResolvedTasks/ResolvedTasks';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
@@ -171,6 +178,8 @@ import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPa
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
+import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
+import PRGradingScreenContainer from './components/PRGradingScreen';
 // Kicthen and Inventory Portal
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
@@ -179,6 +188,7 @@ import GardenManagement from './components/KitchenandInventory/GardenManagement/
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import KitchenReports from './components/KitchenandInventory/KitchenReports/KitchenReports';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 
@@ -213,11 +223,11 @@ import BookingPage from './components/Booking/BookingPage';
 import BookingConfirmPage from './components/Booking/BookingConfirmPage';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
+
 import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
 import PopularPRChart from './components/Analytics/PopularPRChart';
 import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
-import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
-import PRGradingScreen from './components/PRGradingScreen';
+
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
@@ -235,6 +245,17 @@ import MaterialUtilizationChart from './components/MaterialUtilization/MaterialU
 
 // High Good Education
 import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGallery';
+
+// The HGN questionnaire only opens for people invited through the Dropbox setup process.
+const QuestionnaireLinkRedirect = withQuestionnaireAccess(() => (
+  <Redirect to={QUESTIONNAIRE_START_PATH} />
+));
+const QuestionnairePage1 = withQuestionnaireAccess(Page1);
+const QuestionnairePage2 = withQuestionnaireAccess(Page2);
+const QuestionnairePage3 = withQuestionnaireAccess(Page3);
+const QuestionnairePage4 = withQuestionnaireAccess(Page4);
+const QuestionnairePage5 = withQuestionnaireAccess(Page5);
+const QuestionnairePage6 = withQuestionnaireAccess(Page6);
 
 // Social Architecture
 
@@ -399,6 +420,7 @@ export default (
       <ToastContainer />
       <Switch>
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
+        <ProtectedRoute path="/resolvedtasks" exact component={ResolvedTasks} />
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute
@@ -1126,6 +1148,7 @@ export default (
           exact
           component={GardenManagement}
         />
+        <ProtectedRoute path="/kitchenandinventory/reports" exact component={KitchenReports} />
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
@@ -1166,12 +1189,18 @@ export default (
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
         <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
-        <ProtectedRoute path="/hgnform" exact component={Page1} />
-        <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
-        <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
-        <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
-        <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
-        <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+        <ProtectedRoute path="/hgnform" exact component={HGNFormListPage} />
+        <ProtectedRoute
+          path={QUESTIONNAIRE_PERMANENT_PATH}
+          exact
+          component={QuestionnaireLinkRedirect}
+        />
+        <ProtectedRoute path="/hgnform/page1" exact component={QuestionnairePage1} />
+        <ProtectedRoute path="/hgnform/page2" exact component={QuestionnairePage2} />
+        <ProtectedRoute path="/hgnform/page3" exact component={QuestionnairePage3} />
+        <ProtectedRoute path="/hgnform/page4" exact component={QuestionnairePage4} />
+        <ProtectedRoute path="/hgnform/page5" exact component={QuestionnairePage5} />
+        <ProtectedRoute path="/hgnform/page6" exact component={QuestionnairePage6} />
         <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
         <ProtectedRoute path="/hgn-skills/profile" exact component={UserSkillsProfile} />
         <ProtectedRoute
@@ -1207,7 +1236,6 @@ export default (
         />
         <ProtectedRoute path="/actual-cost-breakdown" component={ActualCostBreakdown} fallback />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
-        <ProtectedRoute path="/pr-grading-screen" exact component={PRGradingScreen} />
         <ProtectedRoute path="/pr-grading-test" exact component={PRGradingTest} />
         {/* //temporary route for testing - delete after testing */}
         <ProtectedRoute path="/" exact component={Dashboard} />
@@ -1261,6 +1289,12 @@ export default (
           path="/pr-grading-dashboard"
           exact
           component={PRGradingDashboard}
+          routePermissions={RoutePermissions.prDashboard}
+        />
+        <ProtectedRoute
+          path="/pr-grading-screen"
+          exact
+          component={PRGradingScreenContainer}
           fallback
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />

@@ -15,6 +15,7 @@ import {
 import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
 import AssignBadgePopup from './AssignBadgePopup';
+import BadgeStatistics from './BadgeStatistics';
 import {
   getFirstName,
   getLastName,
@@ -178,6 +179,7 @@ function AssignBadge(props) {
       className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
       style={{ padding: 20 }}
     >
+      <BadgeStatistics allBadgeData={props.allBadgeData} darkMode={darkMode} />
       <div className="row align-items-center mb-3">
         <Label
           className={`col-12 col-md-2 ${darkMode ? 'text-light' : ''}`}
