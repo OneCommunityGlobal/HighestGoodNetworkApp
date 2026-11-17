@@ -27,7 +27,7 @@ import { ApiEndpoint } from '~/utils/URL';
 import hasPermission from '~/utils/permissions';
 
 import { permissions } from '../../utils/constants';
-function ReviewButton({ user, task, updateTask, onTimeOff }) {
+function ReviewButton({ user, task, updateTask }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const myUserId = useSelector(state => state.auth.user.userid);
@@ -458,12 +458,8 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
           onClick={toggleModal}
           type="button"
           style={darkMode ? boxStyleDark : boxStyle}
-          disabled={isSubmitting || Boolean(onTimeOff)}
-          title={
-            onTimeOff
-              ? "You can't submit a task for review while you're on time off this week."
-              : 'Submit for review'
-          }
+          disabled={isSubmitting}
+          title="Submit for review"
         >
           Submit
         </button>
@@ -796,7 +792,6 @@ ReviewButton.propTypes = {
   }).isRequired,
   task: PropTypes.object.isRequired,
   updateTask: PropTypes.func.isRequired,
-  onTimeOff: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
 };
 
 export default ReviewButton;
