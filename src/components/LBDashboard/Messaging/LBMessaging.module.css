@@ -186,9 +186,9 @@
   aspect-ratio: 1/1;
 }
 
-.lbMsgIconMobile {
+.messagingPage .lbMsgIconMobile {
   height: 100%;
-  width: auto !important;
+  width: auto;
   color: var(--msg-text);
 }
 
@@ -356,8 +356,8 @@
   color: #fff;
 }
 
-.received {
-  justify-content: flex-start !important;
+.messageItem.received {
+  justify-content: flex-start;
   margin-left: 10px;
 }
 
@@ -438,9 +438,9 @@
   font-size: 20px;
 }
 
-.lbMsgIcon {
+.messagingPage .lbMsgIcon {
   height: 100%;
-  width: 75% !important;
+  width: 75%;
 }
 
 .lgMessagingBellSelectDropdown {
@@ -472,7 +472,7 @@
   position: absolute;
   top: -6px;
   right: -2px;
-  background-color: #e04f4f;
+  background-color: #c62828;
   color: #fff;
   border-radius: 10px;
   font-size: 10px;
@@ -548,8 +548,8 @@
   cursor: pointer;
 }
 
-.lgMessagingBellSelectDropdown input {
-  width: fit-content !important;
+.messagingPage .lgMessagingBellSelectDropdown input {
+  width: fit-content;
 }
 
 .lgMessagingSaveBtn {
@@ -671,9 +671,9 @@
   margin-left: 10px;
 }
 
-.lbMsgMobileIcon {
+.messagingPage .lbMsgMobileIcon {
   height: 100%;
-  width: auto !important;
+  width: auto;
   color: var(--msg-text);
 }
 
@@ -748,9 +748,9 @@
   outline-offset: 2px;
 }
 
-.lbMsgIcon,
-.lbMsgIconMobile,
-.lbMsgMobileIcon {
+.messagingPage .lbMsgIcon,
+.messagingPage .lbMsgIconMobile,
+.messagingPage .lbMsgMobileIcon {
   color: var(--msg-text);
   cursor: pointer;
 }
@@ -926,5 +926,17 @@
 
   .messageSpacer {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sendButton,
+  .lgMessagingSaveBtn,
+  .lgMessagingSubmitButton {
+    transition: none;
+  }
+
+  .sendButton:hover {
+    transform: none;
   }
 }

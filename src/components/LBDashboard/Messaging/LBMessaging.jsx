@@ -379,6 +379,14 @@ export default function LBMessaging() {
     );
   };
 
+  let searchHint = 'Search by name, then select a contact below.';
+  if (searchQuery.trim()) {
+    searchHint = `${safeSearchResults.length} contacts found`;
+    if (safeSearchResults.length > 2) {
+      searchHint += ' — scroll below to browse';
+    }
+  }
+
   return (
     (users?.userProfilesBasicInfo?.length ?? 0) !== 0 && (
       <div className={`${styles.messagingPage} ${darkMode ? styles.darkMode : ''}`}>
@@ -424,18 +432,9 @@ export default function LBMessaging() {
                     </button>
                   </div>
                 )}
-                {showContacts && (
-                  <p className={styles.searchHint}>
-                    {searchQuery.trim()
-                      ? `${safeSearchResults.length} contacts found${
-                          safeSearchResults.length > 2 ? ' — scroll below to browse' : ''
-                        }`
-                      : 'Search by name, then select a contact below.'}
-                  </p>
-                )}
-                <div
+                {showContacts && <p className={styles.searchHint}>{searchHint}</p>}
+                <section
                   className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
-                  role="region"
                   aria-label={showContacts ? 'Contact search results' : 'Conversations'}
                 >
                   {showContacts
@@ -443,7 +442,7 @@ export default function LBMessaging() {
                         renderContactButton(user._id, user, () => updateSelection(user)),
                       )
                     : renderContacts()}
-                </div>
+                </section>
               </div>
 
               {/* Chat Window Section */}
