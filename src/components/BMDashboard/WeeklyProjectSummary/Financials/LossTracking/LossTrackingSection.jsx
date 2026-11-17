@@ -26,6 +26,9 @@ import {
   formatCurrency,
 } from './lossTrackingData';
 import styles from './LossTrackingSection.module.css';
+// MonthPicker reads its colors from CSS variables that the line chart's
+// darkMode class switches to dark values; reuse it so the picker is dark here too.
+import pickerStyles from '../LossTrackingLineCharts/LossTrackingLineChart.module.css';
 
 const CATEGORY_COLORS = {
   Materials: '#3b82f6',
@@ -101,7 +104,11 @@ export default function LossTrackingSection() {
 
   return (
     <section
-      className={`${styles.section} ${darkMode ? styles.dark : ''}`}
+      className={[
+        styles.section,
+        darkMode ? styles.dark : '',
+        darkMode ? pickerStyles.darkMode : '',
+      ].join(' ')}
       aria-label="Loss tracking"
     >
       <div className={styles.header}>
