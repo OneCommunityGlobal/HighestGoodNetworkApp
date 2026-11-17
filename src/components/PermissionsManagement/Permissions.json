@@ -386,7 +386,7 @@
       {
         "label": "Delete Any Time Entry",
         "key": "deleteTimeEntry",
-        "description": "Lets the user delete any time entry, own or others'. The Time Log trash icon also needs Delete Time Entry (Own) or (Others)."
+        "description": "Lets the user delete any time entry with the trash icon. Also needs 'Modify Important User Info' to delete profile Edit History rows."
       },
       {
         "label": "Toggle Tangible Time Self",
