@@ -325,4 +325,32 @@ describe('Team Member Task Component', () => {
       expect(timeElement[0].textContent).toBe(`${task.hoursLogged} of ${task.estimatedHours}`);
     });
   });
+  describe('red X (Remove User from Task)', () => {
+    const renderWithPermissions = frontPermissions => {
+      const volunteerStore = mockStore({
+        auth: {
+          ...authMock,
+          user: { ...authMock.user, role: 'Volunteer', permissions: { frontPermissions } },
+        },
+        userProfile: userProfileMock,
+        role: rolesMock.role,
+        theme: themeMock,
+      });
+      // Earlier tests push into the shared props.tasks; keep one task
+      renderComponent(
+        { ...props, role: 'Volunteer', tasks: props.tasks.slice(0, 1) },
+        volunteerStore,
+      );
+    };
+
+    it.each(['canDeleteTask', 'removeUserFromTask'])('shows with only %s', key => {
+      renderWithPermissions([key]);
+      expect(screen.getByTitle('Remove User from Task')).toBeInTheDocument();
+    });
+
+    it('is hidden without either permission', () => {
+      renderWithPermissions([]);
+      expect(screen.queryByTitle('Remove User from Task')).not.toBeInTheDocument();
+    });
+  });
 });

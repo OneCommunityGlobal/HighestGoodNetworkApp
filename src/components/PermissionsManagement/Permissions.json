@@ -319,7 +319,7 @@
               {
                 "label": "Unassign Team Members from Tasks",
                 "key": "removeUserFromTask",
-                "description": "Lets the user take a person off a task with the red X on Dashboard > Tasks."
+                "description": "Lets the user take a person off a task with the red X on Dashboard > Tasks. Same as 'View and Interact with Task \"X\" on Dashboards'."
               },
               {
                 "label": "Interact with Task \"Ready for Review\"",
@@ -329,7 +329,7 @@
               {
                 "label": "View and Interact with Task \"X\" on Dashboards",
                 "key": "canDeleteTask",
-                "description": "Lets the user see and use the task 'X' on Dashboard > Tasks."
+                "description": "Lets the user take a person off a task with the red X on Dashboard > Tasks. Same as 'Unassign Team Members from Tasks'."
               },
               {
                 "label": "See How Many Times a Task's Estimated Hours Changed",
