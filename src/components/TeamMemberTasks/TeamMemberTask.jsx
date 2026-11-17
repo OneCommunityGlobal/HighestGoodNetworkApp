@@ -675,7 +675,6 @@ const TeamMemberTask = React.memo(
                                             userId={userId}
                                             task={task}
                                             updateTask={updateTaskStatus}
-                                            onTimeOff={onTimeOff}
                                           />
                                         </div>
                                       </div>
