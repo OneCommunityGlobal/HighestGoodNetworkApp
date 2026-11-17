@@ -61,7 +61,9 @@ function TeamTableHeaderComponent({
         {MEMBERS}
       </th>
       {(canDeleteTeam || canPutTeam) && (
-        <th scope="col" id="teams__delete" data-testid="teams__delete" />
+        <th scope="col" id="teams__delete" data-testid="teams__delete">
+          Actions
+        </th>
       )}
     </tr>
   );
