@@ -45,20 +45,51 @@ export const fetchIssueTypesAndYears = () => async dispatch => {
   }
 };
 
-const formatFilters = ({ projectIds, startDate, endDate } = {}) => {
+const formatDateValue = date => {
+  if (!date) return undefined;
+  if (typeof date === 'string') {
+    return date.split('T')[0];
+  }
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return undefined;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const formatFilters = ({ projectIds, projects, startDate, endDate, dates } = {}) => {
   const formatted = {};
+  const proj = projects || projectIds;
   if (
-    (typeof projectIds === 'string' && projectIds.trim() !== '') ||
-    (Array.isArray(projectIds) && projectIds.length > 0)
+    (typeof proj === 'string' && proj.trim() !== '') ||
+    (Array.isArray(proj) && proj.length > 0)
   ) {
-    formatted.projectIds = Array.isArray(projectIds) ? projectIds.join(',') : projectIds.trim();
+    const projStr = Array.isArray(proj) ? proj.join(',') : proj.trim();
+    formatted.projects = projStr;
+    formatted.projectIds = projStr;
   }
-  if (startDate !== undefined && startDate !== '') {
-    formatted.startDate = startDate;
+
+  const startFormatted = formatDateValue(startDate);
+  const endFormatted = formatDateValue(endDate);
+
+  if (startFormatted !== undefined) {
+    formatted.startDate = startFormatted;
   }
-  if (endDate !== undefined && endDate !== '') {
-    formatted.endDate = endDate;
+  if (endFormatted !== undefined) {
+    formatted.endDate = endFormatted;
   }
+
+  if (dates) {
+    formatted.dates = dates;
+  } else if (startFormatted && endFormatted) {
+    formatted.dates = `${startFormatted},${endFormatted}`;
+  } else if (startFormatted) {
+    formatted.dates = startFormatted;
+  } else if (endFormatted) {
+    formatted.dates = endFormatted;
+  }
+
   return formatted;
 };
 

@@ -1,5 +1,5 @@
 /* Container for the entire chart */
-.chart-container {
+.chartContainer {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding: 10px;
   background-color: #fff;
@@ -13,7 +13,7 @@
 }
 
 /* Chart title styling */
-.chart-title {
+.chartTitle {
   font-size: 1.25rem;
   font-weight: bold;
   text-align: center;
@@ -22,7 +22,7 @@
 }
 
 /* Wrapper for the chart canvas */
-.chart-wrapper {
+.chartWrapper {
   width: 100%;
   max-height: 400px;
   overflow: auto;
@@ -30,114 +30,117 @@
 }
 
 /* Ensure canvas scales responsively */
-.chart-wrapper canvas {
+.chartWrapper canvas {
   width: 100% !important;
   height: auto !important;
   min-height: 200px;
   display: block;
 }
 
+.datepickerWrapper {
+  display: flex;
+  align-items: center;
+}
+
 /* Light mode for multi select */
-.custom-select__control {
+.chartContainer :global(.custom-select__control) {
   background-color: #fff;
   color: #000;
   border-color: #ccc;
 }
 
-.custom-select__multi-value {
+.chartContainer :global(.custom-select__multi-value) {
   background-color: #e2e6ea;
 }
 
-.custom-select__multi-value__label {
+.chartContainer :global(.custom-select__multi-value__label) {
   color: #000;
 }
 
-.custom-select__multi-value__remove {
+.chartContainer :global(.custom-select__multi-value__remove) {
   color: #000;
 }
 
-.custom-select__multi-value__remove:hover {
+.chartContainer :global(.custom-select__multi-value__remove:hover) {
   background-color: #ced4da;
   color: #fff;
 }
 
 /* ===== Dark mode ===== */
 
-/* Change card background & shadow */
-.dark-mode .chart-container {
+.darkMode.chartContainer {
   background-color: #1b2a41;
   box-shadow: 0 1px 3px var(--card-shadow);
 }
 
-/* Text color in dark mode */
-.dark-mode .chart-title {
+.darkMode .chartTitle {
   color: var(--text-color);
 }
 
 /* Dark background for react-datepicker input */
-.dark-mode .datepicker {
+.darkMode :global(.datepicker) {
   background-color: #233a5b !important;
   color: #fff !important;
   border-color: #e3e1e1 !important;
 }
 
 /* Dark mode for multi select */
-.dark-mode .custom-select__control,
-.dark-mode .custom-select__menu {
+.darkMode :global(.custom-select__control),
+.darkMode :global(.custom-select__menu) {
   background-color: #2b3e59 !important;
   border-color: #666 !important;
   color: #fff !important;
 }
 
-.dark-mode .custom-select__multi-value {
+.darkMode :global(.custom-select__multi-value) {
   background-color: #1c2541 !important;
 }
 
-.dark-mode .custom-select__multi-value__label {
+.darkMode :global(.custom-select__multi-value__label) {
   color: #fff !important;
 }
 
-.dark-mode .custom-select__multi-value__remove {
+.darkMode :global(.custom-select__multi-value__remove) {
   color: #fff !important;
 }
 
-.dark-mode .custom-select__multi-value__remove:hover {
+.darkMode :global(.custom-select__multi-value__remove:hover) {
   background-color: #ff6b6b !important;
   color: #fff !important;
 }
 
-.dark-mode .custom-select__option {
+.darkMode :global(.custom-select__option) {
   background-color: #2b3e59 !important;
   color: #fff !important;
 }
 
-.dark-mode .custom-select__option--is-focused {
+.darkMode :global(.custom-select__option--is-focused) {
   background-color: #6c757d !important;
 }
 
-.dark-mode .custom-select__option--is-selected {
+.darkMode :global(.custom-select__option--is-selected) {
   background-color: #007bff !important;
 }
 
 /* Stack filters on narrow screens */
 @media (width <= 768px) {
-  .chart-wrapper {
+  .chartWrapper {
     max-height: 300px;
   }
 }
 
 /* Further adjustments on small phones */
 @media (width <= 480px) {
-  .chart-container {
+  .chartContainer {
     padding: 8px;
   }
 
-  .chart-title {
+  .chartTitle {
     font-size: 1rem;
     margin-bottom: 8px;
   }
 
-  .chart-wrapper {
+  .chartWrapper {
     max-height: 250px;
   }
 }

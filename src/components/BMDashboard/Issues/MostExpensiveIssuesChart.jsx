@@ -15,8 +15,8 @@ import Select from 'react-select';
 import axios from 'axios';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Row, Col } from 'react-bootstrap';
-import './MostExpensiveIssuesChart.css';
 import { ENDPOINTS } from '../../../utils/URL';
+import styles from './MostExpensiveIssuesChart.module.css';
 
 // Register chart components once
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -225,12 +225,12 @@ export default function MostExpensiveOpenIssuesChart() {
   );
 
   return (
-    <div className={`chart-container ${darkMode ? 'dark-mode' : ''}`}>
-      <h2 className="chart-title">Most Expensive Open Issues</h2>
+    <div className={`${styles.chartContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <h2 className={styles.chartTitle}>Most Expensive Open Issues</h2>
 
       <Row className="mb-3 align-items-center">
         <Col md={6}>
-          <div className="datepicker-wrapper">
+          <div className={styles.datepickerWrapper}>
             <DatePicker
               selectsRange
               startDate={startDate}
@@ -268,7 +268,7 @@ export default function MostExpensiveOpenIssuesChart() {
       </Row>
 
       {/* Render the bar chart */}
-      <div className="chart-wrapper">
+      <div className={styles.chartWrapper}>
         {error && <div className="alert alert-danger">{error}</div>}
         {!error && loading && <p className="text-center my-3">Loading issues...</p>}
         {!error && !loading && mappedIssues.length === 0 && (
