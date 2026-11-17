@@ -1,6 +1,8 @@
+/* stylelint-disable no-descending-specificity */
+
 /* ---------- CSS Variables for Dark Mode ---------- */
 :root {
-  --color-text-dark: #ffffff;
+  --color-text-dark: #fff;
   --color-border-dark: #4a5a77;
 }
 
@@ -135,7 +137,7 @@
   color: #fff;
   border-radius: 10px;
   border: 1px solid var(--color-border-dark);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -198,7 +200,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: border-color 0.2s;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
@@ -436,7 +438,7 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
@@ -474,6 +476,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -2606,62 +2609,14 @@
 }
 
 /* ---------- Insights tabs, sort and export controls ---------- */
-.insightsTitleWrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.insightsTabsContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
 .insightsTabsContainer .insightsTabs .insightsTab {
   flex: 0 0 auto;
   padding: 8px 14px;
   white-space: nowrap;
 }
 
-.icons {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .sortIcon {
   flex-shrink: 0;
-}
-
-.tooltipWrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.tooltip {
-  position: absolute;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 6px 10px;
-  font-size: 12px;
-  background-color: #111;
-  color: #fff;
-  border-radius: 6px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
-  z-index: 10;
-}
-
-.tooltipWrapper:hover .tooltip {
-  opacity: 1;
 }
 
 .insightsTabsDarkMode {
