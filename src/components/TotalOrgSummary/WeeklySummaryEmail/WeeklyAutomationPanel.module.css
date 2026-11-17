@@ -1,0 +1,94 @@
+.panel {
+  margin: 16px auto;
+  padding: 16px 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: #fff;
+  color: #212529;
+}
+
+.panelDark {
+  border-color: #3a506b;
+  background: #1c2541;
+  color: #fff;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.statusLine {
+  margin: 0 0 12px;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.alertField {
+  margin-bottom: 12px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.error {
+  margin: 8px 0 0;
+  color: #b02a37;
+}
+
+.errorDark {
+  color: #ff8b94;
+}
+
+.runs {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.runs th,
+.runs td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #dee2e6;
+  text-align: left;
+}
+
+.runsDark th,
+.runsDark td {
+  border-bottom-color: #3a506b;
+}
+
+.runsScroll {
+  overflow-x: auto;
+}
+
+.readOnly {
+  margin: 16px auto;
+  padding: 12px 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+}
