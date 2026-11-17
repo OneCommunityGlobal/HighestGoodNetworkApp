@@ -88,7 +88,7 @@
       {
         "label": "Edit User Profile",
         "key": "putUserProfile",
-        "description": "Lets the user edit other users' basic profile, like name, bio and photo."
+        "description": "Lets the user edit other users' basic profile (name, bio, photo) and add, edit or move their weekly summaries on their Time Log."
       },
       {
         "label": "Change User Status",
@@ -487,7 +487,7 @@
       {
         "label": "Edit Roles",
         "key": "putRole",
-        "description": "Lets the user see all roles, rename them and change their permissions in Permissions Management."
+        "description": "Lets the user see all roles, rename them, change their permissions, and save or load role presets in Permissions Management."
       },
       {
         "label": "Edit Individual User Permissions",
