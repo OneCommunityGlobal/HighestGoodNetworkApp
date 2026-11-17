@@ -377,7 +377,8 @@ function InjurySeverityDashboard(props) {
           color: '#007bff',
           fontSize: '2rem',
           fontWeight: 'bold',
-          marginBottom: '20px',
+          marginTop: darkMode ? '25px' : '0px',
+          marginBottom: '40px',
         }}
         className={`${darkMode && 'text-light'}`}
       >
@@ -394,72 +395,96 @@ function InjurySeverityDashboard(props) {
           paddingLeft: 20,
         }}
       >
-        <Select
-          className={styles.filterSelect}
-          popupClassName={dropdownClassName}
-          mode="multiple"
-          allowClear
-          placeholder="Projects"
-          style={filterStyle}
-          value={selProjects}
-          onChange={setSelProjects}
-          maxTagCount="responsive"
-          maxTagPlaceholder={omitted => `+${omitted.length}`}
-        >
-          {bmProjects.map(p => (
-            <Option key={p._id} value={p._id}>
-              {p.name}
-            </Option>
-          ))}
-        </Select>
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <label htmlFor="injury-projects" style={{ fontSize: '15px' }}>
+            Projects
+          </label>
+          <Select
+            className={styles.filterSelect}
+            popupClassName={dropdownClassName}
+            mode="multiple"
+            allowClear
+            id="injury-projects"
+            placeholder="Select"
+            style={{ ...filterStyle, width: '100%' }}
+            value={selProjects}
+            onChange={setSelProjects}
+            maxTagCount="responsive"
+            maxTagPlaceholder={omitted => `+${omitted.length}`}
+          >
+            {bmProjects.map(p => (
+              <Option key={p._id} value={p._id}>
+                {p.name}
+              </Option>
+            ))}
+          </Select>
+        </div>
 
-        <RangePicker
-          className={styles.filterSelect}
-          popupClassName={`${dateDropdownClassName} ${
-            darkMode ? styles.oxideDark : styles.lightCalendar
-          }`}
-          value={dateRange}
-          onChange={dates => setDateRange(dates || [null, null])}
-          style={filterStyle}
-        />
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <label htmlFor="injury-date-range" style={{ fontSize: '15px' }}>
+            Date Range
+          </label>
+          <RangePicker
+            className={styles.filterSelect}
+            popupClassName={`${dateDropdownClassName} ${
+              darkMode ? styles.oxideDark : styles.lightCalendar
+            }`}
+            value={dateRange}
+            onChange={dates => setDateRange(dates || [null, null])}
+            id="injury-date-range"
+            style={{ ...filterStyle, width: '100%' }}
+          />
+        </div>
 
-        <Select
-          className={styles.filterSelect}
-          popupClassName={dropdownClassName}
-          mode="multiple"
-          allowClear
-          placeholder="Injury Types"
-          style={filterStyle}
-          value={selTypes}
-          onChange={setSelTypes}
-          maxTagCount="responsive"
-          maxTagPlaceholder={omitted => `+${omitted.length}`}
-        >
-          {['Cut', 'Bruise', 'Fracture', 'Burn', 'Electric Shock'].map(t => (
-            <Option key={t} value={t}>
-              {t}
-            </Option>
-          ))}
-        </Select>
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <label htmlFor="injury-types" style={{ fontSize: '15px' }}>
+            Injury Types
+          </label>
+          <Select
+            className={styles.filterSelect}
+            popupClassName={dropdownClassName}
+            mode="multiple"
+            allowClear
+            id="injury-types"
+            placeholder="Select"
+            style={{ ...filterStyle, width: '100%' }}
+            value={selTypes}
+            onChange={setSelTypes}
+            maxTagCount="responsive"
+            maxTagPlaceholder={omitted => `+${omitted.length}`}
+          >
+            {['Cut', 'Bruise', 'Fracture', 'Burn', 'Electric Shock'].map(t => (
+              <Option key={t} value={t}>
+                {t}
+              </Option>
+            ))}
+          </Select>
+        </div>
 
-        <Select
-          className={styles.filterSelect}
-          popupClassName={dropdownClassName}
-          mode="multiple"
-          allowClear
-          placeholder="Departments"
-          style={filterStyle}
-          value={selDepts}
-          onChange={setSelDepts}
-          maxTagCount="responsive"
-          maxTagPlaceholder={omitted => `+${omitted.length}`}
-        >
-          {DEPARTMENT_OPTIONS.map(d => (
-            <Option key={d} value={d}>
-              {d}
-            </Option>
-          ))}
-        </Select>
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <label htmlFor="injury-departments" style={{ fontSize: '15px' }}>
+            Departments
+          </label>
+          <Select
+            className={styles.filterSelect}
+            popupClassName={dropdownClassName}
+            mode="multiple"
+            allowClear
+            id="injury-departments"
+            placeholder="Select"
+            style={{ ...filterStyle, width: '100%' }}
+            value={selDepts}
+            onChange={setSelDepts}
+            maxTagCount="responsive"
+            maxTagPlaceholder={omitted => `+${omitted.length}`}
+          >
+            {DEPARTMENT_OPTIONS.map(d => (
+              <Option key={d} value={d}>
+                {d}
+              </Option>
+            ))}
+          </Select>
+        </div>
       </div>
 
       {/* Chart */}
