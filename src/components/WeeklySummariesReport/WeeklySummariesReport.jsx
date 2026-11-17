@@ -2401,7 +2401,6 @@ const WeeklySummariesReport = props => {
 
 WeeklySummariesReport.propTypes = {
   error: PropTypes.any,
-  loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   infoCollections: PropTypes.array,
   auth: PropTypes.shape({
@@ -2431,7 +2430,6 @@ WeeklySummariesReport.propTypes = {
 const mapStateToProps = state => {
   return {
     error: state.weeklySummariesReport?.error || null,
-    loading: state.weeklySummariesReport?.loading || false,
     summaries: state.weeklySummariesReport?.summaries || [],
     allBadgeData: state.badge?.allBadgeData || [],
     infoCollections: state.infoCollections?.infos || [],
