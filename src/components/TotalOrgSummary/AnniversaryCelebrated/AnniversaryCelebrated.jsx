@@ -19,21 +19,35 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
     );
   }
 
-  const sixMonthsData = data['6Months'];
-  const oneYearData = data['1Year'];
-  const hasComparisonData = [sixMonthsData, oneYearData].every(
-    dataset => dataset.comparisonPercentage,
-  );
+  if (!data) {
+    return <div className="text-center p-3">No anniversary data available for this period.</div>;
+  }
 
-  let sixMonthsPercent;
-  let oneYearPercent;
-  let is6MonthsPositive;
-  let isOneYearPositive;
+  const sixMonthsData = data?.['6Months'] ?? {
+    users: [],
+    comparisonPercentage: 0,
+  };
+
+  const oneYearData = data?.['1Year'] ?? {
+    users: [],
+    comparisonPercentage: 0,
+  };
+
+  const hasComparisonData =
+    sixMonthsData?.comparisonPercentage !== undefined &&
+    oneYearData?.comparisonPercentage !== undefined;
+
+  let sixMonthsPercent = 0;
+  let oneYearPercent = 0;
+  let is6MonthsPositive = true;
+  let isOneYearPositive = true;
+
   if (hasComparisonData) {
-    sixMonthsPercent = sixMonthsData.comparisonPercentage;
-    oneYearPercent = oneYearData.comparisonPercentage;
-    is6MonthsPositive = sixMonthsPercent.toString().charAt(0) !== '-';
-    isOneYearPositive = oneYearPercent.toString().charAt(0) !== '-';
+    sixMonthsPercent = sixMonthsData.comparisonPercentage ?? 0;
+    oneYearPercent = oneYearData.comparisonPercentage ?? 0;
+
+    is6MonthsPositive = Number(sixMonthsPercent) >= 0;
+    isOneYearPositive = Number(oneYearPercent) >= 0;
   }
 
   const handleEmailClick = email => {
@@ -42,6 +56,7 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
 
   const getAnniversaryListItem = (userData = {}, anniversaryMonths = 6) => {
     const { _id, profilePic, email, firstName, lastName, createdDate } = userData;
+
     return (
       <li key={_id} className="d-flex flex-column">
         <div
@@ -74,13 +89,14 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
 
           <div style={{ alignSelf: 'center' }}>
             <p className="m-0" style={{ color: darkMode ? '#fff' : '#000' }}>
-              {`${firstName} ${lastName}`}
+              {`${firstName || ''} ${lastName || ''}`}
             </p>
-            {/* show created date */}
+
             <small style={{ color: darkMode ? '#aaa' : '#555' }}>
-              Joined: {new Date(createdDate).toLocaleDateString()}
+              Joined: {createdDate ? new Date(createdDate).toLocaleDateString() : 'N/A'}
             </small>
           </div>
+
           <img
             src={anniversaryMonths === 6 ? sixMonthsAward : oneYearAward}
             alt="award"
@@ -93,28 +109,34 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
 
   const exportData = () => {
     const exportObj = {
-      sixMonths: sixMonthsData.users,
-      oneYear: oneYearData.users,
+      sixMonths: sixMonthsData?.users ?? [],
+      oneYear: oneYearData?.users ?? [],
     };
+
     const blob = new Blob([JSON.stringify(exportObj, null, 2)], {
       type: 'application/json',
     });
+
     const url = URL.createObjectURL(blob);
+
     const link = document.createElement('a');
     link.href = url;
     link.download = 'anniversaries.json';
-    // eslint-disable-next-line testing-library/no-node-access
     link.click();
+
+    URL.revokeObjectURL(url);
   };
 
-  // filter users by search
   const filterUsers = users =>
-    users.filter(u => `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()));
+    users.filter(user =>
+      `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase().includes(search.toLowerCase()),
+    );
 
-  const usersFilteredSixMonthsData = filterUsers(sixMonthsData.users).map(item =>
+  const usersFilteredSixMonthsData = filterUsers(sixMonthsData?.users ?? []).map(item =>
     getAnniversaryListItem(item, 6),
   );
-  const usersFilteredOneYearData = filterUsers(oneYearData.users).map(item =>
+
+  const usersFilteredOneYearData = filterUsers(oneYearData?.users ?? []).map(item =>
     getAnniversaryListItem(item, 12),
   );
 
@@ -134,12 +156,16 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
       return (
         <li
           className="text-center"
-          style={{ color: darkMode ? '#fff' : '#000', listStyle: 'none' }}
+          style={{
+            color: darkMode ? '#fff' : '#000',
+            listStyle: 'none',
+          }}
         >
           No anniversaries found
         </li>
       );
     }
+
     return (
       <>
         {usersFilteredSixMonthsData}
@@ -155,9 +181,8 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
           #anniversary-search::placeholder {
             color: ${darkMode ? 'rgba(248,250,252,0.75)' : 'rgba(17,24,39,0.6)'} !important;
           }
-        
 
-        .anniversaryGmailIcon {
+          .anniversaryGmailIcon {
             color: #ea4335 !important;
             fill: #ea4335 !important;
           }
@@ -167,7 +192,7 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
           }
         `}
       </style>
-      {/* Comparison percentages with counts */}
+
       {hasComparisonData && (
         <span
           style={{
@@ -180,29 +205,25 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
           }}
         >
           <p style={{ display: 'flex', gap: '5px', marginBottom: '5px' }}>
-            <span style={{ color: darkMode ? '#fff' : 'gray' }}>6 months: </span>
-            <span
-              className={`text-center ${is6MonthsPositive ? 'text-success' : 'text-danger'}`}
-              style={{ margin: 0 }}
-            >
-              {`${is6MonthsPositive ? '+' : ''}${sixMonthsPercent}%`}({sixMonthsData.users.length}{' '}
-              users)
+            <span style={{ color: darkMode ? '#fff' : 'gray' }}>6 months:</span>
+
+            <span className={`text-center ${is6MonthsPositive ? 'text-success' : 'text-danger'}`}>
+              {`${is6MonthsPositive ? '+' : ''}${sixMonthsPercent}%`}(
+              {sixMonthsData?.users?.length ?? 0} users)
             </span>
           </p>
+
           <p style={{ display: 'flex', gap: '5px' }}>
-            <span style={{ color: darkMode ? '#fff' : 'gray' }}>1 year: </span>
-            <span
-              className={`text-center ${isOneYearPositive ? 'text-success' : 'text-danger'}`}
-              style={{ margin: 0 }}
-            >
-              {`${isOneYearPositive ? '+' : ''}${oneYearPercent}%`}({oneYearData.users.length}{' '}
-              users)
+            <span style={{ color: darkMode ? '#fff' : 'gray' }}>1 year:</span>
+
+            <span className={`text-center ${isOneYearPositive ? 'text-success' : 'text-danger'}`}>
+              {`${isOneYearPositive ? '+' : ''}${oneYearPercent}%`}(
+              {oneYearData?.users?.length ?? 0} users)
             </span>
           </p>
         </span>
       )}
 
-      {/* Search + Export Controls */}
       <div className="d-flex justify-content-between align-items-center mb-2">
         <input
           id="anniversary-search"
@@ -212,12 +233,12 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
           onChange={e => setSearch(e.target.value)}
           style={searchInputStyle}
         />
+
         <button onClick={exportData} className="btn btn-secondary">
           Export Data
         </button>
       </div>
 
-      {/* List of anniversaries */}
       <ul className="w-90 overflow-auto" style={{ maxHeight: '410px' }}>
         {renderAnniversariesList()}
       </ul>

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
+
+import { ENDPOINTS } from '~/utils/URL';
 import Loading from '~/components/common/Loading';
+
 import TeamStatsBarChart from './TeamStatsBarChart';
 import styles from './TeamStats.module.css';
 
@@ -14,6 +16,7 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
   const [teamsWithActiveMembers, setTeamsWithActiveMembers] = useState(null);
   const [teamsStatsFetchingError, setTeamsStatsFetchingError] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const dropdownRef = useRef(null);
 
   const isDarkMode =
@@ -23,25 +26,29 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
     const fetchTeamsData = async () => {
       try {
         const url = ENDPOINTS.VOLUNTEER_ROLES_TEAM_STATS(endDate, activeMembersMinimum);
+
         const response = await axios.get(url);
-        const { data } = response;
-        setTeamsWithActiveMembers(data.teamsWithActiveMembers);
+
+        setTeamsWithActiveMembers(response?.data?.teamsWithActiveMembers ?? null);
       } catch (error) {
         setTeamsStatsFetchingError(error);
       }
     };
 
-    fetchTeamsData();
+    if (endDate) {
+      fetchTeamsData();
+    }
   }, [activeMembersMinimum, endDate]);
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
-    }
+    };
 
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
@@ -59,19 +66,24 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
     return <div>Cannot be fetched as of now.</div>;
   }
 
-  const { inTeam, notInTeam } = usersInTeamStats;
+  // Prevent dashboard crash when API returns null/undefined
+  if (!usersInTeamStats) {
+    return <div className="text-center p-3">No team statistics available for this period.</div>;
+  }
+
+  const { inTeam = {}, notInTeam = {} } = usersInTeamStats || {};
 
   const data = [
     {
       name: 'Not In Team',
-      value: notInTeam.count,
-      change: +notInTeam.comparisonPercentage || 0,
+      value: notInTeam?.count ?? 0,
+      change: +(notInTeam?.comparisonPercentage ?? 0),
       color: '#36A2EB',
     },
     {
       name: 'In Team',
-      value: inTeam.count,
-      change: +inTeam.comparisonPercentage || 0,
+      value: inTeam?.count ?? 0,
+      change: +(inTeam?.comparisonPercentage ?? 0),
       color: '#1B6DDF',
     },
   ];
@@ -88,14 +100,15 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
     border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.20)' : '1px solid #c7c7c7',
   };
 
-  function handleOptionSelect(value) {
+  const handleOptionSelect = value => {
     setActiveMembersMinimum(value);
     setIsDropdownOpen(false);
-  }
+  };
 
   return (
     <div>
       <TeamStatsBarChart data={data} yAxisLabel="name" darkMode={isDarkMode} />
+
       {teamsWithActiveMembers && (
         <div className={styles.teamStatsActiveMembers}>
           <div className={styles.teamStatsBarChartSummary}>
@@ -111,6 +124,7 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
                   onClick={() => setIsDropdownOpen(prev => !prev)}
                 >
                   <span>{activeMembersMinimum}</span>
+
                   <span
                     className={`${styles.dropdownArrow} ${
                       isDropdownOpen ? styles.dropdownArrowOpen : ''
