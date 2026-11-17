@@ -533,7 +533,7 @@ export default function UpdateEquipment() {
               <div style={readonlyStyle}>{equipmentDetails?.purchaseStatus || 'Unknown'}</div>
             </Col>
           </Row>
-          {equipmentDetails?.purchaseStatus === 'Rental' && (
+          {['Rental', 'Rented'].includes(equipmentDetails?.purchaseStatus) && (
             <Row form>
               <Col md={4}>
                 <Label style={formLabelStyle}>Rental End Date</Label>

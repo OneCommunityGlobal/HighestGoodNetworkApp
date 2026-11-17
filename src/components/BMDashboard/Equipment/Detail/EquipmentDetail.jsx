@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Button, Input, FormGroup, Label, FormFeedback, Spinner } from 'reactstrap';
 import { useHistory, useParams } from 'react-router-dom';
@@ -9,9 +9,27 @@ import { v4 as uuidv4 } from 'uuid';
 import EquipmentModal from '../EquipmentModal';
 import styles from './EquipmentDetailPage.module.css';
 
-const OWNERSHIP_OPTIONS = ['Purchased', 'Rented'];
+const OWNERSHIP_OPTIONS = [
+  { label: 'Owned', value: 'Purchased', values: ['Purchased', 'Purchase'] },
+  { label: 'Rented', value: 'Rental', values: ['Rental', 'Rented'] },
+];
+const LEGACY_NEEDED = { label: 'Needed', value: 'Needed', values: ['Needed'] };
 const USAGE_OPTIONS = ['Operational', 'Under Maintenance', 'Out of Service'];
 const CONDITION_OPTIONS = ['New', 'Used', 'Refurbished'];
+const LEGACY_CONDITIONS = ['Like New', 'Good', 'Worn', 'Lost', 'Needs Repair', 'Needs Replacing'];
+
+const getFormValues = equipment => ({
+  project:
+    equipment.project?._id || (typeof equipment.project === 'string' ? equipment.project : ''),
+  equipmentClass: equipment.equipmentClass || equipment.itemType?.category || '',
+  ownership: equipment.purchaseStatus || '',
+  currentUsage: equipment.currentUsage || '',
+  condition: equipment.condition || '',
+});
+
+const ownershipLabel = value =>
+  [...OWNERSHIP_OPTIONS, LEGACY_NEEDED].find(option => option.values.includes(value))?.label ||
+  value;
 
 function DetailItem({ label, value }) {
   return (
@@ -58,18 +76,25 @@ function DashedLineItem() {
   return <div className="EquipmentDetailPage__dashed_line" />;
 }
 
-function EditableDropdown({ label, value, options, onChange, error }) {
+function EditableDropdown({ label, value, options, onChange, error, disabled }) {
+  const id = `equipment-${label.toLowerCase().replaceAll(' ', '-')}`;
+  const hasValue = options.some(opt => (typeof opt === 'object' ? opt.value : opt) === value);
   return (
     <FormGroup className={styles.editableField}>
-      <Label className={styles.editableFieldLabel}>{label}:</Label>
+      <Label for={id} className={styles.editableFieldLabel}>
+        {label}:
+      </Label>
       <Input
+        id={id}
         type="select"
         value={value}
         onChange={e => onChange(e.target.value)}
         className={styles.editableFieldInput}
         invalid={!!error}
+        disabled={disabled}
       >
         <option value="">-- Select --</option>
+        {value && !hasValue && <option value={value}>{value}</option>}
         {options.map(opt => (
           <option
             key={typeof opt === 'object' ? opt.value : opt}
@@ -84,21 +109,22 @@ function EditableDropdown({ label, value, options, onChange, error }) {
   );
 }
 
-function EditableRadioGroup({ label, value, options, onChange, error }) {
+function EditableRadioGroup({ label, value, options, onChange, error, disabled }) {
   return (
     <FormGroup className={styles.editableField}>
       <Label className={styles.editableFieldLabel}>{label}:</Label>
       <div className={styles.radioGroup}>
         {options.map(opt => (
-          <Label key={opt} check className={styles.radioLabel}>
+          <Label key={opt.value} check className={styles.radioLabel}>
             <Input
               type="radio"
               name={label}
-              value={opt}
-              checked={value === opt}
-              onChange={() => onChange(opt)}
+              value={opt.value}
+              checked={opt.values.includes(value)}
+              onChange={() => onChange(opt.value)}
+              disabled={disabled}
             />{' '}
-            {opt}
+            {opt.label}
           </Label>
         ))}
       </div>
@@ -118,6 +144,11 @@ function EquipmentDetail() {
   const equipmentTypes = useSelector(state => state.bmInvTypes.list);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const saveInFlight = useRef(false);
+  const initialClass = useRef('');
+  const initialOwnership = useRef('');
+  const initialCondition = useRef('');
 
   const [formValues, setFormValues] = useState({
     project: '',
@@ -130,22 +161,12 @@ function EquipmentDetail() {
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
+    setIsEditing(false);
+    setFormErrors({});
     dispatch(fetchEquipmentById(equipmentId));
     dispatch(fetchBMProjects());
     dispatch(fetchEquipmentTypes());
   }, [dispatch, equipmentId]);
-
-  useEffect(() => {
-    if (equipment && equipment._id) {
-      setFormValues({
-        project: equipment.project?._id || '',
-        equipmentClass: equipment.equipmentClass || equipment.itemType?.category || '',
-        ownership: equipment.purchaseStatus || '',
-        currentUsage: equipment.currentUsage || '',
-        condition: equipment.condition || '',
-      });
-    }
-  }, [equipment]);
 
   const projectOptions = useMemo(() => {
     if (!Array.isArray(projects)) return [];
@@ -243,15 +264,27 @@ function EquipmentDetail() {
 
   const validate = () => {
     const errors = {};
-    if (!formValues.project) errors.project = 'Project is required.';
-    if (!formValues.ownership) errors.ownership = 'Ownership is required.';
-    if (!formValues.currentUsage) errors.currentUsage = 'Current usage is required.';
-    if (!formValues.condition) errors.condition = 'Condition is required.';
+    if (!/^[a-f\d]{24}$/i.test(formValues.project)) errors.project = 'Select a valid project.';
+    if (
+      ![...OWNERSHIP_OPTIONS, LEGACY_NEEDED].some(option =>
+        option.values.includes(formValues.ownership),
+      )
+    )
+      errors.ownership = 'Select a valid ownership.';
+    if (!USAGE_OPTIONS.includes(formValues.currentUsage))
+      errors.currentUsage = 'Select a valid current usage.';
+    if (![...CONDITION_OPTIONS, ...LEGACY_CONDITIONS].includes(formValues.condition))
+      errors.condition = 'Select a valid condition.';
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleEdit = () => {
+    const values = getFormValues(equipment);
+    initialClass.current = values.equipmentClass;
+    initialOwnership.current = values.ownership;
+    initialCondition.current = values.condition;
+    setFormValues(values);
     setIsEditing(true);
     setFormErrors({});
   };
@@ -259,23 +292,19 @@ function EquipmentDetail() {
   const handleCancel = () => {
     setIsEditing(false);
     setFormErrors({});
-    if (equipment && equipment._id) {
-      setFormValues({
-        project: equipment.project?._id || '',
-        equipmentClass: equipment.equipmentClass || equipment.itemType?.category || '',
-        ownership: equipment.purchaseStatus || '',
-        currentUsage: equipment.currentUsage || '',
-        condition: equipment.condition || '',
-      });
-    }
   };
 
   const handleSave = async () => {
+    if (saveInFlight.current || updateLoading) return;
     if (!validate()) return;
 
+    saveInFlight.current = true;
+    setIsSaving(true);
     const payload = {
       projectId: formValues.project,
-      equipmentClass: formValues.equipmentClass,
+      ...(formValues.equipmentClass !== initialClass.current
+        ? { equipmentClass: formValues.equipmentClass }
+        : {}),
       purchaseStatus: formValues.ownership,
       currentUsage: formValues.currentUsage,
       condition: formValues.condition,
@@ -287,6 +316,9 @@ function EquipmentDetail() {
       setFormErrors({});
     } catch {
       // error already handled by the action (toast shown)
+    } finally {
+      saveInFlight.current = false;
+      setIsSaving(false);
     }
   };
 
@@ -301,7 +333,7 @@ function EquipmentDetail() {
     { label: 'Name', value: formatValue(equipment?.itemType?.name) },
     { label: 'Number', value: formatValue(equipment?.code) },
     { label: 'Add Date', value: formatDateString(equipment?.createdAt) },
-    equipment?.purchaseStatus === 'Purchased' ? null : { label: 'Rental Duration' },
+    ['Rental', 'Rented'].includes(equipment?.purchaseStatus) ? { label: 'Rental Duration' } : null,
     { label: 'Dashed Line' },
     { label: 'Input Invoice No or ID', value: formatValue(invoiceNumber) },
     { label: 'Price', value: formatValue(price) },
@@ -380,6 +412,7 @@ function EquipmentDetail() {
         options={projectOptions}
         onChange={val => updateField('project', val)}
         error={formErrors.project}
+        disabled={isSaving}
       />
       <EditableDropdown
         label="Class"
@@ -387,13 +420,19 @@ function EquipmentDetail() {
         options={classOptions}
         onChange={val => updateField('equipmentClass', val)}
         error={formErrors.equipmentClass}
+        disabled={isSaving}
       />
       <EditableRadioGroup
         label="Ownership"
         value={formValues.ownership}
-        options={OWNERSHIP_OPTIONS}
+        options={
+          initialOwnership.current === 'Needed'
+            ? [...OWNERSHIP_OPTIONS, LEGACY_NEEDED]
+            : OWNERSHIP_OPTIONS
+        }
         onChange={val => updateField('ownership', val)}
         error={formErrors.ownership}
+        disabled={isSaving}
       />
       <EditableDropdown
         label="Current Usage"
@@ -401,13 +440,19 @@ function EquipmentDetail() {
         options={USAGE_OPTIONS}
         onChange={val => updateField('currentUsage', val)}
         error={formErrors.currentUsage}
+        disabled={isSaving}
       />
       <EditableDropdown
         label="Condition"
         value={formValues.condition}
-        options={CONDITION_OPTIONS}
+        options={
+          LEGACY_CONDITIONS.includes(initialCondition.current)
+            ? [...CONDITION_OPTIONS, initialCondition.current]
+            : CONDITION_OPTIONS
+        }
         onChange={val => updateField('condition', val)}
         error={formErrors.condition}
+        disabled={isSaving}
       />
     </div>
   );
@@ -419,7 +464,10 @@ function EquipmentDetail() {
         label="Class"
         value={formatValue(equipment?.equipmentClass || equipment?.itemType?.category)}
       />
-      <DetailItem label="Ownership" value={formatValue(equipment?.purchaseStatus)} />
+      <DetailItem
+        label="Ownership"
+        value={formatValue(ownershipLabel(equipment?.purchaseStatus))}
+      />
       <DetailItem
         label="Current Usage"
         value={formatValue(equipment?.currentUsage || derivedUsage)}
@@ -435,7 +483,12 @@ function EquipmentDetail() {
       <header className={styles.equipmentDetailPageHeader}>
         <h1>Equipment Detail Page</h1>
         {!isEditing && (
-          <Button color="primary" className={styles.editBtn} onClick={handleEdit}>
+          <Button
+            color="primary"
+            className={styles.editBtn}
+            onClick={handleEdit}
+            disabled={equipment?._id !== equipmentId}
+          >
             Edit
           </Button>
         )}
@@ -459,9 +512,9 @@ function EquipmentDetail() {
               color="success"
               className={styles.saveBtn}
               onClick={handleSave}
-              disabled={updateLoading}
+              disabled={updateLoading || isSaving}
             >
-              {updateLoading ? (
+              {updateLoading || isSaving ? (
                 <>
                   <Spinner size="sm" /> Saving...
                 </>
@@ -474,7 +527,7 @@ function EquipmentDetail() {
               outline
               className={styles.cancelBtn}
               onClick={handleCancel}
-              disabled={updateLoading}
+              disabled={updateLoading || isSaving}
             >
               Cancel
             </Button>
