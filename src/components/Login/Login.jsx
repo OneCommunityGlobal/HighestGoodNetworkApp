@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Joi from 'joi';
 import { connect } from 'react-redux';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, matchPath, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { faCircleExclamation, faArrowUp } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +10,7 @@ import '@fontsource/atkinson-hyperlegible-next/700.css';
 import logo from '~/assets/images/logo.png';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
+import { QUESTIONNAIRE_PERMANENT_PATH } from '../HGNForm/access/questionnaireLink';
 import styles from './Login.module.css';
 
 const emailSchema = Joi.string().email();
@@ -97,7 +98,11 @@ export function Login({
       history.push(`/forcePasswordUpdate/${auth.user.userId}`);
     } else if (auth?.isAuthenticated) {
       const redirectPath = location?.state?.from?.pathname;
-      history.push(redirectPath?.includes('/hgnform') ? redirectPath : '/dashboard');
+      const isQuestionnairePath =
+        redirectPath &&
+        (redirectPath.includes('/hgnform') ||
+          matchPath(redirectPath, { path: QUESTIONNAIRE_PERMANENT_PATH, exact: true }));
+      history.push(isQuestionnairePath ? redirectPath : '/dashboard');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth]);

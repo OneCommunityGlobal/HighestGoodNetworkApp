@@ -325,4 +325,25 @@ describe('Login redirection logic', () => {
     );
     expect(pushSpy).toHaveBeenCalledWith('/hgnform/page2');
   });
+
+  it.each([
+    ['/questionnaire', '/questionnaire'],
+    ['/questionnaire/', '/questionnaire/'],
+    ['/hgnform/page3', '/hgnform/page3'],
+    ['/questionnaire-other', '/dashboard'],
+  ])('after logging in from %s, redirects to %s', (from, expected) => {
+    const history = createMemoryHistory();
+    const pushSpy = vi.spyOn(history, 'push');
+    const location = { state: { from: { pathname: from } } };
+    const { rerender } = renderWithProviders(<Login {...baseProps({ history, location })} />, {
+      history,
+    });
+    pushSpy.mockClear();
+    rerender(
+      <Login
+        {...baseProps({ history, location, auth: { isAuthenticated: true, user: { new: false } } })}
+      />,
+    );
+    expect(pushSpy).toHaveBeenCalledWith(expected);
+  });
 });
