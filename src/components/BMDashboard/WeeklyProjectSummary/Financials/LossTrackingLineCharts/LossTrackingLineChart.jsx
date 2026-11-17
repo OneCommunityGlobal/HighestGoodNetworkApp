@@ -1,3 +1,4 @@
+// Version 1.0.0
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -10,19 +11,10 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import MonthPicker from './MonthPicker';
+import { buildLossSeries } from './lossTrackingData';
 import styles from './LossTrackingLineChart.module.css';
 
-const colors = {
-  '2022-Metal': '#008080',
-  '2022-Plastic': '#20b2aa',
-  '2022-Glass': '#48d1cc',
-  '2023-Metal': '#ff69b4',
-  '2023-Plastic': '#ff1493',
-  '2023-Glass': '#db7093',
-  '2024-Metal': '#ffd700',
-  '2024-Plastic': '#ffa500',
-  '2024-Glass': '#ff8c00',
-};
+const palette = ['#008080', '#d45087', '#996b00', '#6657c5', '#2580c3', '#cd5a24'];
 
 // Custom tooltip: line colors shown as swatches, text in the theme's text color so every
 // row is readable in light and dark mode; rows sorted from highest to lowest loss.
@@ -50,127 +42,24 @@ function LossTooltip({ active, payload, label }) {
   );
 }
 
-const rawData = [
-  {
-    year: 2022,
-    material: 'Metal',
-    data: [
-      { date: '2022-01', month: 'Jan', value: 10 },
-      { date: '2022-02', month: 'Feb', value: 15 },
-      { date: '2022-03', month: 'Mar', value: 20 },
-      { date: '2022-04', month: 'Apr', value: 18 },
-      { date: '2022-05', month: 'May', value: 12 },
-      { date: '2022-06', month: 'Jun', value: 9 },
-    ],
-  },
-  {
-    year: 2022,
-    material: 'Plastic',
-    data: [
-      { date: '2022-01', month: 'Jan', value: 8 },
-      { date: '2022-02', month: 'Feb', value: 11 },
-      { date: '2022-03', month: 'Mar', value: 14 },
-      { date: '2022-04', month: 'Apr', value: 13 },
-      { date: '2022-05', month: 'May', value: 9 },
-      { date: '2022-06', month: 'Jun', value: 7 },
-    ],
-  },
-  {
-    year: 2022,
-    material: 'Glass',
-    data: [
-      { date: '2022-01', month: 'Jan', value: 6 },
-      { date: '2022-02', month: 'Feb', value: 9 },
-      { date: '2022-03', month: 'Mar', value: 12 },
-      { date: '2022-04', month: 'Apr', value: 11 },
-      { date: '2022-05', month: 'May', value: 8 },
-      { date: '2022-06', month: 'Jun', value: 5 },
-    ],
-  },
-  {
-    year: 2023,
-    material: 'Metal',
-    data: [
-      { date: '2023-01', month: 'Jan', value: 11 },
-      { date: '2023-02', month: 'Feb', value: 14 },
-      { date: '2023-03', month: 'Mar', value: 19 },
-      { date: '2023-04', month: 'Apr', value: 17 },
-      { date: '2023-05', month: 'May', value: 13 },
-      { date: '2023-06', month: 'Jun', value: 8 },
-    ],
-  },
-  {
-    year: 2023,
-    material: 'Plastic',
-    data: [
-      { date: '2023-01', month: 'Jan', value: 5 },
-      { date: '2023-02', month: 'Feb', value: 8 },
-      { date: '2023-03', month: 'Mar', value: 13 },
-      { date: '2023-04', month: 'Apr', value: 14 },
-      { date: '2023-05', month: 'May', value: 10 },
-      { date: '2023-06', month: 'Jun', value: 6 },
-    ],
-  },
-  {
-    year: 2023,
-    material: 'Glass',
-    data: [
-      { date: '2023-01', month: 'Jan', value: 7 },
-      { date: '2023-02', month: 'Feb', value: 10 },
-      { date: '2023-03', month: 'Mar', value: 15 },
-      { date: '2023-04', month: 'Apr', value: 13 },
-      { date: '2023-05', month: 'May', value: 11 },
-      { date: '2023-06', month: 'Jun', value: 8 },
-    ],
-  },
-  {
-    year: 2024,
-    material: 'Metal',
-    data: [
-      { date: '2024-01', month: 'Jan', value: 13 },
-      { date: '2024-02', month: 'Feb', value: 17 },
-      { date: '2024-03', month: 'Mar', value: 16 },
-      { date: '2024-04', month: 'Apr', value: 15 },
-      { date: '2024-05', month: 'May', value: 13 },
-      { date: '2024-06', month: 'Jun', value: 10 },
-    ],
-  },
-  {
-    year: 2024,
-    material: 'Plastic',
-    data: [
-      { date: '2024-01', month: 'Jan', value: 9 },
-      { date: '2024-02', month: 'Feb', value: 13 },
-      { date: '2024-03', month: 'Mar', value: 12 },
-      { date: '2024-04', month: 'Apr', value: 11 },
-      { date: '2024-05', month: 'May', value: 10 },
-      { date: '2024-06', month: 'Jun', value: 8 },
-    ],
-  },
-  {
-    year: 2024,
-    material: 'Glass',
-    data: [
-      { date: '2024-01', month: 'Jan', value: 12 },
-      { date: '2024-02', month: 'Feb', value: 18 },
-      { date: '2024-03', month: 'Mar', value: 17 },
-      { date: '2024-04', month: 'Apr', value: 16 },
-      { date: '2024-05', month: 'May', value: 14 },
-      { date: '2024-06', month: 'Jun', value: 11 },
-    ],
-  },
-];
-
-// Selectable date bounds, derived from the data itself
-const allDates = rawData.flatMap(l => l.data.map(d => d.date)).sort((a, b) => a.localeCompare(b));
-const MIN_DATE = allDates[0]; // e.g. '2022-01'
-const MAX_DATE = allDates.at(-1); // e.g. '2024-06'
-
 const DEFAULTS = { material: 'All', year: 'All', startDate: '', endDate: '' };
 
 export default function LossTrackingLineChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hostRef = useRef(null);
+  const records = useSelector(state => state.materials.materialslist);
+  const rawData = useMemo(() => buildLossSeries(records), [records]);
+  const currentYear = new Date().getFullYear();
+  const colors = useMemo(
+    () =>
+      Object.fromEntries(
+        rawData.map((line, index) => [
+          `${line.year}-${line.materialId}`,
+          palette[index % palette.length],
+        ]),
+      ),
+    [rawData],
+  );
 
   useEffect(() => {
     const host = hostRef.current;
@@ -211,20 +100,33 @@ export default function LossTrackingLineChart() {
   const gridColor = darkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
 
   const materials = useMemo(
-    () => ['All', ...Array.from(new Set(rawData.map(d => d.material)))],
-    [],
+    () =>
+      Array.from(
+        new Map(
+          records
+            .filter(d => d.itemType?._id)
+            .map(d => [d.itemType._id, { id: d.itemType._id, name: d.itemType.name }]),
+        ).values(),
+      ),
+    [records],
   );
   const years = useMemo(
-    () => ['All', ...Array.from(new Set(rawData.map(d => String(d.year))))],
-    [],
+    () => [
+      'All',
+      ...Array.from(new Set([String(currentYear), ...rawData.map(d => String(d.year))])).sort(),
+    ],
+    [rawData, currentYear],
   );
+
+  const minDate = `${years[1]}-01`;
+  const maxDate = `${years[years.length - 1]}-12`;
 
   const filteredLines = useMemo(() => {
     const filterStart = startDate ? startDate.substring(0, 7) : '';
     const filterEnd = endDate ? endDate.substring(0, 7) : '';
 
     return rawData.filter(line => {
-      const materialMatch = material === 'All' || line.material === material;
+      const materialMatch = material === 'All' || line.materialId === material;
       let yearMatch = year === 'All' || String(line.year) === year;
 
       // Filter lines dynamically if they sit entirely outside the selected calendar period
@@ -233,7 +135,7 @@ export default function LossTrackingLineChart() {
 
       return yearMatch && materialMatch;
     });
-  }, [material, year, startDate, endDate]);
+  }, [rawData, material, year, startDate, endDate]);
 
   // Clears date pickers gracefully if they don't belong to the newly active year selection
   const handleYearChange = newYear => {
@@ -262,7 +164,7 @@ export default function LossTrackingLineChart() {
               displayLabel: year === 'All' ? `${month} ${String(line.year).substring(2)}` : month,
             };
           }
-          merged[date][`${line.year}-${line.material}`] = value;
+          merged[date][`${line.year}-${line.materialId}`] = value;
         }
       });
     });
@@ -284,11 +186,11 @@ export default function LossTrackingLineChart() {
   const legendItems = useMemo(
     () =>
       filteredLines.map(line => ({
-        key: `${line.year}-${line.material}`,
+        key: `${line.year}-${line.materialId}`,
         label: `${line.year} - ${line.material}`,
-        color: colors[`${line.year}-${line.material}`],
+        color: colors[`${line.year}-${line.materialId}`],
       })),
-    [filteredLines],
+    [filteredLines, colors],
   );
 
   const handleReset = () => {
@@ -309,9 +211,10 @@ export default function LossTrackingLineChart() {
           <label>
             <span>Material</span>
             <select value={material} onChange={e => setMaterial(e.target.value)}>
+              <option value="All">All</option>
               {materials.map(m => (
-                <option key={m} value={m}>
-                  {m}
+                <option key={m.id} value={m.id}>
+                  {m.name}
                 </option>
               ))}
             </select>
@@ -333,8 +236,8 @@ export default function LossTrackingLineChart() {
               ariaLabel="Start date"
               value={startDate}
               onChange={setStartDate}
-              min={MIN_DATE}
-              max={endDate || MAX_DATE}
+              min={minDate}
+              max={endDate || maxDate}
             />
           </div>
 
@@ -344,8 +247,8 @@ export default function LossTrackingLineChart() {
               ariaLabel="End date"
               value={endDate}
               onChange={setEndDate}
-              min={startDate || MIN_DATE}
-              max={MAX_DATE}
+              min={startDate || minDate}
+              max={maxDate}
             />
           </div>
 
@@ -359,6 +262,10 @@ export default function LossTrackingLineChart() {
           )}
         </div>
 
+        <p>
+          Monthly loss = wasted / approved purchases x 100. Months without purchases have no
+          percentage.
+        </p>
         <div className={styles.chartWrapper}>
           {filteredLines.length === 0 || chartData.length === 0 ? (
             <div className={styles.noDataMessage}>No data available for the selected filters.</div>
@@ -398,10 +305,10 @@ export default function LossTrackingLineChart() {
                     />
                     {filteredLines.map(line => (
                       <Line
-                        key={`${line.year}-${line.material}`}
+                        key={`${line.year}-${line.materialId}`}
                         type="monotone"
-                        dataKey={`${line.year}-${line.material}`}
-                        stroke={colors[`${line.year}-${line.material}`]}
+                        dataKey={`${line.year}-${line.materialId}`}
+                        stroke={colors[`${line.year}-${line.materialId}`]}
                         strokeWidth={2}
                         dot={{ r: 3 }}
                         activeDot={{ r: 5 }}
