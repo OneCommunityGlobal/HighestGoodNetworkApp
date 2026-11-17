@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { 
-  FETCH_INJURIES_REQUEST, 
-  FETCH_INJURIES_SUCCESS, 
-  FETCH_INJURIES_FAILURE 
+import {
+  FETCH_INJURIES_REQUEST,
+  FETCH_INJURIES_SUCCESS,
+  FETCH_INJURIES_FAILURE,
 } from './types';
 import { ENDPOINTS } from '../../utils/URL';
 export const FETCH_BM_INJURY_DATA_REQUEST = 'FETCH_BM_INJURY_DATA_REQUEST';
@@ -153,54 +153,43 @@ export const fetchInjuries = (projectId, startDate, endDate) => async dispatch =
   dispatch({ type: FETCH_INJURIES_REQUEST });
 
   try {
-    // Build query parameters
-    const params = {};
-    if (projectId && projectId !== 'all') {
-      params.projectId = projectId;
-    }
-    if (startDate) params.startDate = startDate;
-    if (endDate) params.endDate = endDate;
-
-    // API call
-    const response = await axios.get(ENDPOINTS.INJURIES, { params });
+    const data = await getInjuryData(projectId, startDate, endDate);
 
     dispatch({
       type: FETCH_INJURIES_SUCCESS,
-      payload: response.data
+      payload: data,
     });
 
-    return response;
+    return data;
   } catch (error) {
     dispatch({
       type: FETCH_INJURIES_FAILURE,
       payload: {
         message: error.response?.data?.message || 'Failed to fetch injury data',
-        status: error.response?.status
-      }
+        status: error.response?.status,
+      },
     });
 
     throw error;
   }
 };
 
-// Function to get injury trend data (non-Redux version for direct component use)
+// Function to get injury data (non-Redux version for direct component use)
 export const getInjuryData = async (projectId, startDate, endDate, projectIds = []) => {
-  const params = {};
-  let ids = [];
-  if (Array.isArray(projectIds) && projectIds.length) {
-    ids = projectIds;
-  } else if (projectId && projectId !== 'all') {
-    ids = [projectId];
+  if (!startDate || !endDate) {
+    return { months: [], serious: [], medium: [], low: [] };
   }
 
-  // Backend trend-data filters by ObjectId projectId values.
-  if (ids.length) {
-    params.projectId = ids.join(',');
+  const params = {};
+  const targetProjectId = (Array.isArray(projectIds) && projectIds.length > 0) ? projectIds[0] : projectId;
+
+  if (targetProjectId && targetProjectId !== 'all') {
+    params.projectId = targetProjectId;
   }
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
 
-  const response = await axios.get(ENDPOINTS.BM_INJURY_TREND, { params });
+  const response = await axios.get(ENDPOINTS.BM_INJURY_TREND_DATA, { params });
   return response.data;
 };
 
@@ -232,4 +221,4 @@ export const fetchInjuriesOverTime = (filters = {}) => {
       dispatch(setErrors(err.response?.data?.error || err.message));
     }
   };
-}
+};

@@ -448,6 +448,7 @@ export const ENDPOINTS = {
   BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
   BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
   BM_INJURY_TREND: `${APIEndpoint}/bm/injuries/trend-data`,
+  BM_INJURY_TREND_DATA: `${APIEndpoint}/bm/injuries/trend-data`,
   BM_INJURY_OVER_TIME: `${APIEndpoint}/bm/injuries/over-time`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
@@ -493,6 +494,28 @@ export const ENDPOINTS = {
 
   BM_LONGEST_OPEN_ISSUES: `${APIEndpoint}/bm/issues/longest-open`,
   BM_MOST_EXPENSIVE_ISSUES: `${APIEndpoint}/bm/issues/most-expensive`,
+  BM_GET_OPEN_ISSUES: (projectIds, startDate, endDate) => {
+    let url = `${APIEndpoint}/bm/issues/most-expensive`;
+    const params = [];
+    if (projectIds) {
+      params.push(`projects=${encodeURIComponent(projectIds)}`);
+      params.push(`projectIds=${encodeURIComponent(projectIds)}`);
+    }
+    if (startDate && endDate) {
+      params.push(`dates=${encodeURIComponent(`${startDate},${endDate}`)}`);
+      params.push(`startDate=${encodeURIComponent(startDate)}`);
+      params.push(`endDate=${encodeURIComponent(endDate)}`);
+    } else if (startDate) {
+      params.push(`dates=${encodeURIComponent(startDate)}`);
+      params.push(`startDate=${encodeURIComponent(startDate)}`);
+    } else if (endDate) {
+      params.push(`dates=${encodeURIComponent(endDate)}`);
+      params.push(`endDate=${encodeURIComponent(endDate)}`);
+    }
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
+  BM_GET_ISSUE_PROJECTS: `${APIEndpoint}/bm/issues/projects`,
 
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
   ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
