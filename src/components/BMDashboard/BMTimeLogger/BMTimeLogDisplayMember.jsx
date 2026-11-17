@@ -3,7 +3,15 @@ import BMTimeLogStopWatch from './BMTimeLogStopWatch';
 import styles from './BMTimeLogCard.module.css';
 
 // function BMTimeLogCard({ selectedProject }) {
-function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId }) {
+function BMTimeLogDisplayMember({
+  firstName,
+  lastName,
+  role,
+  memberId,
+  projectId,
+  isSelected,
+  onToggleSelected,
+}) {
   const roleColors = {
     volunteer: '#78bdda', // light blue
     core: '#ecb16c', // light orange
@@ -23,6 +31,13 @@ function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId
         style={{ border: borderProperty }}
       >
         <CardHeader className={`${styles.memberCardHeader}`} style={{ backgroundColor: cardColor }}>
+          <input
+            type="checkbox"
+            className={`${styles.memberCheckbox}`}
+            aria-label={`Select ${firstName} ${lastName}`}
+            checked={isSelected}
+            onChange={() => onToggleSelected(memberId)}
+          />
           <h5 className={`${styles.memberCardName}`}>
             {firstName} {lastName}
           </h5>
