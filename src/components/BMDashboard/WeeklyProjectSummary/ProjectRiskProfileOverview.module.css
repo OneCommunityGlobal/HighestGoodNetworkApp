@@ -596,6 +596,10 @@
     font-size: 22px;
   }
 
+  .filterRow {
+    justify-content: flex-start;
+  }
+
   .chartWrapper {
     padding: 8px;
   }
