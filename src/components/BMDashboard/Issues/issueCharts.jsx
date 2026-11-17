@@ -570,10 +570,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         backgroundColor: darkMode ? '#22272e' : '#ffffff',
         borderColor: darkMode ? '#3d444d' : '#ccc',
         color: darkMode ? '#cfd7e3' : '#333',
-        // Keep the select itself compact; extra selected chips scroll inside the value area.
+        // Start compact but grow with the selected chips so none of them are clipped.
         minHeight: 42,
-        height: 42,
-        maxHeight: 42,
         alignItems: 'center',
         paddingTop: 0,
         paddingBottom: 0,
@@ -585,11 +583,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       valueContainer: provided => ({
         ...provided,
         display: 'flex',
-        // Show roughly one chip row so filters do not push the chart far down the card.
-        height: 34,
-        maxHeight: 34,
-        overflowY: 'auto',
-        overflowX: 'hidden',
+        // Wrap chips onto as many rows as needed instead of scrolling a fixed-height row.
+        minWidth: 0,
         paddingTop: 2,
         paddingBottom: 2,
         paddingLeft: 10,
@@ -646,6 +641,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         fontSize: 13,
         lineHeight: 1.2,
         whiteSpace: 'normal',
+        overflowWrap: 'anywhere',
       }),
       multiValueRemove: provided => ({
         ...provided,
