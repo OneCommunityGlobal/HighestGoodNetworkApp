@@ -17,6 +17,7 @@ import {
   getWeeklyProjectSummaryProjectStatusRequestKey,
 } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
 import IssuesCharts from '../Issues/LongestOpenIssuesChart';
+import MostExpensiveIssuesChart from '../Issues/MostExpensiveIssuesChart';
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
@@ -292,6 +293,19 @@ function WeeklyProjectSummary() {
         key: 'Issue Tracking',
         className: 'small',
         content: <IssuesCharts bmProjects={bmProjects} />,
+      },
+      {
+        title: 'Most Expensive Open Issues',
+        key: 'MostExpIssues',
+        className: 'full',
+        content: (
+          <div
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            style={{ width: '100%' }}
+          >
+            <MostExpensiveIssuesChart />
+          </div>
+        ),
       },
       {
         title: 'Tools and Equipment Tracking',

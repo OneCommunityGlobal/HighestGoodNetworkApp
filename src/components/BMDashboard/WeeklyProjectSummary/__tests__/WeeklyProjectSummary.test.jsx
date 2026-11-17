@@ -114,6 +114,10 @@ vi.mock('../../Issues/LongestOpenIssuesChart', () => ({
   default: () => <div>Issues Chart</div>,
 }));
 
+vi.mock('../../Issues/MostExpensiveIssuesChart', () => ({
+  default: () => <div>Most Expensive Issues Chart</div>,
+}));
+
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 

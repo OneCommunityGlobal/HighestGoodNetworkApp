@@ -47,6 +47,9 @@ vi.mock('react-toastify', () => ({
 vi.mock('./WeeklyProjectSummaryHeader', () => ({ default: () => <div>Header</div> }));
 vi.mock('./PaidLaborCost/PaidLaborCost', () => ({ default: () => <div>Paid Labor Cost</div> }));
 vi.mock('../Issues/LongestOpenIssuesChart', () => ({ default: () => <div>Issues Chart</div> }));
+vi.mock('../Issues/MostExpensiveIssuesChart', () => ({
+  default: () => <div>Most Expensive Issues Chart</div>,
+}));
 vi.mock('./ProjectRiskProfileOverview', () => ({ default: () => <div>Risk Profile</div> }));
 vi.mock('./IssuesBreakdownChart', () => ({ default: () => <div>Issues Breakdown</div> }));
 vi.mock('./GroupedBarGraphInjurySeverity/InjuryCategoryBarChart', () => ({

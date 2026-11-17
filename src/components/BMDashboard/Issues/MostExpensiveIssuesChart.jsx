@@ -17,7 +17,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Row, Col } from 'react-bootstrap';
 import './MostExpensiveIssuesChart.css';
 import { ENDPOINTS } from '../../../utils/URL';
-import styles from './MostExpensiveIssuesChart.module.css';
 
 // Register chart components once
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -45,16 +44,29 @@ export default function MostExpensiveOpenIssuesChart() {
 
   const [startDate, endDate] = dateRange;
 
-  // Fetch projects from the backend with fallback to Redux bmProjects
+  // Fetch projects from the backend with fallback to Redux bmProjects and BM_PROJECTS
   const fetchProjects = useCallback(async () => {
     try {
       const response = await axios.get(ENDPOINTS.BM_GET_ISSUE_PROJECTS);
       const list = Array.isArray(response.data) ? response.data : response.data?.data || [];
-      setProjects(list);
-    } catch (err) {
-      if (Array.isArray(reduxProjects) && reduxProjects.length > 0) {
-        setProjects(reduxProjects);
-      } else {
+      if (list.length > 0) {
+        setProjects(list);
+        return;
+      }
+    } catch {
+      // Fallback if specific issues projects endpoint is unavailable
+    }
+
+    if (Array.isArray(reduxProjects) && reduxProjects.length > 0) {
+      setProjects(reduxProjects);
+    } else if (ENDPOINTS.BM_PROJECTS) {
+      try {
+        const fallbackRes = await axios.get(ENDPOINTS.BM_PROJECTS);
+        const fallbackList = Array.isArray(fallbackRes.data)
+          ? fallbackRes.data
+          : fallbackRes.data?.data || [];
+        setProjects(fallbackList);
+      } catch (err) {
         setError(`Error fetching projects: ${err.response?.data?.message || err.message}`);
       }
     }
