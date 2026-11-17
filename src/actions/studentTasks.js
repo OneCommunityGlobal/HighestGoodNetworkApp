@@ -54,19 +54,24 @@ export const updateStudentTask = (taskId, updatedTask) => {
  * @returns {Object} Transformed task in flat format
  */
 const transformTaskToFlatFormat = (task, subjectData, subjectKey) => {
+  const status =
+    typeof task.status === 'string'
+      ? task.status.trim().toLowerCase().replace(/\s+/g, '_') || 'assigned'
+      : 'assigned';
+
   return {
     id: task._id,
     course_name: subjectData.subject?.name || subjectKey || 'Unknown Subject',
     subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
-    task_type: task.type || 'read',
+    task_type: task.type || null,
     logged_hours: task.loggedHours || 0,
-    suggested_total_hours: task.suggestedTotalHours || 0,
+    suggested_total_hours: task.suggestedTotalHours ?? null,
     last_logged_date: task.completedAt || task.assignedAt,
     created_at: task.assignedAt,
-    is_completed: task.status === 'completed' || task.status === 'graded',
+    is_completed: status === 'completed' || status === 'graded',
     has_upload: task.uploadUrls && task.uploadUrls.length > 0,
     has_comments: task.feedback && task.feedback.length > 0,
-    status: task.status || 'assigned',
+    status,
     _id: task._id,
     grade: task.grade,
     feedback: task.feedback,
@@ -178,6 +183,10 @@ const validateTaskCompletion = (task) => {
     return { valid: false, errorMessage: 'Only read tasks can be marked as complete manually' };
   }
 
+  if (!Number.isFinite(task.suggested_total_hours) || task.suggested_total_hours < 0) {
+    return { valid: false, errorMessage: 'Task suggested hours are missing or invalid' };
+  }
+
   if (task.logged_hours < task.suggested_total_hours) {
     return {
       valid: false,
@@ -275,9 +284,44 @@ export const logStudentTaskHours = (taskId, hours) => {
       });
 
       toast.success(`${hours} hour(s) logged successfully!`);
+      return true;
     } catch (error) {
       const msg = error.response?.data?.error || 'Failed to log hours. Please try again.';
       toast.error(msg);
+      return false;
     }
   };
+};
+
+/** Upload a write-task submission, then refresh without falling back to demo tasks. */
+export const uploadStudentTaskFile = (taskId, file) => async dispatch => {
+  let data;
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await httpService.post(`${ENDPOINTS.STUDENT_TASKS()}/${taskId}/upload`, formData, {
+      headers: { 'Content-Type': undefined },
+    });
+    data = response.data;
+  } catch (error) {
+    const message = error.response?.data?.error || error.response?.data?.message || 'Upload failed. Please try again.';
+    toast.error(message);
+    return { success: false, error: message };
+  }
+
+  dispatch(updateStudentTask(taskId, {
+    status: data.status,
+    is_completed: data.status === 'completed' || data.status === 'graded',
+    logged_hours: data.loggedHours,
+    suggested_total_hours: data.suggestedTotalHours,
+    has_upload: true,
+    last_logged_date: data.completedAt,
+  }));
+  toast.success('Submission uploaded successfully!');
+  try {
+    dispatch(setStudentTasks(await fetchTasksFromPrimaryEndpoint()));
+  } catch {
+    toast.warning('Upload succeeded, but task refresh failed. Showing the saved completion.');
+  }
+  return { success: true };
 };

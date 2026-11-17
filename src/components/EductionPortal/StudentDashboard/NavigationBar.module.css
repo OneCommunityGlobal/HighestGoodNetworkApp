@@ -15,6 +15,16 @@
   gap: 0.25rem;
 }
 
+@media (width >= 1200px) {
+  .navigationBar .navContainer {
+    max-width: 100%;
+  }
+
+  .navItems {
+    justify-content: space-evenly;
+  }
+}
+
 /* Desktop nav items wrapper */
 .navItems {
   display: flex;

@@ -1,3 +1,4 @@
+import TaskUploadButton from './TaskUploadButton';
 import React from 'react';
 
 import styles from './TaskCard.module.css';
@@ -10,6 +11,7 @@ const TaskCard = ({
   task,
   onMarkAsDone,
   onLogTime,
+  onUploadComplete,
   intermediateTasks = [],
   isExpanded = false,
   onToggleIntermediateTasks,
@@ -94,6 +96,7 @@ const TaskCard = ({
             </svg>
           </button>
 
+          <TaskUploadButton task={task} darkMode={darkMode} onComplete={onUploadComplete} />
           <MarkAsDoneButton
             task={task}
             intermediateTasks={intermediateTasks}
