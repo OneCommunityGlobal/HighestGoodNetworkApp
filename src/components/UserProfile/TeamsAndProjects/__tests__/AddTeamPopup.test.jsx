@@ -102,20 +102,51 @@ describe('AddTeamPopup component', () => {
     });
   });
 
+  it('opens and reopens the selected team editor without refetching the supplied teams list', () => {
+    const renderEditor = open => (
+      <Provider store={store}>
+        <AddTeamPopup
+          open={open}
+          isEdit
+          isTeamManagement
+          teamName="Ayush Phase2 Test Team 1026"
+          teamId="aaa123"
+          teamsData={defaultTeamsData}
+          onClose={onAddTeamPopupClose}
+        />
+      </Provider>
+    );
+    const { rerender } = render(renderEditor(true));
+
+    expect(screen.getByDisplayValue('Ayush Phase2 Test Team 1026')).toBeInTheDocument();
+    expect(axios.get).not.toHaveBeenCalled();
+
+    rerender(renderEditor(false));
+    rerender(renderEditor(true));
+
+    expect(screen.getByDisplayValue('Ayush Phase2 Test Team 1026')).toBeInTheDocument();
+    expect(axios.get).not.toHaveBeenCalled();
+  });
+
   it('renders modal elements when addTeamPopupOpen is true', () => {
     renderOpenPopup(emptyTeamsData);
     expect(screen.getByText('Add Team')).toBeInTheDocument();
   });
 
-  // Only Teams-page Edit skips the opening fetch; all other mode combinations retain it.
+  // Reuse supplied lists in every mode; fetch only when no list was provided.
   it.each([
-    [true, true, false],
+    [true, true, true],
     [true, false, true],
     [false, false, true],
     [false, true, true],
+    [true, true, false],
+    [true, false, false],
+    [false, false, false],
+    [false, true, false],
   ])(
-    'opening with isTeamManagement=%s and isEdit=%s refreshes=%s',
-    async (isTeamManagement, isEdit, shouldRefresh) => {
+    'opening with isTeamManagement=%s, isEdit=%s and supplied teams=%s',
+    async (isTeamManagement, isEdit, hasSuppliedTeams) => {
+      const shouldRefresh = !hasSuppliedTeams;
       const editStore = mockStore(baseState);
       axios.get.mockResolvedValue({ data: baseState.allTeams });
       const popup = open => (
@@ -123,7 +154,7 @@ describe('AddTeamPopup component', () => {
           <AddTeamPopup
             open={open}
             onClose={onAddTeamPopupClose}
-            teamsData={defaultTeamsData}
+            teamsData={hasSuppliedTeams ? defaultTeamsData : undefined}
             isTeamManagement={isTeamManagement}
             isEdit={isEdit}
             teamName="team11"
@@ -145,8 +176,6 @@ describe('AddTeamPopup component', () => {
         });
         expect(axios.get).toHaveBeenCalledTimes(1);
       } else {
-        expect(screen.getByRole('heading', { name: 'Update Team Name' })).toBeInTheDocument();
-        expect(screen.getByDisplayValue('team11')).toBeInTheDocument();
         expect(axios.get).not.toHaveBeenCalled();
         expect(editStore.getActions()).toEqual([]);
       }
