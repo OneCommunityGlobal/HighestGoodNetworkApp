@@ -129,6 +129,19 @@ describe('job application terms acknowledgement', () => {
     expect(checkbox).toBeChecked();
   });
 
+  it('blocks submission after removing the required resume even with profile and consent complete', async () => {
+    await mountApplication();
+    fillProfile();
+    fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: /I agree to terms and conditions/i }));
+    fireEvent.submit(screen.getByRole('form', { name: 'Job application' }));
+
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledTimes(1);
+    render(toast.error.mock.calls[0][0]);
+    expect(screen.getByText('• Resume')).toBeInTheDocument();
+  });
+
   it('submits valid agreed data through the existing mocked API and resets agreement', async () => {
     await mountApplication();
     const checkbox = screen.getByRole('checkbox', { name: /I agree to terms and conditions/i });
@@ -140,6 +153,7 @@ describe('job application terms acknowledgement', () => {
     expect(url).toBe(ENDPOINTS.SUBMIT_JOB_APPLICATION(formId));
     expect(body.get('respondent')).toBe('Fixture Applicant');
     expect(body.get('email')).toBe('fixture@example.com');
+    expect(body.get('resume')).toMatchObject({ name: 'resume.pdf', type: 'application/pdf' });
     expect(JSON.parse(body.get('payload')).profile.jobTitle).toBe('Software Engineer');
     expect(config.headers.Authorization).toBe(false);
     await waitFor(() => expect(checkbox).not.toBeChecked());

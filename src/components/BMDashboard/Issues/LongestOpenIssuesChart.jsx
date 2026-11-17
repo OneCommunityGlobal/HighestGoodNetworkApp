@@ -201,7 +201,6 @@ function IssuesCharts({ bmProjects = [] }) {
           afterFit: scale => {
             scale.width = Math.round(Math.min(200, Math.max(90, scale.chart.width * 0.32)));
           },
-          // Shorten y-axis labels to fit the label column (full title is in the tooltip).
           afterTickToLabelConversion: scale => {
             const maxChars = Math.max(10, Math.floor((scale.chart.width * 0.32) / 7.5));
             scale.ticks.forEach(tick => {
@@ -237,7 +236,7 @@ function IssuesCharts({ bmProjects = [] }) {
     control: base => ({
       ...base,
       minHeight: 38,
-      ...(darkMode && { background: '#2b3e59', borderColor: '#4a5a72', color: '#fff' }),
+      ...(darkMode && { background: '#2b3e59', borderColor: '#4a5a72', color: '#fff' })),
     }),
     menu: base => ({ ...base, zIndex: 5, ...(darkMode && { background: '#2b3e59' }) }),
     option: (base, { isFocused }) =>
@@ -249,7 +248,6 @@ function IssuesCharts({ bmProjects = [] }) {
     placeholder: base => ({ ...base, color: darkMode ? '#cfd7e3' : '#6c757d' }),
   };
 
-  // Height grows with the number of bars; width always follows the card.
   const chartHeight = Math.max(240, chartData.length * 56 + 110);
 
   return (

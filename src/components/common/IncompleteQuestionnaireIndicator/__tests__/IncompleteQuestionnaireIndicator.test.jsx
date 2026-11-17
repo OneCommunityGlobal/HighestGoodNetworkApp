@@ -16,6 +16,12 @@ describe('IncompleteQuestionnaireIndicator', () => {
     expect(await screen.findByRole('tooltip')).toHaveTextContent(INCOMPLETE_QUESTIONNAIRE_LABEL);
   });
 
+  it('uses the exact tooltip wording', () => {
+    expect(INCOMPLETE_QUESTIONNAIRE_LABEL).toBe(
+      'This person has not completed their questionnaire yet.',
+    );
+  });
+
   it('applies an additional className', () => {
     render(<IncompleteQuestionnaireIndicator id="user123" className="extra" />);
     expect(screen.getByTestId('incomplete-questionnaire-indicator')).toHaveClass('extra');

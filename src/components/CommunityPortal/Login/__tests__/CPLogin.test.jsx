@@ -1,4 +1,4 @@
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { act, screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import CPLogin from '../CPLogin';
 import { renderWithStoreRouter } from './renderWithStoreRouter';
@@ -132,7 +132,8 @@ describe('CPLogin component', () => {
 
   it('check if entering the right email and password logs in as expected', async () => {
     axios.post.mockResolvedValue({
-      statusText: 'OK',
+      status: 200,
+      statusText: '',
       data: { token: '1234' },
     });
 
@@ -172,7 +173,47 @@ describe('CPLogin component', () => {
     });
   });
 
-  it("check if statusText is not 'OK' and status is not 422 and does not display validation error", async () => {
+  it('does not navigate again after the login form unmounts', async () => {
+    vi.useFakeTimers();
+    try {
+      axios.post.mockResolvedValue({ status: 200, data: { token: '1234' } });
+      const view = renderCPLogin(makeAuthState(true));
+      await act(async () => {
+        fillAndSubmit({ emailValue: VALID_EMAIL, passwordValue: getValidSecretValue() });
+      });
+      expect(history.push).toHaveBeenCalled();
+      view.unmount();
+      history.push.mockClear();
+      act(() => vi.advanceTimersByTime(150));
+      expect(history.push).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it.each([401, 403])('shows the account denial returned with status %s', async status => {
+    axios.post.mockRejectedValue({
+      response: { status, data: { label: 'email', message: 'Account access denied' } },
+    });
+    renderCPLogin(makeAuthState(true));
+    const { emailElement } = fillAndSubmit({
+      emailValue: VALID_EMAIL,
+      passwordValue: getValidSecretValue(),
+    });
+    await screen.findByText('Account access denied');
+    expect(emailElement).toBeInvalid();
+    expect(history.push).not.toHaveBeenCalled();
+  });
+
+  it('does not treat an empty successful response as portal access', async () => {
+    axios.post.mockResolvedValue({ status: 200, data: {} });
+    renderCPLogin(makeAuthState(true));
+    fillAndSubmit({ emailValue: VALID_EMAIL, passwordValue: getValidSecretValue() });
+    await screen.findByRole('alert');
+    expect(history.push).not.toHaveBeenCalled();
+  });
+
+  it('shows a retry message for a server failure', async () => {
     axios.post.mockResolvedValue({
       statusText: 'ERROR',
       status: 500,
@@ -188,10 +229,13 @@ describe('CPLogin component', () => {
 
     await waitFor(() => {
       expect(passwordElement).not.toBeInvalid();
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Unable to verify your login right now. Please try again.',
+      );
     });
   });
 
-  it('check failed post request does not display validation error', async () => {
+  it('shows a retry message after a network failure', async () => {
     axios.post.mockRejectedValue({ response: 'server error' });
 
     renderCPLogin(makeAuthState(true));
@@ -203,6 +247,9 @@ describe('CPLogin component', () => {
 
     await waitFor(() => {
       expect(passwordElement).not.toBeInvalid();
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Unable to verify your login right now. Please try again.',
+      );
     });
   });
 });
