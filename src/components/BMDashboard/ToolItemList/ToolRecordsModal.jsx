@@ -1,8 +1,12 @@
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
+import { useState } from 'react';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table, Spinner } from 'reactstrap';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { approveToolPurchase, rejectToolPurchase } from '../../../actions/bmdashboard/toolActions';
 import styles from './ToolRecordsModal.module.css';
+
+const ALLOWED_ROLES = ['Owner', 'Administrator'];
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -21,7 +25,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
         <ModalBody className={darkMode ? styles.modalBodyDark : ''}>
           <div className={styles.recordsModalTableContainer}>
             <Table className={darkMode ? styles.tableDark : ''}>
-              <Record record={record} recordType={recordType} />
+              <Record record={record} setRecord={setRecord} recordType={recordType} />
             </Table>
           </div>
         </ModalBody>
@@ -34,7 +38,44 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
   return null;
 }
 
-export function Record({ record, recordType }) {
+export function Record({ record, setRecord, recordType }) {
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector(state => state.auth?.isAuthenticated);
+  const userRole = useSelector(state => state.auth?.user?.role);
+  const [loadingId, setLoadingId] = useState(null);
+  const canApproveReject = Boolean(isAuthenticated) && ALLOWED_ROLES.includes(userRole);
+
+  const updatePurchaseStatus = (purchaseId, status) => {
+    const updatedRecord = record.map(purchase =>
+      purchase._id === purchaseId ? { ...purchase, status } : purchase,
+    );
+    setRecord(updatedRecord);
+  };
+
+  const handleApprove = async (purchaseId, quantity) => {
+    setLoadingId(purchaseId);
+    try {
+      const response = await dispatch(approveToolPurchase(purchaseId, quantity));
+      if (response?.status === 200) {
+        updatePurchaseStatus(purchaseId, 'Approved');
+      }
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const handleReject = async purchaseId => {
+    setLoadingId(purchaseId);
+    try {
+      const response = await dispatch(rejectToolPurchase(purchaseId));
+      if (response?.status === 200) {
+        updatePurchaseStatus(purchaseId, 'Rejected');
+      }
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
   if (recordType === 'Update') {
     return (
       <>
@@ -77,11 +118,15 @@ export function Record({ record, recordType }) {
             <th>Date</th>
             <th>Status</th>
             <th>Description</th>
+            {canApproveReject && <th className={styles.purchaseRecordActionColumn}>Action</th>}
           </tr>
         </thead>
         <tbody>
           {record.map(
             ({ _id, date, status, makeModelPref, priority, quantity, requestedBy, usageDesc }) => {
+              const isActionComplete = status === 'Approved' || status === 'Rejected';
+              const isLoading = loadingId === _id;
+
               return (
                 <tr key={_id}>
                   <td>{priority}</td>
@@ -93,8 +138,46 @@ export function Record({ record, recordType }) {
                     </a>
                   </td>
                   <td>{moment(date).format('MM/DD/YY')}</td>
-                  <td>{status}</td>
+                  <td>
+                    <span
+                      className={
+                        status === 'Approved'
+                          ? styles.statusApproved
+                          : status === 'Rejected'
+                          ? styles.statusRejected
+                          : styles.statusPending
+                      }
+                    >
+                      {status}
+                    </span>
+                  </td>
                   <td>{usageDesc}</td>
+                  {canApproveReject && (
+                    <td className={styles.purchaseRecordActionColumn}>
+                      {isLoading ? (
+                        <Spinner size="sm" />
+                      ) : (
+                        <>
+                          <Button
+                            type="button"
+                            onClick={() => handleApprove(_id, quantity)}
+                            className={styles.approveButton}
+                            disabled={isActionComplete || loadingId !== null}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={() => handleReject(_id)}
+                            className={styles.rejectButton}
+                            disabled={isActionComplete || loadingId !== null}
+                          >
+                            Reject
+                          </Button>
+                        </>
+                      )}
+                    </td>
+                  )}
                 </tr>
               );
             },
