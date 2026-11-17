@@ -47,7 +47,7 @@
       {
         "label": "Toggle Request Bio",
         "key": "requestBio",
-        "description": "Lets the user change a person's 'Bio announcement' switch on the Weekly Summaries Report."
+        "description": "Lets the user open the Weekly Summaries Report and change a person's 'Bio announcement' switch there."
       },
       {
         "label": "See Volunteer Weekly Summaries",

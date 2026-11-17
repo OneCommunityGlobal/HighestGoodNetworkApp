@@ -383,3 +383,19 @@ describe('Header Component Authentication Checks', () => {
     expect(screen.getByTestId('header')).toBeInTheDocument();
   });
 });
+
+describe('Header Reports menu', () => {
+  const reportLinks = ['Weekly Summaries Report', 'Total Org Summary', 'Total Org Summary Email'];
+
+  it.each([
+    ['requestBio', ['Weekly Summaries Report']],
+    ['getWeeklySummaries', reportLinks],
+  ])('%s alone shows these report links: %j', (key, expectedLinks) => {
+    renderHeader({}, { hasPermission: action => [action].flat().includes(key) });
+
+    const shownLinks = reportLinks.filter(name =>
+      screen.queryByRole('menuitem', { name, hidden: true }),
+    );
+    expect(shownLinks).toEqual(expectedLinks);
+  });
+});

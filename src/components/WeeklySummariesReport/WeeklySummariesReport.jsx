@@ -174,6 +174,12 @@ const intialPermissionState = {
   hasSeeBadgePermission: false,
 };
 
+export const canEditBio = (checkPermission, role) =>
+  checkPermission(permissions.requestBio) ||
+  checkPermission(permissions.putUserProfileImportantInfo) ||
+  role === 'Owner' ||
+  role === 'Administrator';
+
 const CheckboxOption = props => {
   return (
     <components.Option {...props}>
@@ -517,10 +523,7 @@ const WeeklySummariesReport = props => {
         // literals. The Owner/Administrator fallbacks grant the right without an
         // explicit permission record, matching codeEditPermission and canManageFilter
         // below.
-        bioEditPermission:
-          hasPermission(permissions.putUserProfileImportantInfo) ||
-          auth.user.role === 'Owner' ||
-          auth.user.role === 'Administrator',
+        bioEditPermission: canEditBio(hasPermission, auth.user.role),
         // NOTE: the other effect gates this on `editSummaryHoursCount` instead. Both
         // spellings predate this merge, so the winner depends on effect ordering.
         // Left as-is rather than silently picking one — needs a product decision.
@@ -1715,10 +1718,7 @@ const WeeklySummariesReport = props => {
           // Keep the Owner/Administrator fallbacks identical to the other place that
           // writes permissionState — both effects run on mount and either may land
           // last. Keys come from the `permissions` constant, not string literals.
-          bioEditPermission:
-            props.hasPermission(permissions.putUserProfileImportantInfo) ||
-            props.auth?.user?.role === 'Owner' ||
-            props.auth?.user?.role === 'Administrator',
+          bioEditPermission: canEditBio(props.hasPermission, props.auth?.user?.role),
           codeEditPermission:
             props.hasPermission(permissions.editTeamCode) ||
             props.auth?.user?.role === 'Owner' ||

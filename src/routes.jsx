@@ -668,8 +668,8 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
-          routePermissions={RoutePermissions.weeklySummariesReport}
+          // setting permission as getWeeklySummaries for now. Later it will be changed to weeklyVolunteerSummary. - H
+          routePermissions={RoutePermissions.totalOrgSummary}
         />
         <ProtectedRoute
           path="/TotalOrgSummaryEmail"
@@ -683,8 +683,8 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
-          routePermissions={RoutePermissions.weeklySummariesReport}
+          // setting permission as getWeeklySummaries for now. Later it will be changed to weeklyVolunteerSummary. - H
+          routePermissions={RoutePermissions.totalOrgSummary}
         />
         <ProtectedRoute
           path="/job-notification-dashboard"

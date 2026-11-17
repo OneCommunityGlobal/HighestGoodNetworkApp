@@ -14,6 +14,7 @@ import {
 } from '../../../actions/weeklySummariesReport';
 import * as constants from '../../../constants/weeklySummariesReport';
 import { ENDPOINTS } from '~/utils/URL';
+import { canEditBio } from '../WeeklySummariesReport';
 
 vi.mock('axios');
 vi.mock('react-toastify', () => ({
@@ -140,5 +141,17 @@ describe('weeklySummariesReport thunks', () => {
       await expect(store.dispatch(toggleUserBio(userId, bioPosted))).rejects.toThrow(error);
       expect(toast.error).toHaveBeenCalledWith('An error occurred while updating bio status.');
     });
+  });
+});
+
+describe('canEditBio', () => {
+  it.each([
+    ['requestBio', 'Volunteer', true],
+    ['putUserProfileImportantInfo', 'Volunteer', true],
+    ['getWeeklySummaries', 'Volunteer', false],
+    ['getWeeklySummaries', 'Owner', true],
+    ['getWeeklySummaries', 'Administrator', true],
+  ])('with only %s as %s returns %s', (key, role, expected) => {
+    expect(canEditBio(permission => permission === key, role)).toBe(expected);
   });
 });
