@@ -525,6 +525,7 @@ function LeaderBoard({
 
   useEffect(() => {
     setFilteredUsers(leaderBoardData);
+
     return () => {
       setSearchInput('');
     };
@@ -797,23 +798,32 @@ function LeaderBoard({
                     </>
                   )}
 
-                  <td className="align-middle" aria-label="Description" />
+                  {/* Days Left */}
+                  <td className="align-middle" aria-label="Placeholder" />
+
+                  {/* Time Off */}
+                  <td className="align-middle" aria-label="Placeholder" />
+
+                  {/* Tangible Time */}
                   <td className="align-middle">
-                    <span title="Tangible time">
-                      {filteredUsers
-                        .reduce((total, user) => total + user.tangibletime, 0)
-                        .toFixed(2)}
-                    </span>
+                    {filteredUsers
+                      .reduce((total, user) => total + Number(user.totaltangibletime_hrs || 0), 0)
+                      .toFixed(2)}
                   </td>
+
+                  {/* Progress */}
                   <td className="align-middle" aria-label="Description">
                     <Progress
                       title={`TangibleEffort: ${filteredUsers
-                        .reduce((total, user) => total + user.tangibletime, 0)
+                        .reduce((total, user) => total + Number(user.totaltangibletime_hrs || 0), 0)
                         .toFixed(2)} hours`}
                       value={
-                        (filteredUsers.reduce((total, user) => total + user.tangibletime, 0) /
+                        (filteredUsers.reduce(
+                          (total, user) => total + Number(user.totaltangibletime_hrs || 0),
+                          0,
+                        ) /
                           filteredUsers.reduce(
-                            (total, user) => total + user.weeklycommittedHours,
+                            (total, user) => total + (user.weeklycommittedHours || 0),
                             0,
                           )) *
                         100
@@ -821,10 +831,12 @@ function LeaderBoard({
                       color="primary"
                     />
                   </td>
+
+                  {/* Total Time */}
                   <td className="align-middle">
                     <span title="Tangible + Intangible time = Total time">
                       {filteredUsers
-                        .reduce((total, user) => total + parseFloat(user.totaltime), 0)
+                        .reduce((total, user) => total + Number(user.totaltime_hrs || 0), 0)
                         .toFixed(2)}{' '}
                       of{' '}
                       {filteredUsers
@@ -832,7 +844,6 @@ function LeaderBoard({
                         .toFixed(2)}
                     </span>
                   </td>
-                  <td aria-label="Placeholder" />
                 </tr>
                 {filteredUsers.map(item => {
                   const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(

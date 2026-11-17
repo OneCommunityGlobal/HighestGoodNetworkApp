@@ -74,7 +74,7 @@ function buildChartData(hoursData, totalHoursData, useBucketCounts = false) {
   const totalVolunteers = normalizedHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
   const totalHoursWorked = useBucketCounts
     ? totalVolunteers
-    : Math.round(Number(totalHoursData?.current ?? totalHoursData?.count ?? 0));
+    : Number(Number(totalHoursData?.current ?? totalHoursData?.count ?? 0).toFixed(2));
 
   const userData = normalizedHoursData.map(range => {
     const value = range.count || 0;
