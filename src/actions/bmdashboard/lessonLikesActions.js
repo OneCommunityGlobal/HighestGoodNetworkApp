@@ -22,7 +22,8 @@ export const likeLessonAction = (lessonId, userId) => async (dispatch, getState)
     dispatch({ type: BM_LESSON_LIKE_SUCCEEDED, payload: { lessonId, lesson: response.data } });
     const refresh = await dispatch(refreshBMLessons());
     return { ok: true, refreshed: refresh.ok };
-  } catch (error) {
+  } catch {
+    // Request errors are intentionally converted to rollback/retry messages instead of rethrown.
     if (!saved) {
       dispatch({ type: 'REVERT_LIKE_UPDATE', payload: { lessonId } });
       toast.error('Error liking/unliking lesson. Please try again.');

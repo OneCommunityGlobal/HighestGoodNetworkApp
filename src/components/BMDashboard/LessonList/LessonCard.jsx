@@ -96,8 +96,15 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
     handleLike(lessonId, userId);
   };
 
+  const getLikeLabels = isLiked => {
+    if (isLiked === true) return { action: 'Unlike', state: 'Liked' };
+    if (isLiked === false) return { action: 'Like', state: 'Like' };
+    return { action: 'Toggle like', state: 'Toggle like' };
+  };
+
   const lessonCards = (filteredLessons || []).map(lesson => {
     const { isLiked, totalLikes, pending } = getLikeStatus(lesson._id);
+    const likeLabels = getLikeLabels(isLiked);
 
     return (
       <Card key={lesson._id} className={`${styles.lessonCard} ${darkMode ? styles.darkCard : ''}`}>
@@ -218,9 +225,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                     aria-disabled={pending}
                     aria-busy={pending}
                     aria-pressed={isLiked}
-                    aria-label={`${
-                      isLiked === undefined ? 'Toggle like' : isLiked ? 'Unlike' : 'Like'
-                    } for ${lesson.title}`}
+                    aria-label={`${likeLabels.action} for ${lesson.title}`}
                     onClick={() => {
                       // Keep the focused button mounted/focusable while synchronizing.
                       if (!pending) handleLikeCount(lesson._id, currentUserId);
@@ -231,8 +236,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                       icon={isLiked === true ? filledHeart : outlineHeart}
                       aria-hidden="true"
                     />
-                    {isLiked === true ? 'Liked' : isLiked === false ? 'Like' : 'Toggle like'}:{' '}
-                    {totalLikes}
+                    {likeLabels.state}: {totalLikes}
                   </button>
                 </div>
               </div>

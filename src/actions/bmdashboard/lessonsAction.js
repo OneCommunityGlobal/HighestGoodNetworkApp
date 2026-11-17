@@ -107,7 +107,8 @@ export const fetchBMLessons = (query = {}, { signal } = {}) => async (dispatch, 
   const queryKey = serializeLessonQuery(activeQuery);
   dispatch({ type: BM_LESSONS_REQUEST, requestId, query: activeQuery, queryKey });
   try {
-    const url = `${ENDPOINTS.BM_LESSONS}${queryKey ? `?${queryKey}` : ''}`;
+    const queryString = queryKey ? `?${queryKey}` : '';
+    const url = `${ENDPOINTS.BM_LESSONS}${queryString}`;
     const response = signal ? await axios.get(url, { signal }) : await axios.get(url);
     const result = normalizeLessonResponse(response.data);
     if (signal?.aborted) throw new Error('Request cancelled');

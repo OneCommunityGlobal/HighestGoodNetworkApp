@@ -292,9 +292,12 @@ function LessonList({ lessons, darkMode, dispatch, request }) {
         second: '2-digit',
       });
 
-      csv += ['Export Date:', exportDateString].map(escapeCSV).join(',') + '\n';
-      csv += ['Applied Filters:', getFilterDescription()].map(escapeCSV).join(',') + '\n';
-      csv += ['Total Lessons:', filteredLessons.length].map(escapeCSV).join(',') + '\n';
+      csv += ['Export Date:', exportDateString].map(value => escapeCSV(value)).join(',') + '\n';
+      csv +=
+        ['Applied Filters:', getFilterDescription()].map(value => escapeCSV(value)).join(',') +
+        '\n';
+      csv +=
+        ['Total Lessons:', filteredLessons.length].map(value => escapeCSV(value)).join(',') + '\n';
       csv += '\n';
 
       // CSV Headers
@@ -307,7 +310,7 @@ function LessonList({ lessons, darkMode, dispatch, request }) {
         'Total Likes',
         'Content Summary',
       ];
-      csv += headers.map(escapeCSV).join(',') + '\n';
+      csv += headers.map(value => escapeCSV(value)).join(',') + '\n';
 
       // CSV Data rows with robust error handling
       filteredLessons.forEach((lesson, index) => {
@@ -334,13 +337,13 @@ function LessonList({ lessons, darkMode, dispatch, request }) {
           }
 
           const row = [title, date, tags, author, project, likes, content];
-          csv += row.map(escapeCSV).join(',') + '\n';
+          csv += row.map(value => escapeCSV(value)).join(',') + '\n';
         } catch (rowError) {
           // Log error but continue with other rows
           console.warn(`Error processing lesson at index ${index}:`, rowError);
           // Add a placeholder row to maintain CSV structure (7 columns matching headers)
           const errorRow = ['Error processing this lesson', '', '', '', '', '', ''];
-          csv += errorRow.map(escapeCSV).join(',') + '\n';
+          csv += errorRow.map(value => escapeCSV(value)).join(',') + '\n';
         }
       });
 
@@ -540,7 +543,9 @@ function LessonList({ lessons, darkMode, dispatch, request }) {
                 }
                 resetKey={resetKey}
               />
-              {tags.length >= 50 && <p role="status">A maximum of 50 tags can be selected.</p>}
+              {tags.length >= 50 && (
+                <output className="d-block mb-3">A maximum of 50 tags can be selected.</output>
+              )}
               {tags.length > 0 && (
                 <div
                   className={`${styles.tagContainer} ${darkMode ? styles.tagContainerDark : ''}`}
@@ -607,7 +612,7 @@ function LessonList({ lessons, darkMode, dispatch, request }) {
             </div>
           </Form.Group>
         </Form>
-        {catalogueLoading && <p role="status">Loading tag suggestions…</p>}
+        {catalogueLoading && <output className="d-block mb-3">Loading tag suggestions…</output>}
         {catalogueError && (
           <div role="alert">
             {catalogueError}{' '}
@@ -617,9 +622,9 @@ function LessonList({ lessons, darkMode, dispatch, request }) {
           </div>
         )}
         {isLoading && (
-          <div role="status" className={styles.loading}>
+          <output className="d-block">
             {isRefreshing ? 'Refreshing lessons…' : 'Loading lessons…'}
-          </div>
+          </output>
         )}
         {listError && (
           <div role="alert">
@@ -645,14 +650,13 @@ function LessonList({ lessons, darkMode, dispatch, request }) {
           isExporting={isExporting || isLoading || Boolean(listError)}
         />
         {/* Retain card identity/drafts during requests, but never expose another query's data. */}
-        <div
-          role="region"
+        <section
           aria-label="Lesson results"
           aria-busy={isLoading}
           hidden={!hasCurrentResults || lessons.length === 0}
         >
           <Lessons filteredLessons={lessons} dispatch={dispatch} />
-        </div>
+        </section>
       </div>
     </div>
   );

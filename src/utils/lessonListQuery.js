@@ -54,7 +54,7 @@ export function normalizeLessonTagCounts(body) {
       typeof entry.tag !== 'string' ||
       !Number.isSafeInteger(entry.count) ||
       entry.count < 0 ||
-      Object.prototype.hasOwnProperty.call(counts, entry.tag)
+      Object.hasOwn(counts, entry.tag)
     ) {
       throw new Error('Invalid tag-count response.');
     }

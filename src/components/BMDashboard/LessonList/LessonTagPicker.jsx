@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './LessonListForm.module.css';
 
+function nextSuggestion(current, length, open, key) {
+  if (!length) return 0;
+  if (!open) {
+    if (key === 'ArrowDown') return 0;
+    return length - 1;
+  }
+  const direction = key === 'ArrowDown' ? 1 : -1;
+  return (current + direction + length) % length;
+}
+
 export default function LessonTagPicker({
   id,
   label,
@@ -88,16 +98,7 @@ export default function LessonTagPicker({
           if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault();
             setOpen(true);
-            setActive(previous =>
-              options.length
-                ? !expanded
-                  ? event.key === 'ArrowDown'
-                    ? 0
-                    : options.length - 1
-                  : (previous + (event.key === 'ArrowDown' ? 1 : -1) + options.length) %
-                    options.length
-                : 0,
-            );
+            setActive(previous => nextSuggestion(previous, options.length, expanded, event.key));
           }
           if (event.key === 'Enter') {
             event.preventDefault();
@@ -131,11 +132,7 @@ export default function LessonTagPicker({
               {counts ? ` (${counts[tag] || 0})` : ''}
             </button>
           ))}
-          {!options.length && (
-            <div role="status" className={styles.noSuggestions}>
-              No matching tags.
-            </div>
-          )}
+          {!options.length && <output className={styles.noSuggestions}>No matching tags.</output>}
         </div>
       )}
     </div>

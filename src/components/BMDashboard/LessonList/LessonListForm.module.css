@@ -6,7 +6,7 @@
   overflow-wrap: anywhere;
 
   .formControl {
-    max-width: unset !important;
+    max-width: unset;
     font-size: small !important;
   }
 
@@ -120,6 +120,8 @@
 }
 
 .tag span {
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: inherit;
 }
 
@@ -336,6 +338,8 @@
 }
 
 .picker .tagDropdown {
+  box-sizing: border-box;
+  max-width: 100%;
   width: 100%;
   max-height: 240px;
   overflow-y: auto;
@@ -351,6 +355,7 @@
 }
 
 .noSuggestions {
+  display: block;
   padding: 0.5rem;
 }
 
@@ -375,18 +380,8 @@
 .formContainer .picker .formControl {
   min-width: 0;
   width: 100%;
-  max-width: 100% !important;
-  box-sizing: border-box;
-}
-
-.tag span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.picker .tagDropdown {
-  box-sizing: border-box;
   max-width: 100%;
+  box-sizing: border-box;
 }
 
 @media (width <= 570px) {

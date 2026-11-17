@@ -112,6 +112,10 @@
 }
 
 .lessonSummary textarea {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   height: 10rem;
   background-color: var(--module-bg);
   color: var(--module-text);
@@ -381,16 +385,10 @@
   overflow-wrap: anywhere;
 }
 
-.lessonSummary textarea,
 .lessonSummary img,
 .lessonSummary video {
   max-width: 100%;
   box-sizing: border-box;
-}
-
-.lessonSummary textarea {
-  min-width: 0;
-  width: 100%;
 }
 
 .lessonSummary pre {

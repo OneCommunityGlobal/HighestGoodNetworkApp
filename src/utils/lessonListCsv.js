@@ -5,6 +5,6 @@ export function escapeLessonCSV(value) {
   // Preserve numeric counters. User-controlled text must remain text, including
   // formula prefixes hidden behind whitespace, control characters or format marks.
   if (typeof value === 'string' && /^[\s\p{Cc}\p{Cf}]*[=+\-@]/u.test(text)) text = `'${text}`;
-  if (/[",]/.test(text) || text.trim() !== text) return `"${text.replace(/"/g, '""')}"`;
+  if (/[",]/.test(text) || text.trim() !== text) return `"${text.replaceAll('"', '""')}"`;
   return text;
 }
