@@ -21,6 +21,7 @@ import TaskCompletedModal from './components/TaskCompletedModal';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import styles from './style.module.css';
 import TeamMemberTask from './TeamMemberTask';
+import TaskTableColgroup from './TaskTableColgroup';
 
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { ENDPOINTS } from '~/utils/URL';
@@ -647,23 +648,8 @@ const TeamMemberTasks = React.memo(props => {
             darkMode ? styles['dark-teammember-row'] : styles['light-teammember-row'],
           ].join(' ')}
         >
-          {/*
-            The outer table is table-layout: fixed with 6 columns. Without a colgroup
-            every column gets 1/6 of the width, so the Tasks/Progress/Status block
-            (colSpan 3) only gets 50% and the Tasks column ends up ~79px wide.
-            This colgroup gives the task block 65% and the left block 35%, keeping the
-            1/3 : 2/3 ratio inside the left block so header and body stay aligned.
-          */}
-          <colgroup className={styles['task-colgroup']}>
-            {/* left block: User Status + Team Member */}
-            <col style={{ width: '9%' }} />
-            <col style={{ width: '13%' }} />
-            <col style={{ width: '13%' }} />
-            {/* right block: Tasks / Progress / Status */}
-            <col style={{ width: '21.67%' }} />
-            <col style={{ width: '21.67%' }} />
-            <col style={{ width: '21.66%' }} />
-          </colgroup>
+          {/* Same column widths as each member row (TeamMemberTask), so header and body align. */}
+          <TaskTableColgroup />
 
           {/*
             Only the outer sticky <thead> carries darkStickyHeader. The inner

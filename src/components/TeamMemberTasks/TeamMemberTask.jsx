@@ -21,6 +21,7 @@ import { getUserProfile } from '~/actions/userProfile.js';
 import Warning from '~/components/Warnings/Warnings';
 import hasPermission from '~/utils/permissions';
 import styles from './style.module.css';
+import TaskTableColgroup from './TaskTableColgroup';
 
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 import * as messages from '../../constants/followUpConstants';
@@ -297,6 +298,8 @@ const TeamMemberTask = React.memo(
               </div>
             )}
             <Table className={styles['no-bottom-margin']}>
+              {/* Same column widths as the header table, so cells sit under their headers. */}
+              <TaskTableColgroup />
               <tbody>
                 <tr className="remove-child-borders">
                   {/* green if member has met committed hours for the week, red if not */}
@@ -421,7 +424,7 @@ const TeamMemberTask = React.memo(
                       style={{ margin: '0 auto', width: '100%' }}
                     >
                       <tbody>
-                        <tr style={{ width: '500px' }}>
+                        <tr>
                           <td
                             colSpan={2}
                             className={styles['team-member-tasks-user-name']}

@@ -110,11 +110,9 @@
   min-height: 32px; /* was height: 32px — lets "Ready for Review" wrap to two lines */
 }
 
-/* Slimmer Status column so Tasks gets the room */
+/* Status column: 24% of the Task(s) / Progress / Status block */
 .status-align {
-  width: 100px;
-  min-width: 100px;
-  max-width: 120px;
+  width: 24%;
   padding-left: 6px !important;
   padding-right: 0 !important;
   text-align: center;
@@ -142,12 +140,13 @@
 }
 
 /*
-  Nested Tasks / Progress / Status tables must size by content so that
-  min-width on the Tasks cell is honoured (min-width is ignored on cells
-  under table-layout: fixed). Higher specificity than `.task_table-container table`.
+  The nested header and row tables share percentage column widths (Task(s) 50%,
+  Progress 26%, Status 24%) under table-layout: fixed, so each cell sits under its
+  header at every width and the block never grows wider than its 65% column.
+  This also keeps a long member name wrapping inside the Team Member column.
 */
 .task_table-container .team-member-tasks-subtable {
-  table-layout: auto;
+  table-layout: fixed;
 }
 
 .team-member-tasks-bell {
@@ -201,11 +200,9 @@
   justify-content: center;
 }
 
-/* Slimmer Progress column so Tasks gets the room */
+/* Progress column: 26% of the Task(s) / Progress / Status block */
 .team-task-progress {
-  width: 110px;
-  min-width: 110px;
-  max-width: 130px;
+  width: 26%;
   padding-right: 0 !important;
   padding-left: 0 !important;
   text-align: center;
@@ -229,10 +226,9 @@
   color: black;
 }
 
-/* Tasks column: real minimum width, shared by header <th> and body <td> */
+/* Task(s) column: 50% of the block, shared by header <th> and body <td> */
 .task-align {
-  width: auto;
-  min-width: 160px; /* sensible floor for the Tasks column */
+  width: 50%;
   flex: 1 1 auto;
   height: auto !important;
   vertical-align: middle !important;
@@ -1186,11 +1182,17 @@
   padding-right: 0 !important;
 }
 
-/* body is 1/6 + 2/6 of the table => 1/3 + 2/3 of the left half */
+/* matches TaskTableColgroup: the left block is 1 column + 2 equal columns => 1/3 + 2/3 */
 .header-col-status {
   width: 33.333%;
   text-align: center;
   vertical-align: middle !important;
+
+  /* narrow column: keep "User" and "Status" whole instead of breaking mid-word */
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .header-col-member {
@@ -1361,7 +1363,7 @@
      stack the header cells vertically, so the header rows are turned back into
      flex rows here. */
   .task-table > thead > tr,
-  .task-table > thead .table tr {
+  .task-table > thead .team-member-tasks-subtable tr {
     display: flex;
     width: 100%;
   }
@@ -1371,9 +1373,19 @@
     padding: 0 !important;
   }
 
-  .task-table > thead .table {
+  /* nested header tables fill their half, so no lighter strip shows beside
+     Status in dark mode */
+  .task-table > thead .team-member-tasks-subtable,
+  .task-table > thead .team-member-tasks-subtable > thead,
+  .task-table > thead .team-member-tasks-subtable tr {
+    display: block;
     width: 100%;
+    height: 100%;
     margin: 0;
+  }
+
+  .task-table > thead .team-member-tasks-subtable tr {
+    display: flex;
   }
 
   .task-table > thead th {
@@ -1400,6 +1412,19 @@
     width: auto;
     min-width: 0;
     max-width: none;
+  }
+}
+
+/* Phones: the two header halves stack, so each label gets the full row width
+   instead of a sixth of it (Status was clipped at 320px). */
+@media (width <= 480px) {
+  .task-table > thead > tr {
+    flex-wrap: wrap;
+  }
+
+  .task-table > thead > tr > th {
+    flex-basis: 100%;
+    min-width: 0;
   }
 }
 

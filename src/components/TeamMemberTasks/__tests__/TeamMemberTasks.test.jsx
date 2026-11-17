@@ -196,8 +196,22 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    // Matches both "Tasks(s)" and "Task(s)"; tighten once the intended text is confirmed.
-    expect(screen.getByText(/Tasks?\(s\)/)).toBeInTheDocument();
+    expect(screen.getByText('Task(s)')).toBeInTheDocument();
+  });
+  it('gives the header table the shared column widths used by every member row', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    const widths = screen.getAllByTestId('task-table-col').map(col => col.style.width);
+    expect(widths).toEqual(['11.67%', '11.67%', '11.66%', '21.67%', '21.67%', '21.66%']);
   });
   it('check if Progress header is displaying as expected', () => {
     axios.get.mockResolvedValue({
