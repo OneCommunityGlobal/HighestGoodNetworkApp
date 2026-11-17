@@ -12,16 +12,16 @@ import {
 import MonthPicker from './MonthPicker';
 import styles from './LossTrackingLineChart.module.css';
 
-const colors = {
-  '2022-Metal': '#008080',
-  '2022-Plastic': '#20b2aa',
-  '2022-Glass': '#48d1cc',
-  '2023-Metal': '#ff69b4',
-  '2023-Plastic': '#ff1493',
-  '2023-Glass': '#db7093',
-  '2024-Metal': '#ffd700',
-  '2024-Plastic': '#ffa500',
-  '2024-Glass': '#ff8c00',
+const materialColors = {
+  Metal: '#2563eb',
+  Plastic: '#c026d3',
+  Glass: '#15803d',
+};
+
+const yearLineStyles = {
+  2022: { strokeDasharray: undefined, legendBorderStyle: 'solid' },
+  2023: { strokeDasharray: '6 3', legendBorderStyle: 'dashed' },
+  2024: { strokeDasharray: '2 3', legendBorderStyle: 'dotted' },
 };
 
 // Custom tooltip: line colors shown as swatches, text in the theme's text color so every
@@ -35,17 +35,24 @@ function LossTooltip({ active, payload, label }) {
   return (
     <div className={styles.tooltip}>
       <div className={styles.tooltipTitle}>{label}</div>
-      {rows.map(item => (
-        <div key={item.dataKey} className={styles.tooltipRow}>
-          <span
-            className={styles.tooltipSwatch}
-            style={{ backgroundColor: item.color }}
-            aria-hidden="true"
-          />
-          <span className={styles.tooltipLabel}>{item.name}</span>
-          <span className={styles.tooltipValue}>{item.value}%</span>
-        </div>
-      ))}
+      {rows.map(item => {
+        const [itemYear, itemMaterial] = item.dataKey.split('-');
+        const yearLineStyle = yearLineStyles[itemYear];
+
+        return (
+          <div key={item.dataKey} className={styles.tooltipRow}>
+            <span
+              className={styles.tooltipSwatch}
+              style={{
+                borderTop: `2px ${yearLineStyle.legendBorderStyle} ${materialColors[itemMaterial]}`,
+              }}
+              aria-hidden="true"
+            />
+            <span className={styles.tooltipLabel}>{item.name}</span>
+            <span className={styles.tooltipValue}>{item.value}%</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -286,7 +293,8 @@ export default function LossTrackingLineChart() {
       filteredLines.map(line => ({
         key: `${line.year}-${line.material}`,
         label: `${line.year} - ${line.material}`,
-        color: colors[`${line.year}-${line.material}`],
+        color: materialColors[line.material],
+        lineStyle: yearLineStyles[line.year],
       })),
     [filteredLines],
   );
@@ -401,7 +409,8 @@ export default function LossTrackingLineChart() {
                         key={`${line.year}-${line.material}`}
                         type="monotone"
                         dataKey={`${line.year}-${line.material}`}
-                        stroke={colors[`${line.year}-${line.material}`]}
+                        stroke={materialColors[line.material]}
+                        strokeDasharray={yearLineStyles[line.year].strokeDasharray}
                         strokeWidth={2}
                         dot={{ r: 3 }}
                         activeDot={{ r: 5 }}
@@ -416,7 +425,7 @@ export default function LossTrackingLineChart() {
                   <span key={item.key} className={styles.legendItem}>
                     <span
                       className={styles.legendSwatch}
-                      style={{ backgroundColor: item.color }}
+                      style={{ borderTop: `2px ${item.lineStyle.legendBorderStyle} ${item.color}` }}
                       aria-hidden="true"
                     />
                     <span>{item.label}</span>
