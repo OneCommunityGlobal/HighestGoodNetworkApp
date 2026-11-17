@@ -574,13 +574,23 @@ describe('Equipment status form', () => {
     expect(await screen.findByText(/Invalid equipment identifier/)).toBeInTheDocument();
     expect(axios.get).not.toHaveBeenCalled();
   });
-  it('warns and blocks if required name is missing while optional metadata is allowed', async () => {
-    axios.get.mockResolvedValue({ data: { _id: id } });
-    setup();
-    expect(await screen.findByText(/Equipment name is unavailable/)).toBeInTheDocument();
-    submit();
-    expect(axios.put).not.toHaveBeenCalled();
-  });
+  it.each([false, true])(
+    'styles the missing-name warning and blocks submission (darkMode=%s)',
+    async darkMode => {
+      const routeId = '6869da54b653924ff05eb471';
+      axios.get.mockResolvedValue({ data: { _id: routeId } });
+      setup({ darkMode, routeId });
+      const warning = await screen.findByRole('alert');
+      expect(warning).toHaveTextContent(
+        'Equipment name is unavailable. Status updates are disabled until the equipment can be identified.',
+      );
+      expect(warning).toHaveClass('alert-warning', styles.missingNameWarning);
+      expect(screen.getByRole('button', { name: 'Update Status' })).toBeDisabled();
+      expect(screen.getByLabelText('Status/Condition Now *')).toBeDisabled();
+      submit();
+      expect(axios.put).not.toHaveBeenCalled();
+    },
+  );
   it('accepts a named equipment with missing optional fields and absent discriminator', async () => {
     axios.get.mockResolvedValue({ data: { _id: id, itemType: { name: 'Excavator' } } });
     setup();

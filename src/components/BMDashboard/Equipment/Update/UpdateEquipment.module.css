@@ -311,3 +311,17 @@
     max-width: 100%;
   }
 }
+
+.missingNameWarning:global(.alert-warning) {
+  color: #664d03;
+  background-color: #fff3cd;
+  border-color: #ffeaa7;
+}
+
+/* Follow the app theme, independent of the OS preference. The important color
+   overrides public/index.css's global dark-mode white text rule. */
+:global(.dark-mode) .missingNameWarning:global(.alert-warning) {
+  color: #fff9e6 !important;
+  background-color: #664d03;
+  border-color: #ffc107;
+}

@@ -749,7 +749,7 @@ function EquipmentStatusForm({ equipmentId }) {
         </Alert>
       )}
       {metadataReady && !hasEquipmentName && (
-        <Alert color="warning">
+        <Alert color="warning" className={styles.missingNameWarning}>
           Equipment name is unavailable. Status updates are disabled until the equipment can be
           identified.
         </Alert>
