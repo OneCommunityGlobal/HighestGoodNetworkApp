@@ -29,7 +29,6 @@ const LEGACY_OR_EXTRA_KEYS = [
   'editProject',
   'editSummaryHoursCount',
   'editTimelogInfo',
-  'getWeeklyVolunteerSummary', // RoutePermissions alias (JSON uses getVolunteerWeeklySummary)
   'infringementAuthorizer',
   'manageAdminLinks',
   'postTeam', // still used for create-team UI; may nest under Teams in Permissions.json

@@ -43,18 +43,11 @@ function StandInPage() {
 }
 
 describe('Weekly Summaries Report and Total Org Summary access', () => {
-  it.each([
-    ['requestBio', '/weeklysummariesreport', '/weeklysummariesreport'],
-    ['requestBio', '/totalorgsummary', '/dashboard'],
-    ['requestBio', '/TotalOrgSummaryEmail', '/dashboard'],
-    ['getWeeklySummaries', '/weeklysummariesreport', '/weeklysummariesreport'],
-    ['getWeeklySummaries', '/totalorgsummary', '/totalorgsummary'],
-    ['getWeeklySummaries', '/TotalOrgSummaryEmail', '/TotalOrgSummaryEmail'],
-  ])('a Volunteer with only %s who opens %s ends on %s', (key, path, expectedPath) => {
+  const landingPath = (role, key, path) => {
     const store = configureMockStore()({
       auth: {
         isAuthenticated: true,
-        user: { role: 'Volunteer', permissions: { frontPermissions: [key] } },
+        user: { role, permissions: { frontPermissions: [key] } },
       },
       role: { roles: [] },
     });
@@ -68,6 +61,27 @@ describe('Weekly Summaries Report and Total Org Summary access', () => {
       </Provider>,
     );
 
-    expect(history.location.pathname).toBe(expectedPath);
+    return history.location.pathname;
+  };
+
+  it.each([
+    ['requestBio', '/weeklysummariesreport', '/weeklysummariesreport'],
+    ['requestBio', '/totalorgsummary', '/dashboard'],
+    ['requestBio', '/TotalOrgSummaryEmail', '/dashboard'],
+    ['getWeeklySummaries', '/weeklysummariesreport', '/weeklysummariesreport'],
+    ['getWeeklySummaries', '/totalorgsummary', '/dashboard'],
+    ['getWeeklySummaries', '/TotalOrgSummaryEmail', '/dashboard'],
+    ['getVolunteerWeeklySummary', '/weeklysummariesreport', '/dashboard'],
+    ['getVolunteerWeeklySummary', '/totalorgsummary', '/totalorgsummary'],
+    ['getVolunteerWeeklySummary', '/TotalOrgSummaryEmail', '/TotalOrgSummaryEmail'],
+  ])('a Volunteer with only %s who opens %s ends on %s', (key, path, expectedPath) => {
+    expect(landingPath('Volunteer', key, path)).toBe(expectedPath);
   });
+
+  it.each(['/totalorgsummary', '/TotalOrgSummaryEmail'])(
+    'an Administrator with only getWeeklySummaries who opens %s stays there',
+    path => {
+      expect(landingPath('Administrator', 'getWeeklySummaries', path)).toBe(path);
+    },
+  );
 });

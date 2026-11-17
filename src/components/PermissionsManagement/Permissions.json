@@ -27,7 +27,7 @@
       {
         "label": "See Weekly Summaries",
         "key": "getWeeklySummaries",
-        "description": "Lets the user open the Weekly Summaries Report, view and email the Total Org Summary, and see Google Doc icons in Dashboard Tasks."
+        "description": "Lets the user open the Weekly Summaries Report and see Google Doc icons in Dashboard Tasks."
       },
       {
         "label": "See PR Dashboard and Edit PR Grading Dashboard",
@@ -50,9 +50,9 @@
         "description": "Lets the user open the Weekly Summaries Report and change a person's 'Bio announcement' switch there."
       },
       {
-        "label": "See Volunteer Weekly Summaries",
+        "label": "See Total Org Summary",
         "key": "getVolunteerWeeklySummary",
-        "description": "Lets the user open Reports > Volunteer Summary Reports."
+        "description": "Lets the user open Reports > Total Org Summary and Reports > Total Org Summary Email."
       },
       {
         "label": "Edit Team Codes",
@@ -67,7 +67,7 @@
       {
         "label": "See Job Analytics Reports",
         "key": "getJobReports",
-        "description": "Lets the user open Reports > Job Analytics Report. Also needs 'See Analytics Reports' or 'See Weekly Summaries'."
+        "description": "Lets the user open Reports > Job Analytics Report. Also needs a permission that shows the Reports menu, like 'See Analytics Reports'."
       }
     ]
   },

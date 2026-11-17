@@ -668,7 +668,6 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          // setting permission as getWeeklySummaries for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.totalOrgSummary}
         />
         <ProtectedRoute
@@ -683,7 +682,6 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          // setting permission as getWeeklySummaries for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.totalOrgSummary}
         />
         <ProtectedRoute

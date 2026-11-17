@@ -389,7 +389,8 @@ describe('Header Reports menu', () => {
 
   it.each([
     ['requestBio', ['Weekly Summaries Report']],
-    ['getWeeklySummaries', reportLinks],
+    ['getWeeklySummaries', ['Weekly Summaries Report']],
+    ['getVolunteerWeeklySummary', ['Total Org Summary', 'Total Org Summary Email']],
   ])('%s alone shows these report links: %j', (key, expectedLinks) => {
     renderHeader({}, { hasPermission: action => [action].flat().includes(key) });
 
