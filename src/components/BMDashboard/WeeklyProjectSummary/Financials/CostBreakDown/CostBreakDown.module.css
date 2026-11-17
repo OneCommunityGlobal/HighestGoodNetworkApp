@@ -344,6 +344,14 @@
 .wrapperDark .filterSelect,
 .wrapperDark .filterInput {
   color-scheme: dark;
+  background: #2b3e59;
+  color: #fff;
+  border-color: #4a5a77;
+}
+
+.wrapperDark .filterInput[type='date']::-webkit-datetime-edit,
+.wrapperDark .filterInput[type='date']::-webkit-datetime-edit-fields-wrapper {
+  color: #fff;
 }
 
 .wrapperDark .filterInput[type='date']::-webkit-calendar-picker-indicator {

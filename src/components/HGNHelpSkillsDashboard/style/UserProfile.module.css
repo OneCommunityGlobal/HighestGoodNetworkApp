@@ -115,3 +115,28 @@
   font-size: 14px;
   font-weight: bold;
 }
+
+/* Dark mode tooltip */
+:global(.dark-mode) .tooltip {
+  background-color: #2a2f3a;
+  border-color: #444c5c;
+  box-shadow: 0 0 6px rgb(0 0 0 / 40%);
+  color: #f1f1f1;
+}
+
+:global(.dark-mode) .tooltipTitle {
+  color: #fff;
+}
+
+:global(.dark-mode) .tooltipScore,
+:global(.dark-mode) .tooltipQuestion {
+  color: #d0d4dc;
+}
+
+:global(.dark-mode) .scoreLow {
+  color: #ff6b6b;
+}
+
+:global(.dark-mode) .scoreHigh {
+  color: #5fd38d;
+}
