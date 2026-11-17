@@ -113,7 +113,9 @@ export default function LossTrackingLineChart() {
   const years = useMemo(
     () => [
       'All',
-      ...Array.from(new Set([String(currentYear), ...rawData.map(d => String(d.year))])).sort(),
+      ...Array.from(new Set([String(currentYear), ...rawData.map(d => String(d.year))])).sort(
+        (a, b) => Number(a) - Number(b),
+      ),
     ],
     [rawData, currentYear],
   );
