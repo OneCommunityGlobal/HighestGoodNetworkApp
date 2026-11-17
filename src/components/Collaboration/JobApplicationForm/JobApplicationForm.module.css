@@ -357,6 +357,21 @@
   box-sizing: border-box;
 }
 
+/* Browser autofill - light mode */
+.formProfileDetailGroup input:where(:-webkit-autofill) {
+  -webkit-text-fill-color: #222;
+  box-shadow: 0 0 0 1000px #fff inset;
+  caret-color: #222;
+}
+
+/* Browser autofill - dark mode */
+.darkMode .formProfileDetailGroup input:where(:-webkit-autofill) {
+  -webkit-text-fill-color: #f1f1f1;
+  box-shadow: 0 0 0 1000px #181a1b inset;
+  caret-color: #f1f1f1;
+  border-color: #444;
+}
+
 .formProfileDetailGroup .profileField {
   flex: 1 1 200px;
   min-width: 200px;
