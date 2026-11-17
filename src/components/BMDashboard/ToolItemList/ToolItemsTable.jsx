@@ -130,6 +130,10 @@ export default function ToolItemsTable({
     setData(newSortedData);
   };
 
+  // With multi-select, show sortable header when no filter is applied (empty array)
+  const noProjectFilter = !Array.isArray(selectedProject) || selectedProject.length === 0;
+  const noItemFilter = !Array.isArray(selectedItem) || selectedItem.length === 0;
+
   return (
     <>
       <ToolRecordsModal
@@ -144,14 +148,14 @@ export default function ToolItemsTable({
         <Table className={`${styles.itemsTable}`}>
           <thead>
             <tr>
-              {selectedProject === 'all' ? (
+              {noProjectFilter ? (
                 <th onClick={() => sortData('ProjectName')}>
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
                 <th>Project</th>
               )}
-              {selectedItem === 'all' ? (
+              {noItemFilter ? (
                 <th onClick={() => sortData('InventoryItemType')}>
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>

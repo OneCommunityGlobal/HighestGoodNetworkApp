@@ -3,6 +3,7 @@
   background-color: #3b82f6;
   padding: 0.75rem 0;
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  position: relative;
 }
 
 .navContainer {
@@ -11,8 +12,16 @@
   padding: 0 1rem;
   display: flex;
   align-items: center;
-  gap: 2rem;
-  overflow-x: auto;
+  gap: 0.25rem;
+}
+
+/* Desktop nav items wrapper */
+.navItems {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: nowrap;
+  flex: 1;
 }
 
 .navItem {
@@ -89,19 +98,74 @@
   color: #1f2937;
 }
 
+/* Hamburger button — hidden on desktop */
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+
+.hamburger:hover {
+  background-color: rgb(255 255 255 / 10%);
+}
+
 /* Responsive Design */
 @media (width <= 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+
   .navContainer {
-    gap: 1rem;
-    padding: 0 0.5rem;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 0 0.75rem;
+  }
+
+  /* Hide desktop nav items on mobile; show only when open */
+  .navItems {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 0.5rem 0;
+    gap: 0;
+  }
+
+  .navItems.navItemsOpen {
+    display: flex;
+  }
+
+  .navItem {
+    width: 100%;
   }
 
   .navButton {
-    padding: 0.5rem;
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.6rem 0.5rem;
+    border-radius: 4px;
   }
 
-  .navText {
-    display: none;
+  .dropdown {
+    position: static;
+    margin-top: 0;
+  }
+
+  .dropdownContent {
+    border-radius: 4px;
+    margin-left: 1.5rem;
+    min-width: auto;
+    width: calc(100% - 1.5rem);
   }
 }
 

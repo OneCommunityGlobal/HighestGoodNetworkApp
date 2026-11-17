@@ -13,6 +13,7 @@ import styles from './PurchaseTool.module.css';
 export default function PurchaseTool() {
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
@@ -42,7 +43,7 @@ export default function PurchaseTool() {
     <main className={`${styles.purchaseToolContainer}`}>
       <header className={`${styles.purchaseToolHeader}`}>
         <h2>Purchase Request: Tools</h2>
-        <div className="inv-form-info">
+        <div className={`${styles.infoText} ${darkMode ? styles.infoTextDark : ''}`}>
           <BsInfoCircle />
           Initiate a purchase request for approval/action by project admins.
         </div>

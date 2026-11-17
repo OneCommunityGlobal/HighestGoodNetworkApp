@@ -1,40 +1,42 @@
-import styles from './TriStateToggleSwitch.module.css';
 import React, { useState, useEffect } from 'react';
+import styles from './TriStateToggleSwitch.module.css';
+
+const getBgColor = pos => {
+  if (pos === 'posted') return 'blue';
+  if (pos === 'default') return 'darkgray';
+  return 'green';
+};
 
 function TriStateToggleSwitch({ pos, onChange }) {
-  const [position, setPosition] = useState(pos || 'default');
-  const [bgColor, setBgColor] = useState('');
+  const [position, setPosition] = useState(pos);
+  const [bgColor, setBgColor] = useState(getBgColor(pos));
 
   const handleClick = newPos => {
     setPosition(newPos);
-    if (onChange) onChange(newPos);
-    if (newPos === 'posted') setBgColor('blue');
-    else if (newPos === 'default') setBgColor('darkgray');
-    else setBgColor('green');
+    if (onChange) {
+      onChange(newPos);
+    }
+    setBgColor(getBgColor(newPos));
   };
 
   useEffect(() => {
-    if (pos) setPosition(pos);
-    if (pos === 'posted') setBgColor('blue');
-    else if (pos === 'default') setBgColor('darkgray');
-    else setBgColor('green');
+    if (pos) {
+      setPosition(pos);
+    }
+    setBgColor(getBgColor(pos));
   }, [pos]);
 
-    return (
-    <div data-testid="toggle-switch" className={`${styles['toggle-switch']} ${styles[`bg-${bgColor}`]}`}>
-      <div data-testid="knob-area" className={styles['knob-area']} style={{ position: 'relative', zIndex: 1 }}>
-        {['posted', 'default', 'requested'].map(p => (
-          <div
-            key={p}
-            data-testid={`option-${p}`}
-            role="button"
-            tabIndex={0}
-            onClick={() => handleClick(p)}
-            onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleClick(p)}
-          />
-        ))}
+  const bgColorClass = styles[`bg-${bgColor}`];
+  const toggleClass = `${styles['toggle-switch']} ${bgColorClass}`;
+
+  return (
+    <div className={toggleClass}>
+      <div className={styles['knob-area']}>
+        <button type="button" onClick={() => handleClick('posted')} aria-label="posted" />
+        <button type="button" onClick={() => handleClick('default')} aria-label="default" />
+        <button type="button" onClick={() => handleClick('requested')} aria-label="requested" />
       </div>
-      <div data-testid="knob" className={`${styles.knob} ${styles[position]}`} />
+      <div className={`${styles.knob} ${styles[position]}`} />
     </div>
   );
 }

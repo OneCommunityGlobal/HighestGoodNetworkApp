@@ -7,6 +7,7 @@ import {
   resendBlueSquareEmails,
   resendWeeklySummaryEmails,
 } from '../../actions/blueSquareEmailActions';
+import { permissions } from '../../utils/constants';
 import styles from './BlueSquareEmailManagement.module.css';
 
 const BlueSquareEmailManagement = ({
@@ -28,9 +29,9 @@ const BlueSquareEmailManagement = ({
   const userRoleData = roles?.find(r => r.roleName === userRole);
   const roleDefaultPermissions = userRoleData?.permissions || [];
   const hasEmailPermission =
-    (roleDefaultPermissions.includes('resendBlueSquareAndSummaryEmails') &&
-      !removedPermissions.includes('resendBlueSquareAndSummaryEmails')) ||
-    userPermissions.includes('resendBlueSquareAndSummaryEmails');
+    (roleDefaultPermissions.includes(permissions.resendBlueSquareAndSummaryEmails) &&
+      !removedPermissions.includes(permissions.resendBlueSquareAndSummaryEmails)) ||
+    userPermissions.includes(permissions.resendBlueSquareAndSummaryEmails);
 
   const handleBlueSquareResend = async () => {
     setIsLoading(true);

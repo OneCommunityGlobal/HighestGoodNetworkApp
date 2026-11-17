@@ -9,6 +9,7 @@ import {
   ADD_NEW_TEAM,
   TEAMS_DELETE,
   UPDATE_TEAM,
+  FETCH_USER_TEAMS_START,
   FETCH_TEAM_USERS_START,
   RECEIVE_TEAM_USERS,
   FETCH_TEAM_USERS_ERROR,
@@ -254,7 +255,10 @@ describe('getAllUserTeams', () => {
     // Mock axios.get
     axios.get.mockResolvedValue({ data: responseData });
 
-    const expectedActions = [{ type: RECEIVE_ALL_USER_TEAMS, payload: responseData }];
+    const expectedActions = [
+      { type: FETCH_USER_TEAMS_START },
+      { type: RECEIVE_ALL_USER_TEAMS, payload: responseData }
+    ];
 
     const store = mockStore({});
 

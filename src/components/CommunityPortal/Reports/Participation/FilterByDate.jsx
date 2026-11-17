@@ -1,7 +1,8 @@
 /**
  * Reusable filter for event lists based on date ranges.
  * @param {Array} events - Array of event objects containing an 'eventDate' property.
- * @param {string} filterType - 'Today', 'This Week', 'This Month', or 'All Time'.
+ * @param {string} filterType - 'Today', 'This Week', 'This Month',
+ *   'Last 3 Months', 'Last 6 Months', 'Last 12 Months', or 'All Time'.
  * @returns {Array} - The filtered subset of events.
  */
 export const filterEventsByDate = (events, filterType) => {
@@ -43,6 +44,23 @@ export const filterEventsByDate = (events, filterType) => {
           eventDate.getMonth() === today.getMonth() &&
           eventDate.getFullYear() === today.getFullYear()
         );
+
+      case 'Last 3 Months':
+      case 'Last 6 Months':
+      case 'Last 12 Months': {
+        // End range at the last moment of today
+        const endOfToday = new Date(startOfToday);
+        endOfToday.setHours(23, 59, 59, 999);
+
+        // Step back the matching number of months from the start of today
+        const monthsBack = { 'Last 3 Months': 3, 'Last 6 Months': 6, 'Last 12 Months': 12 }[
+          filterType
+        ];
+        const startDate = new Date(startOfToday);
+        startDate.setMonth(startOfToday.getMonth() - monthsBack);
+
+        return eventDate >= startDate && eventDate <= endOfToday;
+      }
 
       case 'All Time':
       default:

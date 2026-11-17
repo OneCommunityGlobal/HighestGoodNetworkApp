@@ -1,0 +1,64 @@
+/* Teacher Feedback Styles */
+.feedbackContainer {
+  margin-top: 32px;
+}
+
+.feedbackTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.feedbackCard {
+  padding: 24px;
+  background-color: #f3f4f6;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.feedbackTeacherName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.feedbackText {
+  color: #374151;
+  font-style: italic;
+}
+
+/* No Feedback Card */
+.noFeedbackCard {
+  padding: 24px;
+  text-align: center;
+  color: #6b7280;
+  background-color: #f9fafb;
+  border-radius: 16px;
+  border: 1px dashed #d1d5db;
+}
+
+/* Dark Mode Overrides */
+.darkMode .feedbackTitle {
+  color: #f3f4f6;
+}
+
+.darkMode .feedbackCard {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.darkMode .feedbackTeacherName {
+  color: #f3f4f6;
+}
+
+.darkMode .feedbackText {
+  color: #d1d5db;
+}
+
+.darkMode .noFeedbackCard {
+  background-color: #1f2937;
+  color: #d1d5db;
+  border-color: #4b5563;
+}

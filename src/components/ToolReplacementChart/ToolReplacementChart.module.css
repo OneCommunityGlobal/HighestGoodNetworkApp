@@ -1,0 +1,346 @@
+.mainContainer {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 100%;
+  height: auto;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+.bgDark {
+  background-color: #1b2a41;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 16px;
+  color: #111;
+}
+
+.titleDark {
+  color: #e5e5e5;
+}
+
+.subtitle {
+  margin: -8px auto 18px;
+  max-width: 760px;
+  text-align: center;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: #374151;
+}
+
+.subtitleDark {
+  color: #cbd5e1;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) repeat(3, minmax(160px, 1fr));
+  gap: 16px;
+  margin: 0 auto 20px;
+  max-width: 980px;
+  width: 100%;
+  align-items: end;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.filterLabel {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #111;
+}
+
+.filterLabelDark {
+  color: #e5e5e5;
+}
+
+.datePicker {
+  width: 100%;
+  min-height: 42px !important;
+  height: 42px !important;
+  padding: 8px 12px !important;
+  border: 1px solid #9ca3af !important;
+  border-radius: 8px !important;
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+  box-sizing: border-box !important;
+  background-color: #fff !important;
+  color: #111827 !important;
+}
+
+.datePickerWrapper,
+.datePickerWrapper :global(.react-datepicker__input-container) {
+  display: block;
+  width: 100%;
+}
+
+.projectSelect {
+  min-width: 0;
+}
+
+.datePickerDark {
+  background-color: #3a506b !important;
+  border-color: #5a7a9b !important;
+  color: #f8fafc !important;
+  color-scheme: dark;
+}
+
+.datePickerDark::placeholder {
+  color: #cbd5e1 !important;
+  opacity: 1;
+}
+
+.datePickerPopper {
+  z-index: 20 !important;
+}
+
+.calendar,
+.calendarDark {
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 25%);
+  font-size: 0.85rem !important;
+  overflow: hidden;
+}
+
+.calendar :global(.react-datepicker__header) {
+  background-color: #f3f4f6;
+  border-bottom-color: #d1d5db;
+}
+
+.calendar :global(.react-datepicker__current-month),
+.calendar :global(.react-datepicker__day-name) {
+  color: #111827 !important;
+  font-weight: 600;
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day) {
+  color: #111827 !important;
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day--outside-month) {
+  color: #6b7280 !important;
+}
+
+.calendar :global(.react-datepicker__navigation-icon::before) {
+  border-color: #111827 !important;
+  border-width: 2px 2px 0 0;
+}
+
+.calendar :global(.react-datepicker__navigation:hover *::before) {
+  border-color: #000 !important;
+}
+
+.calendar :global(.react-datepicker__month-select),
+.calendar :global(.react-datepicker__year-select),
+.calendarDark :global(.react-datepicker__month-select),
+.calendarDark :global(.react-datepicker__year-select) {
+  min-height: 30px;
+  padding: 3px 24px 3px 8px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.calendar :global(.react-datepicker__month-select),
+.calendar :global(.react-datepicker__year-select) {
+  border: 1px solid #6b7280;
+  background-color: #fff;
+  color: #111827;
+}
+
+/* Compound selectors so white text beats the base day color !important rule */
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selected),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--keyboard-selected),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-range),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-start),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-end),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selecting-range-start),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selecting-range-end) {
+  background-color: #1d4ed8 !important;
+  color: #fff !important;
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selected:hover),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-range:hover),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range:hover),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-start:hover),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-end:hover) {
+  background-color: #1e40af !important;
+  color: #fff !important;
+}
+
+.calendarDark {
+  background-color: #263a56 !important;
+  border-color: #64748b !important;
+  color: #f8fafc !important;
+}
+
+.calendarDark :global(.react-datepicker__header) {
+  background-color: #1e293b !important;
+  border-bottom-color: #64748b !important;
+}
+
+.calendarDark :global(.react-datepicker__current-month),
+.calendarDark :global(.react-datepicker__day-name),
+.calendarDark :global(.react-datepicker__day) {
+  color: #f8fafc !important;
+}
+
+.calendarDark :global(.react-datepicker__day--outside-month) {
+  color: #cbd5e1 !important;
+}
+
+.calendarDark :global(.react-datepicker__day:hover) {
+  background-color: #475569 !important;
+}
+
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selected),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--keyboard-selected),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-range),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-start),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-end) {
+  background-color: #1d4ed8 !important;
+  color: #fff !important;
+}
+
+.calendarDark :global(.react-datepicker__day--disabled) {
+  color: #94a3b8 !important;
+}
+
+.calendarDark :global(.react-datepicker__navigation-icon::before) {
+  border-color: #f8fafc !important;
+  border-width: 2px 2px 0 0;
+}
+
+.calendarDark :global(.react-datepicker__month-select),
+.calendarDark :global(.react-datepicker__year-select) {
+  border: 1px solid #94a3b8;
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+.resetBtn {
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 1px solid #4f46e5;
+  border-radius: 8px;
+  background-color: #4f46e5;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.resetBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.resetBtn:hover:not(:disabled) {
+  background-color: #82ca9d;
+  border-color: #82ca9d;
+}
+
+.resetBtnDark {
+  background-color: #3a506b;
+  border-color: #5a7a9b;
+  color: #fff;
+}
+
+.chartContainer {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.chart {
+  width: 100%;
+  min-width: 0;
+}
+
+.statusMessage {
+  text-align: center;
+  font-size: 1rem;
+  color: #888;
+  padding: 32px 16px;
+}
+
+.errorMessage {
+  text-align: center;
+  font-size: 1rem;
+  padding: 32px 16px;
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.emptyMessage {
+  text-align: center;
+  font-size: 1rem;
+  color: #888;
+  padding: 32px 16px;
+  font-style: italic;
+}
+
+.bgDark .statusMessage,
+.bgDark .emptyMessage {
+  color: #cbd5e1;
+}
+
+@media (width <= 900px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 680px;
+  }
+}
+
+@media (width <= 600px) {
+  .mainContainer {
+    padding: 12px 4px;
+  }
+
+  .title {
+    padding: 0 8px;
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 0 8px;
+    box-sizing: border-box;
+  }
+
+  .filterGroup:last-child .filterLabel {
+    display: none;
+  }
+
+  .chartContainer {
+    min-height: 300px;
+  }
+
+  .calendar,
+  .calendarDark {
+    font-size: 0.78rem !important;
+  }
+}

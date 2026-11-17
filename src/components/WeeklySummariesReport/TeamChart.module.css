@@ -3,7 +3,7 @@
 /* TeamTable.css */
 
 /* Style for the table */
-table {
+.teamChart {
   border-collapse: collapse;
   width: 100%;
   margin-bottom: 20px;
@@ -20,24 +20,24 @@ table {
 }
 
 /* Style for table headers */
-th {
+.teamChart th {
   text-align: center;
   padding: 8px;
 }
 
 /* Style for table data cells */
-td {
+.teamChart td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: center;
 }
 
 /* Style for footer */
-tfoot td {
+.teamChart tfoot td {
   font-weight: bold;
 }
 
 /* Hover effect on rows */
-tbody tr:hover {
+.teamChart tbody tr:hover {
   background-color: #e2e2e2;
 }

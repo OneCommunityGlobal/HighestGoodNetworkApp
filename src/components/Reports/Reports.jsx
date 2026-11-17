@@ -32,6 +32,7 @@ import TotalPeopleReport from './TotalReport/TotalPeopleReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
 import TotalTeamReport from './TotalReport/TotalTeamReport';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
+import VolunteerHoursReport from './VolunteerHoursReport';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -51,6 +52,7 @@ class ReportsPage extends Component {
       showAddTeamHistory: false,
       showAddProjHistory: false,
       showContributorsReport: false,
+      showVolunteerHoursReport: false,
       teamNameSearchText: '',
       wildCardSearchText: '',
       selectedTeamId: 0,
@@ -109,6 +111,7 @@ class ReportsPage extends Component {
     this.onDateChange = this.onDateChange.bind(this);
     this.handleClearFilters = this.handleClearFilters.bind(this);
     this.showContributorsReport = this.showContributorsReport.bind(this);
+    this.showVolunteerHoursReport = this.showVolunteerHoursReport.bind(this);
     this.handleSearchClick = this.handleSearchClick.bind(this);
   }
 
@@ -211,6 +214,7 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showCharts: !prevState.showAddTimeForm,
     }));
   }
 
@@ -229,7 +233,6 @@ endDate: moment()
       }
       return false;
     });
-
     return filteredList;
   };
 
@@ -296,7 +299,8 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showProjects,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showVolunteerHoursReport: false
     }));
   }
 
@@ -313,7 +317,8 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showTeams,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showVolunteerHoursReport: false
     }));
   }
 
@@ -330,7 +335,8 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showPeople,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showVolunteerHoursReport: false
     }));
   }
 
@@ -347,7 +353,8 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showTotalPeople,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showVolunteerHoursReport: false
     }));
   }
 
@@ -364,7 +371,8 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showTotalTeam,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showVolunteerHoursReport: false
     }));
   }
 
@@ -417,7 +425,8 @@ endDate: moment()
       showAddProjHistory: !prevState.showAddProjHistory,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showCharts: !prevState.showAddProjHistory
     }));
   }
 
@@ -433,7 +442,8 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: !prevState.showAddPersonHistory,
       showAddTeamHistory: false,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showCharts: !prevState.showAddPersonHistory
     }));
   }
 
@@ -449,7 +459,8 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: !prevState.showAddTeamHistory,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showCharts: !prevState.showAddTeamHistory
     }));
   }
 
@@ -466,7 +477,26 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
-      showCharts: !prevState.showContributorsReport
+      showCharts: !prevState.showContributorsReport,
+      showVolunteerHoursReport: false
+    }));
+  }
+
+  showVolunteerHoursReport() {
+    this.setState(prevState => ({
+      showVolunteerHoursReport: !prevState.showVolunteerHoursReport,
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalPeople: false,
+      showTotalTeam: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+      showContributorsReport: false,
+      showCharts: !prevState.showVolunteerHoursReport
     }));
   }
 
@@ -564,8 +594,10 @@ endDate: moment()
               </div>
             </h2>
             <div>
-              <p >Select a Category</p>
+
+              <p className={darkMode ? styles['text-light'] : undefined}>Select a Category</p>
             </div>
+            
             <div className={styles['report-container-data']}>
               <div className={styles['data-container']} style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
                 <div className={styles['category-container']}>
@@ -580,10 +612,13 @@ endDate: moment()
                     onClick={this.showProjectTable}
                   >
                     <h3 className={styles['card-category-item-title']}> Projects</h3>
-                    <h3 className={styles['card-category-item-number']}>
-                      {this.state.projectSearchData.length}
-                      {' '}
-                    </h3>
+                      <h3 className={styles['card-category-item-number']}>
+                        {this.props.state.allProjects.fetching ? (
+                          <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
+                        ) : (
+                          this.state.projectSearchData.length
+                          )}
+                      </h3>
                     <img src={projectsImage} alt="Projects" />
                   </button>
                   <button
@@ -598,7 +633,11 @@ endDate: moment()
                   >
                     <h3 className={styles['card-category-item-title']}> People </h3>
                     <h3 className={styles['card-category-item-number']}>
-                      {this.state.peopleSearchData.length}
+                      {this.props.state.allUserProfilesBasicInfo.fetching ? (
+                        <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
+                      ) : (
+                        this.state.peopleSearchData.length
+                        )}
                     </h3>
                     <img src={peopleImage} alt="that representes the people" />
                   </button>
@@ -613,9 +652,14 @@ endDate: moment()
                     onClick={this.showTeamsTable}
                   >
                     <h3 className={styles['card-category-item-title']}> Teams </h3>
-                    <h3 className={styles['card-category-item-number']}>{this.state.teamSearchData?.length}</h3>
-                    <img src={teamsImage} alt="that representes the teams" />
-                  </button>
+                    <h3 className={styles['card-category-item-number']}>
+                      {this.props.state.allTeamsData.fetching ? (
+                        <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
+                      ) : (
+                        this.state.teamSearchData.length
+                      )}
+                    </h3><img src={teamsImage} alt="that representes the teams" />
+                    </button>
                 </div>
                 <div
                   className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'
@@ -708,7 +752,29 @@ endDate: moment()
                           fontSize={15}
                           isPermissionPage
                           darkMode={darkMode}
-                          defaultText="Click this to see only people who logged/contributed a minimum of 10 tangible hours. This is used for identifying actual contributors vs. people who never started, were immediately terminated, etc."
+                          defaultText="This report only shows Team Members who have contributed more than 10 Hours."
+                        />
+                      </div>
+                    </div>
+                    <div className={styles['total-report-item']}>
+                      <Button
+                        type="button"
+                        color="success"
+                        onClick={this.showVolunteerHoursReport}
+                      >
+                        {this.state.showVolunteerHoursReport
+                        ? 'Hide Volunteer Hours Report'
+                        : 'Show Volunteer Hours Report'}
+                      </Button>
+                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                        <EditableInfoModal
+                          areaName="volunteerHoursReportInfoPoint"
+                          areaTitle="Volunteer Hours Report"
+                          role={myRole}
+                          fontSize={15}
+                          isPermissionPage
+                          darkMode={darkMode}
+                          defaultText="Track total volunteer hours for nonprofit reporting. View hours by person, team, or project with customizable date ranges."
                         />
                       </div>
                     </div>
@@ -849,7 +915,7 @@ endDate: moment()
                 )}
               </div>
               {this.state.showCharts && (
-                <div className="table-data-container" style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
+                <div className={styles['table-data-container']} style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
                   {this.state.showPeople && (
                     <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
                   )}
@@ -895,7 +961,10 @@ endDate: moment()
                     darkMode={darkMode}
                     userRole={userRole}
                   />
-            )}
+                 )}
+                  {this.state.showVolunteerHoursReport && (
+                    <VolunteerHoursReport />
+                  )}
                   {this.state.showAddTimeForm && myRole === 'Owner' && (
                   <AddLostTime
                     isOpen={this.state.showAddTimeForm}

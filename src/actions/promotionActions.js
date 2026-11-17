@@ -1,8 +1,13 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 
-export const getPromotionEligibility = async () => {
-  const res = await axios.post(ENDPOINTS.PROMOTION_ELIGIBILITY, {});
+export const getPromotionEligibility = async requestor => {
+  const res = await axios.post(ENDPOINTS.PROMOTION_ELIGIBILITY, { requestor });
+  return res.data;
+};
+
+export const getPromotionPending = async requestor => {
+  const res = await axios.post(ENDPOINTS.PROMOTION_PENDING, { requestor });
   return res.data;
 };
 

@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import styles from './JobAnalytics.module.css';
 import hasPermission from '../../../utils/permissions';
+import { permissions } from '../../../utils/constants';
 import { ENDPOINTS } from '../../../utils/URL';
 
 const ROLE_OPTIONS = [
@@ -487,7 +488,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
     };
   }, [darkMode]);
 
-  const canViewAnalytics = hasPerm('getJobReports');
+  const canViewAnalytics = hasPerm(permissions.getJobReports);
 
   if (!canViewAnalytics) {
     return <AccessDenied />;

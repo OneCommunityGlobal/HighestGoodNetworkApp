@@ -173,7 +173,7 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
   const notesInputId = 'notes-to-teacher';
 
   return (
-    <div className={styles.outer} id={id}>
+    <div className={`${styles.outer}`} id={id}>
       {/* DROP ZONE */}
       <div
         className={`${styles.dropzone} ${isDragOver ? styles.over : ''}`}
@@ -189,31 +189,31 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
         }}
         aria-label="File upload drop zone"
       >
-        <CloudUp className={styles.cloud} />
-        <div className={styles.dzTitle}>{dzLabel}</div>
+        <CloudUp className={`${styles.cloud}`} />
+        <div className={`${styles.dzTitle}`}>{dzLabel}</div>
 
         {isUploading ? (
-          <div className={styles.progressWrap} aria-live="polite">
-            <div className={styles.progressTrack}>
-              <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+          <div className={`${styles.progressWrap}`} aria-live="polite">
+            <div className={`${styles.progressTrack}`}>
+              <div className={`${styles.progressFill}`} style={{ width: `${progress}%` }} />
             </div>
-            <div className={styles.progressPct}>{progress}%</div>
+            <div className={`${styles.progressPct}`}>{progress}%</div>
           </div>
         ) : (
           <>
-            <div className={styles.or}>OR</div>
-            <div className={styles.actions}>
+            <div className={`${styles.or}`}>OR</div>
+            <div className={`${styles.actions}`}>
               <input
                 ref={inputRef}
                 type="file"
                 multiple
                 onChange={onBrowse}
-                className={styles.hiddenInput}
+                className={`${styles.hiddenInput}`}
                 aria-label="Choose files"
               />
               <button
                 type="button"
-                className={styles.browseBtn}
+                className={`${styles.browseBtn}`}
                 // eslint-disable-next-line testing-library/no-node-access
                 onClick={() => inputRef.current?.click()}
               >
@@ -222,7 +222,7 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
 
               <button
                 type="button"
-                className={styles.uploadBtn}
+                className={`${styles.uploadBtn}`}
                 onClick={doUpload}
                 disabled={pendingFiles.length === 0}
                 title={
@@ -238,17 +238,17 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
           </>
         )}
 
-        {sizeError ? <div className={styles.sizeError}>{sizeError}</div> : null}
+        {sizeError ? <div className={`${styles.sizeError}`}>{sizeError}</div> : null}
       </div>
 
       {/* Notes to Teacher (optional) */}
-      <div className={styles.notesBlock}>
-        <label className={styles.notesLabel} htmlFor={notesInputId}>
-          Notes to Teacher <span className={styles.muted}>(Optional)</span>
+      <div className={`${styles.notesBlock}`}>
+        <label className={`${styles.notesLabel}`} htmlFor={notesInputId}>
+          Notes to Teacher <span className={`${styles.muted}`}>(Optional)</span>
         </label>
         <textarea
           id={notesInputId}
-          className={styles.notes}
+          className={`${styles.notes}`}
           placeholder="Add any notes for the teacher here"
           value={notes}
           onChange={e => setNotes(e.target.value)}
