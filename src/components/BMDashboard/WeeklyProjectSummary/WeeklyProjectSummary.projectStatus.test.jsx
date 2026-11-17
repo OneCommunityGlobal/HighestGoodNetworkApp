@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import WeeklyProjectSummary from './WeeklyProjectSummary';
@@ -98,6 +98,10 @@ vi.mock('../Injuries/InjurySeverityChart', () => ({
   default: () => <div>Injury Severity</div>,
 }));
 vi.mock('./CostPredictionChart', () => ({ default: () => <div>Cost Prediction</div> }));
+vi.mock('../RentalChart/RentalChart', () => ({ default: () => <div>Rental Chart</div> }));
+vi.mock('../RentalChart/ReturnedLateChart', () => ({
+  default: () => <div>Returned Late Chart</div>,
+}));
 
 const mockStore = configureMockStore([]);
 
@@ -149,7 +153,6 @@ const renderWithState = state => {
     </Provider>,
   );
 
-  fireEvent.click(screen.getAllByRole('button', { name: /Project Status/ })[0]);
   return { ...view, store };
 };
 
