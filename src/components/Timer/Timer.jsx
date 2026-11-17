@@ -243,7 +243,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
 
   const [message, setMessage] = useState(defaultMessage);
-  const { time, paused, started, goal, startAt } = message;
+  const { time, paused, started, goal, startAt, sessionRuns } = message;
 
   useEffect(() => {
     timerFlagsRef.current = { started, paused };
@@ -1062,6 +1062,8 @@ function Timer({ authUser, darkMode, isPopout }) {
         sessionId={sessionId}
         timerSessionId={message.loggingSessionId}
         timerStats={getTimerStats()}
+        sessionRuns={sessionRuns}
+        sessionRunLimitMs={time}
       />
     );
 
