@@ -112,7 +112,7 @@ const getChartOptions = darkMode => ({
       },
     },
     datalabels: {
-      display: true,
+      display: context => Number(context.dataset.data[context.dataIndex]) > 0,
       color: context =>
         context.dataset.backgroundColor === CHART_COLORS.lost ? '#1f1f1f' : '#f7f7f7',
       textStrokeColor: context =>
@@ -140,10 +140,10 @@ const getChartOptions = darkMode => ({
         color: darkMode ? '#FFFFFF' : '#000000',
       },
       min: 0,
-      suggestedMax: 100,
+      max: 100,
     },
     y: {
-      title: { display: true, text: 'Tools Name', color: darkMode ? '#FFFFFF' : '#000000' },
+      title: { display: true, text: 'Tool Name', color: darkMode ? '#FFFFFF' : '#000000' },
       stacked: true,
       grid: { display: false },
       ticks: { color: darkMode ? '#e0e0e0' : '#000' },
