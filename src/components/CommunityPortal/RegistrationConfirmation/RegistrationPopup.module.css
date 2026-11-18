@@ -35,17 +35,31 @@
   font-size: 18px;
   cursor: pointer;
   color: #d32f2f;
+  line-height: 1;
+}
+
+.closeBtn:hover {
+  color: #b71c1c;
 }
 
 .popupContent {
   margin-top: 16px;
 }
 
-.eventDetails {
+.eventDetailsBtn {
+  background: none;
+  border: none;
+  padding: 0;
   color: #1976d2;
   cursor: pointer;
   margin: 6px 0 12px;
   font-size: 14px;
+  text-decoration: underline;
+  display: inline-block;
+}
+
+.eventDetailsBtn:hover {
+  color: #1565c0;
 }
 
 .userFullName {
@@ -70,12 +84,17 @@
   border: none;
   font-size: 14px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .calendarBtn {
   background: #2e7d32;
   color: #fff;
   margin-bottom: 16px;
+}
+
+.calendarBtn:hover {
+  background: #256628;
 }
 
 .popupFooter {
@@ -89,10 +108,18 @@
   flex: 1;
 }
 
+.emailBtn:hover {
+  background: #014377;
+}
+
 .downloadBtn {
   background: #fbc02d;
   color: #000;
   flex: 1;
+}
+
+.downloadBtn:hover {
+  background: #e0a800;
 }
 
 /* ==========================================================================
@@ -104,25 +131,56 @@
   color: #ecf0f1;
 }
 
-.darkMode .eventDetails {
+.darkMode h2,
+.darkMode strong,
+.darkMode .userFullName,
+.darkMode p,
+.darkMode .eventInfo span {
+  color: #ecf0f1;
+}
+
+.darkMode .popupHeader span {
+  color: #fff;
+}
+
+.darkMode .closeBtn {
+  color: #ef5350;
+}
+
+.darkMode .closeBtn:hover {
+  color: #f44336;
+}
+
+.darkMode .eventDetailsBtn {
   color: #90caf9;
+}
+
+.darkMode .eventDetailsBtn:hover {
+  color: #bbdefb;
 }
 
 .darkMode .calendarBtn {
   background: #43a047;
 }
 
+.darkMode .calendarBtn:hover {
+  background: #388e3c;
+}
+
 .darkMode .emailBtn {
   background: #0277bd;
+}
+
+.darkMode .emailBtn:hover {
+  background: #026aa7;
 }
 
 .darkMode .downloadBtn {
   background: #fdd835;
 }
 
-.darkMode .userFullName,
-.darkMode p {
-  color: #ecf0f1;
+.darkMode .downloadBtn:hover {
+  background: #fbc02d;
 }
 
 /* ==========================================================================
