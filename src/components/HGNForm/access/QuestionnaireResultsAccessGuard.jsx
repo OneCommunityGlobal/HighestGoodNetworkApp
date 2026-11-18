@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Spinner } from 'reactstrap';
 
-const ADMIN_ROLES = ['Administrator', 'Owner'];
+const ADMIN_ROLES = new Set(['Administrator', 'Owner']);
 
 const QuestionnaireResultsAccessGuard = ({ children, getStatus }) => {
   const requestor = useSelector(state => state.auth.user);
   const userRole = requestor?.role || '';
 
-  const isAdmin = ADMIN_ROLES.includes(userRole);
+  const isAdmin = ADMIN_ROLES.has(userRole);
 
   const [loading, setLoading] = useState(!isAdmin);
   const [hasCompleted, setHasCompleted] = useState(false);
@@ -45,7 +45,7 @@ const QuestionnaireResultsAccessGuard = ({ children, getStatus }) => {
       }
     };
 
-    checkQuestionnaireStatus();
+    void checkQuestionnaireStatus();
 
     return () => {
       isMounted = false;
