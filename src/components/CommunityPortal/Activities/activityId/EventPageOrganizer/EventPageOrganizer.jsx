@@ -1,4 +1,5 @@
 import {
+  ArrowLeftIcon,
   CalendarIcon,
   ClockIcon,
   FileTextIcon,
@@ -7,6 +8,7 @@ import {
   UsersIcon,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar';
@@ -27,6 +29,7 @@ export const EventPageOrganizer = () => {
   const [evt, setEvt] = useState(null);
   const [loading, setLoading] = useState(true);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
 
   useEffect(() => {
     let mounted = true;
@@ -64,6 +67,16 @@ export const EventPageOrganizer = () => {
   return (
     <div className={containerClassName} data-model-id="3572:7958">
       <div className={styles.contentWrapper}>
+        <button
+          type="button"
+          className={`${styles.backBtn} ${darkMode ? styles.backBtnDark : ''}`}
+          onClick={() => history.goBack()}
+          aria-label="Go back"
+        >
+          <ArrowLeftIcon size={16} className={styles.backIcon} />
+          Back
+        </button>
+
         <EventStatusSection />
 
         <div className={eventCardClassName}>

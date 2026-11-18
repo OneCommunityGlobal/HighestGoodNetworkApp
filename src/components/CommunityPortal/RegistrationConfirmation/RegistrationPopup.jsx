@@ -138,11 +138,11 @@ function RegistrationPopup({ onClose, activity, userName, userEmail }) {
             <span>✅ Registration Successful!</span>
             <button
               type="button"
-              className={styles.closeBtn}
+              className={`${styles.closeBtn} ${darkMode ? styles.closeBtnDark : ''}`}
               onClick={onClose}
               aria-label="Close registration popup"
             >
-              ✖
+              ×
             </button>
           </div>
           <h2 id="registration-modal-title">Thank you for Registering!</h2>

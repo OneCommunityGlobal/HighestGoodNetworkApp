@@ -32,14 +32,28 @@
 .closeBtn {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 22px;
   cursor: pointer;
   color: #d32f2f;
   line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .closeBtn:hover {
   color: #b71c1c;
+  background-color: rgb(0 0 0 / 6%);
+}
+
+.closeBtnDark {
+  color: #ff6b6b;
+  font-size: 22px;
+}
+
+.closeBtnDark:hover {
+  color: #f44;
+  background-color: rgb(255 255 255 / 10%);
 }
 
 .popupContent {
@@ -141,14 +155,6 @@
 
 .darkMode .popupHeader span {
   color: #fff;
-}
-
-.darkMode .closeBtn {
-  color: #ef5350;
-}
-
-.darkMode .closeBtn:hover {
-  color: #f44336;
 }
 
 .darkMode .eventDetailsBtn {
