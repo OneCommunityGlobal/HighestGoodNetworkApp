@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { FaRegCalendarAlt } from 'react-icons/fa';
+import KIPieChartCard, { KITCHENS } from '../KIPieChartCard/KIPieChartCard';
 import styles from './FoodCategoriesPieChart.module.css';
 
 const CATEGORIES = [
@@ -10,8 +9,6 @@ const CATEGORIES = [
   { key: 'proteins', name: 'Proteins', color: '#a0522d', labelColor: '#ffffff' },
   { key: 'dairy', name: 'Dairy', color: '#d5c4b0', labelColor: '#3d3d3d' },
 ];
-
-const KITCHENS = ['Kitchen 1', 'Kitchen 2', 'Kitchen 3'];
 
 const METRICS = {
   inventory: {
@@ -56,28 +53,6 @@ const mockRecords = KITCHENS.flatMap(kitchen =>
     }),
   ),
 );
-
-const RADIAN = Math.PI / 180;
-
-const renderSliceLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, payload }) => {
-  if (percent < 0.03) return null;
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.55;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  return (
-    <text
-      x={x}
-      y={y}
-      fill={payload.labelColor}
-      textAnchor="middle"
-      dominantBaseline="central"
-      fontWeight={700}
-      fontSize={16}
-    >
-      {`${Math.round(percent)}%`}
-    </text>
-  );
-};
 
 export default function FoodCategoriesPieChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -130,156 +105,36 @@ export default function FoodCategoriesPieChart() {
     setEndDate(DEFAULTS.endDate);
   };
 
-  const handleDateClick = e => {
-    try {
-      e.currentTarget.showPicker?.();
-    } catch {
-      // Fallback for browsers that do not support showPicker
-    }
-  };
+  const metricFilter = (
+    <label className={styles.field}>
+      <span className={styles.fieldLabel}>Metric</span>
+      <select className={styles.control} value={metric} onChange={e => setMetric(e.target.value)}>
+        {Object.entries(METRICS).map(([key, m]) => (
+          <option key={key} value={key}>
+            {m.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
 
   return (
-    <div className={[styles.container, darkMode ? styles.darkMode : ''].join(' ')}>
-      <div className={styles.filters}>
-        <label className={styles.field}>
-          <span className={styles.fieldLabel}>Metric</span>
-          <select
-            className={styles.control}
-            value={metric}
-            onChange={e => setMetric(e.target.value)}
-          >
-            {Object.entries(METRICS).map(([key, m]) => (
-              <option key={key} value={key}>
-                {m.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className={styles.field}>
-          <span className={styles.fieldLabel}>Kitchen</span>
-          <select
-            className={styles.control}
-            value={kitchen}
-            onChange={e => setKitchen(e.target.value)}
-          >
-            <option value="All">All</option>
-            {KITCHENS.map(k => (
-              <option key={k} value={k}>
-                {k}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className={styles.field}>
-          <span className={styles.fieldLabel}>From</span>
-          <div className={styles.dateWrapper}>
-            <input
-              className={`${styles.control} ${styles.dateInput}`}
-              type="date"
-              value={startDate}
-              min={DATE_MIN}
-              max={endDate || DATE_MAX}
-              onClick={handleDateClick}
-              onChange={e => setStartDate(e.target.value)}
-            />
-            <FaRegCalendarAlt className={styles.dateIcon} aria-hidden="true" />
-          </div>
-        </label>
-
-        <label className={styles.field}>
-          <span className={styles.fieldLabel}>To</span>
-          <div className={styles.dateWrapper}>
-            <input
-              className={`${styles.control} ${styles.dateInput}`}
-              type="date"
-              value={endDate}
-              min={startDate || DATE_MIN}
-              max={DATE_MAX}
-              onClick={handleDateClick}
-              onChange={e => setEndDate(e.target.value)}
-            />
-            <FaRegCalendarAlt className={styles.dateIcon} aria-hidden="true" />
-          </div>
-        </label>
-
-        <div className={styles.buttonCell}>
-          <button
-            type="button"
-            className={styles.resetBtn}
-            onClick={handleReset}
-            disabled={isDefaultFilters}
-          >
-            Reset Filters
-          </button>
-        </div>
-
-        {!isDateRangeValid && (
-          <span className={styles.dateRangeError}>
-            From date must be before or equal to To date.
-          </span>
-        )}
-      </div>
-
-      <h2 className={styles.chartTitle}>{metricConfig.title}</h2>
-
-      <div className={styles.chartWrapper}>
-        {chartData.length === 0 ? (
-          <div className={styles.noDataMessage}>No data available for the selected filters.</div>
-        ) : (
-          <>
-            <div className={styles.pieBox}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius="90%"
-                    startAngle={90}
-                    endAngle={-270}
-                    paddingAngle={1}
-                    stroke={darkMode ? '#0f1522' : '#ffffff'}
-                    strokeWidth={3}
-                    label={renderSliceLabel}
-                    labelLine={false}
-                    isAnimationActive={false}
-                  >
-                    {chartData.map(entry => (
-                      <Cell key={entry.name} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value, name) => [metricConfig.format(value), name]}
-                    contentStyle={{
-                      backgroundColor: 'var(--tooltip-bg)',
-                      color: 'var(--text-color)',
-                      border: '1px solid var(--border-color)',
-                    }}
-                    itemStyle={{ color: 'var(--text-color)' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className={styles.legend}>
-              {chartData.map(item => (
-                <span key={item.name} className={styles.legendItem}>
-                  <span
-                    className={styles.legendSwatch}
-                    style={{ backgroundColor: item.color }}
-                    aria-hidden="true"
-                  />
-                  <span>{`${item.name} (${item.percent}%)`}</span>
-                </span>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+    <KIPieChartCard
+      title={metricConfig.title}
+      darkMode={darkMode}
+      chartData={chartData}
+      formatTooltip={metricConfig.format}
+      extraFilters={metricFilter}
+      kitchen={kitchen}
+      onKitchenChange={setKitchen}
+      startDate={startDate}
+      onStartDateChange={setStartDate}
+      endDate={endDate}
+      onEndDateChange={setEndDate}
+      dateMin={DATE_MIN}
+      dateMax={DATE_MAX}
+      onReset={handleReset}
+      isDefaultFilters={isDefaultFilters}
+    />
   );
 }
