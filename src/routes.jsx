@@ -661,13 +661,7 @@ export default (
           exact
           component={TotalOrgSummary}
           fallback
-          allowedRoles={[
-            UserRole.Administrator,
-            UserRole.Manager,
-            UserRole.CoreTeam,
-            UserRole.Owner,
-            UserRole.Mentor,
-          ]}
+          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
           routePermissions={RoutePermissions.totalOrgSummary}
         />
         <ProtectedRoute
@@ -675,13 +669,7 @@ export default (
           exact
           component={TotalOrgSummaryEmail}
           fallback
-          allowedRoles={[
-            UserRole.Administrator,
-            UserRole.Manager,
-            UserRole.CoreTeam,
-            UserRole.Owner,
-            UserRole.Mentor,
-          ]}
+          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
           routePermissions={RoutePermissions.totalOrgSummary}
         />
         <ProtectedRoute

@@ -78,10 +78,24 @@ describe('Weekly Summaries Report and Total Org Summary access', () => {
     expect(landingPath('Volunteer', key, path)).toBe(expectedPath);
   });
 
-  it.each(['/totalorgsummary', '/TotalOrgSummaryEmail'])(
-    'an Administrator with only getWeeklySummaries who opens %s stays there',
-    path => {
-      expect(landingPath('Administrator', 'getWeeklySummaries', path)).toBe(path);
-    },
-  );
+  it.each([
+    ['Administrator', '/totalorgsummary', '/totalorgsummary'],
+    ['Administrator', '/TotalOrgSummaryEmail', '/TotalOrgSummaryEmail'],
+    ['Core Team', '/totalorgsummary', '/totalorgsummary'],
+    ['Core Team', '/TotalOrgSummaryEmail', '/TotalOrgSummaryEmail'],
+    ['Owner', '/totalorgsummary', '/totalorgsummary'],
+    ['Owner', '/TotalOrgSummaryEmail', '/TotalOrgSummaryEmail'],
+    ['Manager', '/totalorgsummary', '/dashboard'],
+    ['Manager', '/TotalOrgSummaryEmail', '/dashboard'],
+    ['Mentor', '/totalorgsummary', '/dashboard'],
+    ['Mentor', '/TotalOrgSummaryEmail', '/dashboard'],
+  ])('%s with only getWeeklySummaries who opens %s ends on %s', (role, path, expectedPath) => {
+    expect(landingPath(role, 'getWeeklySummaries', path)).toBe(expectedPath);
+  });
+
+  it.each(['Manager', 'Mentor'])('a %s with See Total Org Summary can open it', role => {
+    expect(landingPath(role, 'getVolunteerWeeklySummary', '/totalorgsummary')).toBe(
+      '/totalorgsummary',
+    );
+  });
 });
