@@ -57,6 +57,20 @@ describe('layoutOutsideLabelBoxes', () => {
     });
   });
 
+  it('clamps oversized right-side callouts inside the canvas width', () => {
+    const boxes = [createLabelBox({ angle: 0.2, baseY: 200, boxWidth: 120 })];
+
+    layoutOutsideLabelBoxes(boxes, {
+      chartHeight: 352,
+      chartWidth: 280,
+      containmentPadding: 4,
+      outsideGap: 12,
+    });
+
+    expect(boxes[0].boxX + boxes[0].boxWidth).toBeLessThanOrEqual(280 - 4);
+    expect(boxes[0].boxX).toBeGreaterThanOrEqual(4);
+  });
+
   it('uses separate ordered columns for labels on opposite sides', () => {
     const boxes = [
       createLabelBox({ angle: -1.4, baseY: 72 }),
