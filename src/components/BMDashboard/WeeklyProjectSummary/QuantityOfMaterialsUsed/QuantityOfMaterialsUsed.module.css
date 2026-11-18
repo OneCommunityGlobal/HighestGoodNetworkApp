@@ -211,9 +211,13 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   border-radius: 4px;
   text-align: center;
   padding: 2px 6px;
-  background-color: var(--card-bg);
-  color: var(--text-color);
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
   transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.quantityOfMaterialUsedCustomDatePickerDark {
+  color-scheme: dark;
 }
 
 .quantityOfMaterialsUsedCard .customSelect_singleValue {
