@@ -242,6 +242,8 @@ import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import ProjectStatus from './components/ProjectStatus/ProjectStatus';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
+import QuestionnaireResultsAccessGuard from './components/HGNForm/access/QuestionnaireResultsAccessGuard';
+import { getQuestionnaireStatus } from './components/HGNForm/HGNQuestionnarieRemainder/services/questionnaireService';
 
 // High Good Education
 import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGallery';
@@ -421,7 +423,6 @@ export default (
       <Switch>
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
         <ProtectedRoute path="/resolvedtasks" exact component={ResolvedTasks} />
-        <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute
           path="/kitchenandinventory/processing"
@@ -1178,17 +1179,9 @@ export default (
           fallback
         />{' '}
         {/*Student Page Badge component*/}
-        <ProtectedRoute path="/promotiontable" exact component={PromotionTable} />
-        <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
-        <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
-        <ProtectedRoute path="/hgnteam" exact component={TeamCard} />
-        <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
-        <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
-        <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
-        <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
         <ProtectedRoute path="/hgnform" exact component={HGNFormListPage} />
         <ProtectedRoute
           path={QUESTIONNAIRE_PERMANENT_PATH}
@@ -1201,25 +1194,6 @@ export default (
         <ProtectedRoute path="/hgnform/page4" exact component={QuestionnairePage4} />
         <ProtectedRoute path="/hgnform/page5" exact component={QuestionnairePage5} />
         <ProtectedRoute path="/hgnform/page6" exact component={QuestionnairePage6} />
-        <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
-        <ProtectedRoute path="/hgn-skills/profile" exact component={UserSkillsProfile} />
-        <ProtectedRoute
-          path="/hgn/profile/skills/:userId?"
-          exact
-          fallback
-          component={UserSkillsProfile}
-          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
-          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
-        />
-        <ProtectedRoute path="/topcommunitymembers" exact component={TopCommunityMembers} />
-        <ProtectedRoute
-          path="/hgn-skills/profile/:userId?"
-          exact
-          fallback
-          component={UserSkillsProfile}
-          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
-          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
-        />
         <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
         <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
         <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
@@ -1310,6 +1284,98 @@ export default (
           component={PRDashboardTopReviewedPRs}
         />
         <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
+        {/* Questionnaire results routes */}
+        <ProtectedRoute path="/promotiontable" exact component={PromotionTable} />
+        <ProtectedRoute
+          path="/memberlist"
+          exact
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <MemberList {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
+        <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
+        <ProtectedRoute path="/hgnteam" exact component={TeamCard} />
+        <ProtectedRoute
+          path="/hgnhelp/skills-overview"
+          exact
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <SkillsOverviewPage {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
+        <ProtectedRoute
+          path="/hgnhelp/profile/:userId"
+          exact
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <UserProfilePage {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
+        <ProtectedRoute
+          path="/hgnhelp/community"
+          exact
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <CommunityMembersPage {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
+        <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
+        <ProtectedRoute
+          path="/hgn/profile/skills"
+          exact
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <UserSkillsProfile {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
+        <ProtectedRoute
+          path="/hgn-skills/profile"
+          exact
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <UserSkillsProfile {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
+        <ProtectedRoute
+          path="/hgn/profile/skills/:userId?"
+          exact
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
+          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <UserSkillsProfile {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
+        <ProtectedRoute
+          path="/hgn-skills/profile/:userId?"
+          exact
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
+          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <UserSkillsProfile {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
+        <ProtectedRoute
+          path="/topcommunitymembers"
+          exact
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <TopCommunityMembers {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
