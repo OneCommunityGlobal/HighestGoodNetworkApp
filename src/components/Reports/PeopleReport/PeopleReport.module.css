@@ -36,19 +36,29 @@ body {
 .metricCard {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-direction: column;
+  gap: 0.5rem;
   padding: 2rem 1rem;
   border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .metricCardValue {
   color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
 }
 
 .metricCardTitle {
   color: #ffffff;
+  font-size: 0.95rem;
   font-weight: 600;
+  line-height: 1.4;
   text-align: center;
+  margin: 0;
 }
 
 .rehireable {
@@ -292,17 +302,15 @@ body {
   stroke: rgb(255 255 255 / 15%);
 }
 
-/* When there are only 3 metrics (e.g., for deactivated users): keep each card's width identical to the 4-metric layout without stretching, center them to make the overall section narrower, and eliminate dead space */
+/* Make the three metric cards fill the available width equally for inactive users. */
 .metrics.threeMetrics {
-  justify-content: center;
-  gap: 1.rem;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .metrics.threeMetrics > .metricCard {
-  flex: 0 1 calc((100% - 3rem) / 4);
-  min-width: 220px;
+  min-width: 0;
 }
 
 @media (width <= 850px) {
