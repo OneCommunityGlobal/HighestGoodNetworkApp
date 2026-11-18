@@ -3,20 +3,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import FoodCategoriesPieChart from '../FoodCategoriesPieChart';
 
-// Recharts needs real sizes to draw; this stand-in shows the slices and the tooltip text
-vi.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }) => <div>{children}</div>,
-  PieChart: ({ children }) => <div>{children}</div>,
-  Pie: ({ data }) => (
-    <ul data-testid="pie-slices">
-      {data.map(d => (
-        <li key={d.name}>{`${d.name}: ${d.value}`}</li>
-      ))}
-    </ul>
-  ),
-  Cell: () => null,
-  Tooltip: ({ formatter }) => <span data-testid="tooltip">{formatter(1200, 'Grains', {})[0]}</span>,
-}));
+vi.mock('recharts', () => import('../../testUtils/rechartsPieMock'));
 
 const renderChart = (darkMode = false) =>
   render(

@@ -9,20 +9,7 @@ import FoodSourcesPieChart, {
   toWholePercents,
 } from '../FoodSourcesPieChart';
 
-// Recharts needs real sizes to draw; this stand-in lists the slices it gets
-vi.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }) => <div>{children}</div>,
-  PieChart: ({ children }) => <div>{children}</div>,
-  Pie: ({ data }) => (
-    <ul data-testid="pie-slices">
-      {data.map(d => (
-        <li key={d.name}>{`${d.name}: ${d.value}`}</li>
-      ))}
-    </ul>
-  ),
-  Cell: () => null,
-  Tooltip: () => null,
-}));
+vi.mock('recharts', () => import('../../testUtils/rechartsPieMock'));
 
 const mockStore = configureMockStore([]);
 
@@ -94,7 +81,8 @@ describe('Food Sources chart', () => {
     expect(screen.getByRole('heading', { name: 'Food Sources' })).toBeInTheDocument();
     const slices = screen.getByTestId('pie-slices');
     SOURCES.forEach(s => expect(slices).toHaveTextContent(s.name));
-    expect(screen.getAllByText(/\(\d+%\)$/)).toHaveLength(3);
+    expect(screen.getAllByText(/^[A-Za-z ]+ \(\d+%\)$/)).toHaveLength(3);
+    expect(screen.getByTestId('tooltip')).toHaveTextContent('1,200 kg (10%)');
   });
 
   it('changes the slices when a kitchen is picked and resets back', () => {
