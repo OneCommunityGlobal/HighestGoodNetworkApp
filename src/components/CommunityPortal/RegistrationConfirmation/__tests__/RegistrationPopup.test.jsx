@@ -87,7 +87,7 @@ describe('RegistrationPopup component', () => {
     const detailsBtn = screen.getByText('(Click for more details)');
     fireEvent.click(detailsBtn);
 
-    expect(mockPush).toHaveBeenCalledWith('/communityportal/activities/42');
+    expect(mockPush).toHaveBeenCalledWith('/communityportal/activity/42/event');
     expect(handleClose).toHaveBeenCalled();
   });
 

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Switch, Route } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import RegistrationPage from '../Registration';
 
@@ -63,5 +63,35 @@ describe('RegistrationPage component', () => {
       auth: {},
     });
     expect(screen.getByTestId('registration-page-wrapper').className).toMatch(/darkMode/);
+  });
+
+  test('renders properly within router Switch before dynamic activity routes', () => {
+    const store = mockStore({
+      theme: { darkMode: false },
+      userProfile: { firstName: 'Jane', lastName: 'Doe' },
+      auth: { user: { email: 'jane@example.com' } },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/communityportal/activities/registration']}>
+          <Switch>
+            <Route
+              path="/communityportal/activities/registration"
+              exact
+              component={RegistrationPage}
+            />
+            <Route
+              path="/communityportal/activities/:activityid"
+              exact
+              render={() => <div>Tool Detail Page</div>}
+            />
+          </Switch>
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.getByRole('button', { name: /^Register$/i })).toBeInTheDocument();
+    expect(screen.queryByText('Tool Detail Page')).not.toBeInTheDocument();
   });
 });

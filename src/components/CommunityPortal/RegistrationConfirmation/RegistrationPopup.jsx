@@ -27,7 +27,9 @@ function RegistrationPopup({ onClose, activity, userName, userEmail }) {
 
   const handleDetailsClick = () => {
     if (eventId) {
-      history.push(`/communityportal/activities/${eventId}`);
+      // Navigate to the Activity event page (EventPageOrganizer) rather than the
+      // /activities/:activityid route which renders the unrelated BM ToolDetailPage component.
+      history.push(`/communityportal/activity/${eventId}/event`);
     }
     if (onClose) {
       onClose();

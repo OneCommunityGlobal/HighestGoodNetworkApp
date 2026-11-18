@@ -982,12 +982,6 @@ export default (
           component={EventStats}
         />
         <CPProtectedRoute
-          path="/communityportal/activities/:activityid"
-          exact
-          component={ActivityDetailPage}
-        />
-        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
-        <CPProtectedRoute
           path="/communityportal/Activities/Register/:activityId"
           exact
           component={Register}
@@ -1008,6 +1002,12 @@ export default (
           path="/communityportal/Activities/registration"
           exact
           component={RegistrationPage}
+        />
+        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid"
+          exact
+          component={ActivityDetailPage}
         />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/event"
