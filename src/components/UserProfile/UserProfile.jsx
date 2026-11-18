@@ -1721,6 +1721,7 @@ setUpdatedTasks(prev => {
                 <NavLink
                     className={classnames(
                       'nav-link',
+                      { active: activeTab === '1' },
                       darkMode
                         ? activeTab === '1'
                           ? 'bg-space-cadet text-light darkMode'
@@ -1737,8 +1738,9 @@ setUpdatedTasks(prev => {
                 <NavLink
                     className={classnames(
                       'nav-link',
+                      { active: activeTab === '2' },
                       darkMode
-                        ? activeTab === '1'
+                        ? activeTab === '2'
                           ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
@@ -1753,8 +1755,9 @@ setUpdatedTasks(prev => {
                 <NavLink
                     className={classnames(
                       'nav-link',
+                      { active: activeTab === '3' },
                       darkMode
-                        ? activeTab === '1'
+                        ? activeTab === '3'
                           ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
@@ -1769,8 +1772,9 @@ setUpdatedTasks(prev => {
                 <NavLink
                     className={classnames(
                       'nav-link',
+                      { active: activeTab === '4' },
                       darkMode
-                        ? activeTab === '1'
+                        ? activeTab === '4'
                           ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
@@ -1786,8 +1790,9 @@ setUpdatedTasks(prev => {
                     data-test-id="edit-history-tab"
                     className={classnames(
                       'nav-link',
+                      { active: activeTab === '5' },
                       darkMode
-                        ? activeTab === '1'
+                        ? activeTab === '5'
                           ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
