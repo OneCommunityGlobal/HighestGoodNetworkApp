@@ -461,3 +461,40 @@
     transform: translateY(0);
   }
 }
+
+/* ── Back Button ─────────────────────────────────────────── */
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid #c9c9c9;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.backBtn:hover {
+  background-color: #e8e8e8;
+  border-color: #aaa;
+}
+
+.backBtnDark {
+  background-color: #1e2a38;
+  border-color: #2c3a49;
+  color: #c8d6e5;
+}
+
+.backBtnDark:hover {
+  background-color: #253444;
+  border-color: #3d5166;
+}
+
+.backIcon {
+  flex-shrink: 0;
+}

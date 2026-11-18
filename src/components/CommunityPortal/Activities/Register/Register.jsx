@@ -11,6 +11,7 @@ import { ENDPOINTS } from '../../../../utils/URL';
 
 import EventDescription from './EventDescription';
 import ShareAvailability from './ShareAvailability';
+import RegistrationPopup from '../../RegistrationConfirmation/RegistrationPopup';
 
 /* =========================
    MOCK DATA (KEEP ONLY ONCE)
@@ -81,7 +82,8 @@ const formatTimeOnly = value => {
 };
 
 function Register() {
-  const { activityId } = useParams();
+  const { activityId: paramActivityId } = useParams();
+  const activityId = paramActivityId || '1';
   const history = useHistory();
   const darkMode = useSelector(state => state.theme?.darkMode);
   const userProfile = useSelector(state => state.userProfile);
@@ -95,6 +97,7 @@ function Register() {
   const [availability, setAvailability] = useState(0);
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrants, setRegistrants] = useState([]);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
 
@@ -238,6 +241,7 @@ function Register() {
 
       toast.success('Registered!');
       setIsRegistering(false);
+      setShowSuccessPopup(true);
     }, 1000);
   };
 
@@ -257,7 +261,10 @@ function Register() {
   ========================= */
 
   return (
-    <div className={`${styles['main-container']} ${darkMode ? styles['dark-mode'] : ''}`}>
+    <div
+      className={`${styles['main-container']} ${darkMode ? styles['dark-mode'] : ''}`}
+      data-testid="register-page-wrapper"
+    >
       <div className={styles['register-container']}>
         {/* LEFT */}
         <div className={styles['left-column']}>
@@ -304,6 +311,15 @@ function Register() {
       </div>
 
       <EventDescription activity={activity} registrants={registrants} />
+
+      {showSuccessPopup && (
+        <RegistrationPopup
+          onClose={() => setShowSuccessPopup(false)}
+          activity={activity}
+          userName={resolveUserName()}
+          userEmail={authUser?.email || userProfile?.email}
+        />
+      )}
     </div>
   );
 }

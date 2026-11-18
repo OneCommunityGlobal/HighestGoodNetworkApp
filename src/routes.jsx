@@ -174,6 +174,7 @@ import FollowUpEmailTemplate from './components/CommunityPortal/Activities/Follo
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 import ActivityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import Register from './components/CommunityPortal/Activities/Register/Register';
+import RegistrationPage from './components/CommunityPortal/RegistrationConfirmation/Registration';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // Community Calendar
@@ -981,15 +982,32 @@ export default (
           component={EventStats}
         />
         <CPProtectedRoute
-          path="/communityportal/activities/:activityid"
-          exact
-          component={ActivityDetailPage}
-        />
-        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
-        <CPProtectedRoute
           path="/communityportal/Activities/Register/:activityId"
           exact
           component={Register}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/register/:activityId"
+          exact
+          component={Register}
+        />
+        <CPProtectedRoute path="/communityportal/activities/register" exact component={Register} />
+        <CPProtectedRoute path="/communityportal/Activities/Register" exact component={Register} />
+        <CPProtectedRoute
+          path="/communityportal/activities/registration"
+          exact
+          component={RegistrationPage}
+        />
+        <CPProtectedRoute
+          path="/communityportal/Activities/registration"
+          exact
+          component={RegistrationPage}
+        />
+        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid"
+          exact
+          component={ActivityDetailPage}
         />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/event"
