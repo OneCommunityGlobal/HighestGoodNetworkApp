@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import { Bar } from 'react-chartjs-2';
 import {
@@ -16,6 +17,7 @@ import Select from 'react-select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './WinningVsAverageBidChart.module.css';
 
 ChartJS.register(
@@ -39,13 +41,6 @@ const CATEGORY_OPTIONS = [
   { value: 'property', label: 'By Property' },
   { value: 'village', label: 'By Village' },
 ];
-
-const getRandomInt = (min, max) => {
-  const range = max - min + 1;
-  const bytes = new Uint32Array(1);
-  crypto.getRandomValues(bytes);
-  return min + (bytes[0] % range);
-};
 
 const getDatePickerSlotProps = isDark => ({
   textField: {
@@ -91,193 +86,89 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
   const [limit, setLimit] = useState(10);
 
   // Data states
-  const [chartData, setChartData] = useState(null);
+  const [bidData, setBidData] = useState([]);
   const [villages, setVillages] = useState([]);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const latestRequestId = useRef(0);
 
-  // Initialize with mock data for villages and listings
-  useEffect(() => {
-    // Mock villages data (expanded to support up to 20 items)
-    const mockVillages = [
-      { value: '1', label: 'Eco Village' },
-      { value: '2', label: 'Forest Retreat' },
-      { value: '3', label: 'Desert Oasis' },
-      { value: '4', label: 'River Valley' },
-      { value: '5', label: 'City Sanctuary' },
-      { value: '6', label: 'Mountain Haven' },
-      { value: '7', label: 'Coastal Community' },
-      { value: '8', label: 'Lake District' },
-      { value: '9', label: 'Prairie Settlement' },
-      { value: '10', label: 'Valley Springs' },
-      { value: '11', label: 'Hillside Haven' },
-      { value: '12', label: 'Meadow Village' },
-      { value: '13', label: 'Ocean View' },
-      { value: '14', label: 'Sunrise Community' },
-      { value: '15', label: 'Green Valley' },
-      { value: '16', label: 'Pine Ridge' },
-      { value: '17', label: 'Crystal Bay' },
-      { value: '18', label: 'Sunset Hills' },
-      { value: '19', label: 'Garden Grove' },
-      { value: '20', label: 'Riverside Commons' },
-    ];
-
-    // Mock listings data (expanded to support up to 50 items)
-    const mockListings = [
-      { value: 'l1', label: 'Mountain View Property', villageId: '1' },
-      { value: 'l2', label: 'Solar Haven Cabin', villageId: '1' },
-      { value: 'l3', label: 'Lakeside Cottage', villageId: '2' },
-      { value: 'l4', label: 'Woodland Retreat', villageId: '2' },
-      { value: 'l5', label: 'Desert Oasis Tiny Home', villageId: '3' },
-      { value: 'l6', label: 'Earth Ship Residence', villageId: '3' },
-      { value: 'l7', label: 'Riverside Cabin', villageId: '4' },
-      { value: 'l8', label: 'Floating House', villageId: '4' },
-      { value: 'l9', label: 'Urban Garden Apartment', villageId: '5' },
-      { value: 'l10', label: 'Rooftop Terrace Unit', villageId: '5' },
-      { value: 'l11', label: 'Alpine Lodge', villageId: '6' },
-      { value: 'l12', label: 'Coastal Bungalow', villageId: '7' },
-      { value: 'l13', label: 'Sunset Villa', villageId: '8' },
-      { value: 'l14', label: 'Prairie Home', villageId: '9' },
-      { value: 'l15', label: 'Valley View House', villageId: '10' },
-      { value: 'l16', label: 'Hillside Cottage', villageId: '11' },
-      { value: 'l17', label: 'Meadow House', villageId: '12' },
-      { value: 'l18', label: 'Ocean Breeze Villa', villageId: '13' },
-      { value: 'l19', label: 'Morning Light Cabin', villageId: '14' },
-      { value: 'l20', label: 'Green Acres Property', villageId: '15' },
-      { value: 'l21', label: 'Pine Forest Lodge', villageId: '16' },
-      { value: 'l22', label: 'Bay View Apartment', villageId: '17' },
-      { value: 'l23', label: 'Sunset Manor', villageId: '18' },
-      { value: 'l24', label: 'Garden Terrace', villageId: '19' },
-      { value: 'l25', label: 'Riverside Loft', villageId: '20' },
-      { value: 'l26', label: 'Forest Edge Cabin', villageId: '1' },
-      { value: 'l27', label: 'Lake House', villageId: '2' },
-      { value: 'l28', label: 'Desert Star Home', villageId: '3' },
-      { value: 'l29', label: 'River Rock Cottage', villageId: '4' },
-      { value: 'l30', label: 'City Heights Unit', villageId: '5' },
-      { value: 'l31', label: 'Mountain Peak Lodge', villageId: '6' },
-      { value: 'l32', label: 'Coastal Haven', villageId: '7' },
-      { value: 'l33', label: 'Lakeshore Retreat', villageId: '8' },
-      { value: 'l34', label: 'Prairie Winds Home', villageId: '9' },
-      { value: 'l35', label: 'Valley Meadows', villageId: '10' },
-      { value: 'l36', label: 'Hillcrest Villa', villageId: '11' },
-      { value: 'l37', label: 'Meadowbrook House', villageId: '12' },
-      { value: 'l38', label: 'Oceanfront Property', villageId: '13' },
-      { value: 'l39', label: 'Sunrise Estate', villageId: '14' },
-      { value: 'l40', label: 'Green Hills Manor', villageId: '15' },
-      { value: 'l41', label: 'Pine Valley Lodge', villageId: '16' },
-      { value: 'l42', label: 'Crystal Waters Home', villageId: '17' },
-      { value: 'l43', label: 'Sunset Ridge Villa', villageId: '18' },
-      { value: 'l44', label: 'Garden Oasis', villageId: '19' },
-      { value: 'l45', label: 'Riverside Manor', villageId: '20' },
-      { value: 'l46', label: 'Mountain Vista', villageId: '1' },
-      { value: 'l47', label: 'Forest Glen', villageId: '2' },
-      { value: 'l48', label: 'Desert Bloom', villageId: '3' },
-      { value: 'l49', label: 'River Bend House', villageId: '4' },
-      { value: 'l50', label: 'Urban Skyline', villageId: '5' },
-    ];
-
-    setVillages(mockVillages);
-    setListings(mockListings);
-  }, []);
-
-  // Generate mock data (similar to DemandOverTime component)
-  const getVillageItems = () => {
-    const source =
-      selectedVillages.length > 0
-        ? selectedVillages
-        : villages.slice(0, Math.min(limit, villages.length));
-    return source.map(v => ({ id: v.value, identifier: v.label, type: 'village' }));
-  };
-
-  const getListingItems = () => {
-    const source =
-      selectedListings.length > 0
-        ? selectedListings
-        : listings.slice(0, Math.min(limit, listings.length));
-    return source.map(l => ({ id: l.value, identifier: l.label, type: 'property' }));
-  };
-
-  const generateBidEntry = item => {
-    const winningBid = getRandomInt(150, 500);
-    const averageBid = getRandomInt(100, winningBid - 20);
-    return { ...item, winningBid, averageBid, totalBids: getRandomInt(5, 25) };
-  };
-
-  const generateMockData = () => {
-    const items = category === 'village' ? getVillageItems() : getListingItems();
-    return items.map(generateBidEntry).sort((a, b) => b.winningBid - a.winningBid);
-  };
-
-  // Fetch chart data (using mock data for now)
   const fetchChartData = async () => {
+    if (startDate && endDate && startDate.isAfter(endDate, 'day')) {
+      setError('From Date must be on or before To Date.');
+      return;
+    }
+
+    const selected = category === 'village' ? selectedVillages : selectedListings;
+    const params = { category, limit };
+    if (startDate) params.startDate = startDate.startOf('day').toISOString();
+    if (endDate) params.endDate = endDate.endOf('day').toISOString();
+    if (selected.length > 0) params.ids = selected.map(option => option.value).join(',');
+
+    latestRequestId.current += 1;
+    const requestId = latestRequestId.current;
     setLoading(true);
     setError(null);
 
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const { data } = await axios.get(ENDPOINTS.LB_WINNING_VS_AVERAGE_BIDS, { params });
+      if (requestId !== latestRequestId.current) return;
 
-      // Generate and use mock data
-      const mockData = generateMockData();
-
-      if (mockData.length > 0) {
-        prepareChartData(mockData);
-      } else {
-        setError('No data available for the selected filters.');
-      }
+      setBidData(Array.isArray(data?.data) ? data.data : []);
+      setVillages((data?.filters?.villages || []).map(v => ({ value: v.id, label: v.name })));
+      setListings(
+        (data?.filters?.listings || []).map(l => ({
+          value: l.id,
+          label: l.name,
+          villageId: l.villageId,
+        })),
+      );
     } catch (err) {
-      setError(`Failed to load chart data: ${err.message}`);
+      if (requestId !== latestRequestId.current) return;
+      setBidData([]);
+      setError(
+        `Failed to load chart data: ${err.response?.data?.error || err.message || 'Unknown error'}`,
+      );
     } finally {
-      setLoading(false);
+      if (requestId === latestRequestId.current) setLoading(false);
     }
   };
 
-  // Prepare chart data for Chart.js
-  const prepareChartData = data => {
-    const labels = data.map((item, index) => {
-      // Use listing number as identifier (1-indexed)
-      return `Listing ${index + 1}`;
-    });
-
-    const winningBids = data.map(item => item.winningBid);
-    const averageBids = data.map(item => item.averageBid);
+  // Build Chart.js data from the backend stats
+  const chartData = useMemo(() => {
+    if (bidData.length === 0) return null;
 
     const labelColor = '#ffffff';
     const winningBidBarColor = darkMode ? '#888888' : '#555555';
+    const datalabels = {
+      color: labelColor,
+      font: { weight: 'bold', size: 12 },
+      anchor: 'center',
+      align: 'center',
+    };
 
-    setChartData({
-      labels,
+    return {
+      labels: bidData.map(item => item.name),
       datasets: [
         {
           label: 'Average Bid',
-          data: averageBids,
+          data: bidData.map(item => item.averageBid),
           backgroundColor: '#9370db',
           borderColor: '#9370db',
           borderWidth: 0,
-          datalabels: {
-            color: labelColor,
-            font: { weight: 'bold', size: 12 },
-            anchor: 'center',
-            align: 'center',
-          },
+          datalabels,
         },
         {
           label: 'Winning Bid',
-          data: winningBids,
+          data: bidData.map(item => item.winningBid),
           backgroundColor: winningBidBarColor,
           borderColor: winningBidBarColor,
           borderWidth: 0,
-          datalabels: {
-            color: labelColor,
-            font: { weight: 'bold', size: 12 },
-            anchor: 'center',
-            align: 'center',
-          },
+          datalabels,
         },
       ],
-    });
-  };
+    };
+  }, [bidData, darkMode]);
 
   // Chart options
   const textColor = darkMode ? '#ffffff' : '#000000';
@@ -289,9 +180,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
     plugins: {
       datalabels: {
         display: true,
-        formatter: value => {
-          return Math.round(value);
-        },
+        formatter: value => (value === null || value === undefined ? '' : Math.round(value)),
       },
       legend: {
         position: 'top',
@@ -325,6 +214,9 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
         displayColors: true,
         callbacks: {
           label: function(context) {
+            if (context.parsed.y === null || context.parsed.y === undefined) {
+              return `${context.dataset.label}: No confirmed winner yet`;
+            }
             return `${context.dataset.label}: $${Math.round(context.parsed.y)}`;
           },
         },
@@ -335,7 +227,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
         stacked: false,
         title: {
           display: true,
-          text: 'Listing number/identifier',
+          text: category === 'village' ? 'Village' : 'Listing',
           color: textColor,
           font: {
             size: 12,
@@ -386,12 +278,10 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
     },
   };
 
-  // Fetch data on initial load
+  // Fetch data on initial load; afterwards data refreshes only on Apply Filters
   useEffect(() => {
-    if (villages.length > 0 && listings.length > 0) {
-      fetchChartData();
-    }
-  }, [category, limit, selectedVillages, selectedListings, villages, listings, darkMode]);
+    fetchChartData();
+  }, []);
 
   const handleApplyFilters = () => {
     fetchChartData();
@@ -613,7 +503,9 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
             {!loading && !chartData && (
               <div className={styles.emptyState}>
                 <p className={darkMode ? styles.darkText : ''}>
-                  No data available. Please adjust your filters and try again.
+                  {error
+                    ? 'Unable to display the chart.'
+                    : 'No bids found for the selected filters. Please adjust your filters and try again.'}
                 </p>
               </div>
             )}
