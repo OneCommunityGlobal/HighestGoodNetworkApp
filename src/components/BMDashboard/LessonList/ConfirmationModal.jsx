@@ -2,11 +2,19 @@ import { Modal, ModalBody, ModalFooter } from 'reactstrap';
 import { Button } from 'react-bootstrap';
 import styles from './ConfirmationModal.module.css';
 
-function ConfirmationModal({ showConfirmModal, handleDeleteTags, setConfirmModal, darkMode }) {
+function ConfirmationModal({
+  showConfirmModal,
+  handleDeleteTags,
+  setConfirmModal,
+  darkMode,
+  isDeleting = false,
+}) {
   return (
     <Modal
       isOpen={showConfirmModal}
-      toggle={() => setConfirmModal(false)}
+      toggle={() => {
+        if (!isDeleting) setConfirmModal(false);
+      }}
       contentClassName={darkMode ? styles.darkContent : ''}
     >
       <ModalBody className={darkMode ? styles.darkBody : ''}>
@@ -18,14 +26,14 @@ function ConfirmationModal({ showConfirmModal, handleDeleteTags, setConfirmModal
       <ModalFooter className={darkMode ? styles.darkFooter : ''}>
         <Button
           variant="primary"
+          disabled={isDeleting}
           onClick={() => {
             handleDeleteTags();
-            setConfirmModal(false);
           }}
         >
-          Confirm
+          {isDeleting ? 'Deleting…' : 'Confirm'}
         </Button>
-        <Button variant="danger" onClick={() => setConfirmModal(false)}>
+        <Button variant="danger" disabled={isDeleting} onClick={() => setConfirmModal(false)}>
           Cancel
         </Button>
       </ModalFooter>

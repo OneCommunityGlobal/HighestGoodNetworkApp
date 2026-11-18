@@ -6,10 +6,14 @@ import {
   UPDATE_LESSON,
   DELETE_LESSON,
   SET_LESSON,
+  BM_LESSONS_REQUEST,
+  BM_LESSONS_FAILURE,
+  BM_LESSONS_CANCEL,
 } from '../../constants/bmdashboard/lessonConstants';
 import { getUserProfile } from '../userProfile';
 import { fetchProjectById } from './projectByIdAction';
 import { GET_ERRORS } from '../../constants/errors';
+import { serializeLessonQuery, normalizeLessonResponse } from '~/utils/lessonListQuery';
 
 export const deleteLesson = lessonId => {
   return {
@@ -50,84 +54,87 @@ export const setLessons = payload => {
 // real references; skip those so we don't fire doomed 404/500/400 requests.
 const isObjectId = id => typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
 
-export const fetchBMLessons = () => {
-  return async dispatch => {
-    try {
-      const response = await axios.get(ENDPOINTS.BM_LESSONS);
-      const lessons = response.data;
-      const authorIds = [...new Set(lessons.map(lesson => lesson.author).filter(isObjectId))];
-      const projectIds = [
-        ...new Set(lessons.map(lesson => lesson.relatedProject).filter(isObjectId)),
-      ];
+let lessonRequestSequence = 0;
 
-      // Keep the more robust approach from honglin-lesson-list-buttons branch
-      const [authorProfiles, projectDetails] = await Promise.all([
-        Promise.all(
-          authorIds.map(async authorId => {
-            try {
-              return await dispatch(getUserProfile(authorId));
-            } catch (error) {
-              return null;
-            }
-          })
-        ),
-        Promise.all(
-          projectIds.map(async projectId => {
-            try {
-              return await dispatch(fetchProjectById(projectId));
-            } catch (error) {
-              return null;
-            }
-          })
-        )
+// Enrich only the requested result set; deduplicate references within each response.
+// Read references directly so list requests do not overwrite unrelated profile/project state.
+async function enrichLessons(lessons) {
+  const authors = new Map();
+  const projects = new Map();
+  const lookup = (map, id, url) => {
+    if (!isObjectId(id)) return Promise.resolve(null);
+    if (!map.has(id))
+      map.set(
+        id,
+        axios
+          .get(url(id))
+          .then(response => response.data)
+          .catch(() => null),
+      );
+    return map.get(id);
+  };
+  return Promise.all(
+    lessons.map(async lesson => {
+      const [author, project] = await Promise.all([
+        typeof lesson.author === 'object'
+          ? lesson.author
+          : lookup(authors, lesson.author, ENDPOINTS.USER_PROFILE),
+        typeof lesson.relatedProject === 'object'
+          ? lesson.relatedProject
+          : lookup(projects, lesson.relatedProject, ENDPOINTS.BM_PROJECT_BY_ID),
       ]);
-
-      const authorMap = authorIds.reduce((acc, id, index) => {
-        if (authorProfiles[index]) {
-          acc[id] = authorProfiles[index];
-        }
-        return acc;
-      }, {});
-
-      const projectMap = projectIds.reduce((acc, id, index) => {
-        const project = projectDetails[index];
-        if (project && project.name) {
-          acc[id] = {
-            id,
-            name: project.name,
-            location: project.location
-          };
-        } else {
-          acc[id] = {
-            id,
-            name: 'Unknown Project',
-            location: ''
-          };
-        }
-        return acc;
-      }, {});
-
-      const updatedLessons = lessons.map(lesson => ({
+      return {
         ...lesson,
         author: {
-          id: lesson.author,
-          name: authorMap[lesson.author] 
-            ? `${authorMap[lesson.author].firstName} ${authorMap[lesson.author].lastName}`
-            : 'Unknown'
+          id: author?.id || author?._id || lesson.author,
+          name:
+            author?.name ||
+            (author ? `${author.firstName || ''} ${author.lastName || ''}`.trim() : 'Unknown'),
         },
-        relatedProject: projectMap[lesson.relatedProject] || {
-          id: lesson.relatedProject,
-          name: 'Unknown Project'
-        }
-      }));
-      dispatch(setLessons(updatedLessons));
-    } catch (error) {
-      // Add toast notification from development branch
-      toast.error('Error fetching lessons:', error);
-      dispatch(setErrors(error));
+        relatedProject: {
+          id: project?.id || project?._id || lesson.relatedProject,
+          name: project?.name || 'Unknown Project',
+          location: project?.location || '',
+        },
+      };
+    }),
+  );
+}
+
+export const fetchBMLessons = (query = {}, { signal } = {}) => async (dispatch, getState) => {
+  const requestId = ++lessonRequestSequence;
+  const activeQuery = { ...query, ...(query.tags ? { tags: [...query.tags] } : {}) };
+  const queryKey = serializeLessonQuery(activeQuery);
+  dispatch({ type: BM_LESSONS_REQUEST, requestId, query: activeQuery, queryKey });
+  try {
+    const queryString = queryKey ? `?${queryKey}` : '';
+    const url = `${ENDPOINTS.BM_LESSONS}${queryString}`;
+    const response = signal ? await axios.get(url, { signal }) : await axios.get(url);
+    const result = normalizeLessonResponse(response.data);
+    if (signal?.aborted) throw new Error('Request cancelled');
+    if (getState().lessons?.requestId !== requestId) return { ok: false, stale: true };
+    const lessons = await enrichLessons(result.lessons);
+    if (signal?.aborted) throw new Error('Request cancelled');
+    if (getState().lessons?.requestId !== requestId) return { ok: false, stale: true };
+    dispatch({ type: GET_BM_LESSONS, payload: lessons, pagination: result.pagination, requestId });
+    return { ok: true, lessons, pagination: result.pagination };
+  } catch (error) {
+    if (signal?.aborted || error.code === 'ERR_CANCELED') {
+      dispatch({ type: BM_LESSONS_CANCEL, requestId });
+      return { ok: false, cancelled: true };
     }
-  };
+    const message = error.response?.data?.error || error.message || 'Failed to load lessons.';
+    dispatch({
+      type: BM_LESSONS_FAILURE,
+      requestId,
+      error: typeof message === 'string' ? message : 'Failed to load lessons.',
+    });
+    return { ok: false, error: message };
+  }
 };
+
+export const refreshBMLessons = () => (dispatch, getState) =>
+  dispatch(fetchBMLessons(getState().lessons?.query || {}));
 
 export const fetchSingleBMLesson = lessonId => {
   const url = ENDPOINTS.BM_LESSON + lessonId;
@@ -139,7 +146,9 @@ export const fetchSingleBMLesson = lessonId => {
       // Fetch user profile and project details concurrently, but only when the
       // stored values are real ObjectIds (not display names like "project 1").
       const [projectDetails, userProfile] = await Promise.all([
-        isObjectId(lesson.relatedProject) ? dispatch(fetchProjectById(lesson.relatedProject)) : null,
+        isObjectId(lesson.relatedProject)
+          ? dispatch(fetchProjectById(lesson.relatedProject))
+          : null,
         isObjectId(lesson.author) ? dispatch(getUserProfile(lesson.author)) : null,
       ]);
 
@@ -148,15 +157,15 @@ export const fetchSingleBMLesson = lessonId => {
         ...lesson,
         author: userProfile
           ? {
-            id: userProfile._id,
-            name: `${userProfile.firstName} ${userProfile.lastName}`,
-          }
+              id: userProfile._id,
+              name: `${userProfile.firstName} ${userProfile.lastName}`,
+            }
           : lesson.author,
         relatedProject: projectDetails
           ? {
-            id: projectDetails._id,
-            name: projectDetails.projectName,
-          }
+              id: projectDetails._id,
+              name: projectDetails.projectName,
+            }
           : lesson.relatedProject,
       };
       dispatch(setLesson(updatedLesson));
@@ -167,29 +176,26 @@ export const fetchSingleBMLesson = lessonId => {
   };
 };
 
-export const updateBMLesson = (lessonId, content) => {
-  return async dispatch => {
-    const url = ENDPOINTS.BM_LESSON + lessonId;
-    try {
-      await axios.put(url, { content });
-    } catch (err) {
-      toast.error('Error updating lesson');
-    }
+export const updateBMLesson = (lessonId, content) => async dispatch => {
+  try {
+    await axios.put(ENDPOINTS.BM_LESSON + lessonId, { content });
     dispatch(updateLesson(lessonId, content));
-  };
+    await dispatch(refreshBMLessons());
+    return true;
+  } catch {
+    toast.error('Error updating lesson');
+    return false;
+  }
 };
 
-export const deleteBMLesson = lessonId => {
-  return async dispatch => {
-    const url = ENDPOINTS.BM_LESSON + lessonId;
-    try {
-      await axios.delete(url);
-      dispatch(deleteLesson(lessonId));
-      return Promise.resolve();
-    } catch (err) {
-      toast.error('Error deleting lesson');
-      return Promise.reject(err);
-    }
-  };
+export const deleteBMLesson = lessonId => async dispatch => {
+  try {
+    await axios.delete(ENDPOINTS.BM_LESSON + lessonId);
+    dispatch(deleteLesson(lessonId));
+    await dispatch(refreshBMLessons());
+    return true;
+  } catch (error) {
+    toast.error('Error deleting lesson');
+    throw error;
+  }
 };
-

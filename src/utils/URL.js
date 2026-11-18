@@ -488,6 +488,7 @@ export const ENDPOINTS = {
     return url;
   },
   BM_TAGS: `${APIEndpoint}/bm/tags`,
+  BM_TAG_COUNTS: `${APIEndpoint}/bm/tags/counts`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
 

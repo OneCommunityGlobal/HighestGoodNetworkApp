@@ -1,326 +1,179 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
-import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
+import { Form, FormControl, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { fetchBMLessons } from '~/actions/bmdashboard/lessonsAction';
+import { fetchBMLessons, refreshBMLessons } from '~/actions/bmdashboard/lessonsAction';
+import {
+  DATE_FILTERS,
+  LESSON_SORTS,
+  serializeLessonQuery,
+  readLessonTags,
+  normalizeLessonTagCounts,
+} from '~/utils/lessonListQuery';
 import { ENDPOINTS } from '~/utils/URL';
+import { escapeLessonCSV } from '~/utils/lessonListCsv';
 import Lessons from './Lessons';
 import ConfirmationModal from './ConfirmationModal';
 import ExportConfirmationModal from './ExportConfirmationModal';
 import styles from './LessonListForm.module.css';
 import LessonListRemovableTag from './LessonListRemovableTag';
+import LessonTagPicker from './LessonTagPicker';
 
-function LessonList(props) {
-  const { lessons, darkMode, dispatch } = props;
-  const [tags, setTags] = useState([]);
-  const [tagFilterLogic, setTagFilterLogic] = useState('AND');
+function LessonList({ lessons, darkMode, dispatch, request }) {
+  const [filters, setFilters] = useState(() => ({
+    tags: readLessonTags(),
+    tagFilterLogic: 'AND',
+    filterOption: '1',
+    sortOption: '1',
+  }));
+  const { tags, tagFilterLogic, filterOption, sortOption } = filters;
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
+  const [timeZone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
+  const query = useMemo(
+    () => ({
+      tags,
+      tagMatch: tagFilterLogic === 'OR' ? 'any' : 'all',
+      dateFilter: DATE_FILTERS[filterOption],
+      timeZone,
+      sort: LESSON_SORTS[sortOption],
+    }),
+    [tags, tagFilterLogic, filterOption, sortOption, timeZone],
+  );
+  const queryKey = serializeLessonQuery(query);
+  const [retry, setRetry] = useState(0);
+  const isCurrent = request.queryKey === queryKey;
+  // A request's query is not proof that the retained results belong to it.
+  const hasCurrentResults = request.resultQueryKey === queryKey;
+  const listError = isCurrent ? request.error : null;
+  const isLoading = (!hasCurrentResults && !listError) || (isCurrent && request.loading);
+  const isRefreshing = hasCurrentResults && isLoading;
+  const filteredLessons = hasCurrentResults ? lessons : [];
   const [inputValue, setInputValue] = useState('');
   const [deleteValue, setDeleteInputValue] = useState('');
-  const [filteredLessons, setFilteredLessons] = useState(lessons || []);
-  const [filterOption, setFilterOption] = useState('1');
-  const [sortOption, setSortOption] = useState('1');
   const [availableTags, setAvailableTags] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
+  const [tagCounts, setTagCounts] = useState({});
+  const [catalogueLoading, setCatalogueLoading] = useState(true);
+  const [catalogueError, setCatalogueError] = useState('');
+  const mounted = useRef(true);
+  const catalogueRequest = useRef(0);
+  const catalogueController = useRef(null);
   const [tagsToDelete, setTagsToDelete] = useState([]);
   const [confirmModal, setConfirmModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const deletingRef = useRef(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-
-  // Load saved tags from localStorage on mount
-  useEffect(() => {
-    const savedTags = localStorage.getItem('lessonListSelectedTags');
-    if (savedTags) {
-      try {
-        const parsedTags = JSON.parse(savedTags);
-        if (Array.isArray(parsedTags) && parsedTags.length > 0) {
-          const uniqueTags = [...new Set(parsedTags)];
-          setTags(uniqueTags);
-        }
-      } catch (e) {
-        console.error('Failed to parse saved tags:', e);
-      }
-    }
-  }, []);
+  const exportingRef = useRef(false);
+  const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        await dispatch(fetchBMLessons());
-        const tagsResponse = await axios.get(`${ENDPOINTS.BM_TAGS}`);
-        setAvailableTags(tagsResponse.data);
-      } catch (e) {
-        toast.error('Failed to load data');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [dispatch]);
+    const controller = new AbortController();
+    dispatch(fetchBMLessons(query, { signal: controller.signal }));
+    return () => controller.abort();
+  }, [dispatch, query, retry]);
 
-  // Save tags to localStorage whenever they change
   useEffect(() => {
-    if (tags.length > 0) {
-      localStorage.setItem('lessonListSelectedTags', JSON.stringify(tags));
-    } else {
-      localStorage.removeItem('lessonListSelectedTags');
+    try {
+      if (tags.length) localStorage.setItem('lessonListSelectedTags', JSON.stringify(tags));
+      else localStorage.removeItem('lessonListSelectedTags');
+    } catch {
+      /* Filtering remains usable when browser storage is unavailable. */
     }
   }, [tags]);
 
-  useEffect(() => {
-    if (lessons) {
-      setFilteredLessons(lessons);
-    }
-  }, [lessons]);
-
-  const tagCounts = useMemo(() => {
-    const counts = {};
-    if (lessons && Array.isArray(lessons)) {
-      lessons.forEach(lesson => {
-        if (lesson.tags && Array.isArray(lesson.tags)) {
-          lesson.tags.forEach(tag => {
-            counts[tag] = (counts[tag] || 0) + 1;
-          });
-        }
-      });
-    }
-    return counts;
-  }, [lessons]);
-
-  const handleDeleteTags = async () => {
+  const loadTagData = useCallback(async () => {
+    if (!mounted.current) return;
+    catalogueController.current?.abort();
+    const controller = new AbortController();
+    catalogueController.current = controller;
+    const requestId = ++catalogueRequest.current;
+    setCatalogueLoading(true);
+    setCatalogueError('');
     try {
-      const tagExistsChecks = tagsToDelete.map(tag => availableTags.includes(tag));
-
-      if (tagExistsChecks.includes(false)) {
-        toast.error("One or more tags don't exist");
-        return;
-      }
-
-      const deletePromises = tagsToDelete.map(tag => axios.delete(`${ENDPOINTS.BM_TAGS}/${tag}`));
-
-      // Wait for all deletions to process
-      await Promise.all(deletePromises);
-
-      const lessonsResponse = await axios.get(`${ENDPOINTS.BM_LESSONS}`);
-
-      // Update Redux store
-      dispatch({
-        type: 'SET_LESSONS',
-        payload: lessonsResponse.data,
-      });
-
-      // filter lessons
-      setFilteredLessons(lessonsResponse.data);
-
-      // Update available tags
-      const updatedTagsResponse = await axios.get(`${ENDPOINTS.BM_TAGS}`);
-      setAvailableTags(updatedTagsResponse.data);
-
-      setTagsToDelete([]);
-      setConfirmModal(false);
-      toast.success('Tags deleted successfully');
-    } catch (error) {
-      toast.error('Failed to delete tags');
+      // Global metadata is independent of the active filters and result pagination.
+      const response = await axios.get(ENDPOINTS.BM_TAG_COUNTS, { signal: controller.signal });
+      if (controller.signal.aborted || requestId !== catalogueRequest.current) return;
+      const metadata = normalizeLessonTagCounts(response.data);
+      setAvailableTags(metadata.tags);
+      setTagCounts(metadata.counts);
+    } catch {
+      if (!controller.signal.aborted && requestId === catalogueRequest.current)
+        setCatalogueError('Unable to load tag suggestions and global counts.');
+    } finally {
+      if (!controller.signal.aborted && requestId === catalogueRequest.current)
+        setCatalogueLoading(false);
     }
-  };
-
-  const getFilteredTags = () => {
-    return availableTags
-      .filter(tag => tag.toLowerCase().includes(inputValue.toLowerCase()) && !tags.includes(tag))
-      .sort((a, b) => (tagCounts[b] || 0) - (tagCounts[a] || 0));
-  };
-
-  const getFilteredTagsToDelete = () => {
-    return availableTags.filter(tag => tag.toLowerCase().includes(deleteValue.toLowerCase()));
-  };
-
-  const getWeekNumber = date => {
-    const currentDate = new Date(date);
-    currentDate.setHours(0, 0, 0, 0);
-
-    // Set to the first day of the week (Sunday)
-    currentDate.setDate(currentDate.getDate() - currentDate.getDay());
-
-    // Get first day of year
-    const start = new Date(currentDate.getFullYear(), 0, 1);
-
-    // Calculate full weeks to the first day of the week
-    const weekNumber = Math.ceil(((currentDate - start) / 86400000 + 1) / 7);
-
-    return weekNumber;
-  };
-
-  const isInThisWeek = date => {
-    // Convert the date string to a Date object with consistent formatting
-    const lessonDate = new Date(date);
-    const currentDate = new Date();
-
-    // Check if the year and week are the same
-    if (
-      currentDate.getFullYear() === lessonDate.getFullYear() &&
-      getWeekNumber(currentDate) === getWeekNumber(lessonDate)
-    ) {
-      // Check if the difference in days is within the same week
-      const dayDifference = Math.abs(currentDate - lessonDate) / (1000 * 60 * 60 * 24);
-      return dayDifference < 7;
-    }
-    return false;
-  };
-
-  const isInThisYear = date => {
-    const currentDate = new Date();
-    const lessonDate = new Date(date);
-    return currentDate.getFullYear() === lessonDate.getFullYear();
-  };
-
-  const isInThisMonth = date => {
-    const currentDate = new Date();
-    const lessonDate = new Date(date);
-    return (
-      currentDate.getFullYear() === lessonDate.getFullYear() &&
-      currentDate.getMonth() === lessonDate.getMonth()
-    );
-  };
-
-  useEffect(() => {
-    setFilteredLessons(prevFilteredLessons => {
-      const updated = prevFilteredLessons.map(filteredLesson => {
-        const updatedLesson = lessons.find(lesson => lesson._id === filteredLesson._id);
-        return updatedLesson || filteredLesson;
-      });
-      return updated;
-    });
-  }, [lessons]);
-
-  useEffect(() => {
-    const handleClickOutside = event => {
-      // Don't close dropdown if clicking on tag close button or tag container
-      const buttonClose = event.target.closest('button[aria-label*="Remove"]');
-      const tagContainer = event.target.closest(`.${styles.tagContainer}`);
-
-      if (buttonClose || tagContainer) {
-        return;
-      }
-
-      if (!event.target.closest('.tags-input-container')) {
-        setShowDropdown(false);
-        setShowDeleteDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
   }, []);
+  useEffect(() => {
+    mounted.current = true;
+    loadTagData();
+    return () => {
+      mounted.current = false;
+      catalogueController.current?.abort();
+      catalogueRequest.current += 1;
+    };
+  }, [loadTagData, request.tagMetadataVersion]);
 
+  const changeFilters = patch => setFilters(previous => ({ ...previous, ...patch }));
   const addTag = tag => {
-    // Check if the tag already exists (case-insensitive check)
-    const tagLower = tag.toLowerCase();
-    const tagExists = tags.some(existingTag => existingTag.toLowerCase() === tagLower);
-
-    if (!tagExists) {
-      setTags(prevTags => {
-        // Ensure no duplicates when adding
-        const newTags = [...prevTags, tag];
-        return [...new Set(newTags)];
-      });
-    }
+    setFilters(previous =>
+      previous.tags.length >= 50 ||
+      previous.tags.some(value => value.toLowerCase() === tag.toLowerCase())
+        ? previous
+        : { ...previous, tags: [...previous.tags, tag] },
+    );
     setInputValue('');
   };
-
+  const removeTag = tag =>
+    setFilters(previous => ({ ...previous, tags: previous.tags.filter(value => value !== tag) }));
   const addDeleteTag = tag => {
-    if (!tagsToDelete.includes(tag)) {
-      setTagsToDelete(prev => [...prev, tag]);
-    }
+    setTagsToDelete(previous =>
+      previous.some(value => value.toLowerCase() === tag.toLowerCase())
+        ? previous
+        : [...previous, tag],
+    );
     setDeleteInputValue('');
-    setShowDeleteDropdown(false);
   };
-
-  const handleDeleteKeyDown = event => {
-    if (event.key === 'Enter' && deleteValue.trim()) {
-      addDeleteTag(deleteValue.trim());
+  const removeDeleteTag = tag =>
+    setTagsToDelete(previous => previous.filter(value => value !== tag));
+  const resetAll = () => {
+    setFilters({ tags: [], tagFilterLogic: 'AND', filterOption: '1', sortOption: '1' });
+    setInputValue('');
+    setDeleteInputValue('');
+    setResetKey(value => value + 1);
+  };
+  const handleDeleteTags = async () => {
+    if (deletingRef.current || !tagsToDelete.length) return;
+    deletingRef.current = true;
+    setIsDeleting(true);
+    try {
+      const outcomes = await Promise.allSettled(
+        tagsToDelete.map(tag => axios.delete(`${ENDPOINTS.BM_TAGS}/${encodeURIComponent(tag)}`)),
+      );
+      if (!mounted.current) return;
+      const deleted = tagsToDelete.filter((tag, index) => outcomes[index].status === 'fulfilled');
+      const failed = tagsToDelete.filter((tag, index) => outcomes[index].status === 'rejected');
+      const currentTags = filtersRef.current.tags;
+      if (currentTags.some(tag => deleted.includes(tag))) {
+        setFilters(previous => ({
+          ...previous,
+          tags: previous.tags.filter(tag => !deleted.includes(tag)),
+        }));
+      } else if (deleted.length) await dispatch(refreshBMLessons());
+      setTagsToDelete(failed);
+      if (!failed.length) setConfirmModal(false);
+      if (deleted.length) toast.success(`${deleted.length} tag(s) deleted successfully`);
+      if (failed.length)
+        toast.error(`Failed to delete: ${failed.join(', ')}. You can retry these tags.`);
+      if (deleted.length) await loadTagData();
+    } finally {
+      deletingRef.current = false;
+      if (mounted.current) setIsDeleting(false);
     }
   };
-
-  const handleDeleteButtonClick = () => {
-    setConfirmModal(true);
-  };
-
-  const removeDeleteTag = tagToRemove => {
-    setTagsToDelete(prev => prev.filter(t => t !== tagToRemove));
-  };
-
-  const removeTag = tagToRemove => {
-    if (!tagToRemove) return;
-    setTags(prevTags => prevTags.filter(tag => tag !== tagToRemove));
-  };
-
-  useEffect(() => {
-    const applyFiltersAndSort = () => {
-      if (!lessons || !Array.isArray(lessons) || lessons.length === 0) {
-        setFilteredLessons([]);
-        return;
-      }
-      let filtered = [...lessons];
-
-      // 1) tags
-      if (tags.length > 0) {
-        filtered = filtered.filter(lesson => {
-          if (!lesson.tags) return false;
-          if (tagFilterLogic === 'OR') {
-            return tags.some(tag => lesson.tags.includes(tag));
-          }
-          return tags.every(tag => lesson.tags.includes(tag));
-        });
-      }
-
-      // 2. Apply date filtering
-      switch (filterOption) {
-        case '2':
-          filtered = filtered.filter(item => {
-            const result = isInThisYear(item.date);
-            return result;
-          });
-          break;
-        case '3':
-          filtered = filtered.filter(item => isInThisMonth(item.date));
-          break;
-        case '4':
-          filtered = filtered.filter(item => isInThisWeek(item.date));
-          break;
-        default:
-          break;
-      }
-
-      switch (sortOption) {
-        case '1': // Newest
-          filtered = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-          break;
-        case '2': // Date (oldest)
-          filtered = filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
-          break;
-        case '3': // Likes
-          filtered = filtered.sort((a, b) => b.totalLikes - a.totalLikes);
-          break;
-        case '4': // Tag Frequency
-          filtered = filtered.sort((a, b) => {
-            const sumA = a.tags ? a.tags.reduce((sum, t) => sum + (tagCounts[t] || 0), 0) : 0;
-            const sumB = b.tags ? b.tags.reduce((sum, t) => sum + (tagCounts[t] || 0), 0) : 0;
-            return sumB - sumA;
-          });
-          break;
-        default:
-          break;
-      }
-      setFilteredLessons(filtered);
-    };
-
-    applyFiltersAndSort();
-  }, [lessons, tags, filterOption, sortOption, tagFilterLogic, tagCounts]);
 
   const stripHtmlTags = htmlString => {
     if (!htmlString || typeof htmlString !== 'string') {
@@ -340,38 +193,7 @@ function LessonList(props) {
     }
   };
 
-  const escapeCSV = value => {
-    // Handle null, undefined, and empty values
-    if (value === null || value === undefined || value === '') {
-      return '';
-    }
-
-    // Convert to string safely
-    let stringValue;
-    try {
-      stringValue = String(value);
-    } catch (error) {
-      console.warn('Error converting value to string:', error);
-      return '';
-    }
-
-    // Remove or replace problematic characters that could break CSV
-    // Replace carriage returns and normalize line breaks
-    stringValue = stringValue
-      .replace(/\r\n/g, ' ')
-      .replace(/\r/g, ' ')
-      .replace(/\n/g, ' ');
-
-    // If value contains comma, quote, or starts/ends with whitespace, wrap in quotes and escape quotes
-    const startsOrEndsWithWhitespace =
-      stringValue.length > 0 &&
-      (stringValue.trimStart() !== stringValue || stringValue.trimEnd() !== stringValue);
-    if (stringValue.includes(',') || stringValue.includes('"') || startsOrEndsWithWhitespace) {
-      return `"${stringValue.replace(/"/g, '""')}"`;
-    }
-
-    return stringValue;
-  };
+  const escapeCSV = escapeLessonCSV;
 
   const formatDateForCSV = dateString => {
     if (!dateString) return '';
@@ -409,7 +231,7 @@ function LessonList(props) {
 
     // Tag filter
     if (tags.length > 0) {
-      filterDescriptions.push(`Tags: ${tags.join(', ')}`);
+      filterDescriptions.push(`Tags (${tagFilterLogic}): ${tags.join(', ')}`);
     }
 
     // Sort option
@@ -417,6 +239,7 @@ function LessonList(props) {
       '1': 'Newest',
       '2': 'Date (Oldest)',
       '3': 'Likes',
+      '4': 'Tag Frequency',
     };
     filterDescriptions.push(`Sort: ${sortMap[sortOption]}`);
 
@@ -429,15 +252,17 @@ function LessonList(props) {
       toast.error('No lesson data available to export. Please adjust your filters.');
       return;
     }
+    if (isLoading || listError) return;
     setShowExportModal(true);
   };
 
   const exportLessonData = () => {
     // Prevent multiple simultaneous exports
-    if (isExporting) {
+    if (exportingRef.current || isLoading || listError) {
       return;
     }
 
+    exportingRef.current = true;
     setIsExporting(true);
 
     let blobUrl = null;
@@ -467,9 +292,12 @@ function LessonList(props) {
         second: '2-digit',
       });
 
-      csv += `Export Date: ${exportDateString}\n`;
-      csv += `Applied Filters: ${getFilterDescription()}\n`;
-      csv += `Total Lessons: ${filteredLessons.length}\n`;
+      csv += ['Export Date:', exportDateString].map(value => escapeCSV(value)).join(',') + '\n';
+      csv +=
+        ['Applied Filters:', getFilterDescription()].map(value => escapeCSV(value)).join(',') +
+        '\n';
+      csv +=
+        ['Total Lessons:', filteredLessons.length].map(value => escapeCSV(value)).join(',') + '\n';
       csv += '\n';
 
       // CSV Headers
@@ -482,7 +310,7 @@ function LessonList(props) {
         'Total Likes',
         'Content Summary',
       ];
-      csv += headers.map(escapeCSV).join(',') + '\n';
+      csv += headers.map(value => escapeCSV(value)).join(',') + '\n';
 
       // CSV Data rows with robust error handling
       filteredLessons.forEach((lesson, index) => {
@@ -509,13 +337,13 @@ function LessonList(props) {
           }
 
           const row = [title, date, tags, author, project, likes, content];
-          csv += row.map(escapeCSV).join(',') + '\n';
+          csv += row.map(value => escapeCSV(value)).join(',') + '\n';
         } catch (rowError) {
           // Log error but continue with other rows
           console.warn(`Error processing lesson at index ${index}:`, rowError);
           // Add a placeholder row to maintain CSV structure (7 columns matching headers)
           const errorRow = ['Error processing this lesson', '', '', '', '', '', ''];
-          csv += errorRow.map(escapeCSV).join(',') + '\n';
+          csv += errorRow.map(value => escapeCSV(value)).join(',') + '\n';
         }
       });
 
@@ -600,6 +428,7 @@ function LessonList(props) {
       // Keep modal open on error so user can retry
       // Modal stays open - user can try again or cancel
     } finally {
+      exportingRef.current = false;
       setIsExporting(false);
     }
   };
@@ -607,7 +436,7 @@ function LessonList(props) {
   return (
     <div className={`${styles.mainContainer} ${darkMode ? styles.darkMode : styles.lightMode}`}>
       <div className={`${styles.formContainer}`}>
-        <Form>
+        <Form onSubmit={event => event.preventDefault()}>
           <div>
             <Form.Group controlId="exampleForm.ControlTextarea1">
               <Form.Label className={`${styles.lessonLabel}`}>Lesson List</Form.Label>
@@ -620,12 +449,12 @@ function LessonList(props) {
                 <FormControl
                   className={`${styles.singleFormSelect}`}
                   as="select"
-                  aria-label="Default select example"
+                  aria-label="Date filter"
                   value={filterOption}
-                  onChange={event => setFilterOption(event.target.value)}
+                  onChange={event => changeFilters({ filterOption: event.target.value })}
                   disabled={isLoading}
                 >
-                  <option value="1">Select a Filter</option>
+                  <option value="1">All dates</option>
                   <option value="2">This Year</option>
                   <option value="3">This Month</option>
                   <option value="4">This Week</option>
@@ -638,9 +467,9 @@ function LessonList(props) {
                 <FormControl
                   className={`${styles.singleFormSelect}`}
                   as="select"
-                  aria-label="Default select example"
+                  aria-label="Lesson sort"
                   value={sortOption}
-                  onChange={event => setSortOption(event.target.value)}
+                  onChange={event => changeFilters({ sortOption: event.target.value })}
                   disabled={isLoading}
                 >
                   <option value="1">Newest</option>
@@ -651,12 +480,17 @@ function LessonList(props) {
               </Form.Group>
             </div>
             <div>
-              <Form.Group className={`${styles.singleForm}`} controlId="ExportButton">
+              <Form.Group
+                className={`${styles.singleForm} ${styles.exportGroup}`}
+                controlId="ExportButton"
+              >
                 <Form.Label>&nbsp;</Form.Label>
                 <Button
                   variant="primary"
                   onClick={handleExportClick}
-                  disabled={isExporting || !filteredLessons || filteredLessons.length === 0}
+                  disabled={
+                    isLoading || Boolean(listError) || isExporting || !filteredLessons.length
+                  }
                   style={{ width: '100%', marginTop: '0' }}
                   aria-label="Export lesson data to CSV"
                 >
@@ -664,77 +498,61 @@ function LessonList(props) {
                 </Button>
               </Form.Group>
             </div>
+            <Button type="button" variant="secondary" onClick={resetAll} disabled={isDeleting}>
+              Reset All
+            </Button>
           </div>
 
           {/* Tags input */}
-          <Form.Group controlId="tagInput">
-            <Form.Label>Tags:</Form.Label>
+          <Form.Group>
+            <Form.Label htmlFor="tagInput">Tags:</Form.Label>
             {tags.length > 1 && (
               <div className="mb-2" style={{ fontSize: '0.85rem' }}>
                 <Form.Check
                   inline
+                  name="tagMatch"
                   type="radio"
                   id="tagLogicAnd"
                   label="Match ALL tags (AND)"
                   checked={tagFilterLogic === 'AND'}
-                  onChange={() => setTagFilterLogic('AND')}
+                  onChange={() => changeFilters({ tagFilterLogic: 'AND' })}
                 />
                 <Form.Check
                   inline
+                  name="tagMatch"
                   type="radio"
                   id="tagLogicOr"
                   label="Match ANY tag (OR)"
                   checked={tagFilterLogic === 'OR'}
-                  onChange={() => setTagFilterLogic('OR')}
+                  onChange={() => changeFilters({ tagFilterLogic: 'OR' })}
                 />
               </div>
             )}
             <div className={`tags-input-container ${styles.tagsInputContainer}`}>
-              <InputGroup className={`${styles.tagsWrapper}`}>
-                <input
-                  type="text"
-                  placeholder="Select tag"
-                  value={inputValue}
-                  onChange={e => {
-                    setInputValue(e.target.value);
-                    setShowDropdown(true);
-                  }}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' && getFilteredTags().length > 0) {
-                      addTag(getFilteredTags()[0]);
-                      setShowDropdown(false);
-                    }
-                  }}
-                  onFocus={() => setShowDropdown(true)}
-                  className={`form-control ${styles.formControl}`}
-                  disabled={isLoading}
-                />
-                {showDropdown && inputValue && (
-                  <div className={`${styles.tagDropdown}`}>
-                    {getFilteredTags().map(tag => (
-                      <button
-                        key={tag}
-                        type="button"
-                        className={styles.tagDropdownItem}
-                        onClick={() => {
-                          addTag(tag);
-                          setShowDropdown(false);
-                        }}
-                        disabled={isLoading}
-                      >
-                        {tag} ({tagCounts[tag] || 0})
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </InputGroup>
+              <LessonTagPicker
+                id="tagInput"
+                label="Filter tags"
+                value={inputValue}
+                onInputChange={setInputValue}
+                availableTags={availableTags}
+                selectedTags={tags}
+                counts={tagCounts}
+                onSelect={addTag}
+                disabled={
+                  catalogueLoading || Boolean(catalogueError) || isDeleting || tags.length >= 50
+                }
+                resetKey={resetKey}
+              />
+              {tags.length >= 50 && (
+                <output className="d-block mb-3">A maximum of 50 tags can be selected.</output>
+              )}
               {tags.length > 0 && (
                 <div
                   className={`${styles.tagContainer} ${darkMode ? styles.tagContainerDark : ''}`}
                 >
-                  {tags.map((tag, index) => (
+                  {tags.map(tag => (
                     <LessonListRemovableTag
-                      key={`filter-tag-${tag}-${index}`}
+                      key={tag}
                       tag={tag}
                       darkMode={darkMode}
                       onRemove={removeTag}
@@ -746,41 +564,26 @@ function LessonList(props) {
             </div>
 
             {/* Delete tags */}
-            <Form.Label>Delete Tags (Press enter to add a tag to delete): </Form.Label>
+            <Form.Label htmlFor="deleteTagInput">
+              Delete Tags (removes tags from all lessons):{' '}
+            </Form.Label>
             <div className={`tags-input-container ${styles.tagsInputContainer}`}>
               <div className={`${styles.deleteInputWrapper}`}>
-                <input
-                  type="text"
-                  placeholder="Search tag to delete"
+                <LessonTagPicker
+                  id="deleteTagInput"
+                  label="Tags to delete"
                   value={deleteValue}
-                  className={`form-control ${styles.formControlDelete}`}
-                  onChange={e => {
-                    setDeleteInputValue(e.target.value);
-                    setShowDeleteDropdown(true);
-                  }}
-                  onFocus={() => setShowDeleteDropdown(true)}
-                  onKeyDown={handleDeleteKeyDown}
-                  disabled={isLoading}
+                  onInputChange={setDeleteInputValue}
+                  availableTags={availableTags}
+                  selectedTags={tagsToDelete}
+                  onSelect={addDeleteTag}
+                  disabled={catalogueLoading || Boolean(catalogueError) || isDeleting}
+                  resetKey={resetKey}
                 />
-                {showDeleteDropdown && deleteValue && (
-                  <div className={`${styles.tagDropdown}`}>
-                    {getFilteredTagsToDelete().map(tag => (
-                      <button
-                        key={tag}
-                        type="button"
-                        className={styles.tagDropdownItem}
-                        onClick={() => addDeleteTag(tag)}
-                        disabled={isLoading}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                )}
                 <div className={`${styles.tagContainer}`}>
-                  {tagsToDelete.map((tag, index) => (
+                  {tagsToDelete.map(tag => (
                     <LessonListRemovableTag
-                      key={`delete-tag-${tag}-${index}`}
+                      key={tag}
                       tag={tag}
                       darkMode={darkMode}
                       onRemove={removeDeleteTag}
@@ -792,8 +595,8 @@ function LessonList(props) {
               {tagsToDelete.length > 0 && (
                 <Button
                   style={{ backgroundColor: 'red', marginLeft: '10px' }}
-                  onClick={handleDeleteButtonClick}
-                  disabled={isLoading}
+                  onClick={() => setConfirmModal(true)}
+                  disabled={isDeleting || catalogueLoading}
                 >
                   Delete
                 </Button>
@@ -804,12 +607,37 @@ function LessonList(props) {
                 showConfirmModal={confirmModal}
                 setConfirmModal={setConfirmModal}
                 darkMode={darkMode}
+                isDeleting={isDeleting}
               />
             </div>
           </Form.Group>
         </Form>
-        {isLoading && <div className={styles.loading}>Loading lessons…</div>}
-        {!isLoading && filteredLessons.length === 0 && (
+        {catalogueLoading && <output className="d-block mb-3">Loading tag suggestions…</output>}
+        {catalogueError && (
+          <div role="alert">
+            {catalogueError}{' '}
+            <Button type="button" onClick={loadTagData}>
+              Retry suggestions
+            </Button>
+          </div>
+        )}
+        {isLoading && (
+          <output className="d-block">
+            {isRefreshing ? 'Refreshing lessons…' : 'Loading lessons…'}
+          </output>
+        )}
+        {listError && (
+          <div role="alert">
+            {listError}{' '}
+            <Button type="button" onClick={() => setRetry(value => value + 1)}>
+              Retry lessons
+            </Button>
+          </div>
+        )}
+        {!isLoading && !listError && (
+          <output aria-live="polite">{filteredLessons.length} matching lesson(s)</output>
+        )}
+        {!isLoading && !listError && filteredLessons.length === 0 && (
           <div className={styles.emptyState}>No lessons match this filter.</div>
         )}
         <ExportConfirmationModal
@@ -819,14 +647,16 @@ function LessonList(props) {
           filteredLessonsCount={filteredLessons?.length || 0}
           filterDescription={getFilterDescription()}
           darkMode={darkMode}
-          isExporting={isExporting}
+          isExporting={isExporting || isLoading || Boolean(listError)}
         />
-        <Lessons
-          filteredLessons={filteredLessons}
-          setFilteredLessons={setFilteredLessons}
-          dispatch={dispatch}
-          lessons={lessons}
-        />
+        {/* Retain card identity/drafts during requests, but never expose another query's data. */}
+        <section
+          aria-label="Lesson results"
+          aria-busy={isLoading}
+          hidden={!hasCurrentResults || lessons.length === 0}
+        >
+          <Lessons filteredLessons={lessons} dispatch={dispatch} />
+        </section>
       </div>
     </div>
   );
@@ -836,6 +666,7 @@ const mapStateToProps = state => {
   return {
     lessons: state.lessons.lessons,
     darkMode: state.theme?.darkMode || false,
+    request: state.lessons,
   };
 };
 
