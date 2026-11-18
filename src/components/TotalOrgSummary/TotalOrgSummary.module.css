@@ -446,24 +446,26 @@
   overflow: visible;
 }
 
-/* Global Distribution row: equal-height cards, responsive stacking.
- * Combined with Bootstrap .row so this beats generic flex utilities without !important. */
+/* Global Distribution row: both cards stretch to the taller column. */
 .globalDistributionRow:global(.row) {
+  display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
 }
 
-.globalDistributionRow > :global([class*='col']) {
+.globalDistributionCol {
   display: flex;
   flex-direction: column;
 }
 
 .globalDistributionPanel {
-  flex: 1;
+  flex: 1 1 auto;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  min-height: 100%;
   height: 100%;
-  min-height: 0;
   padding-top: 12px;
   padding-bottom: 12px;
 }
@@ -480,23 +482,29 @@
   margin: 0;
 }
 
+.globalDistributionPanel .countryCounts {
+  flex-shrink: 0;
+}
+
+/* Map grows to fill leftover space so the left card matches the right card height. */
 .globalDistributionPanel :global(.map-container) {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   width: 100%;
+  min-height: 320px;
 }
 
 .globalDistributionPanel :global(.leaflet-container) {
-  height: 380px;
+  flex: 1 1 auto;
+  width: 100%;
   min-height: 320px;
-  max-height: 420px;
+  height: 100%;
 }
 
 @media (width <= 991px) {
+  .globalDistributionPanel :global(.map-container),
   .globalDistributionPanel :global(.leaflet-container) {
-    height: 320px;
     min-height: 280px;
   }
 }

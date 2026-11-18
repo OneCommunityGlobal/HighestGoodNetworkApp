@@ -79,9 +79,9 @@ function GlobalVolunteerMap({ locations = [], isLoading, darkMode = false, error
   );
 
   const containerStyle = {
-    minHeight: '420px',
+    minHeight: '320px',
     height: '100%',
-    flex: 1,
+    flex: '1 1 auto',
     border: `1px solid ${darkMode ? '#334155' : '#ddd'}`,
     borderRadius: '8px',
     backgroundColor: darkMode ? '#1e293b' : '#fff',
@@ -125,10 +125,11 @@ function GlobalVolunteerMap({ locations = [], isLoading, darkMode = false, error
       className={`map-container ${darkMode ? 'dark-mode' : ''}`}
       style={{
         marginTop: 0,
-        flex: '0 1 auto',
+        flex: '1 1 auto',
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
+        minHeight: '320px',
       }}
     >
       {/* Dark theme styles for Leaflet attribution badge & controls */}
@@ -150,7 +151,8 @@ function GlobalVolunteerMap({ locations = [], isLoading, darkMode = false, error
         minZoom={2}
         scrollWheelZoom
         style={{
-          height: '380px',
+          flex: '1 1 auto',
+          height: '100%',
           minHeight: '320px',
           width: '100%',
           borderRadius: '8px',

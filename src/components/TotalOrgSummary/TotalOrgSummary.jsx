@@ -694,7 +694,7 @@ function TotalOrgSummary(props) {
           section="global-distribution"
         >
           <Row className={styles.globalDistributionRow}>
-            <Col lg={{ size: 6 }}>
+            <Col lg={{ size: 6 }} className={styles.globalDistributionCol}>
               <div
                 className={clsx(
                   styles.componentContainer,
@@ -732,7 +732,7 @@ function TotalOrgSummary(props) {
                 />
               </div>
             </Col>
-            <Col lg={{ size: 6 }}>
+            <Col lg={{ size: 6 }} className={styles.globalDistributionCol}>
               <div
                 className={clsx(
                   styles.componentContainer,
