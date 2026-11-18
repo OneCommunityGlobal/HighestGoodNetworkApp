@@ -1,17 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { FaRegCalendarAlt } from 'react-icons/fa';
-// Same card, filter and legend styles as the Food Categories chart next to it
-import styles from '../FoodCategoriesPieChart/FoodCategoriesPieChart.module.css';
+import KIPieChartCard, { KITCHENS } from '../KIPieChartCard/KIPieChartCard';
 
 export const SOURCES = [
   { key: 'grown', name: 'Freshly Grown', color: '#5b8c5a', labelColor: '#ffffff' },
   { key: 'purchased', name: 'Purchased', color: '#d4a373', labelColor: '#3d3d3d' },
   { key: 'preserved', name: 'Preserved', color: '#8b6b47', labelColor: '#ffffff' },
 ];
-
-export const KITCHENS = ['Kitchen 1', 'Kitchen 2', 'Kitchen 3'];
 
 const DEFAULTS = { kitchen: 'All', startDate: '', endDate: '' };
 
@@ -91,47 +86,17 @@ export const buildSourceData = (
   }));
 };
 
-const RADIAN = Math.PI / 180;
-
-// Shows the slice's whole percentage from the data, so the labels match the legend;
-// slices under 3% are too small for a label
-const renderSliceLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, payload }) => {
-  if (payload.percent < 3) return null;
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.55;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  return (
-    <text
-      x={x}
-      y={y}
-      fill={payload.labelColor}
-      textAnchor="middle"
-      dominantBaseline="central"
-      fontWeight={700}
-      fontSize={16}
-    >
-      {`${payload.percent}%`}
-    </text>
-  );
-};
+const formatTooltip = (value, item) => `${value.toLocaleString()} kg (${item.percent}%)`;
 
 export default function FoodSourcesPieChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const months = useMemo(() => getRecentMonths(), []);
   const records = useMemo(() => buildMockRecords(months), [months]);
-  const dateMin = `${months[0]}-01`;
-  const dateMax = lastDayOfMonth(months.at(-1));
 
   const [kitchen, setKitchen] = useState(DEFAULTS.kitchen);
   const [startDate, setStartDate] = useState(DEFAULTS.startDate);
   const [endDate, setEndDate] = useState(DEFAULTS.endDate);
-
-  const isDateRangeValid = !startDate || !endDate || startDate <= endDate;
-  const isDefaultFilters =
-    kitchen === DEFAULTS.kitchen &&
-    startDate === DEFAULTS.startDate &&
-    endDate === DEFAULTS.endDate;
 
   const chartData = useMemo(() => buildSourceData(records, { kitchen, startDate, endDate }), [
     records,
@@ -146,144 +111,26 @@ export default function FoodSourcesPieChart() {
     setEndDate(DEFAULTS.endDate);
   };
 
-  const handleDateClick = e => {
-    try {
-      e.currentTarget.showPicker?.();
-    } catch {
-      // Some browsers do not support showPicker; the native input still works
-    }
-  };
-
   return (
-    <div className={[styles.container, darkMode ? styles.darkMode : ''].join(' ')}>
-      <div className={styles.filters}>
-        <label className={styles.field}>
-          <span className={styles.fieldLabel}>Kitchen</span>
-          <select
-            className={styles.control}
-            value={kitchen}
-            onChange={e => setKitchen(e.target.value)}
-          >
-            <option value="All">All</option>
-            {KITCHENS.map(k => (
-              <option key={k} value={k}>
-                {k}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className={styles.field}>
-          <span className={styles.fieldLabel}>From</span>
-          <div className={styles.dateWrapper}>
-            <input
-              className={`${styles.control} ${styles.dateInput}`}
-              type="date"
-              value={startDate}
-              min={dateMin}
-              max={endDate || dateMax}
-              onClick={handleDateClick}
-              onChange={e => setStartDate(e.target.value)}
-            />
-            <FaRegCalendarAlt className={styles.dateIcon} aria-hidden="true" />
-          </div>
-        </label>
-
-        <label className={styles.field}>
-          <span className={styles.fieldLabel}>To</span>
-          <div className={styles.dateWrapper}>
-            <input
-              className={`${styles.control} ${styles.dateInput}`}
-              type="date"
-              value={endDate}
-              min={startDate || dateMin}
-              max={dateMax}
-              onClick={handleDateClick}
-              onChange={e => setEndDate(e.target.value)}
-            />
-            <FaRegCalendarAlt className={styles.dateIcon} aria-hidden="true" />
-          </div>
-        </label>
-
-        <div className={styles.buttonCell}>
-          <button
-            type="button"
-            className={styles.resetBtn}
-            onClick={handleReset}
-            disabled={isDefaultFilters}
-          >
-            Reset Filters
-          </button>
-        </div>
-
-        {!isDateRangeValid && (
-          <span className={styles.dateRangeError}>
-            From date must be before or equal to To date.
-          </span>
-        )}
-      </div>
-
-      <h2 className={styles.chartTitle}>Food Sources</h2>
-
-      <div className={styles.chartWrapper}>
-        {chartData.length === 0 ? (
-          <div className={styles.noDataMessage}>No data available for the selected filters.</div>
-        ) : (
-          <>
-            <div className={styles.pieBox}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius="90%"
-                    startAngle={90}
-                    endAngle={-270}
-                    paddingAngle={1}
-                    stroke={darkMode ? '#0f1522' : '#ffffff'}
-                    strokeWidth={3}
-                    label={renderSliceLabel}
-                    labelLine={false}
-                    isAnimationActive={false}
-                  >
-                    {chartData.map(entry => (
-                      <Cell key={entry.name} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value, name, item) => [
-                      `${value.toLocaleString()} kg (${item.payload.percent}%)`,
-                      name,
-                    ]}
-                    contentStyle={{
-                      backgroundColor: 'var(--tooltip-bg)',
-                      color: 'var(--text-color)',
-                      border: '1px solid var(--border-color)',
-                    }}
-                    itemStyle={{ color: 'var(--text-color)' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className={styles.legend}>
-              {chartData.map(item => (
-                <span key={item.name} className={styles.legendItem}>
-                  <span
-                    className={styles.legendSwatch}
-                    style={{ backgroundColor: item.color }}
-                    aria-hidden="true"
-                  />
-                  <span>{`${item.name} (${item.percent}%)`}</span>
-                </span>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+    <KIPieChartCard
+      title="Food Sources"
+      darkMode={darkMode}
+      chartData={chartData}
+      formatTooltip={formatTooltip}
+      kitchen={kitchen}
+      onKitchenChange={setKitchen}
+      startDate={startDate}
+      onStartDateChange={setStartDate}
+      endDate={endDate}
+      onEndDateChange={setEndDate}
+      dateMin={`${months[0]}-01`}
+      dateMax={lastDayOfMonth(months.at(-1))}
+      onReset={handleReset}
+      isDefaultFilters={
+        kitchen === DEFAULTS.kitchen &&
+        startDate === DEFAULTS.startDate &&
+        endDate === DEFAULTS.endDate
+      }
+    />
   );
 }
