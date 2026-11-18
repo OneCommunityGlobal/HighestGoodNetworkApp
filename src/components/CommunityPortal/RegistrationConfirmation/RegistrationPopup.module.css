@@ -36,11 +36,11 @@
 }
 
 .closeBtn {
-  background: none;
+  background: transparent;
   border: none;
   font-size: 22px;
   cursor: pointer;
-  color: #d32f2f;
+  color: #b71c1c;
   line-height: 1;
   padding: 2px 6px;
   border-radius: 4px;
@@ -48,18 +48,18 @@
 }
 
 .closeBtn:hover {
-  color: #b71c1c;
-  background-color: rgb(0 0 0 / 6%);
+  color: #7f0000;
+  background-color: rgb(0 0 0 / 8%);
 }
 
 .closeBtnDark {
-  color: #ff6b6b;
+  color: #ff8a80;
   font-size: 22px;
 }
 
 .closeBtnDark:hover {
-  color: #f44;
-  background-color: rgb(255 255 255 / 10%);
+  color: #ffcdd2;
+  background-color: rgb(255 255 255 / 12%);
 }
 
 .popupContent {
