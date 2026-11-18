@@ -18,6 +18,12 @@
   box-shadow: 0 12px 30px rgb(0 0 0 / 20%);
   text-align: center;
   animation: fade-in 0.2s ease-out;
+
+  /* Reset native <dialog> browser defaults */
+  border: none;
+  margin: 0;
+  position: static;
+  overflow: visible;
 }
 
 .popupHeader {
@@ -141,8 +147,8 @@
    ========================================================================== */
 
 .darkMode .popup {
-  background: #2c3e50;
-  color: #ecf0f1;
+  background: #1e2d3d;
+  color: #f0f4f8;
 }
 
 .darkMode h2,
@@ -150,7 +156,7 @@
 .darkMode .userFullName,
 .darkMode p,
 .darkMode .eventInfo span {
-  color: #ecf0f1;
+  color: #f0f4f8;
 }
 
 .darkMode .popupHeader span {
@@ -182,11 +188,12 @@
 }
 
 .darkMode .downloadBtn {
-  background: #fdd835;
+  background: #f9a825;
+  color: #1a1a1a;
 }
 
 .darkMode .downloadBtn:hover {
-  background: #fbc02d;
+  background: #f57f17;
 }
 
 /* ==========================================================================
