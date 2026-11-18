@@ -2,9 +2,19 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import httpService from '../../../../services/httpService';
 import styles from './DistributionLaborHours.module.css';
 
 const COLORS = ['#4f8fa8', '#3fa4b8', '#ffab91', '#ffccbb', '#c7c7c7', '#f9f3e3'];
+
+const SWATCH_CLASSES = [
+  styles.swatch0,
+  styles.swatch1,
+  styles.swatch2,
+  styles.swatch3,
+  styles.swatch4,
+  styles.swatch5,
+];
 
 const CustomTooltip = ({ active, payload, total, darkMode }) => {
   if (active && payload && payload.length) {
@@ -12,14 +22,7 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
     const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
 
     return (
-      <div
-        className={styles.tooltip}
-        style={{
-          backgroundColor: darkMode ? '#2e3e5a' : '#fff',
-          color: darkMode ? '#fff' : '#000',
-          border: darkMode ? '1px solid #64748b' : '1px solid #ccc',
-        }}
-      >
+      <div className={`${styles.tooltip} ${darkMode ? styles.tooltipDark : styles.tooltipLight}`}>
         <p>{name}</p>
         <p>{`Hours: ${value} hrs`}</p>
         <p>{`Percentage: ${percent}%`}</p>
@@ -33,8 +36,10 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
 export default function DistributionLaborHours() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [filterOptions, setFilterOptions] = useState({ projects: [], members: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const [dateRange, setDateRange] = useState({
     from: '',
@@ -44,73 +49,6 @@ export default function DistributionLaborHours() {
   const [projectFilter, setProjectFilter] = useState('');
   const [memberFilter, setMemberFilter] = useState('');
   const [filtersApplied, setFiltersApplied] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const mockData = [
-        {
-          name: 'Stud Wall Construction',
-          value: 25.9,
-          project: 'Project A',
-          member: 'Member 1',
-          date: '2026-08-05',
-        },
-        {
-          name: 'Foundation Concreting',
-          value: 18.5,
-          project: 'Project A',
-          member: 'Member 2',
-          date: '2026-08-09',
-        },
-        {
-          name: 'Task A',
-          value: 22.2,
-          project: 'Project B',
-          member: 'Member 1',
-          date: '2026-08-12',
-        },
-        {
-          name: 'Task B',
-          value: 18.5,
-          project: 'Project B',
-          member: 'Member 2',
-          date: '2026-08-16',
-        },
-        {
-          name: 'Task C',
-          value: 14.8,
-          project: 'Project A',
-          member: 'Member 1',
-          date: '2026-08-20',
-        },
-        {
-          name: 'Electrical',
-          value: 12,
-          project: 'Project A',
-          member: 'Member 2',
-          date: '2026-08-22',
-        },
-        {
-          name: 'Plumbing',
-          value: 8,
-          project: 'Project B',
-          member: 'Member 1',
-          date: '2026-08-24',
-        },
-        {
-          name: 'Welding',
-          value: 6,
-          project: 'Project B',
-          member: 'Member 2',
-          date: '2026-08-27',
-        },
-      ];
-
-      setOriginalData(mockData);
-    };
-
-    fetchData();
-  }, []);
 
   const formatChartData = data => {
     const sortedData = [...data].sort((a, b) => b.value - a.value);
@@ -132,32 +70,48 @@ export default function DistributionLaborHours() {
     return top5;
   };
 
+  const fetchData = async filters => {
+    setLoading(true);
+    setError('');
+    try {
+      const params = new URLSearchParams();
+      if (filters.from && filters.to) {
+        params.set('start_date', filters.from);
+        params.set('end_date', filters.to);
+      }
+      if (filters.project) params.set('project', filters.project);
+      if (filters.member) params.set('member', filters.member);
+      const query = params.toString();
+      const endpoint = `${process.env.REACT_APP_APIENDPOINT}/labor-hours/distribution`;
+      const requestUrl = query ? `${endpoint}?${query}` : endpoint;
+      const response = await httpService.get(requestUrl);
+      const tasks = (response.data.distribution || []).map(item => ({
+        name: item.task || 'Unspecified task',
+        value: Number(item.hours) || 0,
+      }));
+      setFilteredData(formatChartData(tasks));
+      setFilterOptions(response.data.filters || { projects: [], members: [] });
+    } catch (requestError) {
+      setFilteredData([]);
+      setError(
+        requestError.response?.data?.error || 'Unable to load labor-hour data. Please try again.',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (originalData.length > 0) {
-      setFilteredData(formatChartData(originalData));
-    }
-  }, [originalData]);
+    void fetchData({ from: '', to: '', project: '', member: '' });
+  }, []);
 
-  const handleSubmit = () => {
-    let result = [...originalData];
-
-    if (dateRange.from) {
-      result = result.filter(item => item.date >= dateRange.from);
-    }
-
-    if (dateRange.to) {
-      result = result.filter(item => item.date <= dateRange.to);
-    }
-
-    if (projectFilter) {
-      result = result.filter(item => item.project === projectFilter);
-    }
-
-    if (memberFilter) {
-      result = result.filter(item => item.member === memberFilter);
-    }
-
-    setFilteredData(formatChartData(result));
+  const handleSubmit = async () => {
+    await fetchData({
+      from: dateRange.from,
+      to: dateRange.to,
+      project: projectFilter,
+      member: memberFilter,
+    });
     setFiltersApplied(true);
   };
 
@@ -167,14 +121,12 @@ export default function DistributionLaborHours() {
 
   const projectOptions = [
     { value: '', label: 'ALL' },
-    { value: 'Project A', label: 'Project A' },
-    { value: 'Project B', label: 'Project B' },
+    ...filterOptions.projects.map(project => ({ value: project.id, label: project.name })),
   ];
 
   const memberOptions = [
     { value: '', label: 'ALL' },
-    { value: 'Member 1', label: 'Member 1' },
-    { value: 'Member 2', label: 'Member 2' },
+    ...filterOptions.members.map(member => ({ value: member.id, label: member.name })),
   ];
 
   const selectedProject =
@@ -283,8 +235,13 @@ export default function DistributionLaborHours() {
           </div>
 
           <div className={styles.submitSection}>
-            <button className={styles.button} type="button" onClick={handleSubmit}>
-              Submit
+            <button
+              className={styles.button}
+              type="button"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Loading...' : 'Submit'}
             </button>
 
             {filtersApplied && <span className={styles.appliedMessage}>Filters applied</span>}
@@ -292,23 +249,24 @@ export default function DistributionLaborHours() {
         </div>
 
         <div className={styles.visualizationSection}>
-          {filteredData.length > 0 ? (
+          {(error || filteredData.length === 0) && (
+            <div className={styles.noData} role={error ? 'alert' : undefined}>
+              {error || 'No labor-hour data found for the selected filters.'}
+            </div>
+          )}
+          {!error && filteredData.length > 0 && (
             <div className={styles.visualizationContent}>
               <div className={styles.legend}>
                 {filteredData.map((entry, index) => (
                   <div key={entry.name} className={styles.legendItem}>
                     <span
-                      className={styles.colorBox}
-                      style={{
-                        backgroundColor: COLORS[index % COLORS.length],
-                      }}
+                      className={`${styles.colorBox} ${
+                        SWATCH_CLASSES[index % SWATCH_CLASSES.length]
+                      }`}
                     />
 
                     <span
-                      className={styles.legendText}
-                      style={{
-                        color: darkMode ? '#f5f5f5' : '#000',
-                      }}
+                      className={`${styles.legendText} ${darkMode ? styles.legendTextDark : ''}`}
                     >
                       {entry.name}: {entry.value} hrs
                     </span>
@@ -359,8 +317,6 @@ export default function DistributionLaborHours() {
                 </ResponsiveContainer>
               </div>
             </div>
-          ) : (
-            <div className={styles.noData}>No labor-hour data found for the selected filters.</div>
           )}
         </div>
       </div>
