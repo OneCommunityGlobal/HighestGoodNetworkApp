@@ -219,9 +219,9 @@
   width: 100%;
 }
 
-/* Push team-clocks to the bottom of the card */
+/* Keep team-clocks (hours + Set State) right below the Tracking and +/- buttons */
 .team-member-tasks-user-name .team-clocks {
-  margin-top: auto;
+  margin-top: 0;
   margin-bottom: 0;
 }
 
@@ -300,7 +300,7 @@
   text-align: center;
   width: 100%;
   padding: 8px 0;
-  margin-top: auto;
+  margin-top: 0;
   flex-shrink: 0;
 }
 
