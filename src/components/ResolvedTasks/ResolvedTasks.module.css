@@ -1,0 +1,10 @@
+:global(body.dark-mode) a.resolvedTaskLinkDark {
+  color: #66bfff !important;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+:global(body.dark-mode) a.resolvedTaskLinkDark:hover {
+  color: #9dd7ff !important;
+  text-decoration: underline;
+}

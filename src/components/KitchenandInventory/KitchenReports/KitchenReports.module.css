@@ -1,0 +1,137 @@
+.pageWrapper {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #fff;
+}
+
+.pageWrapper.dark {
+  background-color: #1a1816;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.titleBlock h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #1f2937;
+}
+
+.titleBlock p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.dark .titleBlock h1 {
+  color: #f3f4f6;
+}
+
+.dark .titleBlock p {
+  color: #9ca3af;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dateSelect {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #1f2937;
+  font-size: 0.875rem;
+}
+
+.dark .dateSelect {
+  background-color: #2a2622;
+  border-color: #4b4642;
+  color: #f3f4f6;
+}
+
+.exportButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #1f2937;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.exportButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dark .exportButton {
+  background-color: #2a2622;
+  border-color: #4b4642;
+  color: #f3f4f6;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.dark .tabs {
+  border-bottom-color: #3a3632;
+}
+
+.tabButton {
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.tabButton.active {
+  color: #047857;
+  border-bottom-color: #047857;
+}
+
+.dark .tabButton {
+  color: #9ca3af;
+}
+
+.dark .tabButton.active {
+  color: #34d399;
+  border-bottom-color: #34d399;
+}
+
+.tabPanel {
+  min-height: 200px;
+  color: #374151;
+}
+
+.dark .tabPanel {
+  color: #d1d5db;
+}

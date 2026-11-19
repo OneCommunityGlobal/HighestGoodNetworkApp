@@ -37,8 +37,8 @@ const mockProjects = [
 ];
 
 const mockCosts = [
-  { projectId: 1, totalCostK: 100 },
-  { projectId: 2, totalCostK: 200 },
+  { project: 1, totalCostK: 100 },
+  { project: 2, totalCostK: 200 },
 ];
 
 describe('TotalMaterialCostPerProject', () => {
@@ -161,5 +161,45 @@ describe('TotalMaterialCostPerProject', () => {
       </Provider>,
     );
     await waitFor(() => expect(toast.error).toHaveBeenCalled());
+  });
+
+  it('displays zero for missing or invalid material costs', async () => {
+    axios.get.mockImplementation(url => {
+      if (url.includes('/bm/projects')) {
+        return Promise.resolve({
+          data: [
+            { _id: '1', name: 'Project A' },
+            { _id: '2', name: 'Project B' },
+            { _id: '3', name: 'Project C' },
+          ],
+        });
+      }
+
+      if (url.includes('/material-costs')) {
+        return Promise.resolve({
+          data: [
+            { project: '1', totalCostK: 100 },
+            { project: '3', totalCostK: 'invalid' },
+          ],
+        });
+      }
+
+      return Promise.reject(new Error('not found'));
+    });
+
+    render(
+      <Provider store={store}>
+        <TotalMaterialCostPerProject />
+      </Provider>,
+    );
+
+    const chart = await screen.findByTestId('bar-chart');
+
+    await waitFor(() => {
+      expect(chart).toHaveTextContent('100,0,0');
+    });
+
+    expect(chart).toHaveTextContent('Project A,Project B,Project C');
+    expect(chart).not.toHaveTextContent('NaN');
   });
 });

@@ -226,7 +226,7 @@
 .mfkChartContainer {
   width: 100%;
   flex: 1;
-  min-height: 340px;
+  min-height: 350px;
   height: 100%;
   position: relative;
   border-radius: 0.5rem;
@@ -238,12 +238,72 @@
   transition: all 0.3s ease;
 }
 
+/* Extra small devices */
+@media (width < 360px) {
+  .mfkChartContainer {
+    min-height: 280px;
+  }
+}
+
+/* Small devices */
+@media (width <= 480px) {
+  .mfkChartContainer {
+    min-height: 300px;
+  }
+}
+
+/* Tablet */
+@media (width <= 768px) {
+  .mfkChartContainer {
+    min-height: 320px;
+  }
+}
+
+/* Large devices */
+@media (width > 768px) {
+  .mfkChartContainer {
+    min-height: 400px;
+  }
+}
+
 .mfkChartContainer svg {
   display: block;
   overflow: visible;
   pointer-events: none;
-  transform: scale(1.18);
-  transform-origin: center 38%;
+  transform: scale(1.15);
+  transform-origin: center 40%;
+}
+
+/* Adjust scaling for extra small devices */
+@media (width < 360px) {
+  .mfkChartContainer svg {
+    transform: scale(1.08);
+    transform-origin: center 45%;
+  }
+}
+
+/* Adjust scaling for small devices */
+@media (width <= 480px) {
+  .mfkChartContainer svg {
+    transform: scale(1.12);
+    transform-origin: center 42%;
+  }
+}
+
+/* Adjust scaling for tablet */
+@media (width <= 768px) {
+  .mfkChartContainer svg {
+    transform: scale(1.14);
+    transform-origin: center 40%;
+  }
+}
+
+/* Adjust scaling for large devices */
+@media (width > 768px) {
+  .mfkChartContainer svg {
+    transform: scale(1.18);
+    transform-origin: center 38%;
+  }
 }
 
 .mfkCalendarHeader {

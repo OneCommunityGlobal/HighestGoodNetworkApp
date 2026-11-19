@@ -83,6 +83,7 @@ const mockSummariesResponse = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  globalThis.localStorage.clear();
 
   globalThis.scrollTo = vi.fn();
 
@@ -139,7 +140,7 @@ describe('Collaboration', () => {
     expect(screen.getByRole('button', { name: 'What We Do' })).toBeInTheDocument();
   });
 
-  it('fetches jobs and categories on initial render', async () => {
+  it('fetches categories on initial render without loading all jobs', async () => {
     renderComponent();
 
     await waitFor(() => {
@@ -150,11 +151,31 @@ describe('Collaboration', () => {
       true,
     );
 
-    expect(globalThis.fetch.mock.calls.some(([url]) => url.includes('/jobs?'))).toBe(true);
+    expect(globalThis.fetch.mock.calls.some(([url]) => url.includes('/jobs?'))).toBe(false);
   });
 
-  it('shows individual jobs when there is no search or category filter', async () => {
+  it('shows category cards when there is no search or category filter', async () => {
     renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Browse Engineering jobs/i })).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('button', { name: /Browse Administrative jobs/i })).toBeInTheDocument();
+    expect(screen.getByText('Choose a category to see open positions.')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /Frontend Engineer - Engineering/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows jobs after a category card is selected', async () => {
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Browse Engineering jobs/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Browse Engineering jobs/i }));
 
     await waitFor(() => {
       expect(
@@ -165,6 +186,7 @@ describe('Collaboration', () => {
     expect(
       screen.getByRole('button', { name: /Backend Engineer - Engineering/i }),
     ).toBeInTheDocument();
+    expect(screen.getByText("Positions in 'Engineering'")).toBeInTheDocument();
   });
 
   it('allows the user to search for a job title', async () => {
@@ -203,6 +225,58 @@ describe('Collaboration', () => {
         globalThis.fetch.mock.calls.some(([url]) => url.includes('category=Engineering')),
       ).toBe(true);
     });
+  });
+
+  it('does not show the filter recommendation when no filters are active', () => {
+    renderComponent();
+
+    expect(screen.queryByLabelText('Filter recommendation')).not.toBeInTheDocument();
+  });
+
+  it('shows the filter recommendation when only a title is entered', () => {
+    renderComponent();
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
+      target: { value: 'Frontend Engineer' },
+    });
+
+    expect(screen.getByLabelText('Filter recommendation')).toBeInTheDocument();
+  });
+
+  it('shows the filter recommendation when only a category is selected', async () => {
+    renderComponent();
+
+    fireEvent.change(await screen.findByRole('combobox'), { target: { value: 'Engineering' } });
+
+    expect(screen.getByLabelText('Filter recommendation')).toBeInTheDocument();
+  });
+
+  it('hides the filter recommendation when both filters are active', async () => {
+    renderComponent();
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
+      target: { value: 'Frontend Engineer' },
+    });
+    fireEvent.change(await screen.findByRole('combobox'), { target: { value: 'Engineering' } });
+
+    expect(screen.queryByLabelText('Filter recommendation')).not.toBeInTheDocument();
+  });
+
+  it('keeps the filter recommendation dismissed after remounting', () => {
+    const { unmount } = renderComponent();
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
+      target: { value: 'Frontend Engineer' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
+    unmount();
+    renderComponent();
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
+      target: { value: 'Frontend Engineer' },
+    });
+
+    expect(screen.queryByLabelText('Filter recommendation')).not.toBeInTheDocument();
   });
 
   it('resets search and category filters', async () => {
@@ -316,8 +390,8 @@ describe('Collaboration', () => {
 
     expect(mockPush).toHaveBeenCalledWith(
       expect.objectContaining({
-        pathname: '/job-application',
-        search: '?jobTitle=Frontend%20Engineer',
+        pathname: '/job-application/job-1',
+        search: '',
         state: expect.objectContaining({
           jobId: 'job-1',
           jobTitle: 'Frontend Engineer',
@@ -334,15 +408,6 @@ describe('Collaboration', () => {
           ok: true,
           json: () =>
             Promise.resolve({
-              jobs: [
-                {
-                  _id: '1',
-                  title: 'Frontend Engineer',
-                  category: 'Engineering',
-                  description: 'Build UI components',
-                  imageUrl: 'https://example.com/frontend-engineer.jpg',
-                },
-              ],
               categories: ['Engineering'],
             }),
         });
@@ -370,6 +435,12 @@ describe('Collaboration', () => {
     renderComponent();
 
     await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Browse Engineering jobs/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Browse Engineering jobs/i }));
+
+    await waitFor(() => {
       expect(screen.getByRole('button', { name: '1', exact: true })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: '2', exact: true })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: '3', exact: true })).toBeInTheDocument();
@@ -383,7 +454,7 @@ describe('Collaboration', () => {
           ok: true,
           json: () =>
             Promise.resolve({
-              categories: [],
+              categories: ['Engineering'],
             }),
         });
       }
@@ -396,6 +467,12 @@ describe('Collaboration', () => {
     });
 
     renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Browse Engineering jobs/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Browse Engineering jobs/i }));
 
     await waitFor(() => {
       expect(

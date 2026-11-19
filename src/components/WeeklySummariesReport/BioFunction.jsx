@@ -9,7 +9,7 @@ function BioFunction(props) {
   const {
     bioPosted,
     totalTangibleHrs,
-    daysInTeam,
+    weeklySummariesCount,
     textColors,
     summary,
     bioCanEdit,
@@ -19,7 +19,7 @@ function BioFunction(props) {
 
   const [bioStatus, setBioStatus] = useState(bioPosted);
 
-  const isMeetCriteria = isQualifiedForBio({ totalTangibleHrs, daysInTeam, bioPosted });
+  const isMeetCriteria = isQualifiedForBio({ totalTangibleHrs, weeklySummariesCount, bioPosted });
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -59,7 +59,7 @@ function BioFunction(props) {
 BioFunction.propTypes = {
   bioPosted: PropTypes.string,
   totalTangibleHrs: PropTypes.number,
-  daysInTeam: PropTypes.number,
+  weeklySummariesCount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   textColors: PropTypes.object,
   summary: PropTypes.object,
   bioCanEdit: PropTypes.bool,

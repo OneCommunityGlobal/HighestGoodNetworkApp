@@ -18,6 +18,7 @@ import styles from './Announcements.module.css';
 import EmailPanel from './platforms/email';
 import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
+import PlurkAutoPoster from './platforms/plurk';
 import SocialMediaComposer from './platforms/social/SocialMediaComposer';
 import InstagramAutoPoster from './platforms/instagram/Instagramautopotser';
 
@@ -249,6 +250,8 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'instagram':
                 PlatformComposer = InstagramAutoPoster;
+              case 'plurk':
+                PlatformComposer = PlurkAutoPoster;
                 break;
               default:
                 PlatformComposer = SocialMediaComposer;

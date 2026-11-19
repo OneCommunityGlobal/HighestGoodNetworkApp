@@ -119,14 +119,29 @@
 /* ============================================
    SCORE & PRIVATE HELPERS
    ============================================ */
+.scoreCell {
+  white-space: nowrap;
+}
+
 .lowScore {
-  color: #e53e3e;
+  color: #d6353f;
   font-weight: 700;
 }
 
 .highScore {
-  color: #38a169;
+  color: #278049;
   font-weight: 700;
+}
+
+/* The global dark-mode rule (body.dark-mode * { color: #fff !important })
+   forces white text everywhere, so the score colors need to be reapplied
+   against the real body.dark-mode class to take precedence in dark mode. */
+:global(.dark-mode) .lowScore {
+  color: #fc8181 !important;
+}
+
+:global(.dark-mode) .highScore {
+  color: #68d391 !important;
 }
 
 .private {
@@ -148,7 +163,8 @@
   gap: 4px;
   color: #3182ce;
   transition: color 0.2s;
-  font-size: 0.875rem;
+  font-size: 18px;
+  margin: 0 5px;
 }
 
 .iconLink:hover {
@@ -302,7 +318,8 @@
   gap: 4px;
   color: #60a5fa;
   transition: color 0.2s;
-  font-size: 0.875rem;
+  font-size: 18px;
+  margin: 0 5px;
 }
 
 .iconLinkDark:hover {
@@ -326,3 +343,22 @@
   text-decoration: none;
 }
 
+/* Global dark-mode rule forces link text to white; restore legible link
+   colors (both clear 4.5:1 on the dark table surface). */
+:global(.dark-mode) .iconLinkDark,
+:global(.dark-mode) .iconLinkDark span {
+  color: #63b3ed !important;
+}
+
+:global(.dark-mode) .iconLinkDark:hover,
+:global(.dark-mode) .iconLinkDark:hover span {
+  color: #90cdf4 !important;
+}
+
+:global(.dark-mode) .underlineLinkDark {
+  color: #63b3ed !important;
+}
+
+:global(.dark-mode) .underlineLinkDark:hover {
+  color: #90cdf4 !important;
+}

@@ -4,9 +4,12 @@ import styles from './PRGradingScreen.module.css';
 function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
   const { reviewerName, teamCode, teamReviewerName, weeklyPRs } = reviewer;
 
-  const totalPRs = weeklyPRs.reduce((sum, w) => sum + w.count, 0);
-  const avgPRs = weeklyPRs.length > 0 ? (totalPRs / weeklyPRs.length).toFixed(1) : 0;
-  const isConsistent = weeklyPRs.every(w => w.count >= 8);
+  // With no recorded weekly history, show that plainly instead of computing stats:
+  // `[].every(...)` is true, which would otherwise label an unknown history "Consistent".
+  const hasWeeklyHistory = Array.isArray(weeklyPRs) && weeklyPRs.length > 0;
+  const totalPRs = hasWeeklyHistory ? weeklyPRs.reduce((sum, w) => sum + w.count, 0) : 0;
+  const avgPRs = hasWeeklyHistory ? (totalPRs / weeklyPRs.length).toFixed(1) : 0;
+  const isConsistent = hasWeeklyHistory && weeklyPRs.every(w => w.count >= 8);
 
   return (
     <div
@@ -65,149 +68,163 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
           <h5 style={{ color: darkMode ? '#e8a71c' : '#052C65', marginBottom: '8px' }}>
             Weekly PR Stats
           </h5>
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px' }}>
-            <thead>
-              <tr>
-                <th
-                  style={{
-                    padding: '8px 12px',
-                    background: darkMode ? '#2d4059' : '#f8f9fa',
-                    color: darkMode ? '#fff' : '#495057',
-                    border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
-                    textAlign: 'left',
-                  }}
-                >
-                  Week
-                </th>
-                <th
-                  style={{
-                    padding: '8px 12px',
-                    background: darkMode ? '#2d4059' : '#f8f9fa',
-                    color: darkMode ? '#fff' : '#495057',
-                    border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
-                    textAlign: 'center',
-                  }}
-                >
-                  PR Count
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {weeklyPRs.map(w => (
-                <tr key={w.week}>
-                  <td
-                    style={{
-                      padding: '8px 12px',
-                      color: darkMode ? '#fff' : '#333',
-                      border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
-                    }}
-                  >
-                    {w.week}
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px 12px',
-                      color: darkMode ? '#fff' : '#333',
-                      border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
-                      textAlign: 'center',
-                      fontWeight: '600',
-                    }}
-                  >
-                    {w.count}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {hasWeeklyHistory ? (
+            <>
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px' }}>
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        padding: '8px 12px',
+                        background: darkMode ? '#2d4059' : '#f8f9fa',
+                        color: darkMode ? '#fff' : '#495057',
+                        border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
+                        textAlign: 'left',
+                      }}
+                    >
+                      Week
+                    </th>
+                    <th
+                      style={{
+                        padding: '8px 12px',
+                        background: darkMode ? '#2d4059' : '#f8f9fa',
+                        color: darkMode ? '#fff' : '#495057',
+                        border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
+                        textAlign: 'center',
+                      }}
+                    >
+                      PR Count
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {weeklyPRs.map(w => (
+                    <tr key={w.week}>
+                      <td
+                        style={{
+                          padding: '8px 12px',
+                          background: darkMode ? '#1e293b' : '#fff',
+                          color: darkMode ? '#fff' : '#333',
+                          border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
+                        }}
+                      >
+                        {w.week}
+                      </td>
+                      <td
+                        style={{
+                          padding: '8px 12px',
+                          background: darkMode ? '#1e293b' : '#fff',
+                          color: darkMode ? '#fff' : '#333',
+                          border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
+                          textAlign: 'center',
+                          fontWeight: '600',
+                        }}
+                      >
+                        {w.count}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-          {/* Summary Stats */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '12px',
-              marginBottom: '16px',
-              flexWrap: 'wrap',
-            }}
-          >
-            <div
-              style={{
-                flex: 1,
-                minWidth: '120px',
-                background: darkMode ? '#1b2a41' : '#e9ecef',
-                borderRadius: '6px',
-                padding: '12px',
-                textAlign: 'center',
-                border: `1px solid ${darkMode ? '#4a5a77' : '#ced4da'}`,
-              }}
-            >
+              {/* Summary Stats */}
               <div
                 style={{
-                  fontSize: '1.4rem',
-                  fontWeight: '700',
-                  color: darkMode ? '#4a9eff' : '#052C65',
+                  display: 'flex',
+                  gap: '12px',
+                  marginBottom: '16px',
+                  flexWrap: 'wrap',
                 }}
               >
-                {totalPRs}
+                <div
+                  style={{
+                    flex: 1,
+                    minWidth: '120px',
+                    background: darkMode ? '#1b2a41' : '#e9ecef',
+                    borderRadius: '6px',
+                    padding: '12px',
+                    textAlign: 'center',
+                    border: `1px solid ${darkMode ? '#4a5a77' : '#ced4da'}`,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '1.4rem',
+                      fontWeight: '700',
+                      color: darkMode ? '#4a9eff' : '#052C65',
+                    }}
+                  >
+                    {totalPRs}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: darkMode ? '#b0b8c4' : '#6c757d' }}>
+                    Total PRs
+                  </div>
+                </div>
+                <div
+                  style={{
+                    flex: 1,
+                    minWidth: '120px',
+                    background: darkMode ? '#1b2a41' : '#e9ecef',
+                    borderRadius: '6px',
+                    padding: '12px',
+                    textAlign: 'center',
+                    border: `1px solid ${darkMode ? '#4a5a77' : '#ced4da'}`,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '1.4rem',
+                      fontWeight: '700',
+                      color: darkMode ? '#4a9eff' : '#052C65',
+                    }}
+                  >
+                    {avgPRs}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: darkMode ? '#b0b8c4' : '#6c757d' }}>
+                    Avg PRs/Week
+                  </div>
+                </div>
+                <div
+                  style={{
+                    flex: 1,
+                    minWidth: '120px',
+                    background: isConsistent
+                      ? darkMode
+                        ? '#1a3a2a'
+                        : '#d4edda'
+                      : darkMode
+                      ? '#3a1a1a'
+                      : '#f8d7da',
+                    borderRadius: '6px',
+                    padding: '12px',
+                    textAlign: 'center',
+                    border: `1px solid ${isConsistent ? '#c3e6cb' : '#f5c6cb'}`,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '1.4rem',
+                      fontWeight: '700',
+                      color: isConsistent ? '#28a745' : '#dc3545',
+                    }}
+                  >
+                    {isConsistent ? '✅' : '⚠️'}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: darkMode ? '#b0b8c4' : '#6c757d' }}>
+                    {isConsistent ? 'Consistent' : 'Inconsistent'}
+                  </div>
+                </div>
               </div>
-              <div style={{ fontSize: '0.8rem', color: darkMode ? '#b0b8c4' : '#6c757d' }}>
-                Total PRs
-              </div>
-            </div>
-            <div
-              style={{
-                flex: 1,
-                minWidth: '120px',
-                background: darkMode ? '#1b2a41' : '#e9ecef',
-                borderRadius: '6px',
-                padding: '12px',
-                textAlign: 'center',
-                border: `1px solid ${darkMode ? '#4a5a77' : '#ced4da'}`,
-              }}
+            </>
+          ) : (
+            <p
+              className={`${styles['pr-promotion-no-history']} ${
+                darkMode ? styles['dark-mode'] : ''
+              }`}
             >
-              <div
-                style={{
-                  fontSize: '1.4rem',
-                  fontWeight: '700',
-                  color: darkMode ? '#4a9eff' : '#052C65',
-                }}
-              >
-                {avgPRs}
-              </div>
-              <div style={{ fontSize: '0.8rem', color: darkMode ? '#b0b8c4' : '#6c757d' }}>
-                Avg PRs/Week
-              </div>
-            </div>
-            <div
-              style={{
-                flex: 1,
-                minWidth: '120px',
-                background: isConsistent
-                  ? darkMode
-                    ? '#1a3a2a'
-                    : '#d4edda'
-                  : darkMode
-                  ? '#3a1a1a'
-                  : '#f8d7da',
-                borderRadius: '6px',
-                padding: '12px',
-                textAlign: 'center',
-                border: `1px solid ${isConsistent ? '#c3e6cb' : '#f5c6cb'}`,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '1.4rem',
-                  fontWeight: '700',
-                  color: isConsistent ? '#28a745' : '#dc3545',
-                }}
-              >
-                {isConsistent ? '✅' : '⚠️'}
-              </div>
-              <div style={{ fontSize: '0.8rem', color: darkMode ? '#b0b8c4' : '#6c757d' }}>
-                {isConsistent ? 'Consistent' : 'Inconsistent'}
-              </div>
-            </div>
-          </div>
+              No weekly PR history is available for this reviewer.
+            </p>
+          )}
 
           {/* Confirmation question */}
           <p
@@ -227,39 +244,18 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
         {/* Footer */}
         <div
           className={`${styles['pr-grading-screen-modal-footer']} ${
-            darkMode ? styles['dark-mode'] : ''
-          }`}
-          style={{ gap: '12px' }}
+            styles['pr-promotion-footer']
+          } ${darkMode ? styles['dark-mode'] : ''}`}
         >
-          <button
-            type="button"
-            onClick={onCancel}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '4px',
-              border: `1px solid ${darkMode ? '#5a6b88' : '#6c757d'}`,
-              background: darkMode ? '#6c757d' : '#fff',
-              color: darkMode ? '#fff' : '#6c757d',
-              cursor: 'pointer',
-              fontWeight: '600',
-            }}
-          >
+          <button type="button" className={styles['pr-promotion-btn-cancel']} onClick={onCancel}>
             Cancel
           </button>
           <button
             type="button"
-            onClick={() => onConfirm(reviewerName, reviewer.reviewerId)}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '4px',
-              border: 'none',
-              background: '#28a745',
-              color: '#fff',
-              cursor: 'pointer',
-              fontWeight: '600',
-            }}
+            className={styles['pr-promotion-btn-confirm']}
+            onClick={() => onConfirm(reviewerName, reviewer.reviewerId || reviewer.id)}
           >
-            ✅ Confirm Promotion
+            Confirm Promotion
           </button>
         </div>
       </div>

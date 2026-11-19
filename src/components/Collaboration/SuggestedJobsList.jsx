@@ -5,6 +5,7 @@ import { ApiEndpoint } from '../../utils/URL';
 import { toast } from 'react-toastify';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import styles from './SuggestedJobsList.module.css';
+import { buildApplyPath } from './JobApplicationForm/jobApplicationPublicApi';
 
 function SuggestedJobsList() {
   const history = useHistory();
@@ -39,9 +40,11 @@ function SuggestedJobsList() {
 
   const handleApplyNow = ad => {
     const title = ad.title || '';
-    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
+    // Route by the ad's unique id so same-title ads get distinct, shareable URLs.
+    const pathname = ad._id ? `/job-application/${ad._id}` : buildApplyPath(title);
+    const search = !ad._id && title ? `?jobTitle=${encodeURIComponent(title)}` : '';
     history.push({
-      pathname: '/job-application',
+      pathname,
       search,
       state: {
         jobId: ad._id,
