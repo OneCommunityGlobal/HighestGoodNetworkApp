@@ -4,6 +4,16 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styles from './LiveJournalAutoPoster.module.css';
 
+import {
+  formatDate,
+  formatTime,
+  formatDateTime,
+  formatExcerpt,
+  normalizeScheduleDateTime,
+  copyText,
+  buttonStyle as getButtonStyle,
+} from '../../shared/autoPosterUtils';
+
 const SUBJECT_MAX = 255;
 
 const sanitizeTags = text =>
@@ -22,60 +32,14 @@ const sanitizeTags = text =>
     ).values(),
   ].slice(0, 10);
 
-const pad = value => String(value).padStart(2, '0');
-
-const formatDate = date =>
-  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-
-const formatTime = date => `${pad(date.getHours())}:${pad(date.getMinutes())}`;
-
-const formatDateTime = (date, time) => {
-  if (!date) return 'Date unavailable';
-
-  const parsed = new Date(`${date}T${time || '00:00'}`);
-
-  return Number.isNaN(parsed.getTime())
-    ? date
-    : parsed.toLocaleString(undefined, {
-        dateStyle: 'medium',
-        timeStyle: time ? 'short' : undefined,
-      });
-};
-
-const formatExcerpt = content =>
-  content.length > 140 ? `${content.slice(0, 140).trim()}…` : content || 'No content captured.';
-
 const makeId = () => `livejournal-${crypto.randomUUID()}`;
 
-const buttonStyle = (variant, darkMode) => {
-  const base = {
-    borderRadius: '999px',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: 600,
-    padding: '10px 18px',
-    transition: 'filter 0.2s ease',
-  };
-
-  if (variant === 'primary') {
-    return { ...base, backgroundColor: '#0d6efd', color: '#fff' };
-  }
-
-  if (variant === 'outline') {
-    return {
-      ...base,
-      backgroundColor: 'transparent',
-      color: darkMode ? '#9bb5ff' : '#0d6efd',
-      border: `1px solid ${darkMode ? '#3d4d6d' : '#0d6efd'}`,
-    };
-  }
-
-  return {
-    ...base,
-    backgroundColor: darkMode ? '#1c2b44' : '#e9efff',
-    color: darkMode ? '#cfd9f8' : '#1c3f82',
-  };
-};
+const buttonStyle = (variant, darkMode) =>
+  getButtonStyle(variant, darkMode, {
+    primary: '#0d6efd',
+    ghostBackground: '#e9efff',
+    ghostText: '#1c3f82',
+  });
 
 const validateEntry = ({ subject, content }) => {
   if (!subject.trim()) {
@@ -121,17 +85,12 @@ function LiveJournalAutoPoster() {
   const trimmedUrl = originalUrl.trim();
 
   const urlValid = !trimmedUrl || /^https?:\/\/\S+$/i.test(trimmedUrl);
-
   const titleValid = trimmedTitle.length > 0 && trimmedTitle.length <= SUBJECT_MAX;
-
   const contentValid = Boolean(trimmedContent);
-
   const readyToCopy = titleValid && contentValid && urlValid;
 
   const titleInvalid = trimmedTitle.length > 0 && !titleValid;
-
   const contentInvalid = !contentValid && Boolean(content.trim());
-
   const urlInvalid = !urlValid;
 
   const hasInput = Boolean(trimmedTitle || trimmedContent || tagsText.trim() || trimmedUrl);
@@ -163,20 +122,6 @@ function LiveJournalAutoPoster() {
   );
 
   const scheduleHasDraft = Boolean(scheduledDraft.trim());
-
-  const copyText = async (text, label) => {
-    if (!text?.trim()) {
-      toast.warn(`Nothing to copy for ${label}.`);
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success(`${label} copied to clipboard.`);
-    } catch {
-      toast.error(`Could not copy ${label.toLowerCase()}.`);
-    }
-  };
 
   const resetEditor = () => {
     setTitle('');
@@ -308,16 +253,7 @@ function LiveJournalAutoPoster() {
   };
 
   const handleEditSchedule = item => {
-    const today = formatDate(new Date());
-
-    let date = item.scheduledDate || today;
-    let time = item.scheduledTime || formatTime(new Date());
-
-    if (date < today) date = today;
-
-    if (date === today && time < formatTime(new Date())) {
-      time = formatTime(new Date());
-    }
+    const { date, time } = normalizeScheduleDateTime(item.scheduledDate, item.scheduledTime);
 
     setTitle(item.title || '');
     setContent(item.content || '');
@@ -783,7 +719,9 @@ function LiveJournalAutoPoster() {
                       </span>
                     </div>
 
-                    <p className={styles.savedExcerpt}>{formatExcerpt(item.content)}</p>
+                    <p className={styles.savedExcerpt}>
+                      {formatExcerpt(item.content, 'No content captured.')}
+                    </p>
 
                     <div className={styles.savedActions}>
                       <button
