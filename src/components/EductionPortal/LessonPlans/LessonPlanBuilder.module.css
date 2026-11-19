@@ -88,19 +88,64 @@
   width: 200px;
 }
 
-.addSubTaskDiv {
+.actionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
   margin-top: 0.5rem;
-  padding: 0.5rem;
-  border: 1px solid rgb(246 232 232);
-  border-style: outset;
-  border-width: 1px;
-  box-shadow: 2px 2px 6px rgb(0 0 0 / 8%);
-  margin-bottom: 0;
 }
 
 .inputNarrow {
   width: 100px !important;
   box-sizing: border-box;
+}
+
+/* Inline feedback stays readable in both application themes. */
+.validationCell {
+  position: relative;
+  vertical-align: top;
+  padding-bottom: 1.25rem !important;
+}
+
+.validationError {
+  position: absolute;
+  z-index: 2;
+  right: 0.75rem;
+  bottom: 0.25rem;
+  left: 0.75rem;
+  padding: 0 0.125rem;
+  color: #b91c1c;
+  background-color: #fff;
+  border-radius: 0.125rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Metadata errors occupy their own line; table-cell positioning stays unchanged. */
+.metadataGrid .validationError {
+  position: static;
+  min-height: 1.25em;
+  margin-top: 0.25rem;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+:global(body.dark-mode) .validationError {
+  color: #fca5a5;
+  background-color: #1e1e1e;
 }
 
 .selectBtn {
@@ -130,13 +175,6 @@
   padding: 0.25rem;
 }
 
-.footerButtonWrapper {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 1rem;
-}
-
 .headerSaveBtn {
   background-color: #3B75FC;
   color: white;
@@ -158,14 +196,10 @@
   width: auto;
   font-size: 1.2rem;
   padding: 0.25rem 1.5rem;
-  margin-top: -10px;
-  margin-bottom: 5px;
   border-radius: 0.3rem;
-  float: right;
 }
 
 .addSubtaskBtn {
-  margin-left: 0.6rem;
   background-color: #3b75fc;
   color: white;
   width: 13%;
@@ -273,14 +307,11 @@
     max-width: 100%;
   }
 
-  .assignLsnBtn {
-    float: none;
-    display: block;
-    width: 100%;
-    margin-top: 0.75rem;
+  .actionRow {
+    flex-wrap: wrap;
   }
 
-  .addSubTaskDiv {
+  .assignLsnBtn {
     width: 100%;
   }
 
@@ -317,4 +348,17 @@
     width: 100%;
     margin-right: 0;
   }
+}
+
+.metadataGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+:global(body.dark-mode) .metadataGrid input {
+  background-color: #2d2d2d;
+  color: #e8e8e8;
+  border-color: #555;
 }

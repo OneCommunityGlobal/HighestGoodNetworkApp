@@ -1126,15 +1126,15 @@
 // require('dotenv').config();
 
 import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import AssignLessonPlanModal from './AssignLessonPlanModal';
 // Including FaCopy to make Duplicate button logic runnable, although not visible in UI
 import { FaTrashAlt, FaCopy } from 'react-icons/fa';
 import styles from './LessonPlanBuilder.module.css'; // Importing the CSS Module
 import LessonPlanLogTable from './LessonPlanLogTable';
 import styles2 from './LessonPlanLogTable.module.css';
-// Dummy ID for the API call
-const LESSON_PLAN_ID = '68ed6e6e746d9b633a6158f3';
 
 const notify = (message, type = 'success') => {
   if (type === 'error') toast.error(message);
@@ -1142,24 +1142,199 @@ const notify = (message, type = 'success') => {
   else toast.success(message);
 };
 
+// Keep cleared fields editable, but always report them as invalid.
+const getWeightError = value => {
+  const trimmed = value.trim();
+  if (!trimmed) return 'Weight is required.';
+  const weight = Number(trimmed.replace(/%$/, ''));
+  return /^(?:\d+(?:\.\d+)?|\.\d+)%?$/.test(trimmed) && weight >= 0 && weight <= 100
+    ? ''
+    : 'Enter a weight from 0 to 100, optionally followed by %.';
+};
+
+const getPassMarkError = value => {
+  const trimmed = value.trim();
+  if (!trimmed) return 'Pass mark is required.';
+  const match = trimmed.match(/^(\d+(?:\.\d+)?|\.\d+)\s*\/\s*(\d+(?:\.\d+)?|\.\d+)$/);
+  const numerator = match ? Number(match[1]) : NaN;
+  const denominator = match ? Number(match[2]) : NaN;
+  return Number.isFinite(numerator) &&
+    Number.isFinite(denominator) &&
+    denominator > 0 &&
+    numerator >= 0 &&
+    numerator <= denominator
+    ? ''
+    : 'Enter a fraction such as 8/10, with a positive denominator and a score from 0 to that denominator.';
+};
+
+// Build a calendar date from local parts; UTC conversion can shift today by one day.
+const getLocalDate = (date = new Date()) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate(),
+  ).padStart(2, '0')}`;
+
+const getDueDateError = (value, today, badInput = false) => {
+  if (badInput) return 'Enter a valid due date.';
+  if (!value) return 'A due date is required.';
+  // Round-trip local date parts to reject impossible dates as well as malformed strings.
+  const date = new Date(`${value}T00:00:00`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || getLocalDate(date) !== value) {
+    return 'Enter a valid due date.';
+  }
+  return value < today ? 'Due date must be today or later.' : '';
+};
+
+const SUBTASK_TYPES = ['Write-only', 'Read-only', 'Offline entry'];
+
+const getTypeError = type => {
+  if (!type) return 'Type is required.';
+  return SUBTASK_TYPES.includes(type) ? '' : 'Select a supported subtask type.';
+};
+
+// Share the same rules between immediate feedback and every submission guard.
+const getSubtaskErrors = ({ name, type, weight, passMark, dueDate, dueDateBadInput }, today) => ({
+  name: name.trim() ? '' : 'Subtask name is required.',
+  type: getTypeError(type),
+  weight: getWeightError(weight),
+  passMark: getPassMarkError(passMark),
+  dueDate: getDueDateError(dueDate, today, dueDateBadInput),
+});
+
+const ValidationMessage = ({ id, error }) => (
+  <div id={`${id}-visual`} className={styles.validationError} aria-live="polite">
+    {error && (
+      <>
+        <span aria-hidden="true">Invalid input</span>
+        <span id={id} className={styles.visuallyHidden}>
+          {error}
+        </span>
+      </>
+    )}
+  </div>
+);
+
+ValidationMessage.propTypes = {
+  id: PropTypes.string.isRequired,
+  error: PropTypes.string.isRequired,
+};
+
+const getMetadataErrors = metadata => {
+  const errors = { title: metadata.title.trim() ? '' : 'Title is required.' };
+  ['startDate', 'endDate'].forEach(key => {
+    const value = metadata[key];
+    errors[key] = !value
+      ? 'Date is required.'
+      : getDueDateError(value, '0000-01-01')
+      ? 'Enter a valid date.'
+      : '';
+  });
+  if (!errors.startDate && !errors.endDate && metadata.startDate > metadata.endDate) {
+    errors.endDate = 'End date must be on or after start date.';
+  }
+  return errors;
+};
+
 export default function LessonPlanBuilder() {
-  const [subtasks, setSubtasks] = useState([
-    {
-      name: 'Subtask 1: Research summary',
-      type: 'Write-only',
-      dueDate: '',
-      passMark: '8/10',
-      weight: '40%',
-    },
-    {
-      name: 'Subtask 2: Terminology',
-      type: 'Read-only',
-      dueDate: '',
-      passMark: '6/10',
-      weight: '30%',
-    },
-    { name: 'Subtask 3:', type: 'Offline entry', dueDate: '', passMark: '6/10', weight: '30%' },
-  ]);
+  const authUser = useSelector(state => state.auth?.user);
+  const canManageAssignments =
+    authUser?.role === 'Administrator' ||
+    authUser?.role === 'Owner' ||
+    authUser?.role === 'Manager' ||
+    authUser?.role === 'Educator';
+
+  const canSave = ['Educator', 'Administrator', 'Owner'].includes(authUser?.role);
+  const [metadata, setMetadata] = useState({
+    title: '',
+    startDate: '',
+    endDate: '',
+    theme: '',
+    description: '',
+  });
+  const [lessonPlanId, setLessonPlanId] = useState(null);
+  const [savedSubtasks, setSavedSubtasks] = useState(null);
+  const [identityError, setIdentityError] = useState('');
+  const identityBlockedRef = useRef(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const savingInFlightRef = useRef(false);
+  const [touchedMetadata, setTouchedMetadata] = useState({});
+  const [submissionAttempted, setSubmissionAttempted] = useState(false);
+  const metadataErrors = getMetadataErrors(metadata);
+  const visibleMetadataErrors = Object.fromEntries(
+    Object.entries(metadataErrors).map(([key, error]) => [
+      key,
+      submissionAttempted || touchedMetadata[key] ? error : '',
+    ]),
+  );
+  const hasInvalidMetadata = Object.values(metadataErrors).some(Boolean);
+
+  const nextRowKey = useRef(3);
+  const [subtasks, setSubtasks] = useState(
+    [
+      {
+        name: 'Subtask 1: Research summary',
+        type: 'Write-only',
+        dueDate: '',
+        passMark: '8/10',
+        weight: '40%',
+      },
+      {
+        name: 'Subtask 2: Terminology',
+        type: 'Read-only',
+        dueDate: '',
+        passMark: '6/10',
+        weight: '30%',
+      },
+      { name: 'Subtask 3:', type: 'Offline entry', dueDate: '', passMark: '6/10', weight: '30%' },
+    ].map((row, rowKey) => ({ ...row, rowKey })),
+  );
+
+  const today = getLocalDate();
+
+  // Derive errors from current rows so row operations cannot leave stale validation state.
+  const subtaskErrors = subtasks.map(subtask => getSubtaskErrors(subtask, today));
+  const hasInvalidSubtasks =
+    !subtasks.length || subtaskErrors.some(errors => Object.values(errors).some(Boolean));
+
+  // Visibility is separate from validity: untouched fields still block submission.
+  const visibleSubtaskErrors = subtaskErrors.map((errors, index) =>
+    Object.fromEntries(
+      Object.entries(errors).map(([key, error]) => [
+        key,
+        submissionAttempted || subtasks[index].touched?.[key] ? error : '',
+      ]),
+    ),
+  );
+  const touchSubtask = (index, field) =>
+    setSubtasks(previous =>
+      previous.map((row, i) =>
+        i === index ? { ...row, touched: { ...row.touched, [field]: true } } : row,
+      ),
+    );
+  // Disabled buttons cannot run their click handler. Capture pointer attempts on the
+  // container to reveal errors without enabling submission or issuing requests.
+  const revealSubmissionErrors = event => {
+    if (event.target.closest('[data-validation-action]')) setSubmissionAttempted(true);
+  };
+
+  // Derive the total on each render so edits, additions, deletions, and duplicates are reflected.
+  const totalWeight = subtasks.reduce((total, { weight }) => {
+    // Accept percentage strings such as "40%"; empty strings convert to zero.
+    const numericWeight = Number(weight.trim().replace(/%$/, ''));
+    // Invalid values contribute zero without replacing the text entered in the field.
+    return total + (getWeightError(weight) ? 0 : numericWeight);
+  }, 0);
+
+  // Compare only persisted fields; UI date-picker flags never enter the payload.
+  const subTasks = subtasks.map(({ _id, name, type, dueDate, passMark, weight }) => ({
+    ...(_id ? { _id } : {}),
+    name,
+    type,
+    dueDate,
+    passMark,
+    weight,
+  }));
+  const subtaskSnapshot = JSON.stringify(subTasks);
+  const hasUnsavedSubtasks = subtaskSnapshot !== savedSubtasks;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
@@ -1170,11 +1345,12 @@ export default function LessonPlanBuilder() {
   const [logs, setLogs] = useState([]);
 
   // Function to fetch logs ---
-  const fetchLogs = async () => {
+  const fetchLogs = async savedId => {
+    if (!savedId) return;
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${process.env.REACT_APP_APIENDPOINT}/educator/logs/${LESSON_PLAN_ID}`,
+        `${process.env.REACT_APP_APIENDPOINT}/educator/logs/${savedId}`,
         {
           headers: { Authorization: token },
         },
@@ -1190,23 +1366,30 @@ export default function LessonPlanBuilder() {
     }
   };
 
-  // useEffect to fetch logs on component load ---
+  // No log request is made until persistence has returned a real plan ID.
   useEffect(() => {
-    fetchLogs();
-  }, []); // Empty array means this runs once on load
+    if (lessonPlanId) fetchLogs(lessonPlanId);
+  }, [lessonPlanId]);
 
   // --- Data Logic Functions
   const addSubtask = () => {
+    const rowKey = nextRowKey.current;
+    nextRowKey.current += 1;
     setSubtasks([
       ...subtasks,
-      { name: '', type: 'Write-only', dueDate: '', passMark: '', weight: '' },
+      { name: '', type: 'Write-only', dueDate: '', passMark: '', weight: '', rowKey },
     ]);
   };
 
   const updateSubtask = (index, field, value) => {
-    const newSubtasks = [...subtasks];
-    newSubtasks[index][field] = value;
-    setSubtasks(newSubtasks);
+    // Copy the edited row instead of mutating an object from the previous state.
+    setSubtasks(previous =>
+      previous.map((subtask, i) =>
+        i === index
+          ? { ...subtask, [field]: value, touched: { ...subtask.touched, [field]: true } }
+          : subtask,
+      ),
+    );
   };
 
   const deleteSubtask = index => {
@@ -1214,13 +1397,29 @@ export default function LessonPlanBuilder() {
   };
 
   const duplicateSubtask = index => {
-    setSubtasks([...subtasks, { ...subtasks[index] }]);
+    // A duplicate is a new subtask, so only persistence may give it a database ID.
+    const { _id, ...duplicate } = subtasks[index];
+    const rowKey = nextRowKey.current;
+    nextRowKey.current += 1;
+    setSubtasks([...subtasks, { ...duplicate, rowKey, touched: {} }]);
+  };
+
+  const validateSubtasks = () => {
+    // Recheck all fields and the local day, including confirmation after midnight.
+    return (
+      subtasks.length > 0 &&
+      !subtasks.some(subtask =>
+        Object.values(getSubtaskErrors(subtask, getLocalDate())).some(Boolean),
+      )
+    );
   };
 
   // Centralized API Function ---
-  const assignTasks = async (isAutoAssigned, onAssignmentSuccess) => {
+  const assignTasks = async (isAutoAssigned, savedId, onAssignmentSuccess) => {
+    if (identityBlockedRef.current || !savedId || !validateSubtasks()) return;
+    if (!isAutoAssigned && (savingInFlightRef.current || hasUnsavedSubtasks)) return;
     const payload = {
-      lessonPlanId: LESSON_PLAN_ID, // Use the actual lesson plan ID
+      lessonPlanId: savedId,
       assignmentDate: new Date().toISOString().split('T')[0],
       isAutoAssigned: isAutoAssigned,
     };
@@ -1282,12 +1481,16 @@ export default function LessonPlanBuilder() {
       // If the response IS successful, parse the JSON.
       const data = await response.json();
 
+      const assignedCount = Number(data?.assignedCount ?? data?.assigned_count ?? 0);
       const skippedCount = Number(data?.skippedCount ?? data?.skipped_count ?? 0);
 
       if (skippedCount > 0) {
-        notify('Tasks assigned; some were skipped due to unmet prerequisites.', 'warning');
+        notify(
+          `${assignedCount} tasks assigned, ${skippedCount} skipped due to unmet prerequisites.`,
+          'warning',
+        );
       } else {
-        notify('Tasks assigned successfully.', 'success');
+        notify(`${assignedCount} tasks assigned successfully.`, 'success');
       }
 
       // On success, call the callback to update the UI.
@@ -1295,7 +1498,7 @@ export default function LessonPlanBuilder() {
         onAssignmentSuccess();
       }
       // Refreshes the log table after a successful assignment ---
-      fetchLogs();
+      fetchLogs(savedId);
     } catch (error) {
       // This will now catch both network errors and the errors we throw manually.
       notify(`Task assignment failed. ${error.message}`, 'error');
@@ -1319,27 +1522,121 @@ export default function LessonPlanBuilder() {
   };
 
   const handleAssignClick = () => {
-    if (assigningInFlightRef.current) {
+    setSubmissionAttempted(true);
+    if (
+      identityBlockedRef.current ||
+      savingInFlightRef.current ||
+      assigningInFlightRef.current ||
+      !lessonPlanId ||
+      hasUnsavedSubtasks ||
+      !validateSubtasks()
+    ) {
       return;
     }
     setIsModalOpen(true);
   };
 
   const handleSaveClick = async () => {
-    if (assigningInFlightRef.current) {
+    setSubmissionAttempted(true);
+    if (
+      !canSave ||
+      identityBlockedRef.current ||
+      savingInFlightRef.current ||
+      assigningInFlightRef.current ||
+      Object.values(getMetadataErrors(metadata)).some(Boolean) ||
+      !validateSubtasks()
+    )
+      return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      notify('Authentication error: No user token found. Please log in again.', 'error');
       return;
     }
-    // eslint-disable-next-line no-console
-    console.log('Lesson Plan Saved!');
-    // Logic to save the lesson plan data
-
-    // After a successful save, trigger the auto-assignment
-    console.log('Triggering auto-assignment...');
-    // await assignTasks(true); // Call with isAutoAssigned = true -- old
-    await assignTasks(true, () => {
-      const timestamp = new Date().toLocaleTimeString();
-      setAssignmentStatus(`Auto-assigned at ${timestamp}`);
-    });
+    savingInFlightRef.current = true;
+    setIsSaving(true);
+    let savedId;
+    let persistenceSucceeded = false;
+    let saveConflict = false;
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_APIENDPOINT}/educator/lesson-plans${
+          lessonPlanId ? `/${lessonPlanId}` : ''
+        }`,
+        {
+          method: lessonPlanId ? 'PATCH' : 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: token },
+          body: JSON.stringify({ ...metadata, subTasks }),
+        },
+      );
+      // Conflict handling must not depend on parsing the response body. Keep local
+      // identities and edits, but block stale retries until the plan is reconciled.
+      if (response.status === 409) {
+        saveConflict = true;
+        throw new Error('Lesson plan conflict');
+      }
+      persistenceSucceeded = response.ok;
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Please try again.');
+      if (!data?._id) throw new Error('Save response is missing the lesson plan ID.');
+      setLessonPlanId(data._id);
+      if (
+        !Array.isArray(data.subTasks) ||
+        data.subTasks.length !== subTasks.length ||
+        data.subTasks.some(
+          (row, index) =>
+            typeof row?._id !== 'string' ||
+            !/^[a-f\d]{24}$/i.test(row._id) ||
+            (subTasks[index]._id && subTasks[index]._id.toLowerCase() !== row._id.toLowerCase()),
+        ) ||
+        new Set(data.subTasks.map(row => row._id.toLowerCase())).size !== subTasks.length
+      ) {
+        throw new Error('Save response is missing subtask IDs.');
+      }
+      // Responses retain request order. Local row keys keep IDs attached to the
+      // submitted rows even if a row is edited, added or deleted while saving.
+      const savedRows = subTasks.map(({ _id, ...row }, index) => ({
+        _id: data.subTasks[index]._id,
+        ...row,
+      }));
+      const idsByRow = new Map(subtasks.map((row, index) => [row.rowKey, savedRows[index]._id]));
+      setSubtasks(current =>
+        current.map(row =>
+          idsByRow.has(row.rowKey) ? { ...row, _id: idsByRow.get(row.rowKey) } : row,
+        ),
+      );
+      setSavedSubtasks(JSON.stringify(savedRows));
+      savedId = data._id;
+      notify('Lesson plan saved successfully.');
+    } catch (error) {
+      if (saveConflict) {
+        identityBlockedRef.current = true;
+        const message =
+          'The lesson plan on the server changed. Your local form values and saved identities have been preserved. Saving and assignment are blocked until this form is reconciled with the current server plan. Contact support before continuing.';
+        setIdentityError(message);
+        notify(message, 'error');
+      } else if (persistenceSucceeded) {
+        // A successful write must never be retried with unverified row identities.
+        // Keep the saved plan ID and local edits, but fail closed until recovery exists.
+        identityBlockedRef.current = true;
+        const message =
+          'The lesson plan was saved, but its subtask identities could not be verified. Saving and assignment are blocked. Contact support to recover the saved plan before continuing.';
+        setIdentityError(message);
+        notify(message, 'error');
+      } else {
+        notify(`Lesson plan save failed. ${error.message}`, 'error');
+      }
+    }
+    // Use the returned ID directly: state updates are asynchronous. Assignment failure
+    // leaves the saved document ID intact and is reported separately by assignTasks.
+    try {
+      if (savedId)
+        await assignTasks(true, savedId, () => {
+          setAssignmentStatus(`Auto-assigned at ${new Date().toLocaleTimeString()}`);
+        });
+    } finally {
+      savingInFlightRef.current = false;
+      setIsSaving(false);
+    }
   };
   // -----------------------------
   //  Function to handle the successful assignment ---
@@ -1349,7 +1646,11 @@ export default function LessonPlanBuilder() {
   };
 
   return (
-    <div className={styles.lessonPlanContainer}>
+    <div
+      className={styles.lessonPlanContainer}
+      onPointerDownCapture={revealSubmissionErrors}
+      onClickCapture={revealSubmissionErrors}
+    >
       {/* Title Bar and Save Button */}
       {/* <div className="d-flex justify-content-between align-items-center mb-4"> */}
       {/* <div className={styles.contentBox}> */}
@@ -1373,17 +1674,60 @@ export default function LessonPlanBuilder() {
           )}
           <button
             type="button"
+            data-validation-action="save"
             onClick={handleSaveClick}
             className={styles.headerSaveBtn}
-            disabled={isAssigning}
+            disabled={
+              !canSave ||
+              Boolean(identityError) ||
+              isSaving ||
+              isAssigning ||
+              hasInvalidMetadata ||
+              hasInvalidSubtasks
+            }
           >
             Save Lesson Plan
           </button>
         </div>
       </div>
 
+      {identityError && <p role="alert">{identityError}</p>}
       <div className={styles.grayBackgroundWrapper}>
         <div className={styles.contentBox}>
+          <div className={styles.metadataGrid}>
+            {[
+              ['title', 'Title', 'text'],
+              ['startDate', 'Start Date', 'date'],
+              ['endDate', 'End Date', 'date'],
+              ['theme', 'Theme', 'text'],
+              ['description', 'Description', 'text'],
+            ].map(([key, label, type]) => (
+              <div key={key}>
+                <label htmlFor={`plan-${key}`}>{label}</label>
+                <input
+                  id={`plan-${key}`}
+                  type={type}
+                  className="form-control"
+                  value={metadata[key]}
+                  required={['title', 'startDate', 'endDate'].includes(key)}
+                  aria-invalid={Boolean(visibleMetadataErrors[key])}
+                  aria-describedby={visibleMetadataErrors[key] ? `plan-${key}-error` : undefined}
+                  onBlur={() => setTouchedMetadata(previous => ({ ...previous, [key]: true }))}
+                  onChange={event => {
+                    setTouchedMetadata(previous => ({ ...previous, [key]: true }));
+                    setMetadata({ ...metadata, [key]: event.target.value });
+                  }}
+                />
+                <ValidationMessage
+                  id={`plan-${key}-error`}
+                  error={visibleMetadataErrors[key] || ''}
+                />
+              </div>
+            ))}
+          </div>
+          {!subtasks.length && submissionAttempted && (
+            <p role="alert">At least one subtask is required.</p>
+          )}
           {/* Header: Breaks down activities into checkpoints */}
           <p className="text-secondary font-weight-medium h6 mb-3">
             Break down activities into checkpoints
@@ -1418,49 +1762,109 @@ export default function LessonPlanBuilder() {
               </thead>
               <tbody>
                 {subtasks.map((subtask, i) => (
-                  <tr key={i} className="border-bottom">
-                    <td className="p-3">
+                  <tr key={subtask.rowKey} className="border-bottom">
+                    <td className={`p-3 ${styles.validationCell}`}>
                       <input
                         type="text"
                         className="form-control form-control-sm"
                         value={subtask.name}
+                        onBlur={() => touchSubtask(i, 'name')}
                         onChange={e => updateSubtask(i, 'name', e.target.value)}
+                        aria-label={`Subtask ${i + 1} name`}
+                        aria-invalid={!!visibleSubtaskErrors[i].name}
+                        aria-describedby={`name-error-${i}`}
+                      />
+                      <ValidationMessage
+                        id={`name-error-${i}`}
+                        error={visibleSubtaskErrors[i].name}
                       />
                     </td>
-                    <td className="p-3">
+                    <td className={`p-3 ${styles.validationCell}`}>
                       <select
                         className="form-select form-control form-control-sm"
                         value={subtask.type}
+                        onBlur={() => touchSubtask(i, 'type')}
                         onChange={e => updateSubtask(i, 'type', e.target.value)}
+                        aria-label={`Subtask ${i + 1} type`}
+                        aria-invalid={!!visibleSubtaskErrors[i].type}
+                        aria-describedby={`type-error-${i}`}
                       >
-                        <option>Write-only</option>
-                        <option>Read-only</option>
-                        <option>Offline entry</option>
+                        <option value="">Select a type</option>
+                        {SUBTASK_TYPES.map(type => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
                       </select>
+                      <ValidationMessage
+                        id={`type-error-${i}`}
+                        error={visibleSubtaskErrors[i].type}
+                      />
                     </td>
-                    <td className="p-3 position-relative">
+                    <td className={`p-3 position-relative ${styles.validationCell}`}>
                       {/* Date Picker Input */}
                       <input
                         type="date"
                         className={`form-control form-control-sm pr-4 ${styles.inputNarrow}`}
                         value={subtask.dueDate}
-                        onChange={e => updateSubtask(i, 'dueDate', e.target.value)}
+                        min={today}
+                        onBlur={() => touchSubtask(i, 'dueDate')}
+                        aria-label={`Subtask ${i + 1} due date`}
+                        aria-invalid={!!visibleSubtaskErrors[i].dueDate}
+                        aria-describedby={`due-date-error-${i}`}
+                        onChange={e => {
+                          const { value, validity } = e.target;
+                          // Native date inputs can report malformed input as an empty value.
+                          setSubtasks(previous =>
+                            previous.map((row, index) =>
+                              index === i
+                                ? {
+                                    ...row,
+                                    dueDate: value,
+                                    dueDateBadInput: validity.badInput,
+                                    touched: { ...row.touched, dueDate: true },
+                                  }
+                                : row,
+                            ),
+                          );
+                        }}
+                      />
+                      <ValidationMessage
+                        id={`due-date-error-${i}`}
+                        error={visibleSubtaskErrors[i].dueDate}
                       />
                     </td>
-                    <td className="p-3">
+                    <td className={`p-3 ${styles.validationCell}`}>
                       <input
                         type="text"
                         className={`form-control form-control-sm text-center ${styles.inputNarrow}`}
                         value={subtask.passMark}
+                        onBlur={() => touchSubtask(i, 'passMark')}
                         onChange={e => updateSubtask(i, 'passMark', e.target.value)}
+                        aria-label={`Subtask ${i + 1} pass mark`}
+                        aria-invalid={!!visibleSubtaskErrors[i].passMark}
+                        aria-describedby={`pass-mark-error-${i}`}
+                      />
+                      {/* Keep the live region mounted and associate its message with the input. */}
+                      <ValidationMessage
+                        id={`pass-mark-error-${i}`}
+                        error={visibleSubtaskErrors[i].passMark}
                       />
                     </td>
-                    <td className="p-3">
+                    <td className={`p-3 ${styles.validationCell}`}>
                       <input
                         type="text"
                         className={`form-control form-control-sm text-center ${styles.inputNarrow}`}
                         value={subtask.weight}
+                        onBlur={() => touchSubtask(i, 'weight')}
                         onChange={e => updateSubtask(i, 'weight', e.target.value)}
+                        aria-label={`Subtask ${i + 1} weight`}
+                        aria-invalid={!!visibleSubtaskErrors[i].weight}
+                        aria-describedby={`weight-error-${i}`}
+                      />
+                      <ValidationMessage
+                        id={`weight-error-${i}`}
+                        error={visibleSubtaskErrors[i].weight}
                       />
                     </td>
 
@@ -1483,10 +1887,6 @@ export default function LessonPlanBuilder() {
                     </td>
                   </tr>
                 ))}
-                {/* Empty row to create the constant space below the last entry */}
-                <tr className="border-bottom">
-                  <td colSpan="6" style={{ height: '100px', backgroundColor: 'transparent' }}></td>
-                </tr>
               </tbody>
               <tfoot>
                 {/* Total Row */}
@@ -1503,36 +1903,36 @@ export default function LessonPlanBuilder() {
                     colSpan={1}
                     style={{ backgroundColor: 'transparent' }}
                   >
-                    100%
+                    {totalWeight}%
                   </td>
-                </tr>
-                <tr className="border-bottom">
-                  <td colSpan="6" style={{ height: '80px', backgroundColor: 'transparent' }}></td>
                 </tr>
               </tfoot>
             </table>
           </div>
 
-          {/* FIXED: Footer buttons (Correctly aligned and visible with custom styles) */}
-          {/* <div className="d-flex justify-content-between mt-4"> */}
-          {/* Left: Add subtask + (Blue) */}
-          {/* <div className={styles.footerButtonWrapper}> */}
-          <div className={styles.addSubTaskDiv}>
+          <div className={styles.actionRow} role="group" aria-label="Lesson plan actions">
             <button onClick={addSubtask} className={styles.addSubtaskBtn}>
               Add subtask +
             </button>
+            {canManageAssignments && (
+              <button
+                type="button"
+                data-validation-action="assign"
+                onClick={handleAssignClick}
+                className={styles.assignLsnBtn}
+                disabled={
+                  Boolean(identityError) ||
+                  isSaving ||
+                  isAssigning ||
+                  hasInvalidSubtasks ||
+                  !lessonPlanId ||
+                  hasUnsavedSubtasks
+                }
+              >
+                Assign Tasks to Students
+              </button>
+            )}
           </div>
-          <br />
-          {/* Right: Assign Lesson Plan (Green) */}
-          <button
-            type="button"
-            onClick={handleAssignClick}
-            className={styles.assignLsnBtn}
-            disabled={isAssigning}
-          >
-            Assign Lesson Plan
-          </button>
-          {/* </div> */}
         </div>
         {/* ADDDING THE LOG TABLE AT THE BOTTOM --- */}
         {/* {loading && <p className="loading-message">Loading...</p>}
@@ -1555,11 +1955,11 @@ export default function LessonPlanBuilder() {
       {isModalOpen && (
         <AssignLessonPlanModal
           onClose={() => setIsModalOpen(false)}
-          lessonPlanId={LESSON_PLAN_ID}
+          lessonPlanId={lessonPlanId}
           isAssigning={isAssigning}
           // Pass the assignTasks function to the modal
           // assignTasks={assignTasks}
-          assignTasks={isAuto => assignTasks(isAuto, handleManualAssignmentSuccess)}
+          assignTasks={isAuto => assignTasks(isAuto, lessonPlanId, handleManualAssignmentSuccess)}
         />
       )}
     </div>

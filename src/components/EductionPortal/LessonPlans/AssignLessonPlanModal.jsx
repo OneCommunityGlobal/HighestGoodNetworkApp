@@ -310,7 +310,7 @@ export default function AssignLessonPlanModal({ onClose, lessonPlanId, assignTas
               onClick={handleConfirm}
               disabled={isAssigning}
             >
-              {isAssigning ? 'Assigning…' : 'Confirm'}
+              Confirm
             </button>
           </div>
         </div>
