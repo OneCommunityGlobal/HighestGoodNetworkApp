@@ -19,6 +19,7 @@ const formLabels = {
 function MaterialPurchaseForm() {
   return (
     <PurchaseForm
+      isMaterialPurchase
       fetchPrimaryDataAction={fetchBMProjects}
       fetchSecondaryDataAction={fetchMaterialTypes}
       submitFormAction={purchaseMaterial}

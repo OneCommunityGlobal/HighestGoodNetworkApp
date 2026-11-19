@@ -15,10 +15,12 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import { boxStyle } from '~/styles';
+import { fetchSuppliers, createSupplier } from '~/actions/bmdashboard/materialsActions';
 import BMError from '../shared/BMError';
 import styles from './PurchaseForm.module.css';
 
 function PurchaseForm({
+  isMaterialPurchase = false,
   fetchPrimaryDataAction,
   fetchSecondaryDataAction,
   submitFormAction,
@@ -32,12 +34,20 @@ function PurchaseForm({
   const primaryData = useSelector(primaryDataSelector);
   const secondaryData = useSelector(secondaryDataSelector);
   const errors = useSelector(errorSelector);
+  const userRole = useSelector(state => state.auth?.user?.role);
+  const canCreateSupplier = ['Owner', 'Administrator'].includes(userRole);
   const [primaryId, setPrimaryId] = useState('');
   const [secondaryId, setSecondaryId] = useState('');
   const [quantity, setQuantity] = useState('');
   const [unit, setUnit] = useState('');
   const [priority, setPriority] = useState('Low');
   const [brand, setBrand] = useState('');
+  const [supplier, setSupplier] = useState('');
+  const [expectedDeliveryDate, setExpectedDeliveryDate] = useState('');
+  const [suppliers, setSuppliers] = useState([]);
+  const [newSupplierName, setNewSupplierName] = useState('');
+  const [showCreateSupplier, setShowCreateSupplier] = useState(false);
+  const [isCreatingSupplier, setIsCreatingSupplier] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [isError, setIsError] = useState(false);
@@ -50,6 +60,22 @@ function PurchaseForm({
     dispatch(fetchPrimaryDataAction());
     dispatch(fetchSecondaryDataAction());
   }, [dispatch, fetchPrimaryDataAction, fetchSecondaryDataAction]);
+
+  // Fetch suppliers only for material purchase requests
+  useEffect(() => {
+    if (!isMaterialPurchase) return;
+
+    const loadSuppliers = async () => {
+      try {
+        const supplierList = await fetchSuppliers();
+        setSuppliers(supplierList);
+      } catch (error) {
+        toast.error('Unable to load suppliers. Please try again.');
+      }
+    };
+
+    loadSuppliers();
+  }, [isMaterialPurchase]);
 
   // Set error state based on errors from the store
   useEffect(() => {
@@ -129,8 +155,37 @@ function PurchaseForm({
     setUnit('');
     setPriority('Low');
     setBrand('');
+    setSupplier('');
+    setExpectedDeliveryDate('');
     setValidationError('');
     setFieldErrors({});
+  };
+  // Handle creating a new supplier
+  const handleCreateSupplier = async () => {
+    const name = newSupplierName.trim();
+
+    if (!name) {
+      toast.error('Please enter a supplier name.');
+      return;
+    }
+
+    setIsCreatingSupplier(true);
+
+    try {
+      const createdSupplier = await createSupplier(name);
+
+      setSuppliers(prev => [...prev, createdSupplier]);
+      setSupplier(createdSupplier._id);
+      setNewSupplierName('');
+      setShowCreateSupplier(false);
+
+      toast.success('Supplier created successfully!');
+    } catch (error) {
+      const message = error.response?.data?.message || 'Unable to create supplier.';
+      toast.error(message);
+    } finally {
+      setIsCreatingSupplier(false);
+    }
   };
 
   // Handle form submission
@@ -159,7 +214,10 @@ function PurchaseForm({
         secondaryId,
         quantity,
         priority,
-        brand,
+        ...(isMaterialPurchase && {
+          supplier: supplier || undefined,
+          expectedDeliveryDate: expectedDeliveryDate || undefined,
+        }),
       });
 
       if (response?.status === 201) {
@@ -367,6 +425,85 @@ function PurchaseForm({
             disabled={isSubmitting}
           />
         </FormGroup>
+
+        {isMaterialPurchase && (
+          <FormGroup>
+            <Label for="select-supplier">Supplier</Label>
+            <Input
+              id="select-supplier"
+              type="select"
+              value={supplier}
+              onChange={e => setSupplier(e.target.value)}
+              disabled={isSubmitting}
+            >
+              <option value="">Select Supplier...</option>
+              {suppliers.map(item => (
+                <option key={item._id} value={item._id}>
+                  {item.name}
+                </option>
+              ))}
+            </Input>
+            {canCreateSupplier && (
+              <Button
+                type="button"
+                color="link"
+                onClick={() => setShowCreateSupplier(true)}
+                disabled={isSubmitting}
+              >
+                + Create New Supplier
+              </Button>
+            )}
+            {canCreateSupplier && showCreateSupplier && (
+              <div>
+                <Label for="new-supplier-name">New Supplier Name</Label>
+                <Input
+                  id="new-supplier-name"
+                  type="text"
+                  value={newSupplierName}
+                  onChange={e => setNewSupplierName(e.target.value)}
+                  placeholder="Enter supplier name"
+                  disabled={isCreatingSupplier}
+                />
+
+                <div className="d-flex gap-2 mt-2">
+                  <Button
+                    type="button"
+                    color="primary"
+                    onClick={handleCreateSupplier}
+                    disabled={isCreatingSupplier || isSubmitting || !newSupplierName.trim()}
+                  >
+                    {isCreatingSupplier ? 'Creating...' : 'Create Supplier'}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    color="secondary"
+                    onClick={() => {
+                      setShowCreateSupplier(false);
+                      setNewSupplierName('');
+                    }}
+                    disabled={isCreatingSupplier}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </FormGroup>
+        )}
+
+        {isMaterialPurchase && (
+          <FormGroup>
+            <Label for="expected-delivery-date">Expected Delivery Date</Label>
+            <Input
+              id="expected-delivery-date"
+              type="date"
+              value={expectedDeliveryDate}
+              onChange={e => setExpectedDeliveryDate(e.target.value)}
+              disabled={isSubmitting}
+            />
+          </FormGroup>
+        )}
 
         {validationError && (
           <div className={`${styles.purchaseErrorMessage}`}>
