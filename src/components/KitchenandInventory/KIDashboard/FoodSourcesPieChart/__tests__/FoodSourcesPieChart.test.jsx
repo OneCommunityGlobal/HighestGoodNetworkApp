@@ -9,7 +9,7 @@ import FoodSourcesPieChart, {
   toWholePercents,
 } from '../FoodSourcesPieChart';
 
-vi.mock('recharts', () => import('../../testUtils/rechartsPieMock'));
+vi.mock('recharts', () => import('../../testUtils/rechartsMock'));
 
 const mockStore = configureMockStore([]);
 

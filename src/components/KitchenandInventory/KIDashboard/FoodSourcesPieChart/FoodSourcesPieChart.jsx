@@ -1,6 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import KIPieChartCard, { KITCHENS } from '../KIPieChartCard/KIPieChartCard';
+import KIPieChartCard from '../KIPieChartCard/KIPieChartCard';
+import KIChartFilters, {
+  KITCHENS,
+  getRecentMonths,
+  getDateLimits,
+  useChartFilters,
+} from '../KIChartFilters/KIChartFilters';
+
+export { getRecentMonths };
 
 export const SOURCES = [
   { key: 'grown', name: 'Freshly Grown', color: '#5b8c5a', labelColor: '#ffffff' },
@@ -9,18 +17,6 @@ export const SOURCES = [
 ];
 
 const DEFAULTS = { kitchen: 'All', startDate: '', endDate: '' };
-
-// The last 12 months up to this month, as 'YYYY-MM'
-export const getRecentMonths = (today = new Date()) =>
-  Array.from({ length: 12 }, (_, i) => {
-    const d = new Date(today.getFullYear(), today.getMonth() - 11 + i, 1);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-  });
-
-const lastDayOfMonth = month => {
-  const [year, m] = month.split('-').map(Number);
-  return `${month}-${String(new Date(year, m, 0).getDate()).padStart(2, '0')}`;
-};
 
 // Mock data: kg of food each kitchen got from each source per month
 const BASE_KG = {
@@ -93,23 +89,8 @@ export default function FoodSourcesPieChart() {
 
   const months = useMemo(() => getRecentMonths(), []);
   const records = useMemo(() => buildMockRecords(months), [months]);
-
-  const [kitchen, setKitchen] = useState(DEFAULTS.kitchen);
-  const [startDate, setStartDate] = useState(DEFAULTS.startDate);
-  const [endDate, setEndDate] = useState(DEFAULTS.endDate);
-
-  const chartData = useMemo(() => buildSourceData(records, { kitchen, startDate, endDate }), [
-    records,
-    kitchen,
-    startDate,
-    endDate,
-  ]);
-
-  const handleReset = () => {
-    setKitchen(DEFAULTS.kitchen);
-    setStartDate(DEFAULTS.startDate);
-    setEndDate(DEFAULTS.endDate);
-  };
+  const { filters, setFilter, reset, isDefault } = useChartFilters(DEFAULTS);
+  const chartData = useMemo(() => buildSourceData(records, filters), [records, filters]);
 
   return (
     <KIPieChartCard
@@ -117,19 +98,14 @@ export default function FoodSourcesPieChart() {
       darkMode={darkMode}
       chartData={chartData}
       formatTooltip={formatTooltip}
-      kitchen={kitchen}
-      onKitchenChange={setKitchen}
-      startDate={startDate}
-      onStartDateChange={setStartDate}
-      endDate={endDate}
-      onEndDateChange={setEndDate}
-      dateMin={`${months[0]}-01`}
-      dateMax={lastDayOfMonth(months.at(-1))}
-      onReset={handleReset}
-      isDefaultFilters={
-        kitchen === DEFAULTS.kitchen &&
-        startDate === DEFAULTS.startDate &&
-        endDate === DEFAULTS.endDate
+      filterBar={
+        <KIChartFilters
+          filters={filters}
+          onFilterChange={setFilter}
+          onReset={reset}
+          isDefault={isDefault}
+          {...getDateLimits(months)}
+        />
       }
     />
   );

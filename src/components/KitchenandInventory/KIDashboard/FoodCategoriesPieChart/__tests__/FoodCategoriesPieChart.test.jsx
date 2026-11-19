@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import FoodCategoriesPieChart from '../FoodCategoriesPieChart';
 
-vi.mock('recharts', () => import('../../testUtils/rechartsPieMock'));
+vi.mock('recharts', () => import('../../testUtils/rechartsMock'));
 
 const renderChart = (darkMode = false) =>
   render(

@@ -1,10 +1,8 @@
 import PropTypes from 'prop-types';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { FaRegCalendarAlt } from 'react-icons/fa';
-// The Food Categories and Food Sources charts share this card, its filters and its legend
+import { CHART_TOOLTIP_STYLES } from '../KIChartFilters/KIChartFilters';
+// The Food Categories and Food Sources charts share this card and its legend
 import styles from '../FoodCategoriesPieChart/FoodCategoriesPieChart.module.css';
-
-export const KITCHENS = ['Kitchen 1', 'Kitchen 2', 'Kitchen 3'];
 
 const RADIAN = Math.PI / 180;
 
@@ -30,119 +28,23 @@ const renderSliceLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, payload 
   );
 };
 
-const handleDateClick = e => {
-  try {
-    e.currentTarget.showPicker?.();
-  } catch {
-    // Some browsers do not support showPicker; the native input still works
-  }
-};
-
-function DateField({ label, value, min, max, onChange }) {
-  return (
-    <label className={styles.field}>
-      <span className={styles.fieldLabel}>{label}</span>
-      <div className={styles.dateWrapper}>
-        <input
-          className={`${styles.control} ${styles.dateInput}`}
-          type="date"
-          value={value}
-          min={min}
-          max={max}
-          onClick={handleDateClick}
-          onChange={e => onChange(e.target.value)}
-        />
-        <FaRegCalendarAlt className={styles.dateIcon} aria-hidden="true" />
-      </div>
-    </label>
-  );
-}
-
-DateField.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  min: PropTypes.string.isRequired,
-  max: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
-
+// A pie chart card: the chart's filter bar, the title, the pie and a legend with percentages
 export default function KIPieChartCard({
   title,
   darkMode = false,
   chartData,
   formatTooltip,
-  extraFilters = null,
-  kitchen,
-  onKitchenChange,
-  startDate,
-  onStartDateChange,
-  endDate,
-  onEndDateChange,
-  dateMin,
-  dateMax,
-  onReset,
-  isDefaultFilters,
+  filterBar,
+  showChart = true,
 }) {
-  const isDateRangeValid = !startDate || !endDate || startDate <= endDate;
-
   return (
     <div className={[styles.container, darkMode ? styles.darkMode : ''].join(' ')}>
-      <div className={styles.filters}>
-        {extraFilters}
-
-        <label className={styles.field}>
-          <span className={styles.fieldLabel}>Kitchen</span>
-          <select
-            className={styles.control}
-            value={kitchen}
-            onChange={e => onKitchenChange(e.target.value)}
-          >
-            <option value="All">All</option>
-            {KITCHENS.map(k => (
-              <option key={k} value={k}>
-                {k}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <DateField
-          label="From"
-          value={startDate}
-          min={dateMin}
-          max={endDate || dateMax}
-          onChange={onStartDateChange}
-        />
-        <DateField
-          label="To"
-          value={endDate}
-          min={startDate || dateMin}
-          max={dateMax}
-          onChange={onEndDateChange}
-        />
-
-        <div className={styles.buttonCell}>
-          <button
-            type="button"
-            className={styles.resetBtn}
-            onClick={onReset}
-            disabled={isDefaultFilters}
-          >
-            Reset Filters
-          </button>
-        </div>
-
-        {!isDateRangeValid && (
-          <span className={styles.dateRangeError}>
-            From date must be before or equal to To date.
-          </span>
-        )}
-      </div>
+      {filterBar}
 
       <h2 className={styles.chartTitle}>{title}</h2>
 
       <div className={styles.chartWrapper}>
-        {!isDateRangeValid || chartData.length === 0 ? (
+        {!showChart || chartData.length === 0 ? (
           <div className={styles.noDataMessage}>No data available for the selected filters.</div>
         ) : (
           <>
@@ -171,12 +73,7 @@ export default function KIPieChartCard({
                   </Pie>
                   <Tooltip
                     formatter={(value, name, item) => [formatTooltip(value, item.payload), name]}
-                    contentStyle={{
-                      backgroundColor: 'var(--tooltip-bg)',
-                      color: 'var(--text-color)',
-                      border: '1px solid var(--border-color)',
-                    }}
-                    itemStyle={{ color: 'var(--text-color)' }}
+                    {...CHART_TOOLTIP_STYLES}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -214,15 +111,6 @@ KIPieChartCard.propTypes = {
     }),
   ).isRequired,
   formatTooltip: PropTypes.func.isRequired,
-  extraFilters: PropTypes.node,
-  kitchen: PropTypes.string.isRequired,
-  onKitchenChange: PropTypes.func.isRequired,
-  startDate: PropTypes.string.isRequired,
-  onStartDateChange: PropTypes.func.isRequired,
-  endDate: PropTypes.string.isRequired,
-  onEndDateChange: PropTypes.func.isRequired,
-  dateMin: PropTypes.string.isRequired,
-  dateMax: PropTypes.string.isRequired,
-  onReset: PropTypes.func.isRequired,
-  isDefaultFilters: PropTypes.bool.isRequired,
+  filterBar: PropTypes.node.isRequired,
+  showChart: PropTypes.bool,
 };

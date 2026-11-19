@@ -1,9 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import KIPieChartCard, { KITCHENS } from '../KIPieChartCard/KIPieChartCard';
-import styles from './FoodCategoriesPieChart.module.css';
+import KIPieChartCard from '../KIPieChartCard/KIPieChartCard';
+import KIChartFilters, {
+  KITCHENS,
+  isDateRangeValid,
+  useChartFilters,
+} from '../KIChartFilters/KIChartFilters';
 
-const CATEGORIES = [
+export const CATEGORIES = [
   { key: 'produce', name: 'Fresh Produce', color: '#6b8e23', labelColor: '#ffffff' },
   { key: 'grains', name: 'Grains', color: '#c4a35a', labelColor: '#ffffff' },
   { key: 'proteins', name: 'Proteins', color: '#a0522d', labelColor: '#ffffff' },
@@ -54,25 +58,16 @@ const mockRecords = KITCHENS.flatMap(kitchen =>
   ),
 );
 
+const METRIC_OPTIONS = Object.entries(METRICS).map(([value, m]) => ({ value, label: m.label }));
+
 export default function FoodCategoriesPieChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const [metric, setMetric] = useState(DEFAULTS.metric);
-  const [kitchen, setKitchen] = useState(DEFAULTS.kitchen);
-  const [startDate, setStartDate] = useState(DEFAULTS.startDate);
-  const [endDate, setEndDate] = useState(DEFAULTS.endDate);
-
-  const isDateRangeValid = !startDate || !endDate || startDate <= endDate;
-  const isDefaultFilters =
-    metric === DEFAULTS.metric &&
-    kitchen === DEFAULTS.kitchen &&
-    startDate === DEFAULTS.startDate &&
-    endDate === DEFAULTS.endDate;
-
+  const { filters, setFilter, reset, isDefault } = useChartFilters(DEFAULTS);
+  const { metric, kitchen, startDate, endDate } = filters;
   const metricConfig = METRICS[metric];
 
   const chartData = useMemo(() => {
-    if (!isDateRangeValid) return [];
+    if (!isDateRangeValid(filters)) return [];
 
     const from = startDate ? startDate.substring(0, 7) : '';
     const to = endDate ? endDate.substring(0, 7) : '';
@@ -96,27 +91,7 @@ export default function FoodCategoriesPieChart() {
       color: cat.color,
       labelColor: cat.labelColor,
     }));
-  }, [metric, kitchen, startDate, endDate, isDateRangeValid]);
-
-  const handleReset = () => {
-    setMetric(DEFAULTS.metric);
-    setKitchen(DEFAULTS.kitchen);
-    setStartDate(DEFAULTS.startDate);
-    setEndDate(DEFAULTS.endDate);
-  };
-
-  const metricFilter = (
-    <label className={styles.field}>
-      <span className={styles.fieldLabel}>Metric</span>
-      <select className={styles.control} value={metric} onChange={e => setMetric(e.target.value)}>
-        {Object.entries(METRICS).map(([key, m]) => (
-          <option key={key} value={key}>
-            {m.label}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
+  }, [filters, metric, kitchen, startDate, endDate]);
 
   return (
     <KIPieChartCard
@@ -124,17 +99,17 @@ export default function FoodCategoriesPieChart() {
       darkMode={darkMode}
       chartData={chartData}
       formatTooltip={metricConfig.format}
-      extraFilters={metricFilter}
-      kitchen={kitchen}
-      onKitchenChange={setKitchen}
-      startDate={startDate}
-      onStartDateChange={setStartDate}
-      endDate={endDate}
-      onEndDateChange={setEndDate}
-      dateMin={DATE_MIN}
-      dateMax={DATE_MAX}
-      onReset={handleReset}
-      isDefaultFilters={isDefaultFilters}
+      filterBar={
+        <KIChartFilters
+          filters={filters}
+          onFilterChange={setFilter}
+          onReset={reset}
+          isDefault={isDefault}
+          dateMin={DATE_MIN}
+          dateMax={DATE_MAX}
+          metricOptions={METRIC_OPTIONS}
+        />
+      }
     />
   );
 }
