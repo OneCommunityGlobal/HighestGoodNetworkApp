@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styles from './LiveJournalAutoPoster.module.css';
-
+import AutoPosterTabs from '../../shared/AutoPosterTabs';
 import {
   formatDate,
   formatTime,
@@ -171,7 +171,7 @@ function LiveJournalAutoPoster() {
     if (!nextDate) return;
 
     const today = formatDate(new Date());
-    const safeDate = [nextDate, today].sort()[1];
+    const safeDate = [nextDate, today].sort((a, b) => a.localeCompare(b))[1];
 
     setScheduledDate(safeDate);
     setScheduleAttemptedSave(false);
@@ -179,7 +179,9 @@ function LiveJournalAutoPoster() {
     if (safeDate === today) {
       const currentTime = formatTime(new Date());
 
-      setScheduledTime(previous => [previous || currentTime, currentTime].sort()[1]);
+      setScheduledTime(
+        previous => [previous || currentTime, currentTime].sort((a, b) => a.localeCompare(b))[1],
+      );
     }
   };
 
@@ -191,7 +193,7 @@ function LiveJournalAutoPoster() {
     if (scheduledDate === formatDate(new Date())) {
       const currentTime = formatTime(new Date());
 
-      setScheduledTime([nextTime, currentTime].sort()[1]);
+      setScheduledTime([nextTime, currentTime].sort((a, b) => a.localeCompare(b))[1]);
     } else {
       setScheduledTime(nextTime);
     }
@@ -296,23 +298,15 @@ function LiveJournalAutoPoster() {
       })}
       data-testid="livejournal-auto-poster"
     >
-      <div className={styles.subtabs}>
-        {[
+      <AutoPosterTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        styles={styles}
+        tabs={[
           { id: 'make', label: '📝 Make Entry' },
           { id: 'schedule', label: '⏰ Scheduled Entry' },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            type="button"
-            className={classNames(styles.subtab, {
-              [styles.active]: activeTab === tab.id,
-            })}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+        ]}
+      />
 
       {activeTab === 'make' ? (
         <>
