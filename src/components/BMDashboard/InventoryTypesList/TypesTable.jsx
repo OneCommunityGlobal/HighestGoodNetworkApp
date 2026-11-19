@@ -68,6 +68,7 @@ export function TypesTable(props) {
       item,
       name: item.name,
       description: item.description || '',
+      unit: item.unit || '',
     });
   };
 
@@ -112,7 +113,7 @@ export function TypesTable(props) {
       return;
     }
 
-    if (requiresUnit && !(modalState.item.unit || '').trim()) {
+    if (requiresUnit && !modalState.unit.trim()) {
       toast.error('Unit is required');
       return;
     }
@@ -125,7 +126,7 @@ export function TypesTable(props) {
           name: trimmedName,
           description: modalState.description,
           ...(requiresUnit && {
-            unit: modalState.item.unit,
+            unit: modalState.unit,
           }),
         }),
       );
@@ -411,6 +412,30 @@ export function TypesTable(props) {
                   disabled={isProcessing}
                 />
               </Form.Group>
+              {requiresUnit && (
+                <Form.Group className="mt-3">
+                  <Form.Label className={styles.modalLabel}>Unit</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={modalState.unit}
+                    onChange={e =>
+                      setModalState(prev => ({
+                        ...prev,
+                        unit: e.target.value,
+                      }))
+                    }
+                    disabled={isProcessing}
+                    required
+                  >
+                    <option value="">Select unit</option>
+                    {units.map(unit => (
+                      <option key={unit._id || unit.unit} value={unit.unit}>
+                        {unit.unit}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              )}
             </Form>
           </Modal.Body>
 
