@@ -574,3 +574,37 @@
   font-size: 0.75rem;
   line-height: 1.35;
 }
+
+/*
+  Phones: the card sits inside the summary page's own padding (about 60px), then
+  container-fluid's 15px, this card's 36px and the chart wrapper's 24px on each side,
+  which left the chart about 139px wide at 390px (bars and labels disappeared).
+  Trim the padding this component owns; desktop and tablet are unchanged.
+  `.riskProfileRoot:global(.container-fluid)` outranks Bootstrap's own rule.
+*/
+@media (width <= 576px) {
+  .riskProfileRoot:global(.container-fluid) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .container {
+    padding: 16px 12px;
+  }
+
+  .heading {
+    font-size: 22px;
+  }
+
+  .filterRow {
+    justify-content: flex-start;
+  }
+
+  .chartWrapper {
+    padding: 8px;
+  }
+
+  .trendSection {
+    padding: 12px;
+  }
+}
