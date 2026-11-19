@@ -19,6 +19,7 @@ import EmailPanel from './platforms/email';
 import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
 import LiveJournalAutoPoster from './platforms/livejournal';
+import PlurkAutoPoster from './platforms/plurk';
 import SocialMediaComposer from './platforms/social/SocialMediaComposer';
 
 function Announcements({ title, email: initialEmail }) {
@@ -249,6 +250,8 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'livejournal':
                 PlatformComposer = LiveJournalAutoPoster;
+              case 'plurk':
+                PlatformComposer = PlurkAutoPoster;
                 break;
               default:
                 PlatformComposer = SocialMediaComposer;
