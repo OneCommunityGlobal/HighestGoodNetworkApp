@@ -1236,7 +1236,12 @@ export default (
         />
         <ProtectedRoute path="/actual-cost-breakdown" component={ActualCostBreakdown} fallback />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
-        <ProtectedRoute path="/pr-grading-test" exact component={PRGradingTest} />
+        <ProtectedRoute
+          path="/pr-grading-test"
+          exact
+          component={PRGradingTest}
+          routePermissions={RoutePermissions.prDashboard}
+        />
         {/* //temporary route for testing - delete after testing */}
         <ProtectedRoute path="/" exact component={Dashboard} />
         <ProtectedRoute
@@ -1249,12 +1254,14 @@ export default (
           path="/pr-dashboard/promotion-eligibility"
           exact
           component={PromotionEligibility}
+          routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute path="/planned-costs" exact component={PlannedCostDonutChart} />
         <ProtectedRoute
           path="/pr-team-analytics/reviewers-stacked-bar-chart"
           exact
           component={ReviewersStackedBarChart}
+          routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute
           path="/analytics/dashboard"
@@ -1267,6 +1274,7 @@ export default (
           exact
           component={PRReviewTeamAnalyticsDashboard}
           fallback
+          routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute path="/analytics/popular-prs" exact component={PopularPRChart} fallback />
         <ProtectedRoute
@@ -1284,6 +1292,7 @@ export default (
           path="/pr-team-analytics/popular-prs"
           exact
           component={PRReviewTeamAnalytics}
+          routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute
           path="/pr-grading-dashboard"
@@ -1296,9 +1305,20 @@ export default (
           exact
           component={PRGradingScreenContainer}
           fallback
+          routePermissions={RoutePermissions.prDashboard}
         />
-        <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
-        <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
+        <ProtectedRoute
+          path="/pr-dashboard/overview"
+          exact
+          component={PRDashboardOverview}
+          routePermissions={RoutePermissions.prDashboard}
+        />
+        <ProtectedRoute
+          path="/pr-dashboard/analytics"
+          exact
+          component={PRReviewTeamAnalytics}
+          routePermissions={RoutePermissions.prDashboard}
+        />
         {/* <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
           exact
@@ -1308,8 +1328,14 @@ export default (
           path="/pr-dashboard/top-reviewed-prs"
           exact
           component={PRDashboardTopReviewedPRs}
+          routePermissions={RoutePermissions.prDashboard}
         />
-        <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
+        <ProtectedRoute
+          path="/pr-dashboard/details"
+          exact
+          component={PRDashboardDetails}
+          routePermissions={RoutePermissions.prDashboard}
+        />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
