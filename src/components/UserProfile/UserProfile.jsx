@@ -1369,6 +1369,13 @@ setUpdatedTasks(prev => {
 
   const hasScheduledFinalDay = userProfile.isActive && userProfile.inactiveReason === InactiveReason.ScheduledSeparation && !!userProfile.endDate;
 
+  const checkActiveTab = (tabNumber) => {
+    if (darkMode && activeTab === tabNumber) {
+      return 'bg-space-cadet text-light darkMode';
+    }
+    return 'text-azure';
+  };
+
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
@@ -1752,11 +1759,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '1' },
-                      darkMode
-                        ? activeTab === '1'
-                          ? 'bg-space-cadet text-light darkMode'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('1')
                     )}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
@@ -1769,11 +1772,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '2' },
-                      darkMode
-                        ? activeTab === '2'
-                          ? 'bg-space-cadet text-light darkMode'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('2')
                     )}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
@@ -1786,11 +1785,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '3' },
-                      darkMode
-                        ? activeTab === '3'
-                          ? 'bg-space-cadet text-light darkMode'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('3')
                     )}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
@@ -1803,11 +1798,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '4' },
-                      darkMode
-                        ? activeTab === '4'
-                          ? 'bg-space-cadet text-light darkMode'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('4')
                     )}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
@@ -1821,11 +1812,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '5' },
-                      darkMode
-                        ? activeTab === '5'
-                          ? 'bg-space-cadet text-light darkMode'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('5')
                     )}
                     onClick={() => toggleTab('5')}
                   >
