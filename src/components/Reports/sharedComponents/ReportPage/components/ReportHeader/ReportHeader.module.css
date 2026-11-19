@@ -79,7 +79,7 @@
   bottom: 2px;
   width: 20px;
   height: 20px;
-  background-color: #3A506B;
+  background-color: #3a506b;
   border-radius: 50%;
   border: 2px solid #282727;
 }
@@ -91,7 +91,6 @@
 .active {
   background-color: #2affa1;
 }
-
 .report-header-entity-other-info {
   font-size: 15px;
 }

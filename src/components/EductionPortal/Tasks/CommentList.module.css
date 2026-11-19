@@ -94,14 +94,14 @@
 
 .commentItem {
   padding: 1rem;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   transition: box-shadow 0.2s ease;
 }
 
 .commentItem:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
 }
 
 .commentItemDark {
@@ -110,7 +110,7 @@
 }
 
 .commentItemDark:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
 }
 
 .commentHeader {
@@ -140,7 +140,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: #fff;
   font-weight: 600;
   font-size: 0.875rem;
   flex-shrink: 0;
@@ -189,7 +189,7 @@
   color: #374151;
   font-size: 0.938rem;
   line-height: 1.6;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   white-space: pre-wrap;
 }
 
@@ -208,7 +208,7 @@
   color: #6b7280;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .commentItem {
     padding: 0.875rem;
   }
