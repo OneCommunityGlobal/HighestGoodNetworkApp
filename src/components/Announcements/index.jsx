@@ -250,6 +250,7 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'livejournal':
                 PlatformComposer = LiveJournalAutoPoster;
+                break;
               case 'plurk':
                 PlatformComposer = PlurkAutoPoster;
                 break;

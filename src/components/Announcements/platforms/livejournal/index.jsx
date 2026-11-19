@@ -42,6 +42,9 @@ const formatDateTime = (date, time) => {
       });
 };
 
+const formatExcerpt = content =>
+  content.length > 140 ? `${content.slice(0, 140).trim()}…` : content || 'No content captured.';
+
 const makeId = () => `livejournal-${crypto.randomUUID()}`;
 
 const buttonStyle = (variant, darkMode) => {
@@ -223,7 +226,7 @@ function LiveJournalAutoPoster() {
     if (!nextDate) return;
 
     const today = formatDate(new Date());
-    const safeDate = nextDate < today ? today : nextDate;
+    const safeDate = [nextDate, today].sort()[1];
 
     setScheduledDate(safeDate);
     setScheduleAttemptedSave(false);
@@ -231,7 +234,7 @@ function LiveJournalAutoPoster() {
     if (safeDate === today) {
       const currentTime = formatTime(new Date());
 
-      setScheduledTime(previous => (!previous || previous < currentTime ? currentTime : previous));
+      setScheduledTime(previous => [previous || currentTime, currentTime].sort()[1]);
     }
   };
 
@@ -243,7 +246,7 @@ function LiveJournalAutoPoster() {
     if (scheduledDate === formatDate(new Date())) {
       const currentTime = formatTime(new Date());
 
-      setScheduledTime(nextTime < currentTime ? currentTime : nextTime);
+      setScheduledTime([nextTime, currentTime].sort()[1]);
     } else {
       setScheduledTime(nextTime);
     }
@@ -780,11 +783,7 @@ function LiveJournalAutoPoster() {
                       </span>
                     </div>
 
-                    <p className={styles.savedExcerpt}>
-                      {item.content.length > 140
-                        ? `${item.content.slice(0, 140).trim()}…`
-                        : item.content || 'No content captured.'}
-                    </p>
+                    <p className={styles.savedExcerpt}>{formatExcerpt(item.content)}</p>
 
                     <div className={styles.savedActions}>
                       <button
