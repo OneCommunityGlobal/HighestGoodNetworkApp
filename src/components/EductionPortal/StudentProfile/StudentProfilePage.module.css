@@ -109,6 +109,22 @@
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 }
 
+/*
+  Phones: four labels such as "Educational Progress" need more room than a quarter of
+  a 390px screen, so they overlapped each other. Wrap the tabs into two rows of two.
+*/
+@media (width <= 576px) {
+  .tabs {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .tabButton {
+    flex: 1 1 calc(50% - 0.25rem);
+    padding: 0.5rem 0.75rem;
+  }
+}
+
 /* Educational Progress */
 .progressSection {
   margin-top: 1.5rem;
