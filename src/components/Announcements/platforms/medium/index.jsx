@@ -1,106 +1,51 @@
 import React, { useMemo, useState } from 'react';
-
 import classNames from 'classnames';
-
 import { useSelector } from 'react-redux';
-
 import { toast } from 'react-toastify';
-
 import styles from './MediumAutoPoster.module.css';
 
+import {
+  formatDate,
+  formatTime,
+  formatDateTime,
+  formatExcerpt,
+  copyText,
+  buttonStyle as getButtonStyle,
+} from '../../shared/autoPosterUtils';
+
+import AutoPosterTabs from '../../shared/AutoPosterTabs';
+
 const TITLE_MIN = 10;
-
 const TITLE_MAX = 100;
-
 const CONTENT_MIN = 50;
 
 const sanitizeTags = text =>
   [
     ...new Set(
       text
-
         .split(',')
-
         .map(tag =>
           tag
-
             .trim()
-
             .replace(/^#/, '')
-
             .toLowerCase(),
         )
-
         .filter(Boolean)
-
         .map(tag => tag.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))
-
         .filter(Boolean),
     ),
   ].slice(0, 5);
 
-const pad = value => String(value).padStart(2, '0');
+const buttonStyle = (variant, darkMode) =>
+  getButtonStyle(variant, darkMode, {
+    primary: '#0d6efd',
+    ghostBackground: '#e9efff',
+    ghostText: '#1c3f82',
+  });
 
-const formatDate = date =>
-  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+const getToday = () => formatDate(new Date());
 
-const formatTime = date => `${pad(date.getHours())}:${pad(date.getMinutes())}`;
-
-const formatDateTime = (date, time) => {
-  if (!date) return 'Date unavailable';
-
-  const parsed = new Date(`${date}T${time || '00:00'}`);
-
-  return Number.isNaN(parsed.getTime())
-    ? date
-    : parsed.toLocaleString(undefined, {
-        dateStyle: 'medium',
-
-        timeStyle: time ? 'short' : undefined,
-      });
-};
-
-const makeId = () => `medium-${crypto.randomUUID()}`;
-
-const buttonStyle = (variant, darkMode) => {
-  const base = {
-    borderRadius: '999px',
-
-    border: 'none',
-
-    cursor: 'pointer',
-
-    fontWeight: 600,
-
-    padding: '10px 18px',
-
-    transition: 'filter 0.2s ease',
-  };
-
-  if (variant === 'primary') {
-    return { ...base, backgroundColor: '#0d6efd', color: '#fff' };
-  }
-
-  if (variant === 'outline') {
-    return {
-      ...base,
-
-      backgroundColor: 'transparent',
-
-      color: darkMode ? '#9bb5ff' : '#0d6efd',
-
-      border: `1px solid ${darkMode ? '#3d4d6d' : '#0d6efd'}`,
-    };
-  }
-
-  return {
-    ...base,
-
-    backgroundColor: darkMode ? '#1c2b44' : '#e9efff',
-
-    color: darkMode ? '#cfd9f8' : '#1c3f82',
-  };
-};
+const getCurrentTime = () => formatTime(new Date());
 
 const validateArticle = ({
   trimmedTitle,
@@ -143,39 +88,110 @@ const validateArticle = ({
   return true;
 };
 
+const SavedScheduleList = ({
+  savedSchedules,
+  editingId,
+  darkMode,
+  editMediumSchedule,
+  openMediumEditor,
+  handleDeleteSchedule,
+}) => (
+  <div className={styles.savedList}>
+    {savedSchedules.length === 0 ? (
+      <p className={styles.empty}>No scheduled posts yet. Save one to see it listed here.</p>
+    ) : (
+      savedSchedules.map(item => (
+        <article
+          key={item.id}
+          className={classNames(styles.savedItem, {
+            [styles.savedItemActive]: item.id === editingId,
+          })}
+        >
+          <div className={styles.savedHeader}>
+            <h4 className={styles.savedTitle}>{item.title || 'Untitled article'}</h4>
+
+            <span className={styles.savedMeta}>
+              {formatDateTime(item.scheduledDate, item.scheduledTime)}
+            </span>
+          </div>
+
+          <p className={styles.savedExcerpt}>
+            {formatExcerpt(item.content, 'No content captured.')}
+          </p>
+
+          <div className={styles.savedActions}>
+            <button
+              type="button"
+              style={buttonStyle('ghost', darkMode)}
+              onClick={() => editMediumSchedule(item)}
+            >
+              Edit
+            </button>
+
+            <button
+              type="button"
+              style={buttonStyle('outline', darkMode)}
+              onClick={() => copyText(item.scheduledDraft, 'Scheduled draft')}
+            >
+              Copy
+            </button>
+
+            <button
+              type="button"
+              style={buttonStyle('outline', darkMode)}
+              onClick={openMediumEditor}
+            >
+              Open Medium
+            </button>
+
+            <button
+              type="button"
+              style={buttonStyle('ghost', darkMode)}
+              onClick={() => handleDeleteSchedule(item.id)}
+            >
+              Delete
+            </button>
+          </div>
+        </article>
+      ))
+    )}
+  </div>
+);
+
 function MediumAutoPoster() {
   const darkMode = useSelector(state => state.theme?.darkMode);
 
+  // Editor state
   const [activeTab, setActiveTab] = useState('make');
-
   const [title, setTitle] = useState('');
-
   const [content, setContent] = useState('');
-
   const [tagsText, setTagsText] = useState('');
-
   const [canonicalUrl, setCanonicalUrl] = useState('');
-
   const [visibility, setVisibility] = useState('draft');
 
+  // Scheduling state
   const [scheduledDraft, setScheduledDraft] = useState('');
-
-  const [scheduledDate, setScheduledDate] = useState(() => formatDate(new Date()));
-
-  const [scheduledTime, setScheduledTime] = useState(() => formatTime(new Date()));
-
+  const [scheduledDate, setScheduledDate] = useState(getToday);
+  const [scheduledTime, setScheduledTime] = useState(getCurrentTime);
   const [savedSchedules, setSavedSchedules] = useState([]);
-
   const [editingId, setEditingId] = useState(null);
-
   const [scheduleAttemptedSave, setScheduleAttemptedSave] = useState(false);
 
+  const today = getToday();
+  const scheduleTimeMin = scheduledDate === today ? getCurrentTime() : '';
+
+  const editingSchedule = useMemo(
+    () => savedSchedules.find(item => item.id === editingId) || null,
+    [savedSchedules, editingId],
+  );
+
+  const scheduleHasDraft = Boolean(scheduledDraft.trim());
+
+  // Article validation
   const tags = useMemo(() => sanitizeTags(tagsText), [tagsText]);
 
   const trimmedTitle = title.trim();
-
   const trimmedContent = content.trim();
-
   const trimmedUrl = canonicalUrl.trim();
 
   const titleValid = trimmedTitle.length >= TITLE_MIN && trimmedTitle.length <= TITLE_MAX;
@@ -187,9 +203,7 @@ function MediumAutoPoster() {
   const readyToCopy = titleValid && contentValid && tags.length > 0 && urlValid;
 
   const titleInvalid = trimmedTitle.length > 0 && !titleValid;
-
   const contentInvalid = trimmedContent.length > 0 && !contentValid;
-
   const urlInvalid = !urlValid;
 
   const hasInput = Boolean(trimmedTitle || trimmedContent || tagsText.trim() || trimmedUrl);
@@ -199,67 +213,59 @@ function MediumAutoPoster() {
 
     return [
       `Title\n${trimmedTitle || '—'}`,
-
       `Content\n${trimmedContent || '—'}`,
-
       `Tags\n${tagList}`,
-
       `Canonical URL\n${trimmedUrl || '—'}`,
-
       `Visibility\n${visibility}`,
     ].join('\n\n');
   };
 
-  const preview = useMemo(
-    () => (hasInput ? buildDraft() : ''),
+  const preview = useMemo(() => (hasInput ? buildDraft() : ''), [
+    title,
+    content,
+    tagsText,
+    canonicalUrl,
+    visibility,
+    hasInput,
+  ]);
 
-    // The preview should update whenever the editor fields change.
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-
-    [title, content, tagsText, canonicalUrl, visibility, hasInput],
-  );
-
-  const editingSchedule = useMemo(
-    () => savedSchedules.find(item => item.id === editingId) || null,
-
-    [savedSchedules, editingId],
-  );
-
-  const scheduleHasDraft = Boolean(scheduledDraft.trim());
-
-  const copyText = async (text, label) => {
-    if (!text?.trim()) {
-      toast.warn(`Nothing to copy for ${label}.`);
-
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(text);
-
-      toast.success(`${label} copied to clipboard.`);
-    } catch {
-      toast.error(`Could not copy ${label.toLowerCase()}.`);
-    }
-  };
-
+  // Editor handlers
   const resetEditor = () => {
     setTitle('');
-
     setContent('');
-
     setTagsText('');
-
     setCanonicalUrl('');
-
     setVisibility('draft');
   };
 
   const handleReset = () => {
     resetEditor();
-
     toast.info('Editor fields cleared.');
+  };
+
+  const openMediumEditor = () => {
+    window.open('https://medium.com/new-story', '_blank', 'noopener,noreferrer');
+  };
+
+  const removeTag = tagToRemove => {
+    setTagsText(tags.filter(tag => tag !== tagToRemove).join(', '));
+  };
+
+  // Scheduling handlers
+  const handleScheduleDateChange = event => {
+    const nextDate = event.target.value;
+
+    setScheduledDate(nextDate);
+    setScheduleAttemptedSave(false);
+
+    if (nextDate === today && scheduledTime < getCurrentTime()) {
+      setScheduledTime(getCurrentTime());
+    }
+  };
+
+  const handleScheduleTimeChange = event => {
+    setScheduledTime(event.target.value);
+    setScheduleAttemptedSave(false);
   };
 
   const handleScheduleClick = () => {
@@ -277,189 +283,118 @@ function MediumAutoPoster() {
     const now = new Date();
 
     setScheduledDate(formatDate(now));
-
     setScheduledTime(formatTime(now));
-
     setScheduledDraft(preview);
-
     setScheduleAttemptedSave(false);
-
     setEditingId(null);
-
     setActiveTab('schedule');
 
     toast.success('Draft moved to the Schedule tab.');
   };
 
-  const handleScheduleDateChange = event => {
-    const nextDate = event.target.value;
-
-    if (!nextDate) return;
-
-    const today = formatDate(new Date());
-
-    const safeDate = nextDate < today ? today : nextDate;
-
-    setScheduledDate(safeDate);
-
-    setScheduleAttemptedSave(false);
-
-    if (safeDate === today) {
-      const currentTime = formatTime(new Date());
-
-      setScheduledTime(previous => (!previous || previous < currentTime ? currentTime : previous));
-    }
-  };
-
-  const handleScheduleTimeChange = event => {
-    const nextTime = event.target.value;
-
-    if (!nextTime) return;
-
-    if (scheduledDate === formatDate(new Date())) {
-      const currentTime = formatTime(new Date());
-
-      setScheduledTime(nextTime < currentTime ? currentTime : nextTime);
-    } else {
-      setScheduledTime(nextTime);
-    }
-
-    setScheduleAttemptedSave(false);
-  };
-
   const handleSaveSchedule = () => {
     setScheduleAttemptedSave(true);
 
-    if (!scheduleHasDraft) {
-      toast.warn('Add an article to the schedule first.');
-
+    if (!scheduledDraft.trim()) {
+      toast.error('Please add a draft before saving.');
       return;
     }
 
-    if (!scheduledDate || !scheduledTime) {
-      toast.error('Choose a schedule date and time.');
-
+    if (!scheduledDate) {
+      toast.error('Please select a scheduled date.');
       return;
     }
 
-    const scheduledAt = new Date(`${scheduledDate}T${scheduledTime}`);
-
-    if (Number.isNaN(scheduledAt.getTime()) || scheduledAt <= new Date()) {
-      toast.error('Choose a future date and time.');
-
+    if (!scheduledTime) {
+      toast.error('Please select a scheduled time.');
       return;
     }
 
-    const id = editingId || makeId();
+    const selectedDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
 
-    const record = {
-      id,
+    if (Number.isNaN(selectedDateTime.getTime())) {
+      toast.error('Please select a valid date and time.');
+      return;
+    }
 
+    if (selectedDateTime <= new Date()) {
+      toast.error('Please select a future date and time.');
+      return;
+    }
+
+    const scheduleData = {
+      id: editingId || `medium-${Date.now()}`,
       title: trimmedTitle,
-
       content: trimmedContent,
-
-      tags: [...tags],
-
+      tags,
       tagsText,
-
       canonicalUrl: trimmedUrl,
-
       visibility,
-
-      scheduledDraft: scheduledDraft.trim(),
-
       scheduledDate,
-
       scheduledTime,
-
-      updatedAt: new Date().toISOString(),
+      scheduledDraft,
     };
 
-    setSavedSchedules(previous => [record, ...previous.filter(item => item.id !== id)]);
+    if (editingId) {
+      setSavedSchedules(previousSchedules =>
+        previousSchedules.map(item => (item.id === editingId ? scheduleData : item)),
+      );
 
-    toast.success(
-      editingId
-        ? 'Scheduled draft updated for this session.'
-        : 'Scheduled draft saved for this session.',
-    );
+      toast.success('Scheduled post updated.');
+    } else {
+      setSavedSchedules(previousSchedules => [...previousSchedules, scheduleData]);
 
-    resetEditor();
-
-    setScheduledDraft('');
-
-    setScheduledDate(formatDate(new Date()));
-
-    setScheduledTime(formatTime(new Date()));
-
-    setScheduleAttemptedSave(false);
+      toast.success('Scheduled post saved.');
+    }
 
     setEditingId(null);
-
+    setScheduleAttemptedSave(false);
+    setScheduledDraft('');
+    setScheduledDate(getToday());
+    setScheduledTime(getCurrentTime());
+    resetEditor();
     setActiveTab('make');
   };
 
-  const handleEditSchedule = item => {
-    const today = formatDate(new Date());
-
-    let date = item.scheduledDate || today;
-
-    let time = item.scheduledTime || formatTime(new Date());
-
-    if (date < today) date = today;
-
-    if (date === today && time < formatTime(new Date())) {
-      time = formatTime(new Date());
-    }
+  const editMediumSchedule = item => {
+    setEditingId(item.id);
+    setScheduledDraft(item.scheduledDraft || '');
+    setScheduledDate(item.scheduledDate || getToday());
+    setScheduledTime(item.scheduledTime || getCurrentTime());
 
     setTitle(item.title || '');
-
     setContent(item.content || '');
-
     setTagsText(item.tagsText || '');
-
     setCanonicalUrl(item.canonicalUrl || '');
-
     setVisibility(item.visibility || 'draft');
 
-    setScheduledDraft(item.scheduledDraft || '');
-
-    setScheduledDate(date);
-
-    setScheduledTime(time);
-
-    setEditingId(item.id);
-
     setScheduleAttemptedSave(false);
-
     setActiveTab('schedule');
-
-    toast.info('Loaded scheduled draft for editing.');
   };
 
   const handleDeleteSchedule = id => {
-    setSavedSchedules(previous => previous.filter(item => item.id !== id));
+    setSavedSchedules(previousSchedules => previousSchedules.filter(item => item.id !== id));
 
     if (editingId === id) {
       setEditingId(null);
-
       setScheduledDraft('');
+      setScheduledDate(getToday());
+      setScheduledTime(getCurrentTime());
+      setScheduleAttemptedSave(false);
     }
 
-    toast.info('Scheduled draft removed from this session.');
+    toast.success('Scheduled post deleted.');
   };
 
-  const openMediumEditor = () => {
-    window.open('https://medium.com/new-story', '_blank', 'noopener,noreferrer');
+  const handleCancelEditing = () => {
+    setEditingId(null);
+    setScheduledDraft('');
+    setScheduledDate(getToday());
+    setScheduledTime(getCurrentTime());
+    setScheduleAttemptedSave(false);
+    resetEditor();
+    setActiveTab('make');
   };
-
-  const removeTag = tagToRemove => {
-    setTagsText(tags.filter(tag => tag !== tagToRemove).join(', '));
-  };
-
-  const today = formatDate(new Date());
-
-  const scheduleTimeMin = scheduledDate === today ? formatTime(new Date()) : undefined;
 
   return (
     <div
@@ -468,24 +403,15 @@ function MediumAutoPoster() {
       })}
       data-testid="medium-auto-poster"
     >
-      <div className={styles.subtabs}>
-        {[
+      <AutoPosterTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        styles={styles}
+        tabs={[
           { id: 'make', label: '📝 Make Post' },
-
           { id: 'schedule', label: '⏰ Scheduled Post' },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            type="button"
-            className={classNames(styles.subtab, {
-              [styles.active]: activeTab === tab.id,
-            })}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+        ]}
+      />
 
       {activeTab === 'make' ? (
         <>
@@ -566,7 +492,6 @@ function MediumAutoPoster() {
             >
               <div className={styles.fieldHeader}>
                 <label htmlFor="medium-canonical">Canonical URL</label>
-
                 <span className={styles.fieldMeta}>optional</span>
               </div>
 
@@ -664,7 +589,6 @@ function MediumAutoPoster() {
             >
               <div className={styles.fieldHeader}>
                 <label htmlFor="medium-tags">Tags *</label>
-
                 <span className={styles.fieldMeta}>up to 5 tags</span>
               </div>
 
@@ -729,9 +653,7 @@ function MediumAutoPoster() {
                 className={styles.input}
               >
                 <option value="draft">Draft</option>
-
                 <option value="public">Public</option>
-
                 <option value="unlisted">Unlisted</option>
               </select>
 
@@ -767,7 +689,6 @@ function MediumAutoPoster() {
                   type="button"
                   style={{
                     ...buttonStyle('primary', darkMode),
-
                     opacity: readyToCopy ? 1 : 0.5,
                   }}
                   onClick={() => copyText(preview, 'Medium draft')}
@@ -878,7 +799,7 @@ function MediumAutoPoster() {
               <button
                 type="button"
                 style={buttonStyle('outline', darkMode)}
-                onClick={() => setActiveTab('make')}
+                onClick={editingId ? handleCancelEditing : () => setActiveTab('make')}
               >
                 Back to Make Post
               </button>
@@ -892,70 +813,14 @@ function MediumAutoPoster() {
               Edit a saved draft, copy it, or open Medium to submit it manually.
             </p>
 
-            <div className={styles.savedList}>
-              {savedSchedules.length === 0 ? (
-                <p className={styles.empty}>
-                  No scheduled posts yet. Save one to see it listed here.
-                </p>
-              ) : (
-                savedSchedules.map(item => (
-                  <article
-                    key={item.id}
-                    className={classNames(styles.savedItem, {
-                      [styles.savedItemActive]: item.id === editingId,
-                    })}
-                  >
-                    <div className={styles.savedHeader}>
-                      <h4 className={styles.savedTitle}>{item.title || 'Untitled article'}</h4>
-
-                      <span className={styles.savedMeta}>
-                        {formatDateTime(item.scheduledDate, item.scheduledTime)}
-                      </span>
-                    </div>
-
-                    <p className={styles.savedExcerpt}>
-                      {item.content.length > 140
-                        ? `${item.content.slice(0, 140).trim()}…`
-                        : item.content || 'No content captured.'}
-                    </p>
-
-                    <div className={styles.savedActions}>
-                      <button
-                        type="button"
-                        style={buttonStyle('ghost', darkMode)}
-                        onClick={() => handleEditSchedule(item)}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        type="button"
-                        style={buttonStyle('outline', darkMode)}
-                        onClick={() => copyText(item.scheduledDraft, 'Scheduled draft')}
-                      >
-                        Copy
-                      </button>
-
-                      <button
-                        type="button"
-                        style={buttonStyle('outline', darkMode)}
-                        onClick={openMediumEditor}
-                      >
-                        Open Medium
-                      </button>
-
-                      <button
-                        type="button"
-                        style={buttonStyle('ghost', darkMode)}
-                        onClick={() => handleDeleteSchedule(item.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </article>
-                ))
-              )}
-            </div>
+            <SavedScheduleList
+              savedSchedules={savedSchedules}
+              editingId={editingId}
+              darkMode={darkMode}
+              editMediumSchedule={editMediumSchedule}
+              openMediumEditor={openMediumEditor}
+              handleDeleteSchedule={handleDeleteSchedule}
+            />
           </section>
         </div>
       )}

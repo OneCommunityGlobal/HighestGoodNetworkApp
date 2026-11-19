@@ -251,6 +251,7 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'medium':
                 PlatformComposer = MediumAutoPoster;
+                break;
               case 'plurk':
                 PlatformComposer = PlurkAutoPoster;
                 break;
