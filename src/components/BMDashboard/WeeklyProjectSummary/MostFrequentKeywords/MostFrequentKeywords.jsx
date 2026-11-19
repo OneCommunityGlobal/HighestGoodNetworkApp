@@ -7,6 +7,7 @@ import * as d3 from 'd3';
 import styles from './MostFrequentKeywords.module.css';
 import Select, { components as selectComponents } from 'react-select';
 import PropTypes from 'prop-types';
+import { ENDPOINTS } from '../../../../utils/URL';
 
 function deduplicateByTag(sorted, maxItems) {
   const latestItems = [];
@@ -530,7 +531,9 @@ function MFKChartArea({ isLoading, error, tags, selectedOption, svgRef, containe
       {isLoading && <div className={mfkStyles.mfkLoading}>Loading...</div>}
       {!isLoading && error && <div className={mfkStyles.mfkError}>{error}</div>}
       {!isLoading && !error && tags.length === 0 && (
-        <div className={mfkStyles.mfkEmpty}>{selectedOption ? 'No data' : 'Select source'}</div>
+        <div className={mfkStyles.mfkEmpty}>
+          {selectedOption ? 'No keywords found for this project' : 'Select source'}
+        </div>
       )}
       {!isLoading && !error && tags.length > 0 && (
         <svg ref={svgRef} aria-hidden="true" style={{ width: '100%', height: '100%' }} />
@@ -572,7 +575,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMobile, setIsMobile] = useState(false);
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
-  const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
   const darkMode = propDarkMode ?? reduxDarkMode;
   const palette = buildPalette(darkMode);
@@ -581,10 +583,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Load the BM Dashboard construction projects (Building 1, 2, 3, ...)
   const fetchProjects = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_BASE}/projects`, {
+      const res = await axios.get(ENDPOINTS.BM_PROJECTS, {
         headers: { Authorization: token },
       });
       setProjects(res.data || []);
@@ -596,6 +599,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     }
   };
 
+  // Load the most frequent tags from the selected project's lessons
   const fetchProjectData = async projectId => {
     try {
       setIsLoading(true);
@@ -608,9 +612,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       const token = localStorage.getItem('token');
 
       try {
-        const response = await axios.get(`${API_BASE}/tags/frequent?${params.toString()}`, {
-          headers: { Authorization: token },
-        });
+        const response = await axios.get(
+          `${ENDPOINTS.BM_LESSON_TAGS_FREQUENT}?${params.toString()}`,
+          {
+            headers: { Authorization: token },
+          },
+        );
 
         const responseData = response?.data?.data;
         if (responseData && responseData.length > 0) {
@@ -775,6 +782,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     if (allTags.length > 0) {
       const filtered = filterTagsByDate(allTags);
       setTags(filtered);
+    } else {
+      // Clear old keywords so a project with no data shows the empty message
+      setTags([]);
     }
   }, [allTags, startDate, endDate, filterTagsByDate]);
 
@@ -1299,7 +1309,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       options.push({
         label: '🏢 REAL PROJECTS',
         options: projects.map(p => ({
-          label: p.projectName,
+          label: p.name || p.projectName,
           value: p._id,
           type: 'project',
         })),
