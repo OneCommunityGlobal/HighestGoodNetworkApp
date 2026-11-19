@@ -890,22 +890,33 @@ const WeeklyUpdateComposer = ({ onClose }) => {
           Preview Weekly Progress Update
         </ModalHeader>
         <ModalBody>
-          <Alert color="info" className="mb-3">
+          <Alert
+            color="info"
+            className="mb-3"
+            style={
+              darkMode
+                ? { backgroundColor: '#1e3a5f', borderColor: '#2c5282', color: '#e2e8f0' }
+                : undefined
+            }
+          >
             <strong>Sending to:</strong>{' '}
             {emailDistribution === 'broadcast'
               ? 'All subscribers on your email list'
               : `${recipientList.length} test recipient(s)`}
           </Alert>
 
-          <div
+          {/* Rendered in an iframe so the app's dark-mode styles can't override the email's own
+              styles, and the preview matches what recipients receive */}
+          <iframe
+            title="Weekly update email preview"
             className="mt-2 border rounded"
+            srcDoc={generateEmailHTML()}
+            sandbox=""
             style={{
-              maxHeight: '500px',
-              overflow: 'auto',
+              width: '100%',
+              height: '500px',
               backgroundColor: '#f4f4f4',
-              padding: '10px',
             }}
-            dangerouslySetInnerHTML={{ __html: generateEmailHTML() }}
           />
         </ModalBody>
         <ModalFooter>
