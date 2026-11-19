@@ -6,7 +6,7 @@ import AnalyticsSummaryCards from './AnalyticsSummaryCards';
 import ApplicationsTable from './ApplicationsTable';
 import styles from './JobApplicationAnalytics.module.css';
 
-const ALLOWED_ROLES = ['Owner', 'Administrator'];
+const ALLOWED_ROLES = new Set(['Owner', 'Administrator']);
 
 const DEFAULT_FILTERS = {
   q: '',
@@ -27,7 +27,7 @@ function normalizeList(payload) {
 function JobApplicationAnalyticsPage() {
   const darkMode = useSelector(state => state.theme?.darkMode);
   const role = useSelector(state => state.auth?.user?.role);
-  const canAccess = ALLOWED_ROLES.includes(role);
+  const canAccess = ALLOWED_ROLES.has(role);
 
   const [summary, setSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
@@ -47,7 +47,8 @@ function JobApplicationAnalyticsPage() {
     try {
       const { data } = await axios.get(ENDPOINTS.JOB_APPLICATIONS_SUMMARY);
       setSummary(data);
-    } catch (err) {
+    } catch {
+      // Summary cards are non-blocking; CRM table still loads if this fails.
       setSummary(null);
     } finally {
       setSummaryLoading(false);

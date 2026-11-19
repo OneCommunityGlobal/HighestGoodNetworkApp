@@ -570,7 +570,8 @@ export const ENDPOINTS = {
     if (to) params.set('to', to);
     if (sort) params.set('sort', sort);
     const qs = params.toString();
-    return `${APIEndpoint}/jobforms/applications${qs ? `?${qs}` : ''}`;
+    const baseUrl = `${APIEndpoint}/jobforms/applications`;
+    return qs ? `${baseUrl}?${qs}` : baseUrl;
   },
   /** Public: distinct job titles for the apply-page position dropdown. */
   GET_JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
