@@ -186,6 +186,7 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
       layout: { padding: { left: 8, right: 8 } },
       plugins: {
         title: { display: false },
+        legend: { labels: { color: tickColor } },
         // Count inside each bar; month-over-month change just above it, aligned to its bar
         datalabels: {
           labels: {
@@ -207,6 +208,11 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
           },
         },
         tooltip: {
+          backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+          titleColor: darkMode ? '#f8fafc' : '#111827',
+          bodyColor: darkMode ? '#e2e8f0' : '#374151',
+          borderColor: darkMode ? '#475569' : '#d1d5db',
+          borderWidth: 1,
           callbacks: {
             afterLabel: context => {
               const { dataIndex } = context;
@@ -285,6 +291,22 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
       input: base => ({
         ...base,
         color: darkMode ? '#f1f5f9' : '#000',
+      }),
+      dropdownIndicator: base => ({
+        ...base,
+        color: darkMode ? '#cbd5e1' : base.color,
+      }),
+      clearIndicator: base => ({
+        ...base,
+        color: darkMode ? '#cbd5e1' : base.color,
+      }),
+      indicatorSeparator: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#475569' : base.backgroundColor,
+      }),
+      noOptionsMessage: base => ({
+        ...base,
+        color: darkMode ? '#cbd5e1' : base.color,
       }),
       placeholder: base => ({
         ...base,
