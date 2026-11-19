@@ -391,6 +391,17 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  max-width: 100%;
+}
+
+.tasksAndTimelogHeaderButtonColumn {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.intangibleTimeButton {
+  max-width: 100%;
+  white-space: nowrap;
 }
 
 .taskboardHeaderTitle {
@@ -438,6 +449,18 @@
 @media only screen and (width <= 575px) {
   .dateSelectorForm {
     margin-left: 5px;
+  }
+
+  .tasksAndTimelogHeaderButtonColumn,
+  .tasksAndTimelogHeaderAddTimeDiv,
+  .followupTooltipButton {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .intangibleTimeButton {
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 }
 

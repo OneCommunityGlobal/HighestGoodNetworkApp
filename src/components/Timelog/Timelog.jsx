@@ -821,7 +821,7 @@ return (
                     : timeLog.cardHeaderShadow
                   }
                 >
-                  <Row className="d-flex flex-nowrap align-items-center w-100 gx-0">
+                  <Row className={`${timeLog.tasksAndTimelogHeaderRow} w-100 gx-0`}>
                   {/* LEFT: title/subtitle takes remaining space */}
                   <Col className="px-0 flex-grow-1" style={{ minWidth: 0 }}>
                   <CardTitle tag="h4" className="mb-0 d-flex align-items-center h-100">
@@ -874,7 +874,9 @@ return (
                   </Col>
 
                   {/* RIGHT: button stays compact and right-aligned (never becomes a big centered block) */}
-                  <Col className="px-0 d-flex justify-content-end flex-shrink-0">
+                  <Col
+                    className={`${timeLog.tasksAndTimelogHeaderButtonColumn} px-0 d-flex justify-content-end`}
+                  >
                     {isAuthUser ? (
                       <div
                         className={timeLog.tasksAndTimelogHeaderAddTimeDiv}
@@ -882,11 +884,10 @@ return (
                       >
                         <div className={timeLog.followupTooltipButton}>
                         <Button
-                          className="btn btn-success"
+                          className={`btn btn-success ${timeLog.intangibleTimeButton}`}
                           onClick={toggle}
                           style={{
                             ...(darkMode ? boxStyleDark : boxStyle),
-                            whiteSpace: 'nowrap',
                             alignSelf: 'center',
                           }}
                         >
