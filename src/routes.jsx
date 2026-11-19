@@ -325,6 +325,9 @@ const MeetingScheduling = lazy(() => import('./components/MeetingScheduling'));
 const BlueSquareEmailManagement = lazy(() =>
   import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
 );
+const JobApplicationAnalyticsPage = lazy(() =>
+  import('./components/JobApplicationAnalytics/JobApplicationAnalyticsPage'),
+);
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
 const PopularityTimelineChart = lazy(() =>
@@ -583,6 +586,13 @@ export default (
           component={BlueSquareEmailManagement}
           fallback
           routePermissions={[permissions.resendBlueSquareAndSummaryEmails]}
+        />
+        <ProtectedRoute
+          path="/job-application-analytics"
+          exact
+          component={JobApplicationAnalyticsPage}
+          fallback
+          allowedRoles={[UserRole.Owner, UserRole.Administrator]}
         />
         <ProtectedRoute
           path="/teams"

@@ -558,6 +558,20 @@ export const ENDPOINTS = {
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
   SUBMIT_JOB_APPLICATION: formId =>
   `${APIEndpoint}/jobforms/${formId}/responses`,
+  /** Owner/Admin CRM: paginated JobApplications across forms. */
+  JOB_APPLICATIONS_SUMMARY: `${APIEndpoint}/jobforms/applications/summary`,
+  JOB_APPLICATIONS_LIST: ({ page, limit, q, formId, from, to, sort } = {}) => {
+    const params = new URLSearchParams();
+    if (page) params.set('page', page);
+    if (limit) params.set('limit', limit);
+    if (q) params.set('q', q);
+    if (formId) params.set('formId', formId);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+    if (sort) params.set('sort', sort);
+    const qs = params.toString();
+    return `${APIEndpoint}/jobforms/applications${qs ? `?${qs}` : ''}`;
+  },
   /** Public: distinct job titles for the apply-page position dropdown. */
   GET_JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
 

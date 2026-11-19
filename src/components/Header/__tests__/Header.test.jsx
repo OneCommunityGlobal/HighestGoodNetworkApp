@@ -127,6 +127,23 @@ describe('Header component', () => {
     expect(screen.getAllByTestId('mock-owner-message').length).toBeGreaterThan(0);
     expect(screen.getByTestId('mock-timer')).toBeInTheDocument();
   });
+
+  it('shows Job Application Analytics link for Owner', () => {
+    renderHeader();
+    expect(screen.getByText('Job Application Analytics')).toBeInTheDocument();
+  });
+
+  it('hides Job Application Analytics link for Volunteer', () => {
+    renderHeader({
+      auth: {
+        isAuthenticated: true,
+        firstName: 'Vol',
+        profilePic: '/me.png',
+        user: { userid: 'v1', role: 'Volunteer' },
+      },
+    });
+    expect(screen.queryByText('Job Application Analytics')).not.toBeInTheDocument();
+  });
 });
 
 describe('Header Component with Mocked Axios', () => {

@@ -1,0 +1,343 @@
+.page {
+  padding: 1.25rem 1.5rem 2rem;
+  min-height: 100%;
+}
+
+.pageDark {
+  background-color: #1b2a41;
+  color: #e2e8f0;
+}
+
+.heading {
+  margin: 0 0 0.35rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.subheading {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+.accessDenied {
+  max-width: 32rem;
+  margin: 3rem auto;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.pageDark .accessDenied {
+  background: #2d2d2d;
+  border-color: #444;
+  color: #e2e8f0;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  padding: 1rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 5.5rem;
+}
+
+.pageDark .card {
+  background: #243447;
+  border-color: #3a4a5c;
+}
+
+.cardLabel {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+}
+
+.cardValue {
+  font-size: 1.65rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.topForms {
+  margin-bottom: 1.5rem;
+}
+
+.topFormsTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.topFormsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.topFormItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.pageDark .topFormItem {
+  background: #243447;
+  border-color: #3a4a5c;
+}
+
+.optionalRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.optionalCard {
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+}
+
+.pageDark .optionalCard {
+  background: #1e2a3a;
+  border-color: #3a4a5c;
+}
+
+.optionalTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.optionalMuted {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.tableSection {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.pageDark .tableSection {
+  background: #243447;
+  border-color: #3a4a5c;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr auto;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  align-items: end;
+}
+
+.pageDark .filters {
+  border-bottom-color: #3a4a5c;
+}
+
+.filterField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.filterField label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.75;
+}
+
+.filterField input,
+.filterField select {
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: inherit;
+  font-size: 0.9rem;
+}
+
+.pageDark .filterField input,
+.pageDark .filterField select {
+  background: #1e2a3a;
+  border-color: #3a4a5c;
+  color: #e2e8f0;
+}
+
+.applyBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  height: 2.35rem;
+}
+
+.applyBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  padding: 0.7rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.8;
+}
+
+.pageDark .table th,
+.pageDark .table td {
+  border-bottom-color: #3a4a5c;
+}
+
+.resumeLink,
+.viewBtn {
+  color: #2563eb;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+}
+
+.pageDark .resumeLink,
+.pageDark .viewBtn {
+  color: #93c5fd;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  flex-wrap: wrap;
+}
+
+.paginationButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.paginationButtons button {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  cursor: pointer;
+}
+
+.pageDark .paginationButtons button {
+  background: #1e2a3a;
+  border-color: #3a4a5c;
+  color: #e2e8f0;
+}
+
+.paginationButtons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.statusMsg {
+  padding: 1.25rem 1rem;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.errorMsg {
+  color: #b91c1c;
+}
+
+.pageDark .errorMsg {
+  color: #fca5a5;
+}
+
+.detailPanel {
+  margin: 0 1rem 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  font-size: 0.9rem;
+}
+
+.pageDark .detailPanel {
+  background: #1e2a3a;
+  border-color: #3a4a5c;
+}
+
+@media (width <= 900px) {
+  .filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .applyBtn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
+@media (width <= 600px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .heading {
+    font-size: 1.4rem;
+  }
+}
