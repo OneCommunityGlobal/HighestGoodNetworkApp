@@ -169,6 +169,25 @@
   border: 1px solid #4a5a77;
 }
 
+.faqContainerDark .faqCategory:hover,
+.faqContainerDark .faqCategory.active {
+  background-color: #3b4f6b;
+  color: #fff;
+  border-color: #7aa2d6;
+}
+
+.faqContainerDark .contactLink {
+  color: #90caf9;
+}
+
+.faqContainerDark .contactLink:hover {
+  color: #bbdefb;
+}
+
+.faqContainerDark .copiedMessage {
+  color: #81c784;
+}
+
 .faqQuestionDark {
   color: #fff;
 }
