@@ -1,7 +1,7 @@
 // export default WeeklyProjectSummary;
 
 /* eslint-disable import/no-unresolved */
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -77,7 +77,7 @@ function WeeklyProjectSummary() {
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
   const comparisonPeriodFilter = useSelector(
-    state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'No Comparison',
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'Week Over Week',
   );
   const projectStatusData = useSelector(state => state.weeklyProjectSummary?.projectStatusData);
   const projectStatusLoading = useSelector(
@@ -95,6 +95,18 @@ function WeeklyProjectSummary() {
   const cardPrefsKey = `weeklyProjectSummaryCards:${userId || 'guest'}`;
   // Saved card selection per user: { visibleKeys, cardLimit }. null = show all.
   const [cardPrefs, setCardPrefs] = useState(null);
+  const [financialOverviewMetrics, setFinancialOverviewMetrics] = useState(null);
+  const [financialOverviewRequestState, setFinancialOverviewRequestState] = useState({
+    status: 'idle',
+    error: null,
+  });
+
+  const handleFinancialOverviewMetricsChange = useCallback(metrics => {
+    setFinancialOverviewMetrics(metrics);
+  }, []);
+  const handleFinancialOverviewRequestStateChange = useCallback(requestState => {
+    setFinancialOverviewRequestState(requestState);
+  }, []);
 
   useEffect(() => {
     try {
@@ -404,7 +416,11 @@ function WeeklyProjectSummary() {
               className="weekly-project-summary-card financial-big"
               style={{ gridColumn: 'span 2', width: '100%', minHeight: '400px' }}
             >
-              <CostBreakDown />
+              <CostBreakDown
+                requestParams={projectStatusRequestParams}
+                financialMetrics={financialOverviewMetrics}
+                requestState={financialOverviewRequestState}
+              />
             </div>
           </div>
         ),
@@ -489,6 +505,8 @@ function WeeklyProjectSummary() {
           <FinancialOverview
             requestParams={projectStatusRequestParams}
             comparisonPeriodFilter={comparisonPeriodFilter}
+            onMetricsChange={handleFinancialOverviewMetricsChange}
+            onRequestStateChange={handleFinancialOverviewRequestStateChange}
           />
         ),
       },
@@ -508,6 +526,10 @@ function WeeklyProjectSummary() {
       darkMode,
       comparisonPeriodFilter,
       projectStatusCards,
+      financialOverviewMetrics,
+      handleFinancialOverviewMetricsChange,
+      financialOverviewRequestState,
+      handleFinancialOverviewRequestStateChange,
       isProjectStatusLoading,
       projectStatusDisplayError,
       showProjectStatusComparison,

@@ -16,31 +16,51 @@ export const financialOverviewButtons = toCardButtons([
 
 const EMPTY_METRICS = {};
 
-function FinancialOverview({ requestParams, comparisonPeriodFilter }) {
+function FinancialOverview({
+  requestParams,
+  comparisonPeriodFilter,
+  onMetricsChange,
+  onRequestStateChange,
+}) {
   const [metrics, setMetrics] = useState(EMPTY_METRICS);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!requestParams) return undefined;
+    if (!requestParams) {
+      setMetrics(EMPTY_METRICS);
+      setLoading(false);
+      setError(null);
+      onMetricsChange?.(EMPTY_METRICS);
+      onRequestStateChange?.({ status: 'idle', error: null });
+      return undefined;
+    }
 
     // Drop a slower, older response if the filters change while it is still loading.
     let isCurrent = true;
     setLoading(true);
     setError(null);
+    onMetricsChange?.(EMPTY_METRICS);
+    onRequestStateChange?.({ status: 'loading', error: null });
 
     axios
       .get(ENDPOINTS.BM_WEEKLY_PROJECT_SUMMARY_FINANCIAL_OVERVIEW, { params: requestParams })
       .then(response => {
-        if (isCurrent) setMetrics(response.data?.current?.metrics || EMPTY_METRICS);
+        if (!isCurrent) return;
+        const nextMetrics = response.data?.current?.metrics || EMPTY_METRICS;
+        setMetrics(nextMetrics);
+        onMetricsChange?.(nextMetrics);
+        onRequestStateChange?.({ status: 'success', error: null });
       })
       .catch(err => {
         if (!isCurrent) return;
         setMetrics(EMPTY_METRICS);
-        setError(
+        onMetricsChange?.(EMPTY_METRICS);
+        const requestError =
           err?.response?.data?.message ||
-            'Unable to load the financial overview. Please try again.',
-        );
+          'Unable to load the financial overview. Please try again.';
+        setError(requestError);
+        onRequestStateChange?.({ status: 'error', error: requestError });
       })
       .finally(() => {
         if (isCurrent) setLoading(false);
@@ -49,7 +69,7 @@ function FinancialOverview({ requestParams, comparisonPeriodFilter }) {
     return () => {
       isCurrent = false;
     };
-  }, [requestParams]);
+  }, [onMetricsChange, onRequestStateChange, requestParams]);
 
   const cards = useMemo(
     () => buildStatusCards(financialOverviewButtons, metrics, comparisonPeriodFilter),
@@ -80,10 +100,14 @@ FinancialOverview.propTypes = {
     comparisonEndDate: PropTypes.string,
   }),
   comparisonPeriodFilter: PropTypes.string.isRequired,
+  onMetricsChange: PropTypes.func,
+  onRequestStateChange: PropTypes.func,
 };
 
 FinancialOverview.defaultProps = {
   requestParams: null,
+  onMetricsChange: null,
+  onRequestStateChange: null,
 };
 
 export default FinancialOverview;

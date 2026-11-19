@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import {
-  fetchCostBreakdown,
   fetchCostDetail,
   clearCostDetail,
 } from '../../../../../actions/bmdashboard/costBreakdownActions';
@@ -16,7 +14,12 @@ const CATEGORY_CONFIG = {
   'Total Cost of Equipment': { label: 'Equipment', color: '#EAB308' },
 };
 
-const DEBOUNCE_MS = 500;
+const METRIC_CATEGORIES = [
+  { metricKey: 'totalLaborCost', name: 'Total Cost of Labor' },
+  { metricKey: 'totalMaterialCost', name: 'Total Cost of Materials' },
+  { metricKey: 'totalEquipmentCost', name: 'Total Cost of Equipment' },
+];
+
 const CHAR_WIDTH_RATIO = 0.55;
 const MAX_LABEL_LINES = 2;
 
@@ -114,57 +117,36 @@ CustomTooltip.defaultProps = {
   darkMode: false,
 };
 
-export default function CostBreakDown() {
+function getMetricValue(metric) {
+  if (!metric || metric.comparisonType === 'UNAVAILABLE' || metric.value === null) return null;
+  return typeof metric.value === 'number' && Number.isFinite(metric.value) ? metric.value : null;
+}
+
+export function buildCostBreakdownChartData(financialMetrics) {
+  return METRIC_CATEGORIES.flatMap(({ metricKey, name }) => {
+    const value = getMetricValue(financialMetrics?.[metricKey]);
+    if (value === null || value <= 0) return [];
+
+    return [
+      {
+        name,
+        shortName: CATEGORY_CONFIG[name]?.label || name,
+        value,
+        color: CATEGORY_CONFIG[name]?.color || '#999',
+      },
+    ];
+  });
+}
+
+export default function CostBreakDown({ requestParams, financialMetrics, requestState }) {
   const dispatch = useDispatch();
 
-  const { loading, data, error, detailLoading, detailData, detailError } = useSelector(
-    state => state.costBreakdown,
-  );
+  const { detailLoading, detailData, detailError } = useSelector(state => state.costBreakdown);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const [projects, setProjects] = useState([]);
-  const [projectId, setProjectId] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
   const [activeIndex, setActiveIndex] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  const debounceRef = useRef(null);
-
-  // Load project list for dropdown
-  useEffect(() => {
-    let cancelled = false;
-    const apiBase = (process.env.REACT_APP_APIENDPOINT || '').replace(/\/$/, '');
-    axios
-      .get(`${apiBase}/bm/projectsNames`)
-      .then(res => {
-        if (cancelled) return;
-        if (Array.isArray(res.data)) {
-          const list = res.data
-            .filter(p => p?.projectId)
-            .map(p => ({ id: p.projectId, name: p.projectName || p.projectId }));
-          setProjects(list);
-        }
-      })
-      .catch(() => {
-        // Silently fail — dropdown shows only "All Projects"
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Fetch cost breakdown with debouncing
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      dispatch(fetchCostBreakdown({ projectId, startDate, endDate }));
-    }, DEBOUNCE_MS);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [dispatch, projectId, startDate, endDate]);
 
   // Window resize listener
   useEffect(() => {
@@ -173,18 +155,22 @@ export default function CostBreakDown() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const chartData = useMemo(() => {
-    if (!data?.breakdown?.length) return [];
-    return data.breakdown.map(item => ({
-      name: item.category,
-      shortName: CATEGORY_CONFIG[item.category]?.label || item.category,
-      value: item.amount,
-      color: CATEGORY_CONFIG[item.category]?.color || '#999',
-    }));
-  }, [data]);
+  const chartData = useMemo(() => buildCostBreakdownChartData(financialMetrics), [
+    financialMetrics,
+  ]);
 
-  const totalCost = data?.totalCost || 0;
-  const projectLabel = data?.project || 'All Projects';
+  const totalCost = chartData.reduce((sum, item) => sum + item.value, 0);
+  const projectLabel = requestParams?.projectId ? 'Selected Project' : 'All Projects';
+  const requestStatus = requestState?.status || 'idle';
+  const requestError = requestState?.error;
+  const detailParams = useMemo(
+    () => ({
+      projectId: requestParams?.projectId || '',
+      startDate: requestParams?.startDate || '',
+      endDate: requestParams?.endDate || '',
+    }),
+    [requestParams],
+  );
 
   const isXS = windowWidth <= 480;
   let innerRadius;
@@ -219,29 +205,19 @@ export default function CostBreakDown() {
         return;
       }
       setSelectedCategory(category);
-      dispatch(fetchCostDetail({ projectId, startDate, endDate }));
+      dispatch(fetchCostDetail(detailParams));
     },
-    [dispatch, projectId, startDate, endDate, selectedCategory],
+    [dispatch, detailParams, selectedCategory],
   );
 
-  const handleFilterChange = useCallback(
-    (setter, value) => {
-      setter(value);
-      setSelectedCategory(null);
-      dispatch(clearCostDetail());
-    },
-    [dispatch],
-  );
-
-  const hasActiveFilters = projectId || startDate || endDate;
-
-  const handleClearFilters = useCallback(() => {
-    setProjectId('');
-    setStartDate('');
-    setEndDate('');
+  const handleScopeChange = useCallback(() => {
     setSelectedCategory(null);
     dispatch(clearCostDetail());
   }, [dispatch]);
+
+  useEffect(() => {
+    handleScopeChange();
+  }, [handleScopeChange, requestParams]);
 
   const renderProjectBreakdown = () => {
     const categoryData = detailData?.breakdown?.find(b => b.category === selectedCategory);
@@ -267,101 +243,42 @@ export default function CostBreakDown() {
     <div className={wrapperClass} role="img" aria-label="Cost breakdown by category donut chart">
       <h3 className={styles.title}>Cost Breakdown by Category</h3>
 
-      {/* Filters */}
-      <div className={styles.filters}>
-        <div className={styles.filterItem}>
-          <label htmlFor="cost-project-select" className={styles.filterLabel}>
-            Project
-          </label>
-          <select
-            id="cost-project-select"
-            value={projectId}
-            onChange={e => handleFilterChange(setProjectId, e.target.value)}
-            className={styles.filterSelect}
-          >
-            <option value="">All Projects</option>
-            {projects.map(p => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.filterItem}>
-          <label htmlFor="cost-start-date" className={styles.filterLabel}>
-            From
-          </label>
-          <input
-            id="cost-start-date"
-            type="date"
-            value={startDate}
-            onChange={e => handleFilterChange(setStartDate, e.target.value)}
-            className={styles.filterInput}
-          />
-        </div>
-
-        <div className={styles.filterItem}>
-          <label htmlFor="cost-end-date" className={styles.filterLabel}>
-            To
-          </label>
-          <input
-            id="cost-end-date"
-            type="date"
-            value={endDate}
-            onChange={e => handleFilterChange(setEndDate, e.target.value)}
-            className={styles.filterInput}
-          />
-        </div>
-
-        {hasActiveFilters && (
-          <button
-            type="button"
-            className={styles.clearFiltersButton}
-            onClick={handleClearFilters}
-            aria-label="Clear all filters"
-          >
-            Clear Filters
-          </button>
+      {/* The page header owns these filters; the scope is shown here to make the chart context explicit. */}
+      <div className={styles.filters} aria-label="Cost breakdown scope">
+        <span className={styles.filterLabel}>{projectLabel}</span>
+        {requestParams?.startDate && requestParams?.endDate && (
+          <span className={styles.filterLabel}>
+            {requestParams.startDate} – {requestParams.endDate}
+          </span>
         )}
       </div>
 
       {/* Loading */}
-      {loading && (
+      {requestStatus === 'loading' && (
         <div className={styles.loading} role="status" aria-live="polite" aria-busy="true">
-          <div className={styles.spinner} />
           <span>Loading cost data...</span>
         </div>
       )}
 
       {/* Error */}
-      {!loading && error && (
+      {requestStatus === 'error' && (
         <div className={styles.error} role="alert">
-          <p className={styles.errorMessage}>{error}</p>
-          <button
-            type="button"
-            className={styles.retryButton}
-            onClick={() => dispatch(fetchCostBreakdown({ projectId, startDate, endDate }))}
-          >
-            Retry
-          </button>
+          <p className={styles.errorMessage}>
+            {requestError || 'Unable to load cost data for the selected filters.'}
+          </p>
         </div>
       )}
 
       {/* Empty state */}
-      {!loading && !error && data && chartData.length === 0 && (
+      {requestStatus === 'success' && chartData.length === 0 && (
         <output className={styles.loading} aria-live="polite" aria-busy="true">
           <p>No cost data available</p>
-          <p className={styles.emptySubtext}>
-            {projectId
-              ? 'Try selecting a different project or date range'
-              : 'No cost records found'}
-          </p>
+          <p className={styles.emptySubtext}>No cost records found for the selected scope</p>
         </output>
       )}
 
       {/* Chart */}
-      {!loading && !error && chartData.length > 0 && (
+      {requestStatus === 'success' && chartData.length > 0 && (
         <>
           <div className={styles.chartContainer}>
             <ResponsiveContainer width="100%" height={chartHeight}>
@@ -483,3 +400,22 @@ export default function CostBreakDown() {
     </div>
   );
 }
+
+CostBreakDown.propTypes = {
+  requestParams: PropTypes.shape({
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    projectId: PropTypes.string,
+  }),
+  financialMetrics: PropTypes.objectOf(PropTypes.object),
+  requestState: PropTypes.shape({
+    status: PropTypes.oneOf(['idle', 'loading', 'success', 'error']),
+    error: PropTypes.string,
+  }),
+};
+
+CostBreakDown.defaultProps = {
+  requestParams: null,
+  financialMetrics: null,
+  requestState: null,
+};
