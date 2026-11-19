@@ -1,7 +1,16 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import axios from 'axios';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PRGradingScreen from '../PRGradingScreen';
 import GRADE_OPTIONS from '../gradeOptions';
+
+vi.mock('axios');
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  axios.get.mockResolvedValue({ data: [] });
+  axios.post.mockResolvedValue({ data: { status: 'ok' } });
+});
 
 vi.mock('react-redux', async () => {
   const actual = await vi.importActual('react-redux');
@@ -24,8 +33,10 @@ const makeReviewers = () => [
   },
 ];
 
-const renderScreen = () =>
+const renderScreen = async () => {
   render(<PRGradingScreen teamData={teamData} reviewers={makeReviewers()} />);
+  await waitFor(() => expect(screen.getByRole('button', { name: '+ Add new' })).toBeEnabled());
+};
 
 // Both tables label their checkboxes `${prNumbers} ${label}`. Before the modal
 // opens only the inline summary is mounted, so there is exactly one match;
@@ -37,42 +48,45 @@ const checkboxes = label => screen.queryAllByLabelText(`1070 ${label}`);
 const openModal = () => fireEvent.click(screen.getByRole('button', { name: '1070' }));
 
 describe('PRGradingScreen grade sync between inline summary and modal', () => {
-  it.each(GRADE_OPTIONS.map(o => o.label))('reflects an inline "%s" grade in the modal', label => {
-    renderScreen();
+  it.each(GRADE_OPTIONS.map(o => o.label))(
+    'reflects an inline "%s" grade in the modal',
+    async label => {
+      await renderScreen();
 
-    // Only the inline summary is mounted before the modal opens.
-    const [inline] = checkboxes(label);
-    fireEvent.click(inline);
-    expect(inline).toBeChecked();
+      // Only the inline summary is mounted before the modal opens.
+      const [inline] = checkboxes(label);
+      fireEvent.click(inline);
+      await waitFor(() => expect(inline).toBeChecked());
 
-    openModal();
+      openModal();
 
-    // Both tables are mounted now; the second match is the modal's.
-    const all = checkboxes(label);
-    expect(all).toHaveLength(2);
-    expect(all[1]).toBeChecked();
-  });
+      // Both tables are mounted now; the second match is the modal's.
+      const all = checkboxes(label);
+      expect(all).toHaveLength(2);
+      expect(all[1]).toBeChecked();
+    },
+  );
 
-  it('keeps a single grade selected when switching options inline', () => {
-    renderScreen();
+  it('keeps a single grade selected when switching options inline', async () => {
+    await renderScreen();
 
     fireEvent.click(checkboxes('Cannot find image')[0]);
-    expect(checkboxes('Cannot find image')[0]).toBeChecked();
+    await waitFor(() => expect(checkboxes('Cannot find image')[0]).toBeChecked());
     expect(checkboxes('Okay')[0]).not.toBeChecked();
 
     fireEvent.click(checkboxes('Exceptional')[0]);
-    expect(checkboxes('Exceptional')[0]).toBeChecked();
+    await waitFor(() => expect(checkboxes('Exceptional')[0]).toBeChecked());
     expect(checkboxes('Cannot find image')[0]).not.toBeChecked();
   });
 
-  it('propagates a modal grade back to the inline summary', () => {
-    renderScreen();
+  it('propagates a modal grade back to the inline summary', async () => {
+    await renderScreen();
     openModal();
 
     const [inline, modal] = checkboxes('Cannot find image');
     fireEvent.click(modal);
 
-    expect(modal).toBeChecked();
+    await waitFor(() => expect(modal).toBeChecked());
     expect(inline).toBeChecked();
   });
 });

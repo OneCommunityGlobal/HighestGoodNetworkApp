@@ -279,4 +279,40 @@ describe('Login redirection logic', () => {
 
     expect(pushSpy).toHaveBeenCalledWith('/dashboard');
   });
+
+  it.each([
+    ['/questionnaire', '/questionnaire'],
+    ['/questionnaire/', '/questionnaire/'],
+    ['/hgnform/page3', '/hgnform/page3'],
+    ['/questionnaire-other', '/dashboard'],
+  ])('after logging in from %s, redirects to %s', (from, expected) => {
+    const history = createMemoryHistory();
+    const pushSpy = vi.spyOn(history, 'push');
+    const location = { state: { from: { pathname: from } } };
+
+    const { rerender } = renderWithProviders(
+      <Login
+        auth={{ isAuthenticated: false, user: {} }}
+        errors={{}}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
+        history={history}
+        location={location}
+      />,
+      { history },
+    );
+
+    rerender(
+      <Login
+        auth={{ isAuthenticated: true, user: { new: false } }}
+        errors={{}}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
+        history={history}
+        location={location}
+      />,
+    );
+
+    expect(pushSpy).toHaveBeenCalledWith(expected);
+  });
 });

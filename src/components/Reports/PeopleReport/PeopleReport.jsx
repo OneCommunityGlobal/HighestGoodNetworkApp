@@ -18,8 +18,8 @@ import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
-import { Checkbox } from '../../common/Checkbox';
 import { updateRehireableStatus } from '../../../actions/userManagement';
+import RehireableStatusControl from '../../UserProfile/RehireableStatusControl';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
 import BadgeSummaryViz from '../BadgeSummaryViz';
@@ -86,15 +86,17 @@ function PeopleReport(props) {
   }, [userProfile?._id, userProfile?.isRehireable]);
 
   const setRehireable = useCallback(
-    async rehireValue => {
+    async (rehireValue, reason) => {
       const previousValue = isRehireable;
       setIsRehireableState(rehireValue);
       try {
-        await updateRehireableStatus(userProfile, rehireValue);
+        await updateRehireableStatus(userProfile, rehireValue, reason);
         toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
+        return true;
       } catch (err) {
         setIsRehireableState(previousValue);
-        alert('An error occurred while attempting to save the rehireable status of this user.');
+        toast.error('An error occurred while attempting to save the rehireable status of this user.');
+        return false;
       }
     },
     [isRehireable, updateRehireableStatus, userProfile],
@@ -256,14 +258,13 @@ function PeopleReport(props) {
               </div>
 
               <div className={styles.rehireable}>
-                <Checkbox
-                  value={isRehireable}
-                  onChange={event => setRehireable(event.target.checked)}
-                  label="Rehireable"
+                <RehireableStatusControl
+                  isRehireable={userProfile.isRehireable ?? isRehireable}
+                  notRehireableReason={userProfile.notRehireableReason || ''}
+                  notRehireableReasonHistory={userProfile.notRehireableReasonHistory || []}
                   darkMode={darkMode}
-                  className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
-                  backgroundColorCN={darkMode ? styles.bgYinmnBlue : ''}
-                  textColorCN={darkMode ? styles.textLight : ''}
+                  onConfirm={setRehireable}
+                  showLabel
                 />
               </div>
               <div className={styles.dateInfo}>

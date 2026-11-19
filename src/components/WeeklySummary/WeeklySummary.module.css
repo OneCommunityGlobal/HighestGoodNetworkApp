@@ -115,7 +115,33 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin-right: 0;
+}
+
+.summary-instructions-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.summary-actions {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.summary-actions > div {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.summary-actions :global(.btn) {
+  width: 100%;
+  white-space: normal;
 }
 
 .edit-button {
@@ -152,6 +178,22 @@
   }
 }
 
+@media screen and (width <= 768px) {
+  .summary-instructions-row {
+    flex-wrap: wrap;
+  }
+
+  .summary-instructions-copy {
+    flex-basis: 100%;
+  }
+
+  .summary-actions {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
 /* Small devices (landscape phones, 544px and up) */
 @media (width <= 544px) {
   .weeklysummarypane {
@@ -160,6 +202,10 @@
 
   .summary-dropdown {
     margin-left: auto;
+  }
+
+  .summary-actions > div {
+    flex: 1 1 100%;
   }
 }
 
