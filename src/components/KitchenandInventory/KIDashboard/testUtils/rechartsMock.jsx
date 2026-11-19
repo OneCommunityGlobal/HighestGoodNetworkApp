@@ -23,7 +23,7 @@ export const LineChart = ({ data, children }) => (
         <li key={d.label}>{d.label}</li>
       ))}
     </ul>
-    <svg>{children}</svg>
+    <svg aria-hidden="true">{children}</svg>
   </div>
 );
 // Draws one marker so the chart's dot renderer runs

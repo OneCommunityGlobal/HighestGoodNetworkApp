@@ -151,6 +151,16 @@ Marker.propTypes = {
   size: PropTypes.number,
 };
 
+// The dot renderer for each line, made once so the chart does not define components inside itself
+const DOT_RENDERERS = Object.fromEntries(
+  SERIES.map(({ key, marker, color }) => {
+    const renderDot = ({ cx, cy, index }) => (
+      <Marker key={`${key}-${index}`} shape={marker} color={color} cx={cx} cy={cy} />
+    );
+    return [key, renderDot];
+  }),
+);
+
 export default function SeasonalTrendsLineChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -217,15 +227,7 @@ export default function SeasonalTrendsLineChart() {
                       name={s.name}
                       stroke={s.color}
                       strokeWidth={3}
-                      dot={({ cx, cy, index }) => (
-                        <Marker
-                          key={`${s.key}-${index}`}
-                          shape={s.marker}
-                          color={s.color}
-                          cx={cx}
-                          cy={cy}
-                        />
-                      )}
+                      dot={DOT_RENDERERS[s.key]}
                       isAnimationActive={false}
                     >
                       <LabelList
