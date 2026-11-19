@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, startTransition, useCallback, useEffect, useMemo, useState } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -25,6 +25,8 @@ import TeamMemberTask from './TeamMemberTask';
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { ENDPOINTS } from '~/utils/URL';
 import { permissions } from '../../utils/constants';
+
+const EMPTY_SELECTION = [];
 
 const TeamMemberTasks = React.memo(props => {
   const {
@@ -53,6 +55,7 @@ const TeamMemberTasks = React.memo(props => {
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
   const [showTrackers, setShowTrackers] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
+  const [showAllTasks, setShowAllTasks] = useState(false);
 
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
@@ -73,6 +76,10 @@ const TeamMemberTasks = React.memo(props => {
   const [userStateSelections, setUserStateSelections] = useState({});
   const [selectionsLoaded, setSelectionsLoaded] = useState(false);
   const [expandAll, setExpandAll] = useState(false);
+
+  const handleUserStateSelectionChange = useCallback((userId, updated) => {
+    setUserStateSelections(prev => ({ ...prev, [userId]: updated }));
+  }, []);
 
   useEffect(() => {
     axios
@@ -299,6 +306,29 @@ const TeamMemberTasks = React.memo(props => {
 
     return Object.keys(roles).length === 0 ? '' : roles;
   };
+
+  const teamRolesByUserId = useMemo(
+    () => Object.fromEntries(teamList.map(user => [user.personId, filteredTeamRoles(user.teams)])),
+    [teamList, teamRoles],
+  );
+
+  const usersWithMoreThanSixActiveTasks = useMemo(
+    () =>
+      new Set(
+        teamList
+          .filter(
+            user =>
+              user.tasks.filter(
+                task =>
+                  !task.resources?.some(
+                    resource => resource.userID === user.personId && resource.completedTask,
+                  ),
+              ).length > 6,
+          )
+          .map(user => user.personId),
+      ),
+    [teamList],
+  );
 
   const renderFilters = () => {
     const teamGroup = {};
@@ -735,6 +765,18 @@ const TeamMemberTasks = React.memo(props => {
                           >
                             {showTasks ? 'Hide Tasks' : 'Show Tasks'}
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => startTransition(() => setShowAllTasks(prev => !prev))}
+                            className={[
+                              styles.m1,
+                              styles.trackerToggleBtn,
+                              showAllTasks ? styles.trackerToggleBtnActive : '',
+                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                            ].join(' ')}
+                          >
+                            {showAllTasks ? 'Truncate Tasks' : 'Show All Tasks'}
+                          </button>
                         </div>
                       </th>
                     </tr>
@@ -791,7 +833,7 @@ const TeamMemberTasks = React.memo(props => {
                       )}
                       teamRoles={
                         user.teams !== undefined && user.teams.length > 0
-                          ? filteredTeamRoles(user.teams)
+                          ? teamRolesByUserId[user.personId]
                           : ''
                       }
                       handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
@@ -809,11 +851,12 @@ const TeamMemberTasks = React.memo(props => {
                       displayUser={displayUser}
                       userStateCatalog={userStateCatalog}
                       onCatalogChange={setUserStateCatalog}
-                      userStateSelection={userStateSelections[user.personId] || []}
-                      onSelectionChange={(uid, updated) =>
-                        setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
-                      }
+                      userStateSelection={userStateSelections[user.personId] || EMPTY_SELECTION}
+                      onSelectionChange={handleUserStateSelectionChange}
                       expandAll={expandAll}
+                      showAllTasks={
+                        showAllTasks && usersWithMoreThanSixActiveTasks.has(user.personId)
+                      }
                     />
                   );
                   if (!isTimeFilterActive) {

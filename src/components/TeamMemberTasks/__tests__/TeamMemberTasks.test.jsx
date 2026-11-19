@@ -128,6 +128,27 @@ describe('TeamMemberTasks component', () => {
     );
     expect(screen.getByText('Team Member Tasks')).toBeInTheDocument();
   });
+  it('toggles Show All Tasks independently from Hide Tasks', () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const showAllTasksButton = screen.getByRole('button', { name: 'Show All Tasks' });
+    expect(screen.getByRole('button', { name: 'Hide Tasks' })).toBeInTheDocument();
+
+    fireEvent.click(showAllTasksButton);
+
+    expect(screen.getByRole('button', { name: 'Truncate Tasks' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Hide Tasks' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Truncate Tasks' }));
+
+    expect(screen.getByRole('button', { name: 'Show All Tasks' })).toBeInTheDocument();
+  });
   it('check if Team Member header is displaying as expected', () => {
     axios.get.mockResolvedValue({
       status: 200,
