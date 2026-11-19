@@ -322,7 +322,7 @@
   text-align: center;
   width: 100%;
   padding: 8px 0;
-  margin-top: auto;
+  margin-top: 0;
   flex-shrink: 0;
 }
 
