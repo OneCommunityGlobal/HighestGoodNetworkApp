@@ -42,6 +42,21 @@ const CATEGORY_OPTIONS = [
   { value: 'village', label: 'By Village' },
 ];
 
+export const formatBidTooltipLabel = context => {
+  const value = context.parsed?.y;
+  if (value === null || value === undefined) {
+    return `${context.dataset.label}: No confirmed winner yet`;
+  }
+  return `${context.dataset.label}: $${Math.round(value)}`;
+};
+
+// Chart.js skips null bars in tooltips, so flag missing winners from the Average Bid bar
+export const getBidTooltipFooter = (tooltipItems, data) => {
+  const item = data[tooltipItems?.[0]?.dataIndex];
+  if (!item || (item.winningBid !== null && item.winningBid !== undefined)) return '';
+  return 'Winning Bid: No confirmed winner yet';
+};
+
 const getDatePickerSlotProps = isDark => ({
   textField: {
     size: 'small',
@@ -95,6 +110,10 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
 
   const fetchChartData = async () => {
     if (startDate && endDate && startDate.isAfter(endDate, 'day')) {
+      // Invalidate any in-flight request so it cannot repaint stale data
+      latestRequestId.current += 1;
+      setBidData([]);
+      setLoading(false);
       setError('From Date must be on or before To Date.');
       return;
     }
@@ -213,12 +232,8 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
         padding: 10,
         displayColors: true,
         callbacks: {
-          label: function(context) {
-            if (context.parsed.y === null || context.parsed.y === undefined) {
-              return `${context.dataset.label}: No confirmed winner yet`;
-            }
-            return `${context.dataset.label}: $${Math.round(context.parsed.y)}`;
-          },
+          label: formatBidTooltipLabel,
+          footer: tooltipItems => getBidTooltipFooter(tooltipItems, bidData),
         },
       },
     },
