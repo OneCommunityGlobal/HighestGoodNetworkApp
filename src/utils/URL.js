@@ -739,6 +739,17 @@ export const ENDPOINTS = {
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
+  REVIEWER_GROUPS: `${APIEndpoint}/reviewer-groups`,
+  REVIEWER_GROUPS_NEW: `${APIEndpoint}/reviewer-groups/new`,
+  PR_RATINGS: `${APIEndpoint}/promotion-eligibility/pr-ratings`,
+  PROMOTION_PR_ENTRIES: reviewerId =>
+    `${APIEndpoint}/promotion-eligibility/${reviewerId}/pr-entries`,
+  PR_GRADING_ADD_ENTRY: reviewerId =>
+    `${APIEndpoint}/promotion-eligibility/${reviewerId}/pr-entries/new`,
+  PR_GRADING_UPDATE_RATING: entryId =>
+    `${APIEndpoint}/promotion-eligibility/pr-entries/${entryId}/rating`,
+  PROMOTE_MEMBERS_PREVIEW: `${APIEndpoint}/promote-members/preview`,
+  PROMOTION_PR_ENTRIES_BULK: `${APIEndpoint}/promotion-eligibility/pr-entries`,
   PROMOTION_PENDING: `${APIEndpoint}/promotion-pending`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
