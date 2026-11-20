@@ -121,9 +121,7 @@ const PromotionPRGradingScreen = ({ teamData, reviewers, currentUser, onReviewsS
             ...reviewer,
             weeks,
             gradedPrs,
-            prsReviewed: gradedPrs.filter(
-              pr => COMPLETED_REVIEW_RATINGS.has(pr.rating),
-            ).length,
+            prsReviewed: gradedPrs.filter(pr => COMPLETED_REVIEW_RATINGS.has(pr.rating)).length,
             history: reviewer.history || [],
           };
         }),

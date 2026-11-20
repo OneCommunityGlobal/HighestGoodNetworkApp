@@ -121,8 +121,18 @@ describe('PromotionPRGradingScreen', () => {
             {
               year: 2026,
               week: 33,
-              prs: ['Good', 'Exceptional', 'No Image', 'Needs more details', 'Did not review', null]
-                .map((rating, index) => ({ _id: String(index), prNumber: String(index + 1), rating })),
+              prs: [
+                'Good',
+                'Exceptional',
+                'No Image',
+                'Needs more details',
+                'Did not review',
+                null,
+              ].map((rating, index) => ({
+                _id: String(index),
+                prNumber: String(index + 1),
+                rating,
+              })),
             },
             { year: 2026, week: 32, prs: [{ _id: 'prior', prNumber: '100', rating: 'Good' }] },
           ],
@@ -131,8 +141,9 @@ describe('PromotionPRGradingScreen', () => {
     });
     renderScreen();
     await waitFor(() =>
-      expect(screen.getByRole('spinbutton', { name: 'PRs reviewed by Ada Lovelace' }))
-        .toHaveValue(4),
+      expect(screen.getByRole('spinbutton', { name: 'PRs reviewed by Ada Lovelace' })).toHaveValue(
+        4,
+      ),
     );
   });
 
