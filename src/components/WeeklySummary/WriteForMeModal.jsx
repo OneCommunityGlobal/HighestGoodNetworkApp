@@ -1,213 +1,274 @@
-/* eslint-disable prettier/prettier */
-// /* eslint-disable no-console */
-// import { useState, useRef } from 'react';
-// import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-// import { boxStyle, boxStyleDark } from '~/styles';
-// import httpService from '~/services/httpService';
-// import { connect } from 'react-redux';
-// import moment from 'moment-timezone';
-// import axios from 'axios';
-// import { toast } from 'react-toastify';
-// import { ENDPOINTS } from '~/utils/URL';
-// // eslint-disable-next-line import/named
-// import { getUserInfo } from '../../utils/permissions';
+import { useState } from 'react';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Input } from 'reactstrap';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import moment from 'moment-timezone';
+import httpService from '~/services/httpService';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ENDPOINTS } from '~/utils/URL';
 
-// // eslint-disable-next-line consistent-return
-// const getTimeEntriesForWeek = async (userId, offset) => {
-//   const fromDate = moment()
-//     .tz('America/Los_Angeles')
-//     .startOf('week')
-//     .subtract(offset, 'weeks')
-//     .format('YYYY-MM-DDTHH:mm:ss');
+const fallbackPrompt = `Please edit the following summary of my week's work. Write it professionally in third person, as one matter-of-fact paragraph under 500 words. Start with "This week". Do not include URLs or a concluding summary sentence. Apply these instructions to the following work notes:`;
 
-//   const toDate = moment()
-//     .tz('America/Los_Angeles')
-//     .endOf('week')
-//     .subtract(offset, 'weeks')
-//     .format('YYYY-MM-DDTHH:mm:ss');
+const cleanNotes = entries =>
+  entries
+    .map(entry =>
+      String(entry?.notes || '')
+        .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+        .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+        .replace(/<a\b[^>]*>([\s\S]*?)<\/a>/gi, '$1')
+        .replace(/<br\s*\/?\s*>|<\/(?:p|div|li)>/gi, '\n')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;|&#160;/gi, ' ')
+        .replace(/&amp;/gi, '&')
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;|&apos;/gi, "'")
+        .replace(/https?:\/\/\S+/gi, ' ')
+        .replace(/[ \t]+/g, ' ')
+        .trim(),
+    )
+    .filter(Boolean)
+    .join('\n');
 
-//   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
+export const getCurrentWeekTimeEntries = async userId => {
+  const fromDate = moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .format('YYYY-MM-DDTHH:mm:ss');
+  const toDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .format('YYYY-MM-DDTHH:mm:ss');
+  const response = await httpService.get(ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate));
+  return cleanNotes(Array.isArray(response?.data) ? response.data : []);
+};
 
-//   try {
-//     return axios
-//       .get(url)
-//       .then(response => {
-//         // console.log('time entry data: ', response.data[0].notes);
-//         const { data } = response;
+const getLatestPrompt = async () => {
+  const response = await httpService.get(ENDPOINTS.AI_PROMPT());
+  return String(response?.data?.aIPromptText ?? response?.aIPromptText ?? '');
+};
 
-//         const cleanedAndConcatenatedNotes = data.reduce((acc, entry) => {
-//           // Clean the current note
-//           const cleanedNotes = entry.notes
-//             .replace(/<a\b[^>]*>(.*?)<\/a>|&nbsp;|https?:\/\/\S+/gi, ' ')
-//             .replace(/<\/?[^>]+(>|$)/g, '');
+const getErrorMessage = error =>
+  error?.response?.data?.message ||
+  error?.response?.data?.error ||
+  error?.message ||
+  'We could not generate a summary. You can continue writing your summary manually.';
 
-//           // Concatenate the cleaned note to the accumulator with newline separator
-//           return `${acc + cleanedNotes}\n`;
-//         }, '');
+function WriteForMeModal({
+  userId,
+  firstName,
+  displayUserProfile,
+  darkMode,
+  pasteResponse,
+  hasExistingContent,
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [status, setStatus] = useState('idle');
+  const [draft, setDraft] = useState('');
+  const [message, setMessage] = useState('');
+  const [copyMessage, setCopyMessage] = useState('');
+  const [confirmReplace, setConfirmReplace] = useState(false);
+  const resolvedUserId = userId || displayUserProfile?._id;
+  const resolvedFirstName = firstName || displayUserProfile?.firstName || '';
+  const buttonStyle = darkMode ? boxStyleDark : boxStyle;
 
-//         return cleanedAndConcatenatedNotes;
-//       })
-//       .catch(error => {
-//         console.error(`Error fetching time entries: ${error.message || error}`);
-//       });
-//   } catch (error) {
-//     if (error.response && error.response.status === 401) {
-//       // Handle logout or unauthorized access
-//       console.error(`User is not authorized. Please log in.: ${error}`);
-//       // return null;
-//     } else {
-//       console.error(`Error fetching time entries:: ${error}`);
-//     }
-//   }
-// };
+  const handleGenerate = async () => {
+    setIsOpen(true);
+    setStatus('loading');
+    setDraft('');
+    setMessage('');
+    setCopyMessage('');
+    setConfirmReplace(false);
 
-// function WriteItForMeModal(props) {
-//   // const { pasteResponse } = props;
-//   const [modal, setModal] = useState(false);
-//   const [summary, setSummary] = useState();
-//   const [buttonText, setButtonText] = useState('Copy Text');
-//   const [buttonDisabled, setButtonDisabled] = useState(false);
-//   const [clickCount, setClickCount] = useState(0);
-//   const [isAIButtonDisabled, setIsAIButtonDisabled] = useState(false);
-//   const timeoutRef = useRef(null);
+    try {
+      let prompt;
+      try {
+        prompt = await getLatestPrompt();
+      } catch {
+        prompt = fallbackPrompt;
+      }
 
-//   const toggle = () => setModal(!modal);
+      const notes = await getCurrentWeekTimeEntries(resolvedUserId);
+      if (!notes) {
+        setStatus('empty');
+        setMessage(
+          'No time entries with notes were found for this week. You can write your summary manually.',
+        );
+        return;
+      }
 
-//   const { displayUserProfile, darkMode } = props; // Access displayUserProfile and authUser from props
+      const response = await httpService.post(ENDPOINTS.INTERACT_WITH_GPT, {
+        prompt: `${prompt}${prompt ? '\n\n' : ''}${notes}`,
+        userid: resolvedUserId,
+        firstName: resolvedFirstName,
+      });
 
-//   const fetchSummary = async prompt => {
-//     // eslint-disable-next-line react/destructuring-assignment
-//     toggle();
+      if (response?.status < 200 || response?.status >= 300) {
+        throw new Error(
+          response?.data?.message ||
+            response?.data?.error ||
+            'The summary service returned an error.',
+        );
+      }
 
-//     try {
-//       const res = await httpService.post(ENDPOINTS.INTERACT_WITH_GPT, {
-//         prompt: `${prompt}`,
-//         userid: displayUserProfile._id,
-//         firstName: displayUserProfile.firstName,
-//       });
+      const generatedText = response?.data?.text;
+      if (typeof generatedText !== 'string' || !generatedText.trim()) {
+        throw new Error(response?.data?.message || 'The summary service returned no draft.');
+      }
 
-//       if (res.status === 200) {
-//         const markdownRemoved = res.data.text
-//           .replace(/\n+/g, ' ') // Remove line breaks
-//           .replace(/\*/g, '') // Remove asterisks
-//           .replace(/"/g, '');
+      setDraft(generatedText.trim());
+      setStatus('success');
+    } catch (error) {
+      setMessage(getErrorMessage(error));
+      setStatus('error');
+    }
+  };
 
-//         setSummary(markdownRemoved);
-//       } else {
-//         setSummary('Failed to fetch summary.');
-//         console.error(`HTTP error: ${res.status}`);
-//       }
-//     } catch (error) {
-//       setSummary('Failed to fetch summary.');
-//     } finally {
-//       toggle();
-//     }
-//   };
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(draft);
+      setCopyMessage('Draft copied.');
+    } catch {
+      setCopyMessage('Copy failed. You can still select and copy the draft.');
+    }
+  };
 
-//   const handleFetchSummary = async () => {
-//     setClickCount(prevCount => prevCount + 1);
+  const applyDraft = allowReplace => {
+    const applied = pasteResponse?.(draft, allowReplace);
+    if (applied) setIsOpen(false);
+  };
 
-//     if (clickCount + 1 >= 3) {
-//       setIsAIButtonDisabled(true);
-//       toast.info(
-//         'You have clicked 3 times now, try again after 5 minutes. This is to limit API Usage.',
-//       );
+  const handleApplyDraft = () => {
+    if (hasExistingContent) {
+      setConfirmReplace(true);
+      return;
+    }
+    applyDraft(false);
+  };
 
-//       if (timeoutRef.current) {
-//         clearTimeout(timeoutRef.current);
-//       }
+  const closeModal = () => {
+    setConfirmReplace(false);
+    setIsOpen(false);
+  };
 
-//       timeoutRef.current = setTimeout(() => {
-//         setIsAIButtonDisabled(false);
-//         setClickCount(0);
-//       }, 300000); // 300 seconds or 5 minutes
-//     }
+  return (
+    <div>
+      <Button
+        type="button"
+        color="info"
+        className="p-1 mb-1 responsive-font-size"
+        style={buttonStyle}
+        onClick={handleGenerate}
+        disabled={status === 'loading'}
+      >
+        Write it for me
+      </Button>
+      <Modal
+        isOpen={isOpen}
+        toggle={closeModal}
+        modalClassName={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Write it for me
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          {status === 'loading' && <p role="status">Generating a draft…</p>}
+          {status === 'empty' && <p role="status">{message}</p>}
+          {status === 'error' && (
+            <p role="alert" className={darkMode ? 'text-light' : 'text-danger'}>
+              {message}
+            </p>
+          )}
+          {status === 'success' && (
+            <>
+              {confirmReplace ? (
+                <p role="alert">
+                  This summary already has text. Replacing it will remove that text. Do you want to
+                  replace it with this draft?
+                </p>
+              ) : (
+                <p>Review and edit this draft before applying it to your summary.</p>
+              )}
+              <Input
+                type="textarea"
+                rows={8}
+                aria-label="Generated summary draft"
+                value={draft}
+                onChange={event => setDraft(event.target.value)}
+                className={darkMode ? 'bg-space-cadet text-light' : ''}
+                style={darkMode ? { borderColor: '#8294b5' } : undefined}
+              />
+              {copyMessage && <p role="status">{copyMessage}</p>}
+            </>
+          )}
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          {status === 'success' && (
+            <>
+              <Button type="button" color="secondary" onClick={handleCopy} style={buttonStyle}>
+                Copy draft
+              </Button>
+              {confirmReplace ? (
+                <>
+                  <Button
+                    type="button"
+                    color="secondary"
+                    onClick={() => setConfirmReplace(false)}
+                    style={buttonStyle}
+                  >
+                    Keep existing text
+                  </Button>
+                  <Button
+                    type="button"
+                    color="primary"
+                    onClick={() => applyDraft(true)}
+                    style={buttonStyle}
+                  >
+                    Replace summary
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  type="button"
+                  color="primary"
+                  onClick={handleApplyDraft}
+                  style={buttonStyle}
+                >
+                  Use draft in summary
+                </Button>
+              )}
+            </>
+          )}
+          {status === 'error' && (
+            <Button type="button" color="primary" onClick={handleGenerate} style={buttonStyle}>
+              Try again
+            </Button>
+          )}
+          <Button type="button" color="secondary" onClick={closeModal} style={buttonStyle}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </div>
+  );
+}
 
-//     try {
-//       setButtonText('Copy Text');
-//       setSummary();
-//       const promptBody = await getTimeEntriesForWeek(displayUserProfile._id, 0);
-//       if (promptBody === '') {
-//         toggle();
-//         setButtonDisabled(true);
-//         setSummary('You have no time entries logged for this week');
-//       } else {
-//         toggle();
-//         setButtonDisabled(false);
-//         fetchSummary(
-//           `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format referrring to one person.
-//           Write it as only one paragraph. It must be only one paragraph. Keep it at least 50, but less than 500 words.
-//           Start the paragraph with 'This week ${displayUserProfile.firstName}'.
-//           Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment.
-//           Do not add flowery language, keep it simple and factual, for example, do not use the following words or
-//           phrases: diligently, meticulously, successfully, steadfastly, adeptly, persisted, commenced, embarked on,
-//           conducted, conducted a review, in the upcoming week, dedicate, notably, thoroughly, comprehensive, etc.
-//           Do not add a final summary sentence. Apply all this to the following: \n${promptBody}`,
-//         );
-//       }
-//     } catch (error) {
-//       console.error(`Error in either fetching time entries or summary ${error}`);
-//     }
-//   };
+WriteForMeModal.propTypes = {
+  userId: PropTypes.string,
+  firstName: PropTypes.string,
+  displayUserProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    firstName: PropTypes.string,
+  }),
+  darkMode: PropTypes.bool,
+  pasteResponse: PropTypes.func,
+  hasExistingContent: PropTypes.bool,
+};
 
-//   const copyToClipboard = () => {
-//     navigator.clipboard
-//       .writeText(summary)
-//       .then(() => {
-//         setButtonText('Text Copied');
-//         setButtonDisabled(true);
-//       })
-//       .catch(() => {
-//         setButtonText('Copy Failed');
-//         // setButtonDisabled(true);
-//       });
-//   };
+const mapStateToProps = state => ({
+  displayUserProfile: state.userProfile,
+  darkMode: state.theme?.darkMode,
+});
 
-//   // Assuming you have an endpoints file
-
-//   return (
-//     <div>
-//       <Button
-//         color="info"
-//         onClick={handleFetchSummary}
-//         style={{ ...(darkMode ? boxStyleDark : boxStyle), width: '100%', marginTop: '5px' }}
-//         disabled={isAIButtonDisabled}
-//       >
-//         Write It For Me
-//       </Button>
-
-//       <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-//         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
-//           Generated Summary | clicks left : {3 - clickCount}
-//         </ModalHeader>
-//         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-//           {summary || 'Taking a few minutes to load your summary'}
-//         </ModalBody>
-//         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-//           <span>Proofread and Copy the summary</span>
-//           <Button
-//             color="primary"
-//             id="copyButton"
-//             onClick={copyToClipboard}
-//             style={darkMode ? boxStyleDark : boxStyle}
-//             disabled={buttonDisabled}
-//           >
-//             {buttonText}
-//           </Button>
-//           <Button color="primary" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-//             Close
-//           </Button>{' '}
-//         </ModalFooter>
-//       </Modal>
-//     </div>
-//   );
-// }
-
-// const mapStateToProps = state => ({
-//   displayUserProfile: state.userProfile,
-//   darkMode: state.theme.darkMode,
-//   writeDisabled: state.writeButton ? state.writeButton.writeDisabled : false,
-// });
-
-// // export default WriteItForMeModal and connect to redux
-// export default connect(mapStateToProps, { getUserInfo })(WriteItForMeModal);
+export default connect(mapStateToProps)(WriteForMeModal);
