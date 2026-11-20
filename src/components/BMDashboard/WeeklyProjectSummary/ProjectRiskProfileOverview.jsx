@@ -435,6 +435,8 @@ export default function ProjectRiskProfileOverview() {
                           />
                           <Tooltip
                             content={<RiskTooltip />}
+                            allowEscapeViewBox={{ x: true, y: true }}
+                            wrapperStyle={{ zIndex: 2000, pointerEvents: 'none' }}
                             cursor={{ fill: darkMode ? '#ffffff10' : '#00000008' }}
                           />
                           <Bar
@@ -542,6 +544,11 @@ export default function ProjectRiskProfileOverview() {
                             background: darkMode ? '#2b3e59' : '#fff',
                             color: textColor,
                           }}
+                          labelStyle={{ color: textColor }}
+                          itemStyle={{ color: textColor }}
+                          allowEscapeViewBox={{ x: true, y: true }}
+                          wrapperStyle={{ zIndex: 2000, pointerEvents: 'none' }}
+                          position={{ y: -60 }}
                           formatter={value => formatMetric(metricKey, value)}
                         />
                         <ReferenceLine y={5} stroke={colors.Medium} strokeDasharray="4 4" />

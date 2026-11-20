@@ -32,9 +32,13 @@ describe('UserManagement Component', () => {
   let props;
 
   beforeEach(() => {
-    props = createBaseProps();
-    vi.clearAllMocks();
-  });
+    props = {
+    ...createBaseProps(),
+    resetUserProfileEdit: vi.fn(),
+  };
+
+  vi.clearAllMocks();
+});
 
   const renderUserManagement = ui =>
     render(ui, {

@@ -17,6 +17,8 @@
   --border: #cbd5e1;
 
   max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 28px;
   border: 1px solid var(--border);
@@ -58,6 +60,7 @@
 .container select,
 .container input,
 .container button {
+  box-sizing: border-box;
   min-height: 40px;
   max-width: 100%;
   padding: 8px 10px;
@@ -103,6 +106,9 @@
 }
 
 .summary > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -204,7 +210,8 @@
 }
 
 .chartScroll {
-  overflow-x: auto;
+  overflow: auto visible;
+  padding-bottom: 4px;
 }
 
 .chart {
@@ -212,7 +219,8 @@
 }
 
 .tableScroll {
-  overflow-x: auto;
+  overflow: auto visible;
+  padding-bottom: 4px;
   margin-top: 20px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -241,6 +249,14 @@
 
 .table thead {
   background: var(--subtle);
+}
+
+.table tbody tr:hover {
+  background-color: #e8f0fe;
+}
+
+.darkMode .table tbody tr:hover {
+  background-color: #3a506b;
 }
 
 .table th[scope='row'] {
@@ -292,6 +308,9 @@
 }
 
 .history {
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
   margin-top: 28px;
 }
 
