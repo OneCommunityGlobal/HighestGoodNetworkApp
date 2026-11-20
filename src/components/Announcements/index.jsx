@@ -250,6 +250,7 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'pinterest':
                 PlatformComposer = PinterestPinComposer;
+                break;
               case 'plurk':
                 PlatformComposer = PlurkAutoPoster;
                 break;

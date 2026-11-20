@@ -189,8 +189,9 @@
   border-color: #e60023;
 }
 
-.pin-field__input--invalid {
-  border-color: #f87171 !important;
+.pin-field__input.pin-field__input--invalid,
+.pin-field__input.pin-field__input--invalid:focus {
+  border-color: #f87171;
 }
 
 .pin-field__textarea {
@@ -310,7 +311,10 @@
   border: 1px solid #fed7aa;
   border-radius: 6px;
   padding: 8px 12px;
-  margin-bottom: 14px !important;
+}
+
+p.pin-queue__edit-note {
+  margin-bottom: 14px;
 }
 
 .dark .pin-queue__edit-note {
