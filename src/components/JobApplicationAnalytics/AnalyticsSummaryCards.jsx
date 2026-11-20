@@ -1,10 +1,95 @@
 import PropTypes from 'prop-types';
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import styles from './JobApplicationAnalytics.module.css';
+
+const CHART_COLORS = ['#2563eb', '#0d9488', '#d97706', '#dc2626', '#7c3aed', '#059669', '#db2777'];
 
 function formatCount(value) {
   if (value == null || Number.isNaN(Number(value))) return '—';
   return Number(value).toLocaleString();
 }
+
+function itemLabel(item) {
+  return item?.label || item?.name || item?.experience || item?.source || item?._id || 'Unknown';
+}
+
+function itemValue(item) {
+  const value = item?.count ?? item?.value;
+  return Number.isFinite(Number(value)) ? Number(value) : 0;
+}
+
+function toChartData(items) {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map(item => ({
+      name: String(itemLabel(item)),
+      value: itemValue(item),
+    }))
+    .filter(item => item.value > 0);
+}
+
+function BreakdownChart({ title, items, emptyMessage }) {
+  const chartData = toChartData(items);
+
+  return (
+    <div className={styles.optionalCard}>
+      <h3 className={styles.optionalTitle}>{title}</h3>
+      {chartData.length > 0 ? (
+        <div className={styles.chartBlock}>
+          <div className={styles.chartCanvas} aria-hidden="true">
+            <ResponsiveContainer width="100%" height={180}>
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={45}
+                  outerRadius={70}
+                  paddingAngle={2}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={entry.name} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value, name) => [formatCount(value), name]}
+                  contentStyle={{ borderRadius: 8 }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <ul className={styles.chartLegend}>
+            {chartData.map((entry, index) => (
+              <li key={entry.name}>
+                <span
+                  className={styles.legendSwatch}
+                  style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
+                />
+                <span className={styles.legendLabel}>{entry.name}</span>
+                <strong>{formatCount(entry.value)}</strong>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p className={styles.optionalMuted}>{emptyMessage}</p>
+      )}
+    </div>
+  );
+}
+
+BreakdownChart.propTypes = {
+  title: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object),
+  emptyMessage: PropTypes.string,
+};
+
+BreakdownChart.defaultProps = {
+  items: [],
+  emptyMessage: 'No data available.',
+};
 
 function AnalyticsSummaryCards({ summary, loading, experienceBreakdown, applicantSources }) {
   const cards = [
@@ -44,44 +129,18 @@ function AnalyticsSummaryCards({ summary, loading, experienceBreakdown, applican
       {(experienceBreakdown || applicantSources) && (
         <div className={styles.optionalRow}>
           {experienceBreakdown && (
-            <div className={styles.optionalCard}>
-              <h3 className={styles.optionalTitle}>Experience breakdown</h3>
-              {Array.isArray(experienceBreakdown) && experienceBreakdown.length > 0 ? (
-                <ul className={styles.topFormsList}>
-                  {experienceBreakdown.slice(0, 5).map(item => (
-                    <li
-                      key={item.label || item.experience || item._id || JSON.stringify(item)}
-                      className={styles.topFormItem}
-                    >
-                      <span>{item.label || item.experience || item._id || 'Unknown'}</span>
-                      <strong>{formatCount(item.count || item.value)}</strong>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className={styles.optionalMuted}>No experience data available.</p>
-              )}
-            </div>
+            <BreakdownChart
+              title="Experience breakdown"
+              items={experienceBreakdown}
+              emptyMessage="No experience data available."
+            />
           )}
           {applicantSources && (
-            <div className={styles.optionalCard}>
-              <h3 className={styles.optionalTitle}>Applicant sources</h3>
-              {Array.isArray(applicantSources) && applicantSources.length > 0 ? (
-                <ul className={styles.topFormsList}>
-                  {applicantSources.slice(0, 5).map(item => (
-                    <li
-                      key={item.label || item.source || item._id || JSON.stringify(item)}
-                      className={styles.topFormItem}
-                    >
-                      <span>{item.label || item.source || item._id || 'Unknown'}</span>
-                      <strong>{formatCount(item.count || item.value)}</strong>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className={styles.optionalMuted}>No source data available.</p>
-              )}
-            </div>
+            <BreakdownChart
+              title="Applicant sources"
+              items={applicantSources}
+              emptyMessage="No source data available."
+            />
           )}
         </div>
       )}
