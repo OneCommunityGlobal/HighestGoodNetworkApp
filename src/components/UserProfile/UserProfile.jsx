@@ -83,7 +83,7 @@ import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import RehireableStatusControl from './RehireableStatusControl';
 import IncompleteQuestionnaireIndicator from '../common/IncompleteQuestionnaireIndicator';
-import { fetchCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
+import { subscribeToCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 
 import { permissions } from '../../utils/constants';
 function UserProfile(props) {
@@ -1066,22 +1066,12 @@ setUpdatedTasks(prev => {
 
   useEffect(() => {
     const userId = props?.match?.params?.userId;
-    let cancelled = false;
     setQuestionnaireIncomplete(null);
     if (!userId) return undefined;
 
-    fetchCompletedQuestionnaireUserIds()
-      .then(completedUserIds => {
-        if (!cancelled) setQuestionnaireIncomplete(!completedUserIds.has(userId));
-      })
-      .catch(error => {
-        // eslint-disable-next-line no-console
-        console.error('Failed to load questionnaire completion status', error);
-      });
-
-    return () => {
-      cancelled = true;
-    };
+    return subscribeToCompletedQuestionnaireUserIds(completedUserIds =>
+      setQuestionnaireIncomplete(!completedUserIds.has(userId)),
+    );
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
