@@ -36,6 +36,75 @@ const sanitizeTags = text =>
     ),
   ].slice(0, 5);
 
+const validateSchedule = ({ scheduledDraft, scheduledDate, scheduledTime }) => {
+  if (!scheduledDraft.trim()) {
+    toast.error('Please add a draft before saving.');
+    return false;
+  }
+
+  if (!scheduledDate) {
+    toast.error('Please select a scheduled date.');
+    return false;
+  }
+
+  if (!scheduledTime) {
+    toast.error('Please select a scheduled time.');
+    return false;
+  }
+
+  const selectedDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+
+  if (Number.isNaN(selectedDateTime.getTime())) {
+    toast.error('Please select a valid date and time.');
+    return false;
+  }
+
+  if (selectedDateTime <= new Date()) {
+    toast.error('Please select a future date and time.');
+    return false;
+  }
+
+  return true;
+};
+
+const buildScheduleData = ({
+  editingId,
+  trimmedTitle,
+  trimmedContent,
+  tags,
+  tagsText,
+  trimmedUrl,
+  visibility,
+  scheduledDate,
+  scheduledTime,
+  scheduledDraft,
+}) => ({
+  id: editingId || `medium-${Date.now()}`,
+  title: trimmedTitle,
+  content: trimmedContent,
+  tags,
+  tagsText,
+  canonicalUrl: trimmedUrl,
+  visibility,
+  scheduledDate,
+  scheduledTime,
+  scheduledDraft,
+});
+
+const persistSchedule = (scheduleData, editingId, setSavedSchedules) => {
+  if (editingId) {
+    setSavedSchedules(previousSchedules =>
+      previousSchedules.map(item => (item.id === editingId ? scheduleData : item)),
+    );
+
+    toast.success('Scheduled post updated.');
+    return;
+  }
+
+  setSavedSchedules(previousSchedules => [...previousSchedules, scheduleData]);
+  toast.success('Scheduled post saved.');
+};
+
 const buttonStyle = (variant, darkMode) =>
   getButtonStyle(variant, darkMode, {
     primary: '#0d6efd',
@@ -295,63 +364,35 @@ function MediumAutoPoster() {
   const handleSaveSchedule = () => {
     setScheduleAttemptedSave(true);
 
-    if (!scheduledDraft.trim()) {
-      toast.error('Please add a draft before saving.');
-      return;
-    }
+    const isValid = validateSchedule({
+      scheduledDraft,
+      scheduledDate,
+      scheduledTime,
+    });
 
-    if (!scheduledDate) {
-      toast.error('Please select a scheduled date.');
-      return;
-    }
+    if (!isValid) return;
 
-    if (!scheduledTime) {
-      toast.error('Please select a scheduled time.');
-      return;
-    }
-
-    const selectedDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
-
-    if (Number.isNaN(selectedDateTime.getTime())) {
-      toast.error('Please select a valid date and time.');
-      return;
-    }
-
-    if (selectedDateTime <= new Date()) {
-      toast.error('Please select a future date and time.');
-      return;
-    }
-
-    const scheduleData = {
-      id: editingId || `medium-${Date.now()}`,
-      title: trimmedTitle,
-      content: trimmedContent,
+    const scheduleData = buildScheduleData({
+      editingId,
+      trimmedTitle,
+      trimmedContent,
       tags,
       tagsText,
-      canonicalUrl: trimmedUrl,
+      trimmedUrl,
       visibility,
       scheduledDate,
       scheduledTime,
       scheduledDraft,
-    };
+    });
 
-    if (editingId) {
-      setSavedSchedules(previousSchedules =>
-        previousSchedules.map(item => (item.id === editingId ? scheduleData : item)),
-      );
-
-      toast.success('Scheduled post updated.');
-    } else {
-      setSavedSchedules(previousSchedules => [...previousSchedules, scheduleData]);
-
-      toast.success('Scheduled post saved.');
-    }
+    persistSchedule(scheduleData, editingId, setSavedSchedules);
 
     setEditingId(null);
     setScheduleAttemptedSave(false);
     setScheduledDraft('');
     setScheduledDate(getToday());
     setScheduledTime(getCurrentTime());
+
     resetEditor();
     setActiveTab('make');
   };
