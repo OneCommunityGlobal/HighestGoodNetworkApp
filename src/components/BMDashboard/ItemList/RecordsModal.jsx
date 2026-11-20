@@ -3,7 +3,11 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table, Spinner } fr
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './RecordsModal.module.css';
-import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
+import {
+  approvePurchase,
+  rejectPurchase,
+  markPurchaseReceived,
+} from '../../../actions/bmdashboard/materialsActions';
 import consumableActions from '../../../actions/bmdashboard/consumableActions';
 
 const ALLOWED_ROLES = ['Owner', 'Administrator'];
@@ -42,14 +46,20 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
       <Modal
         isOpen={modal}
         size="xl"
-        className={darkMode ? 'dark-modal full-dark bg-yinmn-blue text-light' : ''}
+        className={`${recordType === 'Purchase' ? styles.widePurchaseModal : ''} ${
+          darkMode ? 'dark-modal full-dark bg-yinmn-blue text-light' : ''
+        }`}
         contentClassName={darkMode ? 'dark-oxford-modal' : ''}
       >
         <ModalHeader className={darkMode ? 'dark-modal-header bg-space-cadet text-white' : ''}>
           {recordType} Record
         </ModalHeader>
 
-        <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
+        <ModalBody
+          className={`${darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''} ${
+            recordType === 'Purchase' ? styles.purchaseRecordModalBody : ''
+          }`}
+        >
           <div
             className={`${styles.records_modal_table_container} ${
               recordType === 'Purchase' ? styles.purchaseRecordTableContainer : ''
@@ -79,6 +89,8 @@ export function Record({ record, recordType, setRecord, itemType }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const userRole = useSelector(state => state.auth?.user?.role);
   const [loadingId, setLoadingId] = useState(null);
+  const [receivingPurchaseId, setReceivingPurchaseId] = useState(null);
+  const [actualDeliveryDate, setActualDeliveryDate] = useState('');
   const canApproveReject = ALLOWED_ROLES.includes(userRole);
   const isConsumable = itemType === 'Consumables';
 
@@ -142,6 +154,31 @@ export function Record({ record, recordType, setRecord, itemType }) {
       }
     } catch {
       // Toast error is handled inside the action.
+    } finally {
+      setLoadingId(null);
+    }
+  };
+  const handleMarkReceived = async purchaseId => {
+    if (!actualDeliveryDate) {
+      return;
+    }
+
+    setLoadingId(purchaseId);
+
+    try {
+      const response = await dispatch(markPurchaseReceived(purchaseId, actualDeliveryDate));
+
+      if (response?.status === 200) {
+        const updatedPurchases = record.purchaseRecord.map(purchase =>
+          purchase._id === purchaseId
+            ? { ...purchase, status: 'Received', actualDeliveryDate }
+            : purchase,
+        );
+
+        setRecord({ ...record, purchaseRecord: updatedPurchases });
+        setReceivingPurchaseId(null);
+        setActualDeliveryDate('');
+      }
     } finally {
       setLoadingId(null);
     }
@@ -222,10 +259,13 @@ export function Record({ record, recordType, setRecord, itemType }) {
           <tr className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
             <th>Priority</th>
             <th>Brand</th>
+            {!isConsumable && <th>Supplier</th>}
             <th>Quantity</th>
             <th>Requested By</th>
             <th>Email</th>
             <th>Date</th>
+            {!isConsumable && <th>Expected Delivery</th>}
+            {!isConsumable && <th>Actual Delivery</th>}
             <th>Status</th>
             {canApproveReject && <th className={styles.purchaseRecordActionColumn}>Action</th>}
           </tr>
@@ -234,18 +274,43 @@ export function Record({ record, recordType, setRecord, itemType }) {
         <tbody className={darkMode ? 'dark-tbody bg-yinmn-blue text-light' : ''}>
           {record?.purchaseRecord?.length ? (
             record.purchaseRecord.map(
-              ({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
-                const isActionComplete = status === 'Approved' || status === 'Rejected';
+              ({
+                _id,
+                date,
+                status,
+                brandPref,
+                priority,
+                quantity,
+                requestedBy,
+                supplier,
+                expectedDeliveryDate,
+                actualDeliveryDate: recordedDeliveryDate,
+              }) => {
                 const isLoading = loadingId === _id;
 
                 return (
                   <tr key={_id} className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
                     <td>{priority || '-'}</td>
                     <td>{brandPref || '-'}</td>
+                    {!isConsumable && <td>{supplier?.name || '-'}</td>}
                     <td>{quantity ?? '-'}</td>
                     <td>{renderUser(requestedBy)}</td>
                     <td>{requestedBy?.email || '-'}</td>
                     <td>{date ? moment(date).format('MM/DD/YY') : '-'}</td>
+                    {!isConsumable && (
+                      <td>
+                        {expectedDeliveryDate
+                          ? moment.utc(expectedDeliveryDate).format('MM/DD/YY')
+                          : '-'}
+                      </td>
+                    )}
+                    {!isConsumable && (
+                      <td>
+                        {recordedDeliveryDate
+                          ? moment.utc(recordedDeliveryDate).format('MM/DD/YY')
+                          : '-'}
+                      </td>
+                    )}
                     <td>
                       <span
                         className={
@@ -265,22 +330,43 @@ export function Record({ record, recordType, setRecord, itemType }) {
                           <Spinner size="sm" />
                         ) : (
                           <>
-                            <Button
-                              type="button"
-                              onClick={() => handleApprove(_id, quantity)}
-                              className={styles.approveButton}
-                              disabled={isActionComplete || loadingId !== null}
-                            >
-                              Approve
-                            </Button>
-                            <Button
-                              type="button"
-                              onClick={() => handleReject(_id)}
-                              className={styles.rejectButton}
-                              disabled={isActionComplete || loadingId !== null}
-                            >
-                              Reject
-                            </Button>
+                            {status === 'Pending' && (
+                              <>
+                                <Button
+                                  type="button"
+                                  onClick={() => handleApprove(_id, quantity)}
+                                  className={styles.approveButton}
+                                  disabled={loadingId !== null}
+                                >
+                                  Approve
+                                </Button>
+                                <Button
+                                  type="button"
+                                  onClick={() => handleReject(_id)}
+                                  className={styles.rejectButton}
+                                  disabled={loadingId !== null}
+                                >
+                                  Reject
+                                </Button>
+                              </>
+                            )}
+                            {!isConsumable && status === 'Approved' && (
+                              <Button
+                                type="button"
+                                color="primary"
+                                onClick={() => {
+                                  setReceivingPurchaseId(_id);
+                                  setActualDeliveryDate('');
+                                }}
+                                disabled={loadingId !== null}
+                              >
+                                Mark as Received
+                              </Button>
+                            )}
+                            {(status === 'Received' ||
+                              status === 'Rejected' ||
+                              (isConsumable && status === 'Approved')) &&
+                              '-'}
                           </>
                         )}
                       </td>
@@ -293,6 +379,46 @@ export function Record({ record, recordType, setRecord, itemType }) {
             <tr className={darkMode ? 'text-light bg-space-cadet' : ''}>
               <td colSpan={canApproveReject ? 8 : 7} style={{ fontWeight: 'bold' }}>
                 There are no purchase records.
+              </td>
+            </tr>
+          )}
+          {!isConsumable && receivingPurchaseId && (
+            <tr>
+              <td colSpan={canApproveReject ? 11 : 10}>
+                <div className={styles.deliveryForm}>
+                  <div>
+                    <label htmlFor="actual-delivery-date">Actual Delivery Date</label>
+                    <input
+                      id="actual-delivery-date"
+                      type="date"
+                      value={actualDeliveryDate}
+                      onChange={e => setActualDeliveryDate(e.target.value)}
+                      className="form-control"
+                      disabled={loadingId !== null}
+                    />
+                  </div>
+
+                  <Button
+                    type="button"
+                    color="success"
+                    onClick={() => handleMarkReceived(receivingPurchaseId)}
+                    disabled={!actualDeliveryDate || loadingId !== null}
+                  >
+                    Confirm Received
+                  </Button>
+
+                  <Button
+                    type="button"
+                    color="secondary"
+                    onClick={() => {
+                      setReceivingPurchaseId(null);
+                      setActualDeliveryDate('');
+                    }}
+                    disabled={loadingId !== null}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </td>
             </tr>
           )}

@@ -8,15 +8,27 @@
   white-space: nowrap;
 }
 
+.purchaseRecordTableContainer {
+  height: auto;
+  max-height: 65vh;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
 .purchaseRecordTableContainer :global(table) {
   width: 100%;
-  table-layout: fixed;
+  table-layout: auto;
+  margin-bottom: 0;
 }
 
 .purchaseRecordTableContainer :global(th),
 .purchaseRecordTableContainer :global(td) {
   white-space: normal;
   overflow-wrap: anywhere;
+}
+
+.purchaseRecordModalBody {
+  min-height: 225px;
 }
 
 .purchaseRecordActionColumn {
@@ -169,4 +181,30 @@
 .darkTable .stickyThead th {
   background-color: #2f4157;
   border-bottom: 1px solid #3f5269;
+}
+
+@media (min-width: 1200px) {
+  .widePurchaseModal {
+    max-width: 85vw;
+    width: 85vw;
+  }
+}
+
+.deliveryForm {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px;
+  text-align: left;
+}
+
+.deliveryForm label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.deliveryForm input {
+  min-width: 180px;
 }
