@@ -116,6 +116,20 @@ const getToday = () => formatDate(new Date());
 
 const getCurrentTime = () => formatTime(new Date());
 
+const resetScheduleState = ({
+  setEditingId,
+  setScheduledDraft,
+  setScheduledDate,
+  setScheduledTime,
+  setScheduleAttemptedSave,
+}) => {
+  setEditingId(null);
+  setScheduledDraft('');
+  setScheduledDate(getToday());
+  setScheduledTime(getCurrentTime());
+  setScheduleAttemptedSave(false);
+};
+
 const validateArticle = ({
   trimmedTitle,
   titleValid,
@@ -264,9 +278,7 @@ function MediumAutoPoster() {
   const trimmedUrl = canonicalUrl.trim();
 
   const titleValid = trimmedTitle.length >= TITLE_MIN && trimmedTitle.length <= TITLE_MAX;
-
   const contentValid = trimmedContent.length >= CONTENT_MIN;
-
   const urlValid = !trimmedUrl || /^https?:\/\/\S+$/i.test(trimmedUrl);
 
   const readyToCopy = titleValid && contentValid && tags.length > 0 && urlValid;
@@ -387,11 +399,13 @@ function MediumAutoPoster() {
 
     persistSchedule(scheduleData, editingId, setSavedSchedules);
 
-    setEditingId(null);
-    setScheduleAttemptedSave(false);
-    setScheduledDraft('');
-    setScheduledDate(getToday());
-    setScheduledTime(getCurrentTime());
+    resetScheduleState({
+      setEditingId,
+      setScheduledDraft,
+      setScheduledDate,
+      setScheduledTime,
+      setScheduleAttemptedSave,
+    });
 
     resetEditor();
     setActiveTab('make');
@@ -417,22 +431,27 @@ function MediumAutoPoster() {
     setSavedSchedules(previousSchedules => previousSchedules.filter(item => item.id !== id));
 
     if (editingId === id) {
-      setEditingId(null);
-      setScheduledDraft('');
-      setScheduledDate(getToday());
-      setScheduledTime(getCurrentTime());
-      setScheduleAttemptedSave(false);
+      resetScheduleState({
+        setEditingId,
+        setScheduledDraft,
+        setScheduledDate,
+        setScheduledTime,
+        setScheduleAttemptedSave,
+      });
     }
 
     toast.success('Scheduled post deleted.');
   };
 
   const handleCancelEditing = () => {
-    setEditingId(null);
-    setScheduledDraft('');
-    setScheduledDate(getToday());
-    setScheduledTime(getCurrentTime());
-    setScheduleAttemptedSave(false);
+    resetScheduleState({
+      setEditingId,
+      setScheduledDraft,
+      setScheduledDate,
+      setScheduledTime,
+      setScheduleAttemptedSave,
+    });
+
     resetEditor();
     setActiveTab('make');
   };
