@@ -1,6 +1,8 @@
+// File version: 1.0.0
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
+import { FolderSearch, PackageOpen } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -78,79 +80,99 @@ const getColorByDays = days => {
   return '#32CD32';
 };
 
+function StockOutRiskEmptyState({ hasSelectedProjects }) {
+  const Icon = hasSelectedProjects ? PackageOpen : FolderSearch;
+
+  return (
+    <div className={styles.empty} role="status" aria-live="polite">
+      <Icon className={styles.emptyIcon} size={48} aria-hidden="true" />
+      <h5 className={styles.emptyTitle}>
+        {hasSelectedProjects ? 'No stock-out risk data available' : 'No project selected'}
+      </h5>
+      <p className={styles.emptyMessage}>
+        {hasSelectedProjects
+          ? 'No estimates are available for the selected projects. Check these prerequisites:'
+          : 'Select one or more projects above to view material stock-out risk.'}
+      </p>
+      <div className={styles.prerequisites}>
+        <p className={styles.prerequisitesTitle}>Before viewing this chart:</p>
+        <ol>
+          <li>Select at least one project.</li>
+          <li>Make sure materials are mapped to the selected projects.</li>
+          <li>Record material consumption so stock-out estimates can be calculated.</li>
+        </ol>
+      </div>
+    </div>
+  );
+}
+
 function MaterialStockOutRiskIndicator() {
   const dispatch = useDispatch();
-  const projects = useSelector(state => state.bmProjects) || [];
+  const projects = useSelector(state => state.bmProjects);
   const darkMode = useSelector(state => state.theme?.darkMode || false);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [chartData, setChartData] = useState([]);
 
-  const isMountedRef = useRef(true);
-  const cancelTokenSourceRef = useRef(null);
-  const isRequestInProgressRef = useRef(false);
-
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-      if (cancelTokenSourceRef.current) {
-        cancelTokenSourceRef.current.cancel('Component unmounted');
-      }
-    };
-  }, []);
+  const requestControllerRef = useRef(null);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
+  const projectOptions = useMemo(() => {
+    if (!Array.isArray(projects)) return [];
+
+    return projects
+      .filter(project => typeof project?._id === 'string' && project._id.trim())
+      .map(project => ({
+        label: project.name || `Project ${project._id}`,
+        value: project._id,
+      }));
+  }, [projects]);
+
+  const selectedProjectIds = useMemo(
+    () =>
+      selectedProjects
+        .filter(selected => projectOptions.some(option => option.value === selected.value))
+        .map(project => project.value),
+    [selectedProjects, projectOptions],
+  );
+  const hasSelectedProjects = selectedProjectIds.length > 0;
+
   const fetchData = useCallback(async () => {
-    if (isRequestInProgressRef.current) {
+    // A previous project's response must not replace data for the current selection.
+    requestControllerRef.current?.abort();
+
+    setChartData([]);
+    setError(null);
+
+    if (selectedProjectIds.length === 0) {
+      setLoading(false);
       return;
     }
 
-    if (cancelTokenSourceRef.current) {
-      cancelTokenSourceRef.current.cancel('New request initiated');
-    }
-
-    const CancelToken = axios.CancelToken;
-    cancelTokenSourceRef.current = CancelToken.source();
-    isRequestInProgressRef.current = true;
+    const controller = new AbortController();
+    requestControllerRef.current = controller;
 
     try {
       setLoading(true);
-      setError(null);
-
-      const selectedProjectIds = selectedProjects
-        .map(p => p.value)
-        .filter(id => id && typeof id === 'string');
-
-      const params = {};
-      if (selectedProjectIds.length > 0) {
-        params.projectIds = selectedProjectIds.join(',');
-      }
 
       const response = await axios.get(ENDPOINTS.BM_MATERIAL_STOCK_OUT_RISK, {
-        params,
+        params: { projectIds: selectedProjectIds.join(',') },
         headers: {
           Authorization: localStorage.getItem('token'),
         },
-        cancelToken: cancelTokenSourceRef.current.token,
+        signal: controller.signal,
       });
 
-      if (isMountedRef.current && Array.isArray(response.data)) {
-        setChartData(response.data);
-      } else if (isMountedRef.current) {
-        setChartData([]);
+      if (!controller.signal.aborted) {
+        setChartData(Array.isArray(response.data) ? response.data : []);
       }
     } catch (err) {
-      if (axios.isCancel(err)) {
-        isRequestInProgressRef.current = false;
-        return;
-      }
-
-      if (isMountedRef.current) {
+      if (!controller.signal.aborted) {
         const errorMessage =
           err.response?.data?.error ||
           err.response?.data?.details ||
@@ -160,20 +182,16 @@ function MaterialStockOutRiskIndicator() {
         setChartData([]);
       }
     } finally {
-      isRequestInProgressRef.current = false;
-      if (isMountedRef.current) {
+      if (!controller.signal.aborted) {
         setLoading(false);
       }
     }
-  }, [selectedProjects]);
+  }, [selectedProjectIds]);
 
   useEffect(() => {
-    if ((projects.length > 0 || selectedProjects.length > 0) && !isRequestInProgressRef.current) {
-      fetchData();
-    } else if (projects.length === 0 && selectedProjects.length === 0) {
-      setLoading(false);
-    }
-  }, [projects, selectedProjects, fetchData]);
+    fetchData();
+    return () => requestControllerRef.current?.abort();
+  }, [fetchData]);
 
   const formattedChartData = useMemo(() => {
     if (!Array.isArray(chartData) || chartData.length === 0) {
@@ -192,19 +210,6 @@ function MaterialStockOutRiskIndicator() {
         color: getColorByDays(item.daysUntilStockOut),
       }));
   }, [chartData]);
-
-  const projectOptions = useMemo(() => {
-    if (!Array.isArray(projects) || projects.length === 0) {
-      return [];
-    }
-
-    return projects
-      .filter(project => project?._id)
-      .map(project => ({
-        label: project.name || `Project ${project._id}`,
-        value: project._id,
-      }));
-  }, [projects]);
 
   const handleProjectChange = selectedOptions => {
     setSelectedProjects(Array.isArray(selectedOptions) ? selectedOptions : []);
@@ -254,50 +259,10 @@ function MaterialStockOutRiskIndicator() {
     [darkMode],
   );
 
-  if (loading) {
-    return (
-      <div
-        className={`${styles.card} ${darkMode ? styles.darkMode : ''}`}
-        style={{ minHeight: '400px' }}
-      >
-        <h4 className={styles.title}>Material Stock-Out Risk Indicator</h4>
-        <div className={styles.loading}>Loading chart data...</div>
-      </div>
-    );
-  }
-
-  if (error && chartData.length === 0) {
-    return (
-      <div
-        className={`${styles.card} ${darkMode ? styles.darkMode : ''}`}
-        style={{ minHeight: '400px' }}
-      >
-        <h4 className={styles.title}>Material Stock-Out Risk Indicator</h4>
-        <div className={styles.errorContainer}>
-          <div className={styles.errorIcon}>⚠️</div>
-          <div className={styles.errorContent}>
-            <h5 className={styles.errorTitle}>Unable to Load Data</h5>
-            <p className={styles.errorMessage}>{error}</p>
-            <button
-              className={styles.retryButton}
-              onClick={() => {
-                setError(null);
-                fetchData();
-              }}
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={`${styles.card} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.header}>
         <h4 className={styles.title}>Material Stock-Out Risk Indicator</h4>
-        {selectedProjects.length === 0 && <span className={styles.projectLabel}>Project ALL</span>}
       </div>
 
       <div className={styles.filterGroup}>
@@ -305,130 +270,149 @@ function MaterialStockOutRiskIndicator() {
           Projects
         </label>
         <Select
-          id="projects-select"
+          inputId="projects-select"
           className={styles.select}
           classNamePrefix="select"
           value={selectedProjects}
           onChange={handleProjectChange}
           options={projectOptions}
           placeholder={
-            projectOptions.length === 0
-              ? 'No projects available'
-              : 'Select projects to filter (leave empty for all)'
+            projectOptions.length === 0 ? 'No projects available' : 'Select one or more projects'
           }
           isMulti
           isClearable={true}
-          isDisabled={projectOptions.length === 0 || loading}
+          isDisabled={projectOptions.length === 0}
           closeMenuOnSelect={false}
           styles={selectStyles}
           aria-label="Select projects to filter material stock-out risk data"
         />
       </div>
 
-      {formattedChartData.length > 0 ? (
-        <div className={styles.chartContainer}>
-          <div className={styles.chartWrapper}>
-            <ResponsiveContainer
-              width="100%"
-              height={Math.min(
-                Math.max(
-                  CHART_CONFIG.MIN_HEIGHT,
-                  formattedChartData.length * CHART_CONFIG.ROW_HEIGHT,
-                ),
-                CHART_CONFIG.MAX_HEIGHT,
-              )}
-            >
-              <BarChart
-                layout="vertical"
-                data={formattedChartData}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: CHART_CONFIG.LEFT_MARGIN,
-                  bottom: 20,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis
-                  type="number"
-                  label={{
-                    value: 'Days until Stock-Out',
-                    position: 'insideBottom',
-                    offset: -5,
-                    style: { textAnchor: 'middle', fill: darkMode ? '#e0e0e0' : '#333' },
-                  }}
-                  tick={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 12 }}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="label"
-                  tick={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 11 }}
-                  width={140}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar
-                  dataKey="daysUntilStockOut"
-                  name="Days until Stock-Out"
-                  radius={[0, 4, 4, 0]}
-                  aria-label="Material stock-out risk bars"
-                >
-                  {formattedChartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${entry.materialId}-${entry.projectId}-${index}`}
-                      fill={entry.color}
-                    />
-                  ))}
-                  <LabelList
-                    dataKey="daysUntilStockOut"
-                    position="right"
-                    style={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 11 }}
-                  />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+      <div
+        className={!hasSelectedProjects ? styles.chartDisabled : undefined}
+        role="group"
+        aria-label="Material stock-out risk chart"
+        aria-disabled={!hasSelectedProjects}
+        aria-busy={loading}
+      >
+        {!hasSelectedProjects ? (
+          <StockOutRiskEmptyState hasSelectedProjects={false} />
+        ) : loading ? (
+          <div className={styles.loading} role="status">
+            Loading chart data...
           </div>
+        ) : error ? (
+          <div className={styles.errorContainer} role="alert">
+            <div className={styles.errorIcon} aria-hidden="true">
+              ⚠️
+            </div>
+            <div className={styles.errorContent}>
+              <h5 className={styles.errorTitle}>Unable to Load Data</h5>
+              <p className={styles.errorMessage}>{error}</p>
+              <button type="button" className={styles.retryButton} onClick={fetchData}>
+                Retry
+              </button>
+            </div>
+          </div>
+        ) : formattedChartData.length > 0 ? (
+          <div className={styles.chartContainer}>
+            <div className={styles.chartWrapper}>
+              <ResponsiveContainer
+                width="100%"
+                height={Math.min(
+                  Math.max(
+                    CHART_CONFIG.MIN_HEIGHT,
+                    formattedChartData.length * CHART_CONFIG.ROW_HEIGHT,
+                  ),
+                  CHART_CONFIG.MAX_HEIGHT,
+                )}
+              >
+                <BarChart
+                  layout="vertical"
+                  data={formattedChartData}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: CHART_CONFIG.LEFT_MARGIN,
+                    bottom: 20,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis
+                    type="number"
+                    label={{
+                      value: 'Days until Stock-Out',
+                      position: 'insideBottom',
+                      offset: -5,
+                      style: { textAnchor: 'middle', fill: darkMode ? '#e0e0e0' : '#333' },
+                    }}
+                    tick={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 12 }}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="label"
+                    tick={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 11 }}
+                    width={140}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar
+                    dataKey="daysUntilStockOut"
+                    name="Days until Stock-Out"
+                    radius={[0, 4, 4, 0]}
+                    aria-label="Material stock-out risk bars"
+                  >
+                    {formattedChartData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${entry.materialId}-${entry.projectId}-${index}`}
+                        fill={entry.color}
+                      />
+                    ))}
+                    <LabelList
+                      dataKey="daysUntilStockOut"
+                      position="right"
+                      style={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 11 }}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
 
-          <div className={styles.legend}>
-            <div className={styles.legendTitle}>Risk Level:</div>
-            <div className={styles.legendItems}>
-              <div className={styles.legendItem}>
-                <span className={styles.legendColor} style={{ backgroundColor: '#FF0000' }} />
-                <span>Critical (0-5 days)</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendColor} style={{ backgroundColor: '#FF6B35' }} />
-                <span>High (6-10 days)</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendColor} style={{ backgroundColor: '#FFA500' }} />
-                <span>Medium (11-15 days)</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendColor} style={{ backgroundColor: '#FFD700' }} />
-                <span>Low (16-20 days)</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendColor} style={{ backgroundColor: '#ADFF2F' }} />
-                <span>Safe (21-25 days)</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendColor} style={{ backgroundColor: '#32CD32' }} />
-                <span>Very Safe (26+ days)</span>
+            <div className={styles.legend}>
+              <div className={styles.legendTitle}>Risk Level:</div>
+              <div className={styles.legendItems}>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendColor} style={{ backgroundColor: '#FF0000' }} />
+                  <span>Critical (0-5 days)</span>
+                </div>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendColor} style={{ backgroundColor: '#FF6B35' }} />
+                  <span>High (6-10 days)</span>
+                </div>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendColor} style={{ backgroundColor: '#FFA500' }} />
+                  <span>Medium (11-15 days)</span>
+                </div>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendColor} style={{ backgroundColor: '#FFD700' }} />
+                  <span>Low (16-20 days)</span>
+                </div>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendColor} style={{ backgroundColor: '#ADFF2F' }} />
+                  <span>Safe (21-25 days)</span>
+                </div>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendColor} style={{ backgroundColor: '#32CD32' }} />
+                  <span>Very Safe (26+ days)</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : !loading && !error ? (
-        <div className={styles.empty} role="status" aria-live="polite">
-          <p>
-            {selectedProjects.length > 0
-              ? 'No material stock-out risk data available for selected projects'
-              : 'No material stock-out risk data available. Please select projects to view data.'}
-          </p>
-        </div>
-      ) : null}
+        ) : (
+          <StockOutRiskEmptyState hasSelectedProjects />
+        )}
+      </div>
     </div>
   );
 }
