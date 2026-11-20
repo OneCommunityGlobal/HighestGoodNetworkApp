@@ -532,6 +532,7 @@ export const ENDPOINTS = {
   HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
+  HGN_FORM_ACCESS: `${APIEndpoint}/hgnform/access`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
   SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId => `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
   // HGN Skills Dashboard
@@ -546,6 +547,8 @@ export const ENDPOINTS = {
 
   HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
   HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL_FALLBACK: skill => `${APIEndpoint}/team-skills/${skill}`,
+
+  GET_JOB: jobId => `${APIEndpoint}/jobs/${jobId}`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
