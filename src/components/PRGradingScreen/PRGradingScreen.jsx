@@ -596,10 +596,9 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
 
                           <td className={styles['pr-grading-screen-td-numbers']}>
                             {gradedPrs.map(pr => (
-                              <span
+                              <button
+                                type="button"
                                 key={pr._id || pr.id || pr.prNumber}
-                                role="button"
-                                tabIndex={0}
                                 aria-label={`Grade PR ${pr.prNumber || pr.prNumbers || 'number'}`}
                                 className={`${styles['pr-grading-screen-pr-number']} ${
                                   (pr.prNumber || '').includes('+')
@@ -607,15 +606,9 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
                                     : ''
                                 } ${getRatingClass(pr.rating, styles)} ${dm}`}
                                 onClick={() => handlePRNumberClick(reviewer.id)}
-                                onKeyDown={e => {
-                                  if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    handlePRNumberClick(reviewer.id);
-                                  }
-                                }}
                               >
                                 {pr.prNumber}
-                              </span>
+                              </button>
                             ))}
 
                             {!isFinalized && activeInput !== reviewer.id && (

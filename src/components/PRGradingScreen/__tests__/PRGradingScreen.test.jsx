@@ -3,26 +3,14 @@ import '@testing-library/jest-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PRGradingScreen from '../PRGradingScreen';
 import GRADE_OPTIONS from '../gradeOptions';
-import { teamData, makeReviewers, makeBulkResponse } from '../../../utils/gradingTestUtils';
+import {
+  teamData,
+  makeReviewers,
+  makeBulkResponse,
+  mockNativeDialog,
+} from '../../../utils/gradingTestUtils';
 
-const showModalMock = vi.fn(function() {
-  this.setAttribute('open', '');
-});
-
-const closeMock = vi.fn(function() {
-  this.removeAttribute('open');
-  this.dispatchEvent(new Event('close'));
-});
-
-Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
-  configurable: true,
-  value: showModalMock,
-});
-
-Object.defineProperty(HTMLDialogElement.prototype, 'close', {
-  configurable: true,
-  value: closeMock,
-});
+const { showModalMock } = mockNativeDialog();
 
 const {
   fetchPREntriesBulkMock,
@@ -89,6 +77,16 @@ const openModal = async () => {
   ).toBeInTheDocument();
 
   return modal;
+};
+
+// Drive the "+ Add new" manual-entry flow for a reviewer row: open the
+// field, type a PR number, and submit it.
+const attemptAddPR = (row, value) => {
+  fireEvent.click(within(row).getByRole('button', { name: '+ Add new' }));
+  fireEvent.change(within(row).getByPlaceholderText('1070 or 1070 + 1256'), {
+    target: { value },
+  });
+  fireEvent.click(within(row).getByRole('button', { name: 'Add' }));
 };
 
 describe('PRGradingScreen', () => {
@@ -272,11 +270,7 @@ describe('PRGradingScreen', () => {
     await screen.findByText('Ada Lovelace');
     const row = screen.getByRole('row', { name: /Ada Lovelace/ });
 
-    fireEvent.click(within(row).getByRole('button', { name: '+ Add new' }));
-    fireEvent.change(within(row).getByPlaceholderText('1070 or 1070 + 1256'), {
-      target: { value: '1070' },
-    });
-    fireEvent.click(within(row).getByRole('button', { name: 'Add' }));
+    attemptAddPR(row, '1070');
 
     expect(
       await within(row).findByText('This PR number has already been added for this reviewer.'),
@@ -290,11 +284,7 @@ describe('PRGradingScreen', () => {
     await screen.findByText('Ada Lovelace');
     const row = screen.getByRole('row', { name: /Ada Lovelace/ });
 
-    fireEvent.click(within(row).getByRole('button', { name: '+ Add new' }));
-    fireEvent.change(within(row).getByPlaceholderText('1070 or 1070 + 1256'), {
-      target: { value: '2000 + 2000' },
-    });
-    fireEvent.click(within(row).getByRole('button', { name: 'Add' }));
+    attemptAddPR(row, '2000 + 2000');
 
     expect(
       await within(row).findByText('This PR number has already been added for this reviewer.'),

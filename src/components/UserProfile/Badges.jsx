@@ -289,8 +289,7 @@ export const Badges = props => {
                       sortedBadges &&
                       sortedBadges.map(
                         value =>
-                          value &&
-                          value.badge && (
+                          value?.badge && (
                             <tr key={value.badge._id}>
                               <td className={styles.badge_image_sm}>
                                 {' '}
@@ -400,8 +399,7 @@ export const Badges = props => {
                     </tr>
                   </thead>
                   <tbody>
-                    {props.userProfile.badgeCollection &&
-                    props.userProfile.badgeCollection.length ? (
+                    {props.userProfile.badgeCollection?.length ? (
                       sortedBadges &&
                       sortedBadges.map(
                         value =>

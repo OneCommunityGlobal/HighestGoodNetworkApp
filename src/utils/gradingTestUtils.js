@@ -1,3 +1,31 @@
+import { vi } from 'vitest';
+
+// Native <dialog> isn't implemented in jsdom, so showModal/close are stubbed
+// here and shared by every test file that renders a PRGradingScreen/Modal
+// dialog, instead of each one redefining the same prototype stubs.
+export const mockNativeDialog = () => {
+  const showModalMock = vi.fn(function openDialog() {
+    this.setAttribute('open', '');
+  });
+
+  const closeMock = vi.fn(function closeDialog() {
+    this.removeAttribute('open');
+    this.dispatchEvent(new Event('close'));
+  });
+
+  Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
+    configurable: true,
+    value: showModalMock,
+  });
+
+  Object.defineProperty(HTMLDialogElement.prototype, 'close', {
+    configurable: true,
+    value: closeMock,
+  });
+
+  return { showModalMock, closeMock };
+};
+
 export const teamData = {
   teamName: 'Team One',
   dateRange: {

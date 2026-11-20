@@ -3,26 +3,14 @@ import '@testing-library/jest-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import PRGradingModal from '../PRGradingModal';
-import { teamData, makeReviewers, makeBulkResponse } from '../../../utils/gradingTestUtils';
+import {
+  teamData,
+  makeReviewers,
+  makeBulkResponse,
+  mockNativeDialog,
+} from '../../../utils/gradingTestUtils';
 
-const showModalMock = vi.fn(function() {
-  this.setAttribute('open', '');
-});
-
-const closeMock = vi.fn(function() {
-  this.removeAttribute('open');
-  this.dispatchEvent(new Event('close'));
-});
-
-Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
-  configurable: true,
-  value: showModalMock,
-});
-
-Object.defineProperty(HTMLDialogElement.prototype, 'close', {
-  configurable: true,
-  value: closeMock,
-});
+const { showModalMock } = mockNativeDialog();
 
 const {
   fetchPREntriesBulkMock,

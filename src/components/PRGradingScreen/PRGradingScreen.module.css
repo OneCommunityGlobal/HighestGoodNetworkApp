@@ -352,6 +352,16 @@
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .pr-grading-screen-pr-number {
+    transition: none;
+  }
+
+  .pr-grading-screen-pr-number:hover {
+    transform: none;
+  }
+}
+
 .pr-grading-screen-pair {
   background-color: #d1fae5;
   border-color: #a7f3d0;
