@@ -31,8 +31,11 @@ function JobApplicationAnalyticsPage() {
 
   const [summary, setSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
+  const [summaryError, setSummaryError] = useState('');
   const [experienceBreakdown, setExperienceBreakdown] = useState(null);
   const [applicantSources, setApplicantSources] = useState(null);
+  const [experienceError, setExperienceError] = useState('');
+  const [sourcesError, setSourcesError] = useState('');
 
   const [forms, setForms] = useState([]);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -44,30 +47,36 @@ function JobApplicationAnalyticsPage() {
 
   const loadSummary = useCallback(async () => {
     setSummaryLoading(true);
+    setSummaryError('');
     try {
       const { data } = await axios.get(ENDPOINTS.JOB_APPLICATIONS_SUMMARY);
       setSummary(data);
-    } catch {
+    } catch (err) {
       // Summary cards are non-blocking; CRM table still loads if this fails.
       setSummary(null);
+      setSummaryError(
+        err?.response?.data?.message || 'Unable to load overview analytics right now.',
+      );
     } finally {
       setSummaryLoading(false);
     }
   }, []);
 
   const loadOptionalAnalytics = useCallback(async () => {
-    const softGet = async url => {
+    const softGet = async (url, setError) => {
       try {
         const { data } = await axios.get(url, { skipGlobalErrorToast: true });
+        setError('');
         return normalizeList(data);
-      } catch {
+      } catch (err) {
+        setError(err?.response?.data?.message || err?.response?.data?.error || '');
         return null;
       }
     };
 
     const [experience, sources] = await Promise.all([
-      softGet(ENDPOINTS.JOB_ANALYTICS_EXPERIENCE_BREAKDOWN),
-      softGet(ENDPOINTS.APPLICANT_SOURCES),
+      softGet(ENDPOINTS.JOB_ANALYTICS_EXPERIENCE_BREAKDOWN, setExperienceError),
+      softGet(ENDPOINTS.APPLICANT_SOURCES, setSourcesError),
     ]);
 
     if (experience) setExperienceBreakdown(experience);
@@ -142,32 +151,46 @@ function JobApplicationAnalyticsPage() {
       className={`${styles.page} ${darkMode ? styles.pageDark : ''}`}
       data-testid="job-application-analytics-page"
     >
-      <h1 className={styles.heading}>Job Application Analytics</h1>
-      <p className={styles.subheading}>Live CRM view of job form submissions across all roles.</p>
+      <header className={styles.pageHeader}>
+        <div>
+          <h1 className={styles.heading}>Job Application Analytics</h1>
+          <p className={styles.subheading}>
+            Live CRM view of job form submissions — overview metrics, applicant expectations, and a
+            searchable applications pipeline.
+          </p>
+        </div>
+        <div className={styles.headerMeta}>Owner / Administrator CRM</div>
+      </header>
 
       <AnalyticsSummaryCards
         summary={summary}
         loading={summaryLoading}
+        summaryError={summaryError}
         experienceBreakdown={experienceBreakdown}
         applicantSources={applicantSources}
+        experienceError={experienceError}
+        sourcesError={sourcesError}
       />
 
-      <ApplicationsTable
-        items={list.items}
-        total={list.total}
-        page={page}
-        limit={list.limit}
-        loading={listLoading}
-        error={listError}
-        forms={forms}
-        filters={filters}
-        onFiltersChange={setFilters}
-        onApplyFilters={() => {
-          setPage(1);
-          setAppliedFilters(filters);
-        }}
-        onPageChange={nextPage => setPage(nextPage)}
-      />
+      <section className={styles.section} aria-label="Applications CRM">
+        <h2 className={styles.sectionTitle}>Applications CRM</h2>
+        <ApplicationsTable
+          items={list.items}
+          total={list.total}
+          page={page}
+          limit={list.limit}
+          loading={listLoading}
+          error={listError}
+          forms={forms}
+          filters={filters}
+          onFiltersChange={setFilters}
+          onApplyFilters={() => {
+            setPage(1);
+            setAppliedFilters(filters);
+          }}
+          onPageChange={nextPage => setPage(nextPage)}
+        />
+      </section>
     </div>
   );
 }

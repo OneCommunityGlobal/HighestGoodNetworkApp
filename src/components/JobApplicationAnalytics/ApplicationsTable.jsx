@@ -40,6 +40,12 @@ function ApplicationsTable({
 
   return (
     <section className={styles.tableSection} aria-label="Job applications">
+      <div className={styles.tableHeader}>
+        <h3 className={styles.panelTitle}>All applications</h3>
+        <p className={styles.panelSubtitle}>
+          Search and filter live JobApplications across forms. Resume links open in a new tab.
+        </p>
+      </div>
       <div className={styles.filters}>
         <div className={styles.filterField}>
           <label htmlFor="jaa-search">Search</label>

@@ -40,6 +40,14 @@ describe('JobApplicationAnalyticsPage', () => {
             activeForms: 3,
             formsWithSubmissions: 2,
             topForms: [{ formId: 'f1', formTitle: 'Software', count: 4 }],
+            applicationsByWeekday: [
+              { label: 'Mon', count: 3 },
+              { label: 'Tue', count: 2 },
+            ],
+            applicationsByHour: [{ label: '14:00', count: 4 }],
+            hoursPerWeekBreakdown: [{ label: '10–19 hrs/week', count: 5 }],
+            commitmentBreakdown: [{ label: '3–6 months', count: 4 }],
+            joiningExpectations: [{ label: '2026-03-01', count: 2 }],
           },
         });
       }
