@@ -6,13 +6,11 @@ import axios from 'axios';
 import moment from 'moment';
 import 'moment-timezone';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
-// import { useEffect, useState, startTransition } from 'react'; // Unused import removed
+import { useEffect, useRef, useState } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
 import { connect } from 'react-redux';
 import Select, { components } from 'react-select';
 import { toast } from 'react-toastify';
-import ReactTooltip from 'react-tooltip';
 import {
   Alert,
   Button,
@@ -45,6 +43,7 @@ import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import SkeletonLoading from '../common/SkeletonLoading';
 import TeamChart from './TeamChart';
+import TeamCodeWarningButton from './TeamCodeWarningButton';
 
 import {
   createSavedFilter,
@@ -61,6 +60,7 @@ import { getInfoCollections } from '../../actions/information';
 import { setTeamCodes } from '../../actions/teamCodes';
 import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import hasPermission from '../../utils/permissions';
+import { fetchCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 import CreateFilterModal from './components/CreateFilterModal';
 import SelectFilterModal from './components/SelectFilterModal';
 import UpdateFilterModal from './components/UpdateFilterModal';
@@ -142,6 +142,7 @@ const initialState = {
   replaceCodeLoading: false,
   allRoleInfo: [],
   teamCodeWarningUsers: [],
+  showOnlyMismatched: false,
   loadedTabs: [navItems[1]],
   summariesByTab: {},
   tabsLoading: { [navItems[1]]: false },
@@ -291,6 +292,7 @@ const WeeklySummariesReport = props => {
   const { loading, getInfoCollections } = props;
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
+  const reportResultsRef = useRef(null);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
   const [isTeamCodeFocused, setIsTeamCodeFocused] = useState(false);
 
@@ -298,6 +300,8 @@ const WeeklySummariesReport = props => {
   const [updateFilterModalOpen, setUpdateFilterModalOpen] = useState(false);
   const [selectFilterModalOpen, setSelectFilterModalOpen] = useState(false);
   const [saveFilterDropdownOpen, setSaveFilterDropdownOpen] = useState(false);
+  // null until loaded (or if the request fails), so nobody is flagged by mistake
+  const [completedQuestionnaireUserIds, setCompletedQuestionnaireUserIds] = useState(null);
 
   const toggleSaveFilterDropdown = () => setSaveFilterDropdownOpen(prev => !prev);
   const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
@@ -314,6 +318,21 @@ const WeeklySummariesReport = props => {
     updateFilterWithIndividualCodesChange,
   ] = useUpdateFiltersWithIndividualCodesChangeMutation();
   const [updateFilterWithReplacedTeamCodes] = useUpdateFiltersWithReplacedTeamCodesMutation();
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchCompletedQuestionnaireUserIds()
+      .then(userIds => {
+        if (!cancelled) setCompletedQuestionnaireUserIds(userIds);
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load questionnaire completion status', error);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (props.allBadgeData && props.allBadgeData.length > 0) {
@@ -602,7 +621,7 @@ const WeeklySummariesReport = props => {
         COLORS,
         colorOptions,
         teamCodes,
-        teamCodeWarningUsers: summariesCopy.filter(s => s.teamCodeWarning),
+        teamCodeWarningUsers: summariesCopy.filter(s => s.isActive && s.teamCodeWarning),
         auth,
         tabsLoading: {
           [activeTab]: false,
@@ -966,6 +985,9 @@ const WeeklySummariesReport = props => {
       ...prevState,
       summaries: summariesCopy,
       filteredSummaries: summariesCopy,
+      teamCodeWarningUsers: summariesCopy.filter(
+        summary => summary.isActive && summary.teamCodeWarning,
+      ),
       teamCodes,
       colorOptions,
       tableData,
@@ -981,6 +1003,7 @@ const WeeklySummariesReport = props => {
     ...prevState,
     summaries: [],
     filteredSummaries: [],
+    teamCodeWarningUsers: [],
     teamCodes: [],
     colorOptions: [],
     tableData: {},
@@ -1030,6 +1053,7 @@ const WeeklySummariesReport = props => {
     setState(prevState => ({
       ...prevState,
       activeTab: tab,
+      showOnlyMismatched: false,
       tabsLoading: {
         ...prevState.tabsLoading,
         [tab]: true,
@@ -1078,11 +1102,11 @@ const WeeklySummariesReport = props => {
     }));
   };
 
-  const handleTeamCodeChange = (userId, newTeamCode) => {
+  const handleTeamCodeChange = (userId, newTeamCode, teamCodeWarning) => {
     setState(prevState => {
       const summaries = prevState.summaries.map(summary => {
         if (summary._id === userId) {
-          return { ...summary, teamCode: newTeamCode };
+          return { ...summary, teamCode: newTeamCode, teamCodeWarning: !!teamCodeWarning };
         }
         return summary;
       });
@@ -1142,6 +1166,9 @@ const WeeklySummariesReport = props => {
       return {
         ...prevState,
         summaries,
+        teamCodeWarningUsers: summaries.filter(
+          summary => summary.isActive && summary.teamCodeWarning,
+        ),
         summariesByTab: {
           ...prevState.summariesByTab,
           [prevState.activeTab]: summaries,
@@ -1265,26 +1292,11 @@ const WeeklySummariesReport = props => {
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
-        const updatedWarningUsers = [...teamCodeWarningUsers];
-        updatedUsers.forEach(({ userId, teamCodeWarning }) => {
-          const existingIndex = updatedWarningUsers.findIndex(user => user._id === userId);
+        const updatedWarningUsers = updatedSummaries.filter(
+          summary => summary.isActive && summary.teamCodeWarning,
+        );
 
-          if (teamCodeWarning) {
-            if (existingIndex !== -1) {
-              updatedWarningUsers[existingIndex].teamCodeWarning = true;
-            } else {
-              const userProfile = summaries.find(summary => summary._id === userId);
-              if (userProfile) {
-                userProfile.teamCodeWarning = true;
-                updatedWarningUsers.push({ ...userProfile });
-              }
-            }
-          } else if (existingIndex !== -1) {
-            updatedWarningUsers.splice(existingIndex, 1);
-          }
-        });
-
-        const updatedTableData = tableData;
+        const updatedTableData = { ...tableData };
         updatedTableData[replaceCode] = updatedSummaries.filter(s => s.teamCode === replaceCode);
         oldTeamCodes.forEach(code => {
           updatedTableData[code] = updatedSummaries.filter(s => s.teamCode === code);
@@ -1315,8 +1327,6 @@ const WeeklySummariesReport = props => {
           teamCodeWarningUsers: updatedWarningUsers,
           tableData: updatedTableData,
         }));
-
-        filterWeeklySummaries();
       } else {
         setState(prev => ({
           ...prev,
@@ -1744,6 +1754,16 @@ const WeeklySummariesReport = props => {
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const { authEmailWeeklySummaryRecipient } = props;
+  const warningUsers = state.summaries.filter(
+    summary => summary.isActive && summary.teamCodeWarning,
+  );
+  const showOnlyMismatched = state.showOnlyMismatched && warningUsers.length > 0;
+  const displayedSummaries = showOnlyMismatched ? warningUsers : state.filteredSummaries;
+
+  const handleToggleMismatchedUsers = () => {
+    setState(prev => ({ ...prev, showOnlyMismatched: !prev.showOnlyMismatched }));
+    requestAnimationFrame(() => reportResultsRef.current?.scrollIntoView({ behavior: 'smooth' }));
+  };
 
   if (error) {
     return (
@@ -1946,25 +1966,11 @@ const WeeklySummariesReport = props => {
 
           <div>
             <div className={styles.teamCodeSelectRow}>
-              {state.teamCodeWarningUsers.length > 0 && (
-                <>
-                  <i
-                    className="fa fa-info-circle text-danger"
-                    data-tip
-                    data-placement="top"
-                    data-for="teamCodeWarningTooltip"
-                    style={{
-                      fontSize: '20px',
-                      cursor: 'pointer',
-                      marginRight: '8px',
-                      alignSelf: 'center',
-                    }}
-                  />
-                  <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                    {state.teamCodeWarningUsers.length} users have mismatched team codes!
-                  </ReactTooltip>
-                </>
-              )}
+              <TeamCodeWarningButton
+                count={warningUsers.length}
+                active={showOnlyMismatched}
+                onClick={handleToggleMismatchedUsers}
+              />
 
               <div className={styles.teamCodeSelect}>
                 <Select
@@ -1998,7 +2004,7 @@ const WeeklySummariesReport = props => {
                   onBlur={() => setIsTeamCodeFocused(false)}
                   classNamePrefix="custom-select"
                   className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
-                    state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+                    warningUsers.length > 0 ? 'warning-border' : ''
                   }`}
                   styles={customStyles}
                 />
@@ -2257,6 +2263,7 @@ const WeeklySummariesReport = props => {
       )}
       <Row className={styles['mx-max-sm-0']}>
         <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
+          <div ref={reportResultsRef} />
           <Nav tabs>
             {navItems.map(item => (
               <NavItem key={item}>
@@ -2296,7 +2303,7 @@ const WeeklySummariesReport = props => {
                         style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
                       >
                         <GeneratePdfReport
-                          summaries={state.filteredSummaries}
+                          summaries={displayedSummaries}
                           weekIndex={index}
                           weekDates={weekDates[index]}
                           darkMode={darkMode}
@@ -2333,17 +2340,27 @@ const WeeklySummariesReport = props => {
                         </Button>
                       </Col>
                     </Row>
-                    {state.filteredSummaries && state.filteredSummaries.length > 0 ? (
+                    {showOnlyMismatched && (
+                      <Row className={styles['mx-max-sm-0']}>
+                        <Col>
+                          <output className={styles.mismatchFilterStatus}>
+                            Showing {displayedSummaries.length} users with mismatched team codes.{' '}
+                            Click the red i again to show all users.
+                          </output>
+                        </Col>
+                      </Row>
+                    )}
+                    {displayedSummaries.length > 0 ? (
                       <>
                         <Row>
                           <Col>
-                            <b>Total Team Members:</b> {state.filteredSummaries.length}
+                            <b>Total Team Members:</b> {displayedSummaries.length}
                           </Col>
                         </Row>
                         <Row>
                           <Col>
                             <FormattedReport
-                              summaries={state.filteredSummaries}
+                              summaries={displayedSummaries}
                               weekIndex={index}
                               bioCanEdit={permissionState.bioEditPermission}
                               canEditSummaryCount={permissionState.canEditSummaryCount}
@@ -2359,6 +2376,7 @@ const WeeklySummariesReport = props => {
                               loadTrophies={state.loadTrophies}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
                               timeOffRequests={props.timeOffRequests}
+                              completedQuestionnaireUserIds={completedQuestionnaireUserIds}
                             />
                           </Col>
                         </Row>

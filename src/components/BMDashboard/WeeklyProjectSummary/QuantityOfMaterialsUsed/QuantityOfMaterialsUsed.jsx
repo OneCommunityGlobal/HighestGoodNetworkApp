@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import PropTypes from 'prop-types';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import styles from './QuantityOfMaterialsUsed.module.css';
 
@@ -68,7 +69,94 @@ function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
 
-function QuantityOfMaterialsUsed({ data }) {
+const getOptionBackground = (darkMode, state) => {
+  if (state.isSelected || state.isFocused) return '#0d55b3';
+  return darkMode ? '#22272e' : '#fff';
+};
+
+const getOptionColor = (darkMode, state) => {
+  if (state.isSelected || darkMode) return '#fff';
+  return '#232323';
+};
+
+const createSelectStyles = darkMode => ({
+  control: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#22272e' : '#fff',
+    borderColor: darkMode ? '#375071' : '#ccc',
+    color: darkMode ? '#fff' : '#232323',
+    minHeight: 38,
+    boxShadow: 'none',
+    borderRadius: 8,
+  }),
+  menu: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#22272e' : '#fff',
+    fontSize: 12,
+    zIndex: 10001,
+    borderRadius: 8,
+    marginTop: 2,
+    color: darkMode ? '#fff' : '#232323',
+  }),
+  menuList: base => ({
+    ...base,
+    maxHeight: 400,
+    overflowY: 'auto',
+    backgroundColor: darkMode ? '#22272e' : '#fff',
+    color: darkMode ? '#fff' : '#232323',
+    padding: 0,
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: getOptionBackground(darkMode, state),
+    color: getOptionColor(darkMode, state),
+    fontSize: 13,
+    padding: '10px 16px',
+    cursor: 'pointer',
+  }),
+  multiValue: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#375071' : '#e2e7ee',
+    borderRadius: 6,
+    fontSize: 12,
+    marginRight: 4,
+  }),
+  multiValueLabel: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#333',
+    fontSize: 12,
+    padding: '2px 6px',
+  }),
+  multiValueRemove: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#333',
+    ':hover': {
+      backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
+      color: '#fff',
+    },
+    borderRadius: 4,
+    padding: 2,
+  }),
+  singleValue: base => ({
+    ...base,
+    color: darkMode ? '#fff' : base.color,
+  }),
+  input: base => ({
+    ...base,
+    color: darkMode ? '#fff' : base.color,
+  }),
+  placeholder: base => ({
+    ...base,
+    color: darkMode ? '#fff' : base.color,
+  }),
+});
+
+function QuantityOfMaterialsUsed({
+  data,
+  comparisonMode = 'No Comparison',
+  currentDateRange = {},
+  comparisonDateRange = {},
+}) {
   const dispatch = useDispatch();
   const [chartData, setChartData] = useState(null);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
@@ -85,91 +173,13 @@ function QuantityOfMaterialsUsed({ data }) {
   const [showModal, setShowModal] = useState(false);
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const comparisonEnabled = comparisonMode !== 'No Comparison';
 
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  const selectStyles = useMemo(
-    () => ({
-      control: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        borderColor: darkMode ? '#375071' : '#ccc',
-        color: darkMode ? '#fff' : '#232323',
-        minHeight: 38,
-        boxShadow: 'none',
-        borderRadius: 8,
-      }),
-      menu: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        fontSize: 12,
-        zIndex: 10001,
-        borderRadius: 8,
-        marginTop: 2,
-        color: darkMode ? '#fff' : '#232323',
-      }),
-      menuList: base => ({
-        ...base,
-        maxHeight: 400,
-        overflowY: 'auto',
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        color: darkMode ? '#fff' : '#232323',
-        padding: 0,
-      }),
-      option: (base, state) => ({
-        ...base,
-        backgroundColor: state.isSelected
-          ? '#0d55b3'
-          : state.isFocused
-          ? '#0d55b3'
-          : darkMode
-          ? '#22272e'
-          : '#fff',
-        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
-        fontSize: 13,
-        padding: '10px 16px',
-        cursor: 'pointer',
-      }),
-      multiValue: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#375071' : '#e2e7ee',
-        borderRadius: 6,
-        fontSize: 12,
-        marginRight: 4,
-      }),
-      multiValueLabel: base => ({
-        ...base,
-        color: darkMode ? '#fff' : '#333',
-        fontSize: 12,
-        padding: '2px 6px',
-      }),
-      multiValueRemove: base => ({
-        ...base,
-        color: darkMode ? '#fff' : '#333',
-        ':hover': {
-          backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
-          color: '#fff',
-        },
-        borderRadius: 4,
-        padding: 2,
-      }),
-      singleValue: base => ({
-        ...base,
-        color: darkMode ? '#fff' : base.color,
-      }),
-      input: base => ({
-        ...base,
-        color: darkMode ? '#fff' : base.color,
-      }),
-      placeholder: base => ({
-        ...base,
-        color: darkMode ? '#fff' : base.color,
-      }),
-    }),
-    [darkMode],
-  );
+  const selectStyles = useMemo(() => createSelectStyles(darkMode), [darkMode]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -215,6 +225,28 @@ function QuantityOfMaterialsUsed({ data }) {
     ],
     [],
   );
+
+  useEffect(() => {
+    if (comparisonMode !== 'No Comparison') {
+      const parseDate = date => (date ? new Date(date) : null);
+      setSelectedDate('Custom');
+      setDateRangeOne([parseDate(currentDateRange.startDate), parseDate(currentDateRange.endDate)]);
+      setDateRangeTwo([
+        parseDate(comparisonDateRange.comparisonStartDate),
+        parseDate(comparisonDateRange.comparisonEndDate),
+      ]);
+    } else {
+      setSelectedDate('Last Week');
+      setDateRangeOne([null, null]);
+      setDateRangeTwo([null, null]);
+    }
+  }, [
+    comparisonMode,
+    currentDateRange.startDate,
+    currentDateRange.endDate,
+    comparisonDateRange.comparisonStartDate,
+    comparisonDateRange.comparisonEndDate,
+  ]);
 
   const getPeriodLabel = date => {
     if (date === 'ALL') return 'Total Materials Used';
@@ -379,7 +411,7 @@ function QuantityOfMaterialsUsed({ data }) {
         if (isPeriodOne) {
           periodOneUsage += record?.quantityUsed || 0;
         }
-        if (isPeriodTwo) {
+        if (comparisonEnabled && isPeriodTwo) {
           periodTwoUsage += record?.quantityUsed || 0;
         }
       });
@@ -420,7 +452,7 @@ function QuantityOfMaterialsUsed({ data }) {
       return 'gray';
     });
 
-    if (periodOneUsageMap.size === 0 && periodTwoUsageMap.size > 0) {
+    if (comparisonEnabled && periodOneUsageMap.size === 0 && periodTwoUsageMap.size > 0) {
       let sortedPreviousData = Array.from(periodTwoUsageMap);
 
       if (selectedMaterials.length > 0) {
@@ -481,7 +513,7 @@ function QuantityOfMaterialsUsed({ data }) {
           type: 'bar',
           order: 2,
         },
-        ...(selectedDate !== 'ALL'
+        ...(comparisonEnabled && selectedDate !== 'ALL'
           ? [
               {
                 label: `${getPeriodLabel(selectedDate).split(' vs ')[1]} Usage`,
@@ -503,7 +535,15 @@ function QuantityOfMaterialsUsed({ data }) {
           : []),
       ],
     });
-  }, [data, selectedMaterials, selectedProjects, selectedDate, dateRangeOne, dateRangeTwo]);
+  }, [
+    data,
+    selectedMaterials,
+    selectedProjects,
+    selectedDate,
+    dateRangeOne,
+    dateRangeTwo,
+    comparisonEnabled,
+  ]);
 
   const barWidth = 12;
   // Subtract the 40-px y-axis offset
@@ -805,7 +845,10 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range one"
-            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
+              darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
+            }`}
+            calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -850,7 +893,10 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range two"
-            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
+              darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
+            }`}
+            calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -909,7 +955,12 @@ function QuantityOfMaterialsUsed({ data }) {
                 scales: {
                   x: {
                     ticks: {
-                      display: false,
+                      display: true,
+                      color: darkMode ? '#e5e7eb' : '#333',
+                      font: { size: 11 },
+                      autoSkip: false,
+                      maxRotation: 60,
+                      minRotation: 45,
                     },
                     grid: {
                       color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
@@ -918,7 +969,7 @@ function QuantityOfMaterialsUsed({ data }) {
                   y: {
                     beginAtZero: true,
                     ticks: {
-                      color: darkMode ? '#ccc' : '#333',
+                      color: darkMode ? '#e5e7eb' : '#333',
                     },
                     grid: {
                       color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
@@ -1064,5 +1115,9 @@ function QuantityOfMaterialsUsed({ data }) {
     </div>
   );
 }
+
+QuantityOfMaterialsUsed.propTypes = {
+  data: PropTypes.array.isRequired,
+};
 
 export default QuantityOfMaterialsUsed;
