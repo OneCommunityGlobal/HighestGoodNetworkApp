@@ -30,11 +30,6 @@
   box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
-.containerTop {
-  height: 60px;
-  background-color: #9dd425;
-}
-
 .containerMain {
   display: flex;
   flex-direction: column;
