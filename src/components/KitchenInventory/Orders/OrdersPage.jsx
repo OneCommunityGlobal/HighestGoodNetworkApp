@@ -1024,7 +1024,7 @@ function OrdersPage() {
       setOrders(Array.isArray(orderRes.data) ? orderRes.data : []);
       setSupplierList(Array.isArray(supplierRes.data) ? supplierRes.data : []);
     } catch (error) {
-      // Display a user-friendly message without exposing internal error details.
+      console.error('Failed to load orders:', error);
       toast.error('Failed to load orders.');
     } finally {
       setLoading(false);
