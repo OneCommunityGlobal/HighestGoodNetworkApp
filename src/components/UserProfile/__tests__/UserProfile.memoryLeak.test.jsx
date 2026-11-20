@@ -91,6 +91,10 @@ describe('UserProfile async request cleanup', () => {
       expect(tasksRequestSignal).toBeDefined();
       expect(specialWarningsRequestSignal).toBeDefined();
     });
+    expect(axios.get).toHaveBeenCalledWith(
+      ENDPOINTS.TASKS_BY_USERID('target-user'),
+      expect.objectContaining({ params: { includeResolved: true } }),
+    );
 
     unmount();
 

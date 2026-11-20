@@ -161,7 +161,6 @@ function UserProfile(props) {
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
   const [finalDayPopupOpen, setFinalDayPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const [updatedTasks, setUpdatedTasks] = useState([]);
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
@@ -348,7 +347,10 @@ function UserProfile(props) {
     const userId = props?.match?.params?.userId;
 
     try {
-      const res = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId), { signal });
+      const res = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId), {
+        signal,
+        params: { includeResolved: true },
+      });
 
       if (signal?.aborted) return;
 
@@ -663,52 +665,27 @@ const onAssignProject = async (assignedProject) => {
   return updatedProjects;
 };
 
-const onUpdateTask = async (taskId, updatedTask, method) => {
+  const onUpdateTask = async (taskId, updatedTask, method) => {
+    const removing = method === 'remove';
+    try {
+      if (removing) {
+        await axios.delete(ENDPOINTS.TASK_DELETE_BY_ID(taskId, userProfile._id));
+      } else {
+        await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
+      }
 
-  let newTasks;
+      const applyTaskUpdate = currentTasks =>
+        removing
+          ? currentTasks.filter(task => task._id !== taskId)
+          : currentTasks.map(task => (task._id === taskId ? { ...task, ...updatedTask } : task));
 
-  if (method === 'remove') {
-    try{
-    newTasks = tasks.filter(t => t._id !== taskId);
-    const res = await axios.delete(ENDPOINTS.TASK_DELETE_BY_ID(taskId, userProfile._id));
-    if (res.status === 200) {
-      setTasks(newTasks);
-      toast.success('Task removed successfully');
-    } else {
-      toast.error('Failed to remove task');
+      setTasks(applyTaskUpdate);
+      setOriginalTasks(applyTaskUpdate);
+      toast.success(removing ? 'Task removed successfully' : 'Task updated');
+    } catch (error) {
+      toast.error(removing ? 'Failed to remove task, please try again.' : 'Failed to update task');
     }
-    return newTasks;
-  } catch (e) {
-    toast.error('Failed to remove task, please try again.');
-    console.error(e);
-    return tasks;
-  }
-  } else {
-    // UPDATE the task normally
-    newTasks = tasks.map(t =>
-      t._id === taskId ? updatedTask : t
-    );
-  }
-  setTasks(newTasks);
-
-  const updatedUserProfile = {
-  ...userProfileRef.current,
-  tasks: newTasks
-};
-
-setUpdatedTasks(prev => {
-  const others = prev.filter(t => t.taskId !== taskId);
-  return [...others, { taskId, updatedTask }];
-});
-
-  try {
-    await handleSubmit(updatedUserProfile);
-    toast.success("Task updated");
-  } catch (e) {
-    toast.error("Failed to update task");
-    console.error(e);
-  }
-};
+  };
 
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
@@ -1001,15 +978,6 @@ setUpdatedTasks(prev => {
     projects: projectsIds,  // single source of truth
   };
 
-
-  // update tasks (optionally await if you need sequencing)
-  for (let i = 0; i < updatedTasks.length; i += 1) {
-    const updatedTask = updatedTasks[i];
-    const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-    // consider await here if order matters
-    // eslint-disable-next-line no-console
-    axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
-  }
 
   try {
     await props.updateUserProfile(userProfileToUpdate);
@@ -1876,7 +1844,7 @@ setUpdatedTasks(prev => {
                 {
                   activeTab === '4' && (
                     <ProjectsTab
-                      userProjects={userProfile.projects || []}
+                      userProjects={projects}
                       userTasks={tasks}
                       projectsData={props?.allProjects?.projects || []}
                       onAssignProject={onAssignProject}
@@ -2293,7 +2261,7 @@ setUpdatedTasks(prev => {
                 </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <ProjectsTab
-                    userProjects={userProfile.projects || []}
+                    userProjects={projects}
                     userTasks={tasks}
                     projectsData={props?.allProjects?.projects || []}
                     onAssignProject={onAssignProject}

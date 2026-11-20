@@ -1,154 +1,237 @@
-import { Provider } from 'react-redux';
-import UserProjectsTable from '../UserProjectsTable';
-import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import { render, screen, within } from '@testing-library/react';
-import { userProfileMock } from '../../../../__tests__/mockStates.js';
+import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
+import { createEvent, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { toast } from 'react-toastify';
+import appStyles from '~/App.module.css';
+import UserProjectsTable from '../UserProjectsTable';
+import styles from '../UserProjectsTable.module.css';
 
-vi.mock('utils/permissions', () => ({
-  hasPermission: vi.fn(() => true),
+vi.mock('~/utils/permissions', () => ({
+  default: () => () => true,
 }));
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useLocation: () => ({ pathname: 'localhost:3000/userprofile/1' }),
-  };
-});
+vi.mock('~/components/UserProfile/EditableModal/EditableInfoModal', () => ({
+  default: () => null,
+}));
+
+const projects = [
+  { _id: 'project-1', projectName: 'Project One' },
+  { projectId: 'project-2', projectName: 'Project Two' },
+];
+const firstLink = 'https://example.com/submission-one';
+const secondLink = 'https://example.com/submission-two';
+const tasks = [
+  {
+    _id: 'active',
+    num: '1',
+    taskName: 'Active task',
+    status: 'Started',
+    projectId: projects[0]._id,
+    resources: [
+      { userID: 'other-user', completedTask: true },
+      { userID: 'profile-user', completedTask: false },
+    ],
+    links: ['https://example.com/reference'],
+  },
+  {
+    _id: 'resolved',
+    num: '2',
+    taskName: 'Resolved task',
+    status: 'Started',
+    projectId: [projects[1].projectId],
+    resources: [
+      { userID: 'profile-user', completedTask: true, reviewStatus: 'Reviewed' },
+      { userID: 'other-user', completedTask: false },
+    ],
+    relatedWorkLinks: [firstLink],
+  },
+  {
+    _id: 'multiple',
+    num: '3',
+    taskName: 'Task with multiple links',
+    projectId: projects[0]._id,
+    resources: [{ userID: 'profile-user' }],
+    relatedWorkLinks: [firstLink, secondLink, '', 'javascript:void(0)'],
+  },
+];
 
 const mockStore = configureMockStore([thunk]);
-
-const userTaskMock = [
-  {
-    priority: "Primary",
-    isAssigned: true,
-    status: "Complete",
-    _id: "6470477897eefd0a38475112",
-    resources: [
-        {
-            completedTask: true,
-            reviewStatus: "Unsubmitted",
-            _id: "6470477897eefd0a38475113",
-            userID: "645325bea0067106d4423119",
-        },
-        {
-            completedTask: true,
-            reviewStatus: "Unsubmitted",
-            _id: "64751f5009107205627746fb",
-            userID: "6453268aa0067106d4423160",
-        }
-    ],
-    wbsId: "6470473f97eefd0a38475104",
-    taskName: "Task 1",
-    num: "1",
-    category: "Food",
-    projectId: "1"
-},
-{
-    priority: "Primary",
-    isAssigned: false,
-    status: "Active",
-    isActive: true,
-    _id: "64b6f347d34321075b7734fe",
-    resources: [
-        {
-            completedTask: false,
-            reviewStatus: "Unsubmitted",
-            _id: "64b6f347d34321075b773531",
-            name: "User 1",
-            userID: "6453266da0067106d4423158"
-        },
-        {
-            completedTask: false,
-            reviewStatus: "Unsubmitted",
-            _id: "64b6f347d34321075b773532",
-            name: "User 2",
-            userID: "6453268aa0067106d4423160"
-        }
-    ],
-    wbsId: "64b6f33cd34321075b7734de",
-    taskName: "Task 2",
-    num: "2.1.1.0",
-    projectId: "2"
-},
-]
-
-const mockUserProfile = {
-  userProjects: [
-  { _id: '1', category: 'Society', projectName: 'Project1', projectId: '1'},
-  { _id: '2', category: 'Test', projectName: 'Project2', projectId: '2' }
-],
-userProfile: userProfileMock,
-userTasks: []
-};
-
-
-const renderComponent = mockProps => {
-  const store = mockStore({
-    auth: {
-      user: {
-        role: 'Owner', 
-        permissions: {
-          frontPermissions: [],
-        },
-      },
-    },
-      disabled: false,
-      edit: true,
-      role: "Administrator",
-      userProfile: {
-       ...mockProps.userProfile,
-      },
-      hasPermission: vi.fn((a) => true),
-      userTasks: []
-  });
-
-  return render(
+const store = mockStore({});
+const renderTable = (overrides = {}) => {
+  const props = {
+    userProjectsById: projects,
+    userTasks: tasks,
+    userId: 'profile-user',
+    role: 'Administrator',
+    ...overrides,
+  };
+  return (
     <Provider store={store}>
-      <UserProjectsTable
-        userProjectsById={mockProps.userProjects}
-        renderedOn={Date.now()}
-        edit={mockProps.edit}
-        role={mockProps.role}
-        disabled={mockProps.disabled}
-        userId={mockProps.userProfile._id}
-        hasPermission={vi.fn((a) => true)}
-        userTasks={mockProps.userTasks}
-      />
-    </Provider>,
+      <MemoryRouter>
+        <UserProjectsTable {...props} />
+      </MemoryRouter>
+    </Provider>
   );
 };
 
+const desktopId = 'userProjectTest';
+const tabletId = 'userProjectTabletTest';
+const desktop = () => within(screen.getByTestId(desktopId));
+const tablet = () => within(screen.getByTestId(tabletId));
+const clickFilter = (layoutId, name) =>
+  fireEvent.click(within(screen.getByTestId(layoutId)).getByRole('button', { name }));
+const taskRow = (layoutId, name) =>
+  within(within(screen.getByTestId(layoutId)).getByRole('row', { name }));
 
-describe('User Projects Table Component', () => {
-  it('render without crashing', () => {
-    renderComponent(mockUserProfile);
+const mockPopup = () => ({
+  opener: window,
+  closed: false,
+  location: { replace: vi.fn() },
+});
 
-  });
+afterEach(() => vi.restoreAllMocks());
 
-  it('renders correct number of projects the user is assigned to', () => {
-    renderComponent(mockUserProfile);
-    expect(within(screen.getByTestId('userProjectTest')).getAllByRole('row').length).toBe(2);
-  });
+describe('Profile project tasks', () => {
+  it('filters both layouts by the profiled user’s assignment and labels each status', () => {
+    render(renderTable());
+    expect(desktop().getByRole('link', { name: /Active task/ })).toHaveAttribute(
+      'href',
+      '/wbs/tasks/active',
+    );
+    expect(desktop().queryByText(/Resolved task/)).toBeNull();
+    expect(desktop().getByRole('button', { name: 'Active' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
 
-  // Test for correct rendering of project names
-  it('renders correct project names', () => {
-    renderComponent(mockUserProfile);
-    const projectRows = within(screen.getByTestId('userProjectTest')).getAllByRole('row'); 
-    expect(projectRows.length).toBe(2); // Ensure we have 2 project rows
-
-    const projectNames = projectRows.map(row => {
-      return row.cells[1].textContent;
+    clickFilter(desktopId, 'All');
+    [desktopId, tabletId].forEach(layout => {
+      expect(taskRow(layout, /Active task/).getByText('Active')).toHaveClass(styles.active);
+      expect(taskRow(layout, /Resolved task/).getByText('Resolved')).toHaveClass(styles.resolved);
     });
-    expect(projectNames).toEqual(['Project1', 'Project2']);
+
+    clickFilter(tabletId, 'Resolved');
+    expect(desktop().getByText(/Resolved task/)).toBeVisible();
+    expect(desktop().queryByText(/Active task/)).toBeNull();
+    expect(tablet().queryByText(/Task with multiple links/)).toBeNull();
+
+    clickFilter(desktopId, 'Active');
+    expect(tablet().getByText(/Active task/)).toBeVisible();
+    expect(tablet().queryByText(/Resolved task/)).toBeNull();
   });
 
-  // Test for correct number of tasks per project displayed
-  it('renders correct number of tasks', () => {
-    mockUserProfile.userTasks = userTaskMock;
-    renderComponent(mockUserProfile);
-    const taskRows = within(screen.getByTestId('userProjectTaskTest')).getAllByRole('row'); 
-    expect(taskRows.length).toBe(2); // Ensure we have 2 task rows
+  it('keeps the filter on project and task refreshes', () => {
+    const { rerender } = render(renderTable());
+    clickFilter(desktopId, 'All');
+    rerender(
+      renderTable({ userProjectsById: [{ ...projects[1], projectName: 'Updated project' }] }),
+    );
+    expect(desktop().getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'true');
+    expect(desktop().getByText(/Resolved task/)).toBeVisible();
+    expect(desktop().queryByText(/Active task/)).toBeNull();
+    rerender(renderTable({ userTasks: [tasks[0]] }));
+    expect(desktop().getByText(/Active task/)).toBeVisible();
+    expect(desktop().queryByText(/Resolved task/)).toBeNull();
+  });
+
+  it('reopens the existing assignment without duplicating it', () => {
+    const updateTask = vi.fn();
+    render(renderTable({ edit: true, updateTask }));
+    clickFilter(desktopId, 'All');
+    fireEvent.click(taskRow(desktopId, /Resolved task/).getByRole('button', { name: 'Add' }));
+    expect(updateTask).toHaveBeenCalledWith(
+      'resolved',
+      {
+        resources: [
+          { userID: 'profile-user', completedTask: false, reviewStatus: 'Unsubmitted' },
+          tasks[1].resources[1],
+        ],
+        status: 'Started',
+      },
+      'add',
+    );
+    fireEvent.click(taskRow(desktopId, /Active task/).getByRole('button', { name: 'Delete' }));
+    expect(updateTask).toHaveBeenCalledWith('active', undefined, 'remove');
+  });
+
+  it('opens a single submitted link in a detached window and preserves native modified clicks', () => {
+    const popup = mockPopup();
+    const open = vi.spyOn(window, 'open').mockReturnValue(popup);
+    render(renderTable());
+    clickFilter(desktopId, 'All');
+
+    expect(taskRow(desktopId, /Active task/).queryByRole('link', { name: /submitted/ })).toBeNull();
+    const icon = desktop().getByRole('link', { name: /open submitted link for resolved task/i });
+    expect(icon).toHaveClass(styles.submittedLinkIcon);
+    expect(icon).toHaveAttribute('href', firstLink);
+    expect(icon).toHaveAttribute('target', '_blank');
+    expect(icon).toHaveAttribute('rel', 'noopener noreferrer');
+    fireEvent.click(icon);
+    expect(open).toHaveBeenCalledWith('about:blank', '_blank', expect.stringContaining('popup'));
+    expect(popup.opener).toBeNull();
+    expect(popup.location.replace).toHaveBeenCalledWith(firstLink);
+
+    [{ metaKey: true }, { ctrlKey: true }].forEach(modifier => {
+      const event = createEvent.click(icon, modifier);
+      fireEvent(icon, event);
+      expect(event.defaultPrevented).toBe(false);
+    });
+    expect(open).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports a blocked single popup and leaves its link available', () => {
+    vi.spyOn(window, 'open').mockReturnValue(null);
+    const warn = vi.spyOn(toast, 'warn').mockImplementation(() => {});
+    render(renderTable());
+    clickFilter(desktopId, 'All');
+    const icon = desktop().getByRole('link', { name: /open submitted link for resolved task/i });
+    fireEvent.click(icon);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Allow pop-ups'));
+    expect(icon).toBeVisible();
+  });
+
+  it('lists valid links, opens them individually and in bulk, and closes only with Close', async () => {
+    const popup = mockPopup();
+    const open = vi.spyOn(window, 'open').mockReturnValue(popup);
+    render(renderTable({ darkMode: true }));
+    const trigger = tablet().getByRole('button', { name: /view submitted links/i });
+    trigger.focus();
+    fireEvent.click(trigger);
+
+    const dialog = await screen.findByRole('dialog', {
+      name: /submitted links for task with multiple links/i,
+    });
+    const modal = within(dialog);
+    expect(modal.getAllByRole('link')).toHaveLength(2);
+    expect(modal.getByRole('link', { name: secondLink })).toHaveAttribute('href', secondLink);
+    fireEvent.click(modal.getByRole('link', { name: firstLink }));
+    expect(popup.location.replace).toHaveBeenLastCalledWith(firstLink);
+    fireEvent.keyUp(dialog, { key: 'Escape', keyCode: 27 });
+    fireEvent.mouseDown(dialog);
+    fireEvent.click(dialog);
+    expect(dialog).toBeVisible();
+
+    fireEvent.click(modal.getByRole('button', { name: 'Open All' }));
+    expect(popup.location.replace.mock.calls).toEqual([[firstLink], [firstLink], [secondLink]]);
+    open.mockReturnValueOnce(null);
+    fireEvent.click(modal.getByRole('button', { name: 'Open All' }));
+    expect(modal.getByRole('status')).toHaveTextContent('1 of 2 windows were blocked');
+    expect(dialog).toBeVisible();
+
+    fireEvent.click(modal.getByRole('button', { name: 'Close' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(trigger).toHaveFocus();
+  });
+
+  it('uses scoped classes for desktop, tablet and dark mode', () => {
+    render(renderTable({ darkMode: true }));
+    expect(screen.getByTestId('userProjectTest')).toHaveClass(styles.desktop);
+    expect(screen.getByTestId('userProjectTabletTest')).toHaveClass(styles.tablet);
+    expect(screen.getByTestId('userProjectTaskTest')).toHaveClass(
+      styles.tableContainer,
+      appStyles['bg-yinmn-blue'],
+    );
   });
 });
