@@ -326,11 +326,48 @@ div.lossTrackingChartContainer span.dateRangeError {
   font-size: 14px;
 }
 
-.legendSwatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
+/* Short line in the legend and tooltip that shows each series' color and line style */
+.lineSample {
+  display: block;
   flex: 0 0 auto;
+}
+
+/* ---------- Tooltip ---------- */
+.tooltip {
+  min-width: 210px;
+  padding: 0.6rem 0.75rem;
+  background-color: var(--tooltip-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 18%);
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.tooltipTitle {
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 700;
+}
+
+.tooltipRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+}
+
+.tooltipLabel {
+  white-space: nowrap;
+}
+
+.tooltipValue {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 @media (width <=768px) {
