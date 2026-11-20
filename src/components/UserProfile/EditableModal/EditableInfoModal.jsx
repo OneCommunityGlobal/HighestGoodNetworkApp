@@ -238,7 +238,7 @@ export class EditableInfoModal extends Component {
     if (saveResult === 200 || saveResult === 201) {
       await this.handleSaveSuccess();
       // ✅ Refresh collections so UI is always in sync
-      this.props.getInfoCollections(true);
+      this.props.getInfoCollections();
     } else {
       this.handleSaveError();
     }
@@ -248,7 +248,7 @@ export class EditableInfoModal extends Component {
     const { infoId } = this.handleChangeInInfos();
     await this.props.deleteInfoCollectionById(infoId);
     // Refresh collections after delete
-    this.props.getInfoCollections(true);
+    this.props.getInfoCollections();
   };
 
   // Close = cancel: while editing, throw away unsaved typing and the unsaved 'Who can view' choice
@@ -275,7 +275,7 @@ export class EditableInfoModal extends Component {
     const { darkMode } = this.props;
     const headerDarkClass = darkMode ? `${appStyles['bg-space-cadet']} text-light` : '';
 
-    const sanitizedContent = infoContent; 
+    const sanitizedContent = infoContent;
 
     return (
       CanRead && (
@@ -410,7 +410,7 @@ const mapStateToProps = ({ infoCollections }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getInfoCollections: retrieveInfos => dispatch(getInfoCollections(retrieveInfos)),
+  getInfoCollections: () => dispatch(getInfoCollections()),
   updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
   addInfoCollection: newInfo => dispatch(addInfoCollection(newInfo)),
   deleteInfoCollectionById: infoId => dispatch(deleteInfoCollectionById(infoId)),

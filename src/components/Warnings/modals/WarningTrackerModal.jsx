@@ -90,7 +90,7 @@ function WarningTrackerModal({
       setOriginalWarningDescriptions(res);
     });
     if (retrieveInfoCollections) {
-      dispatch(getInfoCollections(true)).then(res => {
+      dispatch(getInfoCollections()).then(res => {
         if (res.error) {
           setError(res.error);
           return;

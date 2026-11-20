@@ -190,6 +190,7 @@ export default function Warning({
                 fontSize={20}
                 initialInfo={warning?.description}
                 darkMode={darkMode}
+                skipFetch
               />
             </div>
             <WarningIcons
