@@ -479,24 +479,24 @@ export default function InteractiveMap() {
                       {org.status}
                     </span>
                   </div>
-                        <div style={{ marginBottom: '8px' }}>
-                          <strong>Status:</strong>{' '}
-                          <span
-                            className={
-                              // eslint-disable-next-line no-nested-ternary
-                              org.status === 'active'
-                                ? styles.statusActive
-                                : // eslint-disable-next-line no-nested-ternary
-                                org.status === 'delayed'
-                                ? styles.statusDelayed
-                                : org.status === 'completed'
-                                ? styles.statusCompleted
-                                : styles.statusDefault
-                            }
-                          >
-                            {org.status}
-                          </span>
-                        </div>
+                  <div style={{ marginBottom: '8px' }}>
+                    <strong>Status:</strong>{' '}
+                    <span
+                      className={
+                        // eslint-disable-next-line no-nested-ternary
+                        org.status === 'active'
+                          ? styles.statusActive
+                          : // eslint-disable-next-line no-nested-ternary
+                          org.status === 'delayed'
+                          ? styles.statusDelayed
+                          : org.status === 'completed'
+                          ? styles.statusCompleted
+                          : styles.statusDefault
+                      }
+                    >
+                      {org.status}
+                    </span>
+                  </div>
 
                   <div style={{ marginBottom: '8px' }}>
                     <strong>Location:</strong> {org.country || 'N/A'}
