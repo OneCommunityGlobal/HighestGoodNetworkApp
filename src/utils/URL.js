@@ -408,6 +408,7 @@ export const ENDPOINTS = {
   BM_TOOLS_PURCHASE: `${APIEndpoint}/bm/tools/purchase`,
   POST_LESSON: `${APIEndpoint}/bm/lessons/new`,
   BM_LESSONS: `${APIEndpoint}/bm/lessons`,
+  BM_LESSON_TAGS_FREQUENT: `${APIEndpoint}/bm/lessons/tags/frequent`,
   BM_LESSONS_LEARNT: `${APIEndpoint}/bm/lessons-learnt`,
   BM_LESSON: `${APIEndpoint}/bm/lesson/`,
   BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
