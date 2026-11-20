@@ -31,7 +31,27 @@ import { getUserProfile } from '../../actions/userProfile';
 import hasPermission from '../../utils/permissions';
 import BadgeImage from './BadgeImage';
 import { permissions } from '../../utils/constants';
+import badgeStyles from './Badge.module.css';
 import './BadgeReport.module.css';
+
+function BadgeImageAndNameCell({ personalBestMaxHrs, value, index }) {
+  return (
+    <>
+      <td className={badgeStyles.badge_image_sm}>
+        {' '}
+        <BadgeImage
+          personalBestMaxHrs={personalBestMaxHrs}
+          count={value.count}
+          badgeData={value.badge}
+          index={index}
+          key={value._id || index}
+          cssSuffix={'_report'}
+        />
+      </td>
+      <td>{value.badge.badgeName}</td>
+    </>
+  );
+}
 
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState(JSON.parse(JSON.stringify(props.badges)) || []);
@@ -398,18 +418,11 @@ function BadgeReport(props) {
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={value._id || index}>
-                    <td className="badge_image_sm">
-                      {' '}
-                      <BadgeImage
-                        personalBestMaxHrs={props.personalBestMaxHrs}
-                        count={value.count}
-                        badgeData={value.badge}
-                        index={index}
-                        key={value._id || index}
-                        cssSuffix={'_report'}
-                      />
-                    </td>
-                    <td>{value.badge.badgeName}</td>
+                    <BadgeImageAndNameCell
+                      personalBestMaxHrs={props.personalBestMaxHrs}
+                      value={value}
+                      index={index}
+                    />
                     <td>
                       {typeof value.lastModified == 'string'
                         ? // ? formatDate(value.lastModified.substring(0, 10))
@@ -580,18 +593,11 @@ function BadgeReport(props) {
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={value._id || index}>
-                    <td className="badge_image_sm">
-                      {' '}
-                      <BadgeImage
-                        personalBestMaxHrs={props.personalBestMaxHrs}
-                        count={value.count}
-                        badgeData={value.badge}
-                        index={index}
-                        key={value._id || index}
-                        cssSuffix={'_report'}
-                      />
-                    </td>
-                    <td>{value.badge.badgeName}</td>
+                    <BadgeImageAndNameCell
+                      personalBestMaxHrs={props.personalBestMaxHrs}
+                      value={value}
+                      index={index}
+                    />
                     <td>
                       {typeof value.lastModified == 'string'
                         ? formatDate(value.lastModified)

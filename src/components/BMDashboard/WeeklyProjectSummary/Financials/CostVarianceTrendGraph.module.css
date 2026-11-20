@@ -177,8 +177,8 @@
   display: inline-block;
 }
 
-.varianceOverLight { color: #e74c3c; }
-.varianceOverDark { color: #f44; }
+.varianceOverLight { color: #e74c3c !important; }
+.varianceOverDark { color: #f44 !important; }
 
 .varianceUnderLight { color: #2ecc71; }
 .varianceUnderDark { color: #4ade80; }
