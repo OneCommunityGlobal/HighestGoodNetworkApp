@@ -70,11 +70,13 @@ function PurchaseForm({
         const supplierList = await fetchSuppliers();
         setSuppliers(supplierList);
       } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load suppliers:', error);
         toast.error('Unable to load suppliers. Please try again.');
       }
     };
 
-    loadSuppliers();
+    void loadSuppliers();
   }, [isMaterialPurchase]);
 
   // Set error state based on errors from the store

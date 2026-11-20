@@ -286,8 +286,6 @@ export function Record({ record, recordType, setRecord, itemType }) {
                 expectedDeliveryDate,
                 actualDeliveryDate: recordedDeliveryDate,
               }) => {
-                const isActionComplete =
-                  status === 'Approved' || status === 'Rejected' || status === 'Received';
                 const isLoading = loadingId === _id;
 
                 return (
