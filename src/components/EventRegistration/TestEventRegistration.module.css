@@ -578,13 +578,13 @@
 
 /* Dark mode button styles */
 .darkMode .submitBtn {
-  background: #4CAF50;
+  background: #237a38;
   color: #fff;
   border: 1px solid #45a049;
 }
 
 .darkMode .submitBtn:hover {
-  background: #45a049;
+  background: #1b642e;
   border-color: #3d8b40;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgb(76 175 80 / 30%);
@@ -604,12 +604,12 @@
 }
 
 .darkMode .modalBtn {
-  background: #4CAF50;
+  background: #237a38;
   color: #fff;
   border: 1px solid #45a049;
 }
 
 .darkMode .modalBtn:hover {
-  background: #45a049;
+  background: #1b642e;
   border-color: #3d8b40;
 }
