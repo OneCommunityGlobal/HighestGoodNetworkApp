@@ -91,6 +91,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
 
   // Questionnaire endpoints
+  QUESTIONNAIRE_STATUS: `${APIEndpoint}/hgnform/questionnaire/status`,
   QUESTIONNAIRE_CHECK_MODAL: userId => `${APIEndpoint}/dashboard/questionaire/checkModal/${userId}`,
   QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
   QUESTIONNAIRE_CLOSE_PERMANENTLY: () =>
@@ -663,6 +664,7 @@ export const ENDPOINTS = {
 
   DROPBOX_DELETE: `${APIEndpoint}/dropbox/delete-folder`,
   DROPBOX_TEAM_FOLDERS: `${APIEndpoint}/dropbox/team-folders`,
+  DROPBOX_CHECK_ACCESS: `${APIEndpoint}/dropbox/check-access`,
   GITHUB_REMOVE: `${APIEndpoint}/github/remove`,
   SENTRY_REMOVE: `${APIEndpoint}/sentry/remove`,
 
