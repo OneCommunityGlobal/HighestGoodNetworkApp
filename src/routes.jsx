@@ -215,7 +215,6 @@ import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
 import EducatorReports from './components/EductionPortal/EducatorReports';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
-import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
 import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
@@ -225,7 +224,6 @@ import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
 
 import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
-import PopularPRChart from './components/Analytics/PopularPRChart';
 import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
 
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
@@ -1268,7 +1266,7 @@ export default (
           component={PRReviewTeamAnalyticsDashboard}
           fallback
         />
-        <ProtectedRoute path="/analytics/popular-prs" exact component={PopularPRChart} fallback />
+        <Redirect exact from="/analytics/popular-prs" to="/pr-team-analytics/popular-prs" />
         <ProtectedRoute
           path="/analytics/review-summary"
           exact
@@ -1298,12 +1296,6 @@ export default (
           fallback
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
-        <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
-        {/* <ProtectedRoute
-          path="/pr-dashboard/promotion-eligibility"
-          exact
-          component={PRDashboardPromotionEligibility}
-        /> */}
         <ProtectedRoute
           path="/pr-dashboard/top-reviewed-prs"
           exact
