@@ -283,7 +283,7 @@ function BadgeDevelopmentTable(props) {
         <tbody>
           {filteredBadges.map(value => (
             <tr key={value._id}>
-              <td className="badge_image_sm">
+              <td className={styles.badgeImageSm}>
                 {' '}
                 <img
                   src={value.imageUrl ?? ''}
@@ -293,7 +293,7 @@ function BadgeDevelopmentTable(props) {
                 />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
-                    <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                    <CardImg className={styles.badgeImageLg} src={value?.imageUrl} />
                     <CardBody>
                       <CardTitle className={styles.badgeCardTitle}>{value?.badgeName}</CardTitle>
                       <CardText>{value?.description}</CardText>
@@ -307,7 +307,7 @@ function BadgeDevelopmentTable(props) {
               <td className="d-xl-table-cell d-none">{detailsText(value)}</td>
               <td>{value.ranking || 0}</td>
               <td>
-                <span className="badgemanagement-actions-cell">
+                <span className={styles.badgeManagementActionsCell}>
                   <Button
                     outline
                     color="info"
@@ -318,7 +318,7 @@ function BadgeDevelopmentTable(props) {
                     Edit
                   </Button>{' '}
                 </span>
-                <span className="badgemanagement-actions-cell">
+                <span className={styles.badgeManagementActionsCell}>
                   <Button
                     outline
                     color="danger"

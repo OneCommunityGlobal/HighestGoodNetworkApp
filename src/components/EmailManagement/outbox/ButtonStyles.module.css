@@ -25,18 +25,18 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
     white-space: nowrap;
 }
 
 .action-buttons .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
 }
 
 .action-buttons .btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 10%);
 }
 
 /* Refresh button - Blue */
@@ -44,7 +44,7 @@
 .action-buttons button[color='outline-primary'],
 .action-buttons button.btn-outline-primary {
     background-color: #007bff !important;
-    color: #ffffff !important;
+    color: #fff !important;
     border: 1px solid #007bff !important;
 }
 
@@ -53,8 +53,8 @@
 .action-buttons button.btn-outline-primary:hover {
     background-color: #0056b3 !important;
     border-color: #0056b3 !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgb(0 123 255 / 30%) !important;
 }
 
 /* Auto Refresh button - Green */
@@ -62,7 +62,7 @@
 .action-buttons button[color='success'],
 .action-buttons button.btn-success {
     background-color: #28a745 !important;
-    color: #ffffff !important;
+    color: #fff !important;
     border: 1px solid #28a745 !important;
 }
 
@@ -71,8 +71,8 @@
 .action-buttons button.btn-success:hover {
     background-color: #1e7e34 !important;
     border-color: #1e7e34 !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgb(40 167 69 / 30%) !important;
 }
 
 /* Auto Refresh button (inactive) - Gray */
@@ -80,7 +80,7 @@
 .action-buttons button[color='outline-secondary'],
 .action-buttons button.btn-outline-secondary {
     background-color: #6c757d !important;
-    color: #ffffff !important;
+    color: #fff !important;
     border: 1px solid #6c757d !important;
 }
 
@@ -89,81 +89,81 @@
 .action-buttons button.btn-outline-secondary:hover {
     background-color: #545b62 !important;
     border-color: #545b62 !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgb(108 117 125 / 30%) !important;
 }
 
 /* Filter button - Purple */
 .action-buttons .btn-outline-secondary.filter-btn {
     background-color: #6f42c1 !important;
-    color: #ffffff !important;
+    color: #fff !important;
     border: 1px solid #6f42c1 !important;
 }
 
 .action-buttons .btn-outline-secondary.filter-btn:hover {
     background-color: #5a32a3 !important;
     border-color: #5a32a3 !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgb(111 66 193 / 30%) !important;
 }
 
 /* Enhanced button styling for specific classes */
 .action-btn.refresh-btn {
     background-color: #007bff !important;
     border-color: #007bff !important;
-    color: #ffffff !important;
+    color: #fff !important;
 }
 
 .action-btn.refresh-btn:hover {
     background-color: #0056b3 !important;
     border-color: #0056b3 !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgb(0 123 255 / 30%) !important;
 }
 
 .action-btn.auto-refresh-btn {
     background-color: #28a745 !important;
     border-color: #28a745 !important;
-    color: #ffffff !important;
+    color: #fff !important;
 }
 
 .action-btn.auto-refresh-btn:hover {
     background-color: #1e7e34 !important;
     border-color: #1e7e34 !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgb(40 167 69 / 30%) !important;
 }
 
 .action-btn.filter-btn {
     background-color: #6f42c1 !important;
     border-color: #6f42c1 !important;
-    color: #ffffff !important;
+    color: #fff !important;
 }
 
 .action-btn.filter-btn:hover {
     background-color: #5a32a3 !important;
     border-color: #5a32a3 !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgb(111 66 193 / 30%) !important;
 }
 
 /* Dark mode support */
 [data-theme="dark"] .action-buttons .btn,
 .dark-mode .action-buttons .btn,
 body.dark .action-buttons .btn {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
 }
 
 [data-theme="dark"] .action-buttons .btn:hover,
 .dark-mode .action-buttons .btn:hover,
 body.dark .action-buttons .btn:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
     .action-buttons .btn {
-        border: 2px solid currentColor !important;
+        border: 2px solid currentcolor !important;
     }
 }
 
@@ -205,7 +205,7 @@ body.dark .action-buttons .btn:hover {
 }
 
 .inline-filters-modal .card {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 25px rgb(0 0 0 / 15%);
     border: none;
 }
 

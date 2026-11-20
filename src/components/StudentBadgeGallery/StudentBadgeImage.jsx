@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
 import styles from './StudentBadgeImage.module.css';
+import badgeStyles from '../Badge/Badge.module.css';
 
 const hasRealHover = () =>
   typeof window !== 'undefined' &&
@@ -27,7 +28,7 @@ function StudentBadgeImage({ badgeData, time, index, personalBestMaxHrs, count, 
     <>
       {/* ✅ Only image and badge count here — no nested container */}
       <div
-        className="badge_image_sm"
+        className={badgeStyles.badge_image_sm}
         style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}
       >
         <img
@@ -60,7 +61,7 @@ function StudentBadgeImage({ badgeData, time, index, personalBestMaxHrs, count, 
           popperClassName={styles.studentBadgePopover}
         >
           <Card className={`text-center ${styles.popoverCard}`}>
-            <CardImg className="badge_image_lg" src={badgeData?.imageUrl} />
+            <CardImg className={badgeStyles.badge_image_lg} src={badgeData?.imageUrl} />
             <CardBody>
               <CardTitle
                 style={{
@@ -84,17 +85,15 @@ function StudentBadgeImage({ badgeData, time, index, personalBestMaxHrs, count, 
 function BadgeSpan({ badgeType, personalBestMaxHrs, count, cssSuffix }) {
   if (badgeType === 'Personal Max') {
     return (
-      <span className={'badge_count_personalmax' + cssSuffix}>
-        {Math.floor(personalBestMaxHrs)}
-      </span>
+      <span className={badgeStyles.badge_count_personalmax}>{Math.floor(personalBestMaxHrs)}</span>
     );
   }
 
   if (count < 100) {
-    return <span className={'badge_count' + cssSuffix}>{Math.round(count)}</span>;
+    return <span className={badgeStyles.badge_count}>{Math.round(count)}</span>;
   }
 
-  return <span className={'badge_count_3_digit' + cssSuffix}>{Math.round(count)}</span>;
+  return <span className={badgeStyles.badge_count_3_digit}>{Math.round(count)}</span>;
 }
 
 export default StudentBadgeImage;

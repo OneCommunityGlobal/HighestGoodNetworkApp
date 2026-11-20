@@ -1,315 +1,797 @@
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
-import PRGradingView from './PRGradingView';
-import {
-  loadSavedGradings,
-  mergeSavedGradings,
-  saveAddedPR,
-  saveGradeChange,
-} from './prGradingPersistence';
-import { usePRPromotion } from './usePRPromotion';
+import { toast } from 'react-toastify';
 
-const hasDuplicatePR = (gradedPrs, value) => {
+import {
+  addPREntry,
+  updatePRRating,
+  importPREntries,
+  fetchPREntriesBulk,
+  updatePRsNeeded,
+} from '../../actions/promotionActions';
+
+import styles from './PRGradingScreen.module.css';
+import GRADE_OPTIONS from './gradeOptions';
+
+const hasDuplicatePRNumber = (gradedPrs, value) => {
   const enteredNumbers = value.split('+').map(number => number.trim());
   const existingNumbers = new Set(
-    gradedPrs.flatMap(pr => pr.prNumbers.split('+').map(number => number.trim())),
+    (gradedPrs || []).flatMap(pr => (pr.prNumber || '').split('+').map(number => number.trim())),
   );
+
   return (
     new Set(enteredNumbers).size !== enteredNumbers.length ||
     enteredNumbers.some(number => existingNumbers.has(number))
   );
 };
 
-const PRGradingScreen = ({
-  teamData,
-  reviewers,
-  teamOptions = [],
-  selectedTeamName = '',
-  weekOptions = [],
-  selectedWeek = '',
-  onTeamChange,
-  onWeekChange,
-  onSave,
-  onRemoveReviewer,
-  saveStatus,
-  onDismissSaveStatus,
-}) => {
+const getRatingClass = (grade, styles) => {
+  switch (grade) {
+    case 'Did not review':
+      return styles['pr-rating-did-not-review'];
+
+    case 'Needs more details':
+      return styles['pr-rating-needs-details'];
+
+    case 'Good':
+      return styles['pr-rating-good'];
+
+    case 'Exceptional':
+      return styles['pr-rating-exceptional'];
+
+    case 'No Image':
+      return styles['pr-rating-no-image'];
+
+    default:
+      return '';
+  }
+};
+
+const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Reviewer & grading state
   const [reviewerData, setReviewerData] = useState(reviewers || []);
+
   const [activeInput, setActiveInput] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
+
   const [showGradingModal, setShowGradingModal] = useState(null);
-  const [isFinalized, setIsFinalized] = useState(false);
-  const [isLoadingSaved, setIsLoadingSaved] = useState(true);
-  const [isSavingPR, setIsSavingPR] = useState(false);
-  const [isSavingGrade, setIsSavingGrade] = useState(false);
-  const [gradeError, setGradeError] = useState('');
-  const [loadError, setLoadError] = useState('');
+  const [isFinalized] = useState(false);
+
+  const gradingDialogRef = useRef(null);
+
+  /*
+   * Keeps Owner-edited PRs Needed values locally until
+   * the bulk API returns the updated backend data.
+   */
+  const [prsNeededOverrides, setPrsNeededOverrides] = useState({});
+  const [prsNeededDrafts, setPrsNeededDrafts] = useState({});
+
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
-  const [showAddReviewer, setShowAddReviewer] = useState(false);
-  const [newReviewerName, setNewReviewerName] = useState('');
-  const [addReviewerError, setAddReviewerError] = useState('');
-  const {
-    promotingReviewer,
-    promotedReviewerIds,
-    handlePromoteClick,
-    handleConfirmPromotion,
-    handleCancelPromotion,
-  } = usePRPromotion(teamData?.teamName);
 
+  const [isLoadingEntries, setIsLoadingEntries] = useState(false);
+
+  /*
+   * Keep the native dialog synchronized with React state.
+   * showModal() provides native modal behavior, including
+   * focus containment and Escape handling.
+   */
   useEffect(() => {
-    if (!teamData || !reviewers) return undefined;
-    let active = true;
-    setIsLoadingSaved(true);
-    loadSavedGradings(teamData)
-      .then(saved => {
-        if (active) {
-          setReviewerData(mergeSavedGradings(reviewers, saved));
-          setLoadError('');
-        }
-      })
-      .catch(() => {
-        if (active) setLoadError('Could not load saved PRs. Try again before adding a PR.');
-      })
-      .finally(() => {
-        if (active) setIsLoadingSaved(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [teamData, reviewers]);
+    const dialog = gradingDialogRef.current;
+
+    if (!dialog) {
+      return;
+    }
+
+    if (showGradingModal !== null && !dialog.open) {
+      dialog.showModal();
+    } else if (showGradingModal === null && dialog.open) {
+      dialog.close();
+    }
+  }, [showGradingModal]);
+
+  /*
+   * ---------------------------------------------------------
+   * BULK LOAD
+   * ---------------------------------------------------------
+   */
+
+  const loadAllPREntries = useCallback(async () => {
+    if (!reviewers?.length) {
+      setReviewerData([]);
+      return;
+    }
+
+    try {
+      setIsLoadingEntries(true);
+
+      const reviewerIds = reviewers.map(reviewer => reviewer.id);
+
+      const response = await fetchPREntriesBulk(reviewerIds, currentUser);
+
+      const reviewerResults = response?.reviewers || {};
+
+      setReviewerData(
+        reviewers.map(reviewer => {
+          const reviewerResult = reviewerResults[reviewer.id];
+          const weeks = reviewerResult?.weeks || [];
+          const gradedPrs = weeks.flatMap(week => week.prs || []);
+
+          return {
+            ...reviewer,
+            weeks,
+            gradedPrs,
+            prsReviewed: gradedPrs.length,
+            history: reviewer.history || [],
+          };
+        }),
+      );
+    } catch (error) {
+      console.error('Failed to load PR entries:', error);
+      toast.error('Failed to load PR grading data.');
+    } finally {
+      setIsLoadingEntries(false);
+    }
+  }, [reviewers, currentUser]);
+
+  /*
+   * Initial load + reload when reviewer list changes.
+   */
+  useEffect(() => {
+    loadAllPREntries();
+  }, [loadAllPREntries]);
+
+  /*
+   * ---------------------------------------------------------
+   * SEARCH
+   * ---------------------------------------------------------
+   */
 
   const availableRoles = useMemo(() => {
     const roles = reviewerData.map(reviewer => reviewer.role).filter(Boolean);
+
     return [...new Set(roles)];
   }, [reviewerData]);
 
-  const filteredReviewers = useMemo(
-    () =>
-      reviewerData.filter(reviewer => {
-        const nameMatch = reviewer.reviewer.toLowerCase().includes(searchTerm.toLowerCase());
-        const roleMatch = roleFilter ? reviewer.role === roleFilter : true;
-        return nameMatch && roleMatch;
-      }),
-    [reviewerData, searchTerm, roleFilter],
-  );
+  const filteredReviewers = useMemo(() => {
+    return reviewerData.filter(reviewer => {
+      const reviewerName = reviewer.reviewerName || '';
+      const nameMatch = reviewerName.toLowerCase().includes(searchTerm.toLowerCase());
+      const roleMatch = roleFilter ? reviewer.role === roleFilter : true;
+
+      return nameMatch && roleMatch;
+    });
+  }, [reviewerData, searchTerm, roleFilter]);
 
   const handleClearSearch = () => {
     setSearchTerm('');
     setRoleFilter('');
   };
 
+  if (!teamData || !reviewers) {
+    return <div>Error: Missing required props</div>;
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * PRS NEEDED
+   * ---------------------------------------------------------
+   */
+
+  const getReviewerPrsNeeded = reviewer => {
+    // A value still being typed (not yet saved) takes priority, so the field
+    // reflects exactly what the user typed instead of snapping back to the
+    // last-saved number while the request for it is still in flight.
+    if (Object.hasOwn(prsNeededDrafts, reviewer.id)) {
+      return prsNeededDrafts[reviewer.id];
+    }
+
+    if (Object.hasOwn(prsNeededOverrides, reviewer.id)) {
+      return prsNeededOverrides[reviewer.id];
+    }
+
+    return reviewer.prsNeeded ?? reviewer.requiredPRs ?? 0;
+  };
+
+  // Keystrokes only update this local draft — never fire a request — so the
+  // field can't revert mid-type and rapid edits can't race each other into
+  // saving an older value last. The real save happens once, on blur.
+  const handlePrsNeededInputChange = (reviewerId, value) => {
+    if (isFinalized) {
+      return;
+    }
+
+    setPrsNeededDrafts(prev => ({ ...prev, [reviewerId]: value }));
+  };
+
+  const handlePrsNeededBlur = async reviewerId => {
+    if (isFinalized || !Object.hasOwn(prsNeededDrafts, reviewerId)) {
+      return;
+    }
+
+    const value = prsNeededDrafts[reviewerId];
+    const numericValue = Number(value);
+
+    const clearDraft = () =>
+      setPrsNeededDrafts(prev => {
+        const next = { ...prev };
+        delete next[reviewerId];
+        return next;
+      });
+
+    if (value === '' || Number.isNaN(numericValue) || numericValue < 0) {
+      clearDraft();
+      return;
+    }
+
+    try {
+      await updatePRsNeeded(reviewerId, numericValue, currentUser);
+
+      await loadAllPREntries();
+
+      setPrsNeededOverrides(prev => ({
+        ...prev,
+        [reviewerId]: numericValue,
+      }));
+      clearDraft();
+
+      toast.success('PRs Needed updated.');
+    } catch (error) {
+      console.error('Failed to update PRs Needed:', error);
+      toast.error('Failed to update PRs Needed.');
+      clearDraft();
+    }
+  };
+
+  /*
+   * ---------------------------------------------------------
+   * VALIDATION
+   * ---------------------------------------------------------
+   */
+
   const validatePRNumber = value => {
     const trimmed = value.trim();
     const pattern = /^\d+(\s*\+\s*\d+)?$/;
-    if (!trimmed) return { isValid: false, error: 'PR number cannot be empty' };
-    if (!pattern.test(trimmed)) return { isValid: false, error: 'Format: 1070 or 1070 + 1256' };
-    return { isValid: true, error: '' };
+
+    if (!trimmed) {
+      return {
+        isValid: false,
+        error: 'PR number cannot be empty',
+      };
+    }
+
+    if (!pattern.test(trimmed)) {
+      return {
+        isValid: false,
+        error: 'Format: 1070 or 1070 + 1256',
+      };
+    }
+
+    return {
+      isValid: true,
+      error: '',
+    };
   };
 
+  /*
+   * ---------------------------------------------------------
+   * ADD PR
+   * ---------------------------------------------------------
+   */
+
   const handleAddNewClick = reviewerId => {
-    if (isFinalized || isLoadingSaved || loadError) return;
+    if (isFinalized) {
+      return;
+    }
+
+    // Opens the manual entry field only. Importing from the weekly summary is
+    // a separate, explicit action (handleImportFromSummary) — this click must
+    // not save anything on its own, since the user may still Cancel.
     setActiveInput(reviewerId);
     setInputValue('');
     setInputError('');
   };
 
+  /*
+   * ---------------------------------------------------------
+   * IMPORT PR ENTRIES FROM WEEKLY SUMMARY
+   * ---------------------------------------------------------
+   */
+
+  const handleImportFromSummary = async reviewerId => {
+    if (isFinalized) {
+      return;
+    }
+
+    try {
+      setInputError('');
+
+      const result = await importPREntries(reviewerId, currentUser);
+
+      await loadAllPREntries();
+
+      if (result?.added?.length === 0) {
+        toast.info(result.warnings?.[0] || 'No PRs found to import from the weekly summary.');
+        return;
+      }
+
+      toast.success('PRs imported from weekly summary.');
+    } catch (error) {
+      console.error('Failed to import PR entries:', error);
+      toast.error('Unable to import PRs from the weekly summary.');
+    }
+  };
+
   const handleInputSubmit = async reviewerId => {
-    if (isFinalized || isLoadingSaved || isSavingPR || loadError) return;
+    if (isFinalized) {
+      return;
+    }
+
     const validation = validatePRNumber(inputValue);
+
     if (!validation.isValid) {
       setInputError(validation.error);
       return;
     }
+
+    const trimmedValue = inputValue.trim();
     const reviewer = reviewerData.find(item => item.id === reviewerId);
-    if (!reviewer) return;
-    if (hasDuplicatePR(reviewer.gradedPrs, inputValue)) {
+
+    if (hasDuplicatePRNumber(reviewer?.gradedPrs, trimmedValue)) {
       setInputError('This PR number has already been added for this reviewer.');
       return;
     }
 
-    setIsSavingPR(true);
     try {
-      const saved = await loadSavedGradings(teamData);
-      const currentReviewers = mergeSavedGradings(reviewerData, saved);
-      const currentReviewer = currentReviewers.find(item => item.id === reviewerId);
-      if (!currentReviewer) return;
-      if (hasDuplicatePR(currentReviewer.gradedPrs, inputValue)) {
-        setReviewerData(currentReviewers);
-        setInputError('This PR number has already been added for this reviewer.');
-        return;
-      }
+      await addPREntry(reviewerId, trimmedValue, currentUser);
+      await loadAllPREntries();
 
-      const prNumbers = inputValue.trim();
-      await saveAddedPR(teamData, currentReviewer, prNumbers);
-      const newPREntry = { id: uuidv4(), prNumbers, grade: 'Okay' };
-      setReviewerData(
-        currentReviewers.map(item =>
-          item.id === reviewerId
-            ? {
-                ...item,
-                gradedPrs: [...item.gradedPrs, newPREntry],
-                prsReviewed: item.gradedPrs.length + 1,
-              }
-            : item,
-        ),
-      );
       setActiveInput(null);
       setInputValue('');
       setInputError('');
-    } catch {
-      setInputError('Could not save this PR. Please try again.');
-    } finally {
-      setIsSavingPR(false);
+
+      toast.success('PR added successfully.');
+    } catch (error) {
+      console.error('Failed to add PR:', error);
+      setInputError('Failed to save PR. Please try again.');
     }
   };
 
-  const handleCancelInput = () => {
-    if (isFinalized || isSavingPR) return;
+  const handleCancel = () => {
+    if (isFinalized) {
+      return;
+    }
+
     setActiveInput(null);
     setInputValue('');
-    setInputError('');
   };
 
+  /*
+   * ---------------------------------------------------------
+   * PR GRADING
+   * ---------------------------------------------------------
+   */
+
   const handlePRNumberClick = reviewerId => {
-    if (isFinalized || isLoadingSaved || loadError) return;
-    setGradeError('');
+    if (isFinalized) {
+      return;
+    }
+
     setShowGradingModal(reviewerId);
   };
 
-  const handleGradeChange = async (reviewerId, prId, newGrade) => {
-    if (isFinalized || isLoadingSaved || isSavingGrade || loadError) return;
-    const reviewer = reviewerData.find(item => item.id === reviewerId);
-    const pr = reviewer?.gradedPrs.find(item => item.id === prId);
-    if (!pr || pr.grade === newGrade) return;
+  const handleGradeChange = async (prId, newGrade) => {
+    if (isFinalized) {
+      return;
+    }
 
-    setIsSavingGrade(true);
-    setGradeError('');
     try {
-      const savedGrade = newGrade === 'Cannot find image' ? 'No Correct Image' : newGrade;
-      await saveGradeChange(teamData, reviewer, pr.prNumbers, savedGrade);
-      setReviewerData(prev =>
-        prev.map(item =>
-          item.id === reviewerId
-            ? {
-                ...item,
-                gradedPrs: item.gradedPrs.map(gradedPR =>
-                  gradedPR.id === prId ? { ...gradedPR, grade: newGrade } : gradedPR,
-                ),
-              }
-            : item,
-        ),
-      );
-    } catch {
-      setGradeError('Could not save this grade. Please try again.');
-    } finally {
-      setIsSavingGrade(false);
+      await updatePRRating(prId, newGrade, currentUser);
+      await loadAllPREntries();
+
+      toast.success('PR rating saved.');
+    } catch (error) {
+      console.error('Failed to save PR rating:', error);
+      toast.error('Failed to save PR rating.');
     }
   };
 
   const handleCloseGradingModal = () => {
-    if (isSavingGrade) return;
+    const dialog = gradingDialogRef.current;
+
+    if (dialog?.open) {
+      dialog.close();
+    }
+
     setShowGradingModal(null);
-    setGradeError('');
   };
 
-  if (!teamData || !reviewers) return <div>Error: Missing required props</div>;
-  const handleAddReviewer = () => {
-    const name = newReviewerName.trim();
+  /*
+   * ---------------------------------------------------------
+   * HISTORY
+   * ---------------------------------------------------------
+   */
 
-    if (!name) {
-      setAddReviewerError('Reviewer name cannot be empty');
-      return;
+  const getHistory = reviewer => {
+    if (!Array.isArray(reviewer.history)) {
+      return [];
     }
 
-    if (reviewerData.some(r => r.reviewer.toLowerCase() === name.toLowerCase())) {
-      setAddReviewerError('Reviewer already exists');
-      return;
-    }
+    return reviewer.history.map((entry, index) => {
+      if (typeof entry === 'number') {
+        return {
+          id: index,
+          week: '',
+          count: entry,
+          belowRequirement: undefined,
+        };
+      }
 
-    const newReviewer = {
-      id: uuidv4(),
-      reviewer: name,
-      prsNeeded: 10,
-      prsReviewed: 0,
-      gradedPrs: [],
-    };
-
-    setReviewerData(prev => [...prev, newReviewer]);
-    setNewReviewerName('');
-    setAddReviewerError('');
-    setShowAddReviewer(false);
+      return {
+        id: entry.id || entry.week || index,
+        week: entry.week || '',
+        count: Number(entry.prsReviewed ?? entry.count ?? 0),
+        belowRequirement: entry.belowRequirement,
+      };
+    });
   };
 
-  const handleRemoveReviewer = async reviewerName => {
-    setReviewerData(prev => prev.filter(r => r.reviewer !== reviewerName));
+  /*
+   * ---------------------------------------------------------
+   * RENDER
+   * ---------------------------------------------------------
+   */
 
-    if (onRemoveReviewer) {
-      await onRemoveReviewer(reviewerName);
-    }
-  };
+  const dm = darkMode ? styles['dark-mode'] : '';
+
   return (
-    <PRGradingView
-      darkMode={darkMode}
-      teamData={teamData}
-      teamOptions={teamOptions}
-      selectedTeamName={selectedTeamName}
-      weekOptions={weekOptions}
-      selectedWeek={selectedWeek}
-      onTeamChange={onTeamChange}
-      onWeekChange={onWeekChange}
-      onSave={onSave}
-      showAddReviewer={showAddReviewer}
-      onToggleAddReviewer={() => setShowAddReviewer(prev => !prev)}
-      newReviewerName={newReviewerName}
-      onNewReviewerNameChange={value => {
-        setNewReviewerName(value);
-        setAddReviewerError('');
-      }}
-      addReviewerError={addReviewerError}
-      onAddReviewer={handleAddReviewer}
-      onRemoveReviewer={handleRemoveReviewer}
-      saveStatus={saveStatus}
-      onDismissSaveStatus={onDismissSaveStatus}
-      isFinalized={isFinalized}
-      onFinalize={() => setIsFinalized(true)}
-      searchTerm={searchTerm}
-      onSearchTermChange={setSearchTerm}
-      roleFilter={roleFilter}
-      onRoleFilterChange={setRoleFilter}
-      availableRoles={availableRoles}
-      onClearSearch={handleClearSearch}
-      filteredReviewers={filteredReviewers}
-      promotedReviewerIds={promotedReviewerIds}
-      onPromoteClick={handlePromoteClick}
-      activeInput={activeInput}
-      inputValue={inputValue}
-      inputError={inputError}
-      loadError={loadError}
-      gradeError={gradeError}
-      isLoadingSaved={isLoadingSaved}
-      isSavingPR={isSavingPR}
-      isSavingGrade={isSavingGrade}
-      onInputValueChange={value => {
-        setInputValue(value);
-        setInputError('');
-      }}
-      onAddNewClick={handleAddNewClick}
-      onInputSubmit={handleInputSubmit}
-      onCancelInput={handleCancelInput}
-      onPRNumberClick={handlePRNumberClick}
-      promotingReviewer={promotingReviewer}
-      onConfirmPromotion={handleConfirmPromotion}
-      onCancelPromotion={handleCancelPromotion}
-      showGradingModal={showGradingModal}
-      onCloseGradingModal={handleCloseGradingModal}
-      gradingReviewer={reviewerData.find(reviewer => reviewer.id === showGradingModal)}
-      onGradeChange={handleGradeChange}
-    />
+    <Container fluid className={`${styles['pr-grading-screen-container']} ${dm}`}>
+      <Row>
+        <Col md={12}>
+          <Card className={`${styles['pr-grading-screen-card']} ${dm}`}>
+            <Card.Body className={dm}>
+              {/* ---------------- SEARCH ---------------- */}
+
+              <div className={`${styles['pr-grading-screen-search-bar']} ${dm}`}>
+                <input
+                  type="text"
+                  placeholder="Search reviewers by name..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className={`${styles['pr-grading-screen-search-input']} ${dm}`}
+                />
+
+                {availableRoles.length > 0 && (
+                  <select
+                    value={roleFilter}
+                    onChange={e => setRoleFilter(e.target.value)}
+                    className={`${styles['pr-grading-screen-role-select']} ${dm}`}
+                  >
+                    <option value="">All roles</option>
+
+                    {availableRoles.map(role => (
+                      <option key={role} value={role}>
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                {(searchTerm || roleFilter) && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className={`${styles['pr-grading-screen-clear-btn']} ${dm}`}
+                  >
+                    ✕ Clear
+                  </button>
+                )}
+              </div>
+
+              {/* ---------------- LOADING ---------------- */}
+
+              {isLoadingEntries && (
+                <div className={styles['pr-grading-screen-loading']}>
+                  Loading PR grading data...
+                </div>
+              )}
+
+              {/* ---------------- TABLE ---------------- */}
+
+              <table className={`${styles['pr-grading-screen-table']} ${dm}`}>
+                <thead>
+                  <tr>
+                    <th>Reviewer Name</th>
+                    <th>PRs Needed</th>
+                    <th>History</th>
+                    <th>PRs Reviewed</th>
+                    <th>PR Numbers</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredReviewers.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className={`${styles['pr-grading-screen-no-results']} ${dm}`}>
+                        No reviewers found
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredReviewers.map(reviewer => {
+                      const prsNeeded = getReviewerPrsNeeded(reviewer);
+                      const history = getHistory(reviewer);
+                      const gradedPrs = reviewer.gradedPrs || [];
+
+                      return (
+                        <tr key={reviewer.id}>
+                          <td>{reviewer.reviewerName}</td>
+
+                          <td>
+                            <input
+                              type="number"
+                              min="0"
+                              value={prsNeeded}
+                              disabled={isFinalized}
+                              onChange={e =>
+                                handlePrsNeededInputChange(reviewer.id, e.target.value)
+                              }
+                              onBlur={() => handlePrsNeededBlur(reviewer.id)}
+                              className={`${styles['pr-grading-screen-pr-needed-input']} ${dm}`}
+                              title="Owner can manually edit PRs Needed. A manual value overrides the committed-hours calculation."
+                              aria-label={`PRs needed for ${reviewer.reviewerName}`}
+                            />
+
+                            {reviewer.committedHours !== undefined && (
+                              <div className={styles['pr-grading-screen-committed-hours']}>
+                                {reviewer.committedHours} hrs/week
+                              </div>
+                            )}
+                          </td>
+
+                          <td className={styles['pr-grading-screen-history-cell']}>
+                            {history.length === 0 ? (
+                              <span className={styles['pr-grading-screen-no-history']}>—</span>
+                            ) : (
+                              <div className={styles['pr-grading-screen-history']}>
+                                {history.map(historyItem => {
+                                  const belowRequirement = historyItem.belowRequirement === true;
+
+                                  return (
+                                    <span
+                                      key={historyItem.id}
+                                      className={
+                                        belowRequirement
+                                          ? styles['pr-grading-screen-history-below']
+                                          : styles['pr-grading-screen-history-met']
+                                      }
+                                      title={
+                                        historyItem.week
+                                          ? `${historyItem.week}: ${historyItem.count} PRs reviewed`
+                                          : `${historyItem.count} PRs reviewed`
+                                      }
+                                    >
+                                      {historyItem.count}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </td>
+
+                          <td>
+                            <input
+                              type="number"
+                              value={gradedPrs.length}
+                              readOnly
+                              disabled={isFinalized}
+                              className={`${styles['pr-grading-screen-pr-input']} ${dm}`}
+                              aria-label={`PRs reviewed by ${reviewer.reviewerName}`}
+                            />
+                          </td>
+
+                          <td className={styles['pr-grading-screen-td-numbers']}>
+                            {gradedPrs.map(pr => (
+                              <button
+                                type="button"
+                                key={pr._id || pr.id || pr.prNumber}
+                                aria-label={`Grade PR ${pr.prNumber || pr.prNumbers || 'number'}`}
+                                className={`${styles['pr-grading-screen-pr-number']} ${
+                                  (pr.prNumber || '').includes('+')
+                                    ? styles['pr-grading-screen-pair']
+                                    : ''
+                                } ${getRatingClass(pr.rating, styles)} ${dm}`}
+                                onClick={() => handlePRNumberClick(reviewer.id)}
+                              >
+                                {pr.prNumber}
+                              </button>
+                            ))}
+
+                            {!isFinalized && activeInput !== reviewer.id && (
+                              <>
+                                <Button
+                                  variant="success"
+                                  size="sm"
+                                  className={styles['pr-grading-screen-add-btn']}
+                                  onClick={() => handleAddNewClick(reviewer.id)}
+                                >
+                                  + Add new
+                                </Button>
+
+                                <Button
+                                  variant="outline-primary"
+                                  size="sm"
+                                  className={styles['pr-grading-screen-add-btn']}
+                                  onClick={() => handleImportFromSummary(reviewer.id)}
+                                >
+                                  Import from summary
+                                </Button>
+                              </>
+                            )}
+
+                            {!isFinalized && activeInput === reviewer.id && (
+                              <div className={styles['pr-grading-screen-input-container']}>
+                                <input
+                                  type="text"
+                                  value={inputValue}
+                                  onChange={e => {
+                                    setInputValue(e.target.value);
+                                    setInputError('');
+                                  }}
+                                  className={styles['pr-grading-screen-pr-number-input']}
+                                  placeholder="1070 or 1070 + 1256"
+                                  aria-label="PR number"
+                                />
+
+                                <Button
+                                  variant="primary"
+                                  size="sm"
+                                  onClick={() => handleInputSubmit(reviewer.id)}
+                                >
+                                  Add
+                                </Button>
+
+                                <Button variant="secondary" size="sm" onClick={handleCancel}>
+                                  Cancel
+                                </Button>
+
+                                {inputError && (
+                                  <div className={styles['pr-grading-screen-input-error']}>
+                                    {inputError}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* ---------------- GRADING MODAL ---------------- */}
+
+      {showGradingModal !== null && (
+        <dialog
+          ref={gradingDialogRef}
+          className={`${styles['pr-grading-screen-modal']} ${dm}`}
+          aria-labelledby="grade-prs-dialog-title"
+          onCancel={event => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleCloseGradingModal();
+          }}
+          onClose={() => setShowGradingModal(null)}
+        >
+          <div className={`${styles['pr-grading-screen-modal-header']} ${dm}`}>
+            <div>
+              <h4 id="grade-prs-dialog-title">Grade PRs</h4>
+
+              <span
+                className={styles['pr-grading-screen-rating-tooltip']}
+                title="Did not review = red. Needs more details = blue. Good = black. Exceptional = black with yellow highlight. No Image = strikethrough."
+                aria-label="PR rating explanation"
+                role="img"
+              >
+                ⓘ
+              </span>
+            </div>
+
+            <button
+              type="button"
+              className={styles['pr-grading-screen-modal-close']}
+              onClick={handleCloseGradingModal}
+              aria-label="Close grading modal"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className={`${styles['pr-grading-screen-modal-body']} ${dm}`}>
+            <div
+              id="pr-rating-guide"
+              className={`${styles['pr-grading-screen-rating-help']} ${dm}`}
+            >
+              <div>
+                <strong>Rating guide:</strong>
+              </div>
+
+              <div>
+                <span className={styles['pr-rating-did-not-review']}>Did not review</span>
+
+                <span className={styles['pr-rating-needs-details']}>Needs more details</span>
+
+                <span className={styles['pr-rating-good']}>Good</span>
+
+                <span className={styles['pr-rating-exceptional']}>Exceptional</span>
+
+                <span className={styles['pr-rating-no-image']}>No Image</span>
+              </div>
+            </div>
+
+            <table className={`${styles['pr-grading-screen-grading-table']} ${dm}`}>
+              <thead>
+                <tr>
+                  <th>PR Number</th>
+                  <th>Rating</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {reviewerData
+                  .find(reviewer => reviewer.id === showGradingModal)
+                  ?.gradedPrs?.map(pr => (
+                    <tr key={pr._id || pr.id || pr.prNumber}>
+                      <td>
+                        <span className={getRatingClass(pr.rating, styles)}>
+                          {pr.prNumber || pr.prNumbers}
+                        </span>
+                      </td>
+
+                      <td>
+                        <select
+                          value={pr.rating || ''}
+                          disabled={isFinalized}
+                          onChange={e => handleGradeChange(pr._id || pr.id, e.target.value)}
+                          className={`${styles['pr-grading-screen-rating-select']} ${getRatingClass(
+                            pr.rating,
+                            styles,
+                          )} ${dm}`}
+                          aria-describedby="pr-rating-guide"
+                          aria-label={`Rating for PR ${pr.prNumber || pr.prNumbers || 'number'}`}
+                        >
+                          <option value="">Select rating</option>
+
+                          {GRADE_OPTIONS.map(rating => (
+                            <option key={rating.value} value={rating.value}>
+                              {rating.label}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+
+            <div className={`${styles['pr-grading-screen-modal-footer']} ${dm}`}>
+              <Button variant="primary" onClick={handleCloseGradingModal}>
+                Done
+              </Button>
+            </div>
+          </div>
+        </dialog>
+      )}
+    </Container>
   );
 };
 
@@ -321,41 +803,53 @@ PRGradingScreen.propTypes = {
       end: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
+
   reviewers: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      reviewer: PropTypes.string.isRequired,
+      reviewerName: PropTypes.string,
       role: PropTypes.string,
       prsNeeded: PropTypes.number,
+      requiredPRs: PropTypes.number,
+      committedHours: PropTypes.number,
+      prsNeededOverride: PropTypes.number,
+
+      history: PropTypes.arrayOf(
+        PropTypes.oneOfType([
+          PropTypes.number,
+          PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+            week: PropTypes.string,
+            prsReviewed: PropTypes.number,
+            count: PropTypes.number,
+            belowRequirement: PropTypes.bool,
+          }),
+        ]),
+      ),
+
       gradedPrs: PropTypes.arrayOf(
         PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          prNumbers: PropTypes.string.isRequired,
-          grade: PropTypes.string.isRequired,
+          _id: PropTypes.string,
+          id: PropTypes.string,
+          prNumber: PropTypes.string,
+          prNumbers: PropTypes.string,
+          rating: PropTypes.string,
+          source: PropTypes.string,
         }),
-      ).isRequired,
+      ),
     }),
   ).isRequired,
-  teamOptions: PropTypes.arrayOf(
+
+  currentUser: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
     PropTypes.shape({
-      _id: PropTypes.string,
-      teamName: PropTypes.string.isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      username: PropTypes.string,
+      role: PropTypes.string,
     }),
-  ),
-  selectedTeamName: PropTypes.string,
-  weekOptions: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      value: PropTypes.string.isRequired,
-    }),
-  ),
-  selectedWeek: PropTypes.string,
-  onTeamChange: PropTypes.func,
-  onWeekChange: PropTypes.func,
-  onSave: PropTypes.func,
-  onRemoveReviewer: PropTypes.func,
-  saveStatus: PropTypes.oneOf(['success', 'error', null]),
-  onDismissSaveStatus: PropTypes.func,
+  ]),
 };
 
 export default PRGradingScreen;
