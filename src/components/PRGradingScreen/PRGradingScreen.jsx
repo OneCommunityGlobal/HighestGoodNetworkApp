@@ -15,6 +15,18 @@ import {
 import styles from './PRGradingScreen.module.css';
 import GRADE_OPTIONS from './gradeOptions';
 
+const hasDuplicatePRNumber = (gradedPrs, value) => {
+  const enteredNumbers = value.split('+').map(number => number.trim());
+  const existingNumbers = new Set(
+    (gradedPrs || []).flatMap(pr => (pr.prNumber || '').split('+').map(number => number.trim())),
+  );
+
+  return (
+    new Set(enteredNumbers).size !== enteredNumbers.length ||
+    enteredNumbers.some(number => existingNumbers.has(number))
+  );
+};
+
 const getRatingClass = (grade, styles) => {
   switch (grade) {
     case 'Did not review':
@@ -327,8 +339,16 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
       return;
     }
 
+    const trimmedValue = inputValue.trim();
+    const reviewer = reviewerData.find(item => item.id === reviewerId);
+
+    if (hasDuplicatePRNumber(reviewer?.gradedPrs, trimmedValue)) {
+      setInputError('This PR number has already been added for this reviewer.');
+      return;
+    }
+
     try {
-      await addPREntry(reviewerId, inputValue.trim(), currentUser);
+      await addPREntry(reviewerId, trimmedValue, currentUser);
       await loadAllPREntries();
 
       setActiveInput(null);

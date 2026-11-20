@@ -266,6 +266,42 @@ describe('PRGradingScreen', () => {
     expect(input).toHaveValue(8);
   });
 
+  it('rejects a PR number already recorded for that reviewer', async () => {
+    renderScreen();
+
+    await screen.findByText('Ada Lovelace');
+    const row = screen.getByRole('row', { name: /Ada Lovelace/ });
+
+    fireEvent.click(within(row).getByRole('button', { name: '+ Add new' }));
+    fireEvent.change(within(row).getByPlaceholderText('1070 or 1070 + 1256'), {
+      target: { value: '1070' },
+    });
+    fireEvent.click(within(row).getByRole('button', { name: 'Add' }));
+
+    expect(
+      await within(row).findByText('This PR number has already been added for this reviewer.'),
+    ).toBeInTheDocument();
+    expect(addPREntryMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects a repeated number within a newly entered pair', async () => {
+    renderScreen();
+
+    await screen.findByText('Ada Lovelace');
+    const row = screen.getByRole('row', { name: /Ada Lovelace/ });
+
+    fireEvent.click(within(row).getByRole('button', { name: '+ Add new' }));
+    fireEvent.change(within(row).getByPlaceholderText('1070 or 1070 + 1256'), {
+      target: { value: '2000 + 2000' },
+    });
+    fireEvent.click(within(row).getByRole('button', { name: 'Add' }));
+
+    expect(
+      await within(row).findByText('This PR number has already been added for this reviewer.'),
+    ).toBeInTheDocument();
+    expect(addPREntryMock).not.toHaveBeenCalled();
+  });
+
   it('opens the grading dialog natively and closes it on Escape', async () => {
     renderScreen();
 
