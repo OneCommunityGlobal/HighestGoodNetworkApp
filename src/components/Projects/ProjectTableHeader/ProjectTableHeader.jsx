@@ -94,7 +94,7 @@ const ProjectTableHeader = props => {
 
       {/* 2. Category column header */}
       <th scope="col" id="projects__category" className='align-middle'>
-        <span className="d-flex justify-content-between align-items-center">
+        <span className="d-flex justify-content-between align-items-center" style={{ whiteSpace: 'nowrap' }}>
           <span>{PROJECT_CATEGORY}</span>
           {renderDropdownFilterButton('project-category-filter', props.selectedValue, props.onChange, categoryList, 'Choose category')}
         </span>
@@ -110,7 +110,7 @@ const ProjectTableHeader = props => {
 
       {/* 4. Inventory column header */}
       <th scope="col" id="projects__inv" className='align-middle'>
-        <span className='d-flex justify-content-between align-items-center'>
+        <span className='d-flex justify-content-between align-items-center' style={{ whiteSpace: 'nowrap' }}>
           <span>{INVENTORY}</span>
           <div>{renderSortButton('INVENTORY')}</div>
         </span>
@@ -118,7 +118,7 @@ const ProjectTableHeader = props => {
 
       {/* 5. Members column header */}
       <th scope="col" id="projects__members" className='align-middle'>
-        <span className='d-flex justify-content-between align-items-center'>
+        <span className='d-flex justify-content-between align-items-center' style={{ whiteSpace: 'nowrap' }}>
           <span>{MEMBERS}</span>
           <div>
             {renderSortButton('MEMBERS')}

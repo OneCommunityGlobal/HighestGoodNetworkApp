@@ -463,10 +463,10 @@ const Projects = function(props) {
           {showArchived ? 'Hide Archived' : 'Show Archived'}
         </button>
         </div>
-        <div className="table-responsive-sm w-100">
+        <div className="table-responsive w-100">
         <table
           className={`table table-bordered ${styles.projectsTable}`}
-          style={{ tableLayout: 'fixed', width: '100%' }}
+          style={{ tableLayout: 'auto', width: '100%', minWidth: '1000px', }}
         >
           <thead className={styles.projectsTableHead}>
             <ProjectTableHeader
