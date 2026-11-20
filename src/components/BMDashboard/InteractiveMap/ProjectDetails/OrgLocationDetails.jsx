@@ -32,7 +32,7 @@ const OrgLocationDetails = () => {
       }
     };
 
-    fetchProject();
+    void fetchProject();
   }, [orgId]);
 
   const formatDate = date => {

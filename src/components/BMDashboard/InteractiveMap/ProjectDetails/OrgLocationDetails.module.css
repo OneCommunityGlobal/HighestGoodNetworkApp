@@ -60,17 +60,17 @@
 
 .active {
   background-color: #dff5e5;
-  color: #218838;
+  color: #176b2c;
 }
 
 .delayed {
   background-color: #fff2cc;
-  color: #9a6700;
+  color: #805500;
 }
 
 .completed {
   background-color: #dceeff;
-  color: #0969da;
+  color: #084fa8;
 }
 
 /* =========================

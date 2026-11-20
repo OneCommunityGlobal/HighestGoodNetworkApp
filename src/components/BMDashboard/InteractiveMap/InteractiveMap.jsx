@@ -68,17 +68,17 @@ function FloatingLegend({ mapAreaRef }) {
   const origRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    const div = legendRef.current;
+    const legend = legendRef.current;
     const mapArea = mapAreaRef.current;
 
-    if (!div || !mapArea) return undefined;
+    if (!legend || !mapArea) return undefined;
 
     if (pos.left === null && pos.top === null) {
       const mapRect = mapArea.getBoundingClientRect();
 
       setPos({
         left: 20,
-        top: mapRect.height - div.offsetHeight - 20,
+        top: Math.max(0, mapRect.height - legend.offsetHeight - 20),
       });
     }
 
@@ -87,11 +87,21 @@ function FloatingLegend({ mapAreaRef }) {
 
       const mapRect = mapArea.getBoundingClientRect();
 
-      let newLeft = origRef.current.x + (e.clientX - startRef.current.x);
-      let newTop = origRef.current.y + (e.clientY - startRef.current.y);
+      const newLeft = Math.max(
+        0,
+        Math.min(
+          origRef.current.x + (e.clientX - startRef.current.x),
+          mapRect.width - legend.offsetWidth,
+        ),
+      );
 
-      newLeft = Math.max(0, Math.min(newLeft, mapRect.width - div.offsetWidth));
-      newTop = Math.max(0, Math.min(newTop, mapRect.height - div.offsetHeight));
+      const newTop = Math.max(
+        0,
+        Math.min(
+          origRef.current.y + (e.clientY - startRef.current.y),
+          mapRect.height - legend.offsetHeight,
+        ),
+      );
 
       setPos({ left: newLeft, top: newTop });
     };
@@ -110,6 +120,8 @@ function FloatingLegend({ mapAreaRef }) {
   }, [mapAreaRef, pos.left, pos.top]);
 
   const onMouseDown = e => {
+    if (e.target.closest('button') && e.target !== legendRef.current) return;
+
     draggingRef.current = true;
 
     startRef.current = {
@@ -147,11 +159,17 @@ function FloatingLegend({ mapAreaRef }) {
     setPos(current => ({
       left: Math.max(
         0,
-        Math.min((current.left ?? 20) + movement[0], mapRect.width - legend.offsetWidth),
+        Math.min(
+          (current.left ?? 20) + movement[0],
+          Math.max(0, mapRect.width - legend.offsetWidth),
+        ),
       ),
       top: Math.max(
         0,
-        Math.min((current.top ?? 20) + movement[1], mapRect.height - legend.offsetHeight),
+        Math.min(
+          (current.top ?? 20) + movement[1],
+          Math.max(0, mapRect.height - legend.offsetHeight),
+        ),
       ),
     }));
   };
@@ -160,11 +178,10 @@ function FloatingLegend({ mapAreaRef }) {
   const colors = ['#DE6A6A', '#E3D270', '#6ACFDE'];
 
   return (
-    <div
+    <button
       ref={legendRef}
+      type="button"
       className={styles.legendBox}
-      role="button"
-      tabIndex={0}
       aria-label="Draggable project status legend. Use arrow keys to move."
       style={{
         left: pos.left !== null ? `${pos.left}px` : undefined,
@@ -185,7 +202,7 @@ function FloatingLegend({ mapAreaRef }) {
           <span>{status}</span>
         </div>
       ))}
-    </div>
+    </button>
   );
 }
 
@@ -248,14 +265,17 @@ export default function InteractiveMap() {
 
         const data = response.data.data || [];
 
-        // Keep only records with valid map coordinates.
         const validOrgs = data.filter(
           org =>
             org.orgId &&
             org.latitude != null &&
             org.longitude != null &&
             Number.isFinite(Number(org.latitude)) &&
-            Number.isFinite(Number(org.longitude)),
+            Number.isFinite(Number(org.longitude)) &&
+            Number(org.latitude) >= -90 &&
+            Number(org.latitude) <= 90 &&
+            Number(org.longitude) >= -180 &&
+            Number(org.longitude) <= 180,
         );
 
         setOrgs(validOrgs);
@@ -272,7 +292,7 @@ export default function InteractiveMap() {
       }
     };
 
-    fetchOrgs();
+    void fetchOrgs();
   }, []);
 
   /* -----------------------------------------------------
@@ -300,25 +320,21 @@ export default function InteractiveMap() {
       const normalizedFilterStart = normalizeDate(startDate);
       const normalizedFilterEnd = normalizeDate(endDate);
 
-      // Both dates selected: check whether project dates overlap.
       if (normalizedFilterStart && normalizedFilterEnd) {
         const overlaps =
           normalizedOrgStart <= normalizedFilterEnd && normalizedOrgEnd >= normalizedFilterStart;
 
         if (!overlaps) return false;
       } else if (normalizedFilterStart) {
-        // Only start date selected.
         if (normalizedOrgEnd < normalizedFilterStart) {
           return false;
         }
       } else if (normalizedFilterEnd) {
-        // Only end date selected.
         if (normalizedOrgStart > normalizedFilterEnd) {
           return false;
         }
       }
 
-      // Apply status filter.
       if (statusFilter && org.status?.toLowerCase() !== statusFilter.toLowerCase()) {
         return false;
       }
@@ -380,18 +396,161 @@ export default function InteractiveMap() {
   }, [darkMode]);
 
   /* -----------------------------------------------------
+     MAP CONTENT
+  ----------------------------------------------------- */
+
+  let mapContent;
+
+  if (loading) {
+    mapContent = <div className={styles.loading}>Loading…</div>;
+  } else if (errMsg && orgs.length === 0) {
+    mapContent = <div className={styles.loading}>{errMsg}</div>;
+  } else {
+    mapContent = (
+      <MapContainer
+        key={mapKey}
+        center={[40, 0]}
+        zoom={3}
+        minZoom={2}
+        maxZoom={15}
+        maxBounds={[
+          [-85, -180],
+          [85, 180],
+        ]}
+        maxBoundsViscosity={1.0}
+        worldCopyJump={false}
+        scrollWheelZoom
+        className={styles.mapContainer}
+        keyboard={false}
+      >
+        <MapThemeUpdater darkMode={darkMode} />
+
+        <TileLayer
+          noWrap
+          bounds={[
+            [-85, -180],
+            [85, 180],
+          ]}
+          url={MapConfig.tileUrl}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          minZoom={2}
+          maxZoom={15}
+        />
+
+        <MarkerClusterGroup maxClusterRadius={70} chunkedLoading>
+          {filteredOrgs.map(org => (
+            <CircleMarker
+              key={org.orgId}
+              center={[Number(org.latitude), Number(org.longitude)]}
+              radius={8}
+              pathOptions={{
+                fillColor: getStatusColor(org.status),
+                fillOpacity: 0.85,
+                color: 'white',
+                weight: 1,
+              }}
+            >
+              <Tooltip className={darkMode ? styles.darkTooltip : styles.lightTooltip}>
+                <div>
+                  <strong>{org.name}</strong>
+                  <br />
+                  Status: {org.status}
+                  <br />
+                  Country: {org.country || 'N/A'}
+                </div>
+              </Tooltip>
+
+              <Popup>
+                <div style={{ minWidth: '200px' }}>
+                  <h3 style={{ margin: '0 0 10px 0' }}>{org.name}</h3>
+
+                  <div style={{ marginBottom: '10px' }}>
+                    <strong>Project ID:</strong> #{org.orgId}
+                  </div>
+
+                  <div style={{ marginBottom: '8px' }}>
+                    <strong>Status:</strong>{' '}
+                    <span
+                      style={{
+                        color: getStatusColor(org.status),
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {org.status}
+                    </span>
+                  </div>
+                        <div style={{ marginBottom: '8px' }}>
+                          <strong>Status:</strong>{' '}
+                          <span
+                            className={
+                              // eslint-disable-next-line no-nested-ternary
+                              org.status === 'active'
+                                ? styles.statusActive
+                                : // eslint-disable-next-line no-nested-ternary
+                                org.status === 'delayed'
+                                ? styles.statusDelayed
+                                : org.status === 'completed'
+                                ? styles.statusCompleted
+                                : styles.statusDefault
+                            }
+                          >
+                            {org.status}
+                          </span>
+                        </div>
+
+                  <div style={{ marginBottom: '8px' }}>
+                    <strong>Location:</strong> {org.country || 'N/A'}
+                  </div>
+
+                  <div style={{ marginBottom: '8px' }}>
+                    <strong>Start Date:</strong> {formatDateForDisplay(org.startDate)}
+                  </div>
+
+                  {org.endDate && (
+                    <div style={{ marginBottom: '15px' }}>
+                      <strong>End Date:</strong> {formatDateForDisplay(org.endDate)}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => handleProjectClick(org)}
+                    className={styles.detailsButton}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      backgroundColor: '#1f6feb',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    View Project Details
+                  </button>
+                </div>
+              </Popup>
+            </CircleMarker>
+          ))}
+        </MarkerClusterGroup>
+      </MapContainer>
+    );
+  }
+
+  /* -----------------------------------------------------
      RENDER
   ----------------------------------------------------- */
 
   return (
     <div className={darkMode ? styles.darkPage : styles.lightPage}>
       <div className={styles.container}>
-        {/* TITLE ROW */}
         <div className={styles.headerRow}>
           <h2 className={styles.titleText}>Global Distribution and Project Status Overview</h2>
         </div>
 
-        {/* FILTER ROW */}
         <div className={styles.filterRowExtra}>
           <span className={styles.filterLabel}>Date Range:</span>
 
@@ -454,137 +613,9 @@ export default function InteractiveMap() {
           </div>
         </div>
 
-        {/* MAP */}
         <div className={styles.mapArea} ref={mapAreaRef}>
           <FloatingLegend mapAreaRef={mapAreaRef} />
-
-          {loading ? (
-            <div className={styles.loading}>Loading…</div>
-          ) : errMsg && orgs.length === 0 ? (
-            <div className={styles.loading}>{errMsg}</div>
-          ) : (
-            <MapContainer
-              key={mapKey}
-              center={[40, 0]}
-              zoom={3}
-              minZoom={2}
-              maxZoom={15}
-              maxBounds={[
-                [-85, -180],
-                [85, 180],
-              ]}
-              maxBoundsViscosity={1.0}
-              worldCopyJump={false}
-              scrollWheelZoom
-              className={styles.mapContainer}
-              keyboard={false}
-            >
-              <MapThemeUpdater darkMode={darkMode} />
-
-              <TileLayer
-                noWrap
-                bounds={[
-                  [-85, -180],
-                  [85, 180],
-                ]}
-                url={MapConfig.tileUrl}
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                minZoom={2}
-                maxZoom={15}
-              />
-
-              <MarkerClusterGroup maxClusterRadius={70} chunkedLoading>
-                {filteredOrgs.map(org => (
-                  <CircleMarker
-                    key={org.orgId}
-                    center={[Number(org.latitude), Number(org.longitude)]}
-                    radius={8}
-                    pathOptions={{
-                      fillColor: getStatusColor(org.status),
-                      fillOpacity: 0.85,
-                      color: 'white',
-                      weight: 1,
-                    }}
-                  >
-                    {/* MARKER TOOLTIP */}
-                    <Tooltip className={darkMode ? styles.darkTooltip : styles.lightTooltip}>
-                      <div>
-                        <strong>{org.name}</strong>
-                        <br />
-                        Status: {org.status}
-                        <br />
-                        Country: {org.country || 'N/A'}
-                      </div>
-                    </Tooltip>
-
-                    {/* MARKER POPUP */}
-                    <Popup>
-                      <div style={{ minWidth: '200px' }}>
-                        <h3 style={{ margin: '0 0 10px 0' }}>{org.name}</h3>
-
-                        <div style={{ marginBottom: '10px' }}>
-                          <strong>Project ID:</strong> #{org.orgId}
-                        </div>
-
-                        <div style={{ marginBottom: '8px' }}>
-                          <strong>Status:</strong>{' '}
-                          <span
-                            className={
-                              // eslint-disable-next-line no-nested-ternary
-                              org.status === 'active'
-                                ? styles.statusActive
-                                : // eslint-disable-next-line no-nested-ternary
-                                org.status === 'delayed'
-                                ? styles.statusDelayed
-                                : org.status === 'completed'
-                                ? styles.statusCompleted
-                                : styles.statusDefault
-                            }
-                          >
-                            {org.status}
-                          </span>
-                        </div>
-
-                        <div style={{ marginBottom: '8px' }}>
-                          <strong>Location:</strong> {org.country || 'N/A'}
-                        </div>
-
-                        <div style={{ marginBottom: '8px' }}>
-                          <strong>Start Date:</strong> {formatDateForDisplay(org.startDate)}
-                        </div>
-
-                        {org.endDate && (
-                          <div style={{ marginBottom: '15px' }}>
-                            <strong>End Date:</strong> {formatDateForDisplay(org.endDate)}
-                          </div>
-                        )}
-
-                        <button
-                          type="button"
-                          onClick={() => handleProjectClick(org)}
-                          className={styles.detailsButton}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            backgroundColor: '#1f6feb',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            transition: 'all 0.2s ease',
-                          }}
-                        >
-                          View Project Details
-                        </button>
-                      </div>
-                    </Popup>
-                  </CircleMarker>
-                ))}
-              </MarkerClusterGroup>
-            </MapContainer>
-          )}
+          {mapContent}
         </div>
       </div>
     </div>

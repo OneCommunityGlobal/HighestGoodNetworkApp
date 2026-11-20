@@ -330,6 +330,13 @@
   display: none;
 }
 
+.legendBox {
+  border: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+
 /* Error message */
 .errorMsg {
   color: #de6a6a;
