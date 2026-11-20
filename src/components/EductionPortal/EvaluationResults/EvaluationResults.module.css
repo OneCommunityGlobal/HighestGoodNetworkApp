@@ -32,6 +32,12 @@
   transition: none;
 }
 
+/* Match the Education Portal shell when the global dark-mode class is active.
+   Apply only to the page background, preserving light-mode and card styles. */
+:global(.dark-mode) .evaluationResultsPage {
+  background-color: #0f172a;
+}
+
 /* ============================================================================
    HEADER SECTION - Clean Professional Header
    ============================================================================ */
@@ -42,6 +48,11 @@
   padding: 2rem 0;
   margin-bottom: 1.5rem;
   box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
+}
+
+/* Match the page background around the header without changing its inner panel. */
+:global(.dark-mode) .evaluationResultsPage .headerSection {
+  background-color: #0f172a;
 }
 
 .headerContent {
@@ -138,6 +149,14 @@
   margin-bottom: 1.5rem;
 }
 
+/* Scope the portal dark palette to this card; keep progress colors and layout unchanged. */
+:global(.dark-mode) .evaluationResultsPage .overallSection {
+  --text-dark: #f1f5f9;
+  --text-muted: #94a3b8;
+
+  background-color: #1e293b;
+}
+
 .sectionHeader {
   display: flex;
   justify-content: space-between;
@@ -184,7 +203,9 @@
 
 .progressFill {
   height: 100%;
-  background-color: #000;
+
+  /* Match the existing green performance indicators in both light and dark modes. */
+  background-color: #28a745;
   transition: width 0.3s ease;
 }
 
@@ -501,6 +522,38 @@
   background-color: #e9ecef;
   color: #495057;
   border-color: #adb5bd;
+}
+
+/* Dark-mode feedback controls shared by the desktop table and mobile cards.
+   White labels/icons stay readable with the app's global dark-mode text rule. */
+:global(.dark-mode) .evaluationResultsPage .assignmentSection .feedbackButton {
+  background-color: #334155;
+  border-color: #64748b;
+  color: #fff;
+}
+
+/* Keep hover feedback for enabled buttons and a visible keyboard focus ring. */
+:global(.dark-mode) .evaluationResultsPage .assignmentSection .feedbackButton:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+:global(.dark-mode) .evaluationResultsPage .assignmentSection .feedbackButton:hover:not(:disabled) {
+  background-color: #475569;
+  border-color: #94a3b8;
+}
+
+/* Preserve green/red submission meanings with dark surfaces and light text. */
+:global(.dark-mode) .evaluationResultsPage .assignmentSection .statusBadge.onTime {
+  background-color: #14532d;
+  border-color: #22c55e;
+  color: #fff;
+}
+
+:global(.dark-mode) .evaluationResultsPage .assignmentSection .statusBadge.late {
+  background-color: #7f1d1d;
+  border-color: #ef4444;
+  color: #fff;
 }
 
 .buttonIcon {
@@ -1196,12 +1249,57 @@
   overflow-wrap: anywhere;
 }
 
+/* Match the fixed Overall Performance card without changing text, layout, or
+   shared variables used by buttons, indicators, and the feedback modal.
+   The background shorthand also removes the light feedback-panel gradients. */
+:global(.dark-mode) .evaluationResultsPage .categorySection,
+:global(.dark-mode) .evaluationResultsPage .insightsBox,
+:global(.dark-mode) .evaluationResultsPage .assignmentSection,
+:global(.dark-mode) .evaluationResultsPage .assignmentCard,
+:global(.dark-mode) .evaluationResultsPage .teacherFeedbackSection,
+:global(.dark-mode) .evaluationResultsPage .overallFeedback,
+:global(.dark-mode) .evaluationResultsPage .strengthsSection,
+:global(.dark-mode) .evaluationResultsPage .improvementsSection,
+:global(.dark-mode) .evaluationResultsPage .teacherInfo,
+:global(.dark-mode) .evaluationResultsPage .summaryCard,
+:global(.dark-mode) .evaluationResultsPage .userWelcome,
+:global(.dark-mode) .evaluationResultsPage .tableContainer,
+:global(.dark-mode) .evaluationResultsPage .performanceTable,
+:global(.dark-mode) .evaluationResultsPage .assignmentTable,
+:global(.dark-mode) .evaluationResultsPage .performanceTable tbody tr,
+:global(.dark-mode) .evaluationResultsPage .assignmentTable tbody tr,
+:global(.dark-mode) .evaluationResultsPage .performanceTable td,
+:global(.dark-mode) .evaluationResultsPage .assignmentTable td {
+  background: #1e293b;
+}
+
+/* Keep table headers distinct using the portal shell color, including sticky
+   headers on mobile; retain all existing table borders and dimensions. */
+:global(.dark-mode) .evaluationResultsPage .performanceTable th,
+:global(.dark-mode) .evaluationResultsPage .assignmentTable th {
+  background: #0f172a;
+}
+
+/* Use the fixed card's border color for insights, preserving its border width. */
+:global(.dark-mode) .evaluationResultsPage .insightsBox {
+  border-color: var(--border-color);
+}
+
 /* ============================================================================
    FEEDBACK MODAL - Detailed assignment feedback display
    ============================================================================ */
 
 .feedbackModal {
   font-family: inherit;
+}
+
+/* Theme the portaled modal independently of the page wrapper. These variables
+   cover its internal surfaces and labels without altering the blue header. */
+:global(.dark-mode) .feedbackModal {
+  --bg-white: #1e293b;
+  --bg-light: #0f172a;
+  --text-dark: #f1f5f9;
+  --text-muted: #94a3b8;
 }
 
 .feedbackModal .modal-dialog {
@@ -1242,6 +1340,11 @@
   background: var(--bg-light);
   max-height: 70vh;
   overflow-y: auto;
+}
+
+/* Feedback prose and values without explicit colors inherit readable text. */
+:global(.dark-mode) .feedbackModal .modalBody {
+  color: #f1f5f9;
 }
 
 .modalFooter {

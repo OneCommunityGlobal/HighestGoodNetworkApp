@@ -8,82 +8,98 @@ import {
   faEye,
   faGraduationCap,
   faExclamationTriangle,
-  faTimes,
   faCalendarAlt,
-  faPercent,
   faAward,
 } from '@fortawesome/free-solid-svg-icons';
 
 import styles from './EvaluationResults.module.css';
-import EvaluationNotificationService from './evaluationNotificationService';
-import { mockEvaluationData } from './mockData_new';
+import EvaluationApiService from './evaluationApiService';
+
+const displayValue = value => value ?? '—';
+const displayPercent = value => (Number.isFinite(value) ? `${value}%` : '—');
+const displayDate = (value, includeTime = false) => {
+  if (!value || Number.isNaN(new Date(value).getTime())) return '—';
+  const date = new Date(value);
+  return includeTime
+    ? `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+    : date.toLocaleDateString();
+};
+
+const mapResults = data => ({
+  summary: data.summary || {},
+  categories: (data.categories || []).map(category => ({
+    ...category,
+    id: category.evaluationId,
+    name: category.category,
+    earnedMarks: category.marks,
+    totalMarks: category.maxMarks,
+  })),
+  tasks: (data.taskResults || []).map(task => ({
+    ...task,
+    id: task.taskId,
+    name: task.taskName,
+    earnedMarks: task.marks,
+    totalMarks: task.maxMarks,
+    teacherFeedback: task.feedback,
+    status: { on_time: 'On time', late: 'Late', pending: 'Pending' }[task.submissionStatus] ?? '—',
+  })),
+  teacherFeedback: {
+    ...data.teacherFeedback,
+    strengths: data.teacherFeedback?.strengths || [],
+    improvements: data.teacherFeedback?.improvements || [],
+  },
+});
 
 const EvaluationResults = ({ auth }) => {
   const [evaluationData, setEvaluationData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [error, setError] = useState(null);
+  const [attempt, setAttempt] = useState(0);
+  const [loadedFor, setLoadedFor] = useState(null);
+  const accountId = auth?.user?.userid;
   const [feedbackModal, setFeedbackModal] = useState({
     isOpen: false,
     task: null,
   });
 
   useEffect(() => {
-    // Load evaluation data immediately since we're using mock data
-    const loadEvaluationData = () => {
-      try {
-        // Personalize the evaluation data with actual user name
-        const userName = auth?.user?.firstName || 'Student';
-        const userLastName = auth?.user?.lastName || '';
-        const fullName = `${userName} ${userLastName}`.trim();
-        const userEmail = auth?.user?.email || 'student@school.edu';
-
-        const personalizedData = {
-          ...mockEvaluationData,
-          student: {
-            ...mockEvaluationData.student,
-            name: fullName,
-            email: userEmail,
-          },
-          teacherFeedback: {
-            ...mockEvaluationData.teacherFeedback,
-            overall: mockEvaluationData.teacherFeedback.overall.replace('Alex', userName),
-          },
-          tasks: mockEvaluationData.tasks.map(task => ({
-            ...task,
-            teamMembers: task.teamMembers
-              ? task.teamMembers.map(member => (member === 'Alex Johnson' ? fullName : member))
-              : task.teamMembers,
-          })),
+    let active = true;
+    setEvaluationData(null);
+    setError(null);
+    setFeedbackModal({ isOpen: false, task: null });
+    setLoading(true);
+    setLoadedFor(accountId);
+    if (!accountId) {
+      setError('Please sign in to view your evaluation results.');
+      setLoading(false);
+      return () => {
+        active = false;
+      };
+    }
+    EvaluationApiService.getEvaluationResults()
+      .then(data => {
+        if (active) setEvaluationData(mapResults(data));
+      })
+      .catch(requestError => {
+        if (!active) return;
+        const status = requestError.response?.status;
+        const messages = {
+          401: 'Please sign in to view your evaluation results.',
+          403: 'You do not have permission to view evaluation results.',
+          404: 'Your student profile was not found.',
         };
-
-        setEvaluationData(personalizedData);
-
-        // Trigger notification for new results (simulate this is new data)
-        if (auth?.user?.userid && mockEvaluationData) {
-          EvaluationNotificationService.showPerformanceNotification(
-            mockEvaluationData.student.overallScore,
-            auth.user.firstName || 'Student',
-          );
-
-          // Mark results as viewed when user opens the page
-          EvaluationNotificationService.markResultsAsViewed(
-            auth.user.userid,
-            mockEvaluationData.student.id,
-          );
-        }
-      } catch (error) {
-        // Set fallback data to prevent infinite loading
-        setEvaluationData(mockEvaluationData);
-      } finally {
-        // Ensure loading is always set to false
-        setLoading(false);
-      }
+        setError(messages[status] || 'Unable to load evaluation results. Please try again.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    // Ignore responses from an old account, retry, or an unmounted page.
+    return () => {
+      active = false;
     };
+  }, [accountId, attempt]);
 
-    loadEvaluationData();
-  }, [auth]);
-
-  if (loading) {
+  if (loading || loadedFor !== accountId) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}>
@@ -97,7 +113,20 @@ const EvaluationResults = ({ auth }) => {
     );
   }
 
-  if (!evaluationData) {
+  if (error) {
+    return (
+      <Container className={styles.container}>
+        <Alert color="danger" className={styles.noDataAlert}>
+          {error}
+          <Button color="primary" onClick={() => setAttempt(value => value + 1)}>
+            Retry
+          </Button>
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (!evaluationData || (!evaluationData.categories.length && !evaluationData.tasks.length)) {
     return (
       <Container className={styles.container}>
         <Alert color="warning" className={styles.noDataAlert}>
@@ -108,15 +137,19 @@ const EvaluationResults = ({ auth }) => {
     );
   }
 
-  const { student, overallScore, categories, tasks, summary } = evaluationData;
-
-  // Calculate total score for new design (77/100 format)
-  const totalEarnedPoints = categories.reduce((sum, cat) => sum + cat.earnedMarks, 0);
-  const totalPossiblePoints = categories.reduce((sum, cat) => sum + cat.totalMarks, 0);
-  const percentageScore = Math.round((totalEarnedPoints / totalPossiblePoints) * 100);
+  const { categories, tasks, summary } = evaluationData;
+  // Scores and counts are authoritative backend values, including genuine zeroes.
+  const totalEarnedPoints = summary.earnedMarks;
+  const totalPossiblePoints = summary.maxMarks;
+  const percentageScore = summary.overallScore;
+  const totalAssignments = summary.totalTasks;
+  const onTimeCount = summary.onTimeSubmissions;
+  const lateCount = summary.lateSubmissions;
+  const averageScore = summary.averageScore;
 
   // Helper functions
   const getPerformanceColor = percentage => {
+    if (!Number.isFinite(percentage)) return '';
     if (percentage >= 80) return 'excellent';
     if (percentage >= 70) return 'good';
     if (percentage >= 60) return 'fair';
@@ -126,10 +159,11 @@ const EvaluationResults = ({ auth }) => {
   const getStatusClass = status => {
     if (status === 'On time' || status === 'completed') return 'onTime';
     if (status?.toLowerCase().includes('late')) return 'late';
-    return 'onTime';
+    return '';
   };
 
   const getPerformanceColorClass = percentage => {
+    if (!Number.isFinite(percentage)) return '';
     if (percentage >= 80) return styles.excellent;
     if (percentage >= 70) return styles.good;
     if (percentage >= 60) return styles.fair;
@@ -138,8 +172,12 @@ const EvaluationResults = ({ auth }) => {
 
   // Generate dynamic performance insights based on actual data
   const getPerformanceInsights = () => {
-    const strongAreas = categories.filter(cat => cat.percentage >= 80);
-    const improvementAreas = categories.filter(cat => cat.percentage < 70);
+    const strongAreas = categories.filter(
+      cat => Number.isFinite(cat.percentage) && cat.percentage >= 80,
+    );
+    const improvementAreas = categories.filter(
+      cat => Number.isFinite(cat.percentage) && cat.percentage < 70,
+    );
 
     const strongText =
       strongAreas.length > 0
@@ -147,7 +185,7 @@ const EvaluationResults = ({ auth }) => {
             .slice(0, 3)
             .map(cat => `${cat.name} (${Math.round(cat.percentage)}%)`)
             .join(', ')
-        : 'various areas';
+        : null;
 
     const improvementText =
       improvementAreas.length > 0 && improvementAreas[0]
@@ -158,22 +196,6 @@ const EvaluationResults = ({ auth }) => {
   };
 
   const { strongText, improvementText, hasImprovementAreas } = getPerformanceInsights();
-
-  // Calculate summary statistics dynamically
-  const calculateSummaryStats = () => {
-    const totalAssignments = tasks.length;
-    const onTimeCount = tasks.filter(
-      task => task.status === 'On time' || task.status === 'completed',
-    ).length;
-    const lateCount = tasks.filter(task => task.status?.toLowerCase().includes('late')).length;
-    const averageScore = Math.round(
-      tasks.reduce((sum, task) => sum + task.percentage, 0) / tasks.length,
-    );
-
-    return { totalAssignments, onTimeCount, lateCount, averageScore };
-  };
-
-  const { totalAssignments, onTimeCount, lateCount, averageScore } = calculateSummaryStats();
 
   const openFeedbackModal = task => {
     setFeedbackModal({ isOpen: true, task });
@@ -213,17 +235,28 @@ const EvaluationResults = ({ auth }) => {
           <div className={styles.sectionHeader}>
             <h3>Overall Performance Summary</h3>
             <div className={styles.overallScore}>
-              <span className={styles.scoreText}>{percentageScore}%</span>
+              <span className={styles.scoreText}>{displayPercent(percentageScore)}</span>
               <span className={styles.scoreLabel}>Overall Grade</span>
             </div>
           </div>
           <div className={styles.progressSection}>
-            <div className={styles.progressBar}>
-              <div className={styles.progressFill} style={{ width: `${percentageScore}%` }}></div>
+            <div
+              className={styles.progressBar}
+              role="progressbar"
+              aria-label="Overall performance"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={percentageScore ?? undefined}
+            >
+              <div
+                className={styles.progressFill}
+                style={{ width: `${displayPercent(percentageScore)}` }}
+              ></div>
             </div>
             <div className={styles.scoreDetails}>
               <span>
-                Total Score: {totalEarnedPoints}/{totalPossiblePoints} points
+                Total Score: {displayValue(totalEarnedPoints)}/{displayValue(totalPossiblePoints)}{' '}
+                points
               </span>
             </div>
           </div>
@@ -249,18 +282,18 @@ const EvaluationResults = ({ auth }) => {
                 {categories.map(category => (
                   <tr key={category.id}>
                     <td className={styles.categoryName}>{category.name}</td>
-                    <td>{category.weightage}%</td>
-                    <td>{category.completedItems}</td>
-                    <td>{category.totalMarks}</td>
-                    <td>{category.earnedMarks}</td>
-                    <td>{Math.round(category.percentage)}%</td>
+                    <td>{displayPercent(category.weightage)}</td>
+                    <td>{displayValue(category.completedItems)}</td>
+                    <td>{displayValue(category.totalMarks)}</td>
+                    <td>{displayValue(category.earnedMarks)}</td>
+                    <td>{displayPercent(category.percentage)}</td>
                     <td>
                       <div className={styles.performanceBar}>
                         <div
                           className={`${styles.performanceFill} ${
                             styles[getPerformanceColor(category.percentage)]
                           }`}
-                          style={{ width: `${category.percentage}%` }}
+                          style={{ width: `${category.percentage ?? 0}%` }}
                         ></div>
                       </div>
                     </td>
@@ -276,7 +309,13 @@ const EvaluationResults = ({ auth }) => {
           <div className={styles.insightsBox}>
             <h4>Performance Insights</h4>
             <p>
-              You performed strongly in <strong>{strongText}</strong>.
+              {strongText ? (
+                <>
+                  You performed strongly in <strong>{strongText}</strong>.
+                </>
+              ) : (
+                '—'
+              )}
               {hasImprovementAreas && (
                 <>
                   {' '}
@@ -314,24 +353,24 @@ const EvaluationResults = ({ auth }) => {
                       <div className={styles.assignmentInfo}>
                         <div className={styles.assignmentName}>{task.name}</div>
                         <div className={styles.assignmentDate}>
-                          Submitted: {new Date(task.submissionDate).toLocaleDateString()}
+                          Submitted: {displayDate(task.submissionDate)}
                         </div>
                       </div>
                     </td>
-                    <td>{task.weightage || '8'}%</td>
+                    <td>{displayPercent(task.weightage)}</td>
                     <td>
-                      {task.earnedMarks}/{task.totalMarks}
+                      {displayValue(task.earnedMarks)}/{displayValue(task.totalMarks)}
                     </td>
                     <td>
                       <span className={getPerformanceColorClass(task.percentage)}>
-                        {Math.round(task.percentage)}%
+                        {displayPercent(task.percentage)}
                       </span>
                     </td>
                     <td>
                       <span
                         className={`${styles.statusBadge} ${styles[getStatusClass(task.status)]}`}
                       >
-                        {task.status || 'On time'}
+                        {task.status}
                       </span>
                     </td>
                     <td>
@@ -356,22 +395,23 @@ const EvaluationResults = ({ auth }) => {
                 <div className={styles.cardHeader}>
                   <div className={styles.assignmentName}>{task.name}</div>
                   <span className={`${styles.statusBadge} ${styles[getStatusClass(task.status)]}`}>
-                    {task.status || 'On time'}
+                    {task.status}
                   </span>
                 </div>
                 <div className={styles.cardMeta}>
                   <div className={styles.cardMetaItem}>
-                    <strong>Weightage:</strong> {task.weightage || '8'}%
+                    <strong>Weightage:</strong> {displayPercent(task.weightage)}
                   </div>
                   <div className={styles.cardMetaItem}>
-                    <strong>Score:</strong> {task.earnedMarks}/{task.totalMarks}
+                    <strong>Score:</strong> {displayValue(task.earnedMarks)}/
+                    {displayValue(task.totalMarks)}
                     <span className={getPerformanceColorClass(task.percentage)}>
                       {' '}
-                      ({Math.round(task.percentage)}%)
+                      ({displayPercent(task.percentage)})
                     </span>
                   </div>
                   <div className={styles.cardMetaItem}>
-                    <strong>Submitted:</strong> {new Date(task.submissionDate).toLocaleDateString()}
+                    <strong>Submitted:</strong> {displayDate(task.submissionDate)}
                   </div>
                 </div>
                 <div className={styles.cardActions}>
@@ -394,10 +434,10 @@ const EvaluationResults = ({ auth }) => {
             </h3>
             <div className={styles.teacherInfo}>
               <span className={styles.teacherName}>
-                {evaluationData.teacherFeedback.teacherName}
+                {displayValue(evaluationData.teacherFeedback.teacherName)}
               </span>
               <span className={styles.teacherTitle}>
-                {evaluationData.teacherFeedback.teacherTitle}
+                {displayValue(evaluationData.teacherFeedback.teacherTitle)}
               </span>
             </div>
           </div>
@@ -406,7 +446,9 @@ const EvaluationResults = ({ auth }) => {
             {/* Overall Feedback */}
             <div className={styles.overallFeedback}>
               <h4 className={styles.feedbackSubtitle}>Overall Assessment</h4>
-              <p className={styles.feedbackText}>{evaluationData.teacherFeedback.overall}</p>
+              <p className={styles.feedbackText}>
+                {displayValue(evaluationData.teacherFeedback.overall)}
+              </p>
             </div>
 
             {/* Strengths and Improvements */}
@@ -417,6 +459,7 @@ const EvaluationResults = ({ auth }) => {
                   Strengths
                 </h4>
                 <ul className={styles.feedbackList}>
+                  {!evaluationData.teacherFeedback.strengths.length && <li>—</li>}
                   {evaluationData.teacherFeedback.strengths.map((strength, index) => (
                     <li key={index} className={styles.feedbackItem}>
                       <span className={styles.checkmark}>✓</span>
@@ -432,6 +475,7 @@ const EvaluationResults = ({ auth }) => {
                   Areas for Improvement
                 </h4>
                 <ul className={styles.feedbackList}>
+                  {!evaluationData.teacherFeedback.improvements.length && <li>—</li>}
                   {evaluationData.teacherFeedback.improvements.map((improvement, index) => (
                     <li key={index} className={styles.feedbackItem}>
                       <span className={styles.arrow}>→</span>
@@ -447,19 +491,25 @@ const EvaluationResults = ({ auth }) => {
         {/* Summary Cards */}
         <div className={styles.summaryCards}>
           <div className={styles.summaryCard}>
-            <div className={`${styles.cardNumber} ${styles.total}`}>{totalAssignments}</div>
+            <div className={`${styles.cardNumber} ${styles.total}`}>
+              {displayValue(totalAssignments)}
+            </div>
             <div className={styles.cardLabel}>Total Assignments</div>
           </div>
           <div className={styles.summaryCard}>
-            <div className={`${styles.cardNumber} ${styles.onTime}`}>{onTimeCount}</div>
+            <div className={`${styles.cardNumber} ${styles.onTime}`}>
+              {displayValue(onTimeCount)}
+            </div>
             <div className={styles.cardLabel}>On Time</div>
           </div>
           <div className={styles.summaryCard}>
-            <div className={`${styles.cardNumber} ${styles.late}`}>{lateCount}</div>
+            <div className={`${styles.cardNumber} ${styles.late}`}>{displayValue(lateCount)}</div>
             <div className={styles.cardLabel}>Late Submissions</div>
           </div>
           <div className={styles.summaryCard}>
-            <div className={`${styles.cardNumber} ${styles.average}`}>{averageScore}%</div>
+            <div className={`${styles.cardNumber} ${styles.average}`}>
+              {displayPercent(averageScore)}
+            </div>
             <div className={styles.cardLabel}>Avg Score</div>
           </div>
         </div>
@@ -487,11 +537,11 @@ const EvaluationResults = ({ auth }) => {
                 <div className={styles.assignmentMeta}>
                   <span className={styles.assignmentType}>
                     <FontAwesomeIcon icon={faGraduationCap} />
-                    {feedbackModal.task.type}
+                    {displayValue(feedbackModal.task.type)}
                   </span>
                   <span className={styles.assignmentDate}>
                     <FontAwesomeIcon icon={faCalendarAlt} />
-                    Due: {new Date(feedbackModal.task.dueDate).toLocaleDateString()}
+                    Due: {displayDate(feedbackModal.task.dueDate)}
                   </span>
                 </div>
               </div>
@@ -505,15 +555,17 @@ const EvaluationResults = ({ auth }) => {
                       feedbackModal.task.percentage,
                     )}`}
                   >
-                    {feedbackModal.task.earnedMarks}/{feedbackModal.task.totalMarks}
-                    <span className={styles.percentage}>({feedbackModal.task.percentage}%)</span>
+                    {displayValue(feedbackModal.task.earnedMarks)}/
+                    {displayValue(feedbackModal.task.totalMarks)}
+                    <span className={styles.percentage}>
+                      ({displayPercent(feedbackModal.task.percentage)})
+                    </span>
                   </div>
                 </div>
                 <div className={styles.performanceItem}>
                   <div className={styles.performanceLabel}>Weightage</div>
                   <div className={styles.performanceValue}>
-                    <FontAwesomeIcon icon={faPercent} />
-                    {feedbackModal.task.weightage}%
+                    {displayPercent(feedbackModal.task.weightage)}
                   </div>
                 </div>
                 <div className={styles.performanceItem}>
@@ -534,7 +586,9 @@ const EvaluationResults = ({ auth }) => {
                   <FontAwesomeIcon icon={faUser} />
                   Teacher Feedback
                 </h5>
-                <div className={styles.feedbackText}>{feedbackModal.task.teacherFeedback}</div>
+                <div className={styles.feedbackText}>
+                  {displayValue(feedbackModal.task.teacherFeedback)}
+                </div>
               </div>
 
               {/* Additional Details */}
@@ -542,13 +596,14 @@ const EvaluationResults = ({ auth }) => {
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Submission Date:</span>
                   <span className={styles.detailValue}>
-                    {new Date(feedbackModal.task.submissionDate).toLocaleDateString()} at{' '}
-                    {new Date(feedbackModal.task.submissionDate).toLocaleTimeString()}
+                    {displayDate(feedbackModal.task.submissionDate, true)}
                   </span>
                 </div>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Grade Category:</span>
-                  <span className={styles.detailValue}>{feedbackModal.task.category}</span>
+                  <span className={styles.detailValue}>
+                    {displayValue(feedbackModal.task.category)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -556,7 +611,6 @@ const EvaluationResults = ({ auth }) => {
         </ModalBody>
         <ModalFooter className={styles.modalFooter}>
           <Button color="primary" onClick={closeFeedbackModal}>
-            <FontAwesomeIcon icon={faTimes} className="me-2" />
             Close
           </Button>
         </ModalFooter>

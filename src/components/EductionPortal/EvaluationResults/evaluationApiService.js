@@ -10,20 +10,9 @@ class EvaluationApiService {
    * Fetch evaluation results for the current student
    */
   static async getEvaluationResults() {
-    try {
-      const response = await httpService.get(
-        `${ENDPOINTS.APIEndpoint()}/student/evaluation-results`,
-      );
-      return response.data;
-    } catch (error) {
-      if (error.response?.status === 404) {
-        throw new Error('No evaluation results found');
-      }
-      if (error.response?.status === 403) {
-        throw new Error('Access denied to evaluation results');
-      }
-      throw new Error('Failed to fetch evaluation results');
-    }
+    // Preserve HTTP status so the page can distinguish authentication and profile errors.
+    const response = await httpService.get(`${ENDPOINTS.APIEndpoint()}/student/evaluation-results`);
+    return response.data;
   }
 
   /**
