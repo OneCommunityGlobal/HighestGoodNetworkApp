@@ -834,10 +834,6 @@ export const ENDPOINTS = {
   APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
   REVIEWER_GROUPS: `${APIEndpoint}/reviewer-groups`,
   REVIEWER_GROUPS_NEW: `${APIEndpoint}/reviewer-groups/new`,
-  // PR grading endpoints
-  PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
-  WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
-  WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
   PR_RATINGS: `${APIEndpoint}/promotion-eligibility/pr-ratings`,
   PROMOTION_PR_ENTRIES: reviewerId =>
     `${APIEndpoint}/promotion-eligibility/${reviewerId}/pr-entries`,
