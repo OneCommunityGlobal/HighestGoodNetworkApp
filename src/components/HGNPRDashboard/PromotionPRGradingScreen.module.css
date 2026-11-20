@@ -344,12 +344,20 @@
   font-weight: 500;
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .pr-grading-screen-pr-number:hover {
-  transform: translateY(-1px);
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pr-grading-screen-pr-number {
+    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .pr-grading-screen-pr-number:hover {
+    transform: translateY(-1px);
+  }
 }
 
 .pr-grading-screen-pair {
@@ -368,7 +376,7 @@
   padding: 4px 10px;
   border: none;
   border-radius: 4px;
-  background-color: #28a745;
+  background-color: #18743a;
   color: #fff;
   font-size: 0.75rem;
   font-weight: 600;
@@ -376,7 +384,7 @@
 }
 
 .pr-grading-screen-add-btn:hover {
-  background-color: #218838;
+  background-color: #125b2e;
 }
 
 /* =========================================================
