@@ -243,6 +243,29 @@ describe('PRGradingScreen', () => {
     expect(GRADE_OPTIONS.map(option => option.label)).toEqual(expectedRatings);
   });
 
+  it('keeps the typed PRs Needed value visible and only saves on blur', async () => {
+    renderScreen();
+
+    const input = await screen.findByRole('spinbutton', {
+      name: 'PRs needed for Ada Lovelace',
+    });
+
+    expect(input).toHaveValue(5);
+
+    fireEvent.change(input, { target: { value: '8' } });
+
+    expect(input).toHaveValue(8);
+    expect(updatePRsNeededMock).not.toHaveBeenCalled();
+
+    fireEvent.blur(input);
+
+    await waitFor(() => {
+      expect(updatePRsNeededMock).toHaveBeenCalledWith('r1', 8, { id: 'test-user' });
+    });
+
+    expect(input).toHaveValue(8);
+  });
+
   it('opens the grading dialog natively and closes it on Escape', async () => {
     renderScreen();
 

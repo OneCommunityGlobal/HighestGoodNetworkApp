@@ -57,6 +57,7 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
    * the bulk API returns the updated backend data.
    */
   const [prsNeededOverrides, setPrsNeededOverrides] = useState({});
+  const [prsNeededDrafts, setPrsNeededDrafts] = useState({});
 
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
@@ -171,6 +172,13 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
    */
 
   const getReviewerPrsNeeded = reviewer => {
+    // A value still being typed (not yet saved) takes priority, so the field
+    // reflects exactly what the user typed instead of snapping back to the
+    // last-saved number while the request for it is still in flight.
+    if (Object.hasOwn(prsNeededDrafts, reviewer.id)) {
+      return prsNeededDrafts[reviewer.id];
+    }
+
     if (Object.hasOwn(prsNeededOverrides, reviewer.id)) {
       return prsNeededOverrides[reviewer.id];
     }
@@ -178,14 +186,34 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
     return reviewer.prsNeeded ?? reviewer.requiredPRs ?? 0;
   };
 
-  const handlePrsNeededChange = async (reviewerId, value) => {
+  // Keystrokes only update this local draft — never fire a request — so the
+  // field can't revert mid-type and rapid edits can't race each other into
+  // saving an older value last. The real save happens once, on blur.
+  const handlePrsNeededInputChange = (reviewerId, value) => {
     if (isFinalized) {
       return;
     }
 
+    setPrsNeededDrafts(prev => ({ ...prev, [reviewerId]: value }));
+  };
+
+  const handlePrsNeededBlur = async reviewerId => {
+    if (isFinalized || !Object.hasOwn(prsNeededDrafts, reviewerId)) {
+      return;
+    }
+
+    const value = prsNeededDrafts[reviewerId];
     const numericValue = Number(value);
 
+    const clearDraft = () =>
+      setPrsNeededDrafts(prev => {
+        const next = { ...prev };
+        delete next[reviewerId];
+        return next;
+      });
+
     if (value === '' || Number.isNaN(numericValue) || numericValue < 0) {
+      clearDraft();
       return;
     }
 
@@ -198,11 +226,13 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
         ...prev,
         [reviewerId]: numericValue,
       }));
+      clearDraft();
 
       toast.success('PRs Needed updated.');
     } catch (error) {
       console.error('Failed to update PRs Needed:', error);
       toast.error('Failed to update PRs Needed.');
+      clearDraft();
     }
   };
 
@@ -242,24 +272,17 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
    * ---------------------------------------------------------
    */
 
-  const handleAddNewClick = async reviewerId => {
+  const handleAddNewClick = reviewerId => {
     if (isFinalized) {
       return;
     }
 
-    try {
-      setInputError('');
-
-      await importPREntries(reviewerId, currentUser);
-      await loadAllPREntries();
-
-      setActiveInput(reviewerId);
-      setInputValue('');
-      setInputError('');
-    } catch (error) {
-      console.error('Failed to import PR entries:', error);
-      setInputError('Unable to load PRs from the weekly summary.');
-    }
+    // Opens the manual entry field only. Importing from the weekly summary is
+    // a separate, explicit action (handleImportFromSummary) — this click must
+    // not save anything on its own, since the user may still Cancel.
+    setActiveInput(reviewerId);
+    setInputValue('');
+    setInputError('');
   };
 
   /*
@@ -494,7 +517,10 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
                               min="0"
                               value={prsNeeded}
                               disabled={isFinalized}
-                              onChange={e => handlePrsNeededChange(reviewer.id, e.target.value)}
+                              onChange={e =>
+                                handlePrsNeededInputChange(reviewer.id, e.target.value)
+                              }
+                              onBlur={() => handlePrsNeededBlur(reviewer.id)}
                               className={`${styles['pr-grading-screen-pr-needed-input']} ${dm}`}
                               title="Owner can manually edit PRs Needed. A manual value overrides the committed-hours calculation."
                               aria-label={`PRs needed for ${reviewer.reviewerName}`}

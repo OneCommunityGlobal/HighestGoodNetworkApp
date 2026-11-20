@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
 import {
@@ -65,46 +65,49 @@ function PromotionEligibility() {
   const dispatch = useDispatch();
 
   /*
-   * Load promotion eligibility data
+   * Load promotion eligibility data.
+   * Pulled out of the effect (and memoized) so the PR Grading modal's
+   * onClose can re-run it and pick up review counts graded during that
+   * session instead of leaving the table showing stale totals.
    */
-  useEffect(() => {
-    const loadPromotionEligibility = async () => {
-      try {
-        const data = await getPromotionEligibility(currentUser);
+  const loadPromotionEligibility = useCallback(async () => {
+    try {
+      const data = await getPromotionEligibility(currentUser);
 
-        const mappedData = data.map(r => ({
-          ...r,
-          requiredPRs: r.requiredPRs ?? r.prsNeeded ?? 0,
-          promoteEligible: r.remainingWeeks <= 0,
-          id: r.reviewerId,
-          reviewerName: r.reviewerName,
-          isNewMember: r.isNewMember,
-        }));
+      const mappedData = data.map(r => ({
+        ...r,
+        requiredPRs: r.requiredPRs ?? r.prsNeeded ?? 0,
+        promoteEligible: r.remainingWeeks <= 0,
+        id: r.reviewerId,
+        reviewerName: r.reviewerName,
+        isNewMember: r.isNewMember,
+      }));
 
-        setReviewers(mappedData);
-        setError(null);
-      } catch (e) {
-        console.error('Failed to load reviewers:', e);
+      setReviewers(mappedData);
+      setError(null);
+    } catch (e) {
+      console.error('Failed to load reviewers:', e);
 
-        let msg = 'Failed to load reviewers.';
+      let msg = 'Failed to load reviewers.';
 
-        if (e.response?.status === 403) {
-          msg = 'You do not have permission to load reviewers.';
-        } else if (e.response?.status === 404) {
-          msg = 'Reviewer data could not be found.';
-        } else if (e.response?.status >= 500) {
-          msg = 'Server error while loading reviewers. Please try again later.';
-        }
-
-        setError(msg);
-        toast.error(msg);
-      } finally {
-        setLoading(false);
+      if (e.response?.status === 403) {
+        msg = 'You do not have permission to load reviewers.';
+      } else if (e.response?.status === 404) {
+        msg = 'Reviewer data could not be found.';
+      } else if (e.response?.status >= 500) {
+        msg = 'Server error while loading reviewers. Please try again later.';
       }
-    };
 
-    void loadPromotionEligibility();
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
   }, [currentUser]);
+
+  useEffect(() => {
+    void loadPromotionEligibility();
+  }, [loadPromotionEligibility]);
 
   /*
    * Load reviewer groups
@@ -651,7 +654,8 @@ function PromotionEligibility() {
                 <button
                   type="button"
                   onClick={() => setShowReviewDropdown(prev => !prev)}
-                  disabled={processing || loadingReviewOptions}
+                  disabled={!isOwner || processing || loadingReviewOptions}
+                  title={!isOwner ? 'Only an Owner can grade PR reviews.' : undefined}
                   className={styles.review_btn}
                   aria-haspopup="menu"
                   aria-expanded={showReviewDropdown}
@@ -986,6 +990,10 @@ function PromotionEligibility() {
           setShowReviewModal(false);
           setSelectedReviewGroup(null);
           setReviewersForModal([]);
+
+          // Grading inside the modal changes each reviewer's review count;
+          // reload so the main table's Total Reviews Done isn't stale.
+          void loadPromotionEligibility();
         }}
       />
 
