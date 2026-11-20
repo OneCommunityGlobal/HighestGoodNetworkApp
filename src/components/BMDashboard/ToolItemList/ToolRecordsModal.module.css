@@ -41,3 +41,54 @@
 .tableDark th {
   border-top-color: #334155;
 }
+
+.purchaseRecordActionColumn {
+  width: 175px;
+  white-space: nowrap !important;
+}
+
+.approveButton,
+.rejectButton {
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+.approveButton {
+  background-color: green;
+}
+
+.rejectButton {
+  background-color: red;
+}
+
+.approveButton:disabled,
+.rejectButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.statusApproved {
+  color: green;
+  font-weight: bold;
+}
+
+.statusRejected {
+  color: red;
+  font-weight: bold;
+}
+
+.statusPending {
+  color: #e6a800;
+  font-weight: bold;
+}
+
+.modalDark .approveButton,
+.modalDark .rejectButton {
+  background-color: #1c2541;
+  color: #fff;
+  border: 1px solid #3a506b;
+}
