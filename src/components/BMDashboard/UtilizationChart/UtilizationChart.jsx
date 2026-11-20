@@ -276,6 +276,8 @@ function UtilizationChart() {
             selected={startDate}
             onChange={date => setStartDate(date)}
             placeholderText="Start Date"
+            calendarClassName={styles.utilizationCalendar}
+            popperClassName={styles.utilizationCalendarPopper}
             maxDate={endDate || new Date()}
             className={styles.datepickerWrapper}
             aria-label="Start date"
@@ -285,6 +287,8 @@ function UtilizationChart() {
             selected={endDate}
             onChange={date => setEndDate(date)}
             placeholderText="End Date"
+            calendarClassName={styles.utilizationCalendar}
+            popperClassName={styles.utilizationCalendarPopper}
             minDate={startDate || undefined}
             maxDate={new Date()}
             className={styles.datepickerWrapper}
