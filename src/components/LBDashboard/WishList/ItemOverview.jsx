@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import styles from './ItemOverview.module.css';
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
-
 import { FaMapMarkerAlt } from 'react-icons/fa';
-import { IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
 import { BsChat } from 'react-icons/bs';
+import { IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
 import ImageCarousel from '../Components/ImageCarousel';
 import Header from '../Header';
 import { Link, useParams } from 'react-router-dom';
@@ -39,6 +38,16 @@ function WishListItem(props) {
   const { id } = useParams();
 
   const { wishlistItem, wishlists } = props;
+
+  useEffect(() => {
+    const backToTopButton = document.querySelector('.top');
+    if (!backToTopButton) return undefined;
+    const prevDisplay = backToTopButton.style.display;
+    backToTopButton.style.display = 'none';
+    return () => {
+      backToTopButton.style.display = prevDisplay || '';
+    };
+  }, []);
 
   useEffect(() => {
     if (wishlistItem) {
@@ -149,7 +158,13 @@ function WishListItem(props) {
                 darkMode,
               )}
             >
-              <FaMapMarkerAlt className={styles['item__icon']} />
+              <FaMapMarkerAlt
+                className={getClassNames(
+                  styles['item__icon'],
+                  styles['item__icon--dark'],
+                  darkMode,
+                )}
+              />
               <Link
                 to="/lbdashboard/masterplan"
                 className={getClassNames('', styles['item__location-link--dark'], darkMode)}
@@ -215,7 +230,6 @@ function WishListItem(props) {
                       styles['item__form-input--dark'],
                       darkMode,
                     )}
-                    style={darkMode ? { colorScheme: 'dark' } : {}}
                   />
                 </label>
                 <label
@@ -232,7 +246,6 @@ function WishListItem(props) {
                       styles['item__form-input--dark'],
                       darkMode,
                     )}
-                    style={darkMode ? { colorScheme: 'dark' } : {}}
                   />
                 </label>
               </div>
@@ -312,7 +325,13 @@ function WishListItem(props) {
                   }}
                 >
                   {isWishlist ? (
-                    <IoMdHeart className={styles['saved__item']} />
+                    <IoMdHeart
+                      className={getClassNames(
+                        styles['saved__item'],
+                        styles['saved__item--dark'],
+                        darkMode,
+                      )}
+                    />
                   ) : (
                     <IoMdHeartEmpty
                       className={getClassNames('', styles['item__icon-empty--dark'], darkMode)}

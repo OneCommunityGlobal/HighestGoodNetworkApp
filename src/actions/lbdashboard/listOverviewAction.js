@@ -38,12 +38,12 @@ export const fetchListingAvailability = (listingId) => async (dispatch) => {
     try {
         const token = localStorage.getItem('token');
         dispatch({ type: LISTING_AVAILABILITY_REQUEST });
-        const response = await fetch(ENDPOINTS.LB_LISTING_AVAILABILITY, {
+        const url = `${ENDPOINTS.LB_LISTING_AVAILABILITY}?listingid=${encodeURIComponent(listingId)}`;
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 ...(token && { Authorization: token }),
-                listingid: listingId,
             },
         });
         const data = await response.json();
