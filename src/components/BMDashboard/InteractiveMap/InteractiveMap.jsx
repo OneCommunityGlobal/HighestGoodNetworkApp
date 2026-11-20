@@ -9,6 +9,7 @@ import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import 'leaflet/dist/leaflet.css';
+import '@changey/react-leaflet-markercluster/dist/styles.min.css';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -500,13 +501,8 @@ export default function InteractiveMap() {
             >
               <MapThemeUpdater darkMode={darkMode} />
               <TileLayer
-                noWrap
-                bounds={[
-                  [-85, -180],
-                  [85, 180],
-                ]}
                 url={MapConfig.tileUrl}
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution='&copy; <a href="https://www.esri.com">Esri</a>'
                 minZoom={2}
                 maxZoom={15}
               />
