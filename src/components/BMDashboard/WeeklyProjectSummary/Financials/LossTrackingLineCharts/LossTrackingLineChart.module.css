@@ -327,9 +327,17 @@ div.lossTrackingChartContainer span.dateRangeError {
 }
 
 .legendSwatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-radius: 0;
+  flex: 0 0 auto;
+}
+
+.tooltipSwatch {
+  display: inline-block;
+  width: 18px;
+  height: 0;
   flex: 0 0 auto;
 }
 
