@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import styles from './IncompleteQuestionnaireIndicator.module.css';
 
-export const INCOMPLETE_QUESTIONNAIRE_LABEL = 'Has not completed the HGN Questionnaire';
+export const INCOMPLETE_QUESTIONNAIRE_LABEL =
+  'This person has not completed their questionnaire yet.';
 
 /**
  * Small badge shown next to a person's name when they have not completed
