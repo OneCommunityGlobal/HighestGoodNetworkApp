@@ -243,3 +243,13 @@ global.ResizeObserver = ResizeObserver;
 HTMLCanvasElement.prototype.getContext = () => {
   return {};
 };
+
+// Mock window.scrollTo for tests that invoke it (e.g. Page1)
+window.scrollTo = window.scrollTo || (() => {});
+
+// Mock HTMLMediaElement methods (pause, play) to prevent jsdom not implemented errors
+if (typeof window !== 'undefined' && window.HTMLMediaElement) {
+  window.HTMLMediaElement.prototype.pause = window.HTMLMediaElement.prototype.pause || (() => {});
+  window.HTMLMediaElement.prototype.play =
+    window.HTMLMediaElement.prototype.play || (() => Promise.resolve());
+}

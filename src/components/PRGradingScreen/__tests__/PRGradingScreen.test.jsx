@@ -33,14 +33,19 @@ const makeReviewers = () => [
   },
 ];
 
-const renderScreen = async () => {
+const selectReviewer = () => fireEvent.click(screen.getByRole('button', { name: 'Ada Lovelace' }));
+
+const renderScreen = async ({ expandReviewer = true } = {}) => {
   render(<PRGradingScreen teamData={teamData} reviewers={makeReviewers()} />);
   await waitFor(() => expect(screen.getByRole('button', { name: '+ Add new' })).toBeEnabled());
+  if (expandReviewer) {
+    selectReviewer();
+  }
 };
 
-// Both tables label their checkboxes `${prNumbers} ${label}`. Before the modal
-// opens only the inline summary is mounted, so there is exactly one match;
-// afterwards there are two, in DOM order: [inline, modal].
+// Both tables label their checkboxes `${prNumbers} ${label}`. When the reviewer
+// is selected before the modal opens, only the inline summary is mounted, so
+// there is exactly one match; afterwards there are two, in DOM order: [inline, modal].
 const checkboxes = label => screen.queryAllByLabelText(`1070 ${label}`);
 
 // The PR number renders twice (main row + inline summary tag); only the main
@@ -48,6 +53,14 @@ const checkboxes = label => screen.queryAllByLabelText(`1070 ${label}`);
 const openModal = () => fireEvent.click(screen.getByRole('button', { name: '1070' }));
 
 describe('PRGradingScreen grade sync between inline summary and modal', () => {
+  it('does not display the detailed PR grading table by default before a reviewer is selected', async () => {
+    await renderScreen({ expandReviewer: false });
+    expect(checkboxes('Okay')).toHaveLength(0);
+
+    selectReviewer();
+    expect(checkboxes('Okay')).toHaveLength(1);
+  });
+
   it.each(GRADE_OPTIONS.map(o => o.label))(
     'reflects an inline "%s" grade in the modal',
     async label => {
@@ -80,7 +93,7 @@ describe('PRGradingScreen grade sync between inline summary and modal', () => {
   });
 
   it('propagates a modal grade back to the inline summary', async () => {
-    await renderScreen();
+    await renderScreen({ expandReviewer: false });
     openModal();
 
     const [inline, modal] = checkboxes('Cannot find image');
@@ -98,7 +111,7 @@ describe('PRGradingScreen renders pre-existing grades', () => {
   // unchecked in both tables and silently does not display anywhere.
   it.each(['Exceptional', 'Okay', 'Unsatisfactory', 'Cannot find image'])(
     'shows a stored "%s" grade as checked',
-    grade => {
+    async grade => {
       render(
         <PRGradingScreen
           teamData={teamData}
@@ -107,6 +120,8 @@ describe('PRGradingScreen renders pre-existing grades', () => {
           ]}
         />,
       );
+      await waitFor(() => expect(screen.getByRole('button', { name: '+ Add new' })).toBeEnabled());
+      selectReviewer();
 
       // The column is labelled with the grade itself, so a stored grade must
       // light up the column of the same name.

@@ -177,7 +177,7 @@ export function Header(props) {
   );
   const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
 
-// Reports / nav access — prefer RoutePermissions lists (OR any key)
+  // Reports / nav access — prefer RoutePermissions lists (OR any key)
   const canGetReports = props.hasPermission(RoutePermissions.reports, !isAuthUser);
   const canGetWeeklySummaries = props.hasPermission(
     RoutePermissions.weeklySummariesReport,
@@ -311,7 +311,7 @@ export function Header(props) {
 
   const playMeetingAudio = useCallback(() => {
     if (!MeetingNotificationAudioRef.current) return;
-    MeetingNotificationAudioRef.current.play().catch(() => {});
+    MeetingNotificationAudioRef.current.play().catch(() => { });
   }, []);
 
   const getMeetingCountLabel = useCallback((totalMeetings, meetingIndex = 1) => {
@@ -666,18 +666,18 @@ export function Header(props) {
   ]);
 
   const toggle = () => {
-  setIsOpen(prevIsOpen => !prevIsOpen);
-};
+    setIsOpen(prevIsOpen => !prevIsOpen);
+  };
 
   const openModal = () => {
     setLogoutPopup(true);
   };
 
   const handlePermissionChangeAck = async () => {
-      setIsAckLoading(true);
-      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
-      axios.put(ENDPOINTS.USER_PROFILE(_id), { firstName: name, lastName, personalLinks, adminLinks, isAcknowledged: true })
-        .then(() => { setIsAckLoading(false); dispatch(getUserProfile(_id)); });
+    setIsAckLoading(true);
+    const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
+    axios.put(ENDPOINTS.USER_PROFILE(_id), { firstName: name, lastName, personalLinks, adminLinks, isAcknowledged: true })
+      .then(() => { setIsAckLoading(false); dispatch(getUserProfile(_id)); });
   };
 
   const removeViewingUser = () => {
@@ -764,7 +764,7 @@ export function Header(props) {
           <div className={styles.leftSection}>{isAuthenticated && <Timer darkMode={darkMode} />}</div>
           <div className={styles.centerSection}>{isAuthenticated && <OwnerMessage />}</div>
           <div className={styles.rightSection}>
-               
+
             <NavbarToggler
               onClick={toggle}
               ref={toggleRef}
@@ -778,7 +778,7 @@ export function Header(props) {
               tabIndex={-1}
               onKeyDown={e => { if (e.key === 'Escape') setIsOpen(false); }}
             >
-                <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>                
+              <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
                 <NavItem className={styles.showInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img src={`${profilePic || '/pfp-default-header.png'}`} alt="" style={{ maxWidth: '60px', maxHeight: '60px' }} className="dashboardimg" />
@@ -1009,7 +1009,7 @@ export function Header(props) {
                     <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                       <DropdownItem tag={Link} to="/pr-dashboard" className={fontColor} disabled={headerDisabled}>PR Team Analysis Dashboard</DropdownItem>
                       <DropdownItem divider />
-                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor} disabled={headerDisabled}>PR Team Analytics</DropdownItem>
+                      <DropdownItem tag={Link} to="/pr-grading-screen" className={fontColor} disabled={headerDisabled}>PR Team Analytics</DropdownItem>
                       <DropdownItem tag={Link} to="/pr-dashboard/analytics" className={fontColor} disabled={headerDisabled}>PR Analytics</DropdownItem>
                       <DropdownItem
                         tag={Link}
@@ -1098,7 +1098,7 @@ export function Header(props) {
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} ${styles.cardWrapper}`}>
           <Card color="primary" className={`${styles.headerCard} ${styles.dashboardHeader}`}>
-            <div className="close-button" style={{ paddingRight: '5px'}}>
+            <div className="close-button" style={{ paddingRight: '5px' }}>
               <Button close onClick={closeModal} />
             </div>
             <div className={`${styles.cardContent}`}>{modalContent}</div>
@@ -1164,9 +1164,8 @@ export function Header(props) {
           </div>
         </ModalBody>
         <ModalFooter
-          className={`${styles.meetingNotificationModalFooter}${
-            darkMode ? ' bg-yinmn-blue text-white' : ''
-          }`}
+          className={`${styles.meetingNotificationModalFooter}${darkMode ? ' bg-yinmn-blue text-white' : ''
+            }`}
         >
           {userUnreadMeetings.length > 1 && meetingAudioUnlocked && (
             <div className={styles.meetingNotificationNav}>
