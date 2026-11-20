@@ -1,6 +1,6 @@
 /* eslint-disable testing-library/no-node-access */
 import { useSelector } from 'react-redux';
-import { useRef } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import EventParticipationHeader from './EventParticipationHeader';
 import EngagementSummaryCards from './EngagementSummaryCards';
 import EventTypePieChart from './EventTypePieChart';
@@ -16,6 +16,21 @@ import styles from './Participation.module.css';
 function EventParticipation() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const exportRef = useRef(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const handleSaveAsPDF = useCallback(() => {
+    if (isExporting) return;
+
+    setIsExporting(true);
+    document.documentElement.dataset.exporting = 'true';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.print();
+        delete document.documentElement.dataset.exporting;
+        setIsExporting(false);
+      });
+    });
+  }, [isExporting]);
 
   return (
     <div
@@ -24,7 +39,7 @@ function EventParticipation() {
         darkMode ? styles.participationLandingPageDark : ''
       }`}
     >
-      <EventParticipationHeader />
+      <EventParticipationHeader onSaveAsPDF={handleSaveAsPDF} isExporting={isExporting} />
       <EngagementSummaryCards />
       <div className={styles.chartsSection}>
         <div className={styles.chartsRow}>
