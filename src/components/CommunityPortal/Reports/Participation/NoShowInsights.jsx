@@ -223,26 +223,26 @@ function NoShowInsights() {
       {isExportOpen &&
         createPortal(
           <div
-            className={styles.modalOverlay}
+            className={styles.exportModalOverlay}
             onClick={event => {
               if (event.target === event.currentTarget && !isExporting) setIsExportOpen(false);
             }}
             role="presentation"
           >
             <div
-              className={`${styles.modal} ${darkMode ? styles.modalDark : ''}`}
+              className={`${styles.exportModal} ${darkMode ? styles.exportModalDark : ''}`}
               role="dialog"
               aria-modal="true"
               aria-labelledby="no-show-export-title"
             >
-              <div className={styles.modalHeader}>
-                <h4 id="no-show-export-title" className={styles.modalTitle}>
+              <div className={styles.exportModalHeader}>
+                <h4 id="no-show-export-title" className={styles.exportModalTitle}>
                   Export No-show Insights
                 </h4>
                 <button
                   ref={exportCloseButtonRef}
                   type="button"
-                  className={styles.modalClose}
+                  className={styles.exportModalClose}
                   onClick={() => !isExporting && setIsExportOpen(false)}
                   aria-label="Close export modal"
                 >
@@ -250,8 +250,8 @@ function NoShowInsights() {
                 </button>
               </div>
 
-              <div className={styles.modalBody}>
-                <div className={styles.modalMeta}>
+              <div className={styles.exportModalBody}>
+                <div className={styles.exportModalMeta}>
                   <div>
                     <strong>Scope:</strong> {scopeFilter}
                   </div>
@@ -263,9 +263,9 @@ function NoShowInsights() {
                   </div>
                 </div>
 
-                {exportError && <div className={styles.modalError}>{exportError}</div>}
+                {exportError && <div className={styles.exportModalError}>{exportError}</div>}
 
-                <div className={styles.modalActions}>
+                <div className={styles.exportModalActions}>
                   <button
                     type="button"
                     className={`${
