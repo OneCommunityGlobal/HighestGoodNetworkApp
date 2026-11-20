@@ -1,10 +1,11 @@
 import Joi from 'joi';
 import { connect } from 'react-redux';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, matchPath, withRouter } from 'react-router-dom';
 import NetlifyPoweredLink from '~/components/Footer/NetlifyPoweredLink';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
+import { QUESTIONNAIRE_PERMANENT_PATH } from '../HGNForm/access/questionnaireLink';
 
 export class Login extends Form {
   state = {
@@ -36,7 +37,11 @@ export class Login extends Form {
         this.props.history.push(url);
       } else if (this.props.auth.isAuthenticated) {
         const redirectPath = this.props.location?.state?.from?.pathname;
-        if (redirectPath && redirectPath.includes('/hgnform')) {
+        const isQuestionnairePath =
+          redirectPath &&
+          (redirectPath.includes('/hgnform') ||
+            matchPath(redirectPath, { path: QUESTIONNAIRE_PERMANENT_PATH, exact: true }));
+        if (isQuestionnairePath) {
           this.props.history.push(redirectPath);
         } else {
           this.props.history.push('/dashboard');

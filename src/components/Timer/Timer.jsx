@@ -282,7 +282,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendJsonMessage]);
 
   const sendStopAndConfirm = useCallback(
-    targetUserId =>
+    (targetUserId, loggingSessionId) =>
       new Promise(resolve => {
         const socket = getWebSocket();
         if (!socket || socket.readyState !== ReadyState.OPEN) {
@@ -315,6 +315,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             action: 'STOP_TIMER',
             ...(targetUserId == null ? {} : { userId: targetUserId }),
             requestId,
+            ...(loggingSessionId ? { loggingSessionId } : {}),
           });
         } catch (_error) {
           clearTimeout(timeoutId);
@@ -539,8 +540,8 @@ function Timer({ authUser, darkMode, isPopout }) {
           sendJsonMessageNoQueue({ action: action.PAUSE_TIMER });
         },
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
-        sendStop: async () => {
-          const stopped = await sendStopAndConfirm(null);
+        sendStop: async loggingSessionId => {
+          const stopped = await sendStopAndConfirm(null, loggingSessionId);
           // Clear the submitted time when stopping
           clearSubmittedTime();
           return stopped;
@@ -567,8 +568,8 @@ function Timer({ authUser, darkMode, isPopout }) {
       },
       sendClear: () =>
         sendJsonMessageNoQueue({ action: action.CLEAR_TIMER, userId: viewingUserId }),
-      sendStop: async () => {
-        const stopped = await sendStopAndConfirm(viewingUserId);
+      sendStop: async loggingSessionId => {
+        const stopped = await sendStopAndConfirm(viewingUserId, loggingSessionId);
         // Clear the submitted time when stopping
         clearSubmittedTime();
         return stopped;
@@ -810,7 +811,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       const { timeoutId, resolve } = pendingStopRef.current;
       clearTimeout(timeoutId);
       pendingStopRef.current = null;
-      resolve(lastJsonMessage.started === false);
+      resolve(lastJsonMessage.started === false && !lastJsonMessage.stopRejected);
     }
     // Handle explicit week close pause action messages
     if (lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
@@ -1059,6 +1060,7 @@ function Timer({ authUser, darkMode, isPopout }) {
         timerConnected={customReadyState === ReadyState.OPEN}
         onTimeSubmitted={handleTimeSubmitted}
         sessionId={sessionId}
+        timerSessionId={message.loggingSessionId}
         timerStats={getTimerStats()}
       />
     );
