@@ -24,6 +24,7 @@ import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
+import FinancialStatButtons from './Financials/FinancialStatButtons';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
@@ -373,6 +374,11 @@ function WeeklyProjectSummary() {
               width: '100%',
             }}
           >
+            {/* Top: Financial KPI stat buttons (span both columns) */}
+            <div style={{ gridColumn: 'span 2', width: '100%' }}>
+              <FinancialStatButtons defaultProjectId={selectedProjectId} darkMode={darkMode} />
+            </div>
+
             {/* Top Left: Planned vs Actual Cost */}
             <div
               className="weekly-project-summary-card financial-small financial-chart"

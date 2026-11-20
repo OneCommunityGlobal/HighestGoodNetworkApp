@@ -225,7 +225,7 @@ export default function FinancialStatButtons({ defaultProjectId, darkMode }) {
                 className={styles.budgetBadge}
                 style={{
                   backgroundColor: `${budgetStatus.color}18`,
-                  color: budgetStatus.color,
+                  color: '#fff',
                   border: `1px solid ${budgetStatus.color}`,
                 }}
               >
