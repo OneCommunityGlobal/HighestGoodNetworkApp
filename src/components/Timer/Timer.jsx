@@ -870,7 +870,11 @@ function Timer({ authUser, darkMode, isPopout }) {
       // from a stale local countdown) can read it off the resolved value. stopRejected means
       // the server refused the stop (e.g. already stopped/logged elsewhere) even though
       // started is false, so that case must still resolve false, not the message.
-      resolve(lastJsonMessage.started === false && !lastJsonMessage.stopRejected ? lastJsonMessage : false);
+      resolve(
+        lastJsonMessage.started === false && !lastJsonMessage.stopRejected
+          ? lastJsonMessage
+          : false,
+      );
     }
     if (
       lastJsonMessage?.requestId &&

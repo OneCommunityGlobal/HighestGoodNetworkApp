@@ -282,10 +282,55 @@ describe('Timer split-session stop confirmation', () => {
         });
         await Promise.resolve();
       });
-      await expect(pending).resolves.toBe(!stopRejected);
-      expect(confirmed).toHaveBeenCalledWith(!stopRejected);
+      // On success (stopRejected: false), sendStop resolves the full server-confirmed
+      // message - not a bare `true` - so callers can read the authoritative elapsed
+      // time off it instead of trusting a possibly-stale local countdown. On rejection
+      // it still resolves plain `false`.
+      const expected = stopRejected
+        ? false
+        : { ...message, started: false, requestId: request.requestId, stopRejected };
+      await expect(pending).resolves.toEqual(expected);
+      expect(confirmed).toHaveBeenCalledWith(expected);
     },
   );
+
+  it('resolves false and does not return the message when the server rejects the stop (stopRejected: true)', async () => {
+    renderTimer();
+    const batchId = 'rejected-stop-session';
+    const message = {
+      started: true,
+      paused: true,
+      chiming: false,
+      forcedPause: false,
+      time: 0,
+      goal: 60000,
+      initialGoal: 60000,
+      startAt: null,
+      loggingSessionId: batchId,
+    };
+    act(() => mocks.setLastJsonMessage(message));
+    fireEvent.click(await screen.findByLabelText('Stop timer and log timer'));
+
+    let pending;
+    act(() => {
+      pending = mocks.timeEntryProps.sendStop(batchId);
+    });
+    const [request] = mocks.sendJsonMessage.mock.calls.find(
+      ([sent]) => sent.action === 'STOP_TIMER',
+    );
+
+    await act(async () => {
+      mocks.setLastJsonMessage({
+        ...message,
+        started: false,
+        requestId: request.requestId,
+        stopRejected: true,
+      });
+      await Promise.resolve();
+    });
+
+    await expect(pending).resolves.toBe(false);
+  });
 });
 
 describe('Timer connection loss and recovery', () => {
