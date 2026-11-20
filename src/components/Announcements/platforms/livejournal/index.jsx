@@ -4,13 +4,13 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styles from './LiveJournalAutoPoster.module.css';
 import AutoPosterTabs from '../../shared/AutoPosterTabs';
+import LiveJournalPostEditor from './LiveJournalPostEditor';
+import LiveJournalScheduler from './LiveJournalScheduler';
+
 import {
   formatDate,
   formatTime,
-  formatDateTime,
-  formatExcerpt,
   normalizeScheduleDateTime,
-  copyText,
   buttonStyle as getButtonStyle,
 } from '../../shared/autoPosterUtils';
 
@@ -170,13 +170,13 @@ function LiveJournalAutoPoster() {
 
     if (!nextDate) return;
 
-    const today = formatDate(new Date());
-    const safeDate = [nextDate, today].sort((a, b) => a.localeCompare(b))[1];
+    const todayDate = formatDate(new Date());
+    const safeDate = [nextDate, todayDate].sort((a, b) => a.localeCompare(b))[1];
 
     setScheduledDate(safeDate);
     setScheduleAttemptedSave(false);
 
-    if (safeDate === today) {
+    if (safeDate === todayDate) {
       const currentTime = formatTime(new Date());
 
       setScheduledTime(
@@ -199,6 +199,15 @@ function LiveJournalAutoPoster() {
     }
 
     setScheduleAttemptedSave(false);
+  };
+
+  const resetSchedule = () => {
+    setScheduledDraft('');
+    setScheduledDate(formatDate(new Date()));
+    setScheduledTime(formatTime(new Date()));
+    setScheduleAttemptedSave(false);
+    setEditingId(null);
+    setActiveTab('make');
   };
 
   const handleSaveSchedule = () => {
@@ -246,12 +255,7 @@ function LiveJournalAutoPoster() {
     );
 
     resetEditor();
-    setScheduledDraft('');
-    setScheduledDate(formatDate(new Date()));
-    setScheduledTime(formatTime(new Date()));
-    setScheduleAttemptedSave(false);
-    setEditingId(null);
-    setActiveTab('make');
+    resetSchedule();
   };
 
   const handleEditSchedule = item => {
@@ -288,7 +292,6 @@ function LiveJournalAutoPoster() {
   };
 
   const today = formatDate(new Date());
-
   const scheduleTimeMin = scheduledDate === today ? formatTime(new Date()) : undefined;
 
   return (
@@ -309,453 +312,56 @@ function LiveJournalAutoPoster() {
       />
 
       {activeTab === 'make' ? (
-        <>
-          <section className={styles.card}>
-            <h3>LiveJournal Auto-Poster</h3>
-
-            <p>
-              Create and format a LiveJournal entry. Add a subject, entry content, optional tags,
-              and an original article URL. Preview and copy your entry, or open LiveJournal to
-              publish it manually.
-            </p>
-
-            <div className={styles.topActions}>
-              <button type="button" style={buttonStyle('outline', darkMode)} onClick={handleReset}>
-                Clear fields
-              </button>
-            </div>
-          </section>
-
-          <div className={styles.grid}>
-            <section
-              className={classNames(styles.card, {
-                [styles.invalid]: titleInvalid,
-              })}
-            >
-              <div className={styles.fieldHeader}>
-                <label htmlFor="livejournal-title">Entry subject *</label>
-
-                <span
-                  className={classNames(styles.fieldMeta, {
-                    [styles.invalidText]: titleInvalid,
-                  })}
-                >
-                  {title.length}/{SUBJECT_MAX}
-                </span>
-              </div>
-
-              <input
-                id="livejournal-title"
-                value={title}
-                maxLength={SUBJECT_MAX}
-                onChange={event => setTitle(event.target.value)}
-                className={styles.input}
-                placeholder="Enter your entry subject"
-              />
-
-              {!trimmedTitle && (
-                <p className={styles.hint}>Add a subject for your LiveJournal entry.</p>
-              )}
-
-              {titleInvalid && (
-                <p className={styles.error}>Subject cannot exceed {SUBJECT_MAX} characters.</p>
-              )}
-
-              <div className={styles.fieldActions}>
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(title, 'Subject')}
-                >
-                  Copy subject
-                </button>
-
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={() => setTitle('')}
-                >
-                  Clear subject
-                </button>
-              </div>
-            </section>
-
-            <section
-              className={classNames(styles.card, {
-                [styles.invalid]: urlInvalid,
-              })}
-            >
-              <div className={styles.fieldHeader}>
-                <label htmlFor="livejournal-url">Original article URL</label>
-
-                <span className={styles.fieldMeta}>optional</span>
-              </div>
-
-              <input
-                id="livejournal-url"
-                type="url"
-                value={originalUrl}
-                onChange={event => setOriginalUrl(event.target.value)}
-                className={styles.input}
-                placeholder="https://example.com/article"
-              />
-
-              <p className={urlInvalid ? styles.error : styles.hint}>
-                {urlInvalid
-                  ? 'Enter a valid HTTP(S) URL.'
-                  : 'Add a link to the original article if applicable.'}
-              </p>
-
-              <div className={styles.fieldActions}>
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(originalUrl, 'Original URL')}
-                >
-                  Copy URL
-                </button>
-
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={() => setOriginalUrl('')}
-                >
-                  Clear URL
-                </button>
-              </div>
-            </section>
-
-            <section
-              className={classNames(styles.card, {
-                [styles.invalid]: contentInvalid,
-              })}
-            >
-              <div className={styles.fieldHeader}>
-                <label htmlFor="livejournal-content">Entry content *</label>
-
-                <span className={styles.fieldMeta}>
-                  {content.length.toLocaleString()} characters
-                </span>
-              </div>
-
-              <textarea
-                id="livejournal-content"
-                value={content}
-                onChange={event => setContent(event.target.value)}
-                className={classNames(styles.input, styles.textarea)}
-                rows={9}
-                placeholder="Write your LiveJournal entry here..."
-              />
-
-              {!trimmedContent && <p className={styles.hint}>Add the main body of your entry.</p>}
-
-              <div className={styles.fieldActions}>
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(content, 'Entry content')}
-                >
-                  Copy content
-                </button>
-
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={() => setContent('')}
-                >
-                  Clear content
-                </button>
-              </div>
-            </section>
-
-            <section className={styles.card}>
-              <div className={styles.fieldHeader}>
-                <label htmlFor="livejournal-tags">Tags</label>
-
-                <span className={styles.fieldMeta}>Up to 10 tags</span>
-              </div>
-
-              <textarea
-                id="livejournal-tags"
-                value={tagsText}
-                onChange={event => setTagsText(event.target.value)}
-                className={classNames(styles.input, styles.tagInput)}
-                rows={2}
-                placeholder="Technology, Personal, Travel"
-              />
-
-              <div className={styles.chips}>
-                {tags.map(tag => (
-                  <span className={styles.chip} key={tag}>
-                    <span>{tag}</span>
-
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      aria-label={`Remove tag ${tag}`}
-                      className={styles.chipClear}
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-
-              <p className={styles.hint}>Tags are optional. Separate multiple tags with commas.</p>
-
-              <div className={styles.fieldActions}>
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(tags.join(', '), 'Tags')}
-                >
-                  Copy tags
-                </button>
-
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={() => setTagsText('')}
-                >
-                  Clear tags
-                </button>
-              </div>
-            </section>
-
-            <section className={styles.card}>
-              <div className={styles.fieldHeader}>
-                <label htmlFor="livejournal-privacy">Entry privacy</label>
-              </div>
-
-              <select
-                className={styles['privacy-select']}
-                value={privacy}
-                onChange={e => setPrivacy(e.target.value)}
-              >
-                <option value="public">Public</option>
-                <option value="friends">Friends Only</option>
-                <option value="private">Private</option>
-              </select>
-
-              <p className={styles.hint}>
-                Select who should be able to view your entry. This is included in the local preview
-                only. You must select the actual privacy setting in LiveJournal when publishing.
-              </p>
-            </section>
-          </div>
-
-          <section className={styles.card}>
-            <div className={styles.previewHeader}>
-              <h4>LiveJournal entry preview</h4>
-
-              <div className={styles.previewActions}>
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={handleScheduleClick}
-                >
-                  Schedule this entry
-                </button>
-
-                <button
-                  type="button"
-                  style={buttonStyle('outline', darkMode)}
-                  onClick={openLiveJournalEditor}
-                >
-                  Open LiveJournal
-                </button>
-
-                <button
-                  type="button"
-                  style={{
-                    ...buttonStyle('primary', darkMode),
-                    opacity: readyToCopy ? 1 : 0.5,
-                  }}
-                  onClick={() => copyText(preview, 'LiveJournal entry')}
-                  disabled={!readyToCopy}
-                >
-                  Copy full entry
-                </button>
-              </div>
-            </div>
-
-            <pre className={styles.previewBody}>
-              {preview || 'Your entry preview will appear here as you type.'}
-            </pre>
-
-            {!readyToCopy && (
-              <p className={styles.previewHint}>
-                Add a subject and entry content to enable copying the complete entry.
-              </p>
-            )}
-          </section>
-        </>
+        <LiveJournalPostEditor
+          styles={styles}
+          darkMode={darkMode}
+          buttonStyle={buttonStyle}
+          handleReset={handleReset}
+          title={title}
+          setTitle={setTitle}
+          titleInvalid={titleInvalid}
+          trimmedTitle={trimmedTitle}
+          originalUrl={originalUrl}
+          setOriginalUrl={setOriginalUrl}
+          urlInvalid={urlInvalid}
+          content={content}
+          setContent={setContent}
+          contentInvalid={contentInvalid}
+          trimmedContent={trimmedContent}
+          tagsText={tagsText}
+          setTagsText={setTagsText}
+          tags={tags}
+          removeTag={removeTag}
+          privacy={privacy}
+          setPrivacy={setPrivacy}
+          handleScheduleClick={handleScheduleClick}
+          openLiveJournalEditor={openLiveJournalEditor}
+          readyToCopy={readyToCopy}
+          preview={preview}
+        />
       ) : (
-        <div className={styles.schedulerGrid}>
-          <section className={classNames(styles.card, styles.schedulerCard)}>
-            <h3>Schedule LiveJournal Entry</h3>
-
-            <p>
-              Save a local schedule entry for your LiveJournal post. This does not automatically
-              publish the entry at the selected time.
-            </p>
-
-            {editingSchedule && (
-              <p className={styles.schedulerNote}>
-                Editing "{editingSchedule.title || 'Untitled entry'}". Saving will update the
-                existing entry.
-              </p>
-            )}
-
-            <div className={styles.scheduleControls}>
-              <div className={styles.scheduleField}>
-                <label htmlFor="livejournal-schedule-date">Scheduled date *</label>
-
-                <input
-                  id="livejournal-schedule-date"
-                  type="date"
-                  min={today}
-                  value={scheduledDate}
-                  onChange={handleScheduleDateChange}
-                  className={styles.input}
-                  aria-invalid={scheduleAttemptedSave && !scheduledDate}
-                />
-
-                {scheduleAttemptedSave && !scheduledDate && (
-                  <p className={styles.error}>Select a date.</p>
-                )}
-              </div>
-
-              <div className={styles.scheduleField}>
-                <label htmlFor="livejournal-schedule-time">Scheduled time *</label>
-
-                <input
-                  id="livejournal-schedule-time"
-                  type="time"
-                  min={scheduleTimeMin}
-                  value={scheduledTime}
-                  onChange={handleScheduleTimeChange}
-                  className={styles.input}
-                  aria-invalid={scheduleAttemptedSave && !scheduledTime}
-                />
-
-                {scheduleAttemptedSave && !scheduledTime && (
-                  <p className={styles.error}>Select a time.</p>
-                )}
-              </div>
-            </div>
-
-            <label htmlFor="livejournal-schedule-draft">Scheduled entry</label>
-
-            <textarea
-              id="livejournal-schedule-draft"
-              value={scheduledDraft}
-              readOnly
-              rows={9}
-              className={classNames(styles.input, styles.schedulerTextarea)}
-              placeholder="Choose Schedule this entry in Make Entry to load your draft."
-            />
-
-            <div className={styles.schedulerActions}>
-              <button
-                type="button"
-                style={buttonStyle('primary', darkMode)}
-                onClick={handleSaveSchedule}
-                disabled={!scheduleHasDraft}
-              >
-                {editingId ? 'Update scheduled entry' : 'Save scheduled entry'}
-              </button>
-
-              <button
-                type="button"
-                style={buttonStyle('ghost', darkMode)}
-                onClick={() => copyText(scheduledDraft, 'Scheduled entry')}
-                disabled={!scheduleHasDraft}
-              >
-                Copy scheduled entry
-              </button>
-
-              <button
-                type="button"
-                style={buttonStyle('outline', darkMode)}
-                onClick={() => setActiveTab('make')}
-              >
-                Back to Make Entry
-              </button>
-            </div>
-          </section>
-
-          <section className={classNames(styles.card, styles.savedCard)}>
-            <h3>Saved scheduled entries</h3>
-
-            <p className={styles.hint}>
-              Edit a saved entry, copy it, or open LiveJournal to publish it manually.
-            </p>
-
-            <div className={styles.savedList}>
-              {savedSchedules.length === 0 ? (
-                <p className={styles.empty}>
-                  No scheduled entries yet. Save one to see it listed here.
-                </p>
-              ) : (
-                savedSchedules.map(item => (
-                  <article
-                    key={item.id}
-                    className={classNames(styles.savedItem, {
-                      [styles.savedItemActive]: item.id === editingId,
-                    })}
-                  >
-                    <div className={styles.savedHeader}>
-                      <h4 className={styles.savedTitle}>{item.title || 'Untitled entry'}</h4>
-
-                      <span className={styles.savedMeta}>
-                        {formatDateTime(item.scheduledDate, item.scheduledTime)}
-                      </span>
-                    </div>
-
-                    <p className={styles.savedExcerpt}>
-                      {formatExcerpt(item.content, 'No content captured.')}
-                    </p>
-
-                    <div className={styles.savedActions}>
-                      <button
-                        type="button"
-                        style={buttonStyle('ghost', darkMode)}
-                        onClick={() => handleEditSchedule(item)}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        type="button"
-                        style={buttonStyle('outline', darkMode)}
-                        onClick={() => copyText(item.scheduledDraft, 'Scheduled entry')}
-                      >
-                        Copy
-                      </button>
-
-                      <button
-                        type="button"
-                        style={buttonStyle('outline', darkMode)}
-                        onClick={openLiveJournalEditor}
-                      >
-                        Open LiveJournal
-                      </button>
-
-                      <button
-                        type="button"
-                        style={buttonStyle('ghost', darkMode)}
-                        onClick={() => handleDeleteSchedule(item.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </article>
-                ))
-              )}
-            </div>
-          </section>
-        </div>
+        <LiveJournalScheduler
+          styles={styles}
+          darkMode={darkMode}
+          buttonStyle={buttonStyle}
+          editingSchedule={editingSchedule}
+          today={today}
+          scheduledDate={scheduledDate}
+          handleScheduleDateChange={handleScheduleDateChange}
+          scheduleAttemptedSave={scheduleAttemptedSave}
+          scheduledTime={scheduledTime}
+          scheduleTimeMin={scheduleTimeMin}
+          handleScheduleTimeChange={handleScheduleTimeChange}
+          scheduledDraft={scheduledDraft}
+          scheduleHasDraft={scheduleHasDraft}
+          handleSaveSchedule={handleSaveSchedule}
+          editingId={editingId}
+          setActiveTab={setActiveTab}
+          savedSchedules={savedSchedules}
+          handleEditSchedule={handleEditSchedule}
+          openLiveJournalEditor={openLiveJournalEditor}
+          handleDeleteSchedule={handleDeleteSchedule}
+        />
       )}
     </div>
   );
