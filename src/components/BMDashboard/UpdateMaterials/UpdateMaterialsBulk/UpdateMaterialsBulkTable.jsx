@@ -13,18 +13,24 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
   const [materialsState, setMaterialsState] = useState([...materials]);
   const postMaterialUpdateBulkResult = useSelector(state => state.materials.updateMaterialsBulk);
   const [cancel, setCancel] = useState(1);
-  const [updatedRecordsList] = useState({});
-  const [validationsList] = useState({});
-  const [bulkValidationError, setbulkValidationError] = useState(false);
+  const [updatedRecordsList, setUpdatedRecordsList] = useState({});
+  const [validationsList, setValidationsList] = useState({});
+  const bulkValidationError = Object.values(validationsList).some(validation =>
+    Object.values(validation).some(Boolean),
+  );
   const today = moment(new Date()).format('YYYY-MM-DD');
 
   useEffect(() => {
     setMaterialsState([...materials]);
+    setUpdatedRecordsList({});
+    setValidationsList({});
     setProject({ label: 'All Projects', value: '0' });
     setDate(today);
   }, [materials]);
 
   const cancelHandler = () => {
+    setUpdatedRecordsList({});
+    setValidationsList({});
     setCancel(prev => (prev === 1 ? 2 : 1));
   };
 
@@ -67,19 +73,9 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
   };
 
   const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
-    updatedRecordsList[updatedRecord.material._id] = updatedRecord;
-    validationsList[updatedRecord.material._id] = validationRecord;
-    if (
-      !(
-        validationRecord.quantityUsed === '' &&
-        validationRecord.quantityWasted === '' &&
-        validationRecord.quantityTogether === ''
-      )
-    ) {
-      setbulkValidationError(true);
-    } else {
-      setbulkValidationError(false);
-    }
+    const id = updatedRecord.material._id;
+    setUpdatedRecordsList(previous => ({ ...previous, [id]: { ...updatedRecord } }));
+    setValidationsList(previous => ({ ...previous, [id]: { ...validationRecord } }));
   };
 
   return (

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { postMaterialUpdate } from '~/actions/bmdashboard/materialsActions';
 import { toast } from 'react-toastify';
 import styles from './UpdateMaterial.module.css';
+import { formatMaterialAvailable } from '../../../utils/materialDataQuality';
 
 function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const dispatch = useDispatch();
@@ -151,7 +152,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
       <tr key={record._id}>
         <td> {record.project?.name} </td>
         <td> {record.itemType?.name} </td>
-        <td> {record.stockAvailable} </td>
+        <td> {formatMaterialAvailable(record.stockAvailable)} </td>
         <td>
           <Input
             id="updateMaterialQuantityUsed"
@@ -206,7 +207,9 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
         </td>
         <td>
           <span className={updateRecord.newAvailable < 0 ? styles.materialFormErrorClr : undefined}>
-            {updateRecord.newAvailable}
+            {updateRecord.newAvailable === ''
+              ? ''
+              : formatMaterialAvailable(updateRecord.newAvailable)}
           </span>
         </td>
       </tr>
@@ -252,7 +255,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 Project Name
               </Label>
               <Col sm={8} className={`${styles.materialFormValue}`}>
-                {record?.project.name}
+                {record?.project?.name || 'Missing project'}
               </Col>
             </FormGroup>
 
@@ -286,7 +289,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 Available
               </Label>
               <Col sm={6} className={`${styles.materialFormValue}`}>
-                {record?.stockAvailable}
+                {formatMaterialAvailable(record?.stockAvailable)}
               </Col>
             </FormGroup>
 
@@ -306,7 +309,9 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                       updateRecord.newAvailable < 0 ? styles.materialFormErrorClr : undefined
                     }
                   >
-                    {updateRecord.newAvailable}
+                    {updateRecord.newAvailable === ''
+                      ? ''
+                      : formatMaterialAvailable(updateRecord.newAvailable)}
                   </span>
                 </Col>
               </FormGroup>
