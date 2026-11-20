@@ -15,6 +15,10 @@ import {
 import styles from './PromotionPRGradingScreen.module.css';
 import GRADE_OPTIONS from './promotionGradeOptions';
 
+const COMPLETED_REVIEW_RATINGS = new Set(
+  GRADE_OPTIONS.map(option => option.value).filter(value => value !== 'Did not review'),
+);
+
 const getRatingClass = (grade, styles) => {
   switch (grade) {
     case 'Did not review':
@@ -118,7 +122,7 @@ const PromotionPRGradingScreen = ({ teamData, reviewers, currentUser, onReviewsS
             weeks,
             gradedPrs,
             prsReviewed: gradedPrs.filter(
-              pr => pr.rating === 'Good' || pr.rating === 'Exceptional',
+              pr => COMPLETED_REVIEW_RATINGS.has(pr.rating),
             ).length,
             history: reviewer.history || [],
           };
@@ -738,7 +742,9 @@ const PromotionPRGradingScreen = ({ teamData, reviewers, currentUser, onReviewsS
                           aria-describedby="pr-rating-guide"
                           aria-label={`Rating for PR ${pr.prNumber || pr.prNumbers || 'number'}`}
                         >
-                          <option value="">Select rating</option>
+                          <option value="" disabled hidden>
+                            Select rating
+                          </option>
 
                           {GRADE_OPTIONS.map(rating => (
                             <option key={rating.value} value={rating.value}>

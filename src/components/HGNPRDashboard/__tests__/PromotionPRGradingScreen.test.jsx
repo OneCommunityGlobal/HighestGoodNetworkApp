@@ -112,7 +112,7 @@ describe('PromotionPRGradingScreen', () => {
     expect(await screen.findByText('Ada Lovelace')).toBeInTheDocument();
   });
 
-  it('counts only Good and Exceptional reviews in the current week', async () => {
+  it('counts completed ratings and excludes unrated and did-not-review entries', async () => {
     fetchPREntriesBulkMock.mockResolvedValueOnce({
       currentWeek: { year: 2026, week: 33 },
       reviewers: {
@@ -132,7 +132,7 @@ describe('PromotionPRGradingScreen', () => {
     renderScreen();
     await waitFor(() =>
       expect(screen.getByRole('spinbutton', { name: 'PRs reviewed by Ada Lovelace' }))
-        .toHaveValue(2),
+        .toHaveValue(4),
     );
   });
 
@@ -170,6 +170,7 @@ describe('PromotionPRGradingScreen', () => {
     });
 
     expect(ratingSelect).toHaveValue('Good');
+    expect(within(ratingSelect).queryByRole('option', { name: 'Select rating' })).toBeNull();
   });
 
   it('renders all supported rating options', async () => {
