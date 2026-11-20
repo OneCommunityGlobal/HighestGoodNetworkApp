@@ -138,6 +138,14 @@ The `/hgnhelp` route displays the HGN Help request modal. Owners, administrators
 
 After a successful submission, the success toast is displayed, the modal closes, and the user is intentionally returned to `/dashboard`. This redirect is explicit application behavior, not an automatic result of the modal overlay. The suggestion `here` link also closes the help modal and returns to the dashboard to open the suggestion flow.
 
+### HGN questionnaire onboarding
+
+After a person has been set up and invited through the Highest Good Network Dropbox process, send them the permanent HGN questionnaire link:
+
+[Open the HGN questionnaire](https://hgnapplication_react_dev.surge.sh/questionnaire)
+
+The link is available to active people who were invited to the Highest Good Network Dropbox team folder. People invited only to another Dropbox team folder are not eligible to open the questionnaire. Administrators can use the **Copy questionnaire link** control in the HGN Help Community Members dashboard or Access Management to copy the current application link and share it with newly set-up and invited eligible people during onboarding. Use the same `/questionnaire` link for each eligible person; after access is confirmed, it redirects to the first questionnaire page.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## One Community Global Code of Conduct
