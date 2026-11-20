@@ -1,0 +1,245 @@
+
+/* =========================
+   PAGE CONTAINER
+========================= */
+
+.page {
+  min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 26px;
+}
+
+.header p {
+  margin: 0;
+}
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.backButton {
+  padding: 10px 18px;
+  border: 1px solid;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* =========================
+   STATUS BADGES
+========================= */
+
+.status {
+  padding: 7px 14px;
+  border-radius: 20px;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.active {
+  background-color: #dff5e5;
+  color: #218838;
+}
+
+.delayed {
+  background-color: #fff2cc;
+  color: #9a6700;
+}
+
+.completed {
+  background-color: #dceeff;
+  color: #0969da;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card {
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 20px;
+}
+
+/* =========================
+   PROJECT INFORMATION
+========================= */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+}
+
+.grid .fieldLabel {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.grid p {
+  font-weight: 500;
+  margin: 0;
+}
+
+/* =========================
+   LOADING AND ERROR
+========================= */
+
+.message {
+  padding: 40px;
+  text-align: center;
+}
+
+/* =========================
+   LIGHT MODE
+========================= */
+
+.light {
+  background-color: var(--background-color, #f5f6fa);
+  color: #333;
+}
+
+.light .header h1,
+.light .card h2 {
+  color: #333;
+}
+
+.light .header p,
+.light .grid .fieldLabel {
+  color: #666;
+}
+
+.light .card {
+  background-color: #fff;
+  color: #333;
+}
+
+.light .card p,
+.light .grid p {
+  color: #333;
+}
+
+.light .backButton {
+  background-color: #fff;
+  color: #333;
+  border-color: #aaa;
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+.dark {
+  background-color: #1b2a41;
+  color: #f5f7fa;
+}
+
+.dark .header h1,
+.dark .card h2 {
+  color: #3498db;
+}
+
+.dark .header p,
+.dark .grid .fieldLabel {
+  color: #b8c7d9;
+}
+
+.dark .card {
+  background-color: #243752;
+  color: #f5f7fa;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+}
+
+.dark .card p,
+.dark .grid p {
+  color: #f5f7fa;
+}
+
+.dark .message {
+  color: #f5f7fa;
+}
+
+/* Dark mode button */
+.dark .backButton {
+  background-color: #243752;
+  color: #f5f7fa;
+  border-color: #3498db;
+}
+
+/* Dark mode status badges */
+.dark .active {
+  background-color: #194d35;
+  color: #86efac;
+}
+
+.dark .delayed {
+  background-color: #59451b;
+  color: #fcd34d;
+}
+
+.dark .completed {
+  background-color: #1e4168;
+  color: #93c5fd;
+}
+
+/* =========================
+   BUTTON HOVER STATES
+========================= */
+
+.light .backButton:hover {
+  background-color: #e9ecef;
+}
+
+.dark .backButton:hover {
+  background-color: #304b6b;
+  border-color: #5dade2;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (width <= 600px) {
+  .page {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+}
