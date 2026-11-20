@@ -734,6 +734,63 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
     setItems(currentItems => currentItems.filter(item => item.id !== itemId));
   };
 
+  const validateItem = (item, index) => {
+    const itemNumber = index + 1;
+    const quantity = Number(item.quantity);
+    const unitPrice = Number(item.unitPrice);
+
+    if (!item.name.trim()) {
+      toast.error(`Please enter an item name for item ${itemNumber}.`);
+      return false;
+    }
+
+    if (item.quantity === '') {
+      toast.error(`Please enter a quantity for item ${itemNumber}.`);
+      return false;
+    }
+
+    if (item.unitPrice === '') {
+      toast.error(`Please enter a unit price for item ${itemNumber}.`);
+      return false;
+    }
+
+    if (
+      !Number.isFinite(quantity) ||
+      !Number.isInteger(quantity) ||
+      quantity < 1 ||
+      quantity > MAX_QUANTITY
+    ) {
+      toast.error(
+        `Quantity for item ${itemNumber} must be a whole number between 1 and ${MAX_QUANTITY}.`,
+      );
+      return false;
+    }
+
+    if (!Number.isFinite(unitPrice) || unitPrice < 0 || unitPrice > MAX_UNIT_PRICE) {
+      toast.error(`Unit price for item ${itemNumber} must be between $0 and $${MAX_UNIT_PRICE}.`);
+      return false;
+    }
+
+    const decimalPlaces = item.unitPrice.includes('.') ? item.unitPrice.split('.')[1].length : 0;
+
+    if (decimalPlaces > 2) {
+      toast.error(`Unit price for item ${itemNumber} cannot have more than 2 decimal places.`);
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateItems = items => {
+    for (let index = 0; index < items.length; index += 1) {
+      if (!validateItem(items[index], index)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = () => {
     if (!supplierId || !orderDate || !deliveryDate) {
       toast.error('Please fill in all required fields.');
@@ -750,73 +807,8 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
       return;
     }
 
-    /*
-     * Validate every item instead of filtering invalid items out.
-     *
-     * This prevents an invalid row from silently disappearing from
-     * the submitted order.
-     */
-    for (let index = 0; index < items.length; index += 1) {
-      const item = items[index];
-      const itemNumber = index + 1;
-
-      if (!item.name.trim()) {
-        toast.error(`Please enter an item name for item ${itemNumber}.`);
-        return;
-      }
-
-      if (item.quantity === '') {
-        toast.error(`Please enter a quantity for item ${itemNumber}.`);
-        return;
-      }
-
-      if (item.unitPrice === '') {
-        toast.error(`Please enter a unit price for item ${itemNumber}.`);
-        return;
-      }
-
-      const quantity = Number(item.quantity);
-      const unitPrice = Number(item.unitPrice);
-
-      /*
-       * Quantity validation:
-       * - Must be a finite number
-       * - Must be a whole number
-       * - Must be at least 1
-       * - Must not exceed MAX_QUANTITY
-       */
-      if (
-        !Number.isFinite(quantity) ||
-        !Number.isInteger(quantity) ||
-        quantity < 1 ||
-        quantity > MAX_QUANTITY
-      ) {
-        toast.error(
-          `Quantity for item ${itemNumber} must be a whole number between 1 and ${MAX_QUANTITY}.`,
-        );
-        return;
-      }
-
-      /*
-       * Unit price validation:
-       * - Must be a finite number
-       * - Must not be negative
-       * - Must not exceed MAX_UNIT_PRICE
-       */
-      if (!Number.isFinite(unitPrice) || unitPrice < 0 || unitPrice > MAX_UNIT_PRICE) {
-        toast.error(`Unit price for item ${itemNumber} must be between $0 and $${MAX_UNIT_PRICE}.`);
-        return;
-      }
-
-      /*
-       * Limit unit price to two decimal places.
-       */
-      const decimalPlaces = item.unitPrice.includes('.') ? item.unitPrice.split('.')[1].length : 0;
-
-      if (decimalPlaces > 2) {
-        toast.error(`Unit price for item ${itemNumber} cannot have more than 2 decimal places.`);
-        return;
-      }
+    if (!validateItems(items)) {
+      return;
     }
 
     const validItems = items.map(item => ({
@@ -1032,6 +1024,7 @@ function OrdersPage() {
       setOrders(Array.isArray(orderRes.data) ? orderRes.data : []);
       setSupplierList(Array.isArray(supplierRes.data) ? supplierRes.data : []);
     } catch (error) {
+      // Display a user-friendly message without exposing internal error details.
       toast.error('Failed to load orders.');
     } finally {
       setLoading(false);

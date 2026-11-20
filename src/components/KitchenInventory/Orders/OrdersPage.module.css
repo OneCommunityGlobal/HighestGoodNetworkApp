@@ -799,9 +799,9 @@
 }
 
 .containerDark .addItemBtn:hover {
-  background-color: #4caf50;
+  background-color: #2e7d32;
   color: #fff;
-  border-color: #4caf50;
+  border-color: #2e7d32;
 }
 
 .removeItemBtn {
@@ -1076,9 +1076,6 @@
   border-radius: 8px;
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   padding: 20px;
-  transition:
-    box-shadow 0.2s,
-    transform 0.2s;
   min-width: 0;
 }
 
@@ -1671,5 +1668,13 @@
   .tab {
     padding: 12px;
     flex-shrink: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .supplierCard {
+    transition:
+      box-shadow 0.2s,
+      transform 0.2s;
   }
 }
