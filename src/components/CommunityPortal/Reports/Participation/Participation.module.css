@@ -687,15 +687,68 @@
   color: #fff;
 }
 
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  background: rgb(0 0 0 / 60%);
+}
+
+.modal {
+  width: min(100%, 520px);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 24px;
+  color: #212529;
+  background: #fff;
+  border: 1px solid #d8dee4;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 30%);
+}
+
+.modalDark {
+  color: #fff !important;
+  background: #1c2940;
+  border-color: #52647a;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .modalTitle {
   margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.3;
 }
 
 .modalClose {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border: none;
+  border-radius: 6px;
   background: transparent;
-  font-size: 22px;
+  color: inherit;
+  font-size: 28px;
+  line-height: 1;
   cursor: pointer;
+}
+
+.modalClose:hover,
+.modalClose:focus-visible {
+  background: rgb(127 127 127 / 20%);
+  outline: 2px solid #2684ff;
+  outline-offset: 2px;
 }
 
 .modalBody {
@@ -739,6 +792,55 @@
 .exportOptionsButtons:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.exportOptionsButtonsDark {
+  flex: 1;
+  padding: 10px 12px;
+  color: #fff !important;
+  background: #304966;
+  border: 1px solid #71839a;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.exportOptionsButtonsDark:hover,
+.exportOptionsButtonsDark:focus-visible {
+  color: #fff !important;
+  background: #3d5b7d;
+  outline: 2px solid #6eb4ff;
+  outline-offset: 2px;
+}
+
+.exportOptionsButtonsDark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (width <= 576px) {
+  .modalOverlay {
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .modal {
+    width: 100%;
+    max-height: calc(100dvh - 24px);
+    padding: 20px;
+  }
+
+  .modalTitle {
+    font-size: 1.25rem;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .exportOptionsButtons,
+  .exportOptionsButtonsDark {
+    width: 100%;
+  }
 }
 
 /* Use :global for data attributes and print styles */

@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import { Tooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,9 +19,29 @@ function NoShowInsights() {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
   const insightsRef = useRef(null);
+  const exportCloseButtonRef = useRef(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportError, setExportError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+
+  useEffect(() => {
+    if (!isExportOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    exportCloseButtonRef.current?.focus();
+
+    const handleEscape = event => {
+      if (event.key === 'Escape' && !isExporting) setIsExportOpen(false);
+    };
+
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isExportOpen, isExporting]);
 
   const handleSortClick = () => {
     setSortOrder(prev => {
@@ -199,75 +220,79 @@ function NoShowInsights() {
 
   return (
     <>
-      {isExportOpen && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => !isExporting && setIsExportOpen(false)}
-          onKeyDown={() => !isExporting && setIsExportOpen(false)}
-          role="button"
-          tabIndex={0}
-        >
+      {isExportOpen &&
+        createPortal(
           <div
-            className={`${styles.modal} ${darkMode ? styles.modalDark : ''}`}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => e.stopPropagation()}
-            role="button"
-            tabIndex={0}
+            className={styles.modalOverlay}
+            onClick={event => {
+              if (event.target === event.currentTarget && !isExporting) setIsExportOpen(false);
+            }}
+            role="presentation"
           >
-            <div className={styles.modalHeader}>
-              <h4 className={styles.modalTitle}>Export No-show Insights</h4>
-              <button
-                type="button"
-                className={styles.modalClose}
-                onClick={() => !isExporting && setIsExportOpen(false)}
-                aria-label="Close export modal"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className={styles.modalBody}>
-              <div className={styles.modalMeta}>
-                <div>
-                  <strong>Scope:</strong> {scopeFilter}
-                </div>
-                <div>
-                  <strong>Filter:</strong> {dateFilter}
-                </div>
-                <div>
-                  <strong>View:</strong> {activeTab}
-                </div>
-              </div>
-
-              {exportError && <div className={styles.modalError}>{exportError}</div>}
-
-              <div className={styles.modalActions}>
+            <div
+              className={`${styles.modal} ${darkMode ? styles.modalDark : ''}`}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="no-show-export-title"
+            >
+              <div className={styles.modalHeader}>
+                <h4 id="no-show-export-title" className={styles.modalTitle}>
+                  Export No-show Insights
+                </h4>
                 <button
+                  ref={exportCloseButtonRef}
                   type="button"
-                  className={`${
-                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
-                  }`}
-                  onClick={handleDownloadPdf}
-                  disabled={isExporting}
+                  className={styles.modalClose}
+                  onClick={() => !isExporting && setIsExportOpen(false)}
+                  aria-label="Close export modal"
                 >
-                  {isExporting ? 'Working…' : 'Download PDF'}
-                </button>
-
-                <button
-                  type="button"
-                  className={`${
-                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
-                  }`}
-                  onClick={handleSharePdf}
-                  disabled={isExporting}
-                >
-                  {isExporting ? 'Working…' : 'Share PDF'}
+                  ×
                 </button>
               </div>
+
+              <div className={styles.modalBody}>
+                <div className={styles.modalMeta}>
+                  <div>
+                    <strong>Scope:</strong> {scopeFilter}
+                  </div>
+                  <div>
+                    <strong>Filter:</strong> {dateFilter}
+                  </div>
+                  <div>
+                    <strong>View:</strong> {activeTab}
+                  </div>
+                </div>
+
+                {exportError && <div className={styles.modalError}>{exportError}</div>}
+
+                <div className={styles.modalActions}>
+                  <button
+                    type="button"
+                    className={`${
+                      darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
+                    }`}
+                    onClick={handleDownloadPdf}
+                    disabled={isExporting}
+                  >
+                    {isExporting ? 'Working…' : 'Download PDF'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`${
+                      darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
+                    }`}
+                    onClick={handleSharePdf}
+                    disabled={isExporting}
+                  >
+                    {isExporting ? 'Working…' : 'Share PDF'}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
       <div
         ref={insightsRef}
         className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}
