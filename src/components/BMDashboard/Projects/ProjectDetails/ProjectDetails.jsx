@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
-import { LoggingButtons, AddItemButtons, TeamButtons } from './LogBar';
+import { LoggingButtons, AddItemButtons, TeamButtons, BudgetButtons } from './LogBar';
 import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
 import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
@@ -116,6 +116,13 @@ function ProjectDetails() {
           {/* --------------------------- */}
           <DashboardSection icon="👥" title="Team" darkMode={darkMode}>
             <TeamButtons projectId={projectId} darkMode={darkMode} />
+          </DashboardSection>
+
+          {/* --------------------------- */}
+          {/*          BUDGET             */}
+          {/* --------------------------- */}
+          <DashboardSection icon="💰" title="Budget" darkMode={darkMode}>
+            <BudgetButtons projectId={projectId} />
           </DashboardSection>
 
           {/* TOOLS + MATERIALS ROW */}

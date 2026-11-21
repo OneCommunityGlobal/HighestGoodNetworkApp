@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
+import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import ExpenditureChart from './ExpenditureChart';
 import styles from './ExpenditureCard.module.css';
 import PropTypes from 'prop-types';
 
 function useProjectList() {
-  const [projectList, setProjectList] = useState([]);
+  const dispatch = useDispatch();
+  const bmProjects = useSelector(state => state.bmProjects);
+  const [projectIds, setProjectIds] = useState([]);
   const [selectedProject, setSelectedProject] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,14 +24,9 @@ function useProjectList() {
       .get(ENDPOINTS.BM_EXPENDITURE_PROJECTS)
       .then(({ data }) => {
         if (cancelled) return;
-        const labeled = Array.isArray(data)
-          ? data.map((id, index) => ({
-              id,
-              name: `Project ${String.fromCodePoint(65 + index)}`,
-            }))
-          : [];
-        setProjectList(labeled);
-        if (labeled.length > 0) setSelectedProject(labeled[0].id);
+        const ids = Array.isArray(data) ? data.map(String) : [];
+        setProjectIds(ids);
+        if (ids.length > 0) setSelectedProject(ids[0]);
       })
       .catch(err => {
         if (!cancelled) {
@@ -42,6 +41,21 @@ function useProjectList() {
       cancelled = true;
     };
   }, []);
+
+  // Project names come from the BM project list; load it if no other card has yet
+  const hasProjectNames = Array.isArray(bmProjects) && bmProjects.length > 0;
+  useEffect(() => {
+    if (!hasProjectNames) dispatch(fetchBMProjects());
+  }, [dispatch, hasProjectNames]);
+
+  // Show real project names; fall back to "Project A/B/…" for ids without a known name
+  const projectList = useMemo(() => {
+    const names = new Map((bmProjects || []).map(p => [String(p._id), p.name]));
+    return projectIds.map((id, index) => ({
+      id,
+      name: names.get(id) || `Project ${String.fromCodePoint(65 + index)}`,
+    }));
+  }, [projectIds, bmProjects]);
 
   return { projectList, selectedProject, setSelectedProject, loading, error };
 }
