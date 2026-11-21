@@ -2,6 +2,7 @@ import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styles from './ProjectDetails.module.css';
+import { BUDGET_EDITOR_ROLES } from '../ProjectBudget/projectBudgetUtils';
 
 /* --------------------------------------------
     STYLED BUTTON WRAPPER
@@ -77,6 +78,18 @@ export const TeamButtons = ({ projectId }) => {
         View Issues
       </Btn>
     </>
+  );
+};
+
+/* --------------------------------------------
+    4️⃣ BUDGET BUTTON
+--------------------------------------------- */
+export const BudgetButtons = ({ projectId }) => {
+  const role = useSelector(state => state.auth?.user?.role);
+  return (
+    <Btn to={`/bmdashboard/projects/${projectId}/budget`} color="gold">
+      {BUDGET_EDITOR_ROLES.includes(role) ? 'Set Budget' : 'View Budget'}
+    </Btn>
   );
 };
 
