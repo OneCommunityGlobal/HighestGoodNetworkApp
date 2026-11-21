@@ -649,14 +649,16 @@ function CommunityCalendar() {
     [eventCountByDate, selectedDate],
   );
 
-  const uniqueFilterValues = useMemo(
-    () => ({
-      types: [...new Set(mappedEvents.map(e => e.type))],
-      locations: [...new Set(mappedEvents.map(e => e.location))],
-      statuses: [...new Set(mappedEvents.map(e => e.status))],
-    }),
-    [mappedEvents],
-  );
+  const uniqueFilterValues = useMemo(() => {
+    // Hide blank values (e.g. an event with an empty location) so the
+    // filter lists don't show an empty choice.
+    const unique = values => [...new Set(values.filter(v => String(v ?? '').trim().length > 0))];
+    return {
+      types: unique(mappedEvents.map(e => e.type)),
+      locations: unique(mappedEvents.map(e => e.location)),
+      statuses: unique(mappedEvents.map(e => e.status)),
+    };
+  }, [mappedEvents]);
 
   const calendarClasses = useMemo(
     () => ({
@@ -775,41 +777,53 @@ function CommunityCalendar() {
         <h1>Community Calendar</h1>
 
         <div className={calendarClasses.filters}>
-          <select
-            className={calendarClasses.select}
-            value={filter.type}
-            onChange={handleFilterChange('type')}
-          >
-            <option value="all">All Types</option>
+          <div className={styles.filterField}>
+            <FontAwesomeIcon icon={faTag} className={styles.filterIcon} />
+            <select
+              className={`${calendarClasses.select} ${styles.filterSelectWithIcon}`}
+              aria-label="Filter by type"
+              value={filter.type}
+              onChange={handleFilterChange('type')}
+            >
+              <option value="all">All Types</option>
 
-            {uniqueFilterValues.types.map(t => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
+              {uniqueFilterValues.types.map(t => (
+                <option key={t}>{t}</option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            className={calendarClasses.select}
-            value={filter.location}
-            onChange={handleFilterChange('location')}
-          >
-            <option value="all">All Locations</option>
+          <div className={styles.filterField}>
+            <FontAwesomeIcon icon={faLocationDot} className={styles.filterIcon} />
+            <select
+              className={`${calendarClasses.select} ${styles.filterSelectWithIcon}`}
+              aria-label="Filter by location"
+              value={filter.location}
+              onChange={handleFilterChange('location')}
+            >
+              <option value="all">All Locations</option>
 
-            {uniqueFilterValues.locations.map(l => (
-              <option key={l}>{l}</option>
-            ))}
-          </select>
+              {uniqueFilterValues.locations.map(l => (
+                <option key={l}>{l}</option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            className={calendarClasses.select}
-            value={filter.status}
-            onChange={handleFilterChange('status')}
-          >
-            <option value="all">All Statuses</option>
+          <div className={styles.filterField}>
+            <FontAwesomeIcon icon={faCircleCheck} className={styles.filterIcon} />
+            <select
+              className={`${calendarClasses.select} ${styles.filterSelectWithIcon}`}
+              aria-label="Filter by status"
+              value={filter.status}
+              onChange={handleFilterChange('status')}
+            >
+              <option value="all">All Statuses</option>
 
-            {uniqueFilterValues.statuses.map(s => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
+              {uniqueFilterValues.statuses.map(s => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </header>
 
