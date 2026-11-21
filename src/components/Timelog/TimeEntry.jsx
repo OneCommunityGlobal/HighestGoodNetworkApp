@@ -77,13 +77,12 @@ function TimeEntry(props) {
   // permission to delete any time entry on their own time logs tab
   const canDeleteOwn = dispatch(hasPermission(permissions.deleteTimeEntryOwn));
 
-  // permission to delete any time entry, except protected accounts' entries
-  const canDeleteAny =
-    dispatch(hasPermission(permissions.deleteTimeEntry)) && !cantEditJaeRelatedRecord;
+  // permission to delete any time entry
+  const canDeleteAny = dispatch(hasPermission(permissions.deleteTimeEntry));
 
-  // condition for allowing delete in delete model
+  // condition for allowing delete in delete model, never on protected accounts' entries
   // default permission: delete own sameday tangible entry = isAuthUserAndSameDayEntry
-  const canDelete = canDeleteOther || canDeleteOwn || canDeleteAny;
+  const canDelete = (canDeleteOther || canDeleteOwn || canDeleteAny) && !cantEditJaeRelatedRecord;
 
   const toggleTangibility = async () => {
     setIsProcessing(true);
