@@ -1,4 +1,5 @@
 /* stylelint-disable */
+/* Version 1.0.0 */
 .returned-late-chart {
   padding: 20px;
 
@@ -53,7 +54,8 @@
   background: #fff;
   color: inherit;
   cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .returned-late-legend-item:hover {
@@ -195,16 +197,6 @@
   color: #e0e0e0;
 }
 
-/* Tools filter stays disabled until a project is picked */
-.returned-late-tools-select-disabled {
-  opacity: 0.55;
-}
-
-.returned-late-tools-select-disabled :global(.dropdown-container),
-.returned-late-tools-select-disabled :global(.dropdown-heading) {
-  cursor: not-allowed;
-}
-
 /* Options are <label>s, so the app-wide label margin/bold leaked in as gaps between rows */
 .returned-late-tools-select :global(.select-item) {
   margin: 0;
@@ -267,7 +259,6 @@
   color: #ffffff;
 }
 
-
 .bg-oxford-blue .returned-late-date-picker {
   background-color: #1b2a41 !important;
   color: #e0e0e0 !important;
@@ -296,7 +287,6 @@
   background-color: #1b2a41 !important;
   color: #e0e0e0 !important;
   border: 1px solid #555555 !important;
-
 }
 
 .bg-oxford-blue :global(.ant-select-selection-item) {
@@ -315,18 +305,17 @@
   color: #e0e0e0 !important;
 }
 
-
-.dark-dropdown-menu :global(.ant-select-item-option-active):not(:global(.ant-select-item-option-disabled)) {
+.dark-dropdown-menu
+  :global(.ant-select-item-option-active):not(:global(.ant-select-item-option-disabled)) {
   background-color: #2c3e50 !important;
 }
 
-
-.dark-dropdown-menu :global(.ant-select-item-option-selected):not(:global(.ant-select-item-option-disabled)) {
+.dark-dropdown-menu
+  :global(.ant-select-item-option-selected):not(:global(.ant-select-item-option-disabled)) {
   background-color: #374151 !important;
   color: #ffffff !important;
   font-weight: 600;
 }
-
 
 .dark-dropdown-menu :global(.ant-select-empty) {
   color: #374151 !important;
