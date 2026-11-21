@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
-import { MapUtils } from '../components/BMDashboard/InteractiveMap/MapSharedComponents';
 
 export function useProjectsData() {
   const [orgs, setOrgs] = useState([]);
@@ -10,28 +9,17 @@ export function useProjectsData() {
 
   const fetchOrgs = async () => {
     try {
-      let response;
-      try {
-        response = await axios.get(ENDPOINTS.BM_PROJECTS_WITH_LOCATION);
-      } catch (projectError) {
-        console.log('Projects with location endpoint not available, using organization data');
-        response = await axios.get(ENDPOINTS.BM_ORGS_WITH_LOCATION);
-      }
-
-      const data = response.data.data || [];
-
-      if (data.length === 0) {
-        console.log('No data from backend, using pseudo data');
-        const pseudoData = MapUtils.getPseudoOrgs();
-        setOrgs(pseudoData);
-      } else {
-        setOrgs(data);
-      }
+      // Project locations come from the orgs endpoint. The backend has no
+      // /bm/projects/location route (projects have no coordinates), so calling
+      // it first only produced a 404 in the console on every load.
+      const response = await axios.get(ENDPOINTS.BM_ORGS_WITH_LOCATION);
+      const data = Array.isArray(response.data?.data) ? response.data.data : [];
+      setOrgs(data);
       return data;
     } catch (error) {
       console.error('Error fetching project/org data:', error);
-      const pseudoData = MapUtils.getPseudoOrgs();
-      setOrgs(pseudoData);
+      // Show an accurate empty map instead of sample projects when loading fails.
+      setOrgs([]);
       return [];
     } finally {
       setLoading(false);
