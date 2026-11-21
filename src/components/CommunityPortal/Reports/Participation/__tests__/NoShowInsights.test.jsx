@@ -4,7 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { expect, vi, describe, it } from 'vitest';
 import NoShowInsights from '../NoShowInsights';
 
-// Two "mine" (even id) events today with different demographics
+// Three "mine" (even id) events today; the last one has no no-show rate
 vi.mock('../mockData', () => ({
   default: [
     {
@@ -27,6 +27,15 @@ vi.mock('../mockData', () => ({
       ageGroup: '50+',
       gender: 'Female',
     },
+    {
+      id: 6,
+      eventType: 'Art Class',
+      eventDate: new Date().toISOString(),
+      eventTime: '4:00 PM',
+      location: 'Denver',
+      ageGroup: '50+',
+      gender: 'Female',
+    },
   ],
 }));
 
@@ -39,20 +48,32 @@ const renderWithStore = () => {
   );
 };
 
+const TAB_NAMES = ['Demographics', 'Event type', 'Time', 'Location'];
+
 describe('NoShowInsights', () => {
-  it('shows Demographics as the first of the four tabs', () => {
+  it('lists Demographics first of the four tabs', () => {
     renderWithStore();
-    const tabs = ['Demographics', 'Event type', 'Time', 'Location'].map(name =>
-      screen.getByRole('button', { name }),
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs.map(tab => tab.textContent.trim())).toEqual(TAB_NAMES);
+  });
+
+  it('opens on Event type, not Demographics', () => {
+    renderWithStore();
+    expect(screen.getByRole('tab', { name: 'Event type' })).toHaveAttribute(
+      'aria-selected',
+      'true',
     );
-    // Each tab follows the previous one in the document
-    tabs.slice(1).forEach((tab, i) => {
-      expect(tabs[i].compareDocumentPosition(tab) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    });
+    expect(screen.getByRole('tab', { name: 'Demographics' })).toHaveAttribute(
+      'aria-selected',
+      'false',
+    );
+    expect(screen.queryByLabelText('Demographic breakdown')).not.toBeInTheDocument();
+    expect(screen.getByText('Yoga Class')).toBeInTheDocument();
   });
 
   it('groups no-show rates by the chosen demographic', () => {
     renderWithStore();
+    fireEvent.click(screen.getByRole('tab', { name: 'Demographics' }));
     expect(screen.getByText('18-25')).toBeInTheDocument();
     expect(screen.getByText('50+')).toBeInTheDocument();
 
@@ -60,13 +81,23 @@ describe('NoShowInsights', () => {
       target: { value: 'Gender' },
     });
     expect(screen.getByText('Female')).toBeInTheDocument();
+    // The event without a rate is left out of the average
     expect(screen.getByText('40%')).toBeInTheDocument();
+  });
+
+  it('never shows NaN% for an event without a no-show rate', () => {
+    renderWithStore();
+    fireEvent.click(screen.getByRole('tab', { name: 'Location' }));
+    expect(screen.getByText('Austin')).toBeInTheDocument();
+    expect(screen.queryByText('Denver')).not.toBeInTheDocument();
+    expect(screen.queryByText(/NaN/)).not.toBeInTheDocument();
   });
 
   it('hides the demographic selector on other tabs', () => {
     renderWithStore();
-    fireEvent.click(screen.getByRole('button', { name: 'Location' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Demographics' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Location' }));
     expect(screen.queryByLabelText('Demographic breakdown')).not.toBeInTheDocument();
-    expect(screen.getByText('Austin')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Location' })).toHaveAttribute('aria-selected', 'true');
   });
 });

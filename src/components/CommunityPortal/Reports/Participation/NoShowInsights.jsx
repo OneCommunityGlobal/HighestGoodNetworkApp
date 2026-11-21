@@ -12,6 +12,8 @@ import tabStyles from './NoShowInsights.module.css';
 import { filterEventsByDate } from './FilterByDate';
 
 const INSIGHT_TABS = ['Demographics', 'Event type', 'Time', 'Location'];
+// Demographics stays out of the default until it is backed by real data
+const DEFAULT_TAB = 'Event type';
 
 // Demographic breakdown -> field on each event
 const DEMOGRAPHIC_FIELDS = {
@@ -55,9 +57,10 @@ const calculateStats = (events, activeTab, demographicType) => {
 
   events.forEach(event => {
     const key = getInsightKey(event, activeTab, demographicType);
-    if (!key) return;
+    // Skip events without a usable rate so they cannot turn the average into NaN%
+    const percentage = Number.parseInt(event.noShowRate, 10);
+    if (!key || Number.isNaN(percentage)) return;
 
-    const percentage = parseInt(event.noShowRate, 10);
     const existing = statsMap.get(key) || { totalPercentage: 0, count: 0 };
     statsMap.set(key, {
       totalPercentage: existing.totalPercentage + percentage,
@@ -74,7 +77,7 @@ const calculateStats = (events, activeTab, demographicType) => {
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('This Week');
   const [scopeFilter, setScopeFilter] = useState('My Event');
-  const [activeTab, setActiveTab] = useState(INSIGHT_TABS[0]);
+  const [activeTab, setActiveTab] = useState(DEFAULT_TAB);
   const [demographicType, setDemographicType] = useState('Age');
   const [sortOrder, setSortOrder] = useState('none');
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -324,9 +327,8 @@ function NoShowInsights() {
               {getTooltipContent()}
             </Tooltip>
           </div>
-          <div
-            className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
-          >
+          {/* Dark mode for these selects comes from .insightsDark .insightsFilters */}
+          <div className={styles.insightsFilters}>
             <select value={scopeFilter} onChange={e => setScopeFilter(e.target.value)}>
               <option value="My Event">My Event</option>
               <option value="All Events">All Events</option>
@@ -348,11 +350,15 @@ function NoShowInsights() {
             className={`${styles.insightsTabs} ${tabStyles.tabsFit} ${
               darkMode ? styles.insightsTabsDarkMode : ''
             }`}
+            role="tablist"
+            aria-label="No-show insight views"
           >
             {INSIGHT_TABS.map(tab => (
               <button
                 key={tab}
                 type="button"
+                role="tab"
+                aria-selected={activeTab === tab}
                 className={`
                 ${styles.insightsTab} ${tabStyles.tabFit}
                 ${darkMode ? styles.insightsTabDarkMode : ''} 
@@ -389,11 +395,7 @@ function NoShowInsights() {
         </div>
 
         {activeTab === 'Demographics' && (
-          <div
-            className={`${styles.insightsFilters} ${tabStyles.demographicSelect} ${
-              darkMode ? styles.insightsFiltersDark : ''
-            }`}
-          >
+          <div className={`${styles.insightsFilters} ${tabStyles.demographicSelect}`}>
             <select
               aria-label="Demographic breakdown"
               value={demographicType}
