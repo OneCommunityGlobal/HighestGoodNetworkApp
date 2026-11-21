@@ -41,6 +41,8 @@ import { boxStyleDark } from '../../styles';
 import '../Header/index.module.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.module.css';
 import { ENDPOINTS } from '~/utils/URL';
+import IncompleteQuestionnaireIndicator from '../common/IncompleteQuestionnaireIndicator';
+import { fetchCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -134,6 +136,26 @@ function LeaderBoard({
 
   const [isDisplayAlert, setIsDisplayAlert] = useState(false);
   const [stateOrganizationData, setStateOrganizationData] = useState(organizationData);
+  // Keep this null until the request succeeds so an unavailable status never
+  // incorrectly marks every leaderboard user as incomplete.
+  const [completedQuestionnaireUserIds, setCompletedQuestionnaireUserIds] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchCompletedQuestionnaireUserIds()
+      .then(userIds => {
+        if (!cancelled) setCompletedQuestionnaireUserIds(userIds);
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load questionnaire completion status', error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const refTeam = useRef([]);
   const refInput = useRef('');
@@ -972,6 +994,14 @@ function LeaderBoard({
                         >
                           {item.name}
                         </Link>
+                        {completedQuestionnaireUserIds &&
+                          item.personId != null &&
+                          !completedQuestionnaireUserIds.has(item.personId.toString()) && (
+                            <IncompleteQuestionnaireIndicator
+                              id={item.personId.toString()}
+                              className="mr-2"
+                            />
+                          )}
                         {isAllowedOtherThanOwner || isOwner || item.personId === userId
                           ? timeOffIndicator(item.personId)
                           : null}

@@ -4,13 +4,18 @@ vi.mock('../../../actions/leaderBoardData', () => ({
 }));
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import mockAdminState from '../../../__tests__/mockAdminState';
 import Leaderboard from '../Leaderboard';
 import { MemoryRouter } from 'react-router-dom';
+import { fetchCompletedQuestionnaireUserIds } from '../../../utils/questionnaireCompletion';
+
+vi.mock('../../../utils/questionnaireCompletion', () => ({
+  fetchCompletedQuestionnaireUserIds: vi.fn(),
+}));
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -49,6 +54,7 @@ describe('Leaderboard page structure', () => {
   beforeEach(() => {
     store = mockStore(mockState);
     store.dispatch = vi.fn().mockImplementation(() => ({ type: 'MOCKED_ACTION' }));
+    fetchCompletedQuestionnaireUserIds.mockResolvedValue(new Set());
 
     props = {
       ...mockAdminState,
@@ -145,5 +151,30 @@ describe('Leaderboard page structure', () => {
     const timeValue = screen.getByTitle('Tangible + Intangible time = Total time');
     expect(timeValue).toBeInTheDocument();
     expect(timeValue.textContent).toContain('0.00');
+  });
+
+  it('shows the incomplete questionnaire indicator beside users who have not completed it', async () => {
+    fetchCompletedQuestionnaireUserIds.mockResolvedValue(new Set(['1']));
+
+    renderWithProvider(<Leaderboard {...props} />);
+
+    const indicator = await screen.findByTestId('incomplete-questionnaire-indicator');
+    const janeCell = screen.getByRole('cell', { name: /Jane Smith/ });
+    const johnCell = screen.getByRole('cell', { name: /John Doe/ });
+
+    expect(indicator).toHaveAttribute('id', 'incomplete-questionnaire-2');
+    expect(within(janeCell).getByRole('link', { name: 'Jane Smith' })).toBeInTheDocument();
+    expect(within(janeCell).getByTestId('incomplete-questionnaire-indicator')).toBe(indicator);
+    expect(
+      within(johnCell).queryByTestId('incomplete-questionnaire-indicator'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not show questionnaire indicators while completion data is unavailable', () => {
+    fetchCompletedQuestionnaireUserIds.mockReturnValue(new Promise(() => {}));
+
+    renderWithProvider(<Leaderboard {...props} />);
+
+    expect(screen.queryByTestId('incomplete-questionnaire-indicator')).not.toBeInTheDocument();
   });
 });
