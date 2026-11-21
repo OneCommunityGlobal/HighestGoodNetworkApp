@@ -25,7 +25,7 @@ export default function FinancialStatButtons({ defaultProjectId, darkMode }) {
   const [totalCost, setTotalCost] = useState(null);
   const [materialCost, setMaterialCost] = useState(null);
   const [laborCost, setLaborCost] = useState(null);
-  const [equipmentCost, setEquipmentCost] = useState(null);
+  const [toolsCost, setToolsCost] = useState(null);
   const [mom, setMom] = useState(null);
   const [plannedBudget, setPlannedBudget] = useState(null);
 
@@ -146,7 +146,7 @@ export default function FinancialStatButtons({ defaultProjectId, darkMode }) {
         setTotalCost(totalRes?.data?.totalCost ?? null);
         setMaterialCost(breakdownRes?.data?.materialsCost ?? null);
         setLaborCost(breakdownRes?.data?.laborCost ?? null);
-        setEquipmentCost(breakdownRes?.data?.equipmentCost ?? null);
+        setToolsCost(breakdownRes?.data?.toolsCost ?? null);
         setMom(momRes?.data ?? null);
         // Fetch planned budget for over-budget detection
         try {
@@ -255,11 +255,11 @@ export default function FinancialStatButtons({ defaultProjectId, darkMode }) {
 
           <button
             type="button"
-            className={`${styles.kpiButton} ${styles.equipmentCost}`}
-            aria-label="Equipment Cost"
+            className={`${styles.kpiButton} ${styles.toolsCost}`}
+            aria-label="Tools Cost"
           >
-            <span className={styles.label}>Equipment Cost</span>
-            <span className={styles.value}>{formatCurrency(equipmentCost)}</span>
+            <span className={styles.label}>Tools Cost</span>
+            <span className={styles.value}>{formatCurrency(toolsCost)}</span>
 
             {mom?.equipmentCostChange !== undefined && (
               <span className={styles.subtext}>
