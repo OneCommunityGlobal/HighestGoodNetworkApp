@@ -48,6 +48,7 @@ import {
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   DASHBOARD,
   JOB_ANALYTICS_REPORT,
+  JOB_APPLICATION_ANALYTICS,
   LOGOUT,
   OTHER_LINKS,
   PERMISSIONS_MANAGEMENT,
@@ -218,6 +219,9 @@ export function Header(props) {
   const canAccessBlueSquareEmailManagement = props.hasPermission(
     permissions.resendBlueSquareAndSummaryEmails,
     !isAuthUser,
+  );
+  const canAccessJobApplicationAnalytics = ['Owner', 'Administrator'].includes(
+    props.auth.user.role,
   );
   const canAccessPRDashboard = props.hasPermission(RoutePermissions.prDashboard, !isAuthUser);
 
@@ -835,7 +839,7 @@ export function Header(props) {
                   </NavItem>
                 )}
 
-                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
+                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement || canAccessJobApplicationAnalytics) && (
                   <UncontrolledDropdown
                     nav
                     inNavbar
@@ -876,6 +880,16 @@ export function Header(props) {
                       )}
                       {canAccessBlueSquareEmailManagement && (
                         <DropdownItem tag={Link} to="/bluesquare-email-management" className={fontColor} disabled={headerDisabled}>{BLUE_SQUARE_EMAIL_MANAGEMENT}</DropdownItem>
+                      )}
+                      {canAccessJobApplicationAnalytics && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/job-application-analytics"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {JOB_APPLICATION_ANALYTICS}
+                        </DropdownItem>
                       )}
 
                       {/* ── BM Dashboard Section ── */}
