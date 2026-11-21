@@ -279,6 +279,9 @@ const ProjectTeams = lazy(() =>
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
+const ProjectBudgetForm = lazy(() =>
+  import('./components/BMDashboard/Projects/ProjectBudget/ProjectBudgetForm'),
+);
 const UpdateMaterialsBulk = lazy(() =>
   import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
 );
@@ -788,6 +791,11 @@ export default (
           path="/bmdashboard/projects/:projectId/teams"
           fallback
           component={ProjectTeams}
+        />
+        <BMProtectedRoute
+          path="/bmdashboard/projects/:projectId/budget"
+          fallback
+          component={ProjectBudgetForm}
         />
         <BMProtectedRoute
           path="/bmdashboard/projects/:projectId"

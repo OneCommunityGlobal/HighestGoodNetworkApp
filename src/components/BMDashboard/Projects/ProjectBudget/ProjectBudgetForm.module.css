@@ -1,0 +1,215 @@
+/* stylelint-disable no-descending-specificity */
+.page {
+  min-height: 100%;
+  padding: 1.5rem 1rem 3rem;
+  background-color: #f5f7fa;
+  color: #1a1a1a;
+}
+
+.pageDark {
+  background-color: #1b2a41;
+  color: #f1f5f9;
+}
+
+.card {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.75rem 2rem 1.5rem;
+  background-color: #fff;
+  border: 1px solid #dce3ec;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 7%);
+}
+
+.cardDark {
+  background-color: #1e2a3a;
+  border-color: #3a4a5c;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0.25rem 0 1.25rem;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.sectionTitle {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.emptyState,
+.note {
+  margin: 0.5rem 0 0;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* Current budget summary */
+.summary {
+  padding: 1rem 1.25rem;
+  border: 1px solid #dce3ec;
+  border-radius: 10px;
+  background-color: #f0f6ff;
+}
+
+.cardDark .summary {
+  border-color: #3a4a5c;
+  background-color: #243447;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 1.05rem;
+}
+
+.summaryTotal strong {
+  font-size: 1.35rem;
+}
+
+.summaryList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.summaryList li {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.meta {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* Form */
+.fieldset {
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0 1rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.requiredLabel::after {
+  content: ' *';
+  color: #dc3545;
+}
+
+.total {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.error {
+  margin: 0.35rem 0 0;
+  color: #dc3545;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.toggle {
+  margin: 0.5rem 0 1rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.actions button {
+  min-width: 120px;
+  font-weight: 600;
+}
+
+.cardDark .actions {
+  border-top-color: #3a4a5c;
+}
+
+/* Keep validation feedback red even when dark mode overrides text color */
+.card :global(.invalid-feedback) {
+  color: #dc3545 !important;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.cardDark :global(input:not([type='checkbox'])) {
+  background-color: #2a3a4e !important;
+  color: #f1f5f9 !important;
+  border-color: #4b5e74 !important;
+}
+
+.cardDark :global(input::placeholder) {
+  color: #9ca3af !important;
+}
+
+.cardDark :global(input[type='date']::-webkit-calendar-picker-indicator) {
+  filter: invert(1);
+}
+
+/* History */
+.history {
+  margin-top: 1rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.tableWrapper th,
+.tableWrapper td {
+  white-space: nowrap;
+}
+
+.tableDark,
+.tableDark th,
+.tableDark td {
+  color: #f1f5f9 !important;
+  background-color: transparent !important;
+  border-color: #3a4a5c !important;
+}
+
+@media (width <= 576px) {
+  .card {
+    padding: 1.25rem 1rem;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+}
