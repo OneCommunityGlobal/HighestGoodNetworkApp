@@ -164,6 +164,7 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
               name="Planned"
               fill={!darkMode ? '#17a272' : '#1cc88a'}
               barSize={40}
+              minPointSize={6}
             >
               <LabelList dataKey="plannedCost" position="top" fill="var(--text-color)" />
             </Bar>
