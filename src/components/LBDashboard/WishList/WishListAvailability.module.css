@@ -1,0 +1,20 @@
+.card {
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+}
+
+.placeholder {
+  color: #555;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+}
+
+.placeholderDark {
+  color: #c5ced9;
+}
