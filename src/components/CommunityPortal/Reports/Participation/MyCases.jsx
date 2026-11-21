@@ -5,9 +5,30 @@ import 'react-calendar/dist/Calendar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import styles from './MyCases.module.css';
+import upcomingStyles from './UpcomingEvents.module.css';
 import { getEvents } from '../../../../actions/eventActions';
 import CreateEventModal from './CreateEventModal';
-import { filterEventsByDate } from './FilterByDate';
+import {
+  formatDayLabel,
+  getCalendarDay,
+  getCalendarDayKeys,
+  getEmptyMessage,
+  getRangeEvents,
+  getVisibleEvents,
+  isDayInFilter,
+} from './eventDayUtils';
+
+const MAX_COLLAPSED_EVENTS = 10;
+
+// Adds the dark-mode class when dark mode is on
+const withDark = (darkMode, base, dark) => (darkMode ? `${base} ${dark}` : base);
+
+// More only applies to the capped Card and List views
+const shouldShowMore = (view, eventCount, isExporting) =>
+  view !== 'calendar' && eventCount > MAX_COLLAPSED_EVENTS && !isExporting;
+
+// Card and List show which calendar day they are filtered to
+const shouldShowDayBar = (selectedDate, view) => Boolean(selectedDate) && view !== 'calendar';
 
 function MyCases() {
   const [events, setEvents] = useState([]);
@@ -15,12 +36,11 @@ function MyCases() {
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  // Day picked on the calendar; shared by all three views. null = use the dropdown range.
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
-
-  const now = new Date();
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const loadEvents = useCallback(async () => {
@@ -44,6 +64,8 @@ function MyCases() {
         eventType: event.type,
         eventDate: event.date,
         startTime: event.startTime,
+        endTime: event.endTime,
+        location: event.location,
         eventTime: new Date(event.startTime).toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
@@ -62,9 +84,30 @@ function MyCases() {
     loadEvents();
   }, [loadEvents]);
 
-  const filteredEvents = filterEventsByDate(events, filter).filter(
-    event => new Date(event.startTime).getTime() >= now.getTime(),
-  );
+  const filteredEvents = useMemo(() => getVisibleEvents(events, { filter, selectedDate }), [
+    events,
+    filter,
+    selectedDate,
+  ]);
+
+  // Events in the dropdown range; the calendar reads these so it follows the same filter
+  const rangeEvents = useMemo(() => getRangeEvents(events, { filter }), [events, filter]);
+
+  const handleFilterChange = value => {
+    setFilter(value);
+    // Keep the picked day while it is still inside the new range
+    if (selectedDate && !isDayInFilter(selectedDate, value)) {
+      setSelectedDate(null);
+    }
+    setExpanded(false);
+  };
+
+  const clearSelectedDate = () => {
+    setSelectedDate(null);
+    setExpanded(false);
+  };
+
+  const emptyMessage = getEmptyMessage(selectedDate, filter);
 
   const handleEventCreated = createdEvent => {
     if (!createdEvent) return;
@@ -78,6 +121,7 @@ function MyCases() {
         eventType: createdEvent.type || 'all',
         eventDate: new Date(eventDate).toISOString(),
         startTime: eventDate,
+        endTime: createdEvent.endTime,
         eventTime: new Date(eventDate).toLocaleString('en-US', {
           hour: 'numeric',
           minute: 'numeric',
@@ -97,36 +141,35 @@ function MyCases() {
   let visibleEvents = filteredEvents;
 
   if (!isExporting) {
-    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, 10);
+    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, MAX_COLLAPSED_EVENTS);
   }
 
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
 
-  // Memoized event cache by date for calendar
+  // Memoized event cache by date for calendar, limited to the dropdown range
   const eventCacheByDate = useMemo(() => {
     const cache = new Map();
-    events.forEach(event => {
-      const eventDate = new Date(event.startTime || event.eventDate);
-      if (Number.isNaN(eventDate.getTime())) return;
-      const dateKey = eventDate.toDateString();
-      if (!cache.has(dateKey)) {
-        cache.set(dateKey, []);
-      }
-      cache.get(dateKey).push(event);
+    rangeEvents.forEach(event => {
+      // Multi-day events appear on every day they cover inside the range
+      getCalendarDayKeys(event, filter).forEach(dateKey => {
+        if (!cache.has(dateKey)) {
+          cache.set(dateKey, []);
+        }
+        cache.get(dateKey).push(event);
+      });
     });
     return cache;
-  }, [events]);
+  }, [rangeEvents, filter]);
 
-  // Get events for selected date
-  const selectedDateEvents = useMemo(() => {
-    const dateKey = selectedDate.toDateString();
-    return eventCacheByDate.get(dateKey) || [];
-  }, [selectedDate, eventCacheByDate]);
+  // The calendar shows today until a day is picked
+  const calendarDay = getCalendarDay(selectedDate);
+  const selectedDateEvents = eventCacheByDate.get(calendarDay.toDateString()) || [];
 
   // Handle date selection in calendar
   const handleDateSelect = useCallback(date => {
     setSelectedDate(date);
+    setExpanded(false);
   }, []);
 
   // Handle Create New button
@@ -149,7 +192,7 @@ function MyCases() {
 
   const renderCardView = () => {
     if (visibleEvents.length === 0) {
-      return <div className={styles.noEventsMessage}>No upcoming events.</div>;
+      return <div className={styles.noEventsMessage}>{emptyMessage}</div>;
     }
 
     return (
@@ -220,7 +263,7 @@ function MyCases() {
 
   const renderListView = () => {
     if (visibleEvents.length === 0) {
-      return <div className={styles.noEventsMessage}>No upcoming events.</div>;
+      return <div className={styles.noEventsMessage}>{emptyMessage}</div>;
     }
 
     return (
@@ -301,7 +344,8 @@ function MyCases() {
         if (eventCacheByDate.has(dateKey)) {
           classes.push(styles.hasEvents);
         }
-        if (date.toDateString() === selectedDate.toDateString()) {
+        // Today stays highlighted until a day is picked
+        if (date.toDateString() === getCalendarDay(selectedDate).toDateString()) {
           classes.push(styles.selectedDate);
         }
         return classes.join(' ');
@@ -316,10 +360,14 @@ function MyCases() {
       <div className={styles.calendarContainer}>
         <ReactCalendar
           onChange={handleDateSelect}
-          value={selectedDate}
+          value={calendarDay}
           tileContent={tileContent}
           tileClassName={tileClassName}
-          className={darkMode ? styles.calendarDark : styles.calendar}
+          className={
+            darkMode
+              ? `${styles.calendarDark} ${upcomingStyles.calendarDarkHover}`
+              : styles.calendar
+          }
         />
       </div>
       {selectedDateEvents.length > 0 && (
@@ -329,12 +377,7 @@ function MyCases() {
               darkMode ? styles.selectedDateTitleDark : ''
             }`}
           >
-            Events on{' '}
-            {selectedDate.toLocaleDateString('en-US', {
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric',
-            })}
+            Events on {formatDayLabel(calendarDay)}
           </h3>
           <div className={styles.selectedEventsList}>
             {selectedDateEvents.map(event => (
@@ -386,9 +429,26 @@ function MyCases() {
       className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
     >
       <header className={styles.header}>
-        <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
-          Upcoming Events
-        </h2>
+        {/* Figma: "More" sits beside the section title, not with the header actions */}
+        <div className={upcomingStyles.titleGroup}>
+          <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
+            Upcoming Events
+          </h2>
+          {shouldShowMore(view, filteredEvents.length, isExporting) && (
+            <button
+              type="button"
+              className={`more-btn-global ${withDark(
+                darkMode,
+                upcomingStyles.moreBtn,
+                upcomingStyles.moreBtnDark,
+              )}`}
+              onClick={() => setExpanded(!expanded)}
+              aria-expanded={expanded}
+            >
+              {expanded ? 'Show Less' : 'More'}
+            </button>
+          )}
+        </div>
 
         <div className={styles.headerActions}>
           <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
@@ -423,7 +483,7 @@ function MyCases() {
                 darkMode ? styles.filterDropdownDarkMode : ''
               }`}
               value={filter}
-              onChange={e => setFilter(e.target.value)}
+              onChange={e => handleFilterChange(e.target.value)}
             >
               <option value="All Time">All Time</option>
               <option value="Today">Today</option>
@@ -439,20 +499,28 @@ function MyCases() {
           >
             + Create New
           </button>
-
-          {filteredEvents.length > 10 && !isExporting && (
-            <button
-              type="button"
-              className={`more-btn-global ${styles.moreBtn}`}
-              onClick={() => setExpanded(!expanded)}
-            >
-              {expanded ? 'Show Less' : 'More'}
-            </button>
-          )}
         </div>
       </header>
 
       <main className={styles.content}>
+        {shouldShowDayBar(selectedDate, view) && (
+          <div
+            className={withDark(
+              darkMode,
+              upcomingStyles.selectedDayBar,
+              upcomingStyles.selectedDayBarDark,
+            )}
+          >
+            <span>Showing events on {formatDayLabel(selectedDate)}</span>
+            <button
+              type="button"
+              className={upcomingStyles.clearDayBtn}
+              onClick={clearSelectedDate}
+            >
+              Show all upcoming
+            </button>
+          </div>
+        )}
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
