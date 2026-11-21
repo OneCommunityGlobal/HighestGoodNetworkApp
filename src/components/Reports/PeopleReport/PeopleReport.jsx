@@ -26,7 +26,7 @@ import BadgeSummaryViz from '../BadgeSummaryViz';
 import BadgeSummaryPreview from '../BadgeSummaryPreview';
 import PeopleTableDetails from '../PeopleTableDetails';
 import CompletedTasksPieChart from '~/components/Reports/PeopleReport/CompletedTasksPieChart';
-import clsx from 'clsx';
+import { clsx } from 'clsx';
 
 function PeopleReport(props) {
   const {
@@ -63,7 +63,7 @@ function PeopleReport(props) {
       getUserTasks(userId),
       getUserProjects(userId),
       getWeeklySummaries(userId),
-      getTimeEntriesForPeriod(userId, fromDate, toDate),
+      getTimeEntriesForPeriod(userId, fromDate, toDate, { includeTaskLinks: true }),
     ])
       .finally(() => {
         setIsLoading(false);
@@ -232,13 +232,13 @@ function PeopleReport(props) {
             darkMode={darkMode}
           >
             <div
-              className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
+              className={clsx(styles.reportStats, darkMode && [styles.bgYinmnBlue, styles.textLight])}
             >
               <p>
                 <Link
                   to={`/userProfile/${_id}`}
                   title="View Profile"
-                  className={`${darkMode ? `${styles.textLight} ${styles.fontWeightBold}` : ''}`}
+                  className={clsx(darkMode && [styles.textLight, styles.fontWeightBold])}
                   style={{ fontSize: '24px' }}
                 >
                   {firstName} {lastName}
@@ -312,7 +312,7 @@ function PeopleReport(props) {
 
       <div className={`${styles.mobilePeopleTable}`}>
         <div className={styles.graphContainer}>
-          <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
+          <div className={darkMode ? styles.textLight : undefined}>
             <h5>Tasks contributed</h5>
           </div>
           {activeTasks.length > 0 ? (

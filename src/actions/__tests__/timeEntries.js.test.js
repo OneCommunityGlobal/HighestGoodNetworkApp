@@ -269,6 +269,22 @@ describe('timeEntries action creators', () => {
         ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate),
       );
     });
+
+    it('requests submitted task links when the People Report opts in', async () => {
+      const dispatch = vi.fn();
+      const entries = [{ dateOfWork: '2025-01-03', relatedWorkLinks: ['https://example.com/work'] }];
+      axios.get.mockResolvedValue({ data: entries });
+
+      await getTimeEntriesForPeriod('123', '2025-01-01', '2025-01-10', { includeTaskLinks: true })(
+        dispatch,
+      );
+
+      expect(axios.get).toHaveBeenCalledWith(
+        ENDPOINTS.TIME_ENTRIES_PERIOD('123', '2025-01-01', '2025-01-10T23:59:59'),
+        { params: { includeTaskLinks: true } },
+      );
+      expect(dispatch).toHaveBeenCalledWith({ type: GET_TIME_ENTRIES_PERIOD, payload: entries });
+    });
   });
 
   // Test suite for getTimeEntriesForPeriod

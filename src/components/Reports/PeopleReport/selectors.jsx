@@ -63,14 +63,17 @@ export const peopleTasksPieChartViewData = (state) => {
   const taskHours = {};
   allUserEntries.forEach(entry => {
     if (entry.taskId == null) return;
-    const taskKey = entry.taskId;
+    const { taskId: taskKey, projectId, relatedWorkLinks } = entry;
     const taskName = entry.taskName || `Task in "${entry.projectName || 'Unknown Project'}"`;
-    const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
 
     if (!taskHours[taskKey]) {
-      taskHours[taskKey] = { totalTime: 0, projectId: entry.projectId, taskName };
+      taskHours[taskKey] = { totalTime: 0, projectId, taskName };
     }
-    taskHours[taskKey].totalTime += time;
+    const task = taskHours[taskKey];
+    if (relatedWorkLinks?.length && !task.relatedWorkLinks) {
+      task.relatedWorkLinks = relatedWorkLinks;
+    }
+    task.totalTime += (entry.hours || 0) + (entry.minutes || 0) / 60;
   });
 
   const tasksArray = Object.keys(taskHours).map(taskId => {
@@ -79,6 +82,7 @@ export const peopleTasksPieChartViewData = (state) => {
       projectId: taskId,   
       projectName: t.taskName,
       totalTime: t.totalTime,
+      relatedWorkLinks: t.relatedWorkLinks,
     };
   });
 
