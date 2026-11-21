@@ -284,9 +284,9 @@ export class EditableInfoModal extends Component {
             data-toggle="tooltip"
             data-placement="right"
             title="Click for information about this"
-            style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '8px' }}
+            style={{ fontSize: fontSize }}
             aria-hidden="true"
-            className="fa fa-info-circle"
+            className={`fa fa-info-circle ${styles.infoIcon}`}
             onClick={() => this.setState({ editableModalOpen: true })}
           />
 
@@ -336,6 +336,7 @@ export class EditableInfoModal extends Component {
                         Who can view this information?
                       </div>
                       <Select
+                        className={`${styles.visibility} ${darkMode ? styles.darkMode: ''}`}
                         options={options}
                         onChange={this.handleSelectChange}
                         value={options.find(option => option.value === this.state.visibility)}

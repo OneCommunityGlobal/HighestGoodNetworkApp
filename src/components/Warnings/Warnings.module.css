@@ -28,6 +28,12 @@
   margin: 0 auto;
 }
 
+.trackerInfoIcons {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
 .warning-icon {
   display: flex;
   justify-content: flex-start;
@@ -47,6 +53,7 @@
   text-align: left;
   font-size: 0.93em;
   margin: 0;
+  flex: 1 1 min-content;
 }
 
 .popover-body {
@@ -101,6 +108,10 @@
   background: rgb(245 244 244);
   border-radius: 5px;
   box-shadow: rgb(0 0 0 / 80%) 0 0 0;
+}
+
+.warnings__descriptions.darkMode {
+  background: none;
 }
 
 .warning__descriptions__btn {
