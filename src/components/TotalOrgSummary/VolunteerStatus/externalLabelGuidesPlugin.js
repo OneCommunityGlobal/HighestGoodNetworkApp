@@ -442,7 +442,7 @@ const externalLabelGuidesPlugin = {
       }
 
       const percentage = options.total ? Math.round((value / options.total) * 100) : 0;
-      const lines = options.formatter({ value, percentage, index });
+      const lines = options.formatter({ value, percentage, index, chart });
       if (!lines) {
         return;
       }

@@ -68,7 +68,7 @@
 }
 
 .donutHeading {
-  color: #828282;
+  color: #475569;
   font-size: clamp(0.5rem, 10cqi, 0.88rem);
   letter-spacing: 0.03em;
   line-height: 1.15;
@@ -85,7 +85,7 @@
 }
 
 .donutCount {
-  color: #828282;
+  color: #475569;
   font-size: clamp(0.85rem, 24cqi, 2rem);
   line-height: 1;
   font-weight: 800;
@@ -125,7 +125,7 @@
   margin-left: 0;
   margin-bottom: 0.3rem;
   gap: 0.5rem;
-  color: #828282;
+  color: #475569;
   font-size: 0.75rem;
   line-height: 1.25;
 }
