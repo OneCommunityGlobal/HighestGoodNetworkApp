@@ -144,8 +144,9 @@ function DonutChart(props) {
         lineColor: labelTextColor,
         backgroundColor: labelBoxBackground,
         borderColor: labelBoxBorder,
-        formatter: ({ value }) =>
-          calculatePercentage(value, totalCount) < minLabelPercent
+        // On narrow charts the legend retains every count while the hole gets room for text.
+        formatter: ({ value, chart }) =>
+          chart?.width < 320 || calculatePercentage(value, totalCount) < minLabelPercent
             ? null
             : [`${value}`, `(${formatPercent(value, totalCount)})`],
       },
@@ -157,12 +158,12 @@ function DonutChart(props) {
     maintainAspectRatio: false,
     cutout: comparisonType !== 'No Comparison' ? '70%' : '62%',
     layout: {
-      padding: {
+      padding: ({ chart }) => ({
         top: 28,
-        right: 80,
+        right: chart.width < 320 ? 12 : 80,
         bottom: 28,
-        left: 80,
-      },
+        left: chart.width < 320 ? 12 : 80,
+      }),
     },
     onHover: (event, elements) => {
       const target = event?.native?.target;
@@ -173,9 +174,11 @@ function DonutChart(props) {
 
   const comparisonText =
     comparisonType !== 'No Comparison' ? formatComparison(percentageChange, comparisonType) : null;
-  let percentageChangeColor = 'var(--success)';
+  let percentageChangeColor = darkMode ? '#86efac' : 'var(--success)';
   if (comparisonText?.startsWith('N/A')) percentageChangeColor = undefined;
-  else if (Number(percentageChange) < 0) percentageChangeColor = 'var(--danger)';
+  else if (Number(percentageChange) < 0) {
+    percentageChangeColor = darkMode ? '#fca5a5' : 'var(--danger)';
+  }
 
   return (
     <div className={clsx(styles.donutContainer, darkMode && styles.donutContainerDark)}>
