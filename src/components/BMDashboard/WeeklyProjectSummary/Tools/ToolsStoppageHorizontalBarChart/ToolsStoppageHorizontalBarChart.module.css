@@ -15,6 +15,12 @@
   border-radius: 6px;
   border-width: 1px;
   border-style: solid;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  background-color: #fff;
+  color: #000;
+  border-color: #ccc;
 }
 
 /* Date picker input - dark mode (ONLY colors change, sizes stay the same) */

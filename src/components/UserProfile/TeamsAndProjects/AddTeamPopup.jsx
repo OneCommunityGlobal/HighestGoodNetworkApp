@@ -294,11 +294,13 @@ const handleCreateTeamError = (response) => {
   };
 
   useEffect(() => {
-    if (props.open && !(isTeamManagement && isEdit)) {
-      // Teams-page edits already have the list; fetching would unmount and reopen this popup.
+    // The Teams page supplies its loaded list. Refetching it here sets the
+    // page's global loading flag, unmounting this popup and restarting the
+    // fetch each time it mounts again.
+    if (props.open && !Array.isArray(props.teamsData?.allTeams)) {
       refreshTeams();
     }
-  }, [props.open, isTeamManagement, isEdit]);
+  }, [props.open, props.teamsData?.allTeams]);
 
   useEffect(() => {
     if (isEdit && teamName) {
