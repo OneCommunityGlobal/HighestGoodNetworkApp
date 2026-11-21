@@ -52,7 +52,7 @@ function ControllerRow(props) {
   const toggle = () => setDropdownOpen(prevState => !prevState);
 
   const onMove = async (from, to) => {
-    await props.moveTasks(props.wbsId, from, to);
+    await props.moveTasks(props.wbsId, from, to, props.taskId);
     props.load();
   };
 
