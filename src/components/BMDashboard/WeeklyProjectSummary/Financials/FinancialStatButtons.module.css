@@ -81,7 +81,7 @@
 .projectCost   { --brand-color: #0369A1; --hover-bg: #bae6fd; }
 .materialCost  { --brand-color: #6D28D9; --hover-bg: #e9d5ff; }
 .laborCost     { --brand-color: #B91C1C; --hover-bg: #fecaca; }
-.equipmentCost { --brand-color: #15803D; --hover-bg: #bbf7d0; }
+.toolsCost { --brand-color: #15803D; --hover-bg: #bbf7d0; }
 
 
 .subtext {
@@ -138,7 +138,7 @@
 .container.darkMode .projectCost   { --brand-color: #0ea5e9; --hover-bg: #0c4a6e; }
 .container.darkMode .materialCost  { --brand-color: #8b5cf6; --hover-bg: #4c1d95; }
 .container.darkMode .laborCost     { --brand-color: #ef4444; --hover-bg: #7f1d1d; }
-.container.darkMode .equipmentCost { --brand-color: #22c55e; --hover-bg: #14532d; }
+.container.darkMode .toolsCost { --brand-color: #22c55e; --hover-bg: #14532d; }
 
 
 .container.darkMode .kpiButton:hover {
