@@ -5,10 +5,12 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
 import styles from './ToolStatusDonutChart.module.css';
 
+// Keyed by the uppercased status the backend returns (same statuses as the Tools List).
 const COLORS = {
   AVAILABLE: '#220F57',
   USED: '#2B73B6',
-  MAINTENANCE: '#6DC5DA',
+  'NEEDS REPLACEMENT': '#6DC5DA',
+  'YET TO RECEIVE': '#F4A261',
 };
 
 const RADIAN = Math.PI / 180;
@@ -178,12 +180,16 @@ export default function ToolStatusDonutChart() {
       ? toolsFromDropdown
       : toolslist || [];
 
-  // Get all unique projects from the combined data
+  // One entry per project name, like the Tools List project filter. The backend counts every
+  // project record with the selected one's name, so either duplicate id gives the same chart.
   const uniqueProjects = Array.from(
     new Map(
       allAvailableTools
         .filter(t => t?.projectId)
-        .map(t => [t.projectId, { id: t.projectId, name: t.projectName || 'Unnamed Project' }]),
+        .map(t => [
+          t.projectName || t.projectId,
+          { id: t.projectId, name: t.projectName || 'Unnamed Project' },
+        ]),
     ).values(),
   );
 
