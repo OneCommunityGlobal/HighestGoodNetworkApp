@@ -486,6 +486,17 @@
   font-size: 14px;
 }
 
+/* public/index.css forces `body.dark-mode * { color: #fff !important; }` app-wide, which
+   turns this button's text white against its own light-grey background, making it
+   unreadable in dark mode. Two-selector compounds + !important outrank it. */
+.lbPaginationControls .lbPaginationButton {
+  color: #1f2937 !important;
+}
+
+.lbVillagePagination .lbPaginationButton {
+  color: #1f2937 !important;
+}
+
 .lbPaginationButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -955,6 +966,25 @@
   background: #f0f2f5;
 }
 
+/* public/index.css forces `body.dark-mode * { color: #fff !important; }` app-wide, which
+   turns this modal's text white against its own always-white background, making it
+   invisible in dark mode. Two-selector compounds + !important outrank it. */
+.lbPropertyDetailsInfo .lbPropertyInfoItem,
+.lbPropertyDetailsInfo .lbPropertyDescription,
+.lbPropertyDetailsInfo .lbPropertyAmenities,
+.lbPropertyDetailsInfo .lbPropertyAmenities li {
+  color: #666 !important;
+}
+
+.lbPropertyDetailsInfo .lbPropertyInfoItem strong,
+.lbPropertyDetailsInfo .lbPropertyAmenities strong {
+  color: #2c4f3c !important;
+}
+
+.lbPropertyDetailsActions .lbContactButton {
+  color: #2c4f3c !important;
+}
+
 .lbBookButton {
   background: #2c4f3c;
   color: white;
@@ -968,6 +998,53 @@
 /* Bidding-specific styles */
 .lbBiddingItem .lbPrice {
   color: #e74c3c;
+}
+
+/* public/index.css also has an h1-h6-specific dark-mode rule
+   (`body.dark-mode:not(.no-global-theme) h3 { color: #fff !important; }`) that is MORE
+   specific than a two-local-class override, so headings need the matching global-state
+   selector repeated locally to out-specify it. */
+:global(body.dark-mode:not(.no-global-theme)) .lbPropertyDetails h3,
+:global(body.bm-dashboard-dark:not(.no-global-theme)) .lbPropertyDetails h3 {
+  color: #2c4f3c !important;
+}
+
+:global(body.dark-mode:not(.no-global-theme)) .lbPropertyDetailsModal .lbModalHeader h3,
+:global(body.bm-dashboard-dark:not(.no-global-theme)) .lbPropertyDetailsModal .lbModalHeader h3 {
+  color: #2c4f3c !important;
+}
+
+/* Same app-wide `body.dark-mode * { color: #fff !important; }` issue as above, for the
+   property card text, close button, and pagination info/label text. */
+.lbPropertyCard .lbPropertyDetails p {
+  color: #666 !important;
+}
+
+.lbPropertyCard .lbPrice {
+  color: #2c4f3c !important;
+}
+
+/* The icon is an SVG whose <path> has no class of its own, so the app-wide
+   `body.dark-mode * { color: #fff !important; }` rule sets the <path>'s OWN color
+   directly; since `fill="currentColor"` re-resolves per-element (not inherited as an
+   already-resolved color), the path renders white regardless of the <svg>'s color.
+   Set `fill` directly on both to bypass the currentColor chain entirely. */
+.lbCloseButtonWrapper .lbCloseButton,
+.lbCloseButtonWrapper .lbCloseButton path {
+  color: #dc3545 !important;
+  fill: #dc3545 !important;
+}
+
+.lbPaginationControls .lbPaginationInfo {
+  color: #666 !important;
+}
+
+.lbPaginationControls .lbPageSizeSelector {
+  color: #1f2937 !important;
+}
+
+.lbVillagePagination .lbPaginationInfo {
+  color: #666 !important;
 }
 
 /* Responsive Adjustments */

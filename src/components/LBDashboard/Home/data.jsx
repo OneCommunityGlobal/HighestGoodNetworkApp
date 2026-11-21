@@ -24,10 +24,14 @@ const DEFAULT_IMAGE = 'https://picsum.photos/seed/lb-unit/600/400';
  * @returns {Object} Transformed listing object
  */
 export const transformApiListing = apiListing => {
+  // Bidding listings populate village to { _id, name }; regular listings
+  // still return the raw village id, so fall back to that unchanged.
+  const villageName = apiListing.village?.name || apiListing.village || 'Unknown Village';
+
   return {
     id: apiListing._id,
     title: apiListing.title,
-    village: apiListing.village || 'Unknown Village',
+    village: villageName,
     price: apiListing.price || 0,
     perUnit: apiListing.perUnit || 'day',
     images: apiListing.images && apiListing.images.length ? apiListing.images : [DEFAULT_IMAGE],
@@ -37,8 +41,7 @@ export const transformApiListing = apiListing => {
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     coordinates: apiListing.coordinates || [37.7749, -122.4194],
     description:
-      apiListing.description ||
-      `This is a ${apiListing.village || 'Unknown'} style unit available for rent.`,
+      apiListing.description || `This is a ${villageName} style unit available for rent.`,
     amenities: apiListing.amenities || [],
     createdBy: apiListing.createdBy?._id,
     updatedBy: apiListing.updatedBy?._id,
@@ -101,19 +104,19 @@ export const fetchVillages = async () => {
 export const fetchListings = async (page = 1, size = 12, filters = {}) => {
   try {
     ensureAuthentication();
-    const headers = {
+    const params = {
       page: String(page),
       size: String(size),
     };
-    if (filters.availableFrom) headers.availableFrom = filters.availableFrom;
-    if (filters.availableTo) headers.availableTo = filters.availableTo;
-    // Backend expects village ObjectId in header; ignore display names.
+    if (filters.availableFrom) params.availableFrom = filters.availableFrom;
+    if (filters.availableTo) params.availableTo = filters.availableTo;
+    // Backend expects village ObjectId in the query; ignore display names.
     if (filters.village && OBJECT_ID_REGEX.test(String(filters.village))) {
-      headers.village = String(filters.village);
+      params.village = String(filters.village);
     }
 
     const response = await httpService.get(`${API_BASE_URL}/listings`, {
-      headers,
+      params,
       skipGlobalErrorToast: true,
     });
 
@@ -162,18 +165,18 @@ export const fetchListings = async (page = 1, size = 12, filters = {}) => {
 export const fetchBiddings = async (page = 1, size = 12, filters = {}) => {
   try {
     ensureAuthentication();
-    const headers = {
+    const params = {
       page: String(page),
       size: String(size),
     };
-    if (filters.availableFrom) headers.availableFrom = filters.availableFrom;
-    if (filters.availableTo) headers.availableTo = filters.availableTo;
+    if (filters.availableFrom) params.availableFrom = filters.availableFrom;
+    if (filters.availableTo) params.availableTo = filters.availableTo;
     if (filters.village && OBJECT_ID_REGEX.test(String(filters.village))) {
-      headers.village = String(filters.village);
+      params.village = String(filters.village);
     }
 
     const response = await httpService.get(`${API_BASE_URL}/biddings`, {
-      headers,
+      params,
       skipGlobalErrorToast: true,
     });
 
