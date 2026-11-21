@@ -123,6 +123,20 @@ describe('<TimeEntry />', () => {
     expect(screen.queryByRole('button', { name: /DeleteModal/i })).not.toBeInTheDocument();
   });
 
+  it.each(['deleteTimeEntryOthers', 'deleteTimeEntryOwn'])('shows the trash icon with %s', key => {
+    renderWithRolePermissions([key]);
+    expect(screen.getByRole('button', { name: /DeleteModal/i })).toBeInTheDocument();
+  });
+
+  it.each([
+    [['deleteTimeEntryOthers']],
+    [['deleteTimeEntryOwn']],
+    [['deleteTimeEntry', 'deleteTimeEntryOthers', 'deleteTimeEntryOwn']],
+  ])('hides the trash icon with %j on a protected account', rolePermissions => {
+    renderWithRolePermissions(rolePermissions, userProfileMock.email);
+    expect(screen.queryByRole('button', { name: /DeleteModal/i })).not.toBeInTheDocument();
+  });
+
   it('should not render edit button when no permission', () => {
     renderComponent();
     const editButton = screen.queryByRole('button', { name: /FAEdit/i });
