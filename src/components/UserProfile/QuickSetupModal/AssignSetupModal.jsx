@@ -7,7 +7,7 @@ import '../../Header/index.module.css';
 import { toast } from "react-toastify";
 
 import { permissions } from '../../../utils/constants';
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile, handleSubmit}) {
+function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile, handleSubmit, canDeleteTitle}) {
   const darkMode = useSelector(state => state.theme.darkMode)
   const [validation, setValid] = useState({
     volunteerAgree: false,
@@ -217,9 +217,11 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           <Button className="bg-danger m-3" onClick={() => setNoOnClick()}>
             No
           </Button>
-          <Button className="bg-danger m-3" onClick={() => deleteTitle(title._id)}>
-            Delete QSC
-          </Button>
+          {canDeleteTitle && (
+            <Button className="bg-danger m-3" onClick={() => deleteTitle(title._id)}>
+              Delete QSC
+            </Button>
+          )}
         </div>
       </ModalFooter>
     </Modal>

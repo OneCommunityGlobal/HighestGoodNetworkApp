@@ -168,7 +168,10 @@ const TeamMemberTask = React.memo(
       rolesAllowedToResolveTasks.includes(userRole) ||
       dispatch(hasPermission(permissions.getReports));
     const canUpdateTask = dispatch(hasPermission(permissions.updateTask));
-    const canUnassignTask = dispatch(hasPermission(permissions.removeUserFromTask));
+    // Either permission shows the red X
+    const canUnassignTask = dispatch(
+      hasPermission([permissions.removeUserFromTask, permissions.canDeleteTask]),
+    );
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
