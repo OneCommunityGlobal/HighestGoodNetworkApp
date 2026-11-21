@@ -99,7 +99,11 @@ export function PieChartByProject({ mergedProjectUsersArray, projectName, darkMo
 
         {isChecked && (
           <div className={styles.details}>
-            <p className={`${styles.membersLabel} ${darkMode ? 'text-light' : 'blue'}`}>
+            <p
+              className={`${styles.membersLabel} ${styles.statText} ${
+                darkMode ? 'text-light' : ''
+              }`}
+            >
               {showMembers === null ? 'All members' : ''}
             </p>
             <div className={styles.switchWrapper}>
@@ -107,7 +111,11 @@ export function PieChartByProject({ mergedProjectUsersArray, projectName, darkMo
                 style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : '' }}
                 className={`d-flex align-items-center justify-content-between ${styles.switchRow} ${toggleStyles.switchContainer}`}
               >
-                <p className={`${styles.switchLabel} ${darkMode ? 'text-light' : 'blue'}`}>
+                <p
+                  className={`${styles.switchLabel} ${styles.inactiveLabel} ${
+                    darkMode ? 'text-light' : ''
+                  }`}
+                >
                   Inactive Members
                 </p>
                 <div className="pr-2">
@@ -116,23 +124,27 @@ export function PieChartByProject({ mergedProjectUsersArray, projectName, darkMo
                     onChange={handleShowMembersChange}
                   />
                 </div>
-                <p className={`${styles.switchLabel} ${darkMode ? 'text-light' : 'green'}`}>
+                <p
+                  className={`${styles.switchLabel} ${styles.activeLabel} ${
+                    darkMode ? 'text-light' : ''
+                  }`}
+                >
                   Active Members
                 </p>
               </div>
             </div>
-            <p className={`${styles.stat} ${darkMode ? 'text-light' : 'blue'}`}>
+            <p className={`${styles.stat} ${styles.statText} ${darkMode ? 'text-light' : ''}`}>
               Total Active Members: {activeData.length}
               <span> - Hrs Applied: {globalactiveHours.toFixed(2)}</span>
             </p>
-            <p className={`${styles.stat} ${darkMode ? 'text-light' : 'blue'}`}>
+            <p className={`${styles.stat} ${styles.statText} ${darkMode ? 'text-light' : ''}`}>
               Total Inactive Members: {inactiveData.length}{' '}
               <span> - Hrs Applied: {globalInactiveHours.toFixed(2)} </span>
             </p>
-            <p className={`${styles.stat} ${darkMode ? 'text-light' : 'blue'}`}>
+            <p className={`${styles.stat} ${styles.statText} ${darkMode ? 'text-light' : ''}`}>
               Total Applied Hours: {totalHours.toFixed(2)}{' '}
             </p>
-            <p className={`${styles.stat} ${darkMode ? 'text-light' : 'blue'}`}>
+            <p className={`${styles.stat} ${styles.statText} ${darkMode ? 'text-light' : ''}`}>
               Total Members: {mergedProjectUsersArray.length}
             </p>
           </div>

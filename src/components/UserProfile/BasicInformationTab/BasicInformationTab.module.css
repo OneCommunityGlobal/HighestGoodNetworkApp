@@ -1,7 +1,11 @@
-/* stylelint-disable  */
+/* 1. Normalize background color for main content wrapper in dark mode */
+:global(body.dark-mode) :global(#myTabContent) {
+  background-color: #1c2541 !important;
+}
+
 .basic-info-tab-tablet {
   display: none;
-}
+} 
 
 .phone-input-style.phone-input-style {
   width: 100%;
@@ -25,11 +29,6 @@
   margin-right: 0 !important;
 }
 
-
-
-
-
-
 @media (width <= 1024px) {
   .basic-info-tab-desktop {
     display: none;
@@ -47,52 +46,78 @@
   label {
     font-weight: bold;
   }
-
-
 }
 
 .basic-info-tab-desktop {
   width: 100%;
 }
 
+/* 2. Set consistent dark mode background for desktop info container */
+.basic-info-tab-desktop.dark-mode {
+  background-color: #1c2541;
+}
 
 .basic-info-tab-desktop:not(.dark-mode) :global(.form-control){
   background-color: transparent;
 }
 
-.dark-mode {
-  /* marker class */
-}
-
 .dark-mode :global(.row) {
-  background-color: #1c2541 !important;
+  background-color: #1c2541;
+  margin-bottom: 8px;       
+  margin-top: 0;          
+  padding-bottom: 4px;   
+  padding-top: 4px; 
+  padding-left: 8px;
+  border: none;
+  border-bottom: none;   
 }
 
 .dark-label-col {
-  background-color: #1c2541 !important;
+  background-color: #1c2541;
 }
 
 .dark-label-col:hover {
-  background-color: #1c2541 !important;
+  background-color: #1c2541;
 }
 
+/* 3. Normalize dark label container backgrounds in dark mode */
 :global(.bg-yinmn-blue) .dark-label-col {
-  background-color: #1c2541 !important;
+  background-color: #1c2541;
 }
 
 .darkModeText {
   color: white;
 }
 
+/* 4. Fix profile desktop functions background and layout in dark mode */
+.dark-mode :global(.profile-functions-desktop) {
+  background-color: #1c2541;
+  border: none;
+  box-shadow: none;
+  padding-bottom: 16px;
+}
+
+/* 5. Override container and profile wrapper backgrounds to remove right-edge gaps in dark mode */
+.dark-mode :global(.container),
+.dark-mode :global(#containerProfile) {
+  background-color: #1c2541;
+}
+
+/* 6. Ensure active tab pane background consistency in dark mode */
+.dark-mode :global(.tab-pane.active) {
+  background-color: #1c2541;
+  padding-bottom: 20px;
+}
+
 .darkMode.roleModal.button {
-  border-color: #2563eb !important;
-  background-color: #2563eb !important;
+  border-color: #2563eb;
+  background-color: #2563eb;
 }
 
 .darkMode.roleModal.button:hover {
   color: #fff;
-  background-color: #1d4ed8 !important;
-  border-color: #1d4ed8 !important;
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 .roleModal.button {
@@ -111,4 +136,16 @@
   color: #007bff;
   border-color: #007bff;
   background-color: transparent;
+}  
+
+.dark-mode :global([class*="toggleDark"]),
+:global(body.dark-mode) :global([class*="toggleDark"]) {
+  background-color: #475569 !important;
+  border: 1px solid #94a3b8 !important;
+}
+
+.dark-mode :global([class*="toggleDark"]):checked,
+:global(body.dark-mode) :global([class*="toggleDark"]):checked {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
 }

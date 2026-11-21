@@ -24,6 +24,7 @@ import TeamMemberTask from './TeamMemberTask';
 
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { ENDPOINTS } from '~/utils/URL';
+import { permissions } from '../../utils/constants';
 
 const TeamMemberTasks = React.memo(props => {
   const {
@@ -693,19 +694,19 @@ const TeamMemberTasks = React.memo(props => {
                         ].join(' ')}
                       >
                         <FontAwesomeIcon
-                          style={{ color: darkMode ? 'lightgray' : '' }}
+                          className={darkMode ? styles.hoursCommittedDark : ''}
                           icon={faClock}
                           title="Weekly Committed Hours"
                         />
                         /
                         <FontAwesomeIcon
-                          style={{ color: 'green' }}
+                          className={darkMode ? styles.hoursCompletedDark : styles.hoursCompleted}
                           icon={faClock}
                           title="Total Hours Completed this Week"
                         />
                         /
                         <FontAwesomeIcon
-                          style={{ color: 'red' }}
+                          className={darkMode ? styles.hoursRemainingDark : styles.hoursRemaining}
                           icon={faClock}
                           title="Total Remaining Hours"
                         />
@@ -715,19 +716,10 @@ const TeamMemberTasks = React.memo(props => {
                             onClick={handleShowTrackers}
                             className={[
                               styles.m1,
+                              styles.trackerToggleBtn,
+                              showTrackers ? styles.trackerToggleBtnActive : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
-                            style={{
-                              marginTop: '6px',
-                              padding: '2px 8px',
-                              fontSize: '12px',
-                              borderRadius: '4px',
-                              border: '1px solid #17a2b8',
-                              backgroundColor: showTrackers ? '#17a2b8' : 'white',
-                              color: showTrackers ? 'white' : '#17a2b8',
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                            }}
                           >
                             {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
                           </button>
@@ -736,19 +728,10 @@ const TeamMemberTasks = React.memo(props => {
                             onClick={handleHideTasks}
                             className={[
                               styles.m1,
+                              styles.trackerToggleBtn,
+                              !showTasks ? styles.trackerToggleBtnActive : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
-                            style={{
-                              marginTop: '6px',
-                              padding: '2px 8px',
-                              fontSize: '12px',
-                              borderRadius: '4px',
-                              border: '1px solid #17a2b8',
-                              backgroundColor: showTasks ? 'white' : '#17a2b8',
-                              color: showTasks ? '#17a2b8' : 'white',
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                            }}
                           >
                             {showTasks ? 'Hide Tasks' : 'Show Tasks'}
                           </button>
@@ -804,7 +787,7 @@ const TeamMemberTasks = React.memo(props => {
                       key={isTimeFilterActive ? undefined : user.personId}
                       user={user}
                       userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                        'putReviewStatus',
+                        permissions.putReviewStatus,
                       )}
                       teamRoles={
                         user.teams !== undefined && user.teams.length > 0

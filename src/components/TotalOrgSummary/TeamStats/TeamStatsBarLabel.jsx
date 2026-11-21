@@ -41,7 +41,8 @@ function TeamStatsBarLabel({ x, y, width, height, value, change, percentage }) {
         dominantBaseline="middle"
         className="team-stats-value"
       >
-        {change >= 0 ? `+${change} volunteers` : `-${change} volunteers`}
+        {/* change is a growth fraction (-0.02 = -2%), not a volunteer count */}
+        {`${change >= 0 ? '+' : ''}${Math.round(change * 100)}%`}
       </text>
     </g>
   );

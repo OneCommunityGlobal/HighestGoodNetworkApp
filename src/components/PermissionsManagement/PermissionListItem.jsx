@@ -1,14 +1,16 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable no-nested-ternary */
 import { useState, useContext, useEffect } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import hasPermission from '../../utils/permissions';
 import styles from './UserRoleTab.module.css';
 
+import { permissions } from '../../utils/constants';
 function PermissionListItem(props) {
   const {
     rolePermissions,
@@ -22,10 +24,9 @@ function PermissionListItem(props) {
     setPermissions,
     setRemovedDefaultPermissions,
     removedDefaultPermissions,
+    editPermission,
   } = props;
   const isCategory = !!subperms;
-  const [infoRoleModal, setinfoRoleModal] = useState(false);
-  const [modalContent, setContent] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const hasThisPermission =
     rolePermissions.includes(permission) ||
@@ -38,9 +39,9 @@ function PermissionListItem(props) {
   const currentUserRole = useSelector(state => state.auth?.user?.role || '');
 
   // Only restrict the specific Blue Square Email Management permissio
-  const isRestrictedPermission = permission === 'resendBlueSquareAndSummaryEmails';
+  const isRestrictedPermission = permission === permissions.resendBlueSquareAndSummaryEmails;
   const userHasRestrictedPermission = currentUserPermissions.includes(
-    'resendBlueSquareAndSummaryEmails',
+    permissions.resendBlueSquareAndSummaryEmails,
   );
   const userHasRoleWithRestrictedPermission = currentUserRole === 'Owner';
   const shouldDisableForRestriction =
@@ -48,6 +49,8 @@ function PermissionListItem(props) {
     isRestrictedPermission &&
     !userHasRestrictedPermission &&
     !userHasRoleWithRestrictedPermission;
+
+  const canEditPermissions = props.hasPermission(editPermission || permissions.putRole);
 
   const { updateModalStatus } = useContext(ModalContext);
 
@@ -61,15 +64,6 @@ function PermissionListItem(props) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const handleModalOpen = () => {
-    setContent(description);
-    setinfoRoleModal(true);
-  };
-
-  const toggleInfoRoleModal = () => {
-    setinfoRoleModal(!infoRoleModal);
-  };
   const togglePermission = permissionKey => {
     // Block specific restricted permission if user doesn't have it
     if (shouldDisableForRestriction) {
@@ -200,14 +194,20 @@ function PermissionListItem(props) {
         </p>
         <div className={styles.iconButtonContainer}>
           <div className="infos">
-            <i
-              data-toggle="tooltip"
-              data-placement="center"
-              title="Click for more information"
-              aria-hidden="true"
-              className="fa fa-info-circle"
-              onClick={handleModalOpen}
-              style={{ color: darkMode ? 'white' : 'black' }}
+            {/* Owner-editable info text; the outer PermissionList fetches the texts once.
+                Headings have no key, so they save under their lower-case label */}
+            <EditableInfoModal
+              role={currentUserRole}
+              areaName={
+                isCategory
+                  ? `Permission Heading: ${label.toLowerCase()} Info`
+                  : `Permission: ${permission} Info`
+              }
+              areaTitle={label}
+              initialInfo={description}
+              skipFetch
+              fontSize={24}
+              darkMode={darkMode}
             />
           </div>
           {!editable ? (
@@ -229,7 +229,7 @@ function PermissionListItem(props) {
                 props.onChange();
                 updateModalStatus(true);
               }}
-              disabled={!props.hasPermission('putRole')}
+              disabled={!canEditPermissions}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -243,9 +243,9 @@ function PermissionListItem(props) {
                 updateModalStatus(true);
               }}
               disabled={
-                !props.hasPermission('putRole') ||
+                !canEditPermissions ||
                 (immutablePermissions.includes(permission) &&
-                  !props.hasPermission('putUserProfilePermissions')) ||
+                  !props.hasPermission(permissions.putUserProfilePermissions)) ||
                 shouldDisableForRestriction
               }
               style={darkMode ? boxStyleDark : boxStyle}
@@ -269,10 +269,13 @@ function PermissionListItem(props) {
           }}
         >
           <PermissionList
+            // the outer list already asked for the info texts
+            isNested
             rolePermissions={rolePermissions}
             permissionsList={subperms}
             immutablePermissions={immutablePermissions}
             editable={editable}
+            editPermission={editPermission}
             setPermissions={setPermissions}
             // eslint-disable-next-line react/destructuring-assignment
             onChange={props.onChange}
@@ -283,23 +286,6 @@ function PermissionListItem(props) {
           />
         </li>
       ) : null}
-      <Modal
-        isOpen={infoRoleModal}
-        toggle={toggleInfoRoleModal}
-        id="#modal2-body_new-role--padding"
-        className={darkMode ? 'text-light dark-mode' : ''}
-      >
-        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
-          Permission Info
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalContent}</ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
-            {' '}
-            Ok{' '}
-          </Button>
-        </ModalFooter>
-      </Modal>
     </>
   );
 }

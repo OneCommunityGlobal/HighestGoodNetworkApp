@@ -8,10 +8,11 @@ import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from '~/utils/permissions';
 
+import { permissions } from '../../../../utils/constants';
 const AddWBS = (props) => {
   const darkMode = props.state.theme.darkMode;
   const [taskTitle, setTaskTitle] = useState('');
-  const canPostWBS = hasPermission('postWbs');
+  const canPostWBS = hasPermission(permissions.postWbs);
 
   const handleSubmit = () => {
     if (!taskTitle.trim()) return;

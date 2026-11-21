@@ -341,3 +341,68 @@ input:checked + .slider::before {
 .tooltip-detail-dark {
   color: #cbd5e1;
 }
+
+/* Expand/collapse toggle for the capped legend. Deliberately identical to the
+   one in CompletedTasksPieChart.module.css — the two cards sit on the same
+   report and a different pill on each would read as a bug. */
+.more-rows-footer {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 4px;
+}
+
+.show-more-btn {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 0.35rem;
+  border: 1px solid #b58cdb;
+  background: #f4ecff;
+  color: #5b2a86;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.show-more-icon {
+  flex-shrink: 0;
+}
+
+.show-more-btn:hover {
+  background: #ead7ff;
+  border-color: #7b3fad;
+}
+
+.show-more-btn:active {
+  background: #dcc1fc;
+  border-color: #7b3fad;
+}
+
+.show-more-btn:focus-visible {
+  outline: 2px solid #5b2a86;
+  outline-offset: 2px;
+}
+
+:global(.dark-mode) {
+  .show-more-btn {
+    background-color: #2a1f47;
+    border-color: #c9a4f0;
+    color: #e8d4ff;
+  }
+
+  .show-more-btn:hover {
+    background-color: #36265a;
+    border-color: #d8b5f5;
+    color: #fff;
+  }
+
+  .show-more-btn:focus-visible {
+    outline: 2px solid #d8b5f5;
+    outline-offset: 2px;
+  }
+
+  .show-more-btn:active {
+    background-color: #412c6b;
+  }
+}

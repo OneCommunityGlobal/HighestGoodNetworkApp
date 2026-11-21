@@ -37,18 +37,5 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <script type="module" src="/src/index.jsx"></script>
-    <a class="back-to-top" href="#" aria-label="Back to top">
-      ↑
-    </a>
-    <script>
-      document.querySelector('.back-to-top').addEventListener('click', function (e) {
-        e.preventDefault();
-        document.documentElement.style.scrollBehavior = 'smooth';
-        document.body.style.scrollBehavior = 'smooth';
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-        window.scrollTo(0, 0);
-      });
-    </script>
   </body>
 </html>

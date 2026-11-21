@@ -114,7 +114,7 @@ const JobsHitsApplicationsChart = () => {
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
-                placeholderText="Start Date"
+                placeholderText="All"
                 className={`${styles.datePicker} ${darkMode ? styles.bgSpaceCadet : ''}`}
               />
             </div>
@@ -132,7 +132,7 @@ const JobsHitsApplicationsChart = () => {
                 selectsEnd
                 startDate={startDate}
                 endDate={endDate}
-                placeholderText="End Date"
+                placeholderText="All"
                 className={`${styles.datePicker} ${darkMode ? styles.bgSpaceCadet : ''}`}
               />
             </div>
@@ -148,6 +148,7 @@ const JobsHitsApplicationsChart = () => {
                 isMulti
                 options={roleOptions}
                 onChange={setSelectedRoles}
+                placeholder="All"
                 className={styles.roleSelector}
                 styles={{
                   control: base => ({

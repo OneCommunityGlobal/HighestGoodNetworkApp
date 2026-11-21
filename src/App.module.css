@@ -204,25 +204,6 @@ nav ul.navbar-nav li:last-child > div {
   color-scheme: dark;
 }
 
-.top {
-  text-decoration: none;
-  padding: 10px;
-  margin: 10px;
-
-  --offset: 100px;
-
-  margin-top: calc(100vh + var(--offset));
-  font-family: sans-serif;
-  color: #fff;
-  background: #000;
-  border-radius: 100px;
-  place-self: end;
-  position: sticky;
-  right: -30px;
-  bottom: 10px;
-  white-space: nowrap;
-}
-
 tr {
   content-visibility: auto;
 }
@@ -301,16 +282,6 @@ body.dark-mode .text-light {
 /* Override ANY inline styles */
 body.dark-mode [style*="background"] {
   background-color: #1a1d23 !important;
-}
-
-tr.dark-leaderboard-row:hover,
-tr.dark-leaderboard-row:hover td,
-tr.dark-leaderboard-row:hover th,
-tr.dark-leaderboard-row:hover span,
-tr.dark-leaderboard-row:hover p,
-tr.dark-leaderboard-row:hover a {
-  background-color: #fff !important;
-  color: #000 !important;
 }
 
 /* Date Picker Mobile Single Month Override */
