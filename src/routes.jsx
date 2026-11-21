@@ -351,6 +351,8 @@ const ProcessingLandingPage = lazy(() =>
 );
 
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
+import TrackerLogin from './components/MaterialEquipmentToolTracker/Login/Login';
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing Starts----- */}
@@ -1024,7 +1026,6 @@ export default (
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
-        <Route path="/lbdashboard/login" component={LBLogin} />
         <Route path="/lbdashboard/register" component={LBRegister} />
         <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
         <Route
@@ -1310,6 +1311,7 @@ export default (
           component={PRDashboardTopReviewedPRs}
         />
         <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
+        <ProtectedRoute path="/tracker/login" exact component={TrackerLogin} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
