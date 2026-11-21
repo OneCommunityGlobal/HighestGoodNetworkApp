@@ -11,9 +11,11 @@ import CreateEventModal from './CreateEventModal';
 import {
   formatDayLabel,
   getCalendarDay,
+  getCalendarDayKeys,
   getEmptyMessage,
-  getEventDayKeys,
+  getRangeEvents,
   getVisibleEvents,
+  isDayInFilter,
 } from './eventDayUtils';
 
 const MAX_COLLAPSED_EVENTS = 10;
@@ -88,10 +90,15 @@ function MyCases() {
     selectedDate,
   ]);
 
+  // Events in the dropdown range; the calendar reads these so it follows the same filter
+  const rangeEvents = useMemo(() => getRangeEvents(events, { filter }), [events, filter]);
+
   const handleFilterChange = value => {
-    // The dropdown range replaces any day picked on the calendar
     setFilter(value);
-    setSelectedDate(null);
+    // Keep the picked day while it is still inside the new range
+    if (selectedDate && !isDayInFilter(selectedDate, value)) {
+      setSelectedDate(null);
+    }
     setExpanded(false);
   };
 
@@ -140,12 +147,12 @@ function MyCases() {
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
 
-  // Memoized event cache by date for calendar
+  // Memoized event cache by date for calendar, limited to the dropdown range
   const eventCacheByDate = useMemo(() => {
     const cache = new Map();
-    events.forEach(event => {
-      // Multi-day events appear on every day they cover
-      getEventDayKeys(event).forEach(dateKey => {
+    rangeEvents.forEach(event => {
+      // Multi-day events appear on every day they cover inside the range
+      getCalendarDayKeys(event, filter).forEach(dateKey => {
         if (!cache.has(dateKey)) {
           cache.set(dateKey, []);
         }
@@ -153,7 +160,7 @@ function MyCases() {
       });
     });
     return cache;
-  }, [events]);
+  }, [rangeEvents, filter]);
 
   // The calendar shows today until a day is picked
   const calendarDay = getCalendarDay(selectedDate);
