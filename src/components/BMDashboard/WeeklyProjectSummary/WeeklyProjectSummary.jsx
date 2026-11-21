@@ -54,6 +54,7 @@ const projectStatusButtonData = [
   ['Total Labor Cost', 'totalLaborCost', '#FFFDF3', '#FBF9C1', '#328D1B'],
   ['Material Available', 'materialAvailable', '#B4D9C5', '#31BD41', '#C82F2F'],
   ['Material Wasted', 'materialWasted', '#EFBABB', '#F79395', '#328D1B'],
+  ['Open Issues', 'openIssues', '#FFF0E6', '#FFC9A3', '#C82F2F'],
 ];
 
 const projectStatusButtons = toCardButtons(projectStatusButtonData);
