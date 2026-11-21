@@ -365,6 +365,22 @@ export default function InteractiveMap() {
     }
   };
 
+  const getStatusClass = status => {
+    switch (status?.toLowerCase()) {
+      case 'active':
+        return styles.statusActive;
+
+      case 'delayed':
+        return styles.statusDelayed;
+
+      case 'completed':
+        return styles.statusCompleted;
+
+      default:
+        return styles.statusDefault;
+    }
+  };
+
   const formatDateForDisplay = dateString => {
     if (!dateString) return 'N/A';
 
@@ -479,23 +495,10 @@ export default function InteractiveMap() {
                       {org.status}
                     </span>
                   </div>
+
                   <div style={{ marginBottom: '8px' }}>
                     <strong>Status:</strong>{' '}
-                    <span
-                      className={
-                        // eslint-disable-next-line no-nested-ternary
-                        org.status === 'active'
-                          ? styles.statusActive
-                          : // eslint-disable-next-line no-nested-ternary
-                          org.status === 'delayed'
-                          ? styles.statusDelayed
-                          : org.status === 'completed'
-                          ? styles.statusCompleted
-                          : styles.statusDefault
-                      }
-                    >
-                      {org.status}
-                    </span>
+                    <span className={getStatusClass(org.status)}>{org.status}</span>
                   </div>
 
                   <div style={{ marginBottom: '8px' }}>
