@@ -193,6 +193,7 @@ export function TimeEntryForm(props) {
   // props from parent
   const {
     from,
+    sendPause,
     sendStop,
     edit,
     data,
@@ -499,6 +500,9 @@ export function TimeEntryForm(props) {
       setSubmitting(false);
       return;
     }
+    if (from === 'Timer') {
+      sendPause();
+    }
 
     const handleFormReset = () => {
       setFormValues(initialFormValues);
@@ -515,10 +519,10 @@ export function TimeEntryForm(props) {
     const handlePostSubmitActions = async () => {
       switch (from) {
         case 'Timer': {
-          const timerStopped = await sendStop();
-          if (!timerStopped) {
+          const stopped = await sendStop();
+          if (!stopped) {
             toast.warning(
-              'Time was logged, but the timer stop could not be confirmed. Refresh the timer before continuing.',
+              'Time was logged, but the timer stop could not be confirmed. Please check the timer before logging more time.',
             );
           }
           clearForm();
@@ -585,10 +589,19 @@ export function TimeEntryForm(props) {
     };
 
     try {
+      let responseStatus;
+
       if (edit) {
-        await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
+        responseStatus = await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
-        await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
+        responseStatus = await props.postTimeEntry(timeEntry, {
+          displayedUserId: props.displayedUserId,
+        });
+      }
+
+      if (from === 'Timer' && !(responseStatus >= 200 && responseStatus < 300)) {
+        handleError(`Request failed with status ${responseStatus}`);
+        return;
       }
 
       await handlePostSubmitActions();
@@ -1069,6 +1082,7 @@ export function TimeEntryForm(props) {
 
 TimeEntryForm.propTypes = {
   from: PropTypes.string,
+  sendPause: PropTypes.func,
   sendStop: PropTypes.func,
   edit: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,

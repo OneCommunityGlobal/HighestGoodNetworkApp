@@ -603,7 +603,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     sendStart,
     sendPause,
     sendClear,
-    sendStop,
     sendAckForced,
     sendGetTimer,
     sendStartChime,
@@ -819,7 +818,8 @@ function Timer({ authUser, darkMode, isPopout }) {
       return; // Exit early to prevent other modal logic
     }
 
-    const { paused: pausedLJM, forcedPause: forcedPauseLJM, started: startedLJM } = lastJsonMessage;
+    const { paused: pausedLJM, forcedPause: forcedPauseLJM, started: startedLJM } =
+      lastJsonMessage || defaultMessage;
 
     setMessage(lastJsonMessage);
     setRunning(startedLJM && !pausedLJM);
@@ -1056,7 +1056,8 @@ function Timer({ authUser, darkMode, isPopout }) {
         toggle={toggleLogTimeModal}
         isOpen={logTimeEntryModal}
         data={logTimer}
-        sendStop={sendStop}
+        sendPause={sendPause}
+        sendStop={wsJsonMessageHandler.sendStop}
         timerConnected={customReadyState === ReadyState.OPEN}
         onTimeSubmitted={handleTimeSubmitted}
         sessionId={sessionId}
