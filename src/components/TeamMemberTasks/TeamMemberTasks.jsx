@@ -668,7 +668,7 @@ const TeamMemberTasks = React.memo(props => {
                   ].join(' ')}
                 >
                   <thead className={darkMode ? styles.darkStickyHeader : ''}>
-                    <tr>
+                    <tr className={styles['team-member-tasks-header-row']}>
                       <th
                         className={darkMode ? styles.darkStickyHeader : ''}
                         style={{ background: 'transparent' }}

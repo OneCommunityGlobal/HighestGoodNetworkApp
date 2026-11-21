@@ -365,6 +365,13 @@
   gap: 4px;
 }
 
+/* The header cells use display: flex, so they are not real table cells. Lay the header
+   row out as an explicit column so Firefox stacks them the same way Chrome does. */
+.team-member-tasks-header-row {
+  display: flex;
+  flex-direction: column;
+}
+
 .hours-btn-container {
   display: flex;
   align-items: center;
