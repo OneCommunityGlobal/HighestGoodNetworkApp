@@ -65,6 +65,25 @@ body {
   padding: 6px 12px;
 }
 
+.headerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.logoutBtn {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.darkLogoutBtn {
+  background: #8b1e2b;
+  color: #fff;
+  box-shadow: 0 2px 8px #1c2541;
+}
+
 .filterBar {
   background: #fff;
   border: 1px solid #ece7f4;
