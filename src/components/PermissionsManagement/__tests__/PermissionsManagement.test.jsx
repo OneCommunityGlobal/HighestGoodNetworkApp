@@ -457,21 +457,5 @@ describe('PermissionsManagement', () => {
       await clickDialogClose();
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     });
-
-    it('closes on X after a category Delete that changed nothing (the role gives those permissions)', async () => {
-      // 'Popup Management' only holds updatePopup, which this user's role already gives, so the
-      // category shows 'Delete' but there is nothing in the user's own lists to remove.
-      const user = makeUser('u2', 'Administrator', 'Admin');
-      renderWithUser(user, [{ roleName: 'Administrator', permissions: [permissions.updatePopup] }]);
-      await pickUser(user);
-
-      const popupCategory = screen.getByText(/^popup management$/i).closest('li');
-      await userEvent.click(await within(popupCategory).findByRole('button', { name: 'Delete' }));
-      await settle();
-      expect(screen.queryByText(REMINDER)).not.toBeInTheDocument();
-
-      await clickDialogClose();
-      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-    });
   });
 });

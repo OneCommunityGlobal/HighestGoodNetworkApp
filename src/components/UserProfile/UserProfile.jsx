@@ -1012,7 +1012,36 @@ setUpdatedTasks(prev => {
   }
 
   try {
-    await props.updateUserProfile(userProfileToUpdate);
+    await props.updateUserProfile(userProfileToUpdate)
+    if(originalUserProfile.role !== userProfileToUpdate.role) {
+      const userId = userProfileToUpdate?._id;
+      const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
+      const frontPermissions = userProfileToUpdate?.permissions?.frontPermissions;
+      const removedDefaultPermissions = userProfileToUpdate?.permissions?.removedDefaultPermissions;
+      const permissions = {
+          frontPermissions: frontPermissions,
+          removedDefaultPermissions: removedDefaultPermissions,
+      };
+      const requestor = props.auth.user;
+      const permissionData = {
+        previousRole: originalUserProfile?.role,
+        newRole: userProfileToUpdate?.role,
+        permissions: permissions,
+        requestor: requestor,
+      };
+      // Creates a change log if user's role is changed
+      await axios.patch(permissionURL, permissionData)
+        .catch(async err => {
+          try {
+            // Attempts to undo changes to user's data if
+            // change log creation fails
+            await props.updateUserProfile(originalUserProfile);
+          } catch (err) {
+            console.log('Error occurring during rollback attempt, so user state may be inconsistent')
+          }
+          throw err;
+        });
+    }
     clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
@@ -1339,6 +1368,13 @@ setUpdatedTasks(prev => {
   };
 
   const hasScheduledFinalDay = userProfile.isActive && userProfile.inactiveReason === InactiveReason.ScheduledSeparation && !!userProfile.endDate;
+
+  const checkActiveTab = (tabNumber) => {
+    if (darkMode && activeTab === tabNumber) {
+      return 'bg-space-cadet text-light darkMode';
+    }
+    return 'text-azure';
+  };
 
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
@@ -1723,11 +1759,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '1' },
-                      darkMode
-                        ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('1')
                     )}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
@@ -1740,11 +1772,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '2' },
-                      darkMode
-                        ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('2')
                     )}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
@@ -1757,11 +1785,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '3' },
-                      darkMode
-                        ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('3')
                     )}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
@@ -1774,11 +1798,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '4' },
-                      darkMode
-                        ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('4')
                     )}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
@@ -1792,11 +1812,7 @@ setUpdatedTasks(prev => {
                     className={classnames(
                       'nav-link',
                       { active: activeTab === '5' },
-                      darkMode
-                        ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
-                          : 'text-azure'
-                        : 'text-azure',
+                      checkActiveTab('5')
                     )}
                     onClick={() => toggleTab('5')}
                   >
@@ -1807,7 +1823,7 @@ setUpdatedTasks(prev => {
             </div>
             <TabContent
               activeTab={activeTab}
-              className={`tab-content profile-tab ${darkMode ? 'bg-yinmn-blue' : ''}`}
+              className={`tab-content profile-tab ${darkMode ? 'darkMode bg-yinmn-blue' : ''}`}
               id="myTabContent"
               style={{ border: 0 }}
             >
