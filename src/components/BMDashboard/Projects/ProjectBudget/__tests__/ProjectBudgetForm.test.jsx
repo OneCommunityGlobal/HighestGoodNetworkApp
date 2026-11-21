@@ -189,8 +189,19 @@ describe('ProjectBudgetForm', () => {
     expect(screen.getByRole('main')).toHaveClass(styles.pageDark);
   });
 
-  it('shows an error when the budget cannot be loaded', async () => {
-    fetchProjectBudget.mockResolvedValue({ status: 500, data: { message: 'Server down' } });
+  it.each([
+    [
+      'the server returns an error',
+      () => fetchProjectBudget.mockResolvedValue({ status: 500, data: { message: 'Server down' } }),
+      'Server down',
+    ],
+    [
+      'the request throws',
+      () => fetchProjectBudget.mockRejectedValue(new Error('boom')),
+      'Could not load the budget for this project.',
+    ],
+  ])('shows an error when %s while loading the budget', async (_case, arrange, message) => {
+    arrange();
     const store = mockStore({
       theme: { darkMode: false },
       auth: { user: { role: 'Owner' } },
@@ -208,7 +219,8 @@ describe('ProjectBudgetForm', () => {
         </Router>
       </Provider>,
     );
-    expect(await screen.findByText('Server down')).toBeInTheDocument();
+    expect(await screen.findByText(message)).toBeInTheDocument();
+    expect(screen.queryByText('Loading budget…')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Save budget' })).not.toBeInTheDocument();
   });
 });

@@ -179,7 +179,11 @@ export default function ProjectBudgetForm() {
       }
       setLoading(false);
     };
-    load();
+    load().catch(() => {
+      if (!active) return;
+      setLoadError('Could not load the budget for this project.');
+      setLoading(false);
+    });
     return () => {
       active = false;
     };
