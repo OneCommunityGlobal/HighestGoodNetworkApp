@@ -192,6 +192,30 @@
   stroke: #aab4c2 !important;
 }
 
+.noBudgetNote {
+  margin: 0 auto 8px;
+  padding: 6px 10px;
+  max-width: 520px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #92400e;
+  background-color: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 4px;
+}
+
+.noBudgetNote a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.darkMode .noBudgetNote {
+  color: #fde68a;
+  background-color: rgb(146 64 14 / 25%);
+  border-color: #b45309;
+}
+
 .overBudgetWarning {
   text-align: center;
   font-size: 12px;
