@@ -23,8 +23,9 @@ export const fetchInfosBegin = () => ({
   type: actions.FETCH_INFOS_BEGIN,
 });
 
-export const fetchInfosError = () => ({
+export const fetchInfosError = (error) => ({
   type: actions.FETCH_INFOS_ERROR,
+  payload: error,
 })
 
 // Get infoCollections
