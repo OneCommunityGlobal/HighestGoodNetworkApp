@@ -27,7 +27,7 @@ import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
-import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
+import LossTrackingSection from './Financials/LossTracking/LossTrackingSection';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
@@ -412,10 +412,10 @@ function WeeklyProjectSummary() {
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
-        className: 'large',
+        className: 'full',
         content: (
-          <div className="weekly-project-summary-card financial-big">
-            <LossTrackingLineChart />
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <LossTrackingSection />
           </div>
         ),
       },
