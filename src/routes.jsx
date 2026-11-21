@@ -1295,7 +1295,15 @@ export default (
             </QuestionnaireResultsAccessGuard>
           )}
         />
-        <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
+        <ProtectedRoute
+          path="/hgnhelp"
+          exact
+          render={props => (
+            <QuestionnaireResultsAccessGuard getStatus={getQuestionnaireStatus}>
+              <HelpPage {...props} />
+            </QuestionnaireResultsAccessGuard>
+          )}
+        />
         <ProtectedRoute path="/hgnteam" exact component={TeamCard} />
         <ProtectedRoute
           path="/hgnhelp/skills-overview"
