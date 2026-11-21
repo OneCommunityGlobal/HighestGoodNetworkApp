@@ -42,7 +42,7 @@ export const renameIssue = (issueId, newName) => {
       return res.data;
     } catch (err) {
       dispatch(setErrors(err));
-      toast.error("Failed to rename issue");
+      toast.error(err.response?.data?.message || "Failed to rename issue");
       throw err;
     }
   };

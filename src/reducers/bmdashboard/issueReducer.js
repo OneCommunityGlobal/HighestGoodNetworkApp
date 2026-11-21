@@ -19,6 +19,7 @@ import {
 const initialState = {
   loading: false,
   issues: [],
+  dashboardIssues: [],
   issueTypes: [],
   years: [],
   longestOpenIssues: [],
@@ -51,7 +52,7 @@ const issueReducer = (state = initialState, action) => {
       return { ...state, loading: false, error: action.payload };
 
     case SET_ISSUES:
-      return { ...state, loading: false, issues: action.payload };
+      return { ...state, loading: false, dashboardIssues: action.payload };
 
     case FETCH_LONGEST_OPEN_ISSUES_REQUEST:
       return { ...state, loading: true, error: null };

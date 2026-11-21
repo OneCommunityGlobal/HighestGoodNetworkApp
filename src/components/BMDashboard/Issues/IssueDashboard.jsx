@@ -29,9 +29,11 @@ import IssueHeader from './IssueHeader';
 import { toast } from 'react-toastify';
 import { jsPDF } from 'jspdf';
 
+const MAX_ISSUE_NAME_LENGTH = 50;
+
 export default function IssueDashboard() {
   const dispatch = useDispatch();
-  const issues = useSelector(state => state.issue.issues);
+  const issues = useSelector(state => state.issue.dashboardIssues);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,6 +83,10 @@ export default function IssueDashboard() {
   };
 
   const confirmRename = () => {
+    if (renameValue.trim().length > MAX_ISSUE_NAME_LENGTH) {
+      toast.error(`Issue name must be ${MAX_ISSUE_NAME_LENGTH} characters or fewer.`);
+      return;
+    }
     if (renameValue.trim() !== '') {
       dispatch(renameIssue(selectedIssue._id, renameValue.trim()));
       setShowRenameModal(false);
@@ -452,8 +458,12 @@ export default function IssueDashboard() {
                   darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'
                 }`}
                 value={renameValue}
+                maxLength={MAX_ISSUE_NAME_LENGTH}
                 onChange={e => setRenameValue(e.target.value)}
               />
+              <div className={`small ${darkMode ? 'text-light' : 'text-muted'}`}>
+                {renameValue.length}/{MAX_ISSUE_NAME_LENGTH}
+              </div>
               <div className="d-flex justify-content-end gap-2 mt-2">
                 <button
                   className="btn btn-secondary mx-3"
