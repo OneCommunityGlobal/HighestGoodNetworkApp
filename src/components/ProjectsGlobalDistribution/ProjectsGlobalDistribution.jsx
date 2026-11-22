@@ -38,6 +38,7 @@ const ProjectsGlobalDistribution = () => {
     'South America': '#f97316',
     Africa: '#1e40af',
     'Middle East': '#eab308',
+    Other: '#64748b',
   };
 
   useEffect(() => {

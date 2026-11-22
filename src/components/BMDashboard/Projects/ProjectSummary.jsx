@@ -3,6 +3,31 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './ProjectSummary.module.css';
 
+const formatCost = value =>
+  value === null || value === undefined ? 'No cost data recorded' : `${value} USD`;
+
+const getMaterialSummary = (material, quantityKey, suffix) => {
+  const quantity = material?.[quantityKey];
+  const unit = material?.itemType?.unit;
+  const name = material?.itemType?.name;
+
+  if (quantity === null || quantity === undefined || !unit || !name) {
+    return 'No material data recorded';
+  }
+
+  return `${quantity} ${unit} of ${name} ${suffix}`;
+};
+
+const getRentalSummary = rental => {
+  if (!rental?.itemName || !rental.rentalDueDate) return 'No rental data recorded';
+
+  const dueDate = new Date(rental.rentalDueDate);
+  if (Number.isNaN(dueDate.getTime())) return 'No rental data recorded';
+
+  const hoursRemaining = Math.max(0, Math.ceil((dueDate.getTime() - Date.now()) / 3600000));
+  return `${rental.itemName} rental ends in ${hoursRemaining} hours!`;
+};
+
 function ProjectSummary({ project }) {
   const {
     hoursWorked,
@@ -12,6 +37,7 @@ function ProjectSummary({ project }) {
     members,
     mostMaterialBought,
     leastMaterialAvailable,
+    rentalSummary,
   } = project;
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -40,7 +66,7 @@ function ProjectSummary({ project }) {
           <Label className={styles.projectSummaryLabel}>Total hours of work done:</Label>
         </Col>
         <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>{hoursWorked}</span>
+          <span className={styles.projectSummarySpan}>{hoursWorked ?? 0}</span>
         </Col>
       </Row>
 
@@ -49,7 +75,7 @@ function ProjectSummary({ project }) {
           <Label className={styles.projectSummaryLabel}>Total cost of materials:</Label>
         </Col>
         <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>{totalMaterialsCost} USD</span>
+          <span className={styles.projectSummarySpan}>{formatCost(totalMaterialsCost)}</span>
         </Col>
       </Row>
 
@@ -58,7 +84,7 @@ function ProjectSummary({ project }) {
           <Label className={styles.projectSummaryLabel}>Total cost of equipment:</Label>
         </Col>
         <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>{totalEquipmentCost} USD</span>
+          <span className={styles.projectSummarySpan}>{formatCost(totalEquipmentCost)}</span>
         </Col>
       </Row>
 
@@ -68,8 +94,7 @@ function ProjectSummary({ project }) {
         </Col>
         <Col xs={summaryValueCol} sm={summaryValueCol}>
           <span className={styles.projectSummarySpan}>
-            {mostMaterialWaste?.stockWasted} {mostMaterialWaste?.itemType.unit} of{' '}
-            {mostMaterialWaste?.itemType.name} has been wasted!
+            {getMaterialSummary(mostMaterialWaste, 'stockWasted', 'has been wasted!')}
           </span>
         </Col>
       </Row>
@@ -79,7 +104,7 @@ function ProjectSummary({ project }) {
           <Label className={styles.projectSummaryLabel}>Total members:</Label>
         </Col>
         <Col xs={summaryValueCol} sm={summaryValueCol}>
-          <span className={styles.projectSummarySpan}>{members.length}</span>
+          <span className={styles.projectSummarySpan}>{members?.length || 0}</span>
         </Col>
       </Row>
 
@@ -88,7 +113,7 @@ function ProjectSummary({ project }) {
           <Label className={styles.projectSummaryLabel}>Rentals:</Label>
         </Col>
         <Col xs={summaryValueCol} sm={8}>
-          <span className={styles.projectSummarySpan}>Excavator 2 rental ends in 72 hours!</span>
+          <span className={styles.projectSummarySpan}>{getRentalSummary(rentalSummary)}</span>
         </Col>
       </Row>
 
@@ -98,8 +123,7 @@ function ProjectSummary({ project }) {
         </Col>
         <Col xs={summaryValueCol} sm={8}>
           <span className={styles.projectSummarySpan}>
-            {mostMaterialBought?.stockBought} {mostMaterialBought?.itemType.unit} of{' '}
-            {mostMaterialBought?.itemType.name} purchased for this project
+            {getMaterialSummary(mostMaterialBought, 'stockBought', 'purchased for this project')}
           </span>
         </Col>
       </Row>
@@ -110,9 +134,12 @@ function ProjectSummary({ project }) {
         </Col>
         <Col xs={summaryValueCol} sm={summaryValueCol}>
           <span className={styles.projectSummarySpan}>
-            {leastMaterialAvailable?.itemType.name} is nearly out of stock (
-            {leastMaterialAvailable?.stockAvailable} {leastMaterialAvailable?.itemType.unit}{' '}
-            remaining)
+            {leastMaterialAvailable?.itemType?.name &&
+            leastMaterialAvailable?.stockAvailable !== null &&
+            leastMaterialAvailable?.stockAvailable !== undefined &&
+            leastMaterialAvailable?.itemType?.unit
+              ? `${leastMaterialAvailable.itemType.name} is nearly out of stock (${leastMaterialAvailable.stockAvailable} ${leastMaterialAvailable.itemType.unit} remaining)`
+              : 'No stock data recorded'}
           </span>
         </Col>
       </Row>

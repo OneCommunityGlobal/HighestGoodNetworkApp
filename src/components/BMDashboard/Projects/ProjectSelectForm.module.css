@@ -1,0 +1,70 @@
+.controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+}
+
+.projectSelect {
+  flex: 1 1 300px;
+  min-width: 0;
+  max-width: 300px;
+  margin-right: 0;
+  font-size: 1rem;
+}
+
+.goButton {
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  color: #fff;
+  background-color: #2f4f4f;
+  border-color: #2f4f4f;
+}
+
+.goButtonDark {
+  color: #fff;
+  background-color: #3a506b;
+  border-color: #5a7a9b;
+}
+
+.goButtonDark:focus-visible {
+  outline: 2px solid #6af1ea;
+  outline-offset: 2px;
+}
+
+.goButtonDark:disabled {
+  color: #b5bac5;
+  background-color: #1c2541;
+  border-color: #3a506b;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.goButtonDark:hover:not(:disabled) {
+  color: #fff;
+  background-color: #5a7a9b;
+  border-color: #5a7a9b;
+}
+
+.darkInput {
+  border-color: #3a506b;
+  color: #e0e0e0;
+  background-color: #2a3f5f;
+}
+
+@media (width <= 767px) {
+  .controls {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .projectSelect,
+  .goButton {
+    width: 100%;
+    max-width: none;
+    flex-basis: auto;
+  }
+}

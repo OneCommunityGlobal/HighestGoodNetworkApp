@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Row, Col, Button, Input } from 'reactstrap';
+import styles from './ProjectSelectForm.module.css';
 
 function ProjectSelectForm() {
   const projects = useSelector(state => state.bmProjects) || [];
@@ -16,31 +17,14 @@ function ProjectSelectForm() {
     }
   };
 
-  const inputStyles = {
-    maxWidth: '300px',
-    marginRight: '1rem',
-    fontSize: '1rem',
-    backgroundColor: darkMode ? '#2a3f5f' : '',
-    borderColor: darkMode ? '#3a506b' : '',
-    color: darkMode ? '#e0e0e0' : '',
-  };
-
-  const buttonStyles = {
-    whiteSpace: 'nowrap',
-    backgroundColor: darkMode ? '#3a506b' : '#2F4F4F',
-    borderColor: darkMode ? '#3a506b' : '#2F4F4F',
-    color: '#fff',
-  };
-
   return (
     <Row className={`justify-content-center mt-4 ${darkMode ? 'project-select-form-dark' : ''}`}>
-      <Col md="8" lg="6" className="d-flex align-items-center">
+      <Col md="8" lg="6" className={styles.controls}>
         <Input
           type="select"
           value={selectedProject}
           onChange={e => setSelectedProject(e.target.value)}
-          style={inputStyles}
-          className={darkMode ? 'form-control-dark' : ''}
+          className={`${styles.projectSelect} ${darkMode ? styles.darkInput : ''}`}
         >
           <option value="">Select a project</option>
           {projects.map(p => (
@@ -53,21 +37,7 @@ function ProjectSelectForm() {
         <Button
           onClick={handleGo}
           disabled={!selectedProject}
-          style={
-            darkMode
-              ? {
-                  whiteSpace: 'nowrap',
-                  backgroundColor: '#00ffff',
-                  borderColor: '#00ffff',
-                  color: '#000',
-                }
-              : {
-                  whiteSpace: 'nowrap',
-                  backgroundColor: '#2F4F4F',
-                  borderColor: '#2F4F4F',
-                  color: '#fff',
-                }
-          }
+          className={`${styles.goButton} ${darkMode ? styles.goButtonDark : ''}`}
         >
           Go to Project Dashboard
         </Button>

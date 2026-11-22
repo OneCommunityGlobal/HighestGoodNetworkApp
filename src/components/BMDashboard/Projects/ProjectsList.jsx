@@ -5,9 +5,11 @@ import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
 import styles from '../BMDashboard.module.css';
 
-function ProjectsList() {
+function ProjectsList({ onEditProject }) {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme?.darkMode || false);
+  const role = useSelector(state => state.auth?.user?.role);
+  const canManageProjects = role === 'Owner' || role === 'Administrator';
   const [selectedProjects, setSelectedProjects] = useState([]);
   const projectOptions = projects.map(project => ({
     value: project._id,
@@ -127,6 +129,11 @@ function ProjectsList() {
                 className={`${darkMode ? styles.darkProjectSummary : styles.projectSummary}`}
                 key={project._id}
               >
+                {canManageProjects && onEditProject && (
+                  <button type="button" onClick={() => onEditProject(project)}>
+                    Edit project
+                  </button>
+                )}
                 <ProjectSummary project={project} />
               </li>
             ))}
@@ -138,5 +145,7 @@ function ProjectsList() {
     </Row>
   );
 }
+
+ProjectsList.defaultProps = { onEditProject: undefined };
 
 export default ProjectsList;

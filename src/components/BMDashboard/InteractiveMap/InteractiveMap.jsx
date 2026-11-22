@@ -283,54 +283,16 @@ export default function InteractiveMap() {
     }
   };
 
-  const pseudoOrgs = [
-    {
-      orgId: 9991,
-      name: 'Project Alpha',
-      status: 'active',
-      latitude: 34.1185,
-      longitude: -118.0743,
-      startDate: '2025-11-01',
-      endDate: '2026-05-01',
-      country: 'United States',
-    },
-    {
-      orgId: 9992,
-      name: 'Project Beta',
-      status: 'completed',
-      latitude: 52.52,
-      longitude: 13.405,
-      startDate: '2023-12-10',
-      endDate: '2024-08-15',
-      country: 'Germany',
-    },
-    {
-      orgId: 9993,
-      name: 'Project Gamma',
-      status: 'delayed',
-      latitude: 35.6895,
-      longitude: 139.6917,
-      startDate: '2025-06-01',
-      endDate: '2026-01-30',
-      country: 'Japan',
-    },
-  ];
-
   const fetchOrgs = async () => {
     try {
-      let res;
-      try {
-        res = await axios.get(ENDPOINTS.BM_PROJECTS_WITH_LOCATION);
-      } catch {
-        res = await axios.get(ENDPOINTS.BM_ORGS_WITH_LOCATION);
-      }
-      const data = res.data.data && res.data.data.length ? res.data.data : pseudoOrgs;
+      const res = await axios.get(ENDPOINTS.BM_PROJECTS_WITH_LOCATION);
+      const data = res.data.data || [];
       setOrgs(data);
       setFilteredOrgs(data);
     } catch (e) {
       console.error(e);
-      setOrgs(pseudoOrgs);
-      setFilteredOrgs(pseudoOrgs);
+      setOrgs([]);
+      setFilteredOrgs([]);
     } finally {
       setLoading(false);
     }

@@ -388,6 +388,7 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_LOGS: `${APIEndpoint}/bm/equipments/logRecords`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECTS_WITH_LOCATION: `${APIEndpoint}/bm/projects/location`,
+  BM_UPDATE_PROJECT: projectId => `${APIEndpoint}/bm/project/${projectId}`,
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
   BM_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS: `${APIEndpoint}/bm/weekly-project-summary/project-status`,

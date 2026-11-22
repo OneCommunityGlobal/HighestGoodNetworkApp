@@ -18,17 +18,25 @@ export const setErrors = payload => {
   };
 };
 
-export const fetchBMProjects = () => {
-  return async dispatch => {
-    axios
-      .get(ENDPOINTS.BM_PROJECTS)
-      .then(res => {
-        dispatch(setProjects(res.data));
-      })
-      .catch(err => {
-        dispatch(setErrors(err));
-      });
-  };
+export const fetchBMProjects = () => async dispatch => {
+  try {
+    const response = await axios.get(ENDPOINTS.BM_PROJECTS);
+    dispatch(setProjects(response.data));
+    return response.data;
+  } catch (error) {
+    dispatch(setErrors(error));
+    throw error;
+  }
+};
+
+export const createBMProject = payload => async () => {
+  const response = await axios.post(ENDPOINTS.BM_PROJECTS, payload);
+  return response.data;
+};
+
+export const updateBMProject = (projectId, payload) => async () => {
+  const response = await axios.put(ENDPOINTS.BM_UPDATE_PROJECT(projectId), payload);
+  return response.data;
 };
 
 export const getProjectGlobalDistribution = async (payload) => {
