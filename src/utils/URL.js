@@ -469,6 +469,7 @@ export const ENDPOINTS = {
     return url;
   },
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
+  BM_COST_PROJECTS: `${APIEndpoint}/costs/projects`,
   BM_COST_BREAKDOWN: (projectId, startDate, endDate, categoryDetail) => {
     let url = `${APIEndpoint}/costs/breakdown`;
     const params = [];

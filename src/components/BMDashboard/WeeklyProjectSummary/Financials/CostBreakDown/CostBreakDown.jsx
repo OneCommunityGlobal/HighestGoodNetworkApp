@@ -8,6 +8,7 @@ import {
   fetchCostDetail,
   clearCostDetail,
 } from '../../../../../actions/bmdashboard/costBreakdownActions';
+import { ENDPOINTS } from '../../../../../utils/URL';
 import styles from './CostBreakDown.module.css';
 
 const CATEGORY_CONFIG = {
@@ -74,6 +75,66 @@ function formatCurrency(amount) {
   }
 }
 
+// Slices smaller than this get no outside label, so tiny slices don't pile up labels
+const MIN_LABEL_PERCENT = 0.03;
+
+function formatCompactCurrency(amount) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    notation: 'compact',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1,
+  }).format(Number(amount) || 0);
+}
+
+/**
+ * Text shown next to a slice: "$1.1M · 63.7%", or just the % on narrow screens.
+ */
+function sliceLabelText(value, percent, showAmount) {
+  const pct = `${(percent * 100).toFixed(1)}%`;
+  return showAmount ? `${formatCompactCurrency(value)} · ${pct}` : pct;
+}
+
+function SliceLabel({ x, y, textAnchor, value, percent, showAmount, textColor }) {
+  if (!percent || percent < MIN_LABEL_PERCENT) return null;
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor={textAnchor}
+      dominantBaseline="central"
+      fill={textColor}
+      fontSize={12}
+      fontWeight={600}
+    >
+      {sliceLabelText(value, percent, showAmount)}
+    </text>
+  );
+}
+
+SliceLabel.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  textAnchor: PropTypes.string,
+  value: PropTypes.number,
+  percent: PropTypes.number,
+  showAmount: PropTypes.bool,
+  textColor: PropTypes.string,
+};
+
+function SliceLabelLine({ points, percent, stroke }) {
+  if (!percent || percent < MIN_LABEL_PERCENT || points?.length !== 2) return null;
+  const [start, end] = points;
+  return <path d={`M${start.x},${start.y}L${end.x},${end.y}`} stroke={stroke} fill="none" />;
+}
+
+SliceLabelLine.propTypes = {
+  points: PropTypes.arrayOf(PropTypes.shape({ x: PropTypes.number, y: PropTypes.number })),
+  percent: PropTypes.number,
+  stroke: PropTypes.string,
+};
+
 function CustomTooltip({ active, payload, totalCost, darkMode }) {
   if (!active || !payload?.length) return null;
   const entry = payload[0].payload;
@@ -132,12 +193,11 @@ export default function CostBreakDown() {
 
   const debounceRef = useRef(null);
 
-  // Load project list for dropdown
+  // Load the projects that have cost data (active or not), so the filter matches the chart
   useEffect(() => {
     let cancelled = false;
-    const apiBase = (process.env.REACT_APP_APIENDPOINT || '').replace(/\/$/, '');
     axios
-      .get(`${apiBase}/bm/projectsNames`)
+      .get(ENDPOINTS.BM_COST_PROJECTS)
       .then(res => {
         if (cancelled) return;
         if (Array.isArray(res.data)) {
@@ -187,6 +247,7 @@ export default function CostBreakDown() {
   const projectLabel = data?.project || 'All Projects';
 
   const isXS = windowWidth <= 480;
+  const centerTextColor = darkMode ? '#f8fafc' : '#0f172a';
   let innerRadius;
   let outerRadius;
   let chartHeight;
@@ -251,7 +312,7 @@ export default function CostBreakDown() {
     return (
       <div className={styles.projectList}>
         {categoryData.projectBreakdown.map(proj => (
-          <div key={proj.projectId} className={styles.projectRow}>
+          <div key={proj.projectId || 'unassigned'} className={styles.projectRow}>
             <span className={styles.projectName}>{proj.projectName}</span>
             <span className={styles.projectAmount}>{formatCurrency(proj.amount)}</span>
             <span className={styles.projectPct}>{proj.percentage.toFixed(1)}%</span>
@@ -379,6 +440,8 @@ export default function CostBreakDown() {
                   onMouseLeave={() => setActiveIndex(null)}
                   onClick={(_, i) => handleSliceClick(chartData[i])}
                   isAnimationActive={false}
+                  label={<SliceLabel showAmount={!isXS} textColor={centerTextColor} />}
+                  labelLine={<SliceLabelLine />}
                 >
                   {chartData.map((entry, i) => (
                     <Cell
@@ -396,7 +459,7 @@ export default function CostBreakDown() {
                   y={labelLines.length > 1 ? '40%' : '46%'}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fill={darkMode ? '#f8fafc' : '#0f172a'}
+                  fill={centerTextColor}
                   fontSize={labelFontSize}
                   fontWeight="600"
                 >
@@ -413,16 +476,19 @@ export default function CostBreakDown() {
                   y={labelLines.length > 1 ? '57%' : '55%'}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fill={darkMode ? '#f8fafc' : '#0f172a'}
+                  fill={centerTextColor}
                   fontSize={isXS ? 16 : 20}
                   fontWeight="800"
                 >
                   {formatCurrency(totalCost)}
                 </text>
 
+                {/* Pinned to the top-left corner so it never covers the center total */}
                 <Tooltip
                   content={<CustomTooltip totalCost={totalCost} darkMode={darkMode} />}
                   cursor={false}
+                  position={{ x: 0, y: 0 }}
+                  wrapperStyle={{ pointerEvents: 'none' }}
                   allowEscapeViewBox={{ x: false, y: false }}
                 />
               </PieChart>
