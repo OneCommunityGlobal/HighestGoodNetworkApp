@@ -1405,15 +1405,16 @@ class UserProfileAdd extends Component {
           },
         });
         break;
-      case 'pronouns':
-        this.setState({
-          ...this.state,
+      case 'pronouns': {
+        const pronouns = event.target.value;
+        this.setState(prevState => ({
           userProfile: {
-            ...this.state.userProfile,
-            pronouns: event.target.value,
+            ...prevState.userProfile,
+            pronouns,
           },
-        });
+        }));
         break;
+      }
       case 'weeklyCommittedHours':
         let val = Number(event.target.value);
         if (val > 168) {
