@@ -43,83 +43,23 @@ function MapThemeUpdater({ darkMode }) {
 }
 
 /* -----------------------------------------------------
-   DRAGGABLE LEGEND
+   STATUS LEGEND (shown above the map so it never covers markers)
 ----------------------------------------------------- */
-function FloatingLegend({ darkMode, mapAreaRef }) {
-  const legendRef = useRef(null);
-  const [pos, setPos] = useState({ left: null, top: null });
-  const draggingRef = useRef(false);
-  const startRef = useRef({ x: 0, y: 0 });
-  const origRef = useRef({ x: 0, y: 0 });
+const STATUS_LEGEND = [
+  ['active', '#DE6A6A'],
+  ['delayed', '#E3D270'],
+  ['completed', '#6ACFDE'],
+];
 
-  useEffect(() => {
-    const div = legendRef.current;
-    if (!div || !mapAreaRef.current) return;
-
-    // Start in the bottom-left corner (open ocean at the default view) so the legend
-    // doesn't cover project markers; users can still drag it anywhere.
-    if (pos.left === null && pos.top === null) {
-      const mapRect = mapAreaRef.current.getBoundingClientRect();
-      setPos({
-        left: 20,
-        top: mapRect.height - div.offsetHeight - 20,
-      });
-    }
-
-    const onMouseMove = e => {
-      if (!draggingRef.current) return;
-      const mapRect = mapAreaRef.current.getBoundingClientRect();
-      let newLeft = origRef.current.x + (e.clientX - startRef.current.x);
-      let newTop = origRef.current.y + (e.clientY - startRef.current.y);
-
-      newLeft = Math.max(0, Math.min(newLeft, mapRect.width - div.offsetWidth));
-      newTop = Math.max(0, Math.min(newTop, mapRect.height - div.offsetHeight));
-
-      setPos({ left: newLeft, top: newTop });
-    };
-
-    const onMouseUp = () => {
-      draggingRef.current = false;
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-
-    return () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-  }, [mapAreaRef, pos.left, pos.top]);
-
-  const onMouseDown = e => {
-    draggingRef.current = true;
-    startRef.current = { x: e.clientX, y: e.clientY };
-    origRef.current = { x: pos.left, y: pos.top };
-  };
-
-  const statuses = ['active', 'delayed', 'completed'];
-  const colors = ['#DE6A6A', '#E3D270', '#6ACFDE'];
-
+function StatusLegend() {
   return (
-    <div
-      ref={legendRef}
-      className={styles.legendBox}
-      style={{
-        left: pos.left !== null ? pos.left + 'px' : undefined,
-        top: pos.top !== null ? pos.top + 'px' : undefined,
-        bottom: undefined,
-        right: undefined,
-        position: 'absolute',
-        cursor: 'move',
-      }}
-      onMouseDown={onMouseDown}
-    >
-      <h4>Project Status</h4>
-      {statuses.map((s, i) => (
-        <div key={s} className={styles.legendItem}>
-          <span className={styles.legendDot} style={{ background: colors[i] }}></span>
-          <span>{s}</span>
-        </div>
+    <div className={styles.legendBar} aria-label="Project status legend">
+      <span className={styles.legendTitle}>Project Status:</span>
+      {STATUS_LEGEND.map(([status, color]) => (
+        <span key={status} className={styles.legendItem}>
+          <span className={styles.legendDot} style={{ background: color }} />
+          {status}
+        </span>
       ))}
     </div>
   );
@@ -475,10 +415,10 @@ export default function InteractiveMap() {
           </div>
         </div>
 
+        <StatusLegend />
+
         {/* MAP */}
         <div className={styles.mapArea} ref={mapAreaRef}>
-          <FloatingLegend darkMode={darkMode} mapAreaRef={mapAreaRef} />
-
           {loading ? (
             <div className={styles.loading}>Loading…</div>
           ) : (

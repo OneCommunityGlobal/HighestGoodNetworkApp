@@ -7,8 +7,6 @@
   width: 100%;
   height: 100%;
   color: #222;
-
-  --legend-bg: rgb(255 255 255 / 90%);
 }
 
 .darkPage {
@@ -16,8 +14,6 @@
   width: 100%;
   height: 100%;
   color: #e6e6e6;
-
-  --legend-bg: rgb(0 0 0 / 55%);
 }
 
 /* ----------------------------------
@@ -478,6 +474,20 @@
   color: #fff;
 }
 
+/* Status legend row above the map, so it never covers project markers */
+.legendBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.legendTitle {
+  font-weight: 700;
+}
+
 .legendItem {
   display: flex;
   align-items: center;
@@ -553,34 +563,6 @@
   transform: translateY(-1px);
 }
 
-.legendBox {
-  position: absolute; /* absolute inside the map container */
-  width: max-content; /* size to content so it covers as little of the map as possible */
-  height: max-content;
-  cursor: move;
-  user-select: none;
-  padding: 10px 12px;
-  background: var(--legend-bg);
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
-  border: 1px solid rgb(0 0 0 / 15%);
-  backdrop-filter: blur(4px);
-  font-size: 13px;
-  z-index: 10000; /* higher than map */
-  pointer-events: auto !important;
-  opacity: 1 !important;
-  inset: auto 20px 20px auto; /* initial position handled in JSX */ /* initial position handled in JSX */ /* fallback bottom-right */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.legendBox h4 {
-  margin: 0 0 6px;
-  font-size: 14px;
-  font-weight: 700;
-}
-
 /* Zoom buttons: keep them readable in dark mode */
 .darkPage :global(.leaflet-bar a) {
   background-color: #1c2541;
@@ -594,11 +576,6 @@
 
 .darkPage :global(.leaflet-bar) {
   border-color: #465a74;
-}
-
-.darkPage .legendBox {
-  border: 1px solid rgb(255 255 255 / 15%);
-  color: #fff;
 }
 
 /* New filter row styles */
