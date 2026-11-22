@@ -196,4 +196,16 @@ describe('buildInitialSelection', () => {
     expect(selected).toBe('SEEKING SOFTWARE POSITION');
     expect(options).toEqual(positions);
   });
+
+  it('selects the fallback form title when a listing exists but has no linked form', () => {
+    const listingOnly = [...positions, 'UNLINKED LISTING ROLE'];
+    const { selected, bannerTitle, initial } = select({
+      navTitle: 'UNLINKED LISTING ROLE',
+      positionList: listingOnly,
+    });
+    expect(selected).toBe('SEEKING SOFTWARE POSITION');
+    expect(bannerTitle).toBe('SEEKING SOFTWARE POSITION');
+    expect(initial.filteredForm?.title).toBe('SEEKING SOFTWARE POSITION');
+    expect(initial.bannerJobTitle).toBe('SEEKING SOFTWARE POSITION');
+  });
 });
