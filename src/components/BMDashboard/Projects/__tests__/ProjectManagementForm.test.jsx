@@ -26,6 +26,38 @@ const validForm = {
   endDate: '2026-12-31',
 };
 
+const editableProject = {
+  _id: 'project-1',
+  name: 'Saved Project',
+  city: 'San Diego',
+  country: 'United States',
+  latitude: 32.7157,
+  longitude: -117.1611,
+  status: 'active',
+  startDate: '2026-01-01',
+  endDate: '2026-12-31',
+};
+
+const prefilledProject = {
+  ...editableProject,
+  status: 'delayed',
+  startDate: '2026-01-01T00:00:00.000Z',
+  endDate: '2026-12-31T00:00:00.000Z',
+};
+
+const renderProjectForm = ({ role = 'Administrator', projectToEdit } = {}) => {
+  const store = mockStore({
+    auth: { user: { role } },
+    theme: { darkMode: false },
+  });
+
+  return render(
+    <Provider store={store}>
+      <ProjectManagementForm projectToEdit={projectToEdit} />
+    </Provider>,
+  );
+};
+
 describe('ProjectManagementForm', () => {
   it('accepts a valid project payload', () => {
     expect(validateProjectForm(validForm)).toEqual({});
@@ -45,16 +77,7 @@ describe('ProjectManagementForm', () => {
   });
 
   it('hides project management controls for non-admin users', () => {
-    const store = mockStore({
-      auth: { user: { role: 'Volunteer' } },
-      theme: { darkMode: false },
-    });
-
-    render(
-      <Provider store={store}>
-        <ProjectManagementForm />
-      </Provider>,
-    );
+    renderProjectForm({ role: 'Volunteer' });
 
     expect(
       screen.queryByRole('button', { name: /create construction project/i }),
@@ -62,28 +85,7 @@ describe('ProjectManagementForm', () => {
   });
 
   it('prefills saved values when editing a project', async () => {
-    const store = mockStore({
-      auth: { user: { role: 'Administrator' } },
-      theme: { darkMode: false },
-    });
-
-    render(
-      <Provider store={store}>
-        <ProjectManagementForm
-          projectToEdit={{
-            _id: 'project-1',
-            name: 'Saved Project',
-            city: 'San Diego',
-            country: 'United States',
-            latitude: 32.7157,
-            longitude: -117.1611,
-            status: 'delayed',
-            startDate: '2026-01-01T00:00:00.000Z',
-            endDate: '2026-12-31T00:00:00.000Z',
-          }}
-        />
-      </Provider>,
-    );
+    renderProjectForm({ projectToEdit: prefilledProject });
 
     await waitFor(() => {
       expect(screen.getByDisplayValue('Saved Project')).toBeInTheDocument();
@@ -95,27 +97,7 @@ describe('ProjectManagementForm', () => {
   });
 
   it('updates the same project when the edited form is saved', async () => {
-    const store = mockStore({
-      auth: { user: { role: 'Administrator' } },
-      theme: { darkMode: false },
-    });
-    render(
-      <Provider store={store}>
-        <ProjectManagementForm
-          projectToEdit={{
-            _id: 'project-1',
-            name: 'Saved Project',
-            city: 'San Diego',
-            country: 'United States',
-            latitude: 32.7157,
-            longitude: -117.1611,
-            status: 'active',
-            startDate: '2026-01-01',
-            endDate: '2026-12-31',
-          }}
-        />
-      </Provider>,
-    );
+    renderProjectForm({ projectToEdit: editableProject });
 
     await userEvent.click(await screen.findByRole('button', { name: /save changes/i }));
 
