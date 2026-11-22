@@ -77,7 +77,7 @@ function WeeklyProjectSummary() {
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
   const comparisonPeriodFilter = useSelector(
-    state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'No Comparison',
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'Week Over Week',
   );
   const projectStatusData = useSelector(state => state.weeklyProjectSummary?.projectStatusData);
   const projectStatusLoading = useSelector(

@@ -166,6 +166,45 @@ describe('WeeklyProjectSummary Project Status request state', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
+  it('falls back to Week Over Week and shows the trend line when no comparison is set', () => {
+    const weekOverWeekKey = passthroughRequestKey({
+      ...currentParams,
+      comparisonStartDate: '2026-09-06',
+      comparisonEndDate: '2026-09-12',
+    });
+    renderWithState(
+      createState({
+        comparisonPeriodFilter: undefined,
+        projectStatusDataRequestKey: weekOverWeekKey,
+      }),
+    );
+
+    expect(screen.getByText('+16% week over week')).toBeInTheDocument();
+  });
+
+  it('shows the reason tooltip trigger for current-only metrics', () => {
+    const reason = 'Shows current stock available; past stock levels are not stored.';
+    renderWithState(
+      createState({
+        projectStatusData: {
+          current: {
+            metrics: {
+              materialAvailable: {
+                value: 22769,
+                comparisonType: 'CURRENT_ONLY',
+                percentageChange: null,
+                unavailableReason: reason,
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    expect(screen.getByText('22,769')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: reason })).toBeInTheDocument();
+  });
+
   it('shows loading and suppresses stale comparison text when filters change before useEffect dispatches', () => {
     renderWithState(
       createState({
