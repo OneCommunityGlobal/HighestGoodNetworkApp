@@ -5,8 +5,8 @@ const getPRNumbers = value => value.split('+').map(number => number.trim());
 const toDisplayGrade = grade => (grade === 'No Correct Image' ? 'Cannot find image' : grade);
 
 const getGradingKey = teamData => {
-  const [month, day, year] = teamData.dateRange.start.split('/').map(Number);
-  const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  const date = teamData.weekStart;
+
   return { teamKey: `pr-grading-screen:${teamData.teamName}`, date };
 };
 

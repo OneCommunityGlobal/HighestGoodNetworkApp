@@ -308,25 +308,25 @@ function WeeklyProjectSummary() {
             }}
           >
             <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard} ${styles.toolsTrackingCard}`}
               style={{ width: '100%' }}
             >
               <ToolStatusDonutChart />
             </div>
             <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard} ${styles.toolsTrackingCard}`}
               style={{ width: '100%' }}
             >
               <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
             <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard} ${styles.toolsTrackingCard}`}
               style={{ width: '100%' }}
             >
               <SupplierPerformanceGraph />
             </div>
             <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard} ${styles.toolsTrackingCard}`}
               style={{ width: '100%' }}
             >
               <ToolsStoppageHorizontalBarChart />
