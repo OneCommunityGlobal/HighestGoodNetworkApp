@@ -1081,6 +1081,11 @@ function Index({
       >
         {summary.firstName} {summary.lastName}
       </Link>
+      {summary.pronouns && (
+        <span className="ml-1" style={{ fontSize: '0.9em', opacity: 0.85 }}>
+          ({summary.pronouns})
+        </span>
+      )}
       {questionnaireIncomplete && (
         <IncompleteQuestionnaireIndicator id={summary._id} className="mr-2" />
       )}

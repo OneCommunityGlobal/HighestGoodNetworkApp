@@ -31,6 +31,7 @@ import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
 import ReviewButton from './ReviewButton';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
+import PronounsDisplay from '~/components/common/PronounsDisplay';
 
 import { permissions } from '../../utils/constants';
 const NUM_TASKS_SHOW_TRUNCATE = 6;
@@ -60,6 +61,12 @@ const TeamMemberTask = React.memo(
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
+    const authUserId = useSelector(state => state.auth?.user?.userid);
+    const isOwnRow = !!authUserId && String(user.personId) === String(authUserId);
+    const [pronouns, setPronouns] = useState(user.pronouns || '');
+    useEffect(() => {
+      setPronouns(user.pronouns || '');
+    }, [user.pronouns]);
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
@@ -438,6 +445,15 @@ const TeamMemberTask = React.memo(
                                 fontSize: '20px',
                               }}
                             >{`${user.name}`}</Link>
+
+                            <PronounsDisplay
+                              userId={String(user.personId)}
+                              pronouns={pronouns}
+                              canEdit={isOwnRow}
+                              isSelf={isOwnRow}
+                              darkMode={darkMode}
+                              onSaved={setPronouns}
+                            />
 
                             {user.role !== 'Volunteer' ? (
                               <div

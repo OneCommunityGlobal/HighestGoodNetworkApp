@@ -21,6 +21,7 @@ import {
 import PhoneInput from 'react-phone-input-2';
 import { ENDPOINTS } from '~/utils/URL';
 import httpService from '~/services/httpService';
+import { PRONOUN_OPTIONS, isValidPronoun } from '~/utils/pronouns';
 import { useHistory } from 'react-router-dom';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -59,6 +60,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
     weeklyCommittedHours: '10',
     collaborationPreference: 'Zoom',
     jobTitle: '',
+    pronouns: '',
     timeZone: 'America/Los_Angeles',
     location: {
       userProvided: '',
@@ -79,6 +81,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
     phoneNumber: '',
     collaborationPreference: '',
     jobTitle: '',
+    pronouns: '',
     timeZone: '',
     location: '',
     timeZoneFilterClicked: 'false',
@@ -471,6 +474,21 @@ function SetupProfileUserEntry({ token, userEmail }) {
       }));
     }
 
+    // Validate pronouns
+
+    if (!isValidPronoun(userProfile.pronouns)) {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        pronouns: 'Please select your pronouns',
+      }));
+      isDataValid = false;
+    } else {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        pronouns: '',
+      }));
+    }
+
     // Validate Video Call Preference
 
     if (userProfile.collaborationPreference.trim() === '') {
@@ -569,6 +587,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
           phoneNumber: true,
         },
         jobTitle: capitalizeString(userProfile.jobTitle.trim()),
+        pronouns: userProfile.pronouns,
         timeZone: userProfile.timeZone.trim(),
         location: {
           ...userProfile.location,
@@ -790,6 +809,37 @@ function SetupProfileUserEntry({ token, userEmail }) {
                   invalid={formErrors.jobTitle !== ''}
                 />
                 <FormFeedback>{formErrors.jobTitle}</FormFeedback>
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row className="mt-3">
+            <Col md="3" className="text-md-right">
+              <Label for="pronouns">
+                Pronouns<span style={{ color: 'red' }}>*</span>
+              </Label>
+            </Col>
+            <Col md="8">
+              <FormGroup>
+                <Input
+                  type="select"
+                  name="pronouns"
+                  id="pronouns"
+                  value={userProfile.pronouns}
+                  onChange={e => {
+                    handleChange(e);
+                  }}
+                  invalid={formErrors.pronouns !== ''}
+                >
+                  <option value="" disabled>
+                    Select your pronouns
+                  </option>
+                  {PRONOUN_OPTIONS.map(option => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </Input>
+                <FormFeedback>{formErrors.pronouns}</FormFeedback>
               </FormGroup>
             </Col>
           </Row>

@@ -209,6 +209,12 @@
   text-decoration: none;
 }
 
+.pronounsText {
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2px;
+}
+
 .titleCell {
   width: 180px;
   min-width: 180px;

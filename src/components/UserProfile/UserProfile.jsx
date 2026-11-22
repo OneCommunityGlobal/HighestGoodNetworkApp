@@ -83,6 +83,7 @@ import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import RehireableStatusControl from './RehireableStatusControl';
 import IncompleteQuestionnaireIndicator from '../common/IncompleteQuestionnaireIndicator';
+import PronounsDisplay from '../common/PronounsDisplay';
 import { fetchCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 
 import { permissions } from '../../utils/constants';
@@ -1304,6 +1305,14 @@ setUpdatedTasks(prev => {
     : canPutUserProfile;
 
   const canEdit = canEditUserProfile || isUserSelf;
+  // Pronouns can only be changed by the user themselves or an Admin/Owner.
+  const canEditPronouns =
+    isUserSelf ||
+    (['Administrator', 'Owner'].includes(requestorRole) && !targetIsDevAdminUneditable);
+  const handlePronounsSaved = newPronouns => {
+    setUserProfile(prev => ({ ...prev, pronouns: newPronouns }));
+    setOriginalUserProfile(prev => (prev ? { ...prev, pronouns: newPronouns } : prev));
+  };
 
   const customStyles = {
     control: (base, state) => ({
@@ -1516,6 +1525,15 @@ setUpdatedTasks(prev => {
           ) : null} */}
           <div className="profile-head">
             <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
+            <PronounsDisplay
+              userId={userProfile._id || targetUserId}
+              pronouns={userProfile.pronouns}
+              canEdit={canEditPronouns}
+              isSelf={isUserSelf}
+              darkMode={darkMode}
+              onSaved={handlePronounsSaved}
+              className="mr-2"
+            />
             {questionnaireIncomplete && (
               <IncompleteQuestionnaireIndicator
                 id={targetUserId}

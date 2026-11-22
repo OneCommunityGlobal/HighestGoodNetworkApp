@@ -11,6 +11,7 @@ export const ENDPOINTS = {
   HGN_FORMS: `${APIEndpoint}/form`,
   USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
+  USER_PROFILE_PRONOUNS: userId => `${APIEndpoint}/userprofile/${userId}/pronouns`,
   USER_PAUSE: userId => `${APIEndpoint}/userProfile/${userId}/pause`,
   VERIFY_PRODUCTION_IDENTITY: `${APIEndpoint}/production-identity/verify`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,

@@ -14,6 +14,7 @@ import {
   TabContent,
 } from 'reactstrap';
 import CommonInput from '~/components/common/Input';
+import { PRONOUN_OPTIONS } from '~/utils/pronouns';
 import DuplicateNamePopup from '~/components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
@@ -70,6 +71,7 @@ class UserProfileAdd extends Component {
         role: 'Volunteer',
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
+        pronouns: '',
         googleDoc: '',
         dropboxDoc: '',
         timeZone: '',
@@ -293,6 +295,7 @@ class UserProfileAdd extends Component {
       actualPassword,
       actualConfirmedPassword,
       jobTitle,
+      pronouns,
       defaultPassword,
     } = this.state.userProfile;
 
@@ -448,6 +451,32 @@ class UserProfileAdd extends Component {
                     <FormFeedback className={fontWeight}>
                       {this.state.formErrors.jobTitle}
                     </FormFeedback>)}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
+                <Label for="pronouns" className={fontColor}>
+                  Pronouns
+                </Label>
+              </Col>
+              <Col md={{ size: 6 }}>
+                <FormGroup>
+                  <Input
+                    type="select"
+                    name="pronouns"
+                    id="pronouns"
+                    value={pronouns}
+                    onChange={e => this.handleUserProfile(e)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  >
+                    <option value="">Not specified</option>
+                    {PRONOUN_OPTIONS.map(option => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </Input>
                 </FormGroup>
               </Col>
             </Row>
@@ -1089,6 +1118,7 @@ class UserProfileAdd extends Component {
       googleDoc,
       dropboxDoc,
       jobTitle,
+      pronouns,
       timeZone,
       location,
       weeklySummaryOption,
@@ -1105,6 +1135,7 @@ class UserProfileAdd extends Component {
       firstName: firstName,
       lastName: lastName,
       jobTitle: jobTitle,
+      pronouns: pronouns || '',
       phoneNumber: phoneNumber,
       bio: '',
       weeklycommittedHours: that.state.userProfile.weeklyCommittedHours,
@@ -1371,6 +1402,15 @@ class UserProfileAdd extends Component {
           formErrors: {
             ...formErrors,
             jobTitle: event.target.value.length > 0 ? '' : 'Job Title is required',
+          },
+        });
+        break;
+      case 'pronouns':
+        this.setState({
+          ...this.state,
+          userProfile: {
+            ...this.state.userProfile,
+            pronouns: event.target.value,
           },
         });
         break;

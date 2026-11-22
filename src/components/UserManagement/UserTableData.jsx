@@ -282,6 +282,11 @@ const UserTableDataComponent = props => {
         {!editUser?.first && props.questionnaireIncomplete && (
           <IncompleteQuestionnaireIndicator id={props.user._id} />
         )}
+        {editUser?.first && props.user.pronouns && (
+          <div className={`${styles.pronounsText} ${darkMode ? 'text-light' : 'text-muted'}`}>
+            ({props.user.pronouns})
+          </div>
+        )}
       </td>
 
       {/* LAST NAME */}
