@@ -211,14 +211,33 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background-color: #f9fafb;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .activityItem:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+}
+
+/* Let the details button use its card's theme instead of the browser's button fill. */
+.activityItemButton {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.activityItemButton:focus-visible {
+  outline: 2px solid #1e3a8a;
+  outline-offset: 4px;
+}
+
+.darkModeItem .activityItemButton:focus-visible {
+  outline-color: #93c5fd;
 }
 
 /* Dark mode list items */
@@ -240,8 +259,8 @@
   font-size: 1.2rem;
 }
 
-.darkModeItem strong {
-  color: #5c9ce6 !important;
+.activityItem.darkModeItem strong {
+  color: #93c5fd;
 }
 
 .activityList.darkActivityList li strong {
@@ -284,10 +303,7 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    opacity 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
 }
 
 .clearFiltersButton:disabled {
