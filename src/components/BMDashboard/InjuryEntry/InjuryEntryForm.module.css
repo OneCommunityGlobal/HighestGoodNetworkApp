@@ -1,0 +1,273 @@
+.page {
+  min-height: 100vh;
+  padding: 32px 20px;
+  background-color: #f5f7fb;
+  color: #243247;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #fff;
+  border: 1px solid #dce3ec;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 5%);
+}
+
+.header {
+  margin-bottom: 28px;
+}
+
+.header h1 {
+  margin: 0 0 10px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.header p {
+  margin: 0;
+  color: #526176;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.field label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  color: #243247;
+  background-color: #fff;
+  border: 1px solid #aebaca;
+  border-radius: 6px;
+  font: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.field input[readonly] {
+  background-color: #edf1f6;
+  cursor: default;
+}
+
+.field input[aria-invalid='true'],
+.field select[aria-invalid='true'],
+.field textarea[aria-invalid='true'] {
+  border-color: #c62828;
+}
+
+.field input[aria-invalid='true']:focus,
+.field select[aria-invalid='true']:focus,
+.field textarea[aria-invalid='true']:focus {
+  outline-color: #c62828;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.error {
+  color: #b42318;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.hint {
+  color: #526176;
+  font-size: 12px;
+}
+
+.descriptionFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.message {
+  margin: 22px 0 0;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.successMessage {
+  color: #166534;
+  background-color: #dcfce7;
+}
+
+.errorMessage {
+  color: #991b1b;
+  background-color: #fee2e2;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.actions button {
+  min-height: 42px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancelButton {
+  color: #334155;
+  background-color: #fff;
+  border: 1px solid #94a3b8;
+}
+
+.submitButton {
+  color: #fff;
+  background-color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.submitButton:hover {
+  background-color: #1d4ed8;
+}
+
+.actions button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.dark {
+  color: #f1f5f9;
+  background-color: #172235;
+}
+
+.dark .container {
+  background-color: #243247;
+  border-color: #475569;
+}
+
+.dark .header p,
+.dark .hint {
+  color: #cbd5e1;
+}
+
+.dark .field input,
+.dark .field select,
+.dark .field textarea {
+  color: #f1f5f9;
+  background-color: #1e293b;
+  border-color: #94a3b8;
+  color-scheme: dark;
+}
+
+.dark .field input[readonly] {
+  background-color: #334155;
+}
+
+.dark .field input::placeholder,
+.dark .field textarea::placeholder {
+  color: #cbd5e1;
+}
+
+.dark .field input[aria-invalid='true'],
+.dark .field select[aria-invalid='true'],
+.dark .field textarea[aria-invalid='true'] {
+  border-color: #fca5a5;
+}
+
+.dark .error {
+  color: #fca5a5;
+}
+
+.dark .successMessage {
+  color: #bbf7d0;
+  background-color: #14532d;
+}
+
+.dark .errorMessage {
+  color: #fecaca;
+  background-color: #7f1d1d;
+}
+
+.dark .cancelButton {
+  color: #f1f5f9;
+  background-color: #334155;
+  border-color: #94a3b8;
+}
+
+@media (width <= 640px) {
+  .page {
+    padding: 16px;
+  }
+
+  .container {
+    padding: 20px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .descriptionFooter {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}
+
+/* Browser autofill styling - light mode */
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #243247;
+  box-shadow: 0 0 0 1000px #fff inset;
+  caret-color: #243247;
+}
+
+/* Browser autofill styling - dark mode */
+.dark .field input:-webkit-autofill,
+.dark .field input:-webkit-autofill:hover,
+.dark .field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f1f5f9;
+  box-shadow: 0 0 0 1000px #1e293b inset;
+  caret-color: #f1f5f9;
+}

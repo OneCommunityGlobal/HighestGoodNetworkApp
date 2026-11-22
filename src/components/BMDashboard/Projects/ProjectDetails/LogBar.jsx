@@ -54,6 +54,9 @@ export const AddItemButtons = ({ projectId }) => {
       <Btn to={`/bmdashboard/lessonform/${projectId}`} color="blue">
         Lessons
       </Btn>
+      <Btn to={`/bmdashboard/injuries/add/${projectId}`} color="blue">
+        Injury
+      </Btn>
     </>
   );
 };

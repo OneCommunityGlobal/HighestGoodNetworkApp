@@ -108,7 +108,7 @@ function ProjectDetails() {
           {/*   ADD A NEW ITEM            */}
           {/* --------------------------- */}
           <DashboardSection icon="➕" title="Add a New Item" darkMode={darkMode}>
-            <AddItemButtons darkMode={darkMode} />
+            <AddItemButtons projectId={projectId} darkMode={darkMode} />
           </DashboardSection>
 
           {/* --------------------------- */}
