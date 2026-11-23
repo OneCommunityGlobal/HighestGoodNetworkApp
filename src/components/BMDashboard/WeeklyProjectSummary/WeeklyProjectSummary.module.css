@@ -310,6 +310,15 @@
   box-shadow: 0 2px 5px rgb(255 255 255 / 10%);
 }
 
+/* Tools cards stack in a flex column, where the shared 250px flex-basis became a fixed
+   height and overflow-x: hidden made each card a scroll box with a hidden scrollbar.
+   Size to content instead; clip only horizontally (clip does not create a scroll container). */
+.toolsTrackingCard {
+  flex: 0 0 auto;
+  height: auto;
+  overflow: clip visible;
+}
+
 .toolReplacementCard {
   grid-column: 1 / -1;
   min-width: 0;
@@ -496,7 +505,8 @@
   flex-direction: column;
   border-radius: 12px;
   box-shadow: 0 4px 6px var(--card-shadow);
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* ---------------- TOOLS TRACKING LAYOUT ---------------- */
@@ -749,6 +759,8 @@
   max-width: none;
   min-width: 0;
   min-height: 190px;
+  height: auto;
+  align-self: stretch;
   text-align: center;
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
@@ -763,6 +775,13 @@
   font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
   transition: color 0.3s ease;
+}
+
+.projectDurationDescription {
+  margin-top: 4px;
+  color: #333;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 /* The status oval's background is always the color-coded pastel from
@@ -830,6 +849,7 @@
 }
 
 /* Keep all Project Status text readable on the preserved pastel status cards in dark mode. */
+.darkMode .statusCard .projectDurationDescription,
 .darkMode .statusCard .weeklyCardTitle,
 .darkMode .statusCard .weeklyStatusValue {
   color: #000 !important;
@@ -911,6 +931,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
+  min-width: 0;
   max-width: 1600px;
   margin: auto;
 }

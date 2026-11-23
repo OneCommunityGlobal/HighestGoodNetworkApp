@@ -3,7 +3,9 @@ const APIEndpoint =
 
 
 export const ENDPOINTS = {
+
   APIEndpoint: () => APIEndpoint,
+  JOB_APPLICATION_EMAIL_RECIPIENTS:`${APIEndpoint}/job-application-email-recipients`,
   USER_PROFILES: `${APIEndpoint}/userProfile`,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   HGN_FORMS: `${APIEndpoint}/form`,
@@ -547,6 +549,8 @@ export const ENDPOINTS = {
 
   HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
   HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL_FALLBACK: skill => `${APIEndpoint}/team-skills/${skill}`,
+
+  GET_JOB: jobId => `${APIEndpoint}/jobs/${jobId}`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
