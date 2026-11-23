@@ -1,5 +1,6 @@
 import moment from 'moment';
 import styles from '../Timelog/Timelog.module.css';
+import noteStyles from './ActiveCell.module.css';
 import { UserStatus } from '../../utils/enums';
 
 function ActiveCell(props) {
@@ -10,7 +11,10 @@ function ActiveCell(props) {
     canChange,
     onClick,
     index,
+    statusNote,
   } = props;
+
+  const hasNote = typeof statusNote === 'string' && statusNote.trim().length > 0;
 
   const now = moment();
 
@@ -52,7 +56,7 @@ function ActiveCell(props) {
   })();
 
 
-  const title = (() => {
+  const statusTitle = (() => {
     if (!canChange) {
       if (isScheduled) return 'Scheduled for deactivation';
       if (isPaused) return 'Paused';
@@ -75,10 +79,14 @@ function ActiveCell(props) {
     return 'Click to change user status';
   })();
 
+  const title =
+    hasNote && canChange ? `${statusTitle.replace(/\.$/, '')}. This user has a note.` : statusTitle;
+
   return (
     <span
       style={{ fontSize: '1.5rem', cursor: canChange ? 'pointer' : 'default' }}
-      className={className}
+      className={`${className} ${hasNote ? noteStyles.statusDotWithNote : ''}`}
+      data-has-note={hasNote ? 'true' : undefined}
       id={index === undefined ? undefined : `active_cell_${index}`}
       title={title}
       role={canChange ? 'button' : undefined}

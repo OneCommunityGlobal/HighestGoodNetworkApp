@@ -25,7 +25,9 @@ import {
   enableEditUserInfo,
   disableEditUserInfo,
   updateUserPauseStatus,
-  resetUserProfileEdit
+  resetUserProfileEdit,
+  updateStatusNote,
+  getStatusNoteErrorMessage,
 } from '../../actions/userManagement';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
@@ -44,7 +46,7 @@ import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
-import { fetchCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
+import { subscribeToCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 
 export const matchesNameSearch = (name, searchText) => {
   // Ignore leading spaces, but preserve trailing spaces because a trailing space changes the search behavior.
@@ -148,7 +150,9 @@ class UserManagement extends React.PureComponent {
     this.props.getAllTimeOffRequests();
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
-    void this.loadQuestionnaireCompletion();
+    this.unsubscribeFromQuestionnaireCompletion = subscribeToCompletedQuestionnaireUserIds(
+      completedQuestionnaireUserIds => this.setState({ completedQuestionnaireUserIds }),
+    );
     const { darkMode } = this.props.state.theme;
     const { userProfiles } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
@@ -169,20 +173,10 @@ class UserManagement extends React.PureComponent {
     document.body.classList.remove('no-global-theme');
     window.removeEventListener('resize', this.handleResize);
     this.debouncedApplyWildCardSearch.cancel();
+    this.unsubscribeFromQuestionnaireCompletion?.();
 
     this.props.resetUserProfileEdit();
   }
-
-  loadQuestionnaireCompletion = async () => {
-    try {
-      const completedQuestionnaireUserIds = await fetchCompletedQuestionnaireUserIds();
-      this.setState({ completedQuestionnaireUserIds });
-    } catch (error) {
-      // Leave as null so users are not wrongly flagged as incomplete
-      // eslint-disable-next-line no-console
-      console.error('Failed to load questionnaire completion status', error);
-    }
-  };
 
   handleResize = () => {
     this.setState({ isMobile: window.innerWidth <= 750 });
@@ -293,6 +287,9 @@ class UserManagement extends React.PureComponent {
           }}
           onCancelScheduledDeactivation={this.reactivateUser}
           onReactivateUser={this.reactivateUser}
+          statusNote={this.state.selectedUser?.statusNote || ''}
+          statusNoteHistory={this.state.selectedUser?.statusNoteHistory || []}
+          onSaveStatusNote={this.saveStatusNote}
         />
         <SetUpFinalDayPopUp
           open={this.state.finalDayPopupOpen}
@@ -501,6 +498,20 @@ class UserManagement extends React.PureComponent {
     }
   };
   
+  saveStatusNote = async statusNote => {
+    const user = this.state.selectedUser;
+    if (!user) return false;
+    try {
+      const updatedUser = await this.props.dispatch(updateStatusNote(user, statusNote));
+      this.setState({ selectedUser: updatedUser });
+      toast.success(statusNote.trim() ? 'Note saved.' : 'Note deleted.');
+      return true;
+    } catch (error) {
+      toast.error(getStatusNoteErrorMessage(error));
+      return false;
+    }
+  };
+
   reactivateUser = async (user = this.state.selectedUser) => {
   await activateUserAction(
     this.props.dispatch,
