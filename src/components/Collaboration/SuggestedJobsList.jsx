@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { ApiEndpoint } from '../../utils/URL';
 import { toast } from 'react-toastify';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import styles from './SuggestedJobsList.module.css';
+import { buildApplyPath } from './JobApplicationForm/jobApplicationPublicApi';
 
 function SuggestedJobsList() {
+  const history = useHistory();
   const [categories, setCategories] = useState([]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
@@ -33,6 +36,24 @@ function SuggestedJobsList() {
     }
 
     return cleaned || 'No detailed description available.';
+  };
+
+  const handleApplyNow = ad => {
+    const title = ad.title || '';
+    // Route by the ad's unique id so same-title ads get distinct, shareable URLs.
+    const pathname = ad._id ? `/job-application/${ad._id}` : buildApplyPath(title);
+    const search = !ad._id && title ? `?jobTitle=${encodeURIComponent(title)}` : '';
+    history.push({
+      pathname,
+      search,
+      state: {
+        jobId: ad._id,
+        jobTitle: title,
+        jobDescription: ad.description || '',
+        requirements: ad.requirements || [],
+        category: ad.category || 'General',
+      },
+    });
   };
   // Fetch categories on mount
   useEffect(() => {
@@ -239,15 +260,13 @@ function SuggestedJobsList() {
                 </div>
               )}
 
-              <a
-                href={`https://www.onecommunityglobal.org/collaboration/job-application/${ad._id}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                className={`btn btn-primary ${styles.applyNowBtn}`}
+                onClick={() => handleApplyNow(ad)}
               >
-                <button type="submit" className={`btn btn-primary ${styles.applyNowBtn}`}>
-                  Apply Now
-                </button>
-              </a>
+                Apply Now
+              </button>
             </div>
           ))}
 

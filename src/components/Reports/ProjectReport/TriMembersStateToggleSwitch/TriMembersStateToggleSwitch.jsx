@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import './TriMembersStateToggleSwitch.module.css';
+import PropTypes from 'prop-types';
+import styles from './TriMembersStateToggleSwitch.module.css';
 
 function TriMembersStateToggleSwitch({ onChange }) {
   const [position, setPosition] = useState('default');
@@ -30,8 +31,12 @@ function TriMembersStateToggleSwitch({ onChange }) {
   }, []);
 
   return (
-    <div className={`toggle-switch bg-${bgColor}`}>
-      <div className="knob-area">
+    <div
+      className={`${styles['toggle-switch']} ${styles[`bg-${bgColor}`]}`}
+      role="group"
+      aria-label="Member status filter"
+    >
+      <div className={styles['knob-area']}>
         <div
           role="button"
           tabIndex={0}
@@ -54,9 +59,13 @@ function TriMembersStateToggleSwitch({ onChange }) {
           aria-label="Show requested"
         />
       </div>
-      <div className={`knob ${position}`} />
+      <div className={`${styles.knob} ${styles[position]}`} />
     </div>
   );
 }
+
+TriMembersStateToggleSwitch.propTypes = {
+  onChange: PropTypes.func.isRequired,
+};
 
 export default TriMembersStateToggleSwitch;

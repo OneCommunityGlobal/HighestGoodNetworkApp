@@ -50,11 +50,10 @@ const AssignProjectField = React.memo(props => {
           }`}
           style={{ marginTop: '0px', width: '100%' }}
         >
-          {props.projectsData
+          { props.projectsData
             .filter(project => {
-              if (project.projectName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
-                return project;
-              }
+             const projectName = project?.projectName || '';
+             return projectName.toLowerCase().includes(searchText.toLowerCase());
             })
             .slice(0, 10)
             .map(item => (

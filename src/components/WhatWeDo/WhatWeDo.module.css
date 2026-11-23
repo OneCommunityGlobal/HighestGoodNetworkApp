@@ -4,24 +4,23 @@
   text-align: left;
   max-width: 1200px;
   margin: 0 auto;
-  overflow-x: hidden; /* Prevent horizontal overflow */
+  overflow-x: hidden;
 }
 
 .whatWeDoContainer h2 {
   font-size: 2rem;
   color: #333;
   margin-bottom: 16px;
-  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .whatWeDoGrid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(320px, 1fr)
-  ); /* Increased min-width for longer text */
-
-  gap: 20px; /* Increased gap for better spacing */
+  grid-template-columns: repeat(auto-fit,
+      minmax(320px, 1fr));
+  /* Increased min-width for longer text */
+  gap: 20px;
+  /* Increased gap for better spacing */
   margin-top: 16px;
   width: 100%;
 }
@@ -29,16 +28,18 @@
 .whatWeDoItem {
   display: flex;
   align-items: flex-start;
-  gap: 16px; /* Increased gap between image and text */
+
+  /* Increased gap between image and text */
+  gap: 16px;
   text-decoration: none;
   color: inherit;
-  padding: 16px; /* Increased padding */
+  padding: 16px;
   border-radius: 8px;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   min-width: 0;
   overflow: hidden;
-  min-height: fit-content; /* Allow natural height expansion */
+  min-height: fit-content;
 }
 
 .whatWeDoItem:hover {
@@ -62,7 +63,8 @@
 }
 
 .whatWeDoText h3 {
-  margin: 0 0 12px; /* Increased margin */
+  margin: 0 0 12px;
+  /* Increased margin */
   font-size: 1.1rem;
   color: #333;
   line-height: 1.3;
@@ -73,20 +75,25 @@
   margin: 0;
   font-size: 0.85rem;
   color: #666;
-  line-height: 1.5; /* Improved line height for readability */
+  line-height: 1.5;
+  /* Improved line height for readability */
   overflow-wrap: break-word;
   hyphens: auto;
 }
 
+.dark:hover {
+  background-color: #304052;
+}
+
 /* Improved responsive breakpoints */
-@media (width <= 1024px) {
+@media (width <=1024px) {
   .whatWeDoGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 18px;
   }
 }
 
-@media (width <= 768px) {
+@media (width <=768px) {
   .whatWeDoContainer {
     padding: 16px;
   }
@@ -101,7 +108,7 @@
   }
 }
 
-@media (width <= 480px) {
+@media (width <=480px) {
   .whatWeDoContainer {
     padding: 12px;
   }
@@ -115,27 +122,28 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 20px; /* More padding for mobile */
+    padding: 20px;
   }
 
   .whatWeDoItem img {
-    width: 100px; /* Larger image on mobile since text is below */
+    width: 100px;
     height: 100px;
     margin-bottom: 16px;
   }
 
   .whatWeDoText h3 {
-    font-size: 1.2rem; /* Larger heading on mobile */
+    font-size: 1.2rem;
+    /* Larger heading on mobile */
     margin-bottom: 12px;
   }
 
   .whatWeDoText p {
-    font-size: 0.9rem; /* Slightly larger text for better readability */
+    font-size: 0.9rem;
     line-height: 1.6;
   }
 }
 
-@media (width <= 320px) {
+@media (width <=320px) {
   .whatWeDoContainer {
     padding: 10px;
   }

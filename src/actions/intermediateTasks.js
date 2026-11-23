@@ -22,8 +22,13 @@ export const fetchIntermediateTasks = taskId => {
     try {
       const response = await httpService.get(ENDPOINTS.INTERMEDIATE_TASKS_BY_PARENT(taskId));
       return response.data;
-    } catch {
-      return [];
+    } catch (error) {
+      // 404 means the parent task doesn't exist in the education system (e.g. mock/demo tasks) - not an error
+      if (error.response?.status === 404) {
+        return [];
+      }
+      toast.error('Failed to fetch sub-tasks');
+      throw error;
     }
   };
 };

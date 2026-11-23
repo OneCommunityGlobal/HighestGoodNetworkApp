@@ -1,0 +1,107 @@
+/* Usage Percentage Bar Styles */
+
+.usageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
+  cursor: help;
+}
+
+.barWrapper {
+  width: 100%;
+  height: 24px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #d1d5db;
+}
+
+.progressBar {
+  height: 100%;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: white;
+  font-weight: 600;
+}
+
+/* Progress Bar Colors - Light Mode */
+.progressBar.green {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
+
+.progressBar.yellow {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+}
+
+.progressBar.red {
+  background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+}
+
+.progressBar.gray {
+  background: linear-gradient(90deg, #9ca3af 0%, #d1d5db 100%);
+}
+
+.usageLabel {
+  font-size: 0.8125rem;
+  color: #4b5563;
+  font-weight: 500;
+  text-align: center;
+  min-height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dark Mode Styles */
+.darkMode .barWrapper {
+  background-color: #3f5269;
+  border-color: #2f4157;
+}
+
+.darkMode .usageLabel {
+  color: #c8d2e0;
+}
+
+/* Progress Bar Colors - Dark Mode */
+.darkMode .progressBar.green {
+  background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+}
+
+.darkMode .progressBar.yellow {
+  background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
+}
+
+.darkMode .progressBar.red {
+  background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+}
+
+.darkMode .progressBar.gray {
+  background: linear-gradient(90deg, #4b5563 0%, #6b7280 100%);
+}
+
+/* Tooltip Styles */
+:global(.tooltip-inner) {
+  max-width: 200px;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+:global(.darkMode .tooltip-inner) {
+  background-color: #1f2e45;
+  color: #e8edf4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .barWrapper {
+    height: 20px;
+  }
+
+  .usageLabel {
+    font-size: 0.75rem;
+  }
+}

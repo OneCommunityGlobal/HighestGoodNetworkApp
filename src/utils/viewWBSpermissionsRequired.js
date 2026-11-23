@@ -1,11 +1,13 @@
+import { permissions } from './constants';
+
 const viewWBSpermissionsRequired = [
-  'postWbs',
-  'deleteWbs',
-  'postTask',
-  'updateTask',
-  'deleteTask',
-  'resolveTask',
-  'putReviewStatus',
+  permissions.postWbs,
+  permissions.deleteWbs,
+  permissions.postTask,
+  permissions.updateTask,
+  permissions.deleteTask,
+  permissions.resolveTask,
+  permissions.putReviewStatus,
 ];
 
 export default viewWBSpermissionsRequired;

@@ -26,7 +26,7 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
       {
         label: "Applications",
         data: data.map((d) => d.applications ?? d.count ?? 0),
-        backgroundColor: darkMode ? "#3A506B" : "rgba(54, 162, 235, 0.7)",
+        backgroundColor: darkMode ? "#d95926" : "rgba(54, 162, 235, 0.7)",
       },
     ],
   };
