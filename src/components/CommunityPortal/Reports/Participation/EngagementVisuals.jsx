@@ -99,8 +99,15 @@ function ComparisonSection({ comparisonData, darkMode }) {
 }
 
 function EventCard({ event, darkMode }) {
+  const attendeeLabel = event.attendees === 1 ? 'attendee' : 'attendees';
+  const isVirtual = event.location?.trim().toLowerCase() === 'virtual';
+  const formatLabel = isVirtual ? 'Virtual' : 'In-Person';
+
   return (
-    <div className={`${styles.eventCard} ${darkMode ? styles.eventCardDark : ''}`}>
+    <div
+      className={`${styles.eventCard} ${darkMode ? styles.eventCardDark : ''}`}
+      aria-label={`Event engagement details for ${event.title}`}
+    >
       <div className={styles.eventHeader}>
         <h4 className={styles.eventName}>{event.title}</h4>
         <span className={styles.eventType}>{event.type}</span>
@@ -112,7 +119,9 @@ function EventCard({ event, darkMode }) {
         </div>
         <div className={styles.eventMetric}>
           <FaUsers className={styles.metricIcon} />
-          <span>{event.attendees} attendees</span>
+          <span>
+            {event.attendees} {attendeeLabel}
+          </span>
         </div>
         <div className={styles.eventMetric}>
           <FaChartLine className={styles.metricIcon} />
@@ -120,12 +129,12 @@ function EventCard({ event, darkMode }) {
         </div>
       </div>
       <div className={styles.eventLocation}>
-        {event.location === 'Virtual' ? (
+        {isVirtual ? (
           <FaVideo className={styles.locationIcon} />
         ) : (
           <FaBuilding className={styles.locationIcon} />
         )}
-        <span>{event.location}</span>
+        <span>{formatLabel}</span>
       </div>
     </div>
   );
