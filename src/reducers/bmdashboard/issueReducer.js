@@ -56,14 +56,26 @@ const issueReducer = (state = initialState, action) => {
     case FETCH_LONGEST_OPEN_ISSUES_REQUEST:
       return { ...state, loading: true, error: null };
     case FETCH_LONGEST_OPEN_ISSUES_SUCCESS:
-      return { ...state, loading: false, longestOpenIssues: action.payload };
+      return {
+        ...state,
+        loading: false,
+        longestOpenIssues: Array.isArray(action.payload)
+          ? action.payload
+          : action.payload?.data || [],
+      };
     case FETCH_LONGEST_OPEN_ISSUES_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
     case FETCH_MOST_EXPENSIVE_ISSUES_REQUEST:
       return { ...state, loading: true, error: null };
     case FETCH_MOST_EXPENSIVE_ISSUES_SUCCESS:
-      return { ...state, loading: false, mostExpensiveIssues: action.payload };
+      return {
+        ...state,
+        loading: false,
+        mostExpensiveIssues: Array.isArray(action.payload)
+          ? action.payload
+          : action.payload?.data || [],
+      };
     case FETCH_MOST_EXPENSIVE_ISSUES_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
