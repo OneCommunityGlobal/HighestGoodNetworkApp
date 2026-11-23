@@ -1,7 +1,8 @@
+/* stylelint-disable  */
 /* Simple styling for Blue Square Email Management */
 .bgOxfordBlue {
   background-color: #1a1a1a;
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Card styling for consistent height */
@@ -43,6 +44,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

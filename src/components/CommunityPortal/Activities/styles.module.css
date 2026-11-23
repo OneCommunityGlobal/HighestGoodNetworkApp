@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* CSS for ActivitiesPage.jsx, LatestRegistration.jsx, MyEvent.jsx, RegisterationForm.jsx, ResourceMonitoring.jsx */
 
 .activitiesPage {
@@ -19,6 +21,20 @@
   text-align: center;
 }
 
+.feedbackBtn {
+  padding: 8px 18px;
+  background: #1f6feb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.feedbackBtn:hover {
+  background: #1158c7;
+}
+
 .resourceTitle { 
   width: 100%;            
   display: block;         
@@ -34,7 +50,7 @@
 }
 
 .resourceMonitoring h2 {
-  color: rgb(12, 11, 11);
+  color: rgb(12 11 11);
 }
 
 .header,
@@ -208,9 +224,11 @@
   color: white;
   font-weight: bold;
 } 
+
 .active {
   color: green;
 }
+
 .closed {
   color: red;
 }
@@ -254,17 +272,17 @@
 }
 
 .myEvent .status.active {
-  background-color: rgb(200, 240, 200);
+  background-color: rgb(200 240 200);
   color: green;
 }
 
 .myEvent .status.closed {
-  background-color: rgb(191, 191, 238);
+  background-color: rgb(191 191 238);
   color: purple;
 }
 
 .myEvent .status.cancelled {
-  background-color: rgb(239, 170, 170);
+  background-color: rgb(239 170 170);
   color: red;
 }
 
@@ -295,7 +313,7 @@
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
   font-family: Arial, sans-serif;
 }
 
@@ -418,4 +436,3 @@
   margin-top: 3px;
   font-size: 0.9em;
 }
-

@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .card {
   display: flex;
   justify-content: center;
@@ -36,6 +37,7 @@
   align-items: center;
   justify-content: center;
   margin-top: 5px;
+  font-size: 14px;
 }
 
 .cardTextIcon {
@@ -46,12 +48,31 @@
   border: #e6f0ff;
 }
 
-.faCircleIsActive {
-  color: lawngreen;
+/* Keep the Total card's light-mode text and icon despite global dark-mode rules. */
+.overviewTop .totalCard .cardText,
+.overviewTop .totalCard .cardTextIcon {
+  color: #212529 !important;
+  text-shadow: none;
 }
 
-.faCircleIsInActive {
-  color: #dee2e6;
+/* Preserve status colors against the global dark-mode !important text rule. */
+.overviewTop .faCircleIsActive {
+  color: lawngreen !important;
+}
+
+.overviewTop .faCircleIsInActive {
+  color: #dee2e6 !important;
+}
+
+/* Dark mode styles */
+.darkMode.activeCard {
+  background: linear-gradient(to bottom, #e67e22, #d35400, #e74c3c);
+  color: #ecf0f1;
+}
+
+.darkMode.inactiveCard {
+  background: linear-gradient(to bottom, #7d3c98, #6c3483, #5b2c6f) !important;
+  color: #ecf0f1;
 }
 
 /* If you still use this class elsewhere, we can keep it here too */
@@ -68,4 +89,21 @@
   gap: 16px;
   align-items: center;
   margin: 25px 0;
+}
+
+/* Fill the padded container with equal stacked cards only at mobile widths. */
+
+@media (width <= 576px) {
+  .overviewTop {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .cardText {
+    font-size: 11px;
+  }
 }

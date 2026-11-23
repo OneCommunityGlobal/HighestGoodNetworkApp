@@ -24,28 +24,31 @@ import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
 import CcUserList from './CCUserList';
 import PropTypes from 'prop-types';
 
+import { permissions } from '../../../utils/constants';
 // Helper component to render blue square metadata (manual assignment and edit history)
 const BlueSquareMetadata = ({ blueSquareData, fontColor, darkMode }) => {
-  const hasManualAssignment = blueSquareData?.manullyAssigned;
   const hasEditHistory = blueSquareData?.editedBy && blueSquareData.editedBy.length > 0;
-  
-  if (!hasManualAssignment && !hasEditHistory) return null;
+
+  // Determine who assigned the blue square
+  const getAssignedBy = () => {
+    if (blueSquareData?.manuallyAssigned && blueSquareData?.manuallyAssignedBy?.firstName) {
+      return `${blueSquareData.manuallyAssignedBy.firstName} ${blueSquareData.manuallyAssignedBy.lastName}`;
+    }
+    if (!blueSquareData?.manuallyAssigned) {
+      return 'HGN System';
+    }
+    return 'Admin User';
+  };
 
   return (
     <>
-      {hasManualAssignment && (
-        <FormGroup>
-          <Label className={fontColor} for="manullyAssigned">
-            <strong>Manual Assignment</strong>
-          </Label>
-          <div className={fontColor}>
-            {blueSquareData?.manullyAssignedBy?.firstName && blueSquareData?.manullyAssignedBy?.lastName
-              ? `${blueSquareData.manullyAssignedBy.firstName} ${blueSquareData.manullyAssignedBy.lastName}`
-              : 'Admin User'}
-          </div>
-        </FormGroup>
-      )}
-      
+      <FormGroup>
+        <Label className={fontColor}>
+          <strong>Assigned by:</strong>
+        </Label>
+        <div className={fontColor}>{getAssignedBy()}</div>
+      </FormGroup>
+
       {hasEditHistory && (
         <FormGroup>
           <div style={{ textAlign: 'right', fontSize: '0.9em', color: darkMode ? '#ccc' : '#666' }}>
@@ -67,8 +70,8 @@ const BlueSquareMetadata = ({ blueSquareData, fontColor, darkMode }) => {
 
 BlueSquareMetadata.propTypes = {
   blueSquareData: PropTypes.shape({
-    manullyAssigned: PropTypes.bool,
-    manullyAssignedBy: PropTypes.shape({
+    manuallyAssigned: PropTypes.bool,
+    manuallyAssignedBy: PropTypes.shape({
       firstName: PropTypes.string,
       lastName: PropTypes.string,
     }),
@@ -113,9 +116,9 @@ const UserProfileModal = props => {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const canPutUserProfile = props.hasPermission('putUserProfile');
-  const canEditInfringements = props.hasPermission('editInfringements');
-  const canDeleteInfringements = props.hasPermission('deleteInfringements');
+  const canPutUserProfile = props.hasPermission(permissions.putUserProfile);
+  const canEditInfringements = props.hasPermission(permissions.editInfringements);
+  const canDeleteInfringements = props.hasPermission(permissions.deleteInfringements);
 
   const [warningType, setWarningType] = useState('');
 

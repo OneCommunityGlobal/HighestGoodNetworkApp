@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
@@ -6,23 +6,26 @@ import { getAllUserProfile } from '~/actions/userManagement';
 import styles from './PermissionsManagement.module.css';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
+import { ModalContext } from '~/context/ModalContext';
 // eslint-disable-next-line no-unused-vars
 import { boxStyle, boxStyleDark } from '~/styles';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+  permissions,
 } from '../../utils/constants';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
-
+import CircularProgress from '@mui/material/CircularProgress';
 import ReminderModal from './ReminderModal';
+import { hasUserPermissionChanges } from './permissionChanges';
+import appStyles from '~/App.module.css';
 
 function UserPermissionsPopUp({
   allUserProfiles,
-  // eslint-disable-next-line no-unused-vars
-  toggle,
+  closePopUp,
   getAllUsers,
   roles,
   authUser,
@@ -41,7 +44,29 @@ function UserPermissionsPopUp({
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
   const [selectedAccount, setSelectedAccount] = useState('');
   const [toastShown, setToastShown] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { updateModalStatus } = useContext(ModalContext);
+
+  // Unsaved changes = the lists on screen differ from the saved user's lists.
+  const isDirty = hasUserPermissionChanges({
+    savedFront: actualUserProfile?.permissions?.frontPermissions,
+    draftFront: userPermissions,
+    savedRemoved: actualUserProfile?.permissions?.removedDefaultPermissions,
+    draftRemoved: userRemovedDefaultPermissions,
+  });
+
+  // Keep the shared flag in step with that comparison, so the parent keeps the pop-up open
+  // only while there really is something to save.
+  useEffect(() => {
+    updateModalStatus(isDirty);
+  }, [isDirty]);
+
+  // An Add/Delete that changed nothing (e.g. Delete on a category the user's role already
+  // covers) still turns the flag on; turn it off again so X/Esc can close the pop-up.
+  useEffect(() => {
+    if (modalStatus && !isDirty) updateModalStatus(false);
+  }, [modalStatus, isDirty]);
 
   const setToDefault = () => {
     setUserPermissions([]);
@@ -101,6 +126,7 @@ function UserPermissionsPopUp({
       requestor: authUser, // Fixed: use authUser instead of req.body.requestor
     };
 
+    setisLoading(true);
     axios
       .patch(url, permissionData)
       .then(() => {
@@ -113,7 +139,8 @@ function UserPermissionsPopUp({
           });
           setToastShown(true);
         }
-        toggle();
+        updateModalStatus(false);
+        closePopUp();
         getAllUsers();
         getChangeLogs();
       })
@@ -127,6 +154,7 @@ function UserPermissionsPopUp({
       })
       .finally(() => {
         setIsSubmitting(false);
+        setisLoading(false);
       });
   };
   useEffect(() => {
@@ -138,13 +166,19 @@ function UserPermissionsPopUp({
     }
   }, [modalStatus]);
 
+  //prettier-ignore
+  const normalizeSearchInput = text => text.toLowerCase().split('').filter(char => char !== ' ').join('');
+
   const filteredUsers = allUserProfiles
     // eslint-disable-next-line array-callback-return, consistent-return
     .filter(user => {
       if (
-        user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchText.toLowerCase())
+        //prettier-ignore
+        normalizeSearchInput(user.firstName).includes(normalizeSearchInput(searchText)) ||
+        //prettier-ignore
+        normalizeSearchInput(user.lastName).includes(normalizeSearchInput(searchText)) ||
+        //prettier-ignore
+        normalizeSearchInput(`${user.firstName} ${user.lastName}`).includes(normalizeSearchInput(searchText))
       ) {
         if (user.isActive) {
           return user;
@@ -154,7 +188,7 @@ function UserPermissionsPopUp({
 
   return (
     <>
-      {modalStatus && (
+      {isDirty && modalStatus && (
         <ReminderModal
           setReminderModal={setReminderModal}
           reminderModal={reminderModal}
@@ -201,8 +235,9 @@ function UserPermissionsPopUp({
             type="search"
             value={searchText}
             innerRef={refInput}
-            // eslint-disable-next-line no-unused-vars
-            onFocus={e => {
+            // Opens on a click (or typing, below), not on focus: the box gets the cursor by itself
+            // when the pop-up opens, and the list should not drop down until the person asks.
+            onClick={() => {
               setIsInputFocus(true);
               setIsOpen(true);
             }}
@@ -211,7 +246,7 @@ function UserPermissionsPopUp({
               setIsOpen(true);
             }}
             placeholder="Shows only ACTIVE users"
-            className={darkMode ? styles['bg-darkmode-liblack text-light border-0'] : ''}
+            className={darkMode ? `${appStyles['bg-darkmode-liblack']} text-light border-0` : ''}
             autoComplete="off"
             name="user-search"
           />
@@ -221,13 +256,11 @@ function UserPermissionsPopUp({
               role="menu"
               aria-hidden="false"
               className={`dropdown-menu${isOpen ? ` show ${styles['dropdown__user-perms']}` : ''} ${
-                darkMode ? styles['bg-darkmode-liblack text-light'] : ''
+                darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''
               }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
-              {filteredUsers.length === 0 && searchText !== '' ? (
-                <div style={{ padding: '5px' }}>No user found</div>
-              ) : (
+              {filteredUsers.length > 0 ? (
                 filteredUsers.map(user => (
                   <div
                     className={styles['user__auto-complete']}
@@ -252,6 +285,8 @@ function UserPermissionsPopUp({
                     {user.firstName} {user.lastName}
                   </div>
                 ))
+              ) : (
+                <div className="user__auto-complete text-center">No users found</div>
               )}
             </div>
           ) : (
@@ -272,6 +307,7 @@ function UserPermissionsPopUp({
               rolePermissions={userPermissions}
               immutablePermissions={actualUserRolePermission}
               editable={!!actualUserProfile}
+              editPermission={permissions.putUserProfilePermissions}
               setPermissions={setUserPermissions}
               removedDefaultPermissions={userRemovedDefaultPermissions}
               setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}
@@ -286,7 +322,7 @@ function UserPermissionsPopUp({
           block
           style={{ ...boxStyle, marginTop: '1rem' }}
         >
-          Submit
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
         </Button>
       </Form>
     </>

@@ -8,12 +8,8 @@ import moment from 'moment';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import styles from './Warnings.module.css';
+import { useSelector } from 'react-redux';
 
-const colors = {
-  blue: 'blue',
-  red: 'red',
-  yellow: '#ffc107',
-};
 function WarningIcon({
   userProfileModal,
   id,
@@ -34,7 +30,7 @@ function WarningIcon({
   //   numberOfWarnings,
   // } = props;
 
-  const btnColor = color ? colors[color] : 'white';
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // eslint-disable-next-line no-shadow
   const handleIssueWarning = id => {
@@ -60,23 +56,29 @@ function WarningIcon({
   };
 
   const popover = (
-    <Popover id="popover-basic">
+    <Popover id="popover-basic" className={darkMode ? styles.popoverDarkMode : ''}>
       <Popover.Title as="h4">Date Assigned</Popover.Title>
-      <Popover.Content>{dateAssigned}</Popover.Content>
+      <Popover.Content className={styles['popover-body']}>{dateAssigned}</Popover.Content>
     </Popover>
   );
+
+  const warningColor = () => {
+    if (color === 'red') {
+      return styles.warningColorRed;
+    } else if (color === 'blue') {
+      return styles.warningColorBlue;
+    } else if (color === 'yellow') {
+      return styles.warningColorYellow;
+    }
+    return '';
+  };
 
   const renderIcon = (
     <FontAwesomeIcon
       style={{
-        color: btnColor,
-        border: '1px solid black',
-        borderRadius: '50%',
-        width: '10px',
-        height: '10px',
-        margin: '0em 0.175em',
         cursor: userProfileModal ? 'not-allowed' : 'pointer',
       }}
+      className={`${styles.icon} ${warningColor()}`}
       id={id}
       onClick={userProfileModal ? null : () => handleIssueWarning(id)}
       icon={faCircle}

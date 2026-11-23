@@ -10,6 +10,7 @@ const TeamsOverview = ({
   onInactiveClick,
   onAllClick,
   selectedFilter,
+  darkMode,
 }) => {
   const getCardClass = filterType => {
     const base = [styles.card];
@@ -19,6 +20,8 @@ const TeamsOverview = ({
     if (filterType === 'inactive') base.push(styles.inactiveCard);
 
     if (selectedFilter === filterType) base.push(styles.selectedFilter);
+
+    if (darkMode) base.push(styles.darkMode);
 
     return base.join(' ');
   };

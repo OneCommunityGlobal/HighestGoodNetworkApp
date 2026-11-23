@@ -29,8 +29,10 @@ import { boxStyle } from '../../styles';
 import { formatDate, formatDateLocal } from '../../utils/formatDate';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
+import IncompleteQuestionnaireIndicator from '../common/IncompleteQuestionnaireIndicator';
 import styles from './usermanagement.module.css';
 
+import { permissions } from '../../utils/constants';
 /**
  * The body row of the user table
  */
@@ -45,7 +47,7 @@ const UserTableDataComponent = props => {
 
   const [isChanging, onReset] = useState(false);
 
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission(permissions.addDeleteEditOwners);
   const dispatch = useDispatch();
   const history = useHistory();
   const { roles } = useSelector(state => state.role);
@@ -80,11 +82,12 @@ const UserTableDataComponent = props => {
     );
   };
 
-  const canDeleteUsers = props.hasPermission('deleteUserProfile');
-  const resetPasswordStatus = props.hasPermission('updatePassword');
-  const canChangeUserStatus = props.hasPermission('changeUserStatus');
-  const canSetFinalDay = props.hasPermission('setFinalDay');
-  const canSeeReports = props.hasPermission('getReports');
+  const canDeleteUsers = props.hasPermission(permissions.deleteUserProfile);
+  const resetPasswordStatus = props.hasPermission(permissions.updatePassword);
+  const canChangeUserStatus = props.hasPermission(permissions.changeUserStatus);
+  const canInteractWithPauseUserButton = props.hasPermission(permissions.interactWithPauseUserButton);
+  const canSetFinalDay = props.hasPermission(permissions.setFinalDay);
+  const canSeeReports = props.hasPermission(permissions.getReports);
 
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
@@ -179,6 +182,7 @@ const UserTableDataComponent = props => {
         isActive={props.user.isActive}
         endDate={props.user.endDate}
         reactivationDate={props.user.reactivationDate}
+        statusNote={props.user.statusNote}
         canChange={canChangeUserStatus}
         key={`active_cell${props.index}`}
         index={props.index}
@@ -250,9 +254,10 @@ const UserTableDataComponent = props => {
       <td className={styles.emailCell}>
         {editUser?.first ? (
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-black' : 'text-dark'}>
               {formData.firstName}{' '}
             </a>
+            {props.questionnaireIncomplete && <IncompleteQuestionnaireIndicator id={props.user._id} />}
             <FontAwesomeIcon
               className={styles.userManagementCellControl}
               icon={faCopy}
@@ -266,7 +271,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.firstName}
             onChange={e => {
@@ -275,13 +280,16 @@ const UserTableDataComponent = props => {
             }}
           />
         )}
+        {!editUser?.first && props.questionnaireIncomplete && (
+          <IncompleteQuestionnaireIndicator id={props.user._id} />
+        )}
       </td>
 
       {/* LAST NAME */}
       <td className={styles.emailCell}>
         {editUser?.last ? (
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-black' : 'text-dark'}>
               {formData.lastName}
             </a>
             <FontAwesomeIcon
@@ -297,7 +305,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} text-center ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.lastName}
             onChange={e => {
@@ -325,7 +333,7 @@ const UserTableDataComponent = props => {
               updateFormData({ ...formData, role: e.target.value });
               addUserInformation('role', e.target.value, props.user._id);
             }}
-            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            className={darkMode ? 'bg-darkmode-liblack text-white border-0' : ''}
           >
             {roles?.map((e, index) => (
               // eslint-disable-next-line react/no-array-index-key
@@ -356,7 +364,9 @@ const UserTableDataComponent = props => {
         ) : (
           <input
             type="text"
-            className={styles.userManagementCellControl}
+            className={`${styles.userManagementCellControl} text-center ${
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
+            }`}
             style={{ maxWidth: '100%' }}
             value={formData.jobTitle}
             onChange={e => {
@@ -387,7 +397,7 @@ const UserTableDataComponent = props => {
           <input
             type="text"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.email}
             onChange={e => {
@@ -407,7 +417,7 @@ const UserTableDataComponent = props => {
             type="number"
             step={0.5}
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.weeklycommittedHours}
             onChange={e => {
@@ -416,7 +426,7 @@ const UserTableDataComponent = props => {
 
               if (numericValue < 0) {
                 toast.error(
-                  'If negative hours worked, we’d all be on vacation already. Try again, and be sure weekly hours are set to zero or more.',
+                  "If negative hours worked, we'd all be on vacation already. Try again, and be sure weekly hours are set to zero or more.",
                 );
                 return;
               }
@@ -434,7 +444,7 @@ const UserTableDataComponent = props => {
 
       {/* PAUSE/RESUME */}
       <td>
-        {!canChangeUserStatus ? (
+        {canInteractWithPauseUserButton ? null : (
           <Tooltip
             placement="bottom"
             isOpen={tooltipPauseOpen}
@@ -443,8 +453,6 @@ const UserTableDataComponent = props => {
           >
             You don&apos;t have permission to change user status
           </Tooltip>
-        ) : (
-          ''
         )}
         <button
           type="button"
@@ -452,7 +460,7 @@ const UserTableDataComponent = props => {
           onClick={() => {
             if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
               // eslint-disable-next-line no-alert
-              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+              alert("STOP! YOU SHOULDN'T BE TRYING TO CHANGE THIS. Please reconsider your choices.");
               return;
             }
             onReset(true);
@@ -462,7 +470,7 @@ const UserTableDataComponent = props => {
             ...(darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle),
             padding: '5px',
           }}
-          disabled={!canChangeUserStatus}
+          disabled={!canInteractWithPauseUserButton}
           id={`btn-pause-profile-${props.user._id}`}
         >
           {getButtonText()}
@@ -562,7 +570,7 @@ const UserTableDataComponent = props => {
           <input
             type="date"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.startDate}
             onChange={e => {
@@ -590,7 +598,7 @@ const UserTableDataComponent = props => {
           <input
             type="date"
             className={`${styles.userManagementCellControl} ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              darkMode ? 'bg-darkmode-liblack text-white border-0' : ''
             }`}
             value={formData.endDate}
             onChange={e => {
@@ -685,6 +693,7 @@ UserTableDataComponent.propTypes = {
   timeOffRequests: PropTypes.array,
   onActiveInactiveClick: PropTypes.func,
   isMobile: PropTypes.bool,
+  questionnaireIncomplete: PropTypes.bool,
   mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 

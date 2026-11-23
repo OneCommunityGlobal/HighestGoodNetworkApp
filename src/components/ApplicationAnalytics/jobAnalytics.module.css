@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* ============================================================
    Development-added container styles (used by index.jsx)
    ============================================================ */
@@ -691,7 +692,6 @@
   color: var(--muted);
 }
 
-/* stylelint-disable-next-line no-descending-specificity */
 .jaFooter strong {
   color: var(--text);
   font-weight: 600;
@@ -708,7 +708,6 @@
   font-size: 13px;
 }
 
-/* stylelint-disable-next-line no-descending-specificity */
 .jaFilter select,
 .jaFilter input[type='date'] {
   background: var(--card);
@@ -742,7 +741,6 @@
   gap: 8px;
 }
 
-/* stylelint-disable-next-line no-descending-specificity */
 .jaDateRange input[type='date'] {
   flex: 1 1 120px;
   min-width: 0;

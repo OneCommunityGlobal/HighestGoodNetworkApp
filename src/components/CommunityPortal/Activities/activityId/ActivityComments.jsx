@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './ActivityComments.module.css';
+import StatusBadge from './StatusBadge';
+import { fetchMembersList } from '../../../../actions//communityPortal/activities/activityId/MembersListActions';
 
 // Utility function to calculate relative time
 const getRelativeTime = createdAt => {
@@ -244,35 +246,9 @@ const mockFeedbacks = [
 ];
 
 function ActivityComments() {
-  const darkMode = useSelector(state => state.theme?.darkMode || false);
-
-  // Utility function to restore Date objects from localStorage
-  const restoreDates = items => {
-    return items.map(item => ({
-      ...item,
-      createdAt: new Date(item.createdAt),
-      replies: item.replies
-        ? item.replies.map(reply => ({
-            ...reply,
-            createdAt: new Date(reply.createdAt),
-          }))
-        : [],
-    }));
-  };
-
-  // Load data from localStorage or use mock data as fallback
-  const loadStoredComments = () => {
-    try {
-      const stored = localStorage.getItem('activityComments');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return restoreDates(parsed);
-      }
-      return mockComments;
-    } catch (error) {
-      return mockComments;
-    }
-  };
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const dispatch = useDispatch();
+  const { loading, members, error } = useSelector(state => state.membersList);
 
   const loadStoredFeedbacks = () => {
     try {
@@ -292,7 +268,7 @@ function ActivityComments() {
 
   const [activeTab, setActiveTab] = useState('Engagement');
   const [commentTab, setCommentTab] = useState('Comment');
-  const [comments, setComments] = useState(loadStoredComments);
+  const [comments, setComments] = useState(mockComments);
   const [commentInput, setCommentInput] = useState('');
   const [sortType, setSortType] = useState('Newest');
 
@@ -300,7 +276,7 @@ function ActivityComments() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreComments, setHasMoreComments] = useState(true);
-  const [totalComments, setTotalComments] = useState(loadStoredComments().length + 10); // Simulating more comments exist
+  const [totalComments, setTotalComments] = useState(5); // Start with initial 5
   const commentsPerPage = 5;
 
   // Reply states
@@ -329,13 +305,13 @@ function ActivityComments() {
   ];
 
   // Save comments to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem('activityComments', JSON.stringify(comments));
-    } catch (error) {
-      // Failed to save to localStorage - continue without persistence
-    }
-  }, [comments]);
+  // useEffect(() => {
+  //   try {
+  //     localStorage.setItem('activityComments', JSON.stringify(comments));
+  //   } catch (error) {
+  //     // Failed to save to localStorage - continue without persistence
+  //   }
+  // }, [comments]);
 
   // Save feedbacks to localStorage whenever they change
   useEffect(() => {
@@ -357,63 +333,61 @@ function ActivityComments() {
 
   // Mock API function to simulate fetching more comments
   const fetchMoreComments = async page => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Generate unique users pool for variety
+    const usersPool = [
+      { id: 1, name: 'Michael Johnson', profilePic: '/profilepic.webp' },
+      { id: 2, name: 'Jennifer Smith', profilePic: '/pfp-default.png' },
+      { id: 3, name: 'Patricia Davis', profilePic: '/pfp-default-header.png' },
+      { id: 4, name: 'Robert Wilson', profilePic: '/Portrait_Placeholder.png' },
+      { id: 5, name: 'Amanda Lee', profilePic: '/pfp-default.png' },
+      { id: 6, name: 'David Brown', profilePic: '/profilepic.webp' },
+      { id: 7, name: 'Michelle Kim', profilePic: '/pfp-default-header.png' },
+      { id: 8, name: 'Christopher Martinez', profilePic: '/Portrait_Placeholder.png' },
+      { id: 9, name: 'Rachel Green', profilePic: '/pfp-default.png' },
+      { id: 10, name: 'Thomas Anderson', profilePic: '/profilepic.webp' },
+    ];
 
-    // Generate additional mock comments for pagination
+    // Get 2 unique users for this page
+    const startIdx = ((page - 1) * 2) % usersPool.length;
+    const pageUsers = [
+      usersPool[startIdx % usersPool.length],
+      usersPool[(startIdx + 1) % usersPool.length],
+    ];
+
+    // Generate 2 comments for pagination - use unique IDs
+    const baseCommentNum = 6; // Start after initial 5 comments
+    const uniqueOffset = (page - 1) * 1000; // Ensure unique IDs per page
     const additionalComments = [
       {
-        id: 100 + page * 10 + 1,
-        name: 'Michael Johnson',
-        profilePic: '/profilepic.webp',
+        id: uniqueOffset + (page * 2 - 1),
+        name: pageUsers[0].name,
+        profilePic: pageUsers[0].profilePic,
         createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 5} hours ago`,
-        text: `This is an additional comment from page ${page}. The discussion continues with more insights and perspectives from the community.`,
+        text: `Comment ${(page - 1) * 2 + baseCommentNum} - Really enjoyed the event!`,
         visibility: 'Public',
         upvotes: getSecureRandomInt(0, 10),
         downvotes: getSecureRandomInt(0, 3),
         replies: [],
       },
       {
-        id: 100 + page * 10 + 2,
-        name: 'Jennifer Smith',
-        profilePic: '/pfp-default.png',
+        id: uniqueOffset + page * 2,
+        name: pageUsers[1].name,
+        profilePic: pageUsers[1].profilePic,
         createdAt: new Date(Date.now() - (page + 6) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 6} hours ago`,
-        text: `Another perspective on this topic. I found the event very educational and would recommend it to others in our field.`,
+        text: `Comment ${(page - 1) * 2 + baseCommentNum + 1} - Thanks for organizing this!`,
         visibility: 'Public',
         upvotes: getSecureRandomInt(5, 15),
         downvotes: getSecureRandomInt(0, 2),
-        replies: [
-          {
-            id: 200 + page * 10 + 1,
-            name: 'Robert Wilson',
-            profilePic: '/Portrait_Placeholder.png',
-            createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
-            fixedTimestamp: `${page + 5} hours ago`,
-            text: 'I completely agree! Thanks for sharing your thoughts.',
-            visibility: 'Public',
-          },
-        ],
-      },
-      {
-        id: 100 + page * 10 + 3,
-        name: 'Patricia Davis',
-        profilePic: '/pfp-default-header.png',
-        createdAt: new Date(Date.now() - (page + 7) * 60 * 60 * 1000),
-        fixedTimestamp: `${page + 7} hours ago`,
-        text: `Great follow-up discussion! Looking forward to implementing some of these ideas in my own work.`,
-        visibility: 'Public',
-        upvotes: getSecureRandomInt(1, 8),
-        downvotes: 0,
         replies: [],
       },
     ];
 
     return {
       comments: additionalComments,
-      hasMore: page < 3, // Simulate having 3 pages total
-      total: 20, // Simulate total of 20 comments
+      hasMore: page < 10,
+      total: baseCommentNum + (page - 1) * 2 + 2, // Accurate cumulative total
     };
   };
 
@@ -426,16 +400,59 @@ function ActivityComments() {
       const nextPage = currentPage + 1;
       const result = await fetchMoreComments(nextPage);
 
-      setComments(prevComments => [...prevComments, ...result.comments]);
-      setCurrentPage(nextPage);
-      setHasMoreComments(result.hasMore);
-      setTotalComments(result.total);
+      // Filter out duplicates by ID before appending
+      const existingIds = new Set(comments.map(c => c.id));
+      const newComments = result.comments.filter(c => !existingIds.has(c.id));
+
+      // Only append if there are genuinely new comments
+      if (newComments.length > 0) {
+        setComments(prevComments => [...prevComments, ...newComments]);
+        setCurrentPage(nextPage);
+        setHasMoreComments(result.hasMore);
+        // Accumulate total comments rather than replacing
+        setTotalComments(prevTotal => prevTotal + newComments.length);
+      } else {
+        // No new comments - we've reached the end
+        setHasMoreComments(false);
+      }
     } catch (error) {
       // console.error('Error loading more comments:', error);
       // In a real app, you might show an error message to the user
     } finally {
       setIsLoadingMore(false);
     }
+  };
+
+  const toggleSortType = () => {
+    setSortType(prev => (prev === 'Newest' ? 'Oldest' : 'Newest'));
+  };
+
+  const sortedComments = useMemo(
+    () =>
+      [...comments].sort((a, b) => {
+        if (sortType === 'Newest') return new Date(b.createdAt) - new Date(a.createdAt);
+        if (sortType === 'Oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+        return 0;
+      }),
+    [comments, sortType],
+  );
+  const handleVote = (commentId, direction) => {
+    setComments(prevComments =>
+      prevComments.map(comment => {
+        if (comment.id !== commentId) return comment;
+
+        const previousVote = comment.userVote ?? null;
+        const userVote = previousVote === direction ? null : direction;
+
+        return {
+          ...comment,
+          upvotes: comment.upvotes - Number(previousVote === 'up') + Number(userVote === 'up'),
+          downvotes:
+            comment.downvotes - Number(previousVote === 'down') + Number(userVote === 'down'),
+          userVote,
+        };
+      }),
+    );
   };
 
   const handlePostComment = () => {
@@ -533,9 +550,17 @@ function ActivityComments() {
 
   const handleHelpfulClick = feedbackId => {
     setFeedbacks(prevFeedbacks =>
-      prevFeedbacks.map(feedback =>
-        feedback.id === feedbackId ? { ...feedback, helpful: feedback.helpful + 1 } : feedback,
-      ),
+      prevFeedbacks.map(feedback => {
+        if (feedback.id !== feedbackId) return feedback;
+
+        const hasLiked = feedback.hasLiked ?? false;
+
+        return {
+          ...feedback,
+          helpful: hasLiked ? feedback.helpful - 1 : feedback.helpful + 1,
+          hasLiked: !hasLiked,
+        };
+      }),
     );
   };
 
@@ -669,11 +694,27 @@ function ActivityComments() {
       if (feedbackSort === 'Oldest') return dateA - dateB;
       if (feedbackSort === 'Highest Rated') return b.rating - a.rating;
       if (feedbackSort === 'Lowest Rated') return a.rating - b.rating;
-      return dateB - dateA; // Newest (default)
+      return new Date(b.timestamp) - new Date(a.timestamp); // Newest
     });
 
+  useEffect(() => {
+    dispatch(fetchMembersList());
+  }, [dispatch]);
+
+  const [sortBy, setSortBy] = useState('name-asc');
+
+  const sortedMembers = [...members].sort((a, b) => {
+    const aVal = a.name.toLowerCase();
+    const bVal = b.name.toLowerCase();
+
+    if (sortBy === 'name-asc') return aVal.localeCompare(bVal);
+    if (sortBy === 'name-desc') return bVal.localeCompare(aVal);
+
+    return 0;
+  });
+
   return (
-    <div>
+    <div className={styles.container}>
       {/* Event Card */}
       <div className={styles.eventCard}>
         <div>
@@ -716,13 +757,13 @@ function ActivityComments() {
         <div className={styles.calendar}>
           {/* Calendar Header with Navigation */}
           <div className={styles.calendarHeader}>
-            <button onClick={handlePrevMonth} className={styles.calendarNavBtn}>
+            <button type="button" onClick={handlePrevMonth} className={styles.calendarNavBtn}>
               &#8249;
             </button>
             <div className={styles.calendarMonth}>
               {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </div>
-            <button onClick={handleNextMonth} className={styles.calendarNavBtn}>
+            <button type="button" onClick={handleNextMonth} className={styles.calendarNavBtn}>
               &#8250;
             </button>
           </div>
@@ -791,28 +832,38 @@ function ActivityComments() {
       {/* Tabs */}
       <div className={styles.tabs}>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === 'Description' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('Description')}
         >
           Description
         </button>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === 'Analysis' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('Analysis')}
         >
           Analysis
         </button>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === 'Resource' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('Resource')}
         >
           Resource
         </button>
         <button
+          type="button"
           className={`${styles.tab} ${activeTab === 'Engagement' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('Engagement')}
         >
           Engagement
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'Members List' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('Members List')}
+        >
+          Members List
         </button>
       </div>
 
@@ -821,6 +872,7 @@ function ActivityComments() {
         <div>
           <div className={styles.commentTabs}>
             <button
+              type="button"
               className={`${styles.commentTabBtn} ${
                 commentTab === 'Comment' ? styles.commentTabBtnActive : ''
               }`}
@@ -829,6 +881,7 @@ function ActivityComments() {
               Comment
             </button>
             <button
+              type="button"
               className={`${styles.commentTabBtn} ${
                 commentTab === 'Feedback' ? styles.commentTabBtnActive : ''
               }`}
@@ -845,8 +898,8 @@ function ActivityComments() {
                 <span className={styles.commentCount}>
                   Comment <span className={styles.commentCountNumber}>{comments.length}</span>
                 </span>
-                <button className={styles.sortBtn}>
-                  <span style={{ fontSize: '1.1em' }}>⇅</span> Sort
+                <button type="button" className={styles.sortBtn} onClick={toggleSortType}>
+                  <span style={{ fontSize: '1.1em' }}>⇅</span> {sortType}
                 </button>
               </div>
               <div className={styles.commentBox}>
@@ -858,12 +911,12 @@ function ActivityComments() {
                   value={commentInput}
                   onChange={e => setCommentInput(e.target.value)}
                 />
-                <button className={styles.postBtn} onClick={handlePostComment}>
+                <button type="button" className={styles.postBtn} onClick={handlePostComment}>
                   Post
                 </button>
               </div>
               <div className={styles.commentsList}>
-                {comments.map(comment => (
+                {sortedComments.map(comment => (
                   <div key={comment.id} className={styles.commentItem}>
                     <div className={styles.commentTopRow}>
                       <img
@@ -879,13 +932,28 @@ function ActivityComments() {
                     </div>
                     <div className={styles.commentText}>{comment.text}</div>
                     <div className={styles.commentActionsRow}>
-                      <button className={styles.upvoteBtn}>
+                      <button
+                        type="button"
+                        aria-label="Upvote comment"
+                        aria-pressed={comment.userVote === 'up'}
+                        onClick={() => handleVote(comment.id, 'up')}
+                        className={styles.upvoteBtn}
+                      >
                         <span style={{ fontSize: '1.1em' }}>↑</span>
-                      </button>
-                      <button className={styles.downvoteBtn}>
-                        <span style={{ fontSize: '1.1em' }}>↓</span>
+                        <span className={styles.voteCount}>{comment.upvotes}</span>
                       </button>
                       <button
+                        type="button"
+                        aria-label="Downvote comment"
+                        aria-pressed={comment.userVote === 'down'}
+                        onClick={() => handleVote(comment.id, 'down')}
+                        className={styles.downvoteBtn}
+                      >
+                        <span style={{ fontSize: '1.1em' }}>↓</span>
+                        <span className={styles.voteCount}>{comment.downvotes}</span>
+                      </button>
+                      <button
+                        type="button"
                         className={styles.replyBtn}
                         onClick={() => handleReplyClick(comment.id)}
                       >
@@ -910,12 +978,14 @@ function ActivityComments() {
                             onChange={e => setReplyInput(e.target.value)}
                           />
                           <button
+                            type="button"
                             className={styles.replySubmitBtn}
                             onClick={() => handlePostReply(comment.id)}
                           >
                             Reply
                           </button>
                           <button
+                            type="button"
                             className={styles.replyCancelBtn}
                             onClick={() => setReplyingTo(null)}
                           >
@@ -951,6 +1021,7 @@ function ActivityComments() {
               </div>
               {hasMoreComments && (
                 <button
+                  type="button"
                   className={styles.loadMoreBtn}
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
@@ -1067,7 +1138,10 @@ function ActivityComments() {
                       <div className={styles.commentText}>{feedback.text}</div>
                       <div className={styles.commentActionsRow}>
                         <button
+                          type="button"
                           className={styles.upvoteBtn}
+                          aria-label="Helpful"
+                          aria-pressed={Boolean(feedback.hasLiked)}
                           title="Helpful"
                           onClick={() => handleHelpfulClick(feedback.id)}
                         >
@@ -1077,6 +1151,7 @@ function ActivityComments() {
                           </span>
                         </button>
                         <button
+                          type="button"
                           className={styles.replyBtn}
                           title="Report"
                           onClick={() => handleFlagClick(feedback.id)}
@@ -1099,6 +1174,50 @@ function ActivityComments() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Members List */}
+      {activeTab === 'Members List' && (
+        <div
+          className={`${styles.membersListContainer} ${darkMode ? styles.membersListDarkMode : ''}`}
+        >
+          <div className={styles.headerRow}>
+            <h2 className={styles.title}>Members List</h2>
+
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value)}
+              className={styles.select}
+            >
+              <option value="name-asc">Name A–Z</option>
+              <option value="name-desc">Name Z–A</option>
+            </select>
+          </div>
+
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {sortedMembers.map((m, index) => (
+                <tr key={index}>
+                  <td>{m.name}</td>
+                  <td>{m.role}</td>
+                  <td>
+                    <StatusBadge status={m.status} />
+                  </td>
+                  <td>{m.joined}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

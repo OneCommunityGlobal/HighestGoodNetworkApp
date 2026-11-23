@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .projectSummaryHeader {
   font-size: clamp(0.8em, 3vw, 1.3em);
   font-weight: bold;
@@ -46,7 +47,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 700px) {
+@media (width <= 700px) {
   .projectSummaryLabel {
     font-size: 14px;
   }

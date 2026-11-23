@@ -1,15 +1,22 @@
+/* stylelint-disable  */
 .title {
   margin: 0 0 8px;
   text-align: center;
   font-size: 24px;
   font-weight: normal;
-  color: var(--text-color);
+  transition: color 0.2s ease;
 }
 
 .titleContainer {
   width: 100%;
   height: 100%;
   padding: 20px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+:global(.dark-mode) .titleContainer :global(.recharts-cartesian-grid-horizontal) line,
+:global(.dark-mode) .titleContainer :global(.recharts-cartesian-grid-vertical) line {
+  stroke: #aab4c2 !important;
 }
 
 .legendList {
@@ -18,8 +25,9 @@
   gap: 24px;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 8px 12px;
   font-size: 12px;
+  transition: background-color 0.2s ease;
 }
 
 .legendItem {
@@ -33,4 +41,91 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* Filter bar — "card" layer; layout only, colors come from inline theme styles */
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.filterGroup label {
+  font-weight: 500;
+  line-height: 1;
+}
+
+.filterGroupSpacerLabel {
+  display: block;
+  height: 13px;
+  line-height: 1;
+}
+
+.control,
+.dateInput,
+.resetButton {
+  height: 38px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 36px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.control:hover,
+.dateInput:hover {
+  filter: brightness(1.1);
+}
+
+.control:focus-visible,
+.dateInput:focus-visible {
+  outline: 2px solid #6fffe9;
+  outline-offset: 1px;
+}
+
+.dateInput {
+  width: 150px;
+  font-family: inherit;
+  color-scheme: light;
+}
+
+.dateInputDark {
+  color-scheme: dark;
+}
+
+.dateInput::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.resetButton {
+  padding: 0 20px;
+  cursor: pointer;
+}
+
+.resetButton:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.resetButton:focus-visible {
+  outline: 2px solid #6fffe9;
+  outline-offset: 1px;
+}
+
+.resetButton:disabled {
+  cursor: not-allowed;
 }

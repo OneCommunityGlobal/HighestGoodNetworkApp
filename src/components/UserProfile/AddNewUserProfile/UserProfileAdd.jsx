@@ -17,7 +17,7 @@ import CommonInput from '~/components/common/Input';
 import DuplicateNamePopup from '~/components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
-import { createUser } from '../../../services/userProfileService';
+import { createUser, verifyProductionIdentity } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
@@ -48,6 +48,8 @@ import { ENDPOINTS } from '~/utils/URL';
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 const DEFAULT_PASSWORD = '123Welcome!';
+const PRODUCTION_IDENTITY_ENABLED =
+  process.env.REACT_APP_PRODUCTION_IDENTITY_VERIFICATION_ENABLED === 'true';
 
 class UserProfileAdd extends Component {
   constructor(props) {
@@ -105,6 +107,12 @@ class UserProfileAdd extends Component {
       inputAutoComplete: [],
       inputAutoStatus: null,
       isLoading: false,
+      productionEmail: '',
+      productionPassword: '',
+      productionVerificationToken: '',
+      productionIdentityVerified: false,
+      verifyingProductionIdentity: false,
+      productionVerifyError: '',
     };
 
     const { user } = this.props.auth;
@@ -113,7 +121,66 @@ class UserProfileAdd extends Component {
 
   normalizeName = s => (s || '').toLowerCase().replace(/[^a-z]/g, '');
 
+  verifyProductionIdentity = async () => {
+    const { productionEmail, productionPassword } = this.state;
+
+    if (!productionEmail || !productionPassword) {
+      toast.error('Production email and password are required.');
+      return;
+    }
+
+    this.setState({ verifyingProductionIdentity: true, productionVerifyError: '' });
+
+    try {
+      const response = await verifyProductionIdentity({
+        productionEmail: productionEmail.trim(),
+        productionPassword,
+      });
+
+      const { firstName, lastName, email, verificationToken } = response.data;
+
+      this.setState((prevState) => ({
+        productionIdentityVerified: true,
+        productionVerificationToken: verificationToken,
+        verifyingProductionIdentity: false,
+        userProfile: {
+          ...prevState.userProfile,
+          firstName,
+          lastName,
+          email,
+        },
+        formErrors: {
+          ...prevState.formErrors,
+          firstName: '',
+          lastName: '',
+          email: '',
+        },
+      }));
+
+      toast.success('Production identity verified. Name and email are now locked.');
+    } catch (error) {
+      const message =
+        error?.response?.data?.error ||
+        'Production identity verification failed. Please try again.';
+      const retryable = error?.response?.data?.retryable;
+
+      this.setState({
+        verifyingProductionIdentity: false,
+        productionVerifyError: message,
+      });
+
+      toast.error(retryable ? `${message} You can retry.` : message);
+    }
+  };
+
+  isIdentityFieldsLocked = () =>
+    PRODUCTION_IDENTITY_ENABLED && this.state.productionIdentityVerified;
+
   productionNameIsIncluded = () => {
+    if (PRODUCTION_IDENTITY_ENABLED) {
+      return this.state.productionIdentityVerified;
+    }
+
     console.log('NODE_ENV =', process.env.NODE_ENV);
   // ✅ DO NOT enforce name rules in production
     if (process.env.NODE_ENV === 'production') {
@@ -237,6 +304,16 @@ class UserProfileAdd extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
+
+      let verifyButtonText;
+
+      if (this.state.verifyingProductionIdentity) {
+        verifyButtonText = 'Verifying...';
+      } else if (this.state.productionIdentityVerified) {
+        verifyButtonText = 'Verified';
+      } else {
+        verifyButtonText = 'Verify Production Identity';
+      }
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -248,6 +325,62 @@ class UserProfileAdd extends Component {
         <Container className={`emp-profile ${darkMode ? 'bg-yinmn-blue' : ''}`}>
         
           <Form>
+            {PRODUCTION_IDENTITY_ENABLED && (
+              <Row className="user-add-row">
+                <Col md={{ size: 4, offset: 2 }} className="text-md-right my-2">
+                  <Label className={fontColor}>Production Identity</Label>
+                </Col>
+                <Col md="6">
+                  <FormGroup>
+                    <Input
+                      type="email"
+                      name="productionEmail"
+                      id="productionEmail"
+                      value={this.state.productionEmail}
+                      onChange={(e) =>
+                        this.setState({ productionEmail: e.target.value, productionIdentityVerified: false })
+                      }
+                      placeholder="Production Email"
+                      disabled={this.state.productionIdentityVerified}
+                      className={darkMode ? 'bg-darkmode-liblack text-light border-0 mb-2' : 'mb-2'}
+                    />
+                    <CommonInput
+                      type="password"
+                      name="productionPassword"
+                      id="productionPassword"
+                      value={this.state.productionPassword}
+                      onChange={(e) =>
+                        this.setState({
+                          productionPassword: e.target.value,
+                          productionIdentityVerified: false,
+                        })
+                      }
+                      placeholder="Production Password"
+                      disabled={this.state.productionIdentityVerified}
+                      className="d-flex justify-start items-start mb-2"
+                    />
+                    <Button
+                      color="primary"
+                      type="button"
+                      disabled={
+                        this.state.verifyingProductionIdentity || this.state.productionIdentityVerified
+                      }
+                      onClick={this.verifyProductionIdentity}
+                    >
+                      {verifyButtonText}
+                    </Button>
+                    {this.state.productionVerifyError && (
+                      <div className="text-danger mt-2">{this.state.productionVerifyError}</div>
+                    )}
+                    {this.state.productionIdentityVerified && (
+                      <div className="text-success mt-2">
+                        Production identity verified. Name and email are locked to match Production.
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+            )}
             <Row className="user-add-row">
               <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                 <Label className={fontColor} >Name <span style={{ color: 'red' }}>*</span> </Label>
@@ -261,6 +394,8 @@ class UserProfileAdd extends Component {
                     value={firstName}
                     onChange={(e) => this.handleUserProfile(e)}
                     placeholder="First Name"
+                    disabled={this.isIdentityFieldsLocked()}
+                    readOnly={this.isIdentityFieldsLocked()}
                     invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
                     className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
@@ -280,6 +415,8 @@ class UserProfileAdd extends Component {
                     value={lastName}
                     onChange={(e) => this.handleUserProfile(e)}
                     placeholder="Last Name"
+                    disabled={this.isIdentityFieldsLocked()}
+                    readOnly={this.isIdentityFieldsLocked()}
                     invalid={this.state.formSubmitted && (!!this.state.formErrors.lastName || lastName.length < 2)}
                     className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
@@ -327,6 +464,8 @@ class UserProfileAdd extends Component {
                     value={email}
                     onChange={(e) => this.handleUserProfile(e)}
                     placeholder="Email"
+                    disabled={this.isIdentityFieldsLocked()}
+                    readOnly={this.isIdentityFieldsLocked()}
                     invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
                     className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
@@ -458,7 +597,7 @@ class UserProfileAdd extends Component {
                 </FormGroup>
               </Col>
             </Row>
-            {(role === 'Administrator' || role === 'Owner') && (
+            {(role === 'Administrator' || role === 'Owner') && !PRODUCTION_IDENTITY_ENABLED && (
               <>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
@@ -796,8 +935,15 @@ class UserProfileAdd extends Component {
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
       return false;
-    } else if ((role === 'Administrator' || role === 'Owner') && !this.state.userProfile.actualPassword) {
+    } else if (
+      !PRODUCTION_IDENTITY_ENABLED &&
+      (role === 'Administrator' || role === 'Owner') &&
+      !this.state.userProfile.actualPassword
+    ) {
       toast.error('Must use your Production sign-in password');
+      return false;
+    } else if (PRODUCTION_IDENTITY_ENABLED && !this.state.productionIdentityVerified) {
+      toast.error('Verify Production identity before creating this account.');
       return false;
     } else if (role !== 'Administrator' && role !== 'Owner' && !defaultPassword) {
       toast.error('Default Password is required for non-admin users');
@@ -827,7 +973,110 @@ class UserProfileAdd extends Component {
     else return false;
   };
 
-  createUserProfile = () => {
+  // Validates the Google Doc link (if provided) and appends it to userData.adminLinks.
+  // Returns true if creation should proceed, false if it should stop here.
+  validateAndAddGoogleDoc = (googleDoc, userData) => {
+    if (!googleDoc) return true;
+
+    if (isValidGoogleDocsUrl(googleDoc)) {
+      userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
+      return true;
+    }
+
+    toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
+    this.setState(prevState => ({
+      formValid: {
+        ...prevState.formValid,
+        googleDoc: false,
+      },
+      formErrors: {
+        ...prevState.formErrors,
+        googleDoc: 'Invalid Google Doc URL',
+      },
+    }));
+    return false;
+  };
+
+  // Validates the Dropbox/media link (if provided) and appends it to userData.adminLinks.
+  // Returns true if creation should proceed, false if it should stop here.
+  validateAndAddDropboxDoc = (dropboxDoc, userData) => {
+    if (!dropboxDoc) return true;
+
+    if (isValidMediaUrl(dropboxDoc)) {
+      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
+      return true;
+    }
+
+    toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+    this.setState(prevState => ({
+      formValid: {
+        ...prevState.formValid,
+        dropboxDoc: false,
+      },
+      formErrors: {
+        ...prevState.formErrors,
+        dropboxDoc: 'Invalid Dropbox Link URL',
+      },
+    }));
+    return false;
+  };
+
+  // Centralized error handling for the createUser API call, extracted out of
+  // createUserProfile to keep that method's cognitive complexity in check.
+  handleCreateUserError = err => {
+    const res = err.response;
+    const status = res?.status;
+    const data = res?.data || {};
+
+    if (!res) {
+      toast.error(`Network error: ${err.message}`);
+      return;
+    }
+
+    // Handle Mongoose validation error cleanup
+    if (data?.errors && typeof data.errors === 'object') {
+      const firstErrorKey = Object.keys(data.errors)[0];
+      const firstError = data.errors[firstErrorKey];
+      const fieldName = firstError.path || firstErrorKey;
+      const message = firstError.message;
+
+      toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${message}`);
+      return;
+    }
+
+    // Fallback to known type-based errors
+    if (data.type) {
+      switch (data.type) {
+        case 'email':
+          toast.error('Email already exists');
+          return;
+        case 'phoneNumber':
+          toast.error('Phone number already exists');
+          return;
+        case 'name':
+          toast.error('A user with this first and last name already exists');
+          return;
+        case 'credentials': {
+          // Prefer the backend’s explanation if available
+          const detail =
+            (typeof data.error === 'string' && data.error) ||
+            data?.error?.message ||
+            data?.message ||
+            '';
+          const suffix = detail ? `: ${detail}` : '';
+          toast.error(`Admin credentials were not accepted${suffix}`);
+          return;
+        }
+        default:
+          break;
+      }
+    }
+
+    // Generic fallback
+    toast.error(`Create failed${status ? ` (${status})` : ''}: ${data.error || 'Unknown error occurred.'}`);
+  };
+
+  createUserProfile = (skipDuplicateCheck = false) => {
     let that = this;
     const {
       firstName,
@@ -869,7 +1118,7 @@ class UserProfileAdd extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
-      allowsDuplicateName: true,
+      allowsDuplicateName: skipDuplicateCheck,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
       actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
@@ -877,136 +1126,71 @@ class UserProfileAdd extends Component {
       startDate: startDate,
     };
 
+    if (PRODUCTION_IDENTITY_ENABLED) {
+      userData.productionVerificationToken = this.state.productionVerificationToken;
+      delete userData.actualEmail;
+      delete userData.actualPassword;
+    }
+
     this.setState({ formSubmitted: true });
 
     if (!this.productionNameIsIncluded()) {
       return;
     }
 
-    if (actualPassword != actualConfirmedPassword) {
+    if (
+      !PRODUCTION_IDENTITY_ENABLED &&
+      actualPassword != actualConfirmedPassword
+    ) {
       toast.error('Your passwords do not match!');
       return;
     }
 
-    if (googleDoc) {
-      if (isValidGoogleDocsUrl(googleDoc)) {
-        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
-      } else {
-        toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
-        this.setState({
-          formValid: {
-            ...that.state.formValid,
-            googleDoc: false,
-          },
-          formErrors: {
-            ...that.state.formErrors,
-            googleDoc: 'Invalid Google Doc URL',
-          },
-        });
-        return;
-      }
+    if (!this.validateAndAddGoogleDoc(googleDoc, userData)) {
+      return;
     }
-    if (dropboxDoc) {
-      if (isValidMediaUrl(dropboxDoc)) {
-        userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
-      } else {
-        toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
-        this.setState({
-          formValid: {
-            ...that.state.formValid,
-            dropboxDoc: false,
-          },
-          formErrors: {
-            ...that.state.formErrors,
-            dropboxDoc: 'Invalid Dropbox Link URL',
-          },
-        });
-        return;
-      }
+    if (!this.validateAndAddDropboxDoc(dropboxDoc, userData)) {
+      return;
     }
-    if (this.fieldsAreValid()) {
-      this.setState({ showphone: false });
-      if (!email.match(patt)) {
-        toast.error('Email is not valid. Please include @ followed by .com format');
-      } else {
-        createUser(userData)
-          .then(res => {
-            if (res.data.warning) {
-              toast.warn(
-                typeof res.data.warning === 'string'
-                  ? res.data.warning
-                  : res.data.warning?.message || JSON.stringify(res.data.warning),
+    if (!this.fieldsAreValid()) {
+      return;
+    }
+    if (!email.match(patt)) {
+      toast.error('Email is not valid. Please include @ followed by .com format');
+      return;
+    }
+    if (!skipDuplicateCheck && this.checkIfDuplicate(firstName, lastName)) {
+      this.setState({ popupOpen: true });
+      return;
+    }
+
+    this.setState({ showphone: false });
+    createUser(userData)
+      .then(res => {
+        if (res.data.warning) {
+          toast.warn(
+            typeof res.data.warning === 'string'
+              ? res.data.warning
+              : res.data.warning?.message || JSON.stringify(res.data.warning),
+          );
+        } else {
+          toast.success('User profile created.');
+          // eslint-disable-next-line react/no-direct-mutation-state
+          this.state.userProfile._id = res.data._id;
+          if (this.state.teams.length > 0) {
+            this.state.teams.forEach(team => {
+              this.props.addTeamMember(
+                team._id,
+                res.data._id,
+                res.data.firstName,
+                res.data.lastName,
               );
-            } else {
-              toast.success('User profile created.');
-              // eslint-disable-next-line react/no-direct-mutation-state
-              this.state.userProfile._id = res.data._id;
-              if (this.state.teams.length > 0) {
-                this.state.teams.forEach(team => {
-                  this.props.addTeamMember(
-                    team._id,
-                    res.data._id,
-                    res.data.firstName,
-                    res.data.lastName,
-                  );
-                });
-              }
-            }
-            this.props.userCreated();
-          })
-          .catch(err => {
-            const res = err.response;
-            const status = res?.status;
-            const data = res?.data || {};
-
-            if (!res) {
-              toast.error(`Network error: ${err.message}`);
-              return;
-            }
-
-            // Handle Mongoose validation error cleanup
-            if (data?.errors && typeof data.errors === 'object') {
-              const firstErrorKey = Object.keys(data.errors)[0];
-              const firstError = data.errors[firstErrorKey];
-              const fieldName = firstError.path || firstErrorKey;
-              const message = firstError.message;
-          
-              toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${message}`);
-              return;
-            }
-
-            // Fallback to known type-based errors
-            if (data.type) {
-              switch (data.type) {
-                case 'email':
-                  toast.error('Email already exists');
-                  return;
-                case 'phoneNumber':
-                  toast.error('Phone number already exists');
-                  return;
-                case 'name':
-                  toast.error('A user with this first and last name already exists');
-                  return;
-                case 'credentials': {
-                // Prefer the backend’s explanation if available
-                  const detail =
-                    (typeof data.error === 'string' && data.error) ||
-                    data?.error?.message ||
-                    data?.message ||
-                    '';
-                  toast.error(
-                    `Admin credentials were not accepted${detail ? `: ${detail}` : ''}`
-                  );
-                  return;
-                }
-              }
-            }
-
-            // Generic fallback
-            toast.error(`Create failed${status ? ` (${status})` : ''}: ${data.error || 'Unknown error occurred.'}`);
-          });
-      }
-    }
+            });
+          }
+        }
+        this.props.userCreated();
+      })
+      .catch(err => this.handleCreateUserError(err));
   };
 
   handleImageUpload = async e => {

@@ -1,12 +1,15 @@
 import React from 'react';
+
 import styles from './TaskListItem.module.css';
 import { useTaskLogic } from './useTaskLogic';
 import MarkAsDoneButton from './MarkAsDoneButton';
 import IntermediateTasksList from './IntermediateTasksList';
+import { taskItemPropTypes, taskItemDefaultProps } from './taskPropTypes';
 
 const TaskListItem = ({
   task,
   onMarkAsDone,
+  onLogTime,
   intermediateTasks = [],
   isExpanded = false,
   onToggleIntermediateTasks,
@@ -67,7 +70,7 @@ const TaskListItem = ({
 
       {/* Action Icons */}
       <div className={styles.actionIcons}>
-        <button className={styles.clockButton} title="Log Time">
+        <button className={styles.clockButton} title="Log Time" onClick={() => onLogTime?.(task)}>
           <svg
             width="20"
             height="20"
@@ -128,5 +131,8 @@ const TaskListItem = ({
     </div>
   );
 };
+
+TaskListItem.propTypes = taskItemPropTypes;
+TaskListItem.defaultProps = taskItemDefaultProps;
 
 export default TaskListItem;

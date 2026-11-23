@@ -1,20 +1,20 @@
-import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Input, ListGroup, ListGroupItem } from 'reactstrap';
 import styles from './MemberSearchBar.module.css';
 
 function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [searchTerm, setSearchTerm] = useState(value);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Set the value of the input when the value prop changes
     setSearchTerm(value);
   }, [value]);
 
-  // Filter users based on search term
   const filterUsers = searchText => {
     if (!searchText.trim() || !usersList || usersList.length === 0) {
       setSuggestions([]);
@@ -25,18 +25,13 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
 
     try {
       const lowerSearchText = searchText.toLowerCase();
-
-      // Filter users based on first name or last name containing the search text
       const filteredUsers = usersList.filter(user =>
         `${user.firstName} ${user.lastName}`.toLowerCase().includes(lowerSearchText),
       );
-
-      // Format users for display
       const formattedUsers = filteredUsers.map(user => ({
         ...user,
         fullName: `${user.firstName} ${user.lastName}`,
       }));
-
       setSuggestions(formattedUsers);
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -52,7 +47,6 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
     setSearchTerm(inputValue);
     onChange(inputValue);
 
-    // Debounce the filtering
     const timeoutId = setTimeout(() => {
       filterUsers(inputValue);
       setShowSuggestions(true);
@@ -68,8 +62,27 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
     setShowSuggestions(false);
   };
 
+  // Validate on blur — clear if typed text doesn't match any user in the list
+  const handleBlur = () => {
+    setTimeout(() => {
+      setShowSuggestions(false);
+
+      if (searchTerm.trim() !== '') {
+        const isValidUser = usersList.some(
+          user =>
+            `${user.firstName} ${user.lastName}`.toLowerCase() === searchTerm.trim().toLowerCase(),
+        );
+
+        if (!isValidUser) {
+          setSearchTerm('');
+          onChange('');
+        }
+      }
+    }, 200);
+  };
+
   return (
-    <div className={`${styles.memberSearchContainer}`}>
+    <div className={`${styles.memberSearchContainer} ${darkMode ? styles.darkMode : ''}`}>
       <Input
         type="text"
         placeholder="Full Name"
@@ -90,6 +103,7 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
           {suggestions.map(suggestion => (
             <ListGroupItem
               key={`suggestion-${id}-${suggestion.firstName}-${suggestion.lastName}`}
+              className={`${styles.listGroupItem}`}
               onClick={() => handleSuggestionClick(suggestion)}
               action
             >

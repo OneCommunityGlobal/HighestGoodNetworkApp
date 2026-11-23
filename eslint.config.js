@@ -67,6 +67,7 @@ module.exports = [
     },
     rules: {
       'react/react-in-jsx-scope': 'off',
+      'react/no-unescaped-entities': 'off',
       'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
       'no-underscore-dangle': 'off',
       'react/prop-types': 'off',

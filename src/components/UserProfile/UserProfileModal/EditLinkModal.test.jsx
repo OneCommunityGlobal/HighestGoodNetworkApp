@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, within } from "@testing-library/react";
 import EditLinkModal from "~/components/UserProfile/UserProfileModal/EditLinkModal";
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { rolesMock, authMock, userProfileMock, userProjectMock, themeMock } from "__tests__/mockStates";
 import { renderWithProvider } from "__tests__/utils";
@@ -29,7 +29,7 @@ const filledUserProfile = {
 }
 
 describe('EditLinkModal permission checks', () => {
-  const mockStore = configureStore([thunk]);
+  const mockStore = configureMockStore([thunk]);
   let store;
   let component;
   const props = {
@@ -61,7 +61,7 @@ describe('EditLinkModal permission checks', () => {
 
 describe('EditLinkModal with admin links and personal links', () => {
 
-  const mockStore = configureStore([thunk]);
+  const mockStore = configureMockStore([thunk]);
   let store;
   let component;
   const props = {
@@ -167,7 +167,7 @@ describe('EditLinkModal with admin links and personal links', () => {
 
 
 describe('Edit Link Modal with empty links', () => {
-  const mockStore = configureStore([thunk]);
+  const mockStore = configureMockStore([thunk]);
   let store;
   let component;
   const props = {

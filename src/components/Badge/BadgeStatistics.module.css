@@ -1,0 +1,13 @@
+.dropdown-menu {
+  padding: 0;
+}
+
+.badgeDropdownItem:hover,
+.badgeDropdownItem:hover label {
+  background-color: #E6EEF8 !important;
+}
+
+.badgeDropdownItem.dark:hover,
+.badgeDropdownItem.dark:hover label {
+  background-color: #2b3553 !important;
+}

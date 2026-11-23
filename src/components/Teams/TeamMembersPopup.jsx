@@ -12,7 +12,7 @@ import {
 } from 'reactstrap';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import styles from './TeamMembersPopup.module.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,6 +22,7 @@ import MembersAutoComplete from './MembersAutoComplete';
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
 
+import { permissions } from '../../utils/constants';
 /* ---------- small helpers to reduce cognitive complexity ---------- */
 
 function ValidationAlerts({ duplicateUserAlert, isValidUser }) {
@@ -67,16 +68,17 @@ function applyStatusFilter(list, mode) {
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
-  const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
+  const hasVisibilityIconPermission = hasPermission(permissions.seeVisibilityIcon);
+  const canAssignTeamToUsers = hasPermission(permissions.assignTeamToUsers);
+  const [filterMode, setFilterMode] = useState('active'); // 'active' | 'all' | 'inactive'
 
-  const [filterMode, setFilterMode] = useState('all');
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
   const [sortOrder, setSortOrder] = useState(0);
   const [infoModal, setInfoModal] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
 
   // Normalize members
   const validation = useMemo(() => {
@@ -157,10 +159,27 @@ export const TeamMembersPopup = React.memo(props => {
     const map = {};
     if (Array.isArray(teamsData) && teamsData.length > 0) {
       for (const m of teamsData[0]?.members || []) {
-        map[m.userId] = m.visible;
+        // Backend's getAllTeams aggregation returns each member object
+        // keyed by `_id` (the user's id), not `userId`. Using the wrong
+        // key here meant every lookup below resolved to `undefined`,
+        // which made the "See All" toggle appear to reset itself.
+        map[m._id] = m.visible;
       }
     }
     return map;
+  }, [props.teamData]);
+
+  // Only render toggle rows once teamData AND its members are populated so that
+  // `choice` is never undefined on first mount — prevents the brief ON flash.
+  // props.teamData can exist with members: undefined on the first Redux update,
+  // so we must check members is a non-empty array too.
+  const isMemberVisibilityReady = useMemo(() => {
+    return (
+      Array.isArray(props.teamData) &&
+      props.teamData.length > 0 &&
+      Array.isArray(props.teamData[0]?.members) &&
+      props.teamData[0].members.length > 0
+    );
   }, [props.teamData]);
 
   useEffect(() => {
@@ -186,15 +205,16 @@ export const TeamMembersPopup = React.memo(props => {
     setDuplicateUserAlert(false);
   };
 
-  // avoid negated condition
-  const onAddUser = () => {
+  const onAddUser = async () => {
     if (selectedUser) {
       const isDuplicate = validation.some(x => x?._id === selectedUser._id);
       if (isDuplicate) {
         setSearchText('');
         setDuplicateUserAlert(true);
       } else {
-        props.onAddUser(selectedUser);
+        setisLoading(true);
+        await props.onAddUser(selectedUser);
+        setisLoading(false);
         setSearchText('');
         setDuplicateUserAlert(false);
       }
@@ -301,7 +321,7 @@ export const TeamMembersPopup = React.memo(props => {
   };
 
   const renderBody = () => {
-    if (showTableSpinner) {
+    if (showTableSpinner || !isMemberVisibilityReady) {
       return (
         <tr>
           <td align="center" colSpan={canAssignTeamToUsers ? 6 : 5}>
@@ -315,6 +335,9 @@ export const TeamMembersPopup = React.memo(props => {
     return visibleList.map((u, i) => renderRow(u, i));
   };
 
+  const wrapLongTeamName = teamName =>
+    teamName.length >= 60 ? teamName.slice(0, 50) + '...' : teamName;
+
   return (
     <Container fluid>
       <InfoModal isOpen={infoModal} toggle={toggleInfoModal} />
@@ -327,8 +350,8 @@ export const TeamMembersPopup = React.memo(props => {
           props.open ? ' open-team-members-popup-modal' : ''
         }`}
       >
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
-          {`Members of ${props.selectedTeamName}`}
+        <ModalHeader className={`${darkMode ? 'bg-space-cadet' : ''} `} toggle={closePopup}>
+          {wrapLongTeamName(`Members of ${props.selectedTeamName}`)}
         </ModalHeader>
 
         <div className={darkMode ? 'bg-space-cadet' : ''}>
@@ -345,8 +368,9 @@ export const TeamMembersPopup = React.memo(props => {
                 color="primary"
                 onClick={onAddUser}
                 style={darkMode ? boxStyleDark : boxStyle}
+                disabled={isLoading}
               >
-                Add
+                {isLoading ? <Spinner color="light" size="sm" /> : 'Add'}
               </Button>
             </div>
           )}
@@ -397,10 +421,9 @@ export const TeamMembersPopup = React.memo(props => {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {labelForFilter(filterMode)}
+                    {filterMode}
                   </button>
                 </th>
-
                 <th
                   className="def-width"
                   style={{ width: 56, textAlign: 'center', verticalAlign: 'middle' }}
@@ -465,26 +488,6 @@ export const TeamMembersPopup = React.memo(props => {
           </Button>
         </ModalFooter>
       </Modal>
-
-      {/* <Modal
-        isOpen={deletedPopup}
-        toggle={closeDeletedPopup}
-        className={darkMode ? 'dark-mode text-light' : ''}
-      >
-        <ModalHeader
-          toggle={closeDeletedPopup}
-          className={`${darkMode ? 'bg-space-cadet' : ''} text-danger font-weight-bold`}
-        >
-          Member Deleted!
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <p>
-            Team member successfully deleted! Ryunosuke Satoro famously said, &ldquo;Individually we
-            are one drop, together we are an ocean.&rdquo; Through the action you just took, this
-            ocean is now one drop smaller.
-          </p>
-        </ModalBody>
-      </Modal> */}
     </Container>
   );
 });
@@ -502,7 +505,7 @@ TeamMembersPopup.propTypes = {
     PropTypes.shape({
       members: PropTypes.arrayOf(
         PropTypes.shape({
-          userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+          _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
           visible: PropTypes.bool,
         }),
       ),

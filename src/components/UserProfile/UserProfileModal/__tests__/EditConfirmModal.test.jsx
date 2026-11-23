@@ -1,13 +1,13 @@
 import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import EditConfirmModal from '../EditConfirmModal';
 
 const closeModalMock = vi.fn();
 describe('UserProfileModal', () => {
-  const mockStore = configureStore([]);
+  const mockStore = configureMockStore([]);
   const initialState = {
     theme: { darkMode: false },
   };

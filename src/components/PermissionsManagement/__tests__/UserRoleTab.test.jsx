@@ -5,7 +5,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 import { Router } from 'react-router-dom';
@@ -14,7 +14,7 @@ import { themeMock } from '__tests__/mockStates';
 import { ModalProvider } from '~/context/ModalContext';
 import UserRoleTab from '../UserRoleTab';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 let store;
 beforeEach(() => {
   store = mockStore({

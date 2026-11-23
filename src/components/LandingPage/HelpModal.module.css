@@ -1,33 +1,34 @@
+/* stylelint-disable  */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-.helpModal .modalDialog {
+.helpModal :global(.modal-dialog) {
   max-width: 992px;
   margin: 1.75rem auto;
   width: 100%;
   padding: 0 15px;
 }
 
-.helpModal .modalContent {
+.helpModal :global(.modal-content) {
   width: 100%;
   min-height: 416px;
-  background: #ffffff;
-  border: 1px solid #000000;
+  background: #fff;
+  border: 1px solid #000;
   border-radius: 4px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 4px rgb(0 0 0 / 25%);
   position: relative;
   overflow: hidden;
 }
 
-.helpModal .modalHeader {
+.helpModal :global(.modal-header) {
   border: none;
   padding: 48px 80px 24px;
 }
 
-.helpModal .modalTitle {
-  font-family: 'Roboto';
+.helpModal :global(.modal-title) {
+  font-family: Roboto;
   font-weight: 700;
   font-size: 32px;
-  color: #000000;
+  color: #000;
   margin: 0;
 }
 
@@ -43,7 +44,7 @@
   width: 100%;
   height: 55px;
   background: #fff;
-  border: 2px solid rgba(0, 0, 0, 0.8);
+  border: 2px solid rgb(0 0 0 / 80%);
   padding: 12px 20px;
   display: flex;
   justify-content: space-between;
@@ -53,12 +54,12 @@
 }
 
 .selectButtonText {
-  font-family: 'Roboto';
+  font-family: Roboto;
   font-style: normal;
   font-weight: 400;
   font-size: 18px;
   line-height: 24px;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgb(0 0 0 / 50%);
 }
 
 .selected {
@@ -87,7 +88,7 @@
   left: 0;
   width: 100%;
   background: #fff;
-  border: 2px solid rgba(0, 0, 0, 0.8);
+  border: 2px solid rgb(0 0 0 / 80%);
   border-radius: 0 0 10px 10px;
   max-height: 200px;
   overflow-y: auto;
@@ -96,7 +97,7 @@
 
 .selectOption {
   padding: 12px 20px;
-  font-family: 'Roboto';
+  font-family: Roboto;
   font-size: 18px;
   color: #000;
   cursor: pointer;
@@ -104,11 +105,11 @@
 }
 
 .selectOption:hover {
-  background: rgba(86, 54, 213, 0.1);
+  background: rgb(86 54 213 / 10%);
 }
 
 .textMuted {
-  font-family: 'Roboto';
+  font-family: Roboto;
   font-style: italic;
   font-size: 20px;
   color: #666;
@@ -116,50 +117,84 @@
   padding-left: 5px;
 }
 
+.suggestionsLink {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #0d6efd;
+  font: inherit;
+  text-decoration: underline;
+  vertical-align: baseline;
+}
+
+.suggestionsLink:hover {
+  color: #0a58ca;
+}
+
+.suggestionsLink:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+}
+
 /* ============================================
    DARK MODE STYLES
    ============================================ */
 
-.darkMode .modalContent {
+.darkMode :global(.modal-content) {
   background-color: #2b3e59 !important;
   border: 1px solid #4a5a77 !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 40%) !important;
+  color: #fff;
 }
 
-.darkMode .modalHeader {
+.darkMode :global(.modal-header) {
   border-bottom: 1px solid #4a5a77 !important;
 }
 
-.darkMode .modalTitle {
-  color: #ffffff !important;
+.darkMode :global(.modal-title) {
+  color: #fff !important;
 }
 
-.darkMode p button {
-  font-size: 18px;
-  color: #ddb55e !important;
-  text-decoration: underline;
+.darkMode :global(.modal-footer) {
+  border-top-color: #4a5a77;
 }
 
-.darkMode p button:hover {
-  color: #f5a926 !important;
+.darkMode :global(.close) {
+  color: #fff;
+  text-shadow: none;
+  opacity: 0.8;
+}
+
+.darkMode :global(.close:hover),
+.darkMode :global(.close:focus) {
+  color: #fff;
+  opacity: 1;
+}
+
+.suggestionsLinkDark {
+  color: #ddb55e;
+}
+
+.suggestionsLinkDark:hover {
+  color: #f5a926;
 }
 
 .selectButtonDark {
   background-color: #3a506b;
   border: 2px solid #4a5a77;
-  color: #ffffff;
+  color: #fff;
 }
 
 .selectButtonTextDark {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgb(255 255 255 / 70%);
 }
 
 .selectedDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .selectButtonArrowDark {
-  border-color: #ffffff;
+  border-color: #fff;
 }
 
 .selectOptionsDark {
@@ -168,7 +203,7 @@
 }
 
 .selectOptionDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .selectOptionDark:hover {
@@ -185,8 +220,8 @@
   border-color: #e8a71c;
 }
 
-@media (max-width: 992px) {
-  .helpModal .modalBody {
+@media (width <= 992px) {
+  .helpModal :global(.modal-body) {
     padding: 0 20px;
   }
 

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { addTeamMember, deleteTeamMember } from '~/actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
+import PropTypes from 'prop-types';
 
 function TeamsTab(props) {
   const {
@@ -33,6 +35,7 @@ function TeamsTab(props) {
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
   const [removedTeams, setRemovedTeams] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (typeof fetchTeamCodeAllUsers === 'function') {
@@ -57,10 +60,10 @@ function TeamsTab(props) {
     setaddTeamPopupOpen(false);
   };
 
-  const onSelectDeleteTeam = teamId => {
+  const onSelectDeleteTeam = async teamId => {
     try {
       if (userProfile._id) {
-        deleteTeamMember(teamId, userProfile._id);
+        await dispatch(deleteTeamMember(teamId, userProfile._id));
       }
       setUserProfile(prev => ({
       ...prev,
@@ -75,18 +78,27 @@ function TeamsTab(props) {
     }
   };
 
-  const onSelectAssignTeam = team => {
+  const onSelectAssignTeam = async team => {
     try {
       if (userProfile?._id) {
-        addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
+        await dispatch(addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName));
       }
+      const updatedTeams = [...(userProfile?.teams || []), team];
+
       if (setUserProfile) {
       setUserProfile(prev => ({
         ...prev,
-        teams: [...(prev.teams || []), team],
-      }));
-    }
+        teams: updatedTeams,
+        }));
+      }
       onAssignTeam(team);
+      if (typeof handleSubmit === 'function') {
+        await handleSubmit({
+          ...userProfile,
+          teams: updatedTeams.map(t => t._id || t),
+        });
+      }
+
       toast.success('Team assigned successfully');
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -136,4 +148,14 @@ function TeamsTab(props) {
     </>
   );
 }
+
+TeamsTab.propTypes = {
+  userProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    teams: PropTypes.arrayOf(PropTypes.object),
+  }),
+};
+
 export default TeamsTab;

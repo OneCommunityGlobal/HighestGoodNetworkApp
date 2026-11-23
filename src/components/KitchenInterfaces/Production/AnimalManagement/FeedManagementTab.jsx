@@ -1,0 +1,368 @@
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faShoppingCart, faBoxOpen } from '@fortawesome/free-solid-svg-icons';
+import styles from './AnimalManagement.module.css';
+
+const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedInventory }) => {
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [showInventoryModal, setShowInventoryModal] = useState(false);
+  const [newOrder, setNewOrder] = useState({ supplierName: '', items: '', expectedDate: '' });
+  const [newItem, setNewItem] = useState({
+    name: '',
+    unit: '',
+    stockLeft: '',
+    reorderThreshold: '',
+  });
+
+  const handleUnitChange = e => {
+    const value = e.target.value;
+    const lettersOnly = value.replace(/[^a-zA-Z\s]/g, '');
+    setNewItem({ ...newItem, unit: lettersOnly });
+  };
+
+  const handleNumericChange = (field, val) => {
+    let cleaned = val.replace(/[^0-9.]/g, '');
+    const parts = cleaned.split('.');
+    if (parts.length > 2) {
+      cleaned = parts[0] + '.' + parts.slice(1).join('');
+    }
+    setNewItem({ ...newItem, [field]: cleaned });
+  };
+
+  const handleNumericKeyDown = e => {
+    if (['e', 'E', '+', '-'].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleStatusChange = (id, currentStatus) => {
+    let nextStatus = currentStatus;
+    if (currentStatus === 'ordered') nextStatus = 'shipped';
+    else if (currentStatus === 'shipped') nextStatus = 'delivered';
+    setFeedOrders(feedOrders.map(o => (o.id === id ? { ...o, status: nextStatus } : o)));
+  };
+
+  const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleCreateOrder = e => {
+    e.preventDefault();
+    const todayStr = getTodayDateString();
+    if (newOrder.expectedDate < todayStr) {
+      // eslint-disable-next-line no-alert
+      alert('Expected date cannot be in the past.');
+      return;
+    }
+    const newIdNum = String(feedOrders.length + 1).padStart(3, '0');
+    const order = {
+      id: `FO-${newIdNum}`,
+      supplierName: newOrder.supplierName,
+      items: newOrder.items,
+      orderedDate: todayStr,
+      expectedDate: newOrder.expectedDate,
+      status: 'ordered',
+    };
+    setFeedOrders([order, ...feedOrders]);
+    setShowOrderModal(false);
+    setNewOrder({ supplierName: '', items: '', expectedDate: '' });
+  };
+
+  const handleAddInventoryItem = e => {
+    e.preventDefault();
+    const item = {
+      id: `FI-${Date.now()}`,
+      name: newItem.name,
+      unit: newItem.unit,
+      stockLeft: Number.parseFloat(newItem.stockLeft),
+      reorderThreshold: Number.parseFloat(newItem.reorderThreshold),
+    };
+    setFeedInventory([...feedInventory, item]);
+    setShowInventoryModal(false);
+    setNewItem({ name: '', unit: '', stockLeft: '', reorderThreshold: '' });
+  };
+
+  return (
+    <div className={styles['feed-split-layout']}>
+      {/* ─── LEFT: Feed Inventory ─── */}
+      <div className={styles['feed-panel']}>
+        <div className={styles['feed-panel-header']}>
+          <FontAwesomeIcon icon={faBoxOpen} className={styles['panel-icon-green']} />
+          <div>
+            <h3 className={styles['panel-title']}>Feed Inventory</h3>
+            <p className={styles['panel-subtitle']}>Current feed stock levels</p>
+          </div>
+        </div>
+
+        <div className={styles['feed-inventory-list']}>
+          {feedInventory.length === 0 ? (
+            <div className={styles['empty-state']}>No inventory items.</div>
+          ) : (
+            feedInventory.map(item => {
+              const isLow = item.stockLeft < item.reorderThreshold;
+              return (
+                <div key={item.id} className={styles['inventory-row']}>
+                  <div className={styles['inventory-row-info']}>
+                    <span className={styles['inventory-row-name']}>{item.name}</span>
+                    <span className={styles['inventory-row-detail']}>
+                      Stock: {item.stockLeft} {item.unit}
+                    </span>
+                    <span className={styles['inventory-row-detail']}>
+                      Reorder at {item.reorderThreshold} {item.unit}
+                    </span>
+                  </div>
+                  <span
+                    className={`${styles['status-badge']} ${
+                      isLow ? styles['status-warning'] : styles['status-good']
+                    }`}
+                  >
+                    {isLow ? 'warning' : 'good'}
+                  </span>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        <button
+          type="button"
+          className={styles['btn-add-row']}
+          onClick={() => setShowInventoryModal(true)}
+        >
+          <FontAwesomeIcon icon={faPlus} style={{ marginRight: '6px' }} />
+          Add Feed Item
+        </button>
+      </div>
+
+      {/* ─── RIGHT: Feed Orders ─── */}
+      <div className={styles['feed-panel']}>
+        <div className={styles['feed-panel-header']}>
+          <FontAwesomeIcon icon={faShoppingCart} className={styles['panel-icon-blue']} />
+          <div>
+            <h3 className={styles['panel-title']}>Feed Orders</h3>
+            <p className={styles['panel-subtitle']}>Track feed purchases</p>
+          </div>
+        </div>
+
+        <div className={styles['list-container']}>
+          {feedOrders.length === 0 ? (
+            <div className={styles['empty-state']}>No feed orders found.</div>
+          ) : (
+            feedOrders.map(order => {
+              const statusClass = styles[`status-${order.status}`] || '';
+              return (
+                <div key={order.id} className={styles['list-item']}>
+                  <div className={styles['item-main']}>
+                    <span className={styles['item-title']}>{order.id}</span>
+                    <span className={styles['item-subtitle']}>{order.supplierName}</span>
+                    <p className={styles['item-details']}>{order.items}</p>
+                    <div className={styles['item-dates']}>
+                      <span>Ordered: {order.orderedDate}</span>
+                      <span>
+                        {order.status === 'delivered'
+                          ? `Delivered: ${order.expectedDate}`
+                          : `Expected: ${order.expectedDate}`}
+                      </span>
+                    </div>
+                    {order.status === 'ordered' && (
+                      <div className={styles['item-actions']}>
+                        <button
+                          className={styles['btn-secondary']}
+                          onClick={() => handleStatusChange(order.id, order.status)}
+                        >
+                          Mark as Shipped
+                        </button>
+                      </div>
+                    )}
+                    {order.status === 'shipped' && (
+                      <div className={styles['item-actions']}>
+                        <button
+                          className={styles['btn-secondary']}
+                          onClick={() => handleStatusChange(order.id, order.status)}
+                        >
+                          Mark as Delivered
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className={styles['item-status']}>
+                    <span className={`${styles['status-badge']} ${statusClass}`}>
+                      {order.status}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        <button
+          type="button"
+          className={styles['btn-order-feed']}
+          onClick={() => setShowOrderModal(true)}
+        >
+          <FontAwesomeIcon icon={faPlus} style={{ marginRight: '8px' }} />
+          Order Feed
+        </button>
+      </div>
+
+      {/* ─── ORDER MODAL ─── */}
+      {showOrderModal && (
+        /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
+        <div className={styles['modal-overlay']} onClick={() => setShowOrderModal(false)}>
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div className={styles['modal-content']} onClick={e => e.stopPropagation()}>
+            <div className={styles['modal-header']}>
+              <h2>New Feed Order</h2>
+              <button className={styles['modal-close']} onClick={() => setShowOrderModal(false)}>
+                &times;
+              </button>
+            </div>
+            <form onSubmit={handleCreateOrder}>
+              <div className={styles['form-group']}>
+                <label htmlFor="feedSupplierName">Supplier Name</label>
+                <input
+                  id="feedSupplierName"
+                  required
+                  type="text"
+                  value={newOrder.supplierName}
+                  onChange={e => setNewOrder({ ...newOrder, supplierName: e.target.value })}
+                  placeholder="e.g. Farm Supply Co."
+                />
+              </div>
+              <div className={styles['form-group']}>
+                <label htmlFor="feedItems">Items (Description &amp; Qty)</label>
+                <input
+                  id="feedItems"
+                  required
+                  type="text"
+                  value={newOrder.items}
+                  onChange={e => setNewOrder({ ...newOrder, items: e.target.value })}
+                  placeholder="e.g. Layer Feed (100 lbs), Scratch Grains (50 lbs)"
+                />
+              </div>
+              <div className={styles['form-group']}>
+                <label htmlFor="feedExpectedDate">Expected Delivery Date</label>
+                <input
+                  id="feedExpectedDate"
+                  required
+                  type="date"
+                  min={getTodayDateString()}
+                  value={newOrder.expectedDate}
+                  onChange={e => setNewOrder({ ...newOrder, expectedDate: e.target.value })}
+                />
+              </div>
+              <div className={styles['modal-actions']}>
+                <button
+                  type="button"
+                  className={styles['btn-secondary']}
+                  onClick={() => setShowOrderModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className={styles['btn-primary']}>
+                  Submit Order
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ─── INVENTORY MODAL ─── */}
+      {showInventoryModal && (
+        /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
+        <div className={styles['modal-overlay']} onClick={() => setShowInventoryModal(false)}>
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div className={styles['modal-content']} onClick={e => e.stopPropagation()}>
+            <div className={styles['modal-header']}>
+              <h2>Add Feed Item</h2>
+              <button
+                className={styles['modal-close']}
+                onClick={() => setShowInventoryModal(false)}
+              >
+                &times;
+              </button>
+            </div>
+            <form onSubmit={handleAddInventoryItem}>
+              <div className={styles['form-group']}>
+                <label htmlFor="inventoryName">Feed Name</label>
+                <input
+                  id="inventoryName"
+                  required
+                  type="text"
+                  value={newItem.name}
+                  onChange={e => setNewItem({ ...newItem, name: e.target.value })}
+                  placeholder="e.g. Layer Feed"
+                />
+              </div>
+              <div className={styles['form-group']}>
+                <label htmlFor="inventoryUnit">Unit</label>
+                <input
+                  id="inventoryUnit"
+                  required
+                  type="text"
+                  value={newItem.unit}
+                  onChange={handleUnitChange}
+                  placeholder="e.g. lbs, bags, bales"
+                />
+              </div>
+              <div className={styles['form-group']}>
+                <label htmlFor="inventoryStock">Current Stock</label>
+                <input
+                  id="inventoryStock"
+                  required
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={newItem.stockLeft}
+                  onKeyDown={handleNumericKeyDown}
+                  onChange={e => handleNumericChange('stockLeft', e.target.value)}
+                />
+              </div>
+              <div className={styles['form-group']}>
+                <label htmlFor="inventoryThreshold">Reorder Threshold</label>
+                <input
+                  id="inventoryThreshold"
+                  required
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={newItem.reorderThreshold}
+                  onKeyDown={handleNumericKeyDown}
+                  onChange={e => handleNumericChange('reorderThreshold', e.target.value)}
+                />
+              </div>
+              <div className={styles['modal-actions']}>
+                <button
+                  type="button"
+                  className={styles['btn-secondary']}
+                  onClick={() => setShowInventoryModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className={styles['btn-primary']}>
+                  Add Item
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+FeedManagementTab.propTypes = {
+  feedOrders: PropTypes.array.isRequired,
+  setFeedOrders: PropTypes.func.isRequired,
+  feedInventory: PropTypes.array.isRequired,
+  setFeedInventory: PropTypes.func.isRequired,
+};
+
+export default FeedManagementTab;

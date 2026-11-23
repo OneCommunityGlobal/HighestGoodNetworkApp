@@ -1,11 +1,10 @@
+/* stylelint-disable keyframes-name-pattern */
+
 /* ===== OVERLAY ===== */
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
   justify-content: flex-end;
   z-index: 1000;
@@ -15,10 +14,7 @@
 /* ===== BACKDROP BUTTON ===== */
 .overlayBackdrop {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   background: transparent;
@@ -47,7 +43,7 @@
   padding: 2rem;
   position: relative;
   animation: slideIn 0.3s ease;
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  box-shadow: -4px 0 20px rgb(0 0 0 / 15%);
 }
 
 /* ===== CLOSE BUTTON ===== */
@@ -84,7 +80,7 @@
   font-size: 1.75rem;
   font-weight: 700;
   color: #2d5016;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
 }
 
 .recipeType {
@@ -148,7 +144,7 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: #3a3a3a;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.75rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid #d4cfbb;
 }
@@ -213,7 +209,7 @@
 }
 
 .ingredientRow:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 8%);
 }
 
 .ingredientInfo {
@@ -349,7 +345,7 @@
 }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .panel {
     width: 90%;
   }
@@ -377,7 +373,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .panel {
     width: 100%;
     padding: 1.25rem;

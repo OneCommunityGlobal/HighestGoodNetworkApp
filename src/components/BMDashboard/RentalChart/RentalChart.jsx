@@ -2,9 +2,12 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import styles from './RentalChart.module.css';
+import datePickerStyles from './RentalDatePicker.module.css';
+import { getCurrentYearRange } from './rentalChartUtils';
 import { toast } from 'react-toastify';
 import {
   Chart as ChartJS,
@@ -12,14 +15,23 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
-// these colors can be randomly generated once more projects are shared here. Colors generated from ChatGPT
 const PROJECT_COLORS = [
   { borderColor: 'rgb(53, 162, 235)', backgroundColor: 'rgba(53, 162, 235, 0.5)' },
   { borderColor: 'rgb(255, 99, 132)', backgroundColor: 'rgba(255, 99, 132, 0.5)' },
@@ -44,7 +56,17 @@ const MONTHS = [
   'December',
 ];
 
-/* ---------- helper functions to keep processChartData simple ---------- */
+const CHART_COLORS = {
+  darkBg: 'transparent',
+  lightBg: '#ffffff',
+  darkText: '#e0e0e0',
+  lightText: '#333333',
+};
+
+const FILTER_ALL = 'All';
+const MIN_LABELED_CHART_WIDTH = 600;
+// Below this width the chart switches to smaller fonts and shorter axis titles
+const COMPACT_CHART_WIDTH = 576;
 
 const filterRentalData = (data, selectedProject, selectedTool, dateRange) =>
   data.filter(item => {
@@ -79,11 +101,19 @@ const buildMonthsRange = dateRange => {
   return { labels, monthsInRange, totalMonths };
 };
 
-const aggregateDataByGroup = (filteredData, monthsInRange, totalMonths, groupBy, chartType) => {
+// One decimal max, e.g. 16.342 -> "16.3%", 20 -> "20%"
+const formatPercent = value => `${Number(Number(value).toFixed(1))}%`;
+
+const getProjectName = (projMap, projectId) =>
+  projMap instanceof Map && projMap.has(projectId)
+    ? projMap.get(projectId)
+    : `Project ${projectId.substring(0, 8)}...`;
+
+const aggregateDataByProject = (filteredData, monthsInRange, totalMonths, chartType, projMap) => {
   const groupMap = new Map();
 
   for (const item of filteredData) {
-    const groupKey = groupBy === 'project' ? item.projectId : item.toolName;
+    const groupKey = item.projectId;
     const date = new Date(item.date);
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -101,6 +131,7 @@ const aggregateDataByGroup = (filteredData, monthsInRange, totalMonths, groupBy,
     if (!groupMap.has(groupKey)) {
       groupMap.set(groupKey, {
         key: groupKey,
+        name: getProjectName(projMap, groupKey),
         dataPoints: new Array(totalMonths).fill(undefined),
         monthsWithData: new Set(),
       });
@@ -117,13 +148,12 @@ const aggregateDataByGroup = (filteredData, monthsInRange, totalMonths, groupBy,
   return groupMap;
 };
 
-const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
+const buildDatasetsFromGroupMap = groupMap =>
   Array.from(groupMap.values()).map((group, index) => {
     const colorIndex = index % PROJECT_COLORS.length;
-    const label = groupBy === 'project' ? `Project ${group.key.substring(0, 8)}...` : group.key;
 
     return {
-      label,
+      label: group.name,
       data: group.dataPoints,
       borderColor: PROJECT_COLORS[colorIndex].borderColor,
       backgroundColor: PROJECT_COLORS[colorIndex].backgroundColor,
@@ -136,62 +166,229 @@ const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
     };
   });
 
-/* ---------------------------------------------------------------------- */
+// Label above the point when it's the month's highest visible value, below otherwise,
+// so labels for nearby points split apart instead of covering each other
+const isHighestInMonth = ({ chart, dataIndex, datasetIndex, dataset }) => {
+  const value = dataset.data[dataIndex];
+  return !chart.data.datasets.some(
+    (other, i) => i !== datasetIndex && chart.isDatasetVisible(i) && other.data[dataIndex] > value,
+  );
+};
+
+const getDatalabelFormatter = (value, chartType) => {
+  if (value == null || Number.isNaN(value)) return '';
+  if (chartType === 'percentage') {
+    return formatPercent(value);
+  }
+  return `$${value.toFixed(2)}`;
+};
+
+const getYAxisTitle = (chartType, isCompact) => {
+  if (chartType === 'percentage') {
+    return isCompact ? '% of Materials Cost' : 'Percentage of Total Materials Cost (%)';
+  }
+  return isCompact ? 'Rental Cost ($)' : 'Total Rental Cost ($)';
+};
+
+const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+
+const buildChartTitle = (selectedProject, selectedTool, dateRange, availableProjects) => {
+  const toolPart = selectedTool === FILTER_ALL ? '' : ` for ${selectedTool}`;
+  const projectPart =
+    selectedProject === FILTER_ALL
+      ? ' by Project'
+      : ` in ${getProjectName(availableProjects, selectedProject)}`;
+
+  return `Rental Costs${toolPart}${projectPart} (${formatDate(dateRange.startDate)} - ${formatDate(
+    dateRange.endDate,
+  )})`;
+};
 
 export default function RentalChart() {
   const chartRef = useRef(null);
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [],
-  });
+  const chartWrapperRef = useRef(null);
+  const [chartWidth, setChartWidth] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chartType, setChartType] = useState('cost');
-  const [selectedProject, setSelectedProject] = useState('All');
-  const [selectedTool, setSelectedTool] = useState('All');
-  const [groupBy] = useState('project');
+  const [selectedProject, setSelectedProject] = useState(FILTER_ALL);
+  const [selectedTool, setSelectedTool] = useState(FILTER_ALL);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const bmProjects = useSelector(state => state.bmProjects);
 
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(2024, 0, 1),
-    endDate: new Date(2024, 11, 31),
-  });
+  const [dateRange, setDateRange] = useState(getCurrentYearRange);
 
-  const [availableProjects, setAvailableProjects] = useState([]);
-  const [availableTools, setAvailableTools] = useState([]);
+  const [fallbackProjectNames, setFallbackProjectNames] = useState(new Map());
   const [rawData, setRawData] = useState([]);
+  const [rentalCostData, setRentalCostData] = useState([]);
+  const [costBreakdownData, setCostBreakdownData] = useState([]);
 
-  const processChartData = data => {
-    const filteredData = filterRentalData(data, selectedProject, selectedTool, dateRange);
-    const { labels, monthsInRange, totalMonths } = buildMonthsRange(dateRange);
-    const groupMap = aggregateDataByGroup(
-      filteredData,
-      monthsInRange,
-      totalMonths,
-      groupBy,
-      chartType,
+  // Only list projects that have rental data; prefer names from the BM projects list
+  const availableProjects = useMemo(() => {
+    const bmProjectNames = new Map(
+      (Array.isArray(bmProjects) ? bmProjects : []).map(p => [p._id, p.name]),
     );
-    const datasets = buildDatasetsFromGroupMap(groupMap, groupBy);
+    const projectMap = new Map();
+    rawData.forEach(item => {
+      if (item.projectId && !projectMap.has(item.projectId)) {
+        projectMap.set(
+          item.projectId,
+          bmProjectNames.get(item.projectId) ||
+            fallbackProjectNames.get(item.projectId) ||
+            getProjectName(null, item.projectId),
+        );
+      }
+    });
+    return projectMap;
+  }, [rawData, bmProjects, fallbackProjectNames]);
 
-    setChartData({ labels, datasets });
-  };
+  // Tools are picked per project, so the list only has the selected project's tools
+  const availableTools = useMemo(() => {
+    if (selectedProject === FILTER_ALL) return [];
+    const projectData = rawData.filter(item => item.projectId === selectedProject);
+    return [...new Set(projectData.map(item => item.toolName))].sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: 'base' }),
+    );
+  }, [rawData, selectedProject]);
 
+  useEffect(() => {
+    if (selectedTool !== FILTER_ALL && !availableTools.includes(selectedTool)) {
+      setSelectedTool(FILTER_ALL);
+    }
+  }, [availableTools, selectedTool]);
+
+  const chartData = useMemo(
+    () => ({
+      labels: rentalCostData.map(item => item.date),
+      datasets: [
+        {
+          label: 'Total Rental Cost',
+          data: rentalCostData.map(item => item.value),
+          borderColor: 'rgb(53, 162, 235)',
+          backgroundColor: 'rgba(53, 162, 235, 0.5)',
+          tension: 0.4,
+          fill: false,
+        },
+      ],
+    }),
+    [rentalCostData],
+  );
+
+  const stackedBarData = useMemo(
+    () => ({
+      labels: costBreakdownData.map(item => item.projectName),
+      datasets: [
+        {
+          label: 'Tools costs due to owned tools',
+          data: costBreakdownData.map(item => item.ownedToolsCost),
+          backgroundColor: 'rgba(53, 162, 235, 0.7)',
+        },
+        {
+          label: 'Tools costs due to rented tools',
+          data: costBreakdownData.map(item => item.rentedToolsCost),
+          backgroundColor: 'rgba(255, 99, 132, 0.7)',
+        },
+      ],
+    }),
+    [costBreakdownData],
+  );
+
+  const stackedBarOptions = useMemo(() => {
+    const textColor = darkMode ? '#ffffff' : '#000000';
+    const gridColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            color: textColor,
+          },
+        },
+        title: {
+          display: true,
+          text: 'How Much of Tools Costs Are Due to Rentals?',
+          color: textColor,
+        },
+        datalabels: {
+          display: true,
+          color: textColor,
+          formatter: value => `$${Number(value).toFixed(2)}`,
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          title: {
+            display: true,
+            text: 'Projects',
+            color: textColor,
+          },
+          ticks: {
+            color: textColor,
+          },
+          grid: {
+            color: gridColor,
+          },
+        },
+        y: {
+          stacked: true,
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Cost',
+            color: textColor,
+          },
+          ticks: {
+            color: textColor,
+          },
+          grid: {
+            color: gridColor,
+          },
+        },
+      },
+    };
+  }, [darkMode]);
   useEffect(() => {
     const fetchRentalData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(ENDPOINTS.BM_RENTAL_CHART);
-        if (response.data.success) {
-          const { data } = response.data;
+        const headers = { Authorization: localStorage.getItem('token') };
+        const [rentalResponse, projectsResponse] = await Promise.allSettled([
+          axios.get(ENDPOINTS.BM_RENTAL_CHART),
+          axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, { headers }),
+        ]);
+
+        if (rentalResponse.status === 'fulfilled' && rentalResponse.value.data.success) {
+          const { data } = rentalResponse.value.data;
+
+          // Fallback names for projects missing from the BM projects list
+          const projectMap = new Map();
+          if (projectsResponse.status === 'fulfilled') {
+            let pData = projectsResponse.value.data;
+            if (pData && !Array.isArray(pData)) pData = pData.data || pData.results || [];
+
+            if (Array.isArray(pData)) {
+              pData.forEach(p => {
+                const pId = p.projectId || p._id;
+                const pName = p.projectName || p.name;
+                if (pId && pName) {
+                  projectMap.set(pId, pName);
+                }
+              });
+            }
+          }
+
+          data.forEach(item => {
+            if (item.projectId && item.projectName && !projectMap.has(item.projectId)) {
+              projectMap.set(item.projectId, item.projectName);
+            }
+          });
+
+          setFallbackProjectNames(projectMap);
           setRawData(data);
-
-          const projectIds = [...new Set(data.map(item => item.projectId))];
-          setAvailableProjects(projectIds);
-
-          const toolNames = [...new Set(data.map(item => item.toolName))];
-          setAvailableTools(toolNames);
-
-          processChartData(data);
         } else {
           setError('Failed to fetch data');
         }
@@ -205,156 +402,212 @@ export default function RentalChart() {
       }
     };
 
-    fetchRentalData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Errors are handled inside fetchRentalData
+    fetchRentalData().catch(() => {});
+  }, []);
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const headers = {
+          Authorization: localStorage.getItem('token'),
+        };
+
+        const params = {
+          startDate: dateRange.startDate.toISOString(),
+          endDate: dateRange.endDate.toISOString(),
+        };
+
+        if (selectedProject !== FILTER_ALL) {
+          params.projectId = selectedProject;
+        }
+
+        const breakdownParams = {
+          startDate: dateRange.startDate.toISOString(),
+          endDate: dateRange.endDate.toISOString(),
+        };
+
+        if (selectedProject !== FILTER_ALL) {
+          breakdownParams.projects = selectedProject;
+        }
+
+        const [rentalResult, breakdownResult, projectsResult] = await Promise.allSettled([
+          axios.get(ENDPOINTS.BM_RENTAL_COST_OVER_TIME, {
+            headers,
+            params,
+          }),
+          axios.get(ENDPOINTS.BM_TOOLS_COST_BREAKDOWN, {
+            headers,
+            params: breakdownParams,
+          }),
+          axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, {
+            headers,
+          }),
+        ]);
+        if (rentalResult.status === 'rejected') {
+          toast.error('Error fetching rental cost chart data');
+          setError('Error loading rental cost chart data');
+          return;
+        }
+
+        const rentalData =
+          rentalResult.status === 'fulfilled' && Array.isArray(rentalResult.value.data)
+            ? rentalResult.value.data
+            : [];
+
+        const breakdownData =
+          breakdownResult.status === 'fulfilled' && Array.isArray(breakdownResult.value.data)
+            ? breakdownResult.value.data
+            : [];
+
+        const projects =
+          projectsResult.status === 'fulfilled' && Array.isArray(projectsResult.value.data?.data)
+            ? projectsResult.value.data.data
+            : [];
+
+        const projectNames = new Map(
+          projects.map(project => [project.projectId, project.projectName]),
+        );
+
+        const breakdownWithNames = breakdownData.map(item => ({
+          ...item,
+          projectName: projectNames.get(item.projectId) || item.projectName || 'Unknown Project',
+        }));
+
+        setRentalCostData(rentalData);
+        setCostBreakdownData(breakdownWithNames);
+        setError(null);
+      } catch {
+        toast.error('Error fetching rental cost chart data');
+        setError('Error loading rental cost chart data');
+      }
+    };
+
+    void fetchChartData();
+  }, [selectedProject, dateRange]);
+
+  // Track the chart area's width so fonts and labels can shrink on small screens
+  useEffect(() => {
+    const wrapper = chartWrapperRef.current;
+    if (!wrapper || typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(([entry]) => setChartWidth(entry.contentRect.width));
+    observer.observe(wrapper);
+    return () => observer.disconnect();
   }, []);
 
-  function generateChartTitle() {
-    let title = 'Rental Costs';
+  const isCompact = chartWidth > 0 && chartWidth < COMPACT_CHART_WIDTH;
 
-    if (groupBy === 'project') {
-      title += ' by Project';
-      if (selectedProject !== 'All') {
-        title = `Rental Costs for Project ${selectedProject.substring(0, 8)}...`;
-      }
-    } else {
-      title += ' by Tool Type';
-      if (selectedTool !== 'All') {
-        title = `Rental Costs for ${selectedTool}`;
-      }
-    }
+  const options = useMemo(() => {
+    const textColor = darkMode ? '#ffffff' : '#000000';
+    const tooltipBorder = darkMode ? '#ffffff' : '#000000';
+    const tooltipBg = darkMode ? '#343a40' : '#f8f9fa';
+    const titleColor = darkMode ? '#ffffff' : '#000000';
+    const gridXColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const gridYColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
 
-    const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-
-    title += ` (${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)})`;
-
-    return title;
-  }
-
-  useEffect(() => {
-    if (rawData.length > 0) {
-      processChartData(rawData);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData]);
-
-  const options = useMemo(
-    () => ({
+    return {
       responsive: true,
       maintainAspectRatio: false,
-      backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
+      backgroundColor: darkMode ? CHART_COLORS.darkBg : CHART_COLORS.lightBg,
+      // Hovering anywhere in a month lists every project, so hidden labels stay readable
+      interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: {
           position: 'top',
           labels: {
-            color: darkMode ? '#e0e0e0' : '#333333',
+            color: textColor,
+            font: { size: isCompact ? 12 : 16 },
+            boxWidth: isCompact ? 24 : 40,
           },
         },
         title: {
           display: true,
-          text: generateChartTitle(),
+          text: buildChartTitle(selectedProject, selectedTool, dateRange, availableProjects),
           font: {
-            size: 14,
+            size: isCompact ? 12 : 14,
           },
-          color: darkMode ? '#ffffff' : '#1b2a41',
+          color: darkMode ? CHART_COLORS.darkText : CHART_COLORS.lightText,
           padding: {
-            bottom: 20,
+            bottom: isCompact ? 10 : 20,
           },
         },
         tooltip: {
+          filter: item => Number.isFinite(item.parsed.y),
           callbacks: {
-            label(context) {
-              let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              if (context.parsed.y !== null) {
+            label({ dataset, parsed }) {
+              let label = dataset.label ? `${dataset.label}: ` : '';
+              if (parsed.y !== null) {
                 label +=
-                  chartType === 'percentage'
-                    ? `${context.parsed.y.toFixed(1)}%`
-                    : `$${context.parsed.y.toFixed(2)}`;
+                  chartType === 'percentage' ? formatPercent(parsed.y) : `$${parsed.y.toFixed(2)}`;
               }
               return label;
             },
           },
-          backgroundColor: darkMode ? '#1b2a41' : 'rgba(255,255,255,0.8)',
-          titleColor: darkMode ? '#ffffff' : '#1b2a41',
-          bodyColor: darkMode ? '#ffffff' : '#333333',
-          borderColor: darkMode ? 'rgba(255,255,255, 0.2)' : '#1b2a41',
-          borderWidth: 1,
+          backgroundColor: tooltipBg,
+          titleColor,
+          bodyColor: textColor,
+          borderColor: tooltipBorder,
+          borderWidth: 2,
+          titleFont: { size: isCompact ? 14 : 18 },
+          bodyFont: { size: isCompact ? 12 : 16 },
         },
         datalabels: {
           color: darkMode ? '#e0e0e0' : '#333333',
-          // move each dataset to a slightly different side of the point
-          anchor: ctx => {
-            // horizontal side of the point
-            if (ctx.datasetIndex === 0) return 'end'; // right
-            if (ctx.datasetIndex === 1) return 'start'; // left
-            return 'center'; // 3rd stays centered if any
-          },
-
-          align: ctx => {
-            // vertical side of the anchor
-            if (ctx.datasetIndex === 0) return 'bottom'; // slightly below
-            if (ctx.datasetIndex === 1) return 'top'; // slightly above
-            return 'top';
-          },
-          offset: 8, // distance in px away from the point (same for all is fine)
+          backgroundColor: darkMode ? 'rgba(27, 42, 65, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+          borderRadius: 4,
+          padding: { top: 2, bottom: 2, left: 4, right: 4 },
+          anchor: ctx => (isHighestInMonth(ctx) ? 'end' : 'start'),
+          align: ctx => (isHighestInMonth(ctx) ? 'top' : 'bottom'),
+          offset: 4,
+          // Too narrow for per-point labels (the tooltip still shows values); otherwise hide
+          // only labels that would collide, and keep the rest inside the plot
+          display: ctx => (ctx.chart.width < MIN_LABELED_CHART_WIDTH ? false : 'auto'),
+          clamp: true,
           font: {
             size: 12,
           },
 
-          formatter: value => {
-            if (value == null || Number.isNaN(value)) return '';
-
-            // percentage mode → whole-number percent
-            if (chartType === 'percentage') {
-              return `${value.toFixed(0)}%`; // e.g., 348%
-            }
-
-            // cost mode → dollars (you can use 0 or 2 decimals as you like)
-            return `$${value.toFixed(2)}`; // e.g., $175.00
-          },
+          formatter: value => getDatalabelFormatter(value, chartType),
         },
       },
       scales: {
         x: {
+          // Pad both ends so edge points and their labels clear the y-axis ticks
+          offset: true,
           title: {
             display: true,
             text: 'Month/Year',
-            color: darkMode ? '#e0e0e0' : '#333333',
+            color: textColor,
+            font: { size: isCompact ? 13 : 18 },
           },
           ticks: {
-            color: darkMode ? '#e0e0e0' : '#333333',
+            color: textColor,
+            font: { size: isCompact ? 10 : 12 },
+            maxRotation: isCompact ? 60 : 50,
+            autoSkip: true,
+            autoSkipPadding: isCompact ? 4 : 10,
           },
-          grid: {
-            color: darkMode ? '#e0e0e0' : '#333333',
-          },
+          grid: { color: gridXColor },
         },
         y: {
           beginAtZero: true,
+          // Headroom above the highest point so its label doesn't hit the legend
+          grace: '10%',
           title: {
             display: true,
-            text:
-              chartType === 'percentage'
-                ? 'Percentage of Total Materials Cost (%)'
-                : 'Total Rental Cost ($)',
-            color: darkMode ? '#e0e0e0' : '#333333',
+            text: getYAxisTitle(chartType, isCompact),
+            color: textColor,
+            font: { size: isCompact ? 13 : 18 },
           },
           ticks: {
-            callback(value) {
-              return chartType === 'percentage' ? `${value}%` : `$${value}`;
-            },
-            color: darkMode ? '#e0e0e0' : '#333333',
+            callback: value => (chartType === 'percentage' ? formatPercent(value) : `$${value}`),
+            color: textColor,
+            font: { size: isCompact ? 10 : 12 },
           },
-          grid: {
-            color: darkMode ? 'rgba(255,255,255,0.1)' : '#1b2a41',
-          },
+          grid: { color: gridYColor },
         },
       },
-    }),
-    [darkMode, chartType, dateRange, selectedProject, selectedTool],
-  );
+    };
+  }, [darkMode, chartType, dateRange, selectedProject, selectedTool, availableProjects, isCompact]);
 
   const handleTypeChange = e => {
     setChartType(e.target.value);
@@ -362,6 +615,7 @@ export default function RentalChart() {
 
   const handleProjectChange = e => {
     setSelectedProject(e.target.value);
+    setSelectedTool(FILTER_ALL);
   };
 
   const handleToolChange = e => {
@@ -393,77 +647,88 @@ export default function RentalChart() {
   const renderChartContent = () => {
     if (loading) {
       return (
-        <div className={`${styles.loading} ${darkMode ? styles.textLight : ''}`}>
+        <div className={`${styles.loading} ${darkMode ? styles['text-light'] : ''}`}>
           Loading Chart Data....
         </div>
       );
     }
 
     if (error) {
-      return <div className={`${styles.error} ${darkMode ? styles.textLight : ''}`}>{error}</div>;
+      return (
+        <div className={`${styles.error} ${darkMode ? styles['text-light'] : ''}`}>{error}</div>
+      );
     }
 
-    if (chartData.datasets.length === 0) {
+    if (rentalCostData.length === 0) {
       return (
-        <div className={`${styles.noData} ${darkMode ? styles.textLight : ''}`}>
+        <div className={`${styles['no-data']} ${darkMode ? styles['text-light'] : ''}`}>
           No data available for the selected filters
         </div>
       );
     }
 
-    return <Line ref={chartRef} data={chartData} options={options} />;
+    return <Line ref={chartRef} data={chartData} options={options} plugins={[ChartDataLabels]} />;
   };
 
   return (
-    <div className={`${styles.rentalContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h1 className={darkMode ? styles.textLight : ''}>Rental Cost Over Time</h1>
+    <div className={`${styles['rental-container']} ${darkMode ? styles['dark-mode'] : ''}`}>
+      <h1 className={darkMode ? styles['text-light'] : ''}>Rental Cost Over Time</h1>
 
-      <div className={styles.chartFilters}>
-        <div className={`${styles.filterRow} ${styles.topFilters}`}>
-          <div className={styles.filterGroup}>
-            <label htmlFor="chart-type" className={darkMode ? styles.textLight : ''}>
+      <div className={styles['chart-filters']}>
+        <div className={styles['filter-row']}>
+          <div className={styles['filter-group']}>
+            <label htmlFor="chart-type" className={darkMode ? styles['text-light'] : ''}>
               Display:{' '}
             </label>
             <select
               id="chart-type"
               value={chartType}
               onChange={handleTypeChange}
-              className={`${styles.rentalChartSelect} ${darkMode ? styles.darkSelect : ''}`}
+              className={`${styles['rental-chart-select']} ${
+                darkMode ? styles['dark-select'] : ''
+              }`}
             >
               <option value="cost">Total Rental Cost</option>
               <option value="percentage">% of Materials Cost</option>
             </select>
           </div>
 
-          <div className={styles.filterGroup}>
-            <label htmlFor="project-filter" className={darkMode ? styles.textLight : ''}>
+          <div className={styles['filter-group']}>
+            <label htmlFor="project-filter" className={darkMode ? styles['text-light'] : ''}>
               Project:{' '}
             </label>
             <select
               id="project-filter"
               value={selectedProject}
               onChange={handleProjectChange}
-              className={`${styles.rentalChartSelect} ${darkMode ? styles.darkSelect : ''}`}
+              className={`${styles['rental-chart-select']} ${
+                darkMode ? styles['dark-select'] : ''
+              }`}
             >
               <option value="All">All Projects</option>
-              {availableProjects.map(projectId => (
-                <option key={projectId} value={projectId}>
-                  Project {projectId.substring(0, 8)}...
+              {Array.from(availableProjects.entries()).map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className={styles.filterGroup}>
-            <label htmlFor="tool-filter" className={darkMode ? styles.textLight : ''}>
+          <div className={styles['filter-group']}>
+            <label htmlFor="tool-filter" className={darkMode ? styles['text-light'] : ''}>
               Tool:{' '}
             </label>
             <select
               id="tool-filter"
               value={selectedTool}
               onChange={handleToolChange}
-              disabled={groupBy === 'project' && selectedProject !== 'All'}
-              className={`${styles.rentalChartSelect} ${darkMode ? styles.darkSelect : ''}`}
+              disabled={selectedProject === FILTER_ALL}
+              title={
+                selectedProject === FILTER_ALL ? 'Select a project to filter by tool' : undefined
+              }
+              className={`${styles['rental-chart-select']} ${
+                darkMode ? styles['dark-select'] : ''
+              }`}
             >
               <option value="All">All Tools</option>
               {availableTools.map(tool => (
@@ -475,9 +740,9 @@ export default function RentalChart() {
           </div>
         </div>
 
-        <div className={`${styles.filterRow} ${styles.dateFilters}`}>
-          <div className={styles.filterGroup}>
-            <label style={{ marginRight: '8px' }} className={darkMode ? styles.textLight : ''}>
+        <div className={styles['filter-row']}>
+          <div className={styles['filter-group']}>
+            <label className={`${darkMode ? styles['text-light'] : ''} ${styles['date-label']}`}>
               From:{' '}
             </label>
             <DatePicker
@@ -490,12 +755,15 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              className={`${styles.datePicker} ${darkMode ? styles.darkDatePicker : ''}`}
+              calendarClassName={`${datePickerStyles.calendar} ${
+                darkMode ? datePickerStyles.dark : ''
+              }`}
+              className={`${styles['date-picker']} ${darkMode ? styles['dark-date-picker'] : ''}`}
             />
           </div>
 
-          <div className={styles.filterGroup}>
-            <label style={{ marginRight: '10px' }} className={darkMode ? styles.textLight : ''}>
+          <div className={styles['filter-group']}>
+            <label className={`${darkMode ? styles['text-light'] : ''} ${styles['date-label']}`}>
               To:{' '}
             </label>
             <DatePicker
@@ -509,14 +777,29 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              className={`${styles.datePicker} ${darkMode ? styles.darkDatePicker : ''}`}
+              calendarClassName={`${datePickerStyles.calendar} ${
+                darkMode ? datePickerStyles.dark : ''
+              }`}
+              className={`${styles['date-picker']} ${darkMode ? styles['dark-date-picker'] : ''}`}
             />
           </div>
         </div>
       </div>
 
-      <div className={`${styles.chartWrapper} ${darkMode ? styles.darkChart : styles.lightChart}`}>
+      <div
+        ref={chartWrapperRef}
+        className={`${styles['chart-wrapper']} ${darkMode ? styles['dark-chart'] : ''}`}
+      >
         {renderChartContent()}
+      </div>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles['dark-chart'] : ''}`}>
+        {costBreakdownData.length > 0 ? (
+          <Bar data={stackedBarData} options={stackedBarOptions} plugins={[ChartDataLabels]} />
+        ) : (
+          <div className={`${styles['no-data']} ${darkMode ? styles['text-light'] : ''}`}>
+            No tool cost breakdown data available for the selected filters
+          </div>
+        )}
       </div>
     </div>
   );

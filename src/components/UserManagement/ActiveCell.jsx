@@ -1,5 +1,6 @@
 import moment from 'moment';
 import styles from '../Timelog/Timelog.module.css';
+import noteStyles from './ActiveCell.module.css';
 import { UserStatus } from '../../utils/enums';
 
 function ActiveCell(props) {
@@ -10,28 +11,33 @@ function ActiveCell(props) {
     canChange,
     onClick,
     index,
+    statusNote,
   } = props;
+
+  const hasNote = typeof statusNote === 'string' && statusNote.trim().length > 0;
 
   const now = moment();
 
   function deriveUserStatus({ isActive, reactivationDate, endDate }) {
-    if (reactivationDate) return UserStatus.Paused;
-  
-  
-    if (isActive === false) return UserStatus.Inactive;
-  
-  
-    if (isActive && !!endDate && moment(endDate).isAfter(now)) return UserStatus.Scheduled;
-  
-    if (endDate) return UserStatus.Inactive;
-    if (isActive) return UserStatus.Active;
-  
-    return UserStatus.Inactive;
-  }
 
-  const isScheduled = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Scheduled;
-  const isPaused = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Paused;
-  const isSeparated = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Inactive;
+  if (reactivationDate) return UserStatus.Paused;
+
+  if (!isActive) return UserStatus.Inactive;
+
+  if (!!endDate && moment(endDate).isAfter(now)) return UserStatus.Scheduled;
+
+  return UserStatus.Active;
+}
+
+  const userStatus = deriveUserStatus({
+    isActive,
+    reactivationDate,
+    endDate,
+  });
+
+  const isScheduled = userStatus === UserStatus.Scheduled;
+  const isPaused = userStatus === UserStatus.Paused;
+  const isSeparated = userStatus === UserStatus.Inactive;
 
 
   const className = (() => {
@@ -50,7 +56,7 @@ function ActiveCell(props) {
   })();
 
 
-  const title = (() => {
+  const statusTitle = (() => {
     if (!canChange) {
       if (isScheduled) return 'Scheduled for deactivation';
       if (isPaused) return 'Paused';
@@ -73,10 +79,14 @@ function ActiveCell(props) {
     return 'Click to change user status';
   })();
 
+  const title =
+    hasNote && canChange ? `${statusTitle.replace(/\.$/, '')}. This user has a note.` : statusTitle;
+
   return (
     <span
       style={{ fontSize: '1.5rem', cursor: canChange ? 'pointer' : 'default' }}
-      className={className}
+      className={`${className} ${hasNote ? noteStyles.statusDotWithNote : ''}`}
+      data-has-note={hasNote ? 'true' : undefined}
       id={index === undefined ? undefined : `active_cell_${index}`}
       title={title}
       role={canChange ? 'button' : undefined}

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import  configureMockStore  from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 
 import UserTableData from '../UserTableData';
@@ -11,7 +11,7 @@ import { renderWithProvider } from '../../../__tests__/utils';
 
 vi.mock('axios');
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const jaeAccountMock = {
   _id: '1',
@@ -21,7 +21,7 @@ const jaeAccountMock = {
     iat: 1597272666,
     userid: '1',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus', 'interactWithPauseUserButton'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -42,7 +42,7 @@ const nonJaeAccountMock = {
     iat: 1597272666,
     userid: '2',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus', 'interactWithPauseUserButton'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -66,7 +66,7 @@ const ownerAccountMock = {
     iat: 1597272666,
     userid: '3',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus', 'interactWithPauseUserButton'],
       backPermissions: [],
     },
     role: 'Owner',
@@ -78,27 +78,6 @@ const ownerAccountMock = {
   email: 'devadmin@hgn.net',
 };
 
-const setupAxios = (mode) => {
-  if (mode === 'non-jae') {
-    axios.get.mockResolvedValue({
-      data: [
-        { id: 1, name: 'Administrator' },
-        { id: 2, name: 'User' },
-      ],
-    });
-  } else {
-    axios.get.mockResolvedValue({
-      data: {
-        _id: jaeAccountMock._id,
-        firstName: jaeAccountMock.firstName,
-        lastName: jaeAccountMock.lastName,
-        role: jaeAccountMock.role,
-        email: jaeAccountMock.email,
-      },
-    });
-  }
-};
-
 const createStore = ({ authState, profileState, roleName }) =>
   mockStore({
     auth: authState,
@@ -107,7 +86,12 @@ const createStore = ({ authState, profileState, roleName }) =>
       roles: [
         {
           roleName,
-          permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
+          permissions: [
+            'deleteUserProfile',
+            'updatePassword',
+            'changeUserStatus',
+            'interactWithPauseUserButton',
+          ],
         },
       ],
     },
@@ -120,7 +104,29 @@ const createHandlers = () => ({
   onActiveInactiveClick: vi.fn(),
 });
 
-const renderUserRow = ({ store, user, handlers }) => {
+const setupAxios = mode => {
+  if (mode === 'non-jae') {
+    axios.get.mockResolvedValue({
+      data: [
+        { id: 1, name: 'Administrator' },
+        { id: 2, name: 'User' },
+      ],
+    });
+    return;
+  }
+
+  axios.get.mockResolvedValue({
+    data: {
+      _id: jaeAccountMock._id,
+      firstName: jaeAccountMock.firstName,
+      lastName: jaeAccountMock.lastName,
+      role: jaeAccountMock.role,
+      email: jaeAccountMock.email,
+    },
+  });
+};
+
+const renderUserRow = ({ store, user, handlers, questionnaireIncomplete = false }) => {
   renderWithProvider(
     <MemoryRouter initialEntries={['/usermanagement']}>
       <table>
@@ -132,6 +138,7 @@ const renderUserRow = ({ store, user, handlers }) => {
             onActiveInactiveClick={handlers.onActiveInactiveClick}
             onPauseResumeClick={handlers.onPauseResumeClick}
             onDeleteClick={handlers.onDeleteClick}
+            questionnaireIncomplete={questionnaireIncomplete}
           />
         </tbody>
       </table>
@@ -194,6 +201,16 @@ describe.each([
       renderUserRow({ store, user, handlers });
       expect(screen.getByDisplayValue(user.firstName)).toBeInTheDocument();
       expect(screen.getByDisplayValue(user.lastName)).toBeInTheDocument();
+    });
+
+    it('should show the incomplete questionnaire indicator when the questionnaire is incomplete', () => {
+      renderUserRow({ store, user, handlers, questionnaireIncomplete: true });
+      expect(screen.getByTestId('incomplete-questionnaire-indicator')).toBeInTheDocument();
+    });
+
+    it('should NOT show the incomplete questionnaire indicator when the questionnaire is complete', () => {
+      renderUserRow({ store, user, handlers });
+      expect(screen.queryByTestId('incomplete-questionnaire-indicator')).not.toBeInTheDocument();
     });
 
     it('should render the correct email', () => {

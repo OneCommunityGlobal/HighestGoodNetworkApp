@@ -1,26 +1,54 @@
 // Activity List Component
-import { useState, useEffect, useMemo } from 'react';
-import { useSelector, useStore } from 'react-redux';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
+import {
+  FaTag,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaDumbbell,
+  FaUsers,
+  FaGraduationCap,
+  FaPalette,
+} from 'react-icons/fa';
+import { fuzzySearch } from '../../../utils/fuzzySearch';
 import { mockActivities } from './mockActivities';
+
+// Builds YYYY-MM-DD from LOCAL date parts (toISOString() uses UTC and can be off by a day)
+const getLocalDateString = (date = new Date()) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
+
   const [filter, setFilter] = useState({
     type: '',
     date: '',
     location: '',
-    pastEvents: false,
   });
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [dateError, setDateError] = useState('');
+  const todayDate = getLocalDateString();
   const [sortOrder, setSortOrder] = useState('earliest');
   const [showPastEvents, setShowPastEvents] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Dark mode body class
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('activity-list-dark-body');
@@ -33,30 +61,75 @@ function ActivityList() {
     };
   }, [darkMode]);
 
+  // Load activities (API not implemented yet: use mock data)
   useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        throw new Error('API not implemented yet');
-      } catch (err) {
-        setError(err.message);
-        const parsed = mockActivities.map(a => ({
-          ...a,
-          _dateObj: new Date(`${a.date}T00:00:00`),
-        }));
-        setActivities(parsed);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchActivities();
+    const parsed = mockActivities.map(a => ({
+      ...a,
+      _dateObj: new Date(`${a.date}T00:00:00`),
+    }));
+    setActivities(parsed);
+    setLoading(false);
   }, []);
+
+  // Reset pagination on filter/sort change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, sortOrder, showPastEvents]);
+
+  // Unique locations matching the typed text
+  const getLocationSuggestions = useCallback(
+    query => {
+      const normalizedQuery = query.trim().toLowerCase();
+      if (!normalizedQuery) return [];
+      const uniqueLocations = Array.from(new Set(activities.map(a => a.location).filter(Boolean)));
+      const prefixMatches = uniqueLocations.filter(location =>
+        location.toLowerCase().startsWith(normalizedQuery),
+      );
+      // Keep typo tolerance as a fallback without mixing unrelated matches into prefix results.
+      const matches = prefixMatches.length
+        ? prefixMatches
+        : uniqueLocations.filter(location => fuzzySearch(location, normalizedQuery, 0.5));
+      return matches.slice(0, 10);
+    },
+    [activities],
+  );
+
+  const handleSuggestionClick = location => {
+    setFilter(prev => ({ ...prev, location }));
+    setLocationSuggestions([]);
+    setShowSuggestions(false);
+  };
 
   const handleFilterChange = e => {
     const { name, value } = e.target;
-    setFilter({ ...filter, [name]: value });
+
+    if (name === 'date') {
+      if (value) {
+        const [year, month, day] = value.split('-').map(Number);
+        const selectedDate = new Date(year, month - 1, day);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+          setDateError(
+            'Past Activity Date Lookup is not supported. Please select today or a future date',
+          );
+        } else {
+          setDateError('');
+        }
+      } else {
+        setDateError('');
+      }
+    }
+
+    if (name === 'location') {
+      const suggestions = getLocationSuggestions(value);
+      setLocationSuggestions(suggestions);
+      setShowSuggestions(suggestions.length > 0);
+    }
+
+    setFilter(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSortChange = e => {
@@ -68,9 +141,12 @@ function ActivityList() {
       type: '',
       date: '',
       location: '',
-      showPastEvents: false,
     });
+    setLocationSuggestions([]);
+    setShowSuggestions(false);
+    setDateError('');
     setShowPastEvents(false);
+    setCurrentPage(1);
   };
 
   const handleActivityClick = activity => {
@@ -82,41 +158,64 @@ function ActivityList() {
     setModalOpen(false);
   };
 
+  const goToReschedule = useCallback(
+    (event, activity) => {
+      event.stopPropagation();
+
+      const activityId = activity._id || activity.id;
+
+      history.push({
+        pathname: `/communityportal/activities/${activityId}/manage`,
+        state: { activity },
+      });
+    },
+    [history],
+  );
+
+  const getTypeIcon = type => {
+    switch (type) {
+      case 'Fitness':
+        return <FaDumbbell className={styles.activityIcon} />;
+      case 'Social':
+        return <FaUsers className={styles.activityIcon} />;
+      case 'Educational':
+        return <FaGraduationCap className={styles.activityIcon} />;
+      case 'Art':
+        return <FaPalette className={styles.activityIcon} />;
+      default:
+        return <FaTag className={styles.activityIcon} />;
+    }
+  };
+
   const startOfToday = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
 
-  const activityTypes = useMemo(() => {
-    const typeOrder = new Map();
+  const filteredActivities = useMemo(
+    () =>
+      activities
+        .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
+        .filter(
+          activity =>
+            (!filter.type || fuzzySearch(activity.type, filter.type, 0.5)) &&
+            (!filter.date || activity.date === filter.date) &&
+            (!filter.location || fuzzySearch(activity.location, filter.location, 0.5)),
+        )
+        .sort((a, b) =>
+          sortOrder === 'earliest' ? a._dateObj - b._dateObj : b._dateObj - a._dateObj,
+        ),
+    [activities, showPastEvents, startOfToday, filter, sortOrder],
+  );
 
-    activities.forEach(activity => {
-      if (activity.type && !typeOrder.has(activity.type)) {
-        typeOrder.set(activity.type, typeOrder.size);
-      }
-    });
+  // Pagination
+  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+  const safePage = Math.min(currentPage, totalPages || 1);
+  const startIndex = (safePage - 1) * itemsPerPage;
 
-    return [...typeOrder.keys()].sort(
-      (typeA, typeB) => typeOrder.get(typeA) - typeOrder.get(typeB),
-    );
-  }, [activities]);
-
-  const filteredActivities = activities
-    .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
-    .filter(activity => {
-      return (
-        (!filter.type || activity.type === filter.type) &&
-        (!filter.date || activity.date === filter.date) &&
-        (!filter.location ||
-          activity.location.toLowerCase().startsWith(filter.location.toLowerCase()))
-      );
-    })
-    .sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
-    });
+  const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
+  const hasActivities = paginatedActivities.length > 0;
 
   return (
     <div
@@ -126,124 +225,204 @@ function ActivityList() {
     >
       <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
 
-      <div className={`${darkMode ? styles.darkModeFilters : styles.filters}`}>
-        <label className={darkMode ? 'text-light' : ''}>
-          Type:{' '}
-          <select
-            name="type"
-            value={filter.type}
-            onChange={handleFilterChange}
-            className={darkMode ? styles.darkModeInput : ''}
+      <div className={`${styles.filters} ${darkMode ? styles.darkModeFilters : ''}`}>
+        <div className={styles.filterInputsRow}>
+          <label className={darkMode ? 'text-light' : ''}>
+            Type:
+            <input
+              type="text"
+              name="type"
+              value={filter.type}
+              onChange={handleFilterChange}
+              placeholder="Enter type"
+              className={darkMode ? styles.darkModeInput : ''}
+            />
+          </label>
+
+          <label className={darkMode ? 'text-light' : ''}>
+            Date:
+            <input
+              type="date"
+              name="date"
+              value={filter.date}
+              onChange={handleFilterChange}
+              min={todayDate}
+              className={darkMode ? styles.darkModeInput : ''}
+            />
+          </label>
+
+          <label className={darkMode ? 'text-light' : ''}>
+            Location:
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                name="location"
+                value={filter.location}
+                onChange={handleFilterChange}
+                onFocus={() => {
+                  if (filter.location) {
+                    const suggestions = getLocationSuggestions(filter.location);
+                    setLocationSuggestions(suggestions);
+                    setShowSuggestions(suggestions.length > 0);
+                  }
+                }}
+                onBlur={() => {
+                  setTimeout(() => setShowSuggestions(false), 200);
+                }}
+                placeholder="Enter location"
+                autoComplete="off"
+                className={darkMode ? styles.darkModeInput : ''}
+              />
+
+              {showSuggestions && locationSuggestions.length > 0 && (
+                <select
+                  defaultValue=""
+                  size={Math.max(2, Math.min(locationSuggestions.length, 5))}
+                  className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}
+                  aria-label="Location suggestions"
+                  onChange={e => handleSuggestionClick(e.target.value)}
+                  style={{ position: 'absolute', width: '100%', zIndex: 10 }}
+                >
+                  <option value="" disabled hidden>
+                    Choose a location
+                  </option>
+                  {locationSuggestions.map(location => (
+                    <option key={location} value={location}>
+                      {location}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </label>
+
+          <label className={darkMode ? 'text-light' : ''}>
+            Sort By:
+            <select
+              value={sortOrder}
+              onChange={handleSortChange}
+              className={darkMode ? styles.darkModeInput : ''}
+            >
+              <option value="earliest">Start Time: Earliest to Latest</option>
+              <option value="latest">Start Time: Latest to Earliest</option>
+            </select>
+          </label>
+
+          <label
+            className={`${styles.showPastToggle} ${darkMode ? styles.darkShowPastToggle : ''}`}
           >
-            <option value="">All Types</option>
-            {activityTypes.map(type => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </label>
+            Show Past Events:
+            <input
+              type="checkbox"
+              checked={showPastEvents}
+              onChange={e => setShowPastEvents(e.target.checked)}
+            />
+          </label>
 
-        <label className={darkMode ? 'text-light' : ''}>
-          Date:
-          <input
-            type="date"
-            name="date"
-            value={filter.date}
-            onChange={handleFilterChange}
-            className={darkMode ? styles.darkModeInput : ''}
-            min={new Date().toISOString().split('T')[0]}
-          />
-        </label>
+          <div className={styles.clearButtonWrapper}>
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              disabled={!filter.type && !filter.date && !filter.location && !showPastEvents}
+              className={styles.clearButton}
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
 
-        <label className={darkMode ? 'text-light' : ''}>
-          Sort By:
-          <select
-            value={sortOrder}
-            onChange={handleSortChange}
-            className={darkMode ? styles.darkModeInput : ''}
-          >
-            <option value="earliest">Start Time: Earliest to Latest</option>
-            <option value="latest">Start Time: Latest to Earliest</option>
-          </select>
-        </label>
-
-        <label className={darkMode ? 'text-light' : ''}>
-          Location:
-          <input
-            type="text"
-            name="location"
-            value={filter.location}
-            onChange={handleFilterChange}
-            placeholder="Enter location"
-            className={darkMode ? styles.darkModeInput : ''}
-          />
-        </label>
-        <label className={`${styles.showPastToggle} ${darkMode ? styles.darkShowPastToggle : ''}`}>
-          Show Past Events:
-          <input
-            type="checkbox"
-            name="showPastEvents"
-            checked={showPastEvents}
-            onChange={e => setShowPastEvents(e.target.checked)}
-          />
-        </label>
-
-        <div className={styles.clearButtonWrapper}>
-          <button
-            type="button"
-            onClick={handleClearFilters}
-            disabled={!filter.type && !filter.date && !filter.location && !showPastEvents}
-            className={`${styles.clearFiltersButton} ${
-              darkMode ? styles.clearFiltersButtonDark : ''
-            }`}
-          >
-            Clear All
-          </button>
+        <div className={styles.errorContainer}>
+          {dateError && (
+            <div className={styles.errorRow}>
+              <p className={styles.errorMessage}>{dateError}</p>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Activity List */}
       <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
-        {loading ? (
-          <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>
-        ) : filteredActivities.length > 0 ? (
+        {loading && <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>}
+
+        {!loading && hasActivities && (
           <ul>
-            {filteredActivities.map(activity => (
-              <div
+            {paginatedActivities.map(activity => (
+              <li
                 key={activity.id}
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleActivityClick(activity)}
-                tabIndex={0}
-                role="button"
-                aria-label={`View details for ${activity.name}`}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleActivityClick(activity);
-                  }
-                }}
+                className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
               >
-                <li
-                  key={activity.id}
-                  className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
+                <button
+                  type="button"
+                  className={styles.activityItemButton}
+                  onClick={() => handleActivityClick(activity)}
+                  aria-label={`View details for ${activity.name}`}
                 >
                   <strong>{activity.name}</strong>
-                  <span>
-                    {activity.type} – {activity.date} – {activity.location}
+
+                  {/* Type */}
+                  <span className={styles.altypeRow}>
+                    {getTypeIcon(activity.type)}
+                    <span className={styles.altypeText}>{activity.type}</span>
                   </span>
-                </li>
-              </div>
+
+                  {/* Location + Date */}
+                  <span className={styles.allocationDateRow}>
+                    <span className={styles.allocation}>
+                      <FaMapMarkerAlt className={styles.alactivityIcon} />
+                      <span>{activity.location}</span>
+                    </span>
+
+                    <span className={styles.aldate}>
+                      <FaCalendarAlt className={styles.alactivityIcon} />
+                      <span>{activity.date}</span>
+                    </span>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={event => goToReschedule(event, activity)}
+                  className="btn btn-primary btn-sm mt-2"
+                  aria-label={`Reschedule ${activity.name}`}
+                >
+                  Reschedule
+                </button>
+              </li>
             ))}
           </ul>
-        ) : (
+        )}
+
+        {!loading && !hasActivities && (
           <p className={darkMode ? 'text-light' : ''}>No activities found</p>
         )}
       </div>
 
-      {/* Modal for activity details */}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <Button onClick={() => setCurrentPage(p => p - 1)} disabled={safePage === 1}>
+            Prev
+          </Button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <Button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={page === safePage ? styles.activePage : ''}
+            >
+              {page}
+            </Button>
+          ))}
+
+          <Button onClick={() => setCurrentPage(p => p + 1)} disabled={safePage === totalPages}>
+            Next
+          </Button>
+        </div>
+      )}
+
+      {/* Modal */}
       <Modal isOpen={modalOpen} toggle={handleCloseModal}>
-        <ModalHeader toggle={handleCloseModal}>
-          {selectedActivity ? selectedActivity.name : ''}
-        </ModalHeader>
+        <ModalHeader toggle={handleCloseModal}>{selectedActivity?.name}</ModalHeader>
         <ModalBody>
           {selectedActivity && (
             <div>
@@ -262,7 +441,6 @@ function ActivityList() {
               <p>
                 <strong>Description:</strong> {selectedActivity.description}
               </p>
-              {/* Add more details as needed */}
             </div>
           )}
         </ModalBody>

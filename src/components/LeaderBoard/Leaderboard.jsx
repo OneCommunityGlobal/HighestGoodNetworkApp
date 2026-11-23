@@ -28,6 +28,7 @@ import {
 } from '~/utils/leaderboardPermissions';
 import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 import hasPermission from '~/utils/permissions';
+import { permissions } from '../../utils/constants';
 // import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
@@ -37,8 +38,8 @@ import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
-import '../Header/index.css';
-import '../UserProfile/TeamsAndProjects/autoComplete.css';
+import '../Header/index.module.css';
+import '../UserProfile/TeamsAndProjects/autoComplete.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
@@ -92,8 +93,8 @@ function LeaderBoard({
   usersOnFutureTimeOff,
 }) {
   const userId = displayUserId;
-  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+  const hasSummaryIndicatorPermission = hasPermission(permissions.seeSummaryIndicator); // ??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission(permissions.seeVisibilityIcon); // ??? this permission doesn't exist?
   const todaysDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -701,7 +702,7 @@ function LeaderBoard({
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
               style={{ width: '100%', tableLayout: isAbbreviatedView ? 'fixed' : 'auto' }}
             >
-              <thead className="responsive-font-size">
+              <thead className={styles['responsive-font-size']}>
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
                   <th style={darkModeStyle}>
                     <span>{isAbbreviatedView ? 'Stat.' : 'Status'}</span>
@@ -760,7 +761,11 @@ function LeaderBoard({
                 </tr>
               </thead>
               <tbody className="my-custome-scrollbar responsive-font-size">
-                <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
+                <tr
+                  className={
+                    darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
+                  }
+                >
                   {isAbbreviatedView ? (
                     <td colSpan={2}>
                       <div className="leaderboard-totals-container text-center">
@@ -778,7 +783,7 @@ function LeaderBoard({
                   ) : (
                     <>
                       <td aria-label="Placeholder" />
-                      <td className="leaderboard-totals-container">
+                      <td className={styles['leaderboard-totals-container']}>
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
@@ -841,7 +846,9 @@ function LeaderBoard({
                   return (
                     <tr
                       key={item.personId}
-                      className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
+                      className={
+                        darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
+                      }
                     >
                       <td className="align-middle">
                         <div>
@@ -1072,6 +1079,8 @@ function LeaderBoard({
                                 height="19"
                                 viewBox="0 0 448 512"
                                 className="show-time-off-calender-svg"
+                                aria-hidden="true"
+                                focusable="false"
                               >
                                 <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
                               </svg>

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector as useReduxSelector, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector, useSelector as useReduxSelector } from 'react-redux';
-import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
+import { setformData } from '~/actions/hgnFormAction';
 import styles from '../styles/InfoForm.module.css';
 
 function InfoForm() {
@@ -11,10 +11,13 @@ function InfoForm() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
   const isOwner = user.role === 'Owner';
-  const userProfile = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
-
+  const userProfiles = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
+  const userProfile = Array.isArray(userProfiles)
+    ? userProfiles.find(p => p._id === user.userid)
+    : userProfiles;
   const [newVolunteer, setNewVolunteer] = useState({
     ...formData,
+    name: formData?.name || '',
     github: formData?.github || '',
     slack: formData?.slack || '',
   });
@@ -24,7 +27,11 @@ function InfoForm() {
   };
   const [touched, setTouched] = useState(false);
   const [isSlackNameWarning, setIsSlackNameWarning] = useState(false);
+  const [validationErrors, setValidationErrors] = useState([]);
 
+  // Lock the name field only when it was prefilled from the profile,
+  // not whenever the user has typed something.
+  const [nameFromProfile, setNameFromProfile] = useState(false);
   const isValid = newVolunteer.name.length >= 2;
   const showError = touched && !isValid;
 
@@ -42,11 +49,16 @@ function InfoForm() {
   }, [newVolunteer.name, newVolunteer.slack]);
 
   useEffect(() => {
-    if (user && userProfile && formData) {
+    if (user && formData) {
+      const firstName = userProfile?.firstName || user?.firstName || '';
+      const lastName = userProfile?.lastName || user?.lastName || '';
+      setNameFromProfile(Boolean(firstName && lastName));
       setNewVolunteer(prevState => ({
         ...formData,
         ...prevState, // This preserves any user input
-        name: `${userProfile?.firstName} ${userProfile?.lastName}`,
+        // A profile Name is locked (not editable), so it is safe to apply. An editable Name is
+        // always kept as entered, including when intentionally cleared.
+        name: firstName && lastName ? `${firstName} ${lastName}` : prevState.name,
         email: user.email,
         github: prevState.github || formData.github || '', // Preserve GitHub value
         slack: prevState.slack || formData.slack || '', // Preserve
@@ -66,18 +78,23 @@ function InfoForm() {
   const handleNext = e => {
     e.preventDefault();
     updateFormData(newVolunteer);
+
+    // Mirrors the inputs' native required/minLength rules so a blocked Next is always explained.
+    const errors = [];
     if (!isValid) {
       setTouched(true);
-      return;
+      errors.push('Name must be at least 2 characters long.');
     }
-
-    if (
-      newVolunteer.isSlackSameAsName &&
-      newVolunteer.name.trim().toLowerCase() !== newVolunteer.slack.trim().toLowerCase()
-    ) {
+    if (!newVolunteer.github) errors.push('GitHub is required.');
+    if (!newVolunteer.slack) errors.push('Slack is required.');
+    if (!newVolunteer.isSlackSameAsName) {
+      errors.push('Please confirm that your Slack handle is your first and last name.');
+    } else if (newVolunteer.name.trim().toLowerCase() !== newVolunteer.slack.trim().toLowerCase()) {
       setIsSlackNameWarning(true);
-      return;
+      errors.push('Your Slack name must match the full name entered above.');
     }
+    setValidationErrors(errors);
+    if (errors.length > 0) return;
     dispatch(setformData(newVolunteer));
     navigate.push('/hgnform/page2', { isOwner });
   };
@@ -85,6 +102,7 @@ function InfoForm() {
   const handleCancel = e => {
     e.preventDefault();
     setTouched(false);
+    setValidationErrors([]);
 
     setNewVolunteer({
       // Rest all the pages when "Cancel" button is clicked
@@ -148,7 +166,7 @@ function InfoForm() {
 
   return !loading ? (
     <div className={`${styles.infoFormContainer} ${darkMode ? styles.dark : ''}`}>
-      <form onSubmit={handleNext}>
+      <form onSubmit={handleNext} noValidate>
         <div className={`${styles.formInputs}`}>
           <label htmlFor="name">
             Name <span style={{ color: 'red' }}>*</span>
@@ -165,6 +183,7 @@ function InfoForm() {
             pattern=".{2,}"
             title="Name must be at least 2 characters long"
             placeholder="Your First and Last Name"
+            disabled={nameFromProfile}
           />
           {showError && (
             <span className={`${styles.errorMessage}`}>
@@ -184,7 +203,7 @@ function InfoForm() {
             onChange={e => setNewVolunteer({ ...newVolunteer, email: e.target.value })}
             required
             placeholder="Your Email"
-            disabled={!!(user.email !== undefined || user.email !== null)}
+            disabled={!!user.email}
           />
         </div>
         <div className={`${styles.formInputs}`}>
@@ -251,6 +270,20 @@ function InfoForm() {
           Profile Page if they don’t.{' '}
         </span>
 
+        {validationErrors.length > 0 && (
+          <div
+            role="alert"
+            className={`${styles.errorMessage}`}
+            style={{ color: 'red', margin: '20px 20px' }}
+          >
+            Please fix the following before continuing:
+            <ul>
+              {validationErrors.map(message => (
+                <li key={message}>{message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className={`${styles.buttonContainer}`}>
           <button type="button" className={`${styles.hgnReturnButton}`} onClick={handleCancel}>
             Cancel

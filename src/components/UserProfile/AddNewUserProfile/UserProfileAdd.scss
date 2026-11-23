@@ -1,3 +1,4 @@
+/* stylelint-disable declaration-property-value-no-unknown */
 form-control {
   width: 0;
 }
@@ -17,7 +18,7 @@ form-control {
   border: 1px solid #a8a8a8;
   text-align: center;
   z-index: 9;
-  opacity: 70%;
+  opacity: 0.7;
 }
 
 .profileEditTitleCenter {
@@ -50,8 +51,7 @@ form-control {
 .inputSections {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-content: center;
+  place-content: center center;
   text-align: center;
   width: 300px;
 }
@@ -112,7 +112,7 @@ form-control {
 }
 
 .required-user-field {
-  color: rgb(197, 2, 2);
+  color: rgb(197 2 2);
   padding-top: 0.3rem;
   font-size: 0.8rem;
 }
@@ -129,9 +129,9 @@ form-control {
   white-space: nowrap;
 }
 
-@media only screen and (max-width: 1024px) {
+@media only screen and (width <= 1024px) {
   .text-md-right {
-    padding: 0px !important;
+    padding: 0 !important;
   }
 
   label {
@@ -139,10 +139,11 @@ form-control {
   }
 }
 
-@media only screen and (max-width: 992px) and (min-width: 768px) {
+@media only screen and (width <= 992px) and (width >= 768px) {
   .user-add-row {
     font-size: 14px;
   }
+
   .add-new-user .form-control {
     max-width: 210px !important;
   }

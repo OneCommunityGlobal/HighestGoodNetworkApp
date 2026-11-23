@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 
 function DeleteBadgePopup({ open, setDeletePopup, deleteBadge, badgeId, badgeName }) {
   const darkMode = useSelector(state => state.theme.darkMode);

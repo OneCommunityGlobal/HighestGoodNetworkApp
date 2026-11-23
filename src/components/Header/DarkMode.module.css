@@ -58,7 +58,7 @@
 .sliderContainerDark:hover { background-color: #ffffff; }
 
 .sliderContainerDark:hover .labelDark { opacity: 0; }
-.sliderContainerDark:hover .labelLightHover { opacity: 1; }
+.sliderContainerDark:hover .labelLightHover { opacity: 1;color: #151515 !important; }
 
 .sliderContainerDark:hover .iconSunHover { opacity: 0; left: 90px; }
 .sliderContainerDark:hover .iconNight { opacity: 1; left: 90px; }
@@ -76,6 +76,3 @@
 .iconSun, .iconNightHover { left: 90px; }
 .iconNight, .iconSunHover { left: 4px; }
 
-.sliderContainerDark:hover .labelLightHover{
-  color: #151515 !important;
-}

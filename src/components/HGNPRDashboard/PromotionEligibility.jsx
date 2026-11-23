@@ -140,7 +140,7 @@ function PromotionEligibility({ currentUser }) {
               selectedForPromotion.has(id) ? 'checked' : ''
             }`}
           >
-            {selectedForPromotion.has(id) && <FaCheck className="check_icon" />}
+            {selectedForPromotion.has(id) && <FaCheck className={styles.check_icon} />}
           </div>
         </div>
       </td>

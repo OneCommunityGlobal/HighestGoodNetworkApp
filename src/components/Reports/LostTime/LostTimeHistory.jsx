@@ -5,6 +5,7 @@ import Loading from '~/components/common/Loading';
 import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
+import headerStyles from '~/components/Header/index.module.css';
 import EditHistoryModal from './EditHistoryModal';
 
 function LostTimeHistory(props) {
@@ -89,7 +90,7 @@ function LostTimeHistory(props) {
     let newEntriesRow = [];
     if (timeEntries.length > 0) {
       newEntriesRow = timeEntries.map((entry) => (
-        <tr id={`tr_${entry._id}`} key={entry._id}  className={darkMode ? 'hover-effect-reports-page-dark-mode text-light' : ''}>
+        <tr id={`tr_${entry._id}`} key={entry._id}  className={darkMode ? `${headerStyles['hover-effect-reports-page-dark-mode']} text-light` : ''}>
           <td>
             {entry.name}
           </td>

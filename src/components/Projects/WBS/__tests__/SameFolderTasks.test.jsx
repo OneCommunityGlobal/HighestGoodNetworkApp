@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 import { Provider } from 'react-redux';
 import axios from 'axios';
@@ -215,7 +215,7 @@ mock.onGet(ENDPOINTS.GET_TASK('123')).reply(200, mockTaskResponse);
 mock.onGet(ENDPOINTS.GET_TASK('321')).reply(200, mockTaskResponse);
 mock.onGet(ENDPOINTS.GET_TASK('nullMother')).reply(200, mockTaskResponseNullMother);
 
-const mockStore = configureStore();
+const mockStore = configureMockStore();
 
 describe('SameFolderTasks', () => {
   const store = mockStore({

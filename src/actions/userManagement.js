@@ -14,6 +14,9 @@ import {
   DISABLE_USER_PROFILE_EDIT,
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
+  FINISH_USER_INFO_UPDATE,
+  RESET_USER_PROFILE_EDIT,
+  CLEAR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
@@ -115,6 +118,11 @@ export const getAllUserProfile = () => {
     }
     return userProfilesPromise
       .then(res => {
+        // API must return an array; error payloads are objects and crash UserManagement.map
+        if (!Array.isArray(res.data)) {
+          dispatch(userProfilesFetchErrorAction());
+          return [];
+        }
         dispatch(userProfilesFetchCompleteACtion(res.data));
         return res.data;
       })
@@ -139,18 +147,18 @@ const resolveEndDate = (user) => {
 
   //2) if no lastActivityAt, use createdDate (if present)
   // format createdDate to real datetime in COMPANY_TZ
-  if(!user?.lastActivityAt && user?.createdDate) {
+  if (!user?.lastActivityAt && user?.createdDate) {
     const created = moment.tz(user.createdDate, 'YYYY-MM-DD', COMPANY_TZ).startOf('day');
     return created.toISOString();
   }
 
   //3) if no createdDate -> endDate will be set as passed
-  if(user?.endDate) {
+  if (user?.endDate) {
     return moment(user.endDate).toISOString();
   }
 
   // optional: if lastActivityAt is present, use that
-  if(user?.lastActivityAt) {
+  if (user?.lastActivityAt) {
     return moment(user.lastActivityAt).toISOString();
   }
 
@@ -159,7 +167,7 @@ const resolveEndDate = (user) => {
 }
 
 export const buildUpdatedUserLifecycleDetails = (user, payload) => {
-  const {action, endDate, reactivationDate} = payload;
+  const { action, endDate, reactivationDate } = payload;
   switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
@@ -204,7 +212,7 @@ export const buildUpdatedUserLifecycleDetails = (user, payload) => {
 
 const buildBackendPayload = (userDetails, action) => {
   console.log('Building backend payload with:', { userDetails, action });
-  switch (action){
+  switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
         action: action,
@@ -225,7 +233,7 @@ const buildBackendPayload = (userDetails, action) => {
     case UserStatusOperations.PAUSE:
       return {
         action: action,
-        reactivationDate: userDetails.reactivationDate
+        reactivationDate: userDetails.reactivationDate,
       };
     default:
       throw new Error(`Unknown lifecycle action: ${action}`);
@@ -233,34 +241,133 @@ const buildBackendPayload = (userDetails, action) => {
 };
 
 export const updateUserLifecycle = (updatedUser, payload) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { auth } = getState();
     dispatch(userProfileUpdateAction(updatedUser));
-
-    const backendPayload = buildBackendPayload(updatedUser, payload.action);
+    const requestor = {
+      requestorId: auth.user.userid,
+      role: auth.user.role,
+      permissions: auth.user.permissions,
+    };
+    const backendPayload = {
+      ...buildBackendPayload(updatedUser, payload.action),
+      requestor,
+    };
     try {
-      // console.log('Sending PATCH request to update user lifecycle');
-      await axios.patch(ENDPOINTS.USER_PROFILE(updatedUser._id), backendPayload);
-
+      await axios.patch(ENDPOINTS.USER_PROFILE_FIXED(updatedUser._id), backendPayload);
     } catch (error) {
       toast.error('Error updating user lifecycle:', error);
       dispatch(userProfileUpdateAction(payload.originalUser));
       throw error;
     }
   };
-}
+};
+
+/**
+ * Update the pause/resume status of a user via the dedicated pause endpoint.
+ * Requires the 'interactWithPauseUserButton' permission.
+ * @param {*} user - the user to be paused or resumed
+ * @param {string} status - UserStatus.Active or UserStatus.Inactive
+ * @param {*} reactivationDate - the date on which the user should be reactivated
+ */
+export const updateUserPauseStatus = (user, status, reactivationDate) => {
+  return async (dispatch, getState) => {
+    const userProfile = { ...user };
+    userProfile.isActive = status === UserStatus.Active;
+    userProfile.reactivationDate = reactivationDate;
+    const auth = getState().auth;
+    const requestor = {
+      requestorId: auth.user.userid,
+      role: auth.user.role,
+      permissions: auth.user.permissions,
+      email: auth.user.email,
+    };
+    const patchData = {
+      status,
+      reactivationDate: status === UserStatus.Active ? undefined : reactivationDate,
+      requestor,
+    };
+    try {
+      await axios.patch(ENDPOINTS.USER_PAUSE(user._id), patchData);
+      dispatch(userProfileUpdateAction(userProfile));
+    } catch (error) {
+      toast.error('Error updating user pause status:', error);
+      throw error;
+    }
+  };
+};
 
 /**
  * Update the rehireable status of a user
  * @param{*} user - the user whose rehireable status is to be updated
  * @param{boolean} isRehireable - the new rehireable status
  */
-export const updateRehireableStatus = (user, isRehireable) => {
+export const updateRehireableStatus = (user, isRehireable, notRehireableReason = '') => {
   return async dispatch => {
     const userProfile = { ...user, isRehireable };
+    const reason = typeof notRehireableReason === 'string' ? notRehireableReason.trim() : '';
     const requestData = { isRehireable };
 
-    await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
+    if (!isRehireable && !reason) {
+      throw new Error('A reason is required when a user is not rehireable.');
+    }
+
+    if (!isRehireable) {
+      userProfile.notRehireableReason = reason;
+      requestData.notRehireableReason = reason;
+    } else {
+      delete userProfile.notRehireableReason;
+    }
+
+    const response = await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
+    const responseData = response?.data || {};
+    if (Array.isArray(responseData.notRehireableReasonHistory)) {
+      userProfile.notRehireableReasonHistory = responseData.notRehireableReasonHistory;
+    }
+    if (typeof responseData.notRehireableReason === 'string') {
+      if (responseData.notRehireableReason) {
+        userProfile.notRehireableReason = responseData.notRehireableReason;
+      } else {
+        delete userProfile.notRehireableReason;
+      }
+    }
     dispatch(userProfileUpdateAction(userProfile));
+    return userProfile;
+  };
+};
+
+/**
+ * Add, edit or delete the note shown on a user's status dot
+ * @param{*} user - the user the note belongs to
+ * @param{string} statusNote - the new note; an empty string deletes it
+ */
+// Shows why a note could not be saved; the backend sends { error } or, for 403, a plain string
+export const getStatusNoteErrorMessage = error => {
+  const data = error?.response?.data;
+  const reason = typeof data === 'string' ? data : data?.error;
+  return reason ? `Unable to save the note: ${reason}` : 'Unable to save the note.';
+};
+
+export const updateStatusNote = (user, statusNote) => {
+  return async (dispatch, getState) => {
+    const note = typeof statusNote === 'string' ? statusNote.trim() : '';
+    const response = await axios.patch(ENDPOINTS.UPDATE_STATUS_NOTE(user._id), {
+      statusNote: note,
+    });
+    const responseData = response?.data || {};
+    const userProfile = {
+      ...user,
+      statusNote: typeof responseData.statusNote === 'string' ? responseData.statusNote : note,
+      statusNoteHistory: Array.isArray(responseData.statusNoteHistory)
+        ? responseData.statusNoteHistory
+        : user.statusNoteHistory || [],
+    };
+    // Only update the User Management list when this user is in it; the reducer assumes it is
+    const listedUsers = getState?.()?.allUserProfiles?.userProfiles;
+    if (Array.isArray(listedUsers) && listedUsers.some(listed => listed._id === user._id)) {
+      dispatch(userProfileUpdateAction(userProfile));
+    }
+    return userProfile;
   };
 };
 
@@ -369,11 +476,11 @@ export const getUserProfileBasicInfo = ({ userId, source } = {}) => {
   // API request to fetch basic user profile information
   let userProfileBasicInfoPromise;
   if (userId)
-    userProfileBasicInfoPromise = axios.get(`${ENDPOINTS.USER_PROFILE_BASIC_INFO}?userId=${userId}`);
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO_BY_ID(userId));
   else if (source)
     userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
   else
-    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILES);
 
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process
@@ -406,4 +513,23 @@ export const changePagination = value => dispatch => {
 
 export const updateUserInfomation = value => dispatch => {
   dispatch({ type: START_USER_INFO_UPDATE, payload: value });
+};
+
+export const clearUserInformation = () => dispatch => {
+  dispatch({ type: CLEAR_USER_INFO_UPDATE });
+};
+
+/**
+ * Clears the queue of pending user info edits (newUserData) after they have
+ * been successfully saved to the backend. Without this, previously-saved
+ * edits remain in the queue and get resubmitted (replayed) the next time any
+ * user's info is saved, silently overwriting that user's data with stale
+ * values. See hotfix: User Management stale date replay bug.
+ */
+export const finishUserInfoUpdate = () => dispatch => {
+  dispatch({ type: FINISH_USER_INFO_UPDATE });
+};
+
+export const resetUserProfileEdit = () => dispatch => {
+  dispatch({ type: RESET_USER_PROFILE_EDIT });
 };

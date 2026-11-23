@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { Component, useEffect } from 'react';
+import { Component, useEffect, Suspense } from 'react';
 import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -13,6 +13,7 @@ import '../App.module.css';
 import { initMessagingSocket } from '../utils/messagingSocket';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ThemeManager from './common/ThemeManager';
+import ScrollToTopButton from './common/ScrollToTopButton';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +25,12 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+function GlobalScrollToTopButton() {
+  const { pathname } = useLocation();
+
+  return <ScrollToTopButton key={pathname} />;
+}
 
 // Check for token
 if (process.env.NODE_ENV !== 'test') {
@@ -109,11 +116,12 @@ function UpdateDocumentTitle() {
     { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
     { pattern: /^\/kitchenandinventory\/login$/, title: 'Kitchen and Inventory Login' },
     { pattern: /^\/kitchenandinventory$/, title: 'Kitchen and Inventory Dashboard' },
-    { pattern: /.*/, title: 'HGN APP' }, // Default case
+    { pattern: /^\/bmdashboard\/lessons\/add$/, title: 'Add Lessons' },
     {
       pattern: /^\/communityportal\/activity\/activityid\/feedback$/,
       title: 'Activity Feedback',
     },
+    { pattern: /.*/, title: 'HGN APP' }, // Default case
   ];
 
   useEffect(() => {
@@ -233,7 +241,8 @@ class App extends Component {
               <Router>
                 <ThemeManager />
                 <UpdateDocumentTitle />
-                {routes}
+                <Suspense fallback={<Loading />}>{routes}</Suspense>
+                <GlobalScrollToTopButton />
               </Router>
             </ModalProvider>
           </QueryClientProvider>

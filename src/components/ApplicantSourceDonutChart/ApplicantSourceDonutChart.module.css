@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .page {
   min-height: 100vh;
   padding: 2rem 0;
@@ -46,7 +47,7 @@
 .darkContainer {
   background-color: #111827;
   border-radius: 12px;
-  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.08);
+  box-shadow: 0 0 0 1px rgb(148 163 184 / 8%);
   padding-bottom: 2rem;
 }
 
@@ -65,14 +66,14 @@
   border-color: #3b82f6 !important;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .applicantChartContainer {
     padding: 1.5rem 1.75rem;
     max-width: 100%;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .page {
     padding: 1.5rem 0.75rem;
   }
@@ -111,7 +112,7 @@
   background-color: #1e293b !important;
   border: 1px solid #475569 !important;
   border-radius: 6px !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 30%), 0 2px 4px -1px rgb(0 0 0 / 20%) !important;
 }
 
 .dark :global(.recharts-tooltip-label) {

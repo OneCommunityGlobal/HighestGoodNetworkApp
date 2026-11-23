@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getAllUserProfile } from '../../actions/userManagement';
+import { getAllUserProfile, finishUserInfoUpdate } from '../../actions/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import userTableDataPermissions from '../../utils/userTableDataPermissions';
 import PropTypes from 'prop-types';
@@ -29,36 +29,69 @@ import styles from './usermanagement.module.css';
  */
 const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
-    const [editFlag, setEditFlag] = useState(editUser);
+    const defaultEditFlags = {
+       first: 1,
+       last: 1,
+       role: 1,
+       jobTitle: 1,
+       email: 1,
+       weeklycommittedHours: 1,
+       startDate: 1,
+       endDate: 1,
+   };
+    const [editFlag, setEditFlag] = useState(editUser ?? defaultEditFlags);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
-        const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
-        if (response.status === 200) {
-          const toastId = toast.success(' Saving Data...', { autoClose: false });
+        const response = await axios.patch(
+          ENDPOINTS.USER_PROFILE_UPDATE,
+          updatedData
+        );
+
+        if (response.status >= 200 && response.status < 300) {
+          const toastId = toast.success('Saving Data...', { autoClose: false });
+
+          // Clear pending edits only after a successful save.
+          dispatch(finishUserInfoUpdate());
+
           await dispatch(getAllUserProfile());
+
           toast.update(toastId, {
             render: 'Data Updated successfully !',
-            // type: toast.TYPE.SUCCESS,
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
             autoClose: 3000,
           });
-        } else {
-          toast.error('Error Updating Data!');
+
+          return true;
         }
+
+        toast.error('Error Updating Data!');
+        return false;
       } catch (error) {
         toast.error('Error Updating Data ! ');
+        return false;
       }
     };
-    const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#3a506b' } : { backgroundColor: "#f0f8ff",color:"black"};
+    const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#364456' } : { backgroundColor: "#f0f8ff",color:"black"};
     const enableEdit = value => {
       setEditFlag(value);
       enableEditUserInfo(value);
     };
-    const disableEdit = value => {
-      setEditFlag(value);
-      disableEditUserInfo(value);
-      saveUserInformation(updatedUserData);
-    };
+    
+    const disableEdit = async value => {
+        if (updatedUserData.length > 0) {
+          const saved = await saveUserInformation(updatedUserData);
+
+          if (!saved) {
+            return;
+          }
+        }
+
+        setEditFlag(value);
+        dispatch(disableEditUserInfo(value));
+      };
+
 
     return (
       <tr className={darkMode ? 'bg-space-cadet' : ''}
@@ -76,7 +109,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, first: 0 })}
                     />
                   );
@@ -84,7 +117,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, first: 1 })}
                   />
                 );
@@ -102,7 +135,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, last: 0 })}
                     />
                   );
@@ -110,7 +143,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, last: 1 })}
                   />
                 );
@@ -128,7 +161,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, role: 0 })}
                     />
                   );
@@ -136,7 +169,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, role: 1 })}
                   />
                 );
@@ -155,7 +188,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                     return (
                       <FontAwesomeIcon
                         icon={faEdit}
-                        className="editbutton"
+                        className={styles.editbutton}
                         onClick={() => enableEdit({ ...editFlag, jobTitle: 0 })}
                       />
                     );
@@ -163,7 +196,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faSave}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => disableEdit({ ...editFlag, jobTitle: 1 })}
                     />
                   );
@@ -183,7 +216,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, email: 0 })}
                     />
                   );
@@ -191,7 +224,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, email: 1 })}
                   />
                 );
@@ -209,7 +242,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, weeklycommittedHours: 0 })}
                     />
                   );
@@ -217,7 +250,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, weeklycommittedHours: 1 })}
                   />
                 );
@@ -267,7 +300,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, startDate: 0 })}
                     />
                   );
@@ -275,7 +308,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, startDate: 1 })}
                   />
                 );
@@ -294,7 +327,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, endDate: 0 })}
                     />
                   );
@@ -302,7 +335,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, endDate: 1 })}
                   />
                 );

@@ -1,9 +1,11 @@
+/* stylelint-disable no-descending-specificity */
+
 /* Material Stock-Out Risk Indicator Card */
 .card {
-    background-color: var(--card-bg, #ffffff);
+    background-color: var(--card-bg, #fff);
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
     display: flex;
     flex-direction: column;
     transition: transform 0.2s ease;
@@ -12,7 +14,7 @@
 
 .card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
 .card.darkMode {
@@ -39,7 +41,7 @@
 }
 
 .card.darkMode .title {
-    color: #ffffff;
+    color: #fff;
 }
 
 .projectLabel {
@@ -47,13 +49,13 @@
     color: var(--text-color-secondary, #666);
     font-weight: 500;
     padding: 4px 8px;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgb(0 0 0 / 5%);
     border-radius: 4px;
 }
 
 .card.darkMode .projectLabel {
     color: #aaa;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgb(255 255 255 / 10%);
 }
 
 /* Filter Group */
@@ -84,15 +86,19 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
+
     /* Prevent chart from shrinking on small screens */
     min-width: 600px;
+
     /* Enable horizontal scrolling on small screens with smooth scrolling */
-    overflow-x: auto;
-    overflow-y: visible;
+    overflow: auto visible;
+
     /* Align chart to left */
     align-items: flex-start;
+
     /* Smooth scrolling for better UX */
     scroll-behavior: smooth;
+
     /* Add padding for scrollbar */
     padding-bottom: 10px;
 }
@@ -102,6 +108,7 @@
     min-width: 600px;
     width: 100%;
     flex-shrink: 0;
+
     /* Ensure left alignment */
     display: flex;
     justify-content: flex-start;
@@ -199,23 +206,23 @@
 
 /* Tooltip */
 .tooltip {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: rgb(255 255 255 / 95%);
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 10px 14px;
     font-size: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
     max-width: 250px;
 }
 
 .card.darkMode .tooltip {
-    background-color: rgba(44, 51, 68, 0.95);
+    background-color: rgb(44 51 68 / 95%);
     border-color: #555;
 }
 
 .tooltipLabel {
     font-weight: 600;
-    margin: 0 0 6px 0;
+    margin: 0 0 6px;
     color: #333;
     border-bottom: 1px solid #eee;
     padding-bottom: 4px;
@@ -245,7 +252,7 @@
 }
 
 .tooltipProject {
-    margin: 4px 0 0 0;
+    margin: 4px 0 0;
     color: #666;
     font-size: 11px;
 }
@@ -256,7 +263,7 @@
 
 .tooltipStock,
 .tooltipUsage {
-    margin: 4px 0 0 0;
+    margin: 4px 0 0;
     color: #666;
     font-size: 11px;
 }
@@ -281,11 +288,11 @@
 .legend {
     margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgb(0 0 0 / 10%);
 }
 
 .card.darkMode .legend {
-    border-top-color: rgba(255, 255, 255, 0.2);
+    border-top-color: rgb(255 255 255 / 20%);
 }
 
 .legendTitle {
@@ -322,18 +329,19 @@
     width: 16px;
     height: 16px;
     border-radius: 3px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgb(0 0 0 / 10%);
 }
 
 .card.darkMode .legendColor {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgb(255 255 255 / 20%);
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .card {
         padding: 16px;
         min-height: 350px;
+
         /* Allow horizontal scroll on small screens */
         overflow-x: auto;
     }
