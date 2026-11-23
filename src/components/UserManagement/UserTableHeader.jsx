@@ -57,6 +57,7 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
         );
 
         if (response.status >= 200 && response.status < 300) {
+          let roleChangeRegressed = false;
           await Promise.all(
             roleUpdateData.map(async roleUpdate => {
               const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${roleUpdate.user_id}`;
@@ -75,10 +76,11 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
                 await axios.patch(permissionURL, permissionData)
               } catch (err) {
                 try {
-                  // Idea for now, unsure whether this would work though
-                  // Rollback changes made to specific user that making a change log fails
+                  // Rollback changes made to specific user where permission updating fails
                   // But would not prevent or undo changes made to others in the same group.
-                  // await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData)
+                  const userRegressionData = { item: 'role', user_id: roleUpdate.user_id, value: user.data.role}
+                  await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, userRegressionData);
+                  roleChangeRegressed = true;
                 } catch (rollbackError) {
                   toast.error('Error occurring during rollback attempt, so some user states may be inconsistent')
                 }
@@ -94,7 +96,9 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
           await dispatch(getAllUserProfile());
 
           toast.update(toastId, {
-            render: 'Data Updated successfully !',
+            render: roleChangeRegressed ? 
+            'Date Update Completed but Atleast One Role Change Failed (Have Logs on Permissions Management Checked to Verify Successful Role Updates).' 
+            : 'Data Updated successfully !',
             type: toast.TYPE.SUCCESS,
             isLoading: false,
             autoClose: 3000,
