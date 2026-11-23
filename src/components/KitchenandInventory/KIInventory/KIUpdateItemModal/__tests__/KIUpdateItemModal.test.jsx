@@ -127,6 +127,36 @@ describe('KIUpdateItemModal', () => {
     });
   });
 
+  test.each([
+    ['normalizes a replacement barcode', ' 012345000058 ', '0012345000058'],
+    ['clears a saved barcode', '', null],
+  ])('%s on update', async (_description, value, barcode) => {
+    const onSubmit = vi.fn().mockResolvedValue({});
+    renderModal({ onSubmit, item: { ...defaultItem, barcode: '9521101530001' } });
+
+    const input = screen.getByLabelText('Barcode (optional)');
+    expect(input).toHaveValue('9521101530001');
+    fireEvent.change(input, { target: { value } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith('item-1', expect.objectContaining({ barcode }));
+    });
+  });
+
+  test('omits an unchanged barcode on update', async () => {
+    const onSubmit = vi.fn().mockResolvedValue({});
+    renderModal({ onSubmit, item: { ...defaultItem, barcode: '0012345000058' } });
+
+    fireEvent.change(screen.getByLabelText('Barcode (optional)'), {
+      target: { value: '012345000058' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0][1]).not.toHaveProperty('barcode');
+  });
+
   test('requires confirmation before deleting the item', async () => {
     const onDelete = vi.fn().mockResolvedValue({});
     const onClose = vi.fn();

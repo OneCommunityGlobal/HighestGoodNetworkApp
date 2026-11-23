@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import classnames from 'classnames';
+import { normalizeBarcode } from '../KIInventoryBarcode';
 import {
   buildInventoryItemBasePayload,
   getTodayDateValue,
@@ -39,6 +40,7 @@ const toTextValue = value => {
 
 const getInitialFormData = item => ({
   name: toTextValue(item?.name),
+  barcode: toTextValue(item?.barcode),
   type: toTextValue(item?.type),
   unit: toTextValue(item?.unit),
   location: toTextValue(item?.location),
@@ -53,7 +55,7 @@ const getInitialFormData = item => ({
   nextHarvestQuantity: toTextValue(item?.nextHarvestQuantity),
 });
 
-function buildPayload(formData, categoryValue) {
+function buildPayload(formData, categoryValue, savedBarcode) {
   const payload = {
     ...buildInventoryItemBasePayload(formData, categoryValue),
     expiryDate: formData.expiryDate,
@@ -62,6 +64,12 @@ function buildPayload(formData, categoryValue) {
     nextHarvestQuantity:
       formData.nextHarvestQuantity === '' ? null : toNumber(formData.nextHarvestQuantity),
   };
+
+  const barcode = normalizeBarcode(formData.barcode);
+  const previousBarcode = normalizeBarcode(savedBarcode) || savedBarcode || null;
+  if (barcode !== previousBarcode) {
+    payload.barcode = barcode;
+  }
 
   return payload;
 }
@@ -158,7 +166,7 @@ function KIUpdateItemModal({
     }
 
     try {
-      await onSubmit(itemId, buildPayload(formData, categoryValue));
+      await onSubmit(itemId, buildPayload(formData, categoryValue, item.barcode));
       onClose();
     } catch (err) {
       setFormError(err.message || 'Failed to update inventory item.');
@@ -227,6 +235,24 @@ function KIUpdateItemModal({
                 {errors.name && <span className={styles.updateItemFieldError}>{errors.name}</span>}
               </div>
 
+              <div className={styles.updateItemFormGroup}>
+                <label htmlFor="ki-update-item-barcode">Barcode (optional)</label>
+                <input
+                  id="ki-update-item-barcode"
+                  name="barcode"
+                  type="text"
+                  inputMode="numeric"
+                  value={formData.barcode}
+                  onChange={handleTextChange}
+                  aria-invalid={Boolean(errors.barcode)}
+                  aria-describedby={errors.barcode ? 'ki-update-item-barcode-error' : undefined}
+                />
+                {errors.barcode && (
+                  <span id="ki-update-item-barcode-error" className={styles.updateItemFieldError}>
+                    {errors.barcode}
+                  </span>
+                )}
+              </div>
               <div className={styles.updateItemFormGroup}>
                 <label htmlFor="ki-update-item-type">Type</label>
                 <input

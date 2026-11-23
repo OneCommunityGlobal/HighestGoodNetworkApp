@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import classnames from 'classnames';
+import { normalizeBarcode } from '../KIInventoryBarcode';
 import {
   buildInventoryItemBasePayload,
   getTodayDateValue,
@@ -10,8 +11,9 @@ import {
 } from '../KIInventoryFormUtils';
 import styles from './KIAddItem.module.css';
 
-const getInitialFormData = () => ({
+const getInitialFormData = (initialBarcode = '') => ({
   name: '',
+  barcode: initialBarcode,
   type: '',
   unit: '',
   location: '',
@@ -28,6 +30,11 @@ const getInitialFormData = () => ({
 
 function buildPayload(formData, categoryValue) {
   const payload = buildInventoryItemBasePayload(formData, categoryValue);
+  const barcode = normalizeBarcode(formData.barcode);
+
+  if (barcode) {
+    payload.barcode = barcode;
+  }
 
   if (formData.nextHarvestQuantity !== '') {
     payload.nextHarvestQuantity = toNumber(formData.nextHarvestQuantity);
@@ -48,22 +55,23 @@ function KIAddItemModal({
   onSubmit,
   categoryLabel,
   categoryValue,
+  initialBarcode,
   isSubmitting,
   submitError,
   darkMode,
 }) {
   const modalRef = useRef(null);
-  const [formData, setFormData] = useState(getInitialFormData);
+  const [formData, setFormData] = useState(() => getInitialFormData(initialBarcode));
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
 
   useEffect(() => {
     if (isOpen) {
-      setFormData(getInitialFormData());
+      setFormData(getInitialFormData(initialBarcode));
       setErrors({});
       setFormError('');
     }
-  }, [isOpen, categoryValue]);
+  }, [isOpen, categoryValue, initialBarcode]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -176,6 +184,24 @@ function KIAddItemModal({
                 {errors.name && <span className={styles.addItemFieldError}>{errors.name}</span>}
               </div>
 
+              <div className={styles.addItemFormGroup}>
+                <label htmlFor="ki-add-item-barcode">Barcode (optional)</label>
+                <input
+                  id="ki-add-item-barcode"
+                  name="barcode"
+                  type="text"
+                  inputMode="numeric"
+                  value={formData.barcode}
+                  onChange={handleTextChange}
+                  aria-invalid={Boolean(errors.barcode)}
+                  aria-describedby={errors.barcode ? 'ki-add-item-barcode-error' : undefined}
+                />
+                {errors.barcode && (
+                  <span id="ki-add-item-barcode-error" className={styles.addItemFieldError}>
+                    {errors.barcode}
+                  </span>
+                )}
+              </div>
               <div className={styles.addItemFormGroup}>
                 <label htmlFor="ki-add-item-type">Type</label>
                 <input
@@ -382,12 +408,14 @@ KIAddItemModal.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   categoryLabel: PropTypes.string.isRequired,
   categoryValue: PropTypes.string.isRequired,
+  initialBarcode: PropTypes.string,
   isSubmitting: PropTypes.bool,
   submitError: PropTypes.string,
   darkMode: PropTypes.bool,
 };
 
 KIAddItemModal.defaultProps = {
+  initialBarcode: '',
   isSubmitting: false,
   submitError: '',
   darkMode: false,

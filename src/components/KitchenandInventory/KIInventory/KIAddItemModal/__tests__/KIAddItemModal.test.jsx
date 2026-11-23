@@ -129,9 +129,29 @@ describe('KIAddItemModal', () => {
     });
 
     const submittedPayload = onSubmit.mock.calls[0][0];
+    expect(submittedPayload).not.toHaveProperty('barcode');
     expect(submittedPayload).not.toHaveProperty('lastHarvestDate');
     expect(submittedPayload).not.toHaveProperty('nextHarvestDate');
     expect(submittedPayload).not.toHaveProperty('nextHarvestQuantity');
+  });
+
+  test('validates and normalizes the optional barcode on create', async () => {
+    const onSubmit = vi.fn().mockResolvedValue({});
+    renderModal({ onSubmit });
+    fillRequiredFields();
+
+    const barcode = screen.getByLabelText('Barcode (optional)');
+    const submit = screen.getByRole('button', { name: 'Add Item' });
+    fireEvent.change(barcode, { target: { value: '012345000059' } });
+    fireEvent.click(submit);
+    expect(barcode).toBeInvalid();
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    fireEvent.change(barcode, { target: { value: ' 012345000058 ' } });
+    fireEvent.click(submit);
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ barcode: '0012345000058' }));
+    });
   });
 
   test('keeps the modal open and shows an error when submit fails', async () => {
