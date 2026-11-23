@@ -16,6 +16,7 @@ import styles from './EvaluationResults.module.css';
 import EvaluationApiService from './evaluationApiService';
 
 const displayValue = value => value ?? '—';
+const displayFeedback = value => (typeof value === 'string' && value.trim() ? value : '—');
 const displayPercent = value => (Number.isFinite(value) ? `${value}%` : '—');
 const displayDate = (value, includeTime = false) => {
   if (!value || Number.isNaN(new Date(value).getTime())) return '—';
@@ -41,7 +42,12 @@ const mapResults = data => ({
     earnedMarks: task.marks,
     totalMarks: task.maxMarks,
     teacherFeedback: task.feedback,
-    status: { on_time: 'On time', late: 'Late', pending: 'Pending' }[task.submissionStatus] ?? '—',
+    status:
+      { on_time: 'On time', late: 'Late', pending: 'Pending', graded: 'Graded' }[
+        task.status === 'graded' && (!task.submissionDate || !task.dueDate)
+          ? 'graded'
+          : task.submissionStatus
+      ] ?? '—',
   })),
   teacherFeedback: {
     ...data.teacherFeedback,
@@ -159,6 +165,7 @@ const EvaluationResults = ({ auth }) => {
   const getStatusClass = status => {
     if (status === 'On time' || status === 'completed') return 'onTime';
     if (status?.toLowerCase().includes('late')) return 'late';
+    if (status === 'Graded') return 'graded';
     return '';
   };
 
@@ -240,19 +247,12 @@ const EvaluationResults = ({ auth }) => {
             </div>
           </div>
           <div className={styles.progressSection}>
-            <div
+            <progress
               className={styles.progressBar}
-              role="progressbar"
               aria-label="Overall performance"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={percentageScore ?? undefined}
-            >
-              <div
-                className={styles.progressFill}
-                style={{ width: `${displayPercent(percentageScore)}` }}
-              ></div>
-            </div>
+              max={100}
+              value={percentageScore ?? undefined}
+            />
             <div className={styles.scoreDetails}>
               <span>
                 Total Score: {displayValue(totalEarnedPoints)}/{displayValue(totalPossiblePoints)}{' '}
@@ -347,7 +347,7 @@ const EvaluationResults = ({ auth }) => {
                 </tr>
               </thead>
               <tbody>
-                {tasks.slice(0, 6).map(task => (
+                {tasks.map(task => (
                   <tr key={task.id}>
                     <td>
                       <div className={styles.assignmentInfo}>
@@ -390,7 +390,7 @@ const EvaluationResults = ({ auth }) => {
 
           {/* Mobile Cards (shown on small screens) */}
           <div className={styles.mobileAssignments}>
-            {tasks.slice(0, 6).map(task => (
+            {tasks.map(task => (
               <div className={styles.assignmentCard} key={task.id}>
                 <div className={styles.cardHeader}>
                   <div className={styles.assignmentName}>{task.name}</div>
@@ -587,7 +587,7 @@ const EvaluationResults = ({ auth }) => {
                   Teacher Feedback
                 </h5>
                 <div className={styles.feedbackText}>
-                  {displayValue(feedbackModal.task.teacherFeedback)}
+                  {displayFeedback(feedbackModal.task.teacherFeedback)}
                 </div>
               </div>
 

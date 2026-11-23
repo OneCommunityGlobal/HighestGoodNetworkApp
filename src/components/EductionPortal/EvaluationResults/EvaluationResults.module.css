@@ -193,6 +193,9 @@
 }
 
 .progressBar {
+  appearance: none;
+  display: block;
+  border: 0;
   width: 100%;
   height: 2rem;
   background-color: #e0e0e0;
@@ -201,12 +204,23 @@
   margin-bottom: 0.5rem;
 }
 
-.progressFill {
-  height: 100%;
+/* Native progress tracks and fills retain the same palette in both themes. */
+.progressBar::-webkit-progress-bar {
+  background-color: #e0e0e0;
+}
 
-  /* Match the existing green performance indicators in both light and dark modes. */
+.progressBar::-webkit-progress-value {
   background-color: #28a745;
   transition: width 0.3s ease;
+}
+
+.progressBar::-moz-progress-bar {
+  background-color: #28a745;
+}
+
+/* An unavailable score must not display a fabricated filled portion. */
+.progressBar:indeterminate::-moz-progress-bar {
+  background-color: transparent;
 }
 
 .scoreDetails {
@@ -502,6 +516,12 @@
   border: 1px solid #f5c6cb;
 }
 
+.statusBadge.graded {
+  background-color: #cfe2ff;
+  color: #084298;
+  border: 1px solid #b6d4fe;
+}
+
 .feedbackButton {
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
@@ -553,6 +573,12 @@
 :global(.dark-mode) .evaluationResultsPage .assignmentSection .statusBadge.late {
   background-color: #7f1d1d;
   border-color: #ef4444;
+  color: #fff;
+}
+
+:global(.dark-mode) .evaluationResultsPage .assignmentSection .statusBadge.graded {
+  background-color: #1e3a5f;
+  border-color: #60a5fa;
   color: #fff;
 }
 

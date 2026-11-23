@@ -79,7 +79,7 @@ describe('Evaluation Results API integration', () => {
       `${ENDPOINTS.APIEndpoint()}/student/evaluation-results`,
     );
     expect(screen.getByRole('progressbar', { name: 'Overall performance' })).toHaveAttribute(
-      'aria-valuenow',
+      'value',
       '72',
     );
     expect(screen.getByText('Total Score: 120/150 points')).toBeInTheDocument();
@@ -90,9 +90,9 @@ describe('Evaluation Results API integration', () => {
     expect(screen.getAllByText('Late')).toHaveLength(2);
     expect(screen.getByText('Good progress.')).toBeInTheDocument();
     const progress = screen.getByRole('progressbar', { name: 'Overall performance' });
-    expect(within(progress).getByText('', { selector: `.${styles.progressFill}` })).toHaveStyle({
-      width: '72%',
-    });
+    expect(progress).toBeInstanceOf(HTMLProgressElement);
+    expect(progress).toHaveAttribute('max', '100');
+    expect(progress.value / progress.max).toBe(0.72);
     const category = screen.getByRole('row', { name: /^Assignments / });
     expect(
       within(category)
@@ -145,6 +145,41 @@ describe('Evaluation Results API integration', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   });
 
+  it.each([null, undefined, '', '   '])(
+    'displays a dash for empty assignment feedback: %s',
+    async feedback => {
+      const data = fixture();
+      data.taskResults[0].feedback = feedback;
+      respond(data);
+      render(<EvaluationResults auth={auth} />);
+
+      fireEvent.click((await screen.findAllByText('View Feedback'))[0]);
+      const dialog = await screen.findByRole('dialog');
+      expect(
+        within(dialog).getByText('—', { selector: `.${styles.feedbackText}` }),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it('shows Graded for a graded assignment missing a due date instead of Pending', async () => {
+    const data = fixture();
+    data.taskResults[0] = {
+      ...data.taskResults[0],
+      status: 'graded',
+      submissionStatus: 'pending',
+      dueDate: null,
+    };
+    respond(data);
+    render(<EvaluationResults auth={auth} />);
+
+    expect(await screen.findAllByText('Graded')).toHaveLength(2);
+
+    fireEvent.click((await screen.findAllByText('View Feedback'))[0]);
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByText('Graded')).toBeInTheDocument();
+    expect(within(dialog).getByText('Due: —')).toBeInTheDocument();
+  });
+
   it('preserves zero and displays missing scores and dates without fabricating values', async () => {
     const data = fixture();
     data.summary = {
@@ -176,10 +211,8 @@ describe('Evaluation Results API integration', () => {
     expect(screen.queryByText(/Invalid Date|NaN|undefined|1970/)).not.toBeInTheDocument();
     expect(screen.queryByText('8%')).not.toBeInTheDocument();
     const progress = screen.getByRole('progressbar', { name: 'Overall performance' });
-    expect(progress).toHaveAttribute('aria-valuenow', '0');
-    expect(within(progress).getByText('', { selector: `.${styles.progressFill}` })).toHaveStyle({
-      width: '0%',
-    });
+    expect(progress).toHaveAttribute('value', '0');
+    expect(progress.value).toBe(0);
     const category = screen.getByRole('row', { name: /^Ungraded / });
     expect(
       within(category)
@@ -221,7 +254,7 @@ describe('Evaluation Results API integration', () => {
     respond(data);
     render(<EvaluationResults auth={auth} />);
     const progress = await screen.findByRole('progressbar', { name: 'Overall performance' });
-    expect(progress).not.toHaveAttribute('aria-valuenow');
+    expect(progress).not.toHaveAttribute('value');
     expect(screen.getAllByText('—').length).toBeGreaterThan(0);
     expect(screen.queryByText('72%')).not.toBeInTheDocument();
   });
@@ -253,8 +286,9 @@ describe('Evaluation Results API integration', () => {
     expect(httpService.get).toHaveBeenCalledTimes(2);
   });
 
-  it('keeps the six-task limit in desktop and mobile layouts', async () => {
+  it('renders every assignment when there are more than six desktop and mobile results', async () => {
     const data = fixture();
+    data.summary.totalTasks = 7;
     data.taskResults = Array.from({ length: 7 }, (_, index) => ({
       ...data.taskResults[0],
       taskId: `task-${index}`,
@@ -263,8 +297,12 @@ describe('Evaluation Results API integration', () => {
     respond(data);
     render(<EvaluationResults auth={auth} />);
     await screen.findByText('72%');
-    expect(screen.getAllByText('Task 5')).toHaveLength(2);
-    expect(screen.queryByText('Task 6')).not.toBeInTheDocument();
+    for (let index = 0; index < 7; index += 1) {
+      expect(screen.getAllByText(`Task ${index}`)).toHaveLength(2);
+    }
+    expect(screen.getAllByText('7', { selector: `.${styles.cardNumber}` }).length).toBeGreaterThan(
+      0,
+    );
   });
 
   it('ignores an old account response after the account changes', async () => {
