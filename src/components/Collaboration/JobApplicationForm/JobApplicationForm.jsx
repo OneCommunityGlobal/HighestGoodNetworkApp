@@ -6,7 +6,7 @@ import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
@@ -478,14 +478,16 @@ export function buildInitialSelection({
   notifyInitialFormSelection(navTitle, formMatch, chosen, managementFamilySoftMatch);
 
   // Show a real position or form title, never the raw query / slug: near-miss titles select the
-  // matched position, and unmatched ones (e.g. "Applied through site", /apply/<unknown>) select
-  // the default form they fell back to instead of adding a fake dropdown option.
+  // matched position. If the listing has no linked form (fallback to default software), select
+  // that form's title so the dropdown/page heading match the questionnaire on screen.
+  const usedDefaultFormFallback = Boolean(navTitle) && !formMatch && Boolean(chosen);
   const matchedTitle = formMatch ? formMatch.title : chosen?.title;
-  const bannerTitle =
-    matchPositionOption(baseOptions, navTitle) ||
-    matchPositionOption(baseOptions, matchedTitle) ||
-    matchedTitle ||
-    '';
+  const bannerTitle = usedDefaultFormFallback
+    ? matchPositionOption(baseOptions, matchedTitle) || matchedTitle || ''
+    : matchPositionOption(baseOptions, navTitle) ||
+      matchPositionOption(baseOptions, matchedTitle) ||
+      matchedTitle ||
+      '';
   const options = ensurePositionOption(baseOptions, bannerTitle);
   const initial = getInitialFormState(chosen, bannerTitle);
   const selected =
@@ -1080,6 +1082,7 @@ function JobApplicationForm() {
   /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
   const [bannerJobTitle, setBannerJobTitle] = useState('');
   const [jobDataFromRedirect, setJobDataFromRedirect] = useState(null);
+  const [jobLookupStatus, setJobLookupStatus] = useState('idle');
   const [fullTimeYears, setFullTimeYears] = useState('');
   const [monthsVolunteer, setMonthsVolunteer] = useState('');
   const [hoursPerWeek, setHoursPerWeek] = useState('');
@@ -1168,6 +1171,7 @@ function JobApplicationForm() {
   };
 
   const fetchJobData = async jobId => {
+    setJobLookupStatus('loading');
     try {
       const response = await axios.get(
         `${ENDPOINTS.APIEndpoint()}/jobs/${jobId}`,
@@ -1186,10 +1190,17 @@ function JobApplicationForm() {
         if (job.title) {
           setJobTitleInput(job.title);
         }
+        setJobLookupStatus('loaded');
+      } else {
+        setJobLookupStatus('not-found');
       }
     } catch (error) {
       console.error('Error fetching job data:', error);
-      toast.error('Failed to load job details');
+      if (error.response?.status === 404) {
+        setJobLookupStatus('not-found');
+      } else {
+        setJobLookupStatus('error');
+      }
     }
   };
 
@@ -1204,12 +1215,15 @@ function JobApplicationForm() {
     }
 
     if (routerLocation.state) {
+      setJobLookupStatus('idle');
       setJobDataFromRedirect(routerLocation.state);
       if (routerLocation.state.jobTitle) {
         setJobTitleInput(routerLocation.state.jobTitle);
       }
     } else if (jobId) {
       void fetchJobData(jobId);
+    } else if (positionSlug && isMongoObjectId(positionSlug)) {
+      void fetchJobData(positionSlug);
     } else if (positionSlug) {
       const hint = titleHintFromSlug(positionSlug);
       if (hint) setJobTitleInput(hint);
@@ -1269,7 +1283,13 @@ function JobApplicationForm() {
     let form = findFormForJobTitle(forms, selectedJob);
     if (!form) {
       form = findDefaultSoftwareForm(forms);
-      if (form) warnDefaultFormFallback(selectedJob, form);
+      if (form) {
+        warnDefaultFormFallback(selectedJob, form);
+        // Keep dropdown / page title aligned with the questionnaire actually shown.
+        setSelectedJob(form.title);
+        setBannerJobTitle(form.title);
+        setJobTitleInput(form.title);
+      }
     }
     if (!form) return;
     setFilteredForm(form);
@@ -1327,10 +1347,10 @@ function JobApplicationForm() {
 
     if (positionMatch || form) {
       if (usedDefaultSoftware && form) {
-        // Load the default software form, but keep the typed query in the UI and toast.
+        // Load the default software form and select that title so the UI matches the questions.
         setSelectedJob(form.title);
-        setBannerJobTitle(raw);
-        setJobTitleInput(raw);
+        setBannerJobTitle(form.title);
+        setJobTitleInput(form.title);
         warnDefaultFormFallback(raw, form);
       } else {
         const dropdownJob = positionMatch || form.title;
@@ -1644,18 +1664,13 @@ function JobApplicationForm() {
 
     setFieldErrors(prev => {
       const next = { ...prev };
-
       delete next.firstName;
       delete next.lastName;
       delete next.applicantEmail;
       delete next.location;
       delete next.timeZone;
       delete next.phone;
-
-      return {
-        ...next,
-        ...profileErrors,
-      };
+      return { ...next, ...profileErrors };
     });
 
     if (missing.length > 0) {
@@ -1758,6 +1773,57 @@ function JobApplicationForm() {
       setIsSubmitting(false);
     }
   };
+
+  const getJobLookupTitle = () => {
+    if (jobLookupStatus === 'loading') return 'Loading job…';
+    if (jobLookupStatus === 'error') return 'Error loading job';
+    return 'Job not found';
+  };
+
+  if (
+    jobLookupStatus === 'loading' ||
+    jobLookupStatus === 'not-found' ||
+    jobLookupStatus === 'error'
+  ) {
+    return (
+      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+        <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
+        <header className={styles.logo}>
+          <a
+            href="https://www.onecommunityglobal.org/collaboration/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img src={OneCommunityImage} alt="One Community Logo" />
+          </a>
+        </header>
+        <main className={styles.header}>
+          <section className={styles.formContainer} role="status" aria-live="polite">
+            <h1 className={styles.formTitle}>{getJobLookupTitle()}</h1>
+            {jobLookupStatus === 'not-found' && (
+              <p>This job may have been removed or the link may be incorrect.</p>
+            )}
+            {jobLookupStatus === 'error' && (
+              <>
+                <p>Something went wrong while loading the job. Please try again.</p>
+                <button
+                  type="button"
+                  className={styles.submitButton}
+                  onClick={() => {
+                    const id = new URLSearchParams(routerLocation.search).get('jobId');
+                    const retryId = id && isMongoObjectId(id) ? id : positionSlug;
+                    if (retryId && isMongoObjectId(retryId)) void fetchJobData(retryId);
+                  }}
+                >
+                  Retry
+                </button>
+              </>
+            )}
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>

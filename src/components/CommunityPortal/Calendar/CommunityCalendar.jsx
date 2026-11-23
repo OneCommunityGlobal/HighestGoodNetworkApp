@@ -11,7 +11,16 @@ import CalendarActivitySection from './CalendarActivitySection';
 import GOVERNMENT_HOLIDAYS from './governmentHolidays';
 import styles from './CommunityCalendar.module.css';
 import { GrWorkshop } from 'react-icons/gr';
-import { FaVideo, FaUsers, FaGlassCheers, FaAlignLeft } from 'react-icons/fa';
+import {
+  FaVideo,
+  FaUsers,
+  FaGlassCheers,
+  FaAlignLeft,
+  FaTag,
+  FaMapMarkerAlt,
+  FaCalendarAlt,
+  FaClock,
+} from 'react-icons/fa';
 
 const normalizeStatus = status => {
   if (!status) return 'New';

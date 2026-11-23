@@ -4,14 +4,14 @@
   font-size: medium;
   font-weight: bold;
   color: var(--text-color);
-  margin: 0;    
+  margin: 0;
 }
 
 .chartTitleContainer {
   position: relative;
   text-align: center;
   margin-bottom: 5px;
-  padding-right: 30px;   
+  padding-right: 30px;
 }
 
 /* Chart Container */
@@ -211,9 +211,13 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   border-radius: 4px;
   text-align: center;
   padding: 2px 6px;
-  background-color: var(--card-bg);
-  color: var(--text-color);
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
   transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.quantityOfMaterialUsedCustomDatePickerDark {
+  color-scheme: dark;
 }
 
 .quantityOfMaterialsUsedCard .customSelect_singleValue {
@@ -373,6 +377,10 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 }
 
 .quantityModalContent {
+  /* It is a native <dialog>, so undo the browser's own dialog position, margin and border */
+  position: static;
+  margin: 0;
+  border: none;
   background: var(--card-bg);
   color: var(--text-color);
   padding: 20px;
