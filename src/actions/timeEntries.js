@@ -234,15 +234,6 @@ export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
 
       const selectedDate = moment(timeEntry.dateOfWork);
 
-      // console.log('Server time:', serverNow.format());
-      // console.log('Selected time entry date:', selectedDate.format());
-
-      // // Prevent future date/time logging
-      // if (selectedDate.isAfter(serverNow)) {
-      //   toast.error('You cannot log time for a future date or time.');
-      //   return 400;
-      // }
-
       // Prevent logging on previous or future dates
       if (!selectedDate.isSame(serverNow, 'day')) {
         toast.error('You can only log time for today.');
