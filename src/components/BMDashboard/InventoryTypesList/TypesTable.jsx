@@ -103,6 +103,7 @@ export function TypesTable(props) {
       setIsProcessing(false);
     }
   };
+
   const handleSaveEdit = async () => {
     if (isProcessing || !canEdit || !modalState.item) return;
 
@@ -121,7 +122,7 @@ export function TypesTable(props) {
     setIsProcessing(true);
 
     try {
-      await dispatch(
+      const result = await dispatch(
         updateInvType(category, modalState.item._id, {
           name: trimmedName,
           description: modalState.description,
@@ -131,9 +132,17 @@ export function TypesTable(props) {
         }),
       );
 
-      // Do not show another success toast here.
-      // updateInvType already displays its own toast.
+      // Keep the modal open if the update failed.
+      if (
+        result?.success === false ||
+        result?.payload?.success === false ||
+        result?.error ||
+        result?.meta?.requestStatus === 'rejected'
+      ) {
+        return;
+      }
 
+      // Close and reset only after successful update.
       setModalState({
         type: '',
         visible: false,
@@ -231,7 +240,7 @@ export function TypesTable(props) {
           {isAdding && (
             <tr>
               <td>{(itemTypes?.length ?? 0) + 1}</td>
-              <td>{(itemTypes?.length ?? 0) + 1}</td>
+
               <td>
                 <Form.Control
                   type="text"
@@ -242,6 +251,7 @@ export function TypesTable(props) {
                   size="sm"
                 />
               </td>
+
               <td>
                 <Form.Control
                   as="textarea"
@@ -287,19 +297,20 @@ export function TypesTable(props) {
               )}
 
               <td>
-                <Button size="sm" variant="success" onClick={handleSave}>
-                  Save
-                </Button>
-              </td>
-              <td>
-                <Button
-                  size="sm"
-                  className={styles.modalBtnCancel}
-                  variant="secondary"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
+                <div className="d-flex align-items-center gap-2">
+                  <Button size="sm" variant="success" onClick={handleSave}>
+                    Save
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    className={styles.modalBtnCancel}
+                    variant="secondary"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </td>
             </tr>
           )}
@@ -428,6 +439,11 @@ export function TypesTable(props) {
                     required
                   >
                     <option value="">Select unit</option>
+
+                    {modalState.unit && !units.some(unit => unit.unit === modalState.unit) && (
+                      <option value={modalState.unit}>{modalState.unit}</option>
+                    )}
+
                     {units.map(unit => (
                       <option key={unit._id || unit.unit} value={unit.unit}>
                         {unit.unit}

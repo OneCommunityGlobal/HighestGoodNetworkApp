@@ -39,6 +39,7 @@ function TypeRow(props) {
           {canDelete && (
             <Button
               size="sm"
+              variant="danger"
               className={styles.deleteButton}
               onClick={() => onDelete?.()}
               aria-label={`Delete ${itemType.name}`}

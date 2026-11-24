@@ -948,7 +948,7 @@
 :global(body.bm-dashboard-dark:not(.no-global-theme)) .deleteButton,
 :global(body.dark-mode) .deleteButton,
 :global(body.bm-dashboard-dark) .deleteButton {
-  background-color: #dc3545 !important;
+  background-color: #dc3545;
   border-color: #dc3545;
   color: #fff;
 }
