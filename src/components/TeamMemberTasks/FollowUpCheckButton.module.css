@@ -25,6 +25,23 @@
   background-color: #f3e1e2;
 }
 
+/* A global dark mode input rule would otherwise paint every box the same dark color. */
+:global(.dark-mode) .team-task-progress-follow-up {
+  border: 2px solid green;
+  background-color: #e1f3e2;
+}
+
+:global(.dark-mode) .team-task-progress-follow-up-red {
+  border-color: red;
+  background-color: #f3e1e2;
+}
+
+/* public/index.css sets every color to white in dark mode with !important, so the check needs it too. */
+:global(.dark-mode) .team-task-progress-follow-up-check,
+:global(.dark-mode) .team-task-progress-follow-up-check path {
+  color: green !important;
+}
+
 /* the check icon sits inside the box */
 .team-task-progress-follow-up-check {
   position: absolute;
@@ -55,11 +72,16 @@
 }
 
 .team-task-progress-follow-up-violated-icon {
-  color: #FFD700;
+  color: #ffd700;
   position: absolute;
   font-size: 16px;
   top: -8px;
   right: -8px;
   cursor: pointer;
-  filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+
+:global(.dark-mode) .team-task-progress-follow-up-violated-icon,
+:global(.dark-mode) .team-task-progress-follow-up-violated-icon path {
+  color: #ffd700 !important;
 }

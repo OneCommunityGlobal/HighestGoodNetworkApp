@@ -1,78 +1,27 @@
-import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { faCheck, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserFollowUp } from '../../actions/followUpActions';
 import styles from './FollowUpCheckButton.module.css';
+import { getFollowUpUpdate, getTaskProgress, needsFollowUp } from './followUpStatus';
 
 function FollowupCheckButton({ mouseoverText, user, task }) {
   const dispatch = useDispatch();
   const userFollowUps = useSelector(state => state.userFollowUp?.followUps[user.personId] || []);
-  const userFollowUpTask = userFollowUps.filter(ele => ele.taskId === task._id);
-  const isChecked = userFollowUpTask[0]?.followUpCheck || false;
-  const followUpPercentageDeadline = userFollowUpTask[0]?.followUpPercentageDeadline || 0;
-  const acceptedPercentage = userFollowUpTask[0]?.acceptedPercentage || 0;
-  const [needFollowUp, setNeedFollowUp] = useState(false);
+  const followUp = userFollowUps.find(ele => ele.taskId === task._id);
+  const isChecked = followUp?.followUpCheck || false;
+  const acceptedPercentage = followUp?.acceptedPercentage || 0;
 
-  const currentPercentage =
-    Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
+  const currentPercentage = getTaskProgress(task.hoursLogged, task.estimatedHours);
+  const needFollowUp = needsFollowUp(currentPercentage, followUp);
 
   // Was accepted as done but more time was logged after acceptance
   const violatedAfterAcceptance =
     isChecked && acceptedPercentage > 0 && currentPercentage > acceptedPercentage;
 
-  const checkNeedFollowUp = () => {
-    const taskProgressPercentage = currentPercentage;
-
-    if (userFollowUpTask.length > 0) {
-      const followUp = userFollowUpTask[0];
-      const followUpPercentageDeadlineNumber = Number(followUp.followUpPercentageDeadline) || 0;
-
-      if (followUpPercentageDeadlineNumber < 50 && taskProgressPercentage > 50) {
-        setNeedFollowUp(true);
-        return;
-      }
-      if (
-        followUpPercentageDeadlineNumber >= 50 &&
-        followUpPercentageDeadlineNumber < 75 &&
-        taskProgressPercentage > 75
-      ) {
-        setNeedFollowUp(true);
-        return;
-      }
-      if (
-        followUpPercentageDeadlineNumber >= 75 &&
-        followUpPercentageDeadlineNumber < 90 &&
-        taskProgressPercentage > 90
-      ) {
-        setNeedFollowUp(true);
-        return;
-      }
-      if (followUpPercentageDeadlineNumber < 90 && taskProgressPercentage > 90) {
-        setNeedFollowUp(true);
-        return;
-      }
-    } else if (taskProgressPercentage > 50) {
-      setNeedFollowUp(true);
-      return;
-    }
-    setNeedFollowUp(false);
-  };
-
-  useEffect(() => {
-    checkNeedFollowUp();
-  }, [followUpPercentageDeadline, userFollowUpTask.length, task.hoursLogged]); // ← fix: added dependencies
-
   const handleCheckboxFollowUp = () => {
-    const progressPercentage =
-      Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
-
-    const data = {
-      followUpCheck: needFollowUp ? true : !isChecked,
-      followUpPercentageDeadline: progressPercentage,
-      acceptedPercentage: isChecked ? 0 : progressPercentage,
-    };
+    const data = getFollowUpUpdate(currentPercentage, isChecked, needFollowUp);
     dispatch(setUserFollowUp(user.personId, task._id, data));
   };
 

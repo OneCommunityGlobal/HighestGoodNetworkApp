@@ -28,6 +28,7 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import GoogleDocIcon from '../common/GoogleDocIcon';
 import TaskChangeLogModal from './components/TaskChangeLogModal';
 import FollowupCheckButton from './FollowupCheckButton';
+import { getFollowUpStage, getTaskProgress } from './followUpStatus';
 import FollowUpInfoModal from './FollowUpInfoModal';
 import ReviewButton from './ReviewButton';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
@@ -242,17 +243,13 @@ const TeamMemberTask = React.memo(
     }, undefined);
 
     const followUpMouseoverText = task => {
-      const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
-      if (progressPersantage < 50) {
-        return messages.MOUSE_OVER_TEXT_UNDER_50;
-      }
-      if (progressPersantage >= 50 && progressPersantage < 75) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75;
-      }
-      if (progressPersantage >= 75 && progressPersantage < 90) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90;
-      }
-      return messages.MOUSE_OVER_TEXT_OVER_90;
+      const stage = getFollowUpStage(getTaskProgress(task.hoursLogged, task.estimatedHours));
+      return [
+        messages.MOUSE_OVER_TEXT_UNDER_50,
+        messages.MOUSE_OVER_TEXT_BETWEEN_50_75,
+        messages.MOUSE_OVER_TEXT_BETWEEN_75_90,
+        messages.MOUSE_OVER_TEXT_OVER_90,
+      ][stage];
     };
 
     return (
@@ -714,7 +711,7 @@ const TeamMemberTask = React.memo(
                                               <div className={styles['task-followup-icon']}>
                                                 {canSeeFollowUpCheckButton && (
                                                   <FollowupCheckButton
-                                                    moseoverText={followUpMouseoverText(task)}
+                                                    mouseoverText={followUpMouseoverText(task)}
                                                     user={user}
                                                     task={task}
                                                   />
