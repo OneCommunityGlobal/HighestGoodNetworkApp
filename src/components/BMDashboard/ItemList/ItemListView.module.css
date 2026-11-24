@@ -96,13 +96,6 @@ table td {
   vertical-align: middle;
 }
 
-:global(.dark-mode) .items_list_container {
-  background-color: #0d1117 !important;
-  color: #fff !important;
-  min-height: 100vh;
-  padding-bottom: 2rem;
-}
-
 .itemsCell .materialsActionGroup svg {
   margin-right: 0;
 }
