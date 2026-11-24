@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { FaRegCalendarAlt } from 'react-icons/fa';
 // The Food Categories and Food Sources charts share this card, its filters and its legend
 import styles from '../FoodCategoriesPieChart/FoodCategoriesPieChart.module.css';
 
@@ -30,39 +29,33 @@ const renderSliceLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, payload 
   );
 };
 
-const handleDateClick = e => {
-  try {
-    e.currentTarget.showPicker?.();
-  } catch {
-    // Some browsers do not support showPicker; the native input still works
-  }
+// 'YYYY-MM' to a short label like 'Nov 2026'
+export const formatMonth = month => {
+  const [year, m] = month.split('-').map(Number);
+  return new Date(year, m - 1, 1).toLocaleString('en-US', { month: 'short', year: 'numeric' });
 };
 
-function DateField({ label, value, min, max, onChange }) {
+// The chart data is monthly, so the range is picked by whole months
+function MonthField({ label, value, months, onChange }) {
   return (
     <label className={styles.field}>
       <span className={styles.fieldLabel}>{label}</span>
-      <div className={styles.dateWrapper}>
-        <input
-          className={`${styles.control} ${styles.dateInput}`}
-          type="date"
-          value={value}
-          min={min}
-          max={max}
-          onClick={handleDateClick}
-          onChange={e => onChange(e.target.value)}
-        />
-        <FaRegCalendarAlt className={styles.dateIcon} aria-hidden="true" />
-      </div>
+      <select className={styles.control} value={value} onChange={e => onChange(e.target.value)}>
+        <option value="">All</option>
+        {months.map(month => (
+          <option key={month} value={month}>
+            {formatMonth(month)}
+          </option>
+        ))}
+      </select>
     </label>
   );
 }
 
-DateField.propTypes = {
+MonthField.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  min: PropTypes.string.isRequired,
-  max: PropTypes.string.isRequired,
+  months: PropTypes.arrayOf(PropTypes.string).isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
@@ -78,8 +71,7 @@ export default function KIPieChartCard({
   onStartDateChange,
   endDate,
   onEndDateChange,
-  dateMin,
-  dateMax,
+  months,
   onReset,
   isDefaultFilters,
 }) {
@@ -106,20 +98,8 @@ export default function KIPieChartCard({
           </select>
         </label>
 
-        <DateField
-          label="From"
-          value={startDate}
-          min={dateMin}
-          max={endDate || dateMax}
-          onChange={onStartDateChange}
-        />
-        <DateField
-          label="To"
-          value={endDate}
-          min={startDate || dateMin}
-          max={dateMax}
-          onChange={onEndDateChange}
-        />
+        <MonthField label="From" value={startDate} months={months} onChange={onStartDateChange} />
+        <MonthField label="To" value={endDate} months={months} onChange={onEndDateChange} />
 
         <div className={styles.buttonCell}>
           <button
@@ -134,7 +114,7 @@ export default function KIPieChartCard({
 
         {!isDateRangeValid && (
           <span className={styles.dateRangeError}>
-            From date must be before or equal to To date.
+            From month must be before or equal to To month.
           </span>
         )}
       </div>
@@ -221,8 +201,7 @@ KIPieChartCard.propTypes = {
   onStartDateChange: PropTypes.func.isRequired,
   endDate: PropTypes.string.isRequired,
   onEndDateChange: PropTypes.func.isRequired,
-  dateMin: PropTypes.string.isRequired,
-  dateMax: PropTypes.string.isRequired,
+  months: PropTypes.arrayOf(PropTypes.string).isRequired,
   onReset: PropTypes.func.isRequired,
   isDefaultFilters: PropTypes.bool.isRequired,
 };

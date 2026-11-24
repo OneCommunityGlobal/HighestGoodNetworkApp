@@ -50,9 +50,9 @@ describe('Food Categories chart', () => {
 
   it('shows an error and no chart when From is after To', () => {
     renderChart(true);
-    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2024-06-01' } });
-    fireEvent.change(screen.getByLabelText('To'), { target: { value: '2024-02-01' } });
-    expect(screen.getByText('From date must be before or equal to To date.')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2024-06' } });
+    fireEvent.change(screen.getByLabelText('To'), { target: { value: '2024-02' } });
+    expect(screen.getByText('From month must be before or equal to To month.')).toBeInTheDocument();
     expect(screen.getByText('No data available for the selected filters.')).toBeInTheDocument();
   });
 });

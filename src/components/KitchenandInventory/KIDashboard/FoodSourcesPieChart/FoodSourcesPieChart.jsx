@@ -17,11 +17,6 @@ export const getRecentMonths = (today = new Date()) =>
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   });
 
-const lastDayOfMonth = month => {
-  const [year, m] = month.split('-').map(Number);
-  return `${month}-${String(new Date(year, m, 0).getDate()).padStart(2, '0')}`;
-};
-
 // Mock data: kg of food each kitchen got from each source per month
 const BASE_KG = {
   'Kitchen 1': { grown: 450, purchased: 350, preserved: 200 },
@@ -56,19 +51,18 @@ export const toWholePercents = (values, sum) => {
   return floors;
 };
 
-// Adds up the kg per source for the chosen kitchen and dates; [] when nothing matches
+// Adds up the kg per source for the chosen kitchen and months; [] when nothing matches.
+// startDate and endDate are whole months ('YYYY-MM'), or '' for no limit.
 export const buildSourceData = (
   records,
   { kitchen = 'All', startDate = '', endDate = '' } = {},
 ) => {
   if (startDate && endDate && startDate > endDate) return [];
-  const from = startDate.substring(0, 7);
-  const to = endDate.substring(0, 7);
 
   const totals = {};
   records.forEach(r => {
     const kitchenMatch = kitchen === 'All' || r.kitchen === kitchen;
-    const dateMatch = (!from || r.month >= from) && (!to || r.month <= to);
+    const dateMatch = (!startDate || r.month >= startDate) && (!endDate || r.month <= endDate);
     if (kitchenMatch && dateMatch) totals[r.source] = (totals[r.source] || 0) + r.kg;
   });
 
@@ -123,8 +117,7 @@ export default function FoodSourcesPieChart() {
       onStartDateChange={setStartDate}
       endDate={endDate}
       onEndDateChange={setEndDate}
-      dateMin={`${months[0]}-01`}
-      dateMax={lastDayOfMonth(months.at(-1))}
+      months={months}
       onReset={handleReset}
       isDefaultFilters={
         kitchen === DEFAULTS.kitchen &&
