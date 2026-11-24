@@ -34,16 +34,6 @@
   border-color: #334155;
 }
 
-/* Keep the main equipment table's empty-state row readable in dark mode while preserving
-   a visible hover effect. This class is applied only to the "No equipments found" row,
-   so normal equipment rows and the Previous Logs table keep their existing hover behavior. */
-.emptyEquipmentRow:hover,
-.emptyEquipmentRow:hover td {
-  background-color: #222 !important;
-  color: #fff !important;
-  transition: background-color 0.2s;
-}
-
 .infoIcon {
   cursor: pointer;
   opacity: 0.7;
