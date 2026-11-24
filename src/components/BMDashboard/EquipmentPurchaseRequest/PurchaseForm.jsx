@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Form, FormGroup, FormText, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
@@ -17,8 +17,9 @@ export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
   const equipments = useSelector(state => state.bmInvTypes.list);
   const history = useHistory();
+  const location = useLocation();
 
-  const [projectId, setProjectId] = useState('');
+  const [projectId, setProjectId] = useState(location.state?.projectId || '');
   const [equipmentId, setEquipmentId] = useState('');
   const [quantity, setQty] = useState('');
   // const [isTracking, setIsTracking] = useState(true);

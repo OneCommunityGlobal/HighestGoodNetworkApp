@@ -306,7 +306,9 @@ function EDailyActivityLog(props) {
   };
 
   const goToPurchaseEquipment = () => {
-    history.push('/bmdashboard/equipment/purchase');
+    history.push('/bmdashboard/equipment/purchase', {
+      projectId: selectedProject.value,
+    });
   };
 
   const projectSelectStyles = getSelectStyles(darkMode, false);
@@ -528,45 +530,44 @@ function EDailyActivityLog(props) {
             </div>
           </div>
         )}
-        {/* Table */}
-        <Table bordered responsive>
-          <thead className={`${darkMode ? styles.tableDark : 'table-light'} align-middle`}>
-            <tr>
-              <th>Name</th>
-              <th>
-                Working
-                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-working"></i>
-                <UncontrolledTooltip placement="top" target="tooltip-working">
-                  Total number of units operational today
-                </UncontrolledTooltip>
-              </th>
-              <th>
-                Available
-                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-available"></i>
-                <UncontrolledTooltip placement="top" target="tooltip-available">
-                  Number of units currently not in use
-                </UncontrolledTooltip>
-              </th>
-              <th>
-                Using
-                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-using"></i>
-                <UncontrolledTooltip placement="top" target="tooltip-using">
-                  Quantity being checked in/out
-                </UncontrolledTooltip>
-              </th>
-              <th>
-                Tool / Equipment #
-                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-toolnum"></i>
-                <UncontrolledTooltip placement="top" target="tooltip-toolnum">
-                  Select the specific tool identifier
-                </UncontrolledTooltip>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedProject &&
-              rows.length > 0 &&
-              rows.map((r, idx) => {
+        {/* Table - show only when equipment is available */}
+        {selectedProject && !isLoading && rows.length > 0 && (
+          <Table bordered responsive>
+            <thead className={`${darkMode ? styles.tableDark : 'table-light'} align-middle`}>
+              <tr>
+                <th>Name</th>
+                <th>
+                  Working
+                  <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-working"></i>
+                  <UncontrolledTooltip placement="top" target="tooltip-working">
+                    Total number of units operational today
+                  </UncontrolledTooltip>
+                </th>
+                <th>
+                  Available
+                  <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-available"></i>
+                  <UncontrolledTooltip placement="top" target="tooltip-available">
+                    Number of units currently not in use
+                  </UncontrolledTooltip>
+                </th>
+                <th>
+                  Using
+                  <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-using"></i>
+                  <UncontrolledTooltip placement="top" target="tooltip-using">
+                    Quantity being checked in/out
+                  </UncontrolledTooltip>
+                </th>
+                <th>
+                  Tool / Equipment #
+                  <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-toolnum"></i>
+                  <UncontrolledTooltip placement="top" target="tooltip-toolnum">
+                    Select the specific tool identifier
+                  </UncontrolledTooltip>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, idx) => {
                 const validList = logType === 'check-in' ? r.inUseNumbers : r.availableNumbers;
                 const limit = logType === 'check-in' ? r.usingQty : r.availableQty;
 
@@ -594,8 +595,9 @@ function EDailyActivityLog(props) {
                   </tr>
                 );
               })}
-          </tbody>
-        </Table>
+            </tbody>
+          </Table>
+        )}
         {/* Previous Logs Panel */}
         {selectedProject && (
           <div className={`mt-4 ${darkMode ? 'text-light' : 'text-dark'}`}>
