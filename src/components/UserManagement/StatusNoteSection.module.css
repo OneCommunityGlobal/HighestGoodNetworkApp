@@ -1,0 +1,60 @@
+.statusNoteSection {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgb(128 128 128 / 35%);
+}
+
+.statusNoteText {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin-bottom: 0.25rem;
+}
+
+.statusNoteMeta {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.statusNoteButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.statusNoteCount {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  text-align: right;
+}
+
+.statusNoteInputDark {
+  background-color: #1c2541;
+  color: #fff;
+  border-color: #3a506b;
+}
+
+.statusNoteInputDark:focus {
+  background-color: #1c2541;
+  color: #fff;
+}
+
+.statusNoteHistory {
+  margin-top: 0.75rem;
+}
+
+.statusNoteHistory summary {
+  cursor: pointer;
+}
+
+.statusNoteHistoryList {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.statusNoteHistoryList li {
+  margin-bottom: 0.5rem;
+}

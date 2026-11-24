@@ -4,7 +4,7 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable no-param-reassign */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useDispatch } from 'react-redux';
 import {
@@ -37,6 +37,7 @@ import { readSplitDraft } from './splitTimeEntryUtils';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
+import DuplicateTimeLogModal from './DuplicateTimeLogModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/index.module.css';
 import styles from '../Timelog.module.css';
@@ -50,6 +51,74 @@ const customImageUploadHandler = () =>
     // eslint-disable-next-line prefer-promise-reject-errors
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
+
+function getInitialProjectOrTaskId(edit, projectId, wbsId, taskId) {
+  if (!edit) return 'defaultProject';
+  const wbsSuffix = wbsId ? `/${wbsId}` : '';
+  const taskSuffix = taskId ? `/${taskId}` : '';
+  return projectId + wbsSuffix + taskSuffix;
+}
+
+function getEditorOptions(darkMode) {
+  return {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: 'Description (10-word minimum) and reference link',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 250,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
+    images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
+}
+
+function TimeEntryFormHeader({
+  edit,
+  isTangible,
+  darkMode,
+  viewingUser,
+  isAsyncDataLoaded,
+  toggle,
+  aboutModalToggle,
+  headerBg,
+}) {
+  return (
+    <ModalHeader toggle={toggle} className={`${headerBg}`}>
+      <div>
+        {edit ? 'Edit ' : 'Add '}
+        {isTangible ? (
+          <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
+        ) : (
+          <span style={{ color: 'orange' }}>Intangible </span>
+        )}
+        Time Entry
+        {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
+        <i
+          className={`fa fa-info-circle ${styles.customStyle}`}
+          data-tip
+          data-for="registerTip"
+          aria-hidden="true"
+          title="timeEntryTip"
+          onClick={aboutModalToggle}
+        />
+        {!isAsyncDataLoaded && <span> Loading Data...</span>}
+      </div>
+      <ReactTooltip id="registerTip" place="bottom" effect="solid">
+        Click this icon to learn about this time entry form
+      </ReactTooltip>
+    </ModalHeader>
+  );
+}
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -203,6 +272,7 @@ export function TimeEntryForm(props) {
     userProfile,
     userProjects,
     onTimeSubmitted,
+    onDuplicateCancel,
     sessionId,
     timerConnected,
     maxHoursPerEntry,
@@ -232,7 +302,7 @@ export function TimeEntryForm(props) {
     ...data,
   };
 
-  const TINY_MCE_INIT_OPTIONS = timeEntryEditorOptions(darkMode);
+  const TINY_MCE_INIT_OPTIONS = getEditorOptions(darkMode);
 
   const timeEntryUserId = entryUserId(from, viewingUser, authUser, data);
 
@@ -247,7 +317,12 @@ export function TimeEntryForm(props) {
     isTangible: initialIsTangible,
   } = initialFormValues;
 
-  const timeEntryInitialProjectOrTaskId = initialProjectSelection(edit, initialProjectId, initialwbsId, initialTaskId);
+  const timeEntryInitialProjectOrTaskId = getInitialProjectOrTaskId(
+    edit,
+    initialProjectId,
+    initialwbsId,
+    initialTaskId,
+  );
 
   const initialReminder = {
     openModal: false,
@@ -273,6 +348,11 @@ export function TimeEntryForm(props) {
   const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const notesEditorRef = useRef(null);
+  const restoreFocusAfterDuplicateEditRef = useRef(false);
+  const [isDuplicateModalVisible, setDuplicateModalVisible] = useState(false);
+  const pendingDuplicatePayloadRef = useRef(null);
+  const postRequestInFlightRef = useRef(false);
   const splitAvailable = from === 'Timer' && !edit && formValues.personId === authUser.userid;
   const splitTotalMinutes = Number(formValues.hours) * 60 + Number(formValues.minutes);
   const splitTooShort = !Number.isSafeInteger(splitTotalMinutes) || splitTotalMinutes < 2;
@@ -483,19 +563,27 @@ export function TimeEntryForm(props) {
     if (closed === true && isOpen) toggle();
   };
 
-  const submitTimeEntry = async () => {
+  const submitTimeEntry = async ({ retryPayload, allowDuplicate = false } = {}) => {
+    if (!edit && postRequestInFlightRef.current) return;
+    if (!edit) {
+      postRequestInFlightRef.current = true;
+      setSubmitting(true);
+    }
+
     // Prevent submission when logging timer time but timer is disconnected
     if (from === 'Timer' && timerConnected === false) {
       toast.error('Cannot log time entry while timer is disconnected. Please wait for connection to be restored or refresh the page.');
+      postRequestInFlightRef.current = false;
       setSubmitting(false);
       return;
     }
 
-    const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = formValues;
-    const timeEntry = { ...formValues };
+    const timeEntry = { ...(retryPayload || formValues) };
+    const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = timeEntry;
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
-    if (!validateForm(isTimeModified)) {
+    if (!retryPayload && !validateForm(isTimeModified)) {
+      postRequestInFlightRef.current = false;
       setSubmitting(false);
       return;
     }
@@ -549,7 +637,7 @@ export function TimeEntryForm(props) {
           clearForm();
           break;
         case 'TimeLog': {
-          const date = moment(formValues.dateOfWork);
+          const date = moment(timeEntry.dateOfWork);
           const today = moment().tz('America/Los_Angeles');
           const offset = today.week() - date.week();
           props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
@@ -584,18 +672,73 @@ export function TimeEntryForm(props) {
       }
     };
 
+    const postNewTimeEntry = async () => {
+      const payload = allowDuplicate ? { ...timeEntry, allowDuplicate: true } : timeEntry;
+      const result = await props.postTimeEntry(payload, {
+        displayedUserId: props.displayedUserId,
+        detailed: true,
+      });
+      const { status, code } = result || {};
+
+      if (!allowDuplicate && status === 409 && code === 'DUPLICATE_TIME_ENTRY') {
+        pendingDuplicatePayloadRef.current = { ...timeEntry };
+        setDuplicateModalVisible(true);
+        setSubmitting(false);
+        return false;
+      }
+
+      if (!Number.isInteger(status) || status < 200 || status >= 300) {
+        handleError(`request failed with status ${status}`);
+        return false;
+      }
+      return true;
+    };
+
     try {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
-      } else {
-        await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
+      } else if (!(await postNewTimeEntry())) {
+        return;
       }
 
       await handlePostSubmitActions();
+      pendingDuplicatePayloadRef.current = null;
       handleFormReset();
     } catch (error) {
       handleError(error);
+    } finally {
+      if (!edit) postRequestInFlightRef.current = false;
     }
+  };
+
+  const handleDuplicateCancel = () => {
+    const targetPersonId = timeEntryUserId;
+    pendingDuplicatePayloadRef.current = null;
+    restoreFocusAfterDuplicateEditRef.current = false;
+    setDuplicateModalVisible(false);
+    if (isOpen) toggle();
+    if (onDuplicateCancel) onDuplicateCancel(targetPersonId);
+  };
+
+  const handleDuplicateEdit = () => {
+    restoreFocusAfterDuplicateEditRef.current = true;
+    setDuplicateModalVisible(false);
+    pendingDuplicatePayloadRef.current = null;
+  };
+
+  const handleDuplicateModalClosed = () => {
+    if (!restoreFocusAfterDuplicateEditRef.current) return;
+    restoreFocusAfterDuplicateEditRef.current = false;
+    window.setTimeout(() => notesEditorRef.current?.focus(), 0);
+  };
+
+  const handleDuplicateProceed = async () => {
+    const payload = pendingDuplicatePayloadRef.current;
+    if (!payload || postRequestInFlightRef.current) return;
+    restoreFocusAfterDuplicateEditRef.current = false;
+    setDuplicateModalVisible(false);
+    setSubmitting(true);
+    await submitTimeEntry({ retryPayload: payload, allowDuplicate: true });
   };
 
   const handleSubmit = async event => {
@@ -822,9 +965,16 @@ export function TimeEntryForm(props) {
         data-testid="timeEntryFormModal"
         style={modalStyle}
       >
-        <ModalHeader toggle={toggleForm} className={`${headerBg}`}>
-          {renderTimeEntryHeading({ edit, isTangible: formValues.isTangible, darkMode, viewingUser, onAbout: aboutModalToggle, loading: !isAsyncDataLoaded })}
-        </ModalHeader>
+        <TimeEntryFormHeader
+          edit={edit}
+          isTangible={formValues.isTangible}
+          darkMode={darkMode}
+          viewingUser={viewingUser}
+          isAsyncDataLoaded={isAsyncDataLoaded}
+          toggle={toggleForm}
+          aboutModalToggle={aboutModalToggle}
+          headerBg={headerBg}
+        />
         <ModalBody className={bodyBg}>
           <Form>
             <FormGroup>
@@ -973,6 +1123,9 @@ export function TimeEntryForm(props) {
                     name="notes"
                     className="form-control"
                     value={formValues.notes}
+                    onInit={(_event, editor) => {
+                      notesEditorRef.current = editor;
+                    }}
                     onEditorChange={handleEditorChange}
                     disabled={!(isSameDayAuthUserEdit || canEditTimeEntryDescription)}
                   />
@@ -1063,6 +1216,14 @@ export function TimeEntryForm(props) {
         onIntangible={handleTangibleTimelogConfirm}
         darkMode={darkMode}
       />
+      <DuplicateTimeLogModal
+        isOpen={isDuplicateModalVisible}
+        onCancel={handleDuplicateCancel}
+        onEdit={handleDuplicateEdit}
+        onProceed={handleDuplicateProceed}
+        onClosed={handleDuplicateModalClosed}
+        darkMode={darkMode}
+      />
     </>
   );
 }
@@ -1083,6 +1244,7 @@ TimeEntryForm.propTypes = {
   }),
   userProjects: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
   onTimeSubmitted: PropTypes.func,
+  onDuplicateCancel: PropTypes.func,
   sessionId: PropTypes.string,
   timerSessionId: PropTypes.string,
   timerStats: PropTypes.object, // eslint-disable-line react/forbid-prop-types
