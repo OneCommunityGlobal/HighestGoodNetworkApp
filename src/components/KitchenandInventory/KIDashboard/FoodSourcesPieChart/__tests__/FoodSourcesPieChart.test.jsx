@@ -8,6 +8,7 @@ import FoodSourcesPieChart, {
   buildSourceData,
   toWholePercents,
 } from '../FoodSourcesPieChart';
+import { formatMonth } from '../../KIPieChartCard/KIPieChartCard';
 
 vi.mock('recharts', () => import('../../testUtils/rechartsMock'));
 
@@ -62,15 +63,13 @@ describe('Food Sources helpers', () => {
     expect(data.map(d => d.value)).toEqual([60, 30, 10]);
   });
 
-  it('keeps only the months inside the From and To dates', () => {
-    const data = buildSourceData(records, { startDate: '2026-02-01', endDate: '2026-02-28' });
+  it('keeps only the months inside the From and To months', () => {
+    const data = buildSourceData(records, { startDate: '2026-02', endDate: '2026-02' });
     expect(data.map(d => d.value)).toEqual([100, 0, 10]);
   });
 
   it('returns nothing when From is after To or nothing matches', () => {
-    expect(buildSourceData(records, { startDate: '2026-03-01', endDate: '2026-01-01' })).toEqual(
-      [],
-    );
+    expect(buildSourceData(records, { startDate: '2026-03', endDate: '2026-01' })).toEqual([]);
     expect(buildSourceData(records, { kitchen: 'Kitchen 3' })).toEqual([]);
   });
 });
@@ -91,7 +90,7 @@ describe('Food Sources chart', () => {
     const reset = screen.getByRole('button', { name: 'Reset Filters' });
     expect(reset).toBeDisabled();
 
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Kitchen 2' } });
+    fireEvent.change(screen.getByLabelText('Kitchen'), { target: { value: 'Kitchen 2' } });
     expect(screen.getByTestId('pie-slices').textContent).not.toBe(allSlices);
     expect(reset).toBeEnabled();
 
@@ -104,10 +103,38 @@ describe('Food Sources chart', () => {
     const from = screen.getByLabelText('From');
     const to = screen.getByLabelText('To');
     const months = getRecentMonths();
-    fireEvent.change(from, { target: { value: `${months.at(-1)}-01` } });
-    fireEvent.change(to, { target: { value: `${months[0]}-01` } });
-    expect(screen.getByText('From date must be before or equal to To date.')).toBeInTheDocument();
+    fireEvent.change(from, { target: { value: months.at(-1) } });
+    fireEvent.change(to, { target: { value: months[0] } });
+    expect(screen.getByText('From month must be before or equal to To month.')).toBeInTheDocument();
     expect(screen.getByText('No data available for the selected filters.')).toBeInTheDocument();
+  });
+
+  it('picks whole months only, so a one month range shows just that month', () => {
+    renderChart();
+    const months = getRecentMonths();
+    const from = screen.getByLabelText('From');
+    expect(from.tagName).toBe('SELECT');
+    expect([...from.options].map(o => o.value)).toEqual(['', ...months]);
+    expect(from.options[1]).toHaveTextContent(formatMonth(months[0]));
+
+    const allSlices = screen.getByTestId('pie-slices').textContent;
+    const lastMonth = months.at(-1);
+    fireEvent.change(from, { target: { value: lastMonth } });
+    fireEvent.change(screen.getByLabelText('To'), { target: { value: lastMonth } });
+
+    const oneMonth = buildSourceData(buildMockRecords(months), {
+      startDate: lastMonth,
+      endDate: lastMonth,
+    });
+    expect(screen.getByTestId('pie-slices').textContent).not.toBe(allSlices);
+    oneMonth.forEach(d =>
+      expect(screen.getByText(`${d.name} (${d.percent}%)`)).toBeInTheDocument(),
+    );
+  });
+
+  it('shows month labels like Nov 2026', () => {
+    expect(formatMonth('2026-11')).toBe('Nov 2026');
+    expect(formatMonth('2025-01')).toBe('Jan 2025');
   });
 
   it('renders in dark mode', () => {

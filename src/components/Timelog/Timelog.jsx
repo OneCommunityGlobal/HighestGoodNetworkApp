@@ -2,7 +2,7 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
 import pdfMake from 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
@@ -95,6 +95,7 @@ const endOfWeek = offset => {
 function Timelog(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const location = useLocation();
+  const history = useHistory();
 
   const normalizeNotes = (raw) => {
     if (!raw) return '';
@@ -994,6 +995,9 @@ return (
                       userProfile={displayUserProfile}
                       roles={roles}
                       maxHoursPerEntry={40}
+                      onDuplicateCancel={personId =>
+                        history.push(`/timelog/${personId}#currentWeek`)
+                      }
                     />
 
                     <ReactTooltip id="registerTip" place="bottom" effect="solid">
