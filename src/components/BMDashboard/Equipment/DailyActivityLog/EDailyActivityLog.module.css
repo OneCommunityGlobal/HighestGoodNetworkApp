@@ -73,6 +73,7 @@
 
 .backgroundBlue {
   background-color: #c9d6c6;
+  color: #212529;
   line-height: 2;
   font-size: 1rem;
   font-weight: 500;
@@ -80,11 +81,27 @@
   border-radius: 0.25rem;
 }
 
+.darkMode .backgroundBlue {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
 .assignmentBtn {
-  padding: 0.35rem;
+  padding: 0.5rem 1rem;
+  border: none;
   border-radius: 0.25rem;
-  background-color: cadetblue;
+  background-color: #245b60;
   font-size: 1rem;
   font-weight: 500;
-  color: #e2e8f0;
+  color: #fff;
+  cursor: pointer;
+}
+
+.assignmentBtn:hover {
+  background-color: #19474b;
+}
+
+.assignmentBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }

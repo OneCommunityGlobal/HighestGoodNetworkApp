@@ -512,15 +512,18 @@ function EDailyActivityLog(props) {
         {!selectedProject && (
           <div className={styles.backgroundBlue}>Select a project to load equipments.</div>
         )}
-        {selectedProject && rows.length === 0 && (
+        {selectedProject && rows.length === 0 && !isLoading && (
           <div className={styles.backgroundBlue}>
             <div>No equipment is currently assigned to this project</div>
-            <div>Select different project from the above section</div>
+            <div>Select a different project above.</div>
             <div> OR </div>
             <div>
-              <button className={styles.assignmentBtn} onClick={goToPurchaseEquipment}>
-                {' '}
-                Go To Equipment Assignment{' '}
+              <button
+                type="button"
+                className={styles.assignmentBtn}
+                onClick={goToPurchaseEquipment}
+              >
+                Request Equipment Purchase
               </button>
             </div>
           </div>
@@ -561,24 +564,6 @@ function EDailyActivityLog(props) {
             </tr>
           </thead>
           <tbody>
-            {!selectedProject && (
-              <tr className={darkMode ? `select-project-row dark-mode ${styles.darkMode}` : ''}>
-                <td colSpan={5} className={`text-center py-3 ${darkMode ? 'text-light' : ''}`}>
-                  Select a project to load equipments.
-                </td>
-              </tr>
-            )}
-
-            {selectedProject && rows.length === 0 && (
-              // This row is non-interactive, so it gets a dedicated dark-mode hover class instead
-              // of relying on Bootstrap's default table hover color, which is too light here.
-              <tr className={darkMode ? `${styles.darkMode} ${styles.emptyEquipmentRow}` : ''}>
-                <td colSpan={5} className="text-center py-3">
-                  No equipments found for this project.
-                </td>
-              </tr>
-            )}
-
             {selectedProject &&
               rows.length > 0 &&
               rows.map((r, idx) => {
