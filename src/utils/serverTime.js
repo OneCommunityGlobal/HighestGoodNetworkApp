@@ -1,13 +1,19 @@
 import axios from 'axios';
+import moment from 'moment-timezone';
+import { ENDPOINTS } from '~/utils/URL';
 
 let serverTime = null;
 
 export const fetchServerTime = async () => {
-  const response = await axios.get('/api/servertime');
+  const response = await axios.get(ENDPOINTS.SERVER_TIME);
+
   serverTime = response.data.serverTime;
-  return serverTime;
+
+  return response.data;
 };
 
 export const getServerMoment = () => {
-  return serverTime ? serverTime : new Date();
+  return serverTime
+    ? moment.utc(serverTime).tz('America/Los_Angeles')
+    : null;
 };

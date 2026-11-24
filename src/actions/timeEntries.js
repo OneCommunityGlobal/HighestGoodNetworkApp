@@ -222,39 +222,56 @@ export const postTimeEntry = (timeEntry, { displayedUserId, detailed = false } =
 */
 
 
-export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
+export const postTimeEntry = (
+  timeEntry,
+  { displayedUserId, detailed = false } = {},
+) => {
   const url = ENDPOINTS.TIME_ENTRY();
 
   return async dispatch => {
+    let serverData;
+
     try {
-      // Get backend server time
-      await fetchServerTime();
+      serverData = await fetchServerTime();
 
-      const serverNow = moment(getServerMoment());
-
-      const selectedDate = moment(timeEntry.dateOfWork);
-
-      // Prevent logging on previous or future dates
-      if (!selectedDate.isSame(serverNow, 'day')) {
-        toast.error('You can only log time for today.');
-        return 400;
+      if (!serverData?.date) {
+        throw new Error('Server date is unavailable');
       }
+    } catch (error) {
+      toast.error('Unable to verify server time. Please try again.');
+      return detailed ? { status: 500 } : 500;
+    }
 
+    const selectedDate = timeEntry.dateOfWork;
+
+    if (selectedDate !== serverData.date) {
+      console.error('Time entry date validation failed:', {
+        selectedDate,
+        serverDate: serverData.date,
+      });
+      return detailed ? { status: 400, code: 'INVALID_TIME_ENTRY_DATE' } : 400;
+    }
+
+    try {
       const res = await axios.post(url, timeEntry);
 
       if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
         dispatch(updateTimeEntries(timeEntry, undefined, displayedUserId));
       }
 
-      return res.status;
+      return detailed ? { status: res.status } : res.status;
+    } catch (error) {
+      const status = error.response?.status ?? 500;
+      const code = error.response?.data?.code;
 
-    } catch (e) {
-      toast.error('Unable to verify server time. Please try again.');
-      return e.response?.status ?? 500;
+      if (detailed) {
+        return typeof code === 'string' ? { status, code } : { status };
+      }
+
+      return status;
     }
   };
 };
-
 
 export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork, { displayedUserId } = {}) => {
   const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntryId);

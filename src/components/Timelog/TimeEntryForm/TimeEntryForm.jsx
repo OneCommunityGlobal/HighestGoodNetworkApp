@@ -596,7 +596,14 @@ export function TimeEntryForm(props) {
     };
 
     const handleError = error => {
-      toast.error(`An error occurred while attempting to submit your time entry. Error: ${error}`);
+      if (error === 'INVALID_TIME_ENTRY_DATE') {
+        toast.error('You can only log time for today.');
+      } else {
+        toast.error(
+          `An error occurred while attempting to submit your time entry. Error: ${error}`,
+        );
+      }
+
       setSubmitting(false);
     };
 
@@ -688,7 +695,7 @@ export function TimeEntryForm(props) {
       }
 
       if (!Number.isInteger(status) || status < 200 || status >= 300) {
-        handleError(`request failed with status ${status}`);
+        handleError(code || `request failed with status ${status}`);
         return false;
       }
       return true;
