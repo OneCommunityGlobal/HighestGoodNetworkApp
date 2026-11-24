@@ -149,6 +149,17 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
   const pieStrokeColor = darkMode ? '#2d3748' : '#fff';
 
   const renderBodyContent = () => {
+    // Materials whose project was removed have no projectId, so there is nothing to fetch
+    if (!projectId) {
+      return (
+        <div className={styles.statusContainer}>
+          <p className={darkMode ? styles.subTextDark : styles.subTextLight}>
+            No usage record available.
+          </p>
+        </div>
+      );
+    }
+
     if (loading) {
       return (
         <div className={styles.statusContainer}>
@@ -179,7 +190,7 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
       return (
         <div className={styles.statusContainer}>
           <p className={darkMode ? styles.subTextDark : styles.subTextLight}>
-            No material data available
+            No usage record available.
           </p>
         </div>
       );
@@ -252,7 +263,7 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
 }
 
 MaterialUsageChart.propTypes = {
-  projectId: PropTypes.string.isRequired,
+  projectId: PropTypes.string,
   toggle: PropTypes.func.isRequired,
   darkMode: PropTypes.bool,
 };
