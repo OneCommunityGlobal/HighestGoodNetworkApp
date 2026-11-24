@@ -97,7 +97,6 @@ function WriteForMeModal({
         prompt = fallbackPrompt;
       }
 
-      requestStage = 'weekly time entries';
       const notes = await getCurrentWeekTimeEntries(resolvedUserId);
       if (!notes) {
         setStatus('empty');
