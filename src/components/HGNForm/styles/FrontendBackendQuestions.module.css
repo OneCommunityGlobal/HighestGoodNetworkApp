@@ -1,6 +1,6 @@
 /* stylelint-disable declaration-block-single-line-max-declarations, no-descending-specificity */
 .frontendBackendQuestions {
-  width: 50%;
+  width: 90%;
   margin: 10px auto;
   border: 1px solid #c0c0c0;
   border-radius: 15px;
@@ -104,14 +104,18 @@
 }
 
 @media screen and (width <= 1024px) {
+  .frontendBackendRating {
+    gap: 20px 5px;
+  }
+  
   .frontendBackendRating div {
-    width: 30%;
+    width: calc(20% - 5px);
   }
 }
 
-@media screen and (width <= 768px) {
-  .frontendBackendRating div {
-    width: 45%;
+@media screen and (width <= 680px) {
+  .frontendBackendRating {
+    margin: 10px 30px;
   }
 }
 
