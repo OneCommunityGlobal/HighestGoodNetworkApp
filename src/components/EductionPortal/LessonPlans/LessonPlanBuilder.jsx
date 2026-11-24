@@ -1340,8 +1340,6 @@ export default function LessonPlanBuilder() {
   const assigningInFlightRef = useRef(false);
   // State for tracking assignment status ---
   const [assignmentStatus, setAssignmentStatus] = useState(null);
-  // State to hold the logs ---
-  const [logs, setLogs] = useState([]);
 
   // Function to fetch logs ---
   const fetchLogs = async savedId => {
@@ -1355,9 +1353,7 @@ export default function LessonPlanBuilder() {
         },
       );
       const data = await response.json();
-      if (response.ok) {
-        setLogs(data);
-      } else {
+      if (!response.ok) {
         console.error('Failed to fetch logs:', data.message);
       }
     } catch (error) {
