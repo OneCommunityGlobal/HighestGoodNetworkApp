@@ -1296,6 +1296,8 @@
 :global(.dark-mode) .evaluationResultsPage .assignmentTable tbody tr,
 :global(.dark-mode) .evaluationResultsPage .performanceTable td,
 :global(.dark-mode) .evaluationResultsPage .assignmentTable td {
+  --text-dark: #f1f5f9;
+
   background: #1e293b;
 }
 
