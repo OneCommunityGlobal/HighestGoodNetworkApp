@@ -19,14 +19,25 @@ export const updateInfoSuccess = updatedInfo => ({
   payload: updatedInfo,
 });
 
+export const fetchInfosBegin = () => ({
+  type: actions.FETCH_INFOS_BEGIN,
+});
+
+export const fetchInfosError = (error) => ({
+  type: actions.FETCH_INFOS_ERROR,
+  payload: error,
+})
+
 // Get infoCollections
 export const getInfoCollections = () => {
   return async dispatch => {
     try {
+      dispatch(fetchInfosBegin())
       const response = await axios.get(ENDPOINTS.INFO_COLLECTIONS);
       dispatch(fetchInfosSuccess(response.data));
       return response.data;
     } catch (error) {
+      dispatch(fetchInfosError(error))
       toast.error(error.message || 'Failed to fetch info collections.');
       return null;
     }
