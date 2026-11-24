@@ -9,25 +9,32 @@ import { ENDPOINTS } from '~/utils/URL';
 
 const fallbackPrompt = `Please edit the following summary of my week's work. Write it professionally in third person, as one matter-of-fact paragraph under 500 words. Start with "This week". Do not include URLs or a concluding summary sentence. Apply these instructions to the following work notes:`;
 
+const collectNoteText = node =>
+  Array.from(node.childNodes)
+    .map(child => {
+      if (child.nodeType === Node.TEXT_NODE) return child.nodeValue;
+      if (child.nodeType !== Node.ELEMENT_NODE) return '';
+
+      const tagName = child.tagName.toLowerCase();
+      if (tagName === 'script' || tagName === 'style') return '';
+      if (tagName === 'br') return '\n';
+
+      const childText = collectNoteText(child);
+      return ['div', 'li', 'p'].includes(tagName) ? `${childText}\n` : childText;
+    })
+    .join('');
+
+const cleanNote = notes => {
+  const parsedNotes = new DOMParser().parseFromString(String(notes || ''), 'text/html');
+  return collectNoteText(parsedNotes.body)
+    .replace(/https?:\/\/\S+/gi, ' ')
+    .replace(/[ \t]+/g, ' ')
+    .trim();
+};
+
 const cleanNotes = entries =>
   entries
-    .map(entry =>
-      String(entry?.notes || '')
-        .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
-        .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
-        .replace(/<a\b[^>]*>([\s\S]*?)<\/a>/gi, '$1')
-        .replace(/<br\s*\/?\s*>|<\/(?:p|div|li)>/gi, '\n')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/&nbsp;|&#160;/gi, ' ')
-        .replace(/&amp;/gi, '&')
-        .replace(/&lt;/gi, '<')
-        .replace(/&gt;/gi, '>')
-        .replace(/&quot;/gi, '"')
-        .replace(/&#39;|&apos;/gi, "'")
-        .replace(/https?:\/\/\S+/gi, ' ')
-        .replace(/[ \t]+/g, ' ')
-        .trim(),
-    )
+    .map(entry => cleanNote(entry?.notes))
     .filter(Boolean)
     .join('\n');
 
@@ -81,6 +88,7 @@ function WriteForMeModal({
     setCopyMessage('');
     setConfirmReplace(false);
 
+    let requestStage = 'weekly time entries';
     try {
       let prompt;
       try {
@@ -89,6 +97,7 @@ function WriteForMeModal({
         prompt = fallbackPrompt;
       }
 
+      requestStage = 'weekly time entries';
       const notes = await getCurrentWeekTimeEntries(resolvedUserId);
       if (!notes) {
         setStatus('empty');
@@ -98,6 +107,7 @@ function WriteForMeModal({
         return;
       }
 
+      requestStage = 'AI summary generation';
       const response = await httpService.post(ENDPOINTS.INTERACT_WITH_GPT, {
         prompt: `${prompt}${prompt ? '\n\n' : ''}${notes}`,
         userid: resolvedUserId,
@@ -120,7 +130,9 @@ function WriteForMeModal({
       setDraft(generatedText.trim());
       setStatus('success');
     } catch (error) {
-      setMessage(getErrorMessage(error));
+      const endpoint =
+        requestStage === 'AI summary generation' ? ` (${ENDPOINTS.INTERACT_WITH_GPT})` : '';
+      setMessage(`${requestStage} request failed${endpoint}: ${getErrorMessage(error)}`);
       setStatus('error');
     }
   };
@@ -173,8 +185,8 @@ function WriteForMeModal({
           Write it for me
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          {status === 'loading' && <p role="status">Generating a draft…</p>}
-          {status === 'empty' && <p role="status">{message}</p>}
+          {status === 'loading' && <output aria-live="polite">Generating a draft…</output>}
+          {status === 'empty' && <output aria-live="polite">{message}</output>}
           {status === 'error' && (
             <p role="alert" className={darkMode ? 'text-light' : 'text-danger'}>
               {message}
@@ -199,7 +211,7 @@ function WriteForMeModal({
                 className={darkMode ? 'bg-space-cadet text-light' : ''}
                 style={darkMode ? { borderColor: '#8294b5' } : undefined}
               />
-              {copyMessage && <p role="status">{copyMessage}</p>}
+              {copyMessage && <output aria-live="polite">{copyMessage}</output>}
             </>
           )}
         </ModalBody>

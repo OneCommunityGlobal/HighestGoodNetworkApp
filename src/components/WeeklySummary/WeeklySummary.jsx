@@ -64,17 +64,17 @@ const customImageUploadHandler = () =>
 
 const escapeSummaryText = text =>
   text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 
-const hasSummaryContent = value =>
-  value
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/&nbsp;|&#160;/gi, ' ')
-    .trim().length > 0;
+const hasSummaryContent = value => {
+  const parsedSummary = new DOMParser().parseFromString(value, 'text/html');
+  const summaryText = parsedSummary.body.textContent || '';
+  return summaryText.replaceAll('\u00a0', ' ').trim().length > 0;
+};
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -532,7 +532,7 @@ export class WeeklySummary extends Component {
   handleEditorChange = (content, editor) => {
     const { errors: _errors, formElements: _formElements } = this.state;
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
-    const filteredContent = content.replace(/<p>&nbsp;<\/p>/g, '');
+    const filteredContent = content.replaceAll('<p>&nbsp;</p>', '');
 
     const wordCount = editor.plugins.wordcount.getCount();
 
@@ -561,7 +561,7 @@ export class WeeklySummary extends Component {
 
     const formattedDraft = draft
       .split(/\n{2,}/)
-      .map(paragraph => `<p>${escapeSummaryText(paragraph).replace(/\n/g, '<br />')}</p>`)
+      .map(paragraph => `<p>${escapeSummaryText(paragraph).replaceAll('\n', '<br />')}</p>`)
       .join('');
     editor.setContent(formattedDraft);
     this.handleEditorChange(editor.getContent(), editor);
