@@ -60,7 +60,7 @@ function Login() {
   return (
     <div className={styles.loginContainer}>
       <h1 className={styles.pageTitle}>Highest Good Network</h1>
-      <h1 className={styles.pageTitle}> Material Equipemnt Tool Tracker</h1>
+      <h2 className={styles.pageTitle}>Material Equipment Tool Tracker</h2>
       <div className={`${styles.formContainer} ${darkMode ? styles.darkBg : ''}`}>
         <Form onSubmit={handleSubmit(onSubmit)}>
           {/* Backend/general error */}
@@ -127,18 +127,15 @@ function Login() {
                 aria-describedby={errors.password ? 'password-error' : undefined}
               />
               {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-              <span
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
+                className={styles.passwordToggle}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 title={showPassword ? 'Hide password' : 'Show password'}
                 onClick={() => setShowPassword(prev => !prev)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') setShowPassword(prev => !prev);
-                }}
               >
                 <i className={showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'} />
-              </span>
+              </button>
             </div>
             {capsLockOn && <span className={styles.capsMsg}> &nbsp; Caps Lock is ON</span>}
             {errors.password && (
@@ -148,7 +145,7 @@ function Login() {
             )}
           </FormGroup>
           <div className={styles.forgetPswd}>
-            <a href="https://www.highestgood.com/forgotpassword">Forgot your password?</a>
+            <a href="/forgotpassword">Forgot your password?</a>
           </div>
           {/* Login Button */}
           <div>
@@ -158,7 +155,13 @@ function Login() {
           </div>
           <div>
             <p className={styles.infoSec}>
-              If you do not have login info, contact the admin({supportEmail})
+              If you do not have login info, contact the admin
+              {supportEmail && (
+                <>
+                  {' '}
+                  (<a href={`mailto:${supportEmail}`}>{supportEmail}</a>)
+                </>
+              )}
             </p>
           </div>
         </Form>

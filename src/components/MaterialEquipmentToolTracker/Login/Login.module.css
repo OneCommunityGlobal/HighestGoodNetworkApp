@@ -24,7 +24,7 @@
 }
 
 .heading2 {
-  color: #df7801;
+  color: #b35f00;
   font-size: large;
   font-weight: 600;
   padding: 1em;
@@ -36,6 +36,8 @@
   border-radius: 0;
   text-align: center;
   width: auto;
+  flex: 1;
+  min-width: 0;
 }
 
 .inputWrapper {
@@ -71,7 +73,7 @@
 }
 
 .infoSec {
-  color: #df7801;
+  color: #b35f00;
   text-align: center;
   font-weight: 400;
   font-size: small;
