@@ -1,15 +1,9 @@
 /* stylelint-disable  */
-/* .totalContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: #f1ebf7;
-  border-radius: 16px;
-  padding: 20px 40px;
-  margin-bottom: 30px;
-} */
-
 .totalContainer {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -17,8 +11,7 @@
   border-radius: 16px;
   padding: 20px 40px;
   margin-bottom: 30px;
-  word-break: break-word; /* 防止极窄情况下文字硬撑破容器 */
-  overflow: hidden;       /* 隐藏任何意外溢出的边界 */
+  overflow-wrap: anywhere;
 }
 
 .tables {
@@ -27,57 +20,41 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* .totalTitle {
-  font-size: 32px;
-  font-weight: 600;
-  text-align: center;
-  color: steelblue;
-} */
-
 .totalTitle {
   font-size: 32px;
   font-weight: 600;
   text-align: center;
   color: steelblue;
-  word-break: normal;     /* 确保正常标题不会乱换行 */
   overflow-wrap: break-word;
 }
 
-/* .totalNumber {
-  font-size: 32px;
-  font-weight: 700;
-  margin-right: 5px;
-}
-
 .totalItem {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-} */
-
-.totalItem {
-  display: flex;
-  flex-direction: column; /* 核心：改为纵向堆叠，数字在上，文本在下，彻底根治重叠 */
-  align-items: flex-start; /* 左对齐 */
-  margin-bottom: 10px;     /* 上下模块间距 */
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 12px;
 }
 
 .totalNumber {
   font-size: 32px;
   font-weight: 700;
-  margin-right: 0;        /* 移除原本的横向右边距 */
-  margin-bottom: 2px;     /* 数字和下方文字留出微小间距 */
-  line-height: 1.1;       /* 限制行高，防止撑开 */
+  margin-bottom: 2px;
+  line-height: 1.1;
 }
 
 .totalPeriod {
   font-size: 24px;
   font-weight: 400;
-  text-align: center;/* 建议在极窄时居中或保持自然对齐 */
+  overflow-wrap: anywhere;
 }
 
 .totalDetail {
   margin-top: 20px;
+}
+
+.charts {
+  width: 100%;
+  min-width: 0;
 }
 
 .totalDetail button {
@@ -100,11 +77,18 @@
 
 .totalText {
   font-size: inherit;
+  overflow-wrap: anywhere;
 }
 
 @media screen and (width <= 1100px) {
-  .totalTitle,
-  .totalNumber,
+  .totalTitle {
+    font-size: 28px;
+  }
+
+  .totalNumber {
+    font-size: 28px;
+  }
+
   .totalPeriod {
     font-size: 20px;
   }
@@ -116,9 +100,12 @@
 
 @media screen and (width <= 700px) {
   .totalTitle,
-  .totalNumber,
+  .totalNumber {
+    font-size: 24px;
+  }
+
   .totalPeriod {
-    font-size: 28px;
+    font-size: 18px;
   }
 
   .totalText {
@@ -128,7 +115,7 @@
 
 @media screen and (width <= 550px) {
   .totalContainer {
-    padding: 15px;
+    padding: 16px;
   }
 }
 

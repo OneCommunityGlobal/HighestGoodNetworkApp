@@ -324,7 +324,7 @@ function TotalProjectReport(props) {
           <span className={styles.totalNumber}>{totalTangibleTime.toFixed(2)}</span>
           <span className={styles.totalText}>hours of tangible time have been logged.</span>
         </div>
-        <div>
+        <div className={styles.charts}>
           {showMonthly && projectInMonth.length > 0 ? (
             <TotalReportBarGraph barData={projectInMonth} range="month" />
           ) : null}
@@ -335,8 +335,7 @@ function TotalProjectReport(props) {
         </div>
         {allProject.length ? (
           <div className={styles.totalDetail}>
-            {/* eslint-disable-next-line no-unused-vars */}
-            <Button onClick={e => onClickTotalProjectDetail()}>
+            <Button onClick={onClickTotalProjectDetail}>
               {showTotalProjectTable ? 'Hide Details' : 'Show Details'}
             </Button>
             <i
