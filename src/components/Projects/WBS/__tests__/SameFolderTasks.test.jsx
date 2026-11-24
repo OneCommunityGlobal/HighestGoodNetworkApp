@@ -1,13 +1,18 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import configureMockStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 import { Provider } from 'react-redux';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import MockAdapter from 'axios-mock-adapter';
 import SameFolderTasks from '../SameFolderTasks';
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
+
+// Use this suite's Axios adapter responses instead of the shared generic Axios mock.
+vi.unmock('axios');
 
 vi.mock('../WBSDetail/EditTask/EditTaskModal');
 EditTaskModal.mockImplementation = () => <div />;
@@ -225,11 +230,22 @@ describe('SameFolderTasks', () => {
     tasks: { error: '' },
   });
   const renderSameFolderTasks = props => {
+    // Hold the WBS response until the test checks the initial loading state.
+    let resolveWbs;
+    const wbsResponse = new Promise(resolve => {
+      resolveWbs = resolve;
+    });
+    mock.onGet(ENDPOINTS.GET_WBS(mockTaskResponse.wbsId)).reply(() => wbsResponse);
+    const history = createMemoryHistory({ initialEntries: ['/same-folder'] });
+    vi.spyOn(history, 'replace');
     render(
       <Provider store={store}>
-        <SameFolderTasks {...props} />
+        <Router history={history}>
+          <SameFolderTasks {...props} />
+        </Router>
       </Provider>,
     );
+    return { history, resolveWbs };
   };
 
   describe('Render with no table when task.mother === null or task.mother === taskId', () => {
@@ -301,33 +317,51 @@ describe('SameFolderTasks', () => {
     });
   });
 
-  describe('Render Table tests', () => {
-    let props;
+  describe('Loading and WBS redirect', () => {
+    const propsFor = taskId => ({ match: { params: { taskId } } });
+    const wbsPath = `/wbs/tasks/${mockTaskResponse.wbsId}/${mockWbsResponse.projectId}/${mockWbsResponse.wbsName}`;
 
-    it('Before loading tasks, there is a table header', async () => {
-      renderSameFolderTasks(props);
-      expect(await screen.findByText('Task Name')).toBeInTheDocument();
+    it('shows an accessible loading spinner while WBS data loads', async () => {
+      const { history, resolveWbs } = renderSameFolderTasks(propsFor('321'));
+
+      expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true');
+      expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite');
+      expect(screen.getByText('Loading...')).toBeInTheDocument();
+      expect(screen.queryByRole('table')).not.toBeInTheDocument();
+      expect(history.location.pathname).toBe('/same-folder');
+
+      await act(async () => {
+        resolveWbs([200, mockWbsResponse]);
+      });
+      await waitFor(() => expect(history.location.pathname).toBe(wbsPath));
     });
 
-    it('After loading tasks, there is a table', async () => {
-      renderSameFolderTasks(props);
-      expect(await screen.findByText('Task Name')).toBeInTheDocument();
+    it('replaces the same-folder route with the full WBS route for a nested task', async () => {
+      const { history, resolveWbs } = renderSameFolderTasks(propsFor('321'));
+
+      await act(async () => {
+        resolveWbs([200, mockWbsResponse]);
+      });
+      await waitFor(() => expect(history.location.pathname).toBe(wbsPath));
+      expect(history.action).toBe('REPLACE');
+      expect(history.entries).toHaveLength(1);
+      expect(screen.queryByRole('table')).not.toBeInTheDocument();
     });
 
-    it('After loading tasks, table structure renders', async () => {
-      renderSameFolderTasks(props);
-      expect(await screen.findByText('Task Name')).toBeInTheDocument();
-      expect(screen.getByRole('table')).toBeInTheDocument();
-    });
+    it('redirects a top-level task and encodes the WBS name', async () => {
+      const wbsName = 'Planning & Design / Phase 1';
+      const { history, resolveWbs } = renderSameFolderTasks(propsFor('nullMother'));
 
-    beforeEach(() => {
-      props = {
-        match: {
-          params: {
-            taskId: '321',
-          },
-        },
-      };
+      await act(async () => {
+        resolveWbs([200, { ...mockWbsResponse, wbsName }]);
+      });
+      await waitFor(() =>
+        expect(history.replace).toHaveBeenCalledWith(
+          `/wbs/tasks/${mockTaskResponse.wbsId}/${mockWbsResponse.projectId}/${encodeURIComponent(wbsName)}`,
+        ),
+      );
+      expect(history.action).toBe('REPLACE');
+      expect(screen.queryByRole('table')).not.toBeInTheDocument();
     });
   });
 });

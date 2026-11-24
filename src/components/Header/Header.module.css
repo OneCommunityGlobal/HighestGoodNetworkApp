@@ -249,20 +249,11 @@
   }
 }
 
-/*
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px;
-} */
-
 /* Timer Message Section */
 .timer-message-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  /* flex-wrap: wrap; */
   width: 100%;
   gap: 1rem;
 }

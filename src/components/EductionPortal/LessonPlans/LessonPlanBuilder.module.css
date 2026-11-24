@@ -89,6 +89,9 @@
 }
 
 .actionRow {
+  border: 0;
+  padding: 0;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -191,7 +194,7 @@
 }
 
 .assignLsnBtn {
-  background-color: #2ecc71;
+  background-color: #187c43;
   color: #fff;
   width: auto;
   font-size: 1.2rem;
@@ -200,7 +203,7 @@
 }
 
 .addSubtaskBtn {
-  background-color: #3b75fc;
+  background-color: #285bd4;
   color: white;
   width: 13%;
   font-size: 1.2rem;
@@ -267,7 +270,7 @@
 :global(body.dark-mode) .duplicateBtn {
   color: #6ee7a8;
   border-color: #34d399;
-  background-color: rgb(52 211 153 / 12%);
+  background-color: #263b32;
 }
 
 :global(body.dark-mode) .selectBtn {

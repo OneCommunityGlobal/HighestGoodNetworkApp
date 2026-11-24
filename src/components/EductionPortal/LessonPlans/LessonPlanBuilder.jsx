@@ -1130,11 +1130,8 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import AssignLessonPlanModal from './AssignLessonPlanModal';
-// Including FaCopy to make Duplicate button logic runnable, although not visible in UI
-import { FaTrashAlt, FaCopy } from 'react-icons/fa';
+import { FaTrashAlt } from 'react-icons/fa';
 import styles from './LessonPlanBuilder.module.css'; // Importing the CSS Module
-import LessonPlanLogTable from './LessonPlanLogTable';
-import styles2 from './LessonPlanLogTable.module.css';
 
 const notify = (message, type = 'success') => {
   if (type === 'error') toast.error(message);
@@ -1142,12 +1139,16 @@ const notify = (message, type = 'success') => {
   else toast.success(message);
 };
 
+// Share a small decimal validator between weights and each side of a fraction.
+const isUnsignedDecimal = value => /^(?:\d+|\d*\.\d+)$/.test(value);
+
 // Keep cleared fields editable, but always report them as invalid.
 const getWeightError = value => {
   const trimmed = value.trim();
   if (!trimmed) return 'Weight is required.';
-  const weight = Number(trimmed.replace(/%$/, ''));
-  return /^(?:\d+(?:\.\d+)?|\.\d+)%?$/.test(trimmed) && weight >= 0 && weight <= 100
+  const numericText = trimmed.endsWith('%') ? trimmed.slice(0, -1) : trimmed;
+  const weight = Number(numericText);
+  return isUnsignedDecimal(numericText) && weight >= 0 && weight <= 100
     ? ''
     : 'Enter a weight from 0 to 100, optionally followed by %.';
 };
@@ -1155,9 +1156,10 @@ const getWeightError = value => {
 const getPassMarkError = value => {
   const trimmed = value.trim();
   if (!trimmed) return 'Pass mark is required.';
-  const match = trimmed.match(/^(\d+(?:\.\d+)?|\.\d+)\s*\/\s*(\d+(?:\.\d+)?|\.\d+)$/);
-  const numerator = match ? Number(match[1]) : NaN;
-  const denominator = match ? Number(match[2]) : NaN;
+  const parts = trimmed.split('/').map(part => part.trim());
+  const validFormat = parts.length === 2 && parts.every(isUnsignedDecimal);
+  const numerator = validFormat ? Number(parts[0]) : Number.NaN;
+  const denominator = validFormat ? Number(parts[1]) : Number.NaN;
   return Number.isFinite(numerator) &&
     Number.isFinite(denominator) &&
     denominator > 0 &&
@@ -1222,11 +1224,8 @@ const getMetadataErrors = metadata => {
   const errors = { title: metadata.title.trim() ? '' : 'Title is required.' };
   ['startDate', 'endDate'].forEach(key => {
     const value = metadata[key];
-    errors[key] = !value
-      ? 'Date is required.'
-      : getDueDateError(value, '0000-01-01')
-      ? 'Enter a valid date.'
-      : '';
+    if (!value) errors[key] = 'Date is required.';
+    else errors[key] = getDueDateError(value, '0000-01-01') ? 'Enter a valid date.' : '';
   });
   if (!errors.startDate && !errors.endDate && metadata.startDate > metadata.endDate) {
     errors.endDate = 'End date must be on or after start date.';
@@ -1368,7 +1367,9 @@ export default function LessonPlanBuilder() {
 
   // No log request is made until persistence has returned a real plan ID.
   useEffect(() => {
-    if (lessonPlanId) fetchLogs(lessonPlanId);
+    if (lessonPlanId) {
+      fetchLogs(lessonPlanId).catch(error => console.error('Error fetching logs:', error));
+    }
   }, [lessonPlanId]);
 
   // --- Data Logic Functions
@@ -1498,7 +1499,7 @@ export default function LessonPlanBuilder() {
         onAssignmentSuccess();
       }
       // Refreshes the log table after a successful assignment ---
-      fetchLogs(savedId);
+      fetchLogs(savedId).catch(error => console.error('Error fetching logs:', error));
     } catch (error) {
       // This will now catch both network errors and the errors we throw manually.
       notify(`Task assignment failed. ${error.message}`, 'error');
@@ -1675,7 +1676,11 @@ export default function LessonPlanBuilder() {
           <button
             type="button"
             data-validation-action="save"
-            onClick={handleSaveClick}
+            onClick={() => {
+              handleSaveClick().catch(error =>
+                notify(`Unexpected save error: ${error.message}`, 'error'),
+              );
+            }}
             className={styles.headerSaveBtn}
             disabled={
               !canSave ||
@@ -1910,7 +1915,8 @@ export default function LessonPlanBuilder() {
             </table>
           </div>
 
-          <div className={styles.actionRow} role="group" aria-label="Lesson plan actions">
+          <fieldset className={styles.actionRow}>
+            <legend className={styles.visuallyHidden}>Lesson plan actions</legend>
             <button onClick={addSubtask} className={styles.addSubtaskBtn}>
               Add subtask +
             </button>
@@ -1932,7 +1938,7 @@ export default function LessonPlanBuilder() {
                 Assign Tasks to Students
               </button>
             )}
-          </div>
+          </fieldset>
         </div>
         {/* ADDDING THE LOG TABLE AT THE BOTTOM --- */}
         {/* {loading && <p className="loading-message">Loading...</p>}

@@ -176,7 +176,7 @@ describe('required subtask validation', () => {
     ).toBeInTheDocument();
   });
 
-  it.each(['abc', '40abc', '-1', '101', '40%%', '1e2', ' '])(
+  it.each(['abc', '40abc', '-1', '101', '40%%', '1e2', '1.', '.', ' '])(
     'rejects invalid weight %j',
     async value => {
       await renderBuilder();
@@ -194,22 +194,32 @@ describe('required subtask validation', () => {
     },
   );
 
-  it.each(['abc', '8/a', '-1/10', '1/-10', '1/0', '11/10', '8.5', '8/', '8/10/2'])(
-    'rejects invalid pass mark %j',
-    async value => {
-      await renderBuilder();
-      change('pass mark', value);
-      expect(field('pass mark')).toHaveAttribute('aria-invalid', 'true');
-      expect(screen.getByRole('button', { name: 'Save Lesson Plan' })).toBeDisabled();
-      expect(screen.getByRole('button', { name: 'Assign Tasks to Students' })).toBeDisabled();
-      click('Save Lesson Plan');
-      click('Assign Tasks to Students');
-      expect(field('pass mark')).toHaveValue(value);
-      expect(field('pass mark')).toHaveAttribute('aria-invalid', 'true');
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-      expect(assignments()).toHaveLength(0);
-    },
-  );
+  it.each([
+    'abc',
+    '8/a',
+    '-1/10',
+    '1/-10',
+    '1/0',
+    '11/10',
+    '8.5',
+    '8/',
+    '8/10/2',
+    '8./10',
+    '1e1/10',
+    './10',
+  ])('rejects invalid pass mark %j', async value => {
+    await renderBuilder();
+    change('pass mark', value);
+    expect(field('pass mark')).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByRole('button', { name: 'Save Lesson Plan' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Assign Tasks to Students' })).toBeDisabled();
+    click('Save Lesson Plan');
+    click('Assign Tasks to Students');
+    expect(field('pass mark')).toHaveValue(value);
+    expect(field('pass mark')).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(assignments()).toHaveLength(0);
+  });
 
   it('shows all required errors across existing, duplicated, and new rows', async () => {
     await renderBuilder();
@@ -239,7 +249,7 @@ describe('required subtask validation', () => {
     expect(assignments()).toHaveLength(0);
   });
 
-  it.each(['0', '100%', '40', '20.5%'])(
+  it.each(['0', '100%', '40', '20.5%', '.5%', '00.5'])(
     'allows valid weight %s and fraction through Save validation',
     async value => {
       await renderBuilder();
@@ -250,6 +260,14 @@ describe('required subtask validation', () => {
       expect(JSON.parse(assignments()[0][1].body).isAutoAssigned).toBe(true);
     },
   );
+
+  it.each(['.5/1', '8.5 / 10.5', '0/.5'])('preserves valid decimal fraction %s', async value => {
+    await renderBuilder();
+    change('pass mark', value);
+    click('Save Lesson Plan');
+    await waitFor(() => expect(assignments()).toHaveLength(1));
+    expect(field('pass mark')).toHaveValue(value);
+  });
 
   it('allows a valid manual confirmation', async () => {
     await renderBuilder();
@@ -318,7 +336,11 @@ describe('required subtask validation', () => {
     await renderBuilder();
     await savePlan();
     click('Assign Tasks to Students');
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    const dialog = screen.getByRole('dialog', { name: 'Confirm Assignment' });
+    expect(dialog.tagName).toBe('DIALOG');
+    expect(dialog).toHaveAccessibleDescription(
+      'This will assign tasks to all eligible students. Do you want to proceed?',
+    );
     click('Cancel');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(assignments()).toHaveLength(0);

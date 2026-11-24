@@ -257,22 +257,12 @@
   color: #333;
 }
 
-.trackingRate .trackingRateSubheading span,
-.trackingRate .trackingRateValue span {
-  color: #333;
-}
-
 /* Dark mode */
 .trackingRateDark {
   background: #3a506b;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
-  color: #fff;
-}
-
-.trackingRateDark .trackingRateSubheading span,
-.trackingRateDark .trackingRateValue span {
   color: #fff;
 }
 
@@ -317,22 +307,6 @@
   border-collapse: collapse;
   table-layout: fixed;
   overflow-wrap: break-word;
-}
-
-.trackingTable thead th {
-  text-align: left;
-  padding: 10px;
-  background: #f4f4f4;
-}
-
-.trackingTableDark thead th {
-  background: #1c2541;
-  color: #fff;
-}
-
-.trackingTable tbody td {
-  padding: 5px;
-  border-bottom: 1px solid #eee;
 }
 
 .trackingRateGreen {
@@ -710,7 +684,7 @@
 
 /* Active tab dark mode */
 .activeTabDarkMode {
-  background-color: #3b82f6;
+  background-color: #2563eb;
   color: #fff;
   font-weight: bold;
 }
@@ -799,7 +773,7 @@
   padding: 8px 14px;
   border-radius: 6px;
   border: none;
-  background: #007bff;
+  background: #0056b3;
   color: white;
   cursor: pointer;
 }
@@ -874,6 +848,16 @@
   display: inline-block;
 }
 
+.trackingRate .trackingRateSubheading span,
+.trackingRate .trackingRateValue span {
+  color: #333;
+}
+
+.trackingRateDark .trackingRateSubheading span,
+.trackingRateDark .trackingRateValue span {
+  color: #fff;
+}
+
 .trackingListContainerDark::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -908,17 +892,8 @@
   background: #f5f7fa;
 }
 
-.trackingTableDark tbody td {
-  color: var(--color-text-dark);
-  border-bottom: 1px solid var(--color-border-dark);
-}
-
 .trackingTableDark tbody tr:hover {
   background: #2c3e50;
-}
-
-.trackingTableDark tbody tr:hover td {
-  color: #fff;
 }
 
 .insightsTitleWrapper {
@@ -966,13 +941,6 @@
 
 .case-list-item-dark:hover {
   background-color: #2b3f59;
-}
-
-.eventsTableDark .tableContainer tr:hover,
-.monthlyTrendsDark .trendsTable tr:hover,
-.eventTypeValuesDark .valueTable tr:hover,
-.eventTypeTrendsDark .trendsTable tr:hover {
-  background: #304663;
 }
 
 .insightsDark .insightsTabs {
@@ -1081,15 +1049,15 @@
   border: 1px solid #dee2e6;
 }
 
-.analyticsPage .navLink:hover {
-  background: #e9ecef;
-  color: #333;
-}
-
 .analyticsPageDark .navLink {
   color: #fff;
   background: #2d3e54;
   border: 1px solid #5a6b7d;
+}
+
+.analyticsPage .navLink:hover {
+  background: #e9ecef;
+  color: #333;
 }
 
 .analyticsPageDark .navLink:hover {
@@ -1539,33 +1507,15 @@
   margin-right: -50vw !important;
 }
 
+.pageHeader {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
 .analyticsPageDark .pageHeader {
   text-align: center;
   max-width: 1200px;
   margin: 0 auto 2rem;
-}
-
-.analyticsPageDark .comparisonCards,
-.analyticsPageDark .valueSummaryCards,
-.analyticsPageDark .trendsSummaryCards,
-.analyticsPageDark .performanceSummaryCards,
-.analyticsPageDark .comparisonTable,
-.analyticsPageDark .eventTypeValues,
-.analyticsPageDark .monthlyTrends,
-.analyticsPageDark .eventTypeTrends,
-.analyticsPageDark .eventsTable,
-.analyticsPageDark .valueTrends,
-.analyticsPageDark .insightsSection,
-.analyticsPageDark .valueInsights,
-.analyticsPageDark .trendInsights,
-.analyticsPageDark .performanceInsights {
-  max-width: 1200px;
-  margin: 0 auto 2rem;
-}
-
-.pageHeader {
-  margin-bottom: 2rem;
-  text-align: center;
 }
 
 .pageTitle {
@@ -1687,21 +1637,11 @@
   border-radius: 10px;
 }
 
-.virtualCardDark .cardHeader .cardIcon,
-.inPersonCardDark .cardHeader .cardIcon {
-  background: #5a6b7d;
-}
-
 .cardHeader h3 {
   font-size: 1.3rem;
   font-weight: 600;
   margin: 0;
   color: #333;
-}
-
-.virtualCardDark .cardHeader h3,
-.inPersonCardDark .cardHeader h3 {
-  color: #fff;
 }
 
 .cardStats {
@@ -1783,8 +1723,11 @@
   color: #fff;
 }
 
-.comparisonTableDark table tbody tr:hover td {
-  color: #fff;
+.eventsTableDark .tableContainer tr:hover,
+.monthlyTrendsDark .trendsTable tr:hover,
+.eventTypeValuesDark .valueTable tr:hover,
+.eventTypeTrendsDark .trendsTable tr:hover {
+  background: #304663;
 }
 
 .comparisonTable h3 {
@@ -2007,6 +1950,27 @@
   border-bottom: 1px solid #eee;
 }
 
+.trackingTable thead th {
+  text-align: left;
+  padding: 10px;
+  background: #f4f4f4;
+}
+
+.trackingTableDark thead th {
+  background: #1c2541;
+  color: #fff;
+}
+
+.trackingTable tbody td {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.trackingTableDark tbody td {
+  color: var(--color-text-dark);
+  border-bottom: 1px solid var(--color-border-dark);
+}
+
 .eventTypeValuesDark .valueTable th {
   border-bottom-color: #5a6b7d;
   background: #5a6b7d;
@@ -2045,6 +2009,14 @@
 
 .eventsTableDark .tableContainer td {
   border-bottom-color: #5a6b7d;
+}
+
+.trackingTableDark tbody tr:hover td {
+  color: #fff;
+}
+
+.comparisonTableDark table tbody tr:hover td {
+  color: #fff;
 }
 
 .eventType {
@@ -2282,6 +2254,24 @@
   margin-bottom: 2rem;
 }
 
+.analyticsPageDark .comparisonCards,
+.analyticsPageDark .valueSummaryCards,
+.analyticsPageDark .trendsSummaryCards,
+.analyticsPageDark .performanceSummaryCards,
+.analyticsPageDark .comparisonTable,
+.analyticsPageDark .eventTypeValues,
+.analyticsPageDark .monthlyTrends,
+.analyticsPageDark .eventTypeTrends,
+.analyticsPageDark .eventsTable,
+.analyticsPageDark .valueTrends,
+.analyticsPageDark .insightsSection,
+.analyticsPageDark .valueInsights,
+.analyticsPageDark .trendInsights,
+.analyticsPageDark .performanceInsights {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+}
+
 .insightsSectionDark,
 .valueInsightsDark,
 .trendInsightsDark,
@@ -2305,6 +2295,11 @@
 .valueInsightsDark h3,
 .trendInsightsDark h3,
 .performanceInsightsDark h3 {
+  color: #fff;
+}
+
+.virtualCardDark .cardHeader h3,
+.inPersonCardDark .cardHeader h3 {
   color: #fff;
 }
 
@@ -2390,6 +2385,12 @@
   color: #fff !important;
 }
 
+.sectionSubtitle {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
 .participationLandingPageDark .summaryLabel,
 .participationLandingPageDark .summaryValue,
 .participationLandingPageDark .legendLabel,
@@ -2419,12 +2420,6 @@
   padding: 1.5rem;
   border-radius: 12px;
   border: 1px solid #3a506b;
-}
-
-.sectionSubtitle {
-  color: #666;
-  margin-bottom: 1.5rem;
-  font-size: 1rem;
 }
 
 .analyticsNavigationDark .sectionSubtitle {
@@ -2483,6 +2478,11 @@
 }
 
 .navigationCardDark .cardIcon {
+  background: #5a6b7d;
+}
+
+.virtualCardDark .cardHeader .cardIcon,
+.inPersonCardDark .cardHeader .cardIcon {
   background: #5a6b7d;
 }
 
@@ -2802,22 +2802,22 @@
   /* Event badge colors for print */
   :global(.event-badge-global)[data-type='Yoga Class'] {
     background-color: #e9f7ef !important;
-    color: #28a745 !important;
+    color: #197532 !important;
   }
 
   :global(.event-badge-global)[data-type='Cooking Workshop'] {
     background-color: #fdecea !important;
-    color: #e74c3c !important;
+    color: #b52b20 !important;
   }
 
   :global(.event-badge-global)[data-type='Dance Class'] {
     background-color: #fff5e6 !important;
-    color: #f39c12 !important;
+    color: #925900 !important;
   }
 
   :global(.event-badge-global)[data-type='Fitness Bootcamp'] {
     background-color: #f5e6ff !important;
-    color: #9b59b6 !important;
+    color: #78418f !important;
   }
 
   .trackingRateGreen {
