@@ -83,6 +83,20 @@ it('starts in the original single-entry workflow and allows switching back befor
   expect(screen.getByLabelText('Project/Task')).toBeInTheDocument();
   expect(axios.post).not.toHaveBeenCalled();
 });
+it('preserves dark styling on the single-entry project selector', () => {
+  mount({ darkMode: true });
+  expect(screen.getByLabelText('Project/Task')).toHaveClass('bg-darkmode-liblack', 'text-light');
+});
+it('prevents closing the form from its header after a split save fails', async () => {
+  axios.post.mockRejectedValueOnce(new Error('Lost response'));
+  mount();
+  await fill();
+  fireEvent.click(screen.getByRole('button', { name: 'Submit 2 time entries' }));
+  await screen.findByRole('button', { name: 'Retry split save' });
+  fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+  expect(props.toggle).not.toHaveBeenCalled();
+  expect(screen.getByRole('button', { name: 'Retry split save' })).toBeInTheDocument();
+});
 it('stops only after the batch save and refreshes profile, logs and tasks', async () => {
   mount();
   await fill();
