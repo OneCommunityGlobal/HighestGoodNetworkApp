@@ -8,7 +8,7 @@ import FoodSourcesPieChart, {
   buildSourceData,
   toWholePercents,
 } from '../FoodSourcesPieChart';
-import { formatMonth } from '../../KIPieChartCard/KIPieChartCard';
+import { formatMonthOption as formatMonth } from '../../KIChartFilters/KIChartFilters';
 
 vi.mock('recharts', () => import('../../testUtils/rechartsMock'));
 

@@ -32,8 +32,6 @@ const METRICS = {
 const DEFAULTS = { metric: 'inventory', kitchen: 'All', startDate: '', endDate: '' };
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => `2024-${String(i + 1).padStart(2, '0')}`);
-const DATE_MIN = `${MONTHS[0]}-01`;
-const DATE_MAX = `${MONTHS.at(-1)}-31`;
 
 // Mock data: base kg per kitchen/category, price per kg per category
 const BASE_KG = {
@@ -69,13 +67,12 @@ export default function FoodCategoriesPieChart() {
   const chartData = useMemo(() => {
     if (!isDateRangeValid(filters)) return [];
 
-    const from = startDate ? startDate.substring(0, 7) : '';
-    const to = endDate ? endDate.substring(0, 7) : '';
+    // startDate and endDate are whole months ('YYYY-MM'), or '' for no limit
 
     const totals = {};
     mockRecords.forEach(r => {
       const kitchenMatch = kitchen === 'All' || r.kitchen === kitchen;
-      const dateMatch = (!from || r.month >= from) && (!to || r.month <= to);
+      const dateMatch = (!startDate || r.month >= startDate) && (!endDate || r.month <= endDate);
       if (kitchenMatch && dateMatch) {
         totals[r.category] = (totals[r.category] || 0) + r[metric];
       }
@@ -105,8 +102,7 @@ export default function FoodCategoriesPieChart() {
           onFilterChange={setFilter}
           onReset={reset}
           isDefault={isDefault}
-          dateMin={DATE_MIN}
-          dateMax={DATE_MAX}
+          months={MONTHS}
           metricOptions={METRIC_OPTIONS}
         />
       }

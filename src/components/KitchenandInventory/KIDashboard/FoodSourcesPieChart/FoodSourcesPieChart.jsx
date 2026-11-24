@@ -4,7 +4,6 @@ import KIPieChartCard from '../KIPieChartCard/KIPieChartCard';
 import KIChartFilters, {
   KITCHENS,
   getRecentMonths,
-  getDateLimits,
   useChartFilters,
 } from '../KIChartFilters/KIChartFilters';
 
@@ -58,13 +57,12 @@ export const buildSourceData = (
   { kitchen = 'All', startDate = '', endDate = '' } = {},
 ) => {
   if (startDate && endDate && startDate > endDate) return [];
-  const from = startDate.substring(0, 7);
-  const to = endDate.substring(0, 7);
+  // startDate and endDate are whole months ('YYYY-MM'), or '' for no limit
 
   const totals = {};
   records.forEach(r => {
     const kitchenMatch = kitchen === 'All' || r.kitchen === kitchen;
-    const dateMatch = (!from || r.month >= from) && (!to || r.month <= to);
+    const dateMatch = (!startDate || r.month >= startDate) && (!endDate || r.month <= endDate);
     if (kitchenMatch && dateMatch) totals[r.source] = (totals[r.source] || 0) + r.kg;
   });
 
@@ -104,7 +102,7 @@ export default function FoodSourcesPieChart() {
           onFilterChange={setFilter}
           onReset={reset}
           isDefault={isDefault}
-          {...getDateLimits(months)}
+          months={months}
         />
       }
     />

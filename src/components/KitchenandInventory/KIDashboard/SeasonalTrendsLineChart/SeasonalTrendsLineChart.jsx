@@ -15,7 +15,6 @@ import KIChartFilters, {
   KITCHENS,
   CHART_TOOLTIP_STYLES,
   getRecentMonths,
-  getDateLimits,
   isDateRangeValid,
   useChartFilters,
 } from '../KIChartFilters/KIChartFilters';
@@ -96,13 +95,12 @@ export const formatMonth = month =>
 // chosen kitchen(s) for each category; [] when the dates are reversed or nothing matches
 export const buildTrendData = (records, { metric, kitchen, startDate, endDate }) => {
   if (!isDateRangeValid({ startDate, endDate })) return [];
-  const from = startDate.substring(0, 7);
-  const to = endDate.substring(0, 7);
+  // startDate and endDate are whole months ('YYYY-MM'), or '' for no limit
 
   const byMonth = new Map();
   records
     .filter(r => kitchen === 'All' || r.kitchen === kitchen)
-    .filter(r => (!from || r.month >= from) && (!to || r.month <= to))
+    .filter(r => (!startDate || r.month >= startDate) && (!endDate || r.month <= endDate))
     .forEach(r => {
       if (!byMonth.has(r.month))
         byMonth.set(r.month, { month: r.month, label: formatMonth(r.month) });
@@ -181,7 +179,7 @@ export default function SeasonalTrendsLineChart() {
         onReset={reset}
         isDefault={isDefault}
         metricOptions={METRIC_OPTIONS}
-        {...getDateLimits(months)}
+        months={months}
       />
 
       <h2 className={cardStyles.chartTitle}>{METRICS[filters.metric].title}</h2>

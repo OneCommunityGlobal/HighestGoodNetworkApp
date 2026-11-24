@@ -58,9 +58,9 @@ describe('Seasonal Trends helpers', () => {
   });
 
   it('keeps only the months inside the dates, and nothing when they are reversed', () => {
-    const inRange = { ...ALL, startDate: '2026-02-01', endDate: '2026-03-31' };
+    const inRange = { ...ALL, startDate: '2026-02', endDate: '2026-03' };
     expect(buildTrendData(records, inRange).map(d => d.month)).toEqual(['2026-02', '2026-03']);
-    const reversed = { ...ALL, startDate: '2026-03-01', endDate: '2026-01-01' };
+    const reversed = { ...ALL, startDate: '2026-03', endDate: '2026-01' };
     expect(buildTrendData(records, reversed)).toEqual([]);
   });
 
@@ -114,16 +114,16 @@ describe('Seasonal Trends chart', () => {
   it('shows only the months between From and To', () => {
     renderChart();
     const months = getRecentMonths();
-    fireEvent.change(screen.getByLabelText('From'), { target: { value: `${months[9]}-01` } });
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: months[9] } });
     expect(monthLabels()).toHaveLength(3);
   });
 
   it('shows an error and no chart when From is after To', () => {
     renderChart();
     const months = getRecentMonths();
-    fireEvent.change(screen.getByLabelText('From'), { target: { value: `${months.at(-1)}-01` } });
-    fireEvent.change(screen.getByLabelText('To'), { target: { value: `${months[0]}-01` } });
-    expect(screen.getByText('From date must be before or equal to To date.')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: months.at(-1) } });
+    fireEvent.change(screen.getByLabelText('To'), { target: { value: months[0] } });
+    expect(screen.getByText('From month must be before or equal to To month.')).toBeInTheDocument();
     expect(screen.getByText('No data available for the selected filters.')).toBeInTheDocument();
   });
 });

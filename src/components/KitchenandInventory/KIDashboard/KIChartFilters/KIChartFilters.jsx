@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { FaRegCalendarAlt } from 'react-icons/fa';
 // Shared by the Kitchen and Inventory dashboard charts
 import styles from '../FoodCategoriesPieChart/FoodCategoriesPieChart.module.css';
 
@@ -18,14 +17,6 @@ export function useChartFilters(defaults) {
   const isDefault = Object.keys(defaults).every(key => filters[key] === defaults[key]);
   return { filters, setFilter, reset, isDefault };
 }
-
-const handleDateClick = e => {
-  try {
-    e.currentTarget.showPicker?.();
-  } catch {
-    // Some browsers do not support showPicker; the native input still works
-  }
-};
 
 function SelectField({ label, value, options, onChange }) {
   return (
@@ -53,48 +44,30 @@ SelectField.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-function DateField({ label, value, min, max, onChange }) {
-  return (
-    <label className={styles.field}>
-      <span className={styles.fieldLabel}>{label}</span>
-      <div className={styles.dateWrapper}>
-        <input
-          className={`${styles.control} ${styles.dateInput}`}
-          type="date"
-          value={value}
-          min={min}
-          max={max}
-          onClick={handleDateClick}
-          onChange={e => onChange(e.target.value)}
-        />
-        <FaRegCalendarAlt className={styles.dateIcon} aria-hidden="true" />
-      </div>
-    </label>
-  );
-}
-
-DateField.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  min: PropTypes.string.isRequired,
-  max: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
+// 'YYYY-MM' to a short label like 'Nov 2026'
+export const formatMonthOption = month => {
+  const [year, m] = month.split('-').map(Number);
+  return new Date(year, m - 1, 1).toLocaleString('en-US', { month: 'short', year: 'numeric' });
 };
 
 const KITCHEN_OPTIONS = ['All', ...KITCHENS].map(k => ({ value: k, label: k }));
 
-// Metric (when the chart has one), Kitchen, From and To dates, Reset Filters,
+// Metric (when the chart has one), Kitchen, From and To months, Reset Filters,
 // and an error when From is after To
 export default function KIChartFilters({
   filters,
   onFilterChange,
   onReset,
   isDefault,
-  dateMin,
-  dateMax,
+  months,
   metricOptions = null,
 }) {
   const { metric, kitchen, startDate, endDate } = filters;
+  // The chart data is monthly, so the range is picked by whole months
+  const monthOptions = [
+    { value: '', label: 'All' },
+    ...months.map(month => ({ value: month, label: formatMonthOption(month) })),
+  ];
 
   return (
     <div className={styles.filters}>
@@ -112,18 +85,16 @@ export default function KIChartFilters({
         options={KITCHEN_OPTIONS}
         onChange={value => onFilterChange('kitchen', value)}
       />
-      <DateField
+      <SelectField
         label="From"
         value={startDate}
-        min={dateMin}
-        max={endDate || dateMax}
+        options={monthOptions}
         onChange={value => onFilterChange('startDate', value)}
       />
-      <DateField
+      <SelectField
         label="To"
         value={endDate}
-        min={startDate || dateMin}
-        max={dateMax}
+        options={monthOptions}
         onChange={value => onFilterChange('endDate', value)}
       />
 
@@ -134,7 +105,9 @@ export default function KIChartFilters({
       </div>
 
       {!isDateRangeValid(filters) && (
-        <span className={styles.dateRangeError}>From date must be before or equal to To date.</span>
+        <span className={styles.dateRangeError}>
+          From month must be before or equal to To month.
+        </span>
       )}
     </div>
   );
@@ -150,8 +123,7 @@ KIChartFilters.propTypes = {
   onFilterChange: PropTypes.func.isRequired,
   onReset: PropTypes.func.isRequired,
   isDefault: PropTypes.bool.isRequired,
-  dateMin: PropTypes.string.isRequired,
-  dateMax: PropTypes.string.isRequired,
+  months: PropTypes.arrayOf(PropTypes.string).isRequired,
   metricOptions: OPTIONS_TYPE,
 };
 
@@ -171,13 +143,3 @@ export const getRecentMonths = (today = new Date()) =>
     const d = new Date(today.getFullYear(), today.getMonth() - 11 + i, 1);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   });
-
-// The first and last day the date pickers allow for a list of 'YYYY-MM' months
-export const getDateLimits = months => {
-  const [year, month] = months
-    .at(-1)
-    .split('-')
-    .map(Number);
-  const lastDay = String(new Date(year, month, 0).getDate()).padStart(2, '0');
-  return { dateMin: `${months[0]}-01`, dateMax: `${months.at(-1)}-${lastDay}` };
-};
