@@ -326,7 +326,8 @@ describe('UserPermissionsPopup component', () => {
       </Provider>,
     );
 
-    // Select user
+    // Select user (list opens on click/typing only)
+    fireEvent.click(screen.getByPlaceholderText('Shows only ACTIVE users'));
     fireEvent.click(screen.getByText('Test2 Manager'));
 
     // Wait for initial "Add" buttons to appear
