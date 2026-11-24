@@ -337,6 +337,41 @@ export const updateRehireableStatus = (user, isRehireable, notRehireableReason =
 };
 
 /**
+ * Add, edit or delete the note shown on a user's status dot
+ * @param{*} user - the user the note belongs to
+ * @param{string} statusNote - the new note; an empty string deletes it
+ */
+// Shows why a note could not be saved; the backend sends { error } or, for 403, a plain string
+export const getStatusNoteErrorMessage = error => {
+  const data = error?.response?.data;
+  const reason = typeof data === 'string' ? data : data?.error;
+  return reason ? `Unable to save the note: ${reason}` : 'Unable to save the note.';
+};
+
+export const updateStatusNote = (user, statusNote) => {
+  return async (dispatch, getState) => {
+    const note = typeof statusNote === 'string' ? statusNote.trim() : '';
+    const response = await axios.patch(ENDPOINTS.UPDATE_STATUS_NOTE(user._id), {
+      statusNote: note,
+    });
+    const responseData = response?.data || {};
+    const userProfile = {
+      ...user,
+      statusNote: typeof responseData.statusNote === 'string' ? responseData.statusNote : note,
+      statusNoteHistory: Array.isArray(responseData.statusNoteHistory)
+        ? responseData.statusNoteHistory
+        : user.statusNoteHistory || [],
+    };
+    // Only update the User Management list when this user is in it; the reducer assumes it is
+    const listedUsers = getState?.()?.allUserProfiles?.userProfiles;
+    if (Array.isArray(listedUsers) && listedUsers.some(listed => listed._id === user._id)) {
+      dispatch(userProfileUpdateAction(userProfile));
+    }
+    return userProfile;
+  };
+};
+
+/**
  * Switches the visibility of a user
  * @param{*} user - the user whose visibility is to be changed
  * @param{boolean} isVisible - the new visiblity status

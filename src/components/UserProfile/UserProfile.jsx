@@ -53,7 +53,12 @@ import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateCompany } from '~/utils/formatDate';
 import { fetchAllProjects } from '../../actions/projects';
-import { toggleVisibility, updateRehireableStatus } from '../../actions/userManagement';
+import {
+  toggleVisibility,
+  updateRehireableStatus,
+  updateStatusNote,
+  getStatusNoteErrorMessage,
+} from '../../actions/userManagement';
 import { updateUserProfile } from "../../actions/userProfile";
 import BlueSquareLayout from './BlueSquareLayout';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
@@ -82,6 +87,8 @@ import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import RehireableStatusControl from './RehireableStatusControl';
+import IncompleteQuestionnaireIndicator from '../common/IncompleteQuestionnaireIndicator';
+import { subscribeToCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 
 import { permissions } from '../../utils/constants';
 function UserProfile(props) {
@@ -137,6 +144,8 @@ function UserProfile(props) {
   const [showSelect, setShowSelect] = useState(false);
   const [summaries, setSummaries] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
+  // null until known (or if the request fails), so the indicator is never shown by mistake
+  const [questionnaireIncomplete, setQuestionnaireIncomplete] = useState(null);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
   const [originalTasks, setOriginalTasks] = useState([]);
 
@@ -1061,6 +1070,16 @@ setUpdatedTasks(prev => {
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
+    const userId = props?.match?.params?.userId;
+    setQuestionnaireIncomplete(null);
+    if (!userId) return undefined;
+
+    return subscribeToCompletedQuestionnaireUserIds(completedUserIds =>
+      setQuestionnaireIncomplete(!completedUserIds.has(userId)),
+    );
+  }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
     if (userProfile?.firstName || userProfile?.lastName) {
       document.title = `${userProfile.firstName ?? ''} ${userProfile.lastName ?? ''}`.trim();
     } else {
@@ -1156,6 +1175,24 @@ setUpdatedTasks(prev => {
       return true;
     } catch (error) {
       toast.error('Unable change rehireable status');
+      return false;
+    }
+  };
+
+  const handleSaveStatusNote = async statusNote => {
+    try {
+      const savedUserProfile = await dispatch(updateStatusNote(userProfile, statusNote));
+      const noteFields = {
+        statusNote: savedUserProfile.statusNote,
+        statusNoteHistory: savedUserProfile.statusNoteHistory,
+      };
+      // Only the note fields change, so unsaved profile edits are kept
+      setUserProfile(prev => ({ ...prev, ...noteFields }));
+      setOriginalUserProfile(prev => (prev ? { ...prev, ...noteFields } : prev));
+      toast.success(statusNote.trim() ? 'Note saved.' : 'Note deleted.');
+      return true;
+    } catch (error) {
+      toast.error(getStatusNoteErrorMessage(error));
       return false;
     }
   };
@@ -1332,6 +1369,9 @@ setUpdatedTasks(prev => {
         }}
         onCancelScheduledDeactivation={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
         onReactivateUser={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
+        statusNote={userProfile.statusNote || ''}
+        statusNoteHistory={userProfile.statusNoteHistory || []}
+        onSaveStatusNote={handleSaveStatusNote}
       />
 
       <SetUpFinalDayPopUp
@@ -1492,6 +1532,12 @@ setUpdatedTasks(prev => {
           ) : null} */}
           <div className="profile-head">
             <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
+            {questionnaireIncomplete && (
+              <IncompleteQuestionnaireIndicator
+                id={targetUserId}
+                className="profile-questionnaire-indicator mr-2"
+              />
+            )}
             <div style={{ marginTop: '6px' }}>
               <EditableInfoModal
                 areaName="UserProfileInfoModal"
@@ -1509,6 +1555,7 @@ setUpdatedTasks(prev => {
                 user={userProfile}
                 endDate={userProfile.endDate}
                 reactivationDate={userProfile.reactivationDate}
+                statusNote={userProfile.statusNote}
                 canChange={canChangeUserStatus}
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {

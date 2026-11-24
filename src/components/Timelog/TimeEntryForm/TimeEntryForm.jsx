@@ -4,7 +4,7 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable no-param-reassign */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useDispatch } from 'react-redux';
 import {
@@ -28,12 +28,16 @@ import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import hasPermission from '~/utils/permissions';
+import { fetchTeamMembersTask } from '~/actions/task';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
+import SplitTimeEntryForm from './SplitTimeEntryForm';
+import { readSplitDraft } from './splitTimeEntryUtils';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
+import DuplicateTimeLogModal from './DuplicateTimeLogModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/index.module.css';
 import styles from '../Timelog.module.css';
@@ -47,6 +51,74 @@ const customImageUploadHandler = () =>
     // eslint-disable-next-line prefer-promise-reject-errors
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
+
+function getInitialProjectOrTaskId(edit, projectId, wbsId, taskId) {
+  if (!edit) return 'defaultProject';
+  const wbsSuffix = wbsId ? `/${wbsId}` : '';
+  const taskSuffix = taskId ? `/${taskId}` : '';
+  return projectId + wbsSuffix + taskSuffix;
+}
+
+function getEditorOptions(darkMode) {
+  return {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: 'Description (10-word minimum) and reference link',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 250,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
+    images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
+}
+
+function TimeEntryFormHeader({
+  edit,
+  isTangible,
+  darkMode,
+  viewingUser,
+  isAsyncDataLoaded,
+  toggle,
+  aboutModalToggle,
+  headerBg,
+}) {
+  return (
+    <ModalHeader toggle={toggle} className={`${headerBg}`}>
+      <div>
+        {edit ? 'Edit ' : 'Add '}
+        {isTangible ? (
+          <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
+        ) : (
+          <span style={{ color: 'orange' }}>Intangible </span>
+        )}
+        Time Entry
+        {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
+        <i
+          className={`fa fa-info-circle ${styles.customStyle}`}
+          data-tip
+          data-for="registerTip"
+          aria-hidden="true"
+          title="timeEntryTip"
+          onClick={aboutModalToggle}
+        />
+        {!isAsyncDataLoaded && <span> Loading Data...</span>}
+      </div>
+      <ReactTooltip id="registerTip" place="bottom" effect="solid">
+        Click this icon to learn about this time entry form
+      </ReactTooltip>
+    </ModalHeader>
+  );
+}
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -67,7 +139,125 @@ const customImageUploadHandler = () =>
  * @returns
  */
 
-function TimeEntryForm(props) {
+function renderTimeEntryHeading({ edit, isTangible, darkMode, viewingUser, onAbout, loading }) {
+  return (
+    <>
+      <div>
+        {edit ? 'Edit ' : 'Add '}
+        {isTangible ? (
+          <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
+        ) : (
+          <span style={{ color: 'orange' }}>Intangible </span>
+        )}
+        Time Entry
+        {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
+        <i
+          className={`fa fa-info-circle ${styles.customStyle}`}
+          data-tip
+          data-for="registerTip"
+          aria-hidden="true"
+          title="timeEntryTip"
+          onClick={onAbout}
+        />
+        {loading && <span> Loading Data...</span>}
+      </div>
+      <ReactTooltip id="registerTip" place="bottom" effect="solid">
+        Click this icon to learn about this time entry form
+      </ReactTooltip>
+    </>
+  );
+}
+
+function initialProjectSelection(edit, projectId, wbsId, taskId) {
+  if (!edit) return 'defaultProject';
+  return projectId + (wbsId ? `/${wbsId}` : '') + (taskId ? `/${taskId}` : '');
+}
+
+function entryUserId(from, viewingUser, authUser, data) {
+  return from === 'Timer' ? viewingUser.userId ?? authUser.userid : data.personId;
+}
+
+function allowsTimeChange(from, canEditTimeEntryTime, isSameDayAuthUserEdit) {
+  return from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntryTime || isSameDayAuthUserEdit);
+}
+
+function timeEntryEditorOptions(darkMode) {
+  return {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: 'Description (10-word minimum) and reference link',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 250,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style:
+      'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
+    images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
+}
+
+function timeEntryTheme(darkMode) {
+  if (darkMode)
+    return {
+      fontColor: 'text-light',
+      headerBg: 'bg-space-cadet',
+      bodyBg: 'bg-yinmn-blue',
+      modalClass: 'text-light dark-mode',
+      modalStyle: boxStyleDark,
+      buttonStyle: boxStyleDark,
+    };
+  return {
+    fontColor: '',
+    headerBg: '',
+    bodyBg: '',
+    modalClass: '',
+    modalStyle: {},
+    buttonStyle: boxStyle,
+  };
+}
+
+function SplitModeToggle({ locked, mode, tooShort, timerSessionId, fontColor, onChange }) {
+  const showMinimumTimeHelp = tooShort && !locked;
+  return (
+    <FormGroup check>
+      <Label check className={fontColor}>
+        <Input
+          type="checkbox"
+          checked={mode}
+          disabled={locked || !timerSessionId || (!mode && tooShort)}
+          aria-describedby={showMinimumTimeHelp ? 'split-minimum-time-help' : undefined}
+          onChange={event => onChange(event.target.checked)}
+        />
+        Worked on multiple tasks?
+      </Label>
+      {showMinimumTimeHelp && (
+        <div id="split-minimum-time-help" className={fontColor}>
+          At least 2 minutes are needed to split time between tasks.
+        </div>
+      )}
+    </FormGroup>
+  );
+}
+
+SplitModeToggle.propTypes = {
+  locked: PropTypes.bool.isRequired,
+  mode: PropTypes.bool.isRequired,
+  tooShort: PropTypes.bool.isRequired,
+  timerSessionId: PropTypes.string,
+  fontColor: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+export function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
   const {
@@ -82,6 +272,7 @@ function TimeEntryForm(props) {
     userProfile,
     userProjects,
     onTimeSubmitted,
+    onDuplicateCancel,
     sessionId,
     timerConnected,
     maxHoursPerEntry,
@@ -111,28 +302,9 @@ function TimeEntryForm(props) {
     ...data,
   };
 
-  const TINY_MCE_INIT_OPTIONS = {
-    license_key: 'gpl',
-    menubar: false,
-    placeholder: 'Description (10-word minimum) and reference link',
-    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
-    toolbar:
-      // eslint-disable-next-line no-multi-str
-      'bold italic underline link removeformat | bullist numlist outdent indent |\
-                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                      subscript superscript charmap  | help',
-    branding: false,
-    toolbar_mode: 'sliding',
-    min_height: 250,
-    max_height: 300,
-    autoresize_bottom_margin: 1,
-    content_style: 'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
-    images_upload_handler: customImageUploadHandler,
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
+  const TINY_MCE_INIT_OPTIONS = getEditorOptions(darkMode);
 
-  const timeEntryUserId = from === 'Timer' ? viewingUser.userId ?? authUser.userid : data.personId;
+  const timeEntryUserId = entryUserId(from, viewingUser, authUser, data);
 
   const {
     dateOfWork: initialDateOfWork,
@@ -145,11 +317,12 @@ function TimeEntryForm(props) {
     isTangible: initialIsTangible,
   } = initialFormValues;
 
-  const timeEntryInitialProjectOrTaskId = edit
-    ? initialProjectId +
-      (initialwbsId ? `/${initialwbsId}` : '') +
-      (initialTaskId ? `/${initialTaskId}` : '')
-    : 'defaultProject';
+  const timeEntryInitialProjectOrTaskId = getInitialProjectOrTaskId(
+    edit,
+    initialProjectId,
+    initialwbsId,
+    initialTaskId,
+  );
 
   const initialReminder = {
     openModal: false,
@@ -175,6 +348,43 @@ function TimeEntryForm(props) {
   const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const notesEditorRef = useRef(null);
+  const restoreFocusAfterDuplicateEditRef = useRef(false);
+  const [isDuplicateModalVisible, setDuplicateModalVisible] = useState(false);
+  const pendingDuplicatePayloadRef = useRef(null);
+  const postRequestInFlightRef = useRef(false);
+  const splitAvailable = from === 'Timer' && !edit && formValues.personId === authUser.userid;
+  const splitTotalMinutes = Number(formValues.hours) * 60 + Number(formValues.minutes);
+  const splitTooShort = !Number.isSafeInteger(splitTotalMinutes) || splitTotalMinutes < 2;
+  const hasPendingSplit = () => splitAvailable && Boolean(readSplitDraft(authUser.userid)?.attempted);
+  const [splitMode, setSplitMode] = useState(hasPendingSplit);
+  const [splitLocked, setSplitLocked] = useState(hasPendingSplit);
+  const toggleForm = () => {
+    if (!splitLocked) toggle();
+  };
+  const finishSplit = async (receipt, payload) => {
+    // A recovered save may belong to a timer that was reset in another tab.
+    if (props.timerSessionId === payload.batchId) {
+      const stopped = await sendStop(payload.batchId);
+      if (!stopped) return false;
+      if (onTimeSubmitted) {
+        onTimeSubmitted({
+          hours: Math.floor(receipt.totalMinutes / 60),
+          minutes: receipt.totalMinutes % 60,
+          sessionId,
+        });
+      }
+    } else {
+      toast.info('The earlier split is saved. Your current timer was left running.');
+    }
+    await Promise.allSettled([
+      Promise.resolve().then(() => props.getUserProfile(payload.personId)),
+      Promise.resolve().then(() => props.getTimeEntriesForWeek(payload.personId, 0)),
+      Promise.resolve().then(() => dispatch(fetchTeamMembersTask(payload.personId))),
+    ]);
+    toggle();
+    return true;
+  };
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
@@ -191,8 +401,7 @@ function TimeEntryForm(props) {
   const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
 
   // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-  const canChangeTime =
-    from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntryTime || isSameDayAuthUserEdit);
+  const canChangeTime = allowsTimeChange(from, canEditTimeEntryTime, isSameDayAuthUserEdit);
 
   /* ---------------- methods -------------- */
   const toggleRemainder = () =>
@@ -354,19 +563,27 @@ function TimeEntryForm(props) {
     if (closed === true && isOpen) toggle();
   };
 
-  const submitTimeEntry = async () => {
+  const submitTimeEntry = async ({ retryPayload, allowDuplicate = false } = {}) => {
+    if (!edit && postRequestInFlightRef.current) return;
+    if (!edit) {
+      postRequestInFlightRef.current = true;
+      setSubmitting(true);
+    }
+
     // Prevent submission when logging timer time but timer is disconnected
     if (from === 'Timer' && timerConnected === false) {
       toast.error('Cannot log time entry while timer is disconnected. Please wait for connection to be restored or refresh the page.');
+      postRequestInFlightRef.current = false;
       setSubmitting(false);
       return;
     }
 
-    const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = formValues;
-    const timeEntry = { ...formValues };
+    const timeEntry = { ...(retryPayload || formValues) };
+    const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = timeEntry;
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
-    if (!validateForm(isTimeModified)) {
+    if (!retryPayload && !validateForm(isTimeModified)) {
+      postRequestInFlightRef.current = false;
       setSubmitting(false);
       return;
     }
@@ -420,7 +637,7 @@ function TimeEntryForm(props) {
           clearForm();
           break;
         case 'TimeLog': {
-          const date = moment(formValues.dateOfWork);
+          const date = moment(timeEntry.dateOfWork);
           const today = moment().tz('America/Los_Angeles');
           const offset = today.week() - date.week();
           props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
@@ -455,18 +672,73 @@ function TimeEntryForm(props) {
       }
     };
 
+    const postNewTimeEntry = async () => {
+      const payload = allowDuplicate ? { ...timeEntry, allowDuplicate: true } : timeEntry;
+      const result = await props.postTimeEntry(payload, {
+        displayedUserId: props.displayedUserId,
+        detailed: true,
+      });
+      const { status, code } = result || {};
+
+      if (!allowDuplicate && status === 409 && code === 'DUPLICATE_TIME_ENTRY') {
+        pendingDuplicatePayloadRef.current = { ...timeEntry };
+        setDuplicateModalVisible(true);
+        setSubmitting(false);
+        return false;
+      }
+
+      if (!Number.isInteger(status) || status < 200 || status >= 300) {
+        handleError(`request failed with status ${status}`);
+        return false;
+      }
+      return true;
+    };
+
     try {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
-      } else {
-        await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
+      } else if (!(await postNewTimeEntry())) {
+        return;
       }
 
       await handlePostSubmitActions();
+      pendingDuplicatePayloadRef.current = null;
       handleFormReset();
     } catch (error) {
       handleError(error);
+    } finally {
+      if (!edit) postRequestInFlightRef.current = false;
     }
+  };
+
+  const handleDuplicateCancel = () => {
+    const targetPersonId = timeEntryUserId;
+    pendingDuplicatePayloadRef.current = null;
+    restoreFocusAfterDuplicateEditRef.current = false;
+    setDuplicateModalVisible(false);
+    if (isOpen) toggle();
+    if (onDuplicateCancel) onDuplicateCancel(targetPersonId);
+  };
+
+  const handleDuplicateEdit = () => {
+    restoreFocusAfterDuplicateEditRef.current = true;
+    setDuplicateModalVisible(false);
+    pendingDuplicatePayloadRef.current = null;
+  };
+
+  const handleDuplicateModalClosed = () => {
+    if (!restoreFocusAfterDuplicateEditRef.current) return;
+    restoreFocusAfterDuplicateEditRef.current = false;
+    window.setTimeout(() => notesEditorRef.current?.focus(), 0);
+  };
+
+  const handleDuplicateProceed = async () => {
+    const payload = pendingDuplicatePayloadRef.current;
+    if (!payload || postRequestInFlightRef.current) return;
+    restoreFocusAfterDuplicateEditRef.current = false;
+    setDuplicateModalVisible(false);
+    setSubmitting(true);
+    await submitTimeEntry({ retryPayload: payload, allowDuplicate: true });
   };
 
   const handleSubmit = async event => {
@@ -682,43 +954,27 @@ function TimeEntryForm(props) {
     setFormValues(prev => ({ ...prev, ...data }));
   }, [data]);
 
-  const fontColor = darkMode ? 'text-light' : '';
-  const headerBg = darkMode ? 'bg-space-cadet' : '';
-  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+  const { fontColor, headerBg, bodyBg, modalClass, modalStyle, buttonStyle } = timeEntryTheme(darkMode);
 
   return (
     <>
       <Modal
-        className={darkMode ? `${fontColor} dark-mode` : ''}
+        className={modalClass}
         isOpen={isOpen}
-        toggle={toggle}
+        toggle={toggleForm}
         data-testid="timeEntryFormModal"
-        style={darkMode ? boxStyleDark : {}}
+        style={modalStyle}
       >
-        <ModalHeader toggle={toggle} className={`${headerBg}`}>
-          <div>
-            {edit ? 'Edit ' : 'Add '}
-            {formValues.isTangible ? (
-              <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
-            ) : (
-              <span style={{ color: 'orange' }}>Intangible </span>
-            )}
-            Time Entry
-            {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
-            <i
-              className={`fa fa-info-circle ${styles.customStyle}`}
-              data-tip
-              data-for="registerTip"
-              aria-hidden="true"
-              title="timeEntryTip"
-              onClick={aboutModalToggle}
-            />
-            {!isAsyncDataLoaded && <span> Loading Data...</span>}
-          </div>
-          <ReactTooltip id="registerTip" place="bottom" effect="solid">
-            Click this icon to learn about this time entry form
-          </ReactTooltip>
-        </ModalHeader>
+        <TimeEntryFormHeader
+          edit={edit}
+          isTangible={formValues.isTangible}
+          darkMode={darkMode}
+          viewingUser={viewingUser}
+          isAsyncDataLoaded={isAsyncDataLoaded}
+          toggle={toggleForm}
+          aboutModalToggle={aboutModalToggle}
+          headerBg={headerBg}
+        />
         <ModalBody className={bodyBg}>
           <Form>
             <FormGroup>
@@ -732,7 +988,7 @@ function TimeEntryForm(props) {
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
                 // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]}
-                disabled={!canEditTimeEntryDate}
+                disabled={splitMode || !canEditTimeEntryDate}
                 className={
                   darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''
                 }
@@ -757,7 +1013,7 @@ function TimeEntryForm(props) {
                   placeholder="Hours"
                   value={formValues.hours}
                   onChange={handleInputChange}
-                  disabled={!canChangeTime}
+                  disabled={splitMode || !canChangeTime}
                   className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                 />
                 </Col>
@@ -777,7 +1033,7 @@ function TimeEntryForm(props) {
                       }
                     }}
                     onKeyDown={allowOnlyNumbersKeyDown}
-                    disabled={!canChangeTime}
+                    disabled={splitMode || !canChangeTime}
                     className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                 </Col>
@@ -788,6 +1044,31 @@ function TimeEntryForm(props) {
                 </div>
               )}
             </FormGroup>
+            {splitAvailable && (
+              <SplitModeToggle
+                locked={splitLocked}
+                mode={splitMode}
+                tooShort={splitTooShort}
+                timerSessionId={props.timerSessionId}
+                fontColor={fontColor}
+                onChange={setSplitMode}
+              />
+            )}
+            {splitMode ? (
+              <SplitTimeEntryForm
+                key={`${authUser.userid}:${props.timerSessionId || ''}`}
+                personId={authUser.userid}
+                batchId={props.timerSessionId || ''}
+                dateOfWork={formValues.dateOfWork}
+                totalMinutes={splitTotalMinutes}
+                tasks={timeEntryFormUserTasks}
+                loading={!isAsyncDataLoaded}
+                connected={timerConnected !== false}
+                darkMode={darkMode}
+                onComplete={finishSplit}
+                onLockChange={setSplitLocked}
+              />
+            ) : <>
             <FormGroup>
               <Label for="projectOrTask" className={fontColor}>
                 Project/Task
@@ -842,6 +1123,9 @@ function TimeEntryForm(props) {
                     name="notes"
                     className="form-control"
                     value={formValues.notes}
+                    onInit={(_event, editor) => {
+                      notesEditorRef.current = editor;
+                    }}
                     onEditorChange={handleEditorChange}
                     disabled={!(isSameDayAuthUserEdit || canEditTimeEntryDescription)}
                   />
@@ -877,17 +1161,20 @@ function TimeEntryForm(props) {
                 </ReactTooltip>
               </Label>
             </FormGroup>
+            </>}
           </Form>
         </ModalBody>
         <ModalFooter className={bodyBg}>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger" style={darkMode ? boxStyleDark : boxStyle}>
+          {!splitMode && (
+            <>
+          <Button onClick={clearForm} color="danger" style={buttonStyle}>
             Clear Form
           </Button>
           <Button
             color="primary"
             onClick={handleSubmit}
-            style={darkMode ? boxStyleDark : boxStyle}
+            style={buttonStyle}
             disabled={!actualDate || submitting}
           >
             {(() => {
@@ -897,6 +1184,8 @@ function TimeEntryForm(props) {
               return submitting ? 'Submitting...' : 'Submit';
             })()}
           </Button>
+            </>
+          )}
         </ModalFooter>
       </Modal>
       <TangibleInfoModal
@@ -927,6 +1216,14 @@ function TimeEntryForm(props) {
         onIntangible={handleTangibleTimelogConfirm}
         darkMode={darkMode}
       />
+      <DuplicateTimeLogModal
+        isOpen={isDuplicateModalVisible}
+        onCancel={handleDuplicateCancel}
+        onEdit={handleDuplicateEdit}
+        onProceed={handleDuplicateProceed}
+        onClosed={handleDuplicateModalClosed}
+        darkMode={darkMode}
+      />
     </>
   );
 }
@@ -947,7 +1244,9 @@ TimeEntryForm.propTypes = {
   }),
   userProjects: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
   onTimeSubmitted: PropTypes.func,
+  onDuplicateCancel: PropTypes.func,
   sessionId: PropTypes.string,
+  timerSessionId: PropTypes.string,
   timerStats: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   timerConnected: PropTypes.bool,
   maxHoursPerEntry: PropTypes.number,

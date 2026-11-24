@@ -23,6 +23,16 @@ function DropOffTracking() {
     if (selectedEvent === 'All Events') return true;
     return event.eventType === selectedEvent;
   });
+  const sortedEvents = sortColumn
+    ? filteredEventsByEventType.toSorted((a, b) => {
+        const direction = sortDirection === 'asc' ? 1 : -1;
+        if (sortColumn === 'eventName') {
+          return direction * a.eventName.localeCompare(b.eventName);
+        }
+        return direction * (Number.parseFloat(a[sortColumn]) - Number.parseFloat(b[sortColumn]));
+      })
+    : filteredEventsByEventType;
+
   const handleOpenList = event => {
     setActiveEvent(event);
     setSelectedUsers([]);
@@ -149,15 +159,11 @@ function DropOffTracking() {
           </thead>
 
           <tbody>
-            {filteredEventsByEventType.map(event => (
+            {sortedEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className={styles.trackingRateGreen} style={{ color: 'green' }}>
-                  {event.noShowRate}
-                </td>
-                <td className={styles.trackingRateRed} style={{ color: 'red' }}>
-                  {event.dropOffRate}
-                </td>
+                <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
+                <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
                 <td>
                   <button
                     type="button"

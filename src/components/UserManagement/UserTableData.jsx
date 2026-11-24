@@ -29,6 +29,7 @@ import { boxStyle } from '../../styles';
 import { formatDate, formatDateLocal } from '../../utils/formatDate';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
+import IncompleteQuestionnaireIndicator from '../common/IncompleteQuestionnaireIndicator';
 import styles from './usermanagement.module.css';
 
 import { permissions } from '../../utils/constants';
@@ -181,6 +182,7 @@ const UserTableDataComponent = props => {
         isActive={props.user.isActive}
         endDate={props.user.endDate}
         reactivationDate={props.user.reactivationDate}
+        statusNote={props.user.statusNote}
         canChange={canChangeUserStatus}
         key={`active_cell${props.index}`}
         index={props.index}
@@ -255,6 +257,7 @@ const UserTableDataComponent = props => {
             <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-black' : 'text-dark'}>
               {formData.firstName}{' '}
             </a>
+            {props.questionnaireIncomplete && <IncompleteQuestionnaireIndicator id={props.user._id} />}
             <FontAwesomeIcon
               className={styles.userManagementCellControl}
               icon={faCopy}
@@ -276,6 +279,9 @@ const UserTableDataComponent = props => {
               addUserInformation('firstName', e.target.value, props.user._id);
             }}
           />
+        )}
+        {!editUser?.first && props.questionnaireIncomplete && (
+          <IncompleteQuestionnaireIndicator id={props.user._id} />
         )}
       </td>
 
@@ -687,6 +693,7 @@ UserTableDataComponent.propTypes = {
   timeOffRequests: PropTypes.array,
   onActiveInactiveClick: PropTypes.func,
   isMobile: PropTypes.bool,
+  questionnaireIncomplete: PropTypes.bool,
   mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
