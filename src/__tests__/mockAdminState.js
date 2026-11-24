@@ -1661,7 +1661,7 @@ export default {
         },
         {
           roleName: 'Volunteer',
-          permissions: ['getReporteesLimitRoles', 'getUserProfiles'],
+          permissions: ['getReporteesLimitRoles'],
         },
         {
           roleName: 'Core Team',
