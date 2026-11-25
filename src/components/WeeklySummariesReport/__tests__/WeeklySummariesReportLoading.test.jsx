@@ -56,6 +56,8 @@ vi.mock('../../../actions/weeklySummariesFilterAction', () => ({
 
 vi.mock('../../../utils/questionnaireCompletion', () => ({
   fetchCompletedQuestionnaireUserIds: () => Promise.resolve([]),
+  // WeeklySummariesReport subscribes on mount; return a no-op unsubscribe.
+  subscribeToCompletedQuestionnaireUserIds: () => () => {},
 }));
 
 vi.mock('../../common/SkeletonLoading', () => ({
