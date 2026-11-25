@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -13,7 +15,14 @@ import {
 } from 'recharts';
 import styles from './JobApplicationAnalytics.module.css';
 
-const CHART_COLORS = ['#2563eb', '#0d9488', '#d97706', '#dc2626', '#7c3aed', '#059669', '#db2777'];
+/** Soft CRM palette — distinct hues per series, not one flat blue. */
+const CHART_COLORS = ['#22c55e', '#38bdf8', '#f59e0b', '#f43f5e', '#14b8a6', '#818cf8', '#fb7185'];
+
+const TOOLTIP_STYLE = {
+  borderRadius: 10,
+  border: '1px solid #e2e8f0',
+  fontSize: 12,
+};
 
 function formatCount(value) {
   if (value == null || Number.isNaN(Number(value))) return '—';
@@ -37,6 +46,10 @@ function toChartData(items) {
       value: itemValue(item),
     }))
     .filter(item => item.value > 0);
+}
+
+function totalOf(items) {
+  return toChartData(items).reduce((sum, row) => sum + row.value, 0);
 }
 
 function Panel({ title, subtitle, children, error }) {
@@ -79,8 +92,10 @@ EmptyState.propTypes = {
   message: PropTypes.string.isRequired,
 };
 
-function DonutCard({ title, subtitle, items, emptyMessage, error }) {
+function DonutCard({ title, subtitle, items, emptyMessage, error, colors }) {
   const chartData = toChartData(items);
+  const total = totalOf(items);
+  const palette = colors || CHART_COLORS;
 
   return (
     <Panel title={title} subtitle={subtitle} error={error}>
@@ -95,29 +110,40 @@ function DonutCard({ title, subtitle, items, emptyMessage, error }) {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  innerRadius={48}
-                  outerRadius={72}
-                  paddingAngle={2}
+                  innerRadius={50}
+                  outerRadius={74}
+                  paddingAngle={3}
                 >
                   {chartData.map((entry, index) => (
-                    <Cell key={entry.name} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    <Cell key={entry.name} fill={palette[index % palette.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value, name) => [formatCount(value), name]} />
+                <Tooltip
+                  contentStyle={TOOLTIP_STYLE}
+                  formatter={(value, name) => {
+                    const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
+                    return [`${formatCount(value)} (${pct}%)`, name];
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
           <ul className={styles.legendList}>
-            {chartData.map((entry, index) => (
-              <li key={entry.name}>
-                <span
-                  className={styles.legendSwatch}
-                  style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
-                />
-                <span className={styles.legendLabel}>{entry.name}</span>
-                <strong>{formatCount(entry.value)}</strong>
-              </li>
-            ))}
+            {chartData.map((entry, index) => {
+              const pct = total > 0 ? Math.round((entry.value / total) * 100) : 0;
+              return (
+                <li key={entry.name}>
+                  <span
+                    className={styles.legendSwatch}
+                    style={{ backgroundColor: palette[index % palette.length] }}
+                  />
+                  <span className={styles.legendLabel}>
+                    {entry.name}
+                    <span className={styles.legendPct}> {pct}%</span>
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : (
@@ -133,6 +159,7 @@ DonutCard.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object),
   emptyMessage: PropTypes.string,
   error: PropTypes.string,
+  colors: PropTypes.arrayOf(PropTypes.string),
 };
 
 DonutCard.defaultProps = {
@@ -140,10 +167,12 @@ DonutCard.defaultProps = {
   items: [],
   emptyMessage: 'No data available for this chart yet.',
   error: '',
+  colors: null,
 };
 
-function BarCard({ title, subtitle, items, emptyMessage, error, compact }) {
+function VerticalBarCard({ title, subtitle, items, emptyMessage, error, colors, compact }) {
   const chartData = toChartData(items);
+  const palette = colors || CHART_COLORS;
 
   return (
     <Panel title={title} subtitle={subtitle} error={error}>
@@ -159,8 +188,15 @@ function BarCard({ title, subtitle, items, emptyMessage, error, compact }) {
               />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-              <Tooltip formatter={value => [formatCount(value), 'Applications']} />
-              <Bar dataKey="value" fill="#2563eb" radius={[6, 6, 0, 0]} />
+              <Tooltip
+                contentStyle={TOOLTIP_STYLE}
+                formatter={value => [formatCount(value), 'Applications']}
+              />
+              <Bar dataKey="value" radius={[7, 7, 0, 0]}>
+                {chartData.map((entry, index) => (
+                  <Cell key={entry.name} fill={palette[index % palette.length]} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -171,21 +207,206 @@ function BarCard({ title, subtitle, items, emptyMessage, error, compact }) {
   );
 }
 
-BarCard.propTypes = {
+VerticalBarCard.propTypes = {
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string,
   items: PropTypes.arrayOf(PropTypes.object),
   emptyMessage: PropTypes.string,
   error: PropTypes.string,
+  colors: PropTypes.arrayOf(PropTypes.string),
   compact: PropTypes.bool,
 };
 
-BarCard.defaultProps = {
+VerticalBarCard.defaultProps = {
   subtitle: '',
   items: [],
   emptyMessage: 'No timing data available yet.',
   error: '',
+  colors: null,
   compact: false,
+};
+
+function HorizontalBarCard({ title, subtitle, items, emptyMessage, error, colors }) {
+  const chartData = toChartData(items);
+  const palette = colors || CHART_COLORS;
+
+  return (
+    <Panel title={title} subtitle={subtitle} error={error}>
+      {chartData.length > 0 ? (
+        <div className={styles.chartWrapCompact} aria-hidden="true">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              layout="vertical"
+              data={chartData}
+              margin={{ top: 4, right: 16, left: 8, bottom: 4 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                horizontal={false}
+                stroke="currentColor"
+                opacity={0.12}
+              />
+              <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+              <YAxis
+                type="category"
+                dataKey="name"
+                width={96}
+                tick={{ fontSize: 11 }}
+                interval={0}
+              />
+              <Tooltip
+                contentStyle={TOOLTIP_STYLE}
+                formatter={value => [formatCount(value), 'Applicants']}
+              />
+              <Bar dataKey="value" radius={[0, 7, 7, 0]} barSize={16}>
+                {chartData.map((entry, index) => (
+                  <Cell key={entry.name} fill={palette[index % palette.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <EmptyState message={emptyMessage} />
+      )}
+    </Panel>
+  );
+}
+
+HorizontalBarCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
+  items: PropTypes.arrayOf(PropTypes.object),
+  emptyMessage: PropTypes.string,
+  error: PropTypes.string,
+  colors: PropTypes.arrayOf(PropTypes.string),
+};
+
+HorizontalBarCard.defaultProps = {
+  subtitle: '',
+  items: [],
+  emptyMessage: 'No data available yet.',
+  error: '',
+  colors: null,
+};
+
+function AreaCard({ title, subtitle, items, emptyMessage, error, stroke, fill }) {
+  const chartData = toChartData(items);
+
+  return (
+    <Panel title={title} subtitle={subtitle} error={error}>
+      {chartData.length > 0 ? (
+        <div className={styles.chartWrapCompact} aria-hidden="true">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+              <defs>
+                <linearGradient id="jaaAreaFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={fill || '#22c55e'} stopOpacity={0.45} />
+                  <stop offset="100%" stopColor={fill || '#22c55e'} stopOpacity={0.02} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="currentColor"
+                opacity={0.12}
+              />
+              <XAxis dataKey="name" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
+              <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+              <Tooltip
+                contentStyle={TOOLTIP_STYLE}
+                formatter={value => [formatCount(value), 'Applications']}
+              />
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke={stroke || '#16a34a'}
+                strokeWidth={2.5}
+                fill="url(#jaaAreaFill)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <EmptyState message={emptyMessage} />
+      )}
+    </Panel>
+  );
+}
+
+AreaCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
+  items: PropTypes.arrayOf(PropTypes.object),
+  emptyMessage: PropTypes.string,
+  error: PropTypes.string,
+  stroke: PropTypes.string,
+  fill: PropTypes.string,
+};
+
+AreaCard.defaultProps = {
+  subtitle: '',
+  items: [],
+  emptyMessage: 'No timing data available yet.',
+  error: '',
+  stroke: '',
+  fill: '',
+};
+
+function TopFormsCard({ forms }) {
+  const max = Math.max(...forms.map(form => Number(form.count) || 0), 1);
+
+  return (
+    <Panel
+      title="Top forms by applications"
+      subtitle="Highest-volume roles across live JobApplications"
+    >
+      {forms.length > 0 ? (
+        <ul className={styles.progressList}>
+          {forms.map((form, index) => {
+            const count = Number(form.count) || 0;
+            const width = `${Math.max(8, Math.round((count / max) * 100))}%`;
+            return (
+              <li
+                key={String(form.formId || form.formTitle || index)}
+                className={styles.progressItem}
+              >
+                <div className={styles.progressMeta}>
+                  <span className={styles.progressLabel}>{form.formTitle || 'Untitled form'}</span>
+                  <span className={styles.progressValue}>{formatCount(count)}</span>
+                </div>
+                <div className={styles.progressTrack} aria-hidden="true">
+                  <div
+                    className={styles.progressFill}
+                    style={{
+                      width,
+                      backgroundColor: CHART_COLORS[index % CHART_COLORS.length],
+                    }}
+                  />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <EmptyState message="No form submission rankings yet." />
+      )}
+    </Panel>
+  );
+}
+
+TopFormsCard.propTypes = {
+  forms: PropTypes.arrayOf(
+    PropTypes.shape({
+      formId: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+      formTitle: PropTypes.string,
+      count: PropTypes.number,
+    }),
+  ),
+};
+
+TopFormsCard.defaultProps = {
+  forms: [],
 };
 
 function AnalyticsSummaryCards({
@@ -240,36 +461,16 @@ function AnalyticsSummaryCards({
       <section className={styles.section} aria-label="Pipeline insights">
         <h2 className={styles.sectionTitle}>Pipeline insights</h2>
         <div className={styles.insightsGrid}>
-          <Panel
-            title="Top forms by applications"
-            subtitle="Highest-volume roles across live JobApplications"
-          >
-            {topForms.length > 0 ? (
-              <ul className={styles.rankList}>
-                {topForms.map((form, index) => (
-                  <li
-                    key={String(form.formId || form.formTitle || index)}
-                    className={styles.rankItem}
-                  >
-                    <span className={styles.rankIndex}>{index + 1}</span>
-                    <span className={styles.rankLabel}>{form.formTitle || 'Untitled form'}</span>
-                    <strong className={styles.rankValue}>{formatCount(form.count)}</strong>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <EmptyState message="No form submission rankings yet." />
-            )}
-          </Panel>
-
-          <BarCard
+          <TopFormsCard forms={topForms} />
+          <VerticalBarCard
             title="When people apply most"
             subtitle={
               peakHour?.value || peakHour?.count
                 ? `Peak hour so far: ${itemLabel(peakHour)}`
-                : 'Applications by day of week from submittedAt timestamps'
+                : 'Applications by day of week'
             }
             items={weekdayData}
+            colors={['#22c55e', '#4ade80', '#86efac', '#38bdf8', '#0ea5e9', '#f59e0b', '#fb7185']}
             emptyMessage="Not enough submission timestamps to chart application timing yet."
           />
         </div>
@@ -278,33 +479,34 @@ function AnalyticsSummaryCards({
       <section className={styles.section} aria-label="Applicant expectations">
         <h2 className={styles.sectionTitle}>Applicant expectations</h2>
         <div className={styles.deepGrid}>
-          <BarCard
+          <HorizontalBarCard
             title="Expected weekly hours"
             subtitle="Preferred time applicants say they can work"
             items={summary?.hoursPerWeekBreakdown}
+            colors={['#38bdf8', '#22c55e', '#f59e0b', '#f43f5e']}
             emptyMessage="No hours-per-week answers found in applicant profiles yet."
-            compact
           />
-          <BarCard
+          <DonutCard
             title="Expected commitment"
             subtitle="How long applicants plan to stay engaged"
             items={summary?.commitmentBreakdown}
+            colors={['#14b8a6', '#38bdf8', '#f59e0b', '#818cf8']}
             emptyMessage="No commitment / months-volunteer answers found yet."
-            compact
           />
-          <BarCard
+          <HorizontalBarCard
             title="Expected joining window"
             subtitle="Start / join / availability answers from form questions"
             items={summary?.joiningExpectations}
+            colors={['#f59e0b', '#fb7185', '#38bdf8', '#22c55e', '#818cf8']}
             emptyMessage="No joining-date style answers found yet. Add start/join questions to forms to populate this card."
-            compact
           />
-          <BarCard
+          <AreaCard
             title="Applications by hour"
             subtitle="UTC hour-of-day pattern across all submissions"
             items={hourData}
+            stroke="#0ea5e9"
+            fill="#38bdf8"
             emptyMessage="No hourly timing data available yet."
-            compact
           />
         </div>
       </section>
@@ -316,6 +518,7 @@ function AnalyticsSummaryCards({
             title="Experience breakdown"
             subtitle="From applicant analytics experience data"
             items={experienceBreakdown}
+            colors={['#22c55e', '#38bdf8', '#f59e0b', '#f43f5e']}
             emptyMessage="No experience breakdown data available."
             error={experienceError}
           />
@@ -323,6 +526,7 @@ function AnalyticsSummaryCards({
             title="Applicant sources"
             subtitle="Where applicants report finding the opportunity"
             items={applicantSources}
+            colors={['#818cf8', '#14b8a6', '#f59e0b', '#fb7185']}
             emptyMessage="No applicant source data available."
             error={sourcesError}
           />
