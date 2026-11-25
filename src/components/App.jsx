@@ -94,7 +94,7 @@ function UpdateDocumentTitle() {
     { pattern: /^\/bmdashboard\/materials$/, title: 'Material List' },
     { pattern: /^\/bmdashboard\/consumables\/add$/, title: 'Add Consumable' },
     { pattern: /^\/bmdashboard\/reusables$/, title: 'Reusable List' },
-    { pattern: /^\/bmdashboard\/tools\/[^/]+\/update$/, title: 'Update Tool' },
+    { pattern: /^\/bmdashboard\/tools\/[^/]+\/update$/, title: 'Update Equipment Status' },
     { pattern: /^\/bmdashboard\/tools$/, title: 'Tools List' },
     { pattern: /^\/bmdashboard\/tools\/add$/, title: 'Add Tool' },
     { pattern: /^\/bmdashboard\/tools\/equipmentupdate$/, title: 'Update Equipment or Tool' },
