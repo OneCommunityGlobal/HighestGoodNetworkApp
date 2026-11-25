@@ -23,9 +23,8 @@ export function TrendIndicator({ value, metricLabel, comparisonLabel = 'Last wee
   const formattedValue = available ? `${numericValue > 0 ? '+' : ''}${numericValue}%` : 'N/A';
   let description = 'trend unavailable';
   if (available) {
-    description = numericValue === 0
-      ? 'unchanged'
-      : `${direction} by ${Math.abs(numericValue)} percent`;
+    description =
+      numericValue === 0 ? 'unchanged' : `${direction} by ${Math.abs(numericValue)} percent`;
   }
 
   return (
