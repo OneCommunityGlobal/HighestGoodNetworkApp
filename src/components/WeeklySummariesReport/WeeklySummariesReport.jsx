@@ -118,6 +118,7 @@ const initialState = {
   total: 0,
   COLORS: [],
   loading: true,
+  error: null,
   summaries: [],
   activeTab: navItems[1],
   passwordModalOpen: false,
@@ -147,6 +148,9 @@ const initialState = {
   summariesByTab: {},
   // The first tab is fetched on mount, so it starts out loading.
   tabsLoading: { [navItems[1]]: true },
+  tabsError: {},
+  userStateCatalog: [],
+  userStateSelections: {},
   formattedReportLoading: false,
   loadTrophies: false,
   selectedSpecialColors: {
@@ -294,6 +298,7 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const reportResultsRef = useRef(null);
+  const reportRequestIdRef = useRef(0);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
   const [isTeamCodeFocused, setIsTeamCodeFocused] = useState(false);
 
@@ -1009,28 +1014,104 @@ const WeeklySummariesReport = props => {
       headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
     });
 
-    return Array.isArray(response?.data) ? response.data : [];
+    if (!Array.isArray(response?.data)) {
+      throw new Error('Weekly summaries request returned an invalid response.');
+    }
+
+    return response.data;
   };
 
-  const refreshCurrentTab = async () => {
-    const { activeTab } = state;
-    setState(prev => ({ ...prev, refreshing: true }));
+  const getRequestError = error => {
+    const responseMessage = error?.response?.data?.message || error?.response?.data;
+    const message =
+      typeof responseMessage === 'string' ? responseMessage : error?.message || 'Request failed.';
+    return new Error(message);
+  };
+
+  const loadUserStateData = async (summaries, requestId) => {
+    const userIds = summaries.map(summary => summary?._id).filter(Boolean);
+
+    if (userIds.length === 0) return;
+
+    let catalogResult;
+    let selectionsResult;
+    try {
+      [catalogResult, selectionsResult] = await Promise.allSettled([
+        axios.get(ENDPOINTS.USER_STATE_CATALOG),
+        axios.post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds }),
+      ]);
+    } catch {
+      return;
+    }
+
+    if (requestId !== reportRequestIdRef.current) return;
+
+    setState(prev => ({
+      ...prev,
+      ...(catalogResult.status === 'fulfilled'
+        ? {
+            userStateCatalog: Array.isArray(catalogResult.value?.data?.items)
+              ? catalogResult.value.data.items
+              : [],
+          }
+        : {}),
+      ...(selectionsResult.status === 'fulfilled'
+        ? {
+            userStateSelections: {
+              ...prev.userStateSelections,
+              ...(selectionsResult.value?.data?.selections || {}),
+            },
+          }
+        : {}),
+    }));
+  };
+
+  const loadTabData = async (activeTab, { forceRefresh = false, showPageLoading = false } = {}) => {
+    const requestId = ++reportRequestIdRef.current;
+
+    setState(prev => ({
+      ...prev,
+      loading: showPageLoading,
+      error: null,
+      refreshing: forceRefresh,
+      tabsLoading: { ...prev.tabsLoading, [activeTab]: true },
+      tabsError: { ...prev.tabsError, [activeTab]: null },
+    }));
 
     try {
       const rawSummaries = await fetchWeeklySummariesForTab(activeTab);
+
+      if (requestId !== reportRequestIdRef.current) return;
 
       setState(prevState => ({
         ...(rawSummaries.length > 0
           ? buildProcessedSummariesState(prevState, rawSummaries, activeTab)
           : buildEmptySummariesState(prevState, activeTab)),
+        loading: false,
         refreshing: false,
+        error: null,
+        tabsLoading: { ...prevState.tabsLoading, [activeTab]: false },
+        tabsError: { ...prevState.tabsError, [activeTab]: null },
       }));
+
+      void loadUserStateData(rawSummaries, requestId);
     } catch (error) {
-      setState(prevState => ({
-        ...prevState,
+      if (requestId !== reportRequestIdRef.current) return;
+
+      const requestError = getRequestError(error);
+      setState(prev => ({
+        ...prev,
+        loading: false,
         refreshing: false,
+        error: showPageLoading ? requestError : null,
+        tabsLoading: { ...prev.tabsLoading, [activeTab]: false },
+        tabsError: { ...prev.tabsError, [activeTab]: requestError },
       }));
     }
+  };
+
+  const refreshCurrentTab = () => {
+    loadTabData(state.activeTab, { forceRefresh: true });
   };
 
   const toggleTab = tab => {
@@ -1038,27 +1119,30 @@ const WeeklySummariesReport = props => {
 
     if (activeTab === tab) return;
 
+    reportRequestIdRef.current += 1;
+    const hasCachedData = Object.prototype.hasOwnProperty.call(state.summariesByTab, tab);
+
     setState(prevState => ({
       ...prevState,
       activeTab: tab,
       showOnlyMismatched: false,
-      tabsLoading: {
-        ...prevState.tabsLoading,
-        [tab]: true,
-      },
+      summaries: hasCachedData ? prevState.summaries : [],
+      filteredSummaries: hasCachedData ? prevState.filteredSummaries : [],
+      tabsLoading: { ...prevState.tabsLoading, [tab]: true },
+      tabsError: { ...prevState.tabsError, [tab]: null },
     }));
 
     sessionStorage.setItem('tabSelection', tab);
+  };
 
-    if (state.summariesByTab[tab]) {
-      setState(prevState => ({
-        ...buildProcessedSummariesState(prevState, prevState.summariesByTab[tab], tab),
-        tabsLoading: {
-          ...prevState.tabsLoading,
-          [tab]: false,
-        },
-      }));
-    }
+  const handleUserStateSelectionChange = (userId, selected) => {
+    setState(prev => ({
+      ...prev,
+      userStateSelections: {
+        ...prev.userStateSelections,
+        [userId]: selected,
+      },
+    }));
   };
 
   const handleSelectCodeChange = event => {
@@ -1608,70 +1692,23 @@ const WeeklySummariesReport = props => {
   };
 
   useEffect(() => {
-    let isMounted = true;
+    const activeTab = state.activeTab;
+    const cachedSummaries = state.summariesByTab[activeTab];
 
-    const loadTabData = async () => {
-      const activeTab = state.activeTab;
-
-      if (state.summariesByTab[activeTab]) {
-        setState(prevState => ({
-          ...buildProcessedSummariesState(
-            prevState,
-            prevState.summariesByTab[activeTab],
-            activeTab,
-          ),
-          tabsLoading: {
-            ...prevState.tabsLoading,
-            [activeTab]: false,
-          },
-        }));
-        return;
-      }
-
-      // Show the tab's own spinner. The full-page skeleton (state.loading) is only for
-      // the first load, which starts with loading: true in initialState.
-      setState(prev => ({
-        ...prev,
-        tabsLoading: {
-          ...prev.tabsLoading,
-          [activeTab]: true,
-        },
+    if (Object.prototype.hasOwnProperty.call(state.summariesByTab, activeTab)) {
+      setState(prevState => ({
+        ...buildProcessedSummariesState(prevState, cachedSummaries, activeTab),
+        loading: false,
+        error: null,
+        tabsLoading: { ...prevState.tabsLoading, [activeTab]: false },
+        tabsError: { ...prevState.tabsError, [activeTab]: null },
       }));
+      return undefined;
+    }
 
-      try {
-        const rawSummaries = await fetchWeeklySummariesForTab(activeTab);
-
-        if (!isMounted) return;
-
-        setState(prevState => ({
-          ...(rawSummaries.length > 0
-            ? buildProcessedSummariesState(prevState, rawSummaries, activeTab)
-            : buildEmptySummariesState(prevState, activeTab)),
-          loading: false,
-          tabsLoading: {
-            ...prevState.tabsLoading,
-            [activeTab]: false,
-          },
-        }));
-      } catch (err) {
-        if (!isMounted) return;
-
-        console.error('❌ Failed to fetch data', err);
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-          tabsLoading: {
-            ...prevState.tabsLoading,
-            [activeTab]: false,
-          },
-        }));
-      }
-    };
-
-    loadTabData();
-
+    loadTabData(activeTab, { showPageLoading: state.loading });
     return () => {
-      isMounted = false;
+      reportRequestIdRef.current += 1;
     };
   }, [state.activeTab]);
 
@@ -1738,7 +1775,7 @@ const WeeklySummariesReport = props => {
   }, [state.teamCodes, props.setTeamCodes]);
 
   const { role, darkMode } = props;
-  const { error } = props;
+  const error = state.error || props.error;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const { authEmailWeeklySummaryRecipient } = props;
   const warningUsers = state.summaries.filter(
@@ -2278,6 +2315,12 @@ const WeeklySummariesReport = props => {
                       <p>Loading data...</p>
                     </Col>
                   </Row>
+                ) : state.tabsError[item] ? (
+                  <Row className={styles['mx-max-sm-0']}>
+                    <Col>
+                      <Alert color="danger">Error! {state.tabsError[item].message}</Alert>
+                    </Col>
+                  </Row>
                 ) : (
                   <>
                     <Row className={styles['mx-max-sm-0']}>
@@ -2364,6 +2407,9 @@ const WeeklySummariesReport = props => {
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
                               timeOffRequests={props.timeOffRequests}
                               completedQuestionnaireUserIds={completedQuestionnaireUserIds}
+                              userStateCatalog={state.userStateCatalog}
+                              userStateSelections={state.userStateSelections}
+                              handleUserStateSelectionChange={handleUserStateSelectionChange}
                             />
                           </Col>
                         </Row>

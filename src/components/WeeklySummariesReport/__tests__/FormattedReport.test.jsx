@@ -127,6 +127,29 @@ describe('FormattedReport minimal test', () => {
     expect(screen.getByText('Test summary')).toBeInTheDocument();
   });
 
+  it('renders the saved user state from the shared state catalog and selection data', () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            userStateCatalog={[{ key: 'away', label: 'Away', emoji: '🌴', color: '#0088FE' }]}
+            userStateSelections={{
+              '1': [{ key: 'away', selectedAt: '2026-11-23T00:00:00.000Z' }],
+            }}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(
+      screen.getByTitle(
+        "This is the user's state. Ask an Admin to change it for you if you feel it is not accurate",
+      ),
+    ).toHaveTextContent('Away');
+    expect(screen.queryByText('Set State')).not.toBeInTheDocument();
+  });
+
   it('does not render the Emails section for non-admin users', () => {
     const nonAdminAuth = { user: { email: 'user@example.com', role: 'Volunteer' } };
     const props = { ...defaultProps, auth: nonAdminAuth };
