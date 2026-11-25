@@ -255,6 +255,14 @@
   min-height: 180px;
 }
 
+/* Fills remaining panel height when a grid sibling is taller. */
+.chartFill {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 220px;
+  height: 100%;
+}
+
 .donutRow {
   display: grid;
   grid-template-columns: minmax(140px, 180px) 1fr;
@@ -311,6 +319,9 @@
   margin: 0 0 0.2rem;
   font-weight: 650;
   color: var(--jaa-text);
+  max-width: 16rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .chartTooltipRow {

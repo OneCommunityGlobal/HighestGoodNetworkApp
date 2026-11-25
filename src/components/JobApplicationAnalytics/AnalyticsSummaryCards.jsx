@@ -29,10 +29,13 @@ function formatCount(value) {
 function ChartTooltip({ active, payload, label, formatValue }) {
   if (!active || !payload?.length) return null;
 
+  const fullLabel = payload[0]?.payload?.fullName;
+  const heading = fullLabel || label;
+
   return (
     <div className={styles.chartTooltip}>
-      {label != null && String(label) !== '' ? (
-        <div className={styles.chartTooltipLabel}>{label}</div>
+      {heading != null && String(heading) !== '' ? (
+        <div className={styles.chartTooltipLabel}>{heading}</div>
       ) : null}
       {payload.map(entry => {
         const formatted = formatValue
@@ -42,9 +45,12 @@ function ChartTooltip({ active, payload, label, formatValue }) {
           ? formatted
           : [formatted, entry.name];
 
+        // When the category is already shown as the heading, keep the row label short.
+        const rowName = fullLabel ? 'Applicants' : displayName;
+
         return (
           <div key={String(entry.dataKey || entry.name)} className={styles.chartTooltipRow}>
-            <span className={styles.chartTooltipName}>{displayName}</span>
+            <span className={styles.chartTooltipName}>{rowName}</span>
             <span className={styles.chartTooltipValue}>{displayValue}</span>
           </div>
         );
@@ -76,14 +82,28 @@ function itemValue(item) {
   return Number.isFinite(Number(value)) ? Number(value) : 0;
 }
 
-function toChartData(items) {
+function truncateLabel(text, maxLen = 18) {
+  const value = String(text || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (value.length <= maxLen) return value;
+  return `${value.slice(0, Math.max(1, maxLen - 1))}…`;
+}
+
+function toChartData(items, { labelMaxLen = 0 } = {}) {
   if (!Array.isArray(items)) return [];
   return items
-    .map(item => ({
-      name: String(itemLabel(item)),
-      value: itemValue(item),
-    }))
-    .filter(item => item.value > 0);
+    .map(item => {
+      const fullName = String(itemLabel(item))
+        .replace(/\s+/g, ' ')
+        .trim();
+      return {
+        name: labelMaxLen > 0 ? truncateLabel(fullName, labelMaxLen) : fullName,
+        fullName,
+        value: itemValue(item),
+      };
+    })
+    .filter(item => item.value > 0 && item.fullName);
 }
 
 function totalOf(items) {
@@ -271,18 +291,19 @@ VerticalBarCard.defaultProps = {
 };
 
 function HorizontalBarCard({ title, subtitle, items, emptyMessage, error, colors }) {
-  const chartData = toChartData(items);
+  const chartData = toChartData(items, { labelMaxLen: 16 });
   const palette = colors || CHART_COLORS;
+  const chartHeight = Math.max(200, chartData.length * 36 + 28);
 
   return (
     <Panel title={title} subtitle={subtitle} error={error}>
       {chartData.length > 0 ? (
-        <div className={styles.chartWrapCompact} aria-hidden="true">
+        <div className={styles.chartWrapCompact} style={{ height: chartHeight }} aria-hidden="true">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               layout="vertical"
               data={chartData}
-              margin={{ top: 4, right: 16, left: 8, bottom: 4 }}
+              margin={{ top: 4, right: 16, left: 4, bottom: 4 }}
             >
               <CartesianGrid
                 strokeDasharray="3 3"
@@ -294,17 +315,18 @@ function HorizontalBarCard({ title, subtitle, items, emptyMessage, error, colors
               <YAxis
                 type="category"
                 dataKey="name"
-                width={96}
+                width={108}
                 tick={{ fontSize: 11 }}
                 interval={0}
+                tickLine={false}
               />
               <Tooltip
                 cursor={CHART_CURSOR}
                 content={<ChartTooltip formatValue={value => [formatCount(value), 'Applicants']} />}
               />
-              <Bar dataKey="value" radius={[0, 7, 7, 0]} barSize={16}>
+              <Bar dataKey="value" radius={[0, 7, 7, 0]} barSize={14}>
                 {chartData.map((entry, index) => (
-                  <Cell key={entry.name} fill={palette[index % palette.length]} />
+                  <Cell key={`${entry.fullName}-${index}`} fill={palette[index % palette.length]} />
                 ))}
               </Bar>
             </BarChart>
