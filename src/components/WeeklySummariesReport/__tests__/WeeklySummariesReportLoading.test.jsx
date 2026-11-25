@@ -56,6 +56,16 @@ vi.mock('../../../actions/weeklySummariesFilterAction', () => ({
 
 vi.mock('../../../utils/questionnaireCompletion', () => ({
   fetchCompletedQuestionnaireUserIds: () => Promise.resolve([]),
+  subscribeToCompletedQuestionnaireUserIds: onChange => {
+    let active = true;
+    // Match the async initial notification and ignore it after cleanup.
+    Promise.resolve().then(() => {
+      if (active) onChange(new Set());
+    });
+    return () => {
+      active = false;
+    };
+  },
 }));
 
 vi.mock('../../common/SkeletonLoading', () => ({
