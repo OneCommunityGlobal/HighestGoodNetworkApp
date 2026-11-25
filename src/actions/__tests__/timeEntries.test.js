@@ -1,3 +1,4 @@
+
 import moment from 'moment-timezone';
 import axios from 'axios';
 import {
@@ -12,7 +13,7 @@ import {
 } from '../timeEntries';
 import { GET_TIME_ENTRIES_PERIOD, GET_TIME_ENTRIES_WEEK } from '../../constants/timeEntries';
 import { ENDPOINTS } from '~/utils/URL';
-import { fetchServerTime, getServerMoment } from '~/utils/serverTime';
+import { fetchServerTime } from '~/utils/serverTime';
 
 vi.mock('axios');
 
@@ -25,7 +26,6 @@ vi.mock('react-toastify', () => ({
 
 vi.mock('~/utils/serverTime', () => ({
   fetchServerTime: vi.fn(),
-  getServerMoment: vi.fn(),
 }));
 
 describe('timeEntries action creators', () => {
@@ -35,8 +35,10 @@ describe('timeEntries action creators', () => {
     axios.post.mockReset();
     axios.put.mockReset();
     axios.delete.mockReset();
-    fetchServerTime.mockResolvedValue(undefined);
-    getServerMoment.mockReturnValue(moment());
+
+    fetchServerTime.mockResolvedValue({
+      date: moment().format('YYYY-MM-DD'),
+    });
   });
 
   describe('setTimeEntriesForPeriod', () => {
@@ -67,16 +69,20 @@ describe('timeEntries action creators', () => {
     it('dispatches an update when deleting a default entry', async () => {
       const dispatch = vi.fn();
       const timeEntry = { _id: '123', entryType: 'default' };
+
       axios.delete.mockResolvedValue({ status: 200 });
 
       await deleteTimeEntry(timeEntry)(dispatch);
 
       expect(dispatch).toHaveBeenCalledWith(expect.any(Function));
-      expect(axios.delete).toHaveBeenCalledWith(ENDPOINTS.TIME_ENTRY_CHANGE('123'));
+      expect(axios.delete).toHaveBeenCalledWith(
+        ENDPOINTS.TIME_ENTRY_CHANGE('123'),
+      );
     });
 
     it('returns the response status', async () => {
       const dispatch = vi.fn();
+
       axios.delete.mockResolvedValue({ status: 200 });
 
       const status = await deleteTimeEntry({
@@ -89,7 +95,10 @@ describe('timeEntries action creators', () => {
 
     it('returns the error response status when the request fails', async () => {
       const dispatch = vi.fn();
-      axios.delete.mockRejectedValue({ response: { status: 500 } });
+
+      axios.delete.mockRejectedValue({
+        response: { status: 500 },
+      });
 
       const status = await deleteTimeEntry({
         _id: '123',
@@ -104,11 +113,14 @@ describe('timeEntries action creators', () => {
     it('dispatches an update when editing a default entry', async () => {
       const dispatch = vi.fn();
       const timeEntryId = '123';
+
       const timeEntry = {
         entryType: 'default',
         dateOfWork: moment().toISOString(),
       };
+
       const oldDateOfWork = moment().subtract(1, 'week').toISOString();
+
       axios.put.mockResolvedValue({ status: 200 });
 
       await editTimeEntry(timeEntryId, timeEntry, oldDateOfWork)(dispatch);
@@ -122,10 +134,12 @@ describe('timeEntries action creators', () => {
 
     it('returns the response status', async () => {
       const dispatch = vi.fn();
+
       const timeEntry = {
         entryType: 'default',
         dateOfWork: moment().toISOString(),
       };
+
       axios.put.mockResolvedValue({ status: 200 });
 
       const status = await editTimeEntry('123', timeEntry)(dispatch);
@@ -135,11 +149,15 @@ describe('timeEntries action creators', () => {
 
     it('returns the error response status when the request fails', async () => {
       const dispatch = vi.fn();
+
       const timeEntry = {
         entryType: 'default',
         dateOfWork: moment().toISOString(),
       };
-      axios.put.mockRejectedValue({ response: { status: 500 } });
+
+      axios.put.mockRejectedValue({
+        response: { status: 500 },
+      });
 
       const status = await editTimeEntry('123', timeEntry)(dispatch);
 
@@ -150,26 +168,31 @@ describe('timeEntries action creators', () => {
   describe('postTimeEntry', () => {
     it('fetches server time before posting a time entry for today', async () => {
       const dispatch = vi.fn();
+
       const timeEntry = {
         entryType: 'default',
-        dateOfWork: moment().toISOString(),
+        dateOfWork: moment().format('YYYY-MM-DD'),
       };
+
       axios.post.mockResolvedValue({ status: 200 });
 
       const status = await postTimeEntry(timeEntry)(dispatch);
 
       expect(fetchServerTime).toHaveBeenCalledTimes(1);
-      expect(getServerMoment).toHaveBeenCalledTimes(1);
-      expect(axios.post).toHaveBeenCalledWith(ENDPOINTS.TIME_ENTRY(), timeEntry);
+      expect(axios.post).toHaveBeenCalledWith(
+        ENDPOINTS.TIME_ENTRY(),
+        timeEntry,
+      );
       expect(dispatch).toHaveBeenCalledWith(expect.any(Function));
       expect(status).toBe(200);
     });
 
     it('returns 400 and does not post an entry for a different day', async () => {
       const dispatch = vi.fn();
+
       const timeEntry = {
         entryType: 'default',
-        dateOfWork: moment().subtract(1, 'day').toISOString(),
+        dateOfWork: moment().subtract(1, 'day').format('YYYY-MM-DD'),
       };
 
       const status = await postTimeEntry(timeEntry)(dispatch);
@@ -182,15 +205,21 @@ describe('timeEntries action creators', () => {
 
     it('returns the response status for a person entry', async () => {
       const dispatch = vi.fn();
+
       const timeEntry = {
         entryType: 'person',
-        dateOfWork: moment().toISOString(),
+        dateOfWork: moment().format('YYYY-MM-DD'),
       };
+
       axios.post.mockResolvedValue({ status: 200 });
 
       const status = await postTimeEntry(timeEntry)(dispatch);
 
-      expect(axios.post).toHaveBeenCalledWith(ENDPOINTS.TIME_ENTRY(), timeEntry);
+      expect(fetchServerTime).toHaveBeenCalledTimes(1);
+      expect(axios.post).toHaveBeenCalledWith(
+        ENDPOINTS.TIME_ENTRY(),
+        timeEntry,
+      );
       expect(dispatch).toHaveBeenCalledWith(expect.any(Function));
       expect(status).toBe(200);
     });
@@ -199,11 +228,15 @@ describe('timeEntries action creators', () => {
       'returns the HTTP status %i when the server rejects the request',
       async statusCode => {
         const dispatch = vi.fn();
+
         const timeEntry = {
           entryType: 'default',
-          dateOfWork: moment().toISOString(),
+          dateOfWork: moment().format('YYYY-MM-DD'),
         };
-        axios.post.mockRejectedValue({ response: { status: statusCode } });
+
+        axios.post.mockRejectedValue({
+          response: { status: statusCode },
+        });
 
         const status = await postTimeEntry(timeEntry)(dispatch);
 
@@ -214,10 +247,12 @@ describe('timeEntries action creators', () => {
 
     it('returns 500 when the request fails without an HTTP response', async () => {
       const dispatch = vi.fn();
+
       const timeEntry = {
         entryType: 'default',
-        dateOfWork: moment().toISOString(),
+        dateOfWork: moment().format('YYYY-MM-DD'),
       };
+
       axios.post.mockRejectedValue(new Error('Network Error'));
 
       const status = await postTimeEntry(timeEntry)(dispatch);
@@ -228,14 +263,19 @@ describe('timeEntries action creators', () => {
 
     it('passes displayedUserId to the update action', async () => {
       const dispatch = vi.fn();
+
       const timeEntry = {
         entryType: 'default',
         personId: 'user-123',
-        dateOfWork: moment().toISOString(),
+        dateOfWork: moment().format('YYYY-MM-DD'),
       };
+
       axios.post.mockResolvedValue({ status: 200 });
 
-      await postTimeEntry(timeEntry, { displayedUserId: 'user-123' })(dispatch);
+      await postTimeEntry(
+        timeEntry,
+        { displayedUserId: 'user-123' },
+      )(dispatch);
 
       expect(dispatch).toHaveBeenCalledWith(expect.any(Function));
     });
@@ -246,7 +286,11 @@ describe('timeEntries action creators', () => {
       const userId = '123';
       const fromDate = moment().subtract(2, 'weeks').toISOString();
       const toDate = moment().toISOString();
-      const formattedToDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+
+      const formattedToDate = moment(toDate)
+        .endOf('day')
+        .format('YYYY-MM-DDTHH:mm:ss');
+
       const entries = [
         {
           dateOfWork: moment().subtract(1, 'day').toISOString(),
@@ -257,13 +301,22 @@ describe('timeEntries action creators', () => {
           createdDateTime: '2023-08-22T10:00:00.000Z',
         },
       ];
+
       axios.get.mockResolvedValue({ data: entries });
 
-      const result = await getTimeEndDateEntriesByPeriod(userId, fromDate, toDate)();
+      const result = await getTimeEndDateEntriesByPeriod(
+        userId,
+        fromDate,
+        toDate,
+      )();
 
       expect(result).toBe(entries[0].createdDateTime);
       expect(axios.get).toHaveBeenCalledWith(
-        ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate),
+        ENDPOINTS.TIME_ENTRIES_PERIOD(
+          userId,
+          fromDate,
+          formattedToDate,
+        ),
       );
     });
 
@@ -271,9 +324,14 @@ describe('timeEntries action creators', () => {
       const userId = '123';
       const fromDate = moment().subtract(2, 'weeks').toISOString();
       const toDate = moment().toISOString();
+
       axios.get.mockResolvedValue({ data: [] });
 
-      const result = await getTimeEndDateEntriesByPeriod(userId, fromDate, toDate)();
+      const result = await getTimeEndDateEntriesByPeriod(
+        userId,
+        fromDate,
+        toDate,
+      )();
 
       expect(result).toBe('N/A');
     });
@@ -282,9 +340,14 @@ describe('timeEntries action creators', () => {
       const userId = '123';
       const fromDate = moment().subtract(2, 'weeks').toISOString();
       const toDate = moment().toISOString();
+
       axios.get.mockRejectedValue(new Error('Request failed'));
 
-      const result = await getTimeEndDateEntriesByPeriod(userId, fromDate, toDate)();
+      const result = await getTimeEndDateEntriesByPeriod(
+        userId,
+        fromDate,
+        toDate,
+      )();
 
       expect(result).toBe('N/A');
     });
@@ -296,23 +359,39 @@ describe('timeEntries action creators', () => {
       const userId = '123';
       const fromDate = moment().subtract(2, 'weeks').toISOString();
       const toDate = moment().toISOString();
-      const formattedToDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+
+      const formattedToDate = moment(toDate)
+        .endOf('day')
+        .format('YYYY-MM-DDTHH:mm:ss');
+
       const entries = [
         { dateOfWork: moment().subtract(1, 'day').toISOString() },
         { dateOfWork: moment().subtract(2, 'days').toISOString() },
       ];
+
       axios.get.mockResolvedValue({ data: entries });
 
-      await getTimeEntriesForPeriod(userId, fromDate, toDate)(dispatch);
+      await getTimeEntriesForPeriod(
+        userId,
+        fromDate,
+        toDate,
+      )(dispatch);
 
       expect(dispatch).toHaveBeenCalledWith({
         type: GET_TIME_ENTRIES_PERIOD,
         payload: [...entries].sort(
-          (a, b) => moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf(),
+          (a, b) =>
+            moment(b.dateOfWork).valueOf() -
+            moment(a.dateOfWork).valueOf(),
         ),
       });
+
       expect(axios.get).toHaveBeenCalledWith(
-        ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate),
+        ENDPOINTS.TIME_ENTRIES_PERIOD(
+          userId,
+          fromDate,
+          formattedToDate,
+        ),
       );
     });
   });
@@ -322,20 +401,24 @@ describe('timeEntries action creators', () => {
       const dispatch = vi.fn();
       const userId = '123';
       const offset = 1;
+
       const fromDate = moment()
         .tz('America/Los_Angeles')
         .startOf('week')
         .subtract(offset, 'weeks')
         .format('YYYY-MM-DDTHH:mm:ss');
+
       const toDate = moment()
         .tz('America/Los_Angeles')
         .endOf('week')
         .subtract(offset, 'weeks')
         .format('YYYY-MM-DDTHH:mm:ss');
+
       const entries = [
         { dateOfWork: moment(fromDate).add(1, 'day').toISOString() },
         { dateOfWork: moment(fromDate).subtract(2, 'days').toISOString() },
       ];
+
       axios.get.mockResolvedValue({ data: entries });
 
       await getTimeEntriesForWeek(userId, offset)(dispatch);
@@ -345,6 +428,7 @@ describe('timeEntries action creators', () => {
         payload: [entries[0]],
         offset,
       });
+
       expect(axios.get).toHaveBeenCalledWith(
         ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate),
       );

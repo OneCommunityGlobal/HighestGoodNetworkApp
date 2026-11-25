@@ -10,7 +10,7 @@ import {
   GET_TIME_ENTRIES_PERIOD_BULK,
 } from '../constants/timeEntries';
 import { ENDPOINTS } from '~/utils/URL';
-import { fetchServerTime, getServerMoment } from '../utils/serverTime';
+import { fetchServerTime } from '../utils/serverTime';
 
 export const setTimeEntriesForWeek = (data, offset) => ({
   type: GET_TIME_ENTRIES_WEEK,
@@ -200,28 +200,6 @@ export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => {
   };
 };
 
-/*
-export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
-export const postTimeEntry = (timeEntry, { displayedUserId, detailed = false } = {}) => {
-  const url = ENDPOINTS.TIME_ENTRY();
-  return async dispatch => {
-    try {
-      const res = await axios.post(url, timeEntry);
-      if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
-        dispatch(updateTimeEntries(timeEntry, undefined, displayedUserId));
-      }
-      return detailed ? { status: res.status } : res.status;
-    } catch (e) {
-      const { status, data } = e.response;
-      if (!detailed) return status;
-      // Only a string code is exposed; the rest of the response body stays private.
-      return typeof data?.code === 'string' ? { status, code: data.code } : { status };
-    }
-  };
-};
-*/
-
-
 export const postTimeEntry = (
   timeEntry,
   { displayedUserId, detailed = false } = {},
@@ -238,6 +216,8 @@ export const postTimeEntry = (
         throw new Error('Server date is unavailable');
       }
     } catch (error) {
+      // Server-time verification failure prevents safe date validation.
+      // Return 500 so the caller can retry instead of posting the entry.
       toast.error('Unable to verify server time. Please try again.');
       return detailed ? { status: 500 } : 500;
     }
