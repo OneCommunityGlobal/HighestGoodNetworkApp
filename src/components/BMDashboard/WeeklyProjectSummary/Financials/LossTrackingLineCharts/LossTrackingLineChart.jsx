@@ -1,4 +1,4 @@
-// Version 1.0.0
+// Version 1.1.0
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -265,8 +265,10 @@ export default function LossTrackingLineChart() {
         </div>
 
         <p>
-          Monthly loss = wasted / approved purchases x 100. Months without purchases have no
-          percentage.
+          Monthly loss = monthly wasted quantity / cumulative approved purchase quantity through
+          that month x 100, across loaded projects and prior years. Months with no purchase history
+          have no percentage. Purchase timing depends on recorded backend dates; the existing
+          purchase-date default uses the server start time when a date is omitted.
         </p>
         <div className={styles.chartWrapper}>
           {filteredLines.length === 0 || chartData.length === 0 ? (

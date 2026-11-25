@@ -1,4 +1,4 @@
-﻿// Version 1.0.0
+﻿// Version 1.1.0
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -50,7 +50,7 @@ it('sums actual monthly quantities across projects before computing percentages,
   const [cement, steel] = buildLossSeries(materials);
   expect(cement.data).toHaveLength(12);
   expect(cement.data[8]).toEqual({ date: '2026-09', month: 'Sep', value: 5 });
-  expect(cement.data[10].value).toBeNull();
+  expect(cement.data[10].value).toBe(1.25);
   expect(cement.data[11].value).toBe(0);
   expect(steel.data[8].value).toBe(0);
 });
@@ -67,7 +67,7 @@ it('handles missing materials, invalid records, zero purchases and different yea
       ],
     },
   ]);
-  expect(result.find(line => line.year === 2026).data[8].value).toBeNull();
+  expect(result.find(line => line.year === 2026).data[8].value).toBe(0);
   expect(result.find(line => line.year === 2025).data[9].value).toBe(20);
 });
 
@@ -95,7 +95,9 @@ it('renders real materials, current year, monthly loss and filters without sampl
     fireEvent.click(screen.getByRole('button', { name: 'Sep' }));
     fireEvent.click(screen.getByRole('button', { name: 'End date' }));
     fireEvent.click(screen.getByRole('button', { name: 'Nov' }));
-    expect(JSON.parse(screen.getByTestId('chart').getAttribute('data-points'))).toHaveLength(3);
+    const filtered = JSON.parse(screen.getByTestId('chart').getAttribute('data-points'));
+    expect(filtered).toHaveLength(3);
+    expect(filtered[2]['2026-cement']).toBe(1.25);
     fireEvent.click(screen.getByRole('button', { name: 'Reset Filters' }));
     expect(screen.getByLabelText('Material')).toHaveValue('All');
     unmount();
@@ -116,4 +118,75 @@ it('shows an empty state with the current year available when there are no recor
   expect(
     screen.getByRole('option', { name: String(new Date().getFullYear()) }),
   ).toBeInTheDocument();
+});
+
+const carryoverMaterials = [
+  {
+    itemType: { _id: 'cement', name: 'Cement' },
+    // Deliberately unordered: later purchases must not inflate an earlier denominator.
+    purchaseRecord: [
+      record(1000, '2026-12-01'),
+      record(1, '2026-02-01'),
+      record(100, '2025-12-01'),
+    ],
+    updateRecord: [
+      { date: '2026-01-01', quantityWasted: 5 },
+      { date: '2026-02-01', quantityWasted: 5 },
+      { date: '2025-11-01', quantityWasted: 5 },
+    ],
+  },
+];
+
+it('carries purchases across years chronologically and handles small subsequent purchases', () => {
+  const result = buildLossSeries(carryoverMaterials);
+  expect(result.find(line => line.year === 2025).data[10].value).toBeNull();
+  const nextYear = result.find(line => line.year === 2026);
+  expect(nextYear.data[0].value).toBe(5);
+  expect(nextYear.data[1].value).toBe(4.95);
+});
+
+it('preserves null without approved purchase history and excludes invalid quantities and dates', () => {
+  const [line] = buildLossSeries([
+    {
+      itemType: { _id: 'a', name: 'Bricks' },
+      purchaseRecord: [
+        record(0),
+        record(-1),
+        record(NaN),
+        record(Infinity),
+        record('100'),
+        record(100, 'bad-date'),
+        record(100, null),
+        record(100, undefined, 'Pending'),
+        record(100, undefined, 'Rejected'),
+      ],
+      updateRecord: [
+        { date: '2026-09-01', quantityWasted: 5 },
+        { date: '2026-09-01', quantityWasted: -1 },
+        { date: '2026-09-01', quantityWasted: Infinity },
+      ],
+    },
+  ]);
+  expect(line.data.every(point => point.value === null)).toBe(true);
+});
+
+it('keeps cross-year purchase history when year and date display filters hide it', () => {
+  const store = configureMockStore()({
+    theme: { darkMode: false },
+    materials: { materialslist: carryoverMaterials },
+  });
+  render(
+    <Provider store={store}>
+      <LossTrackingLineChart />
+    </Provider>,
+  );
+  fireEvent.change(screen.getByLabelText('Year'), { target: { value: '2026' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Start date' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Next year' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Feb' }));
+  fireEvent.click(screen.getByRole('button', { name: 'End date' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Feb' }));
+  const points = JSON.parse(screen.getByTestId('chart').getAttribute('data-points'));
+  expect(points).toHaveLength(1);
+  expect(points[0]['2026-cement']).toBe(4.95);
 });

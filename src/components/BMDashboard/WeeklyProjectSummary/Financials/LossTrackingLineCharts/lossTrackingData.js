@@ -1,4 +1,4 @@
-// Version 1.0.0
+// Version 1.1.0
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function buildLossSeries(materials) {
@@ -39,11 +39,20 @@ export function buildLossSeries(materials) {
       addRecord(record, 'wasted', record.quantityWasted),
     );
   });
-  return Array.from(series.values()).map(line => ({
-    ...line,
-    data: line.data.map(({ bought, wasted, ...point }) => ({
-      ...point,
-      value: bought > 0 ? Number(((wasted / bought) * 100).toFixed(2)) : null,
-    })),
-  }));
+  const cumulativePurchases = new Map();
+  // Accumulate all loaded history before display filters, including purchases in prior years.
+  return Array.from(series.values())
+    .sort((a, b) => a.year - b.year)
+    .map(line => {
+      let boughtToDate = cumulativePurchases.get(line.materialId) || 0;
+      const data = line.data.map(({ bought, wasted, ...point }) => {
+        boughtToDate += bought;
+        return {
+          ...point,
+          value: boughtToDate > 0 ? Number(((wasted / boughtToDate) * 100).toFixed(2)) : null,
+        };
+      });
+      cumulativePurchases.set(line.materialId, boughtToDate);
+      return { ...line, data };
+    });
 }
