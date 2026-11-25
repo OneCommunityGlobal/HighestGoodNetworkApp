@@ -9,6 +9,10 @@
  * @returns {number} Progress percentage (0-100)
  */
 export const calculateProgressPercentage = (task, intermediateTasks = []) => {
+  if (task.task_type === 'write' && ['completed', 'graded'].includes(task.status)) {
+    return 100;
+  }
+
   // If there are intermediate tasks, calculate progress based on number of completed tasks
   if (intermediateTasks && intermediateTasks.length > 0) {
     const totalTasks = intermediateTasks.length;
@@ -34,7 +38,7 @@ export const canMarkTaskAsDone = (task, intermediateTasks = []) => {
   if (
     !task.task_type ||
     !Number.isFinite(task.suggested_total_hours) ||
-    task.suggested_total_hours < 0
+    task.suggested_total_hours <= 0
   )
     return false;
 
@@ -117,7 +121,7 @@ export const getMarkAsDoneTooltip = (task, intermediateTasks = []) => {
   if (
     !task.task_type ||
     !Number.isFinite(task.suggested_total_hours) ||
-    task.suggested_total_hours < 0
+    task.suggested_total_hours <= 0
   ) {
     return 'Cannot mark as done: Task type or suggested hours are missing or invalid';
   }

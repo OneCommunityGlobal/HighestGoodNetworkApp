@@ -62,7 +62,7 @@ const transformTaskToFlatFormat = (task, subjectData, subjectKey) => {
   return {
     id: task._id,
     course_name: subjectData.subject?.name || subjectKey || 'Unknown Subject',
-    subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
+    subtitle: (typeof task.name === 'string' ? task.name.trim() : '') || task.lessonPlan?.title || task.atom?.name || 'No Description',
     task_type: task.type || null,
     logged_hours: task.loggedHours || 0,
     suggested_total_hours: task.suggestedTotalHours ?? null,
@@ -183,7 +183,7 @@ const validateTaskCompletion = (task) => {
     return { valid: false, errorMessage: 'Only read tasks can be marked as complete manually' };
   }
 
-  if (!Number.isFinite(task.suggested_total_hours) || task.suggested_total_hours < 0) {
+  if (!Number.isFinite(task.suggested_total_hours) || task.suggested_total_hours <= 0) {
     return { valid: false, errorMessage: 'Task suggested hours are missing or invalid' };
   }
 

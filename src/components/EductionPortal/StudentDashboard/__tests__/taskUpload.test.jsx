@@ -10,13 +10,13 @@ import { uploadStudentTaskFile, fetchStudentTasks } from '../../../../actions/st
 import TaskCard from '../TaskCard';
 import TaskListItem from '../TaskListItem';
 import StudentDashboard from '../StudentDashboard';
+import { useTaskLogic } from '../useTaskLogic';
 
 vi.mock('../../../../services/httpService', () => ({ default: { post: vi.fn(), get: vi.fn() } }));
 vi.mock('react-toastify', () => ({
   toast: { success: vi.fn(), error: vi.fn(), warning: vi.fn(), info: vi.fn() },
 }));
 vi.mock('../NavigationBar', () => ({ default: () => null }));
-vi.mock('../SummaryCards', () => ({ default: () => null }));
 vi.mock('../../../../actions/intermediateTasks', () => ({
   fetchIntermediateTasks: () => async () => [],
   markIntermediateTaskAsDone: vi.fn(),
@@ -26,7 +26,7 @@ const task = {
   id: 'write-task',
   task_type: 'write',
   status: 'in_progress',
-  logged_hours: 3,
+  logged_hours: 0.5,
   suggested_total_hours: 5,
   course_name: 'Mathematics',
   created_at: '2026-10-27',
@@ -34,7 +34,7 @@ const task = {
 const file = new File(['submission'], 'answer.txt', { type: 'text/plain' });
 const completed = {
   status: 'completed',
-  loggedHours: 5,
+  loggedHours: 0.5,
   suggestedTotalHours: 5,
   url: 'https://example.com/file',
   completedAt: '2026-10-27',
@@ -51,9 +51,12 @@ const grouped = status => ({
                 tasks: [
                   {
                     _id: task.id,
+                    name: '  Submit mathematics assignment  ',
+                    lessonPlan: { title: 'Lesson plan title' },
+                    atom: { name: 'Atom title' },
                     type: 'write',
                     status,
-                    loggedHours: status === 'completed' ? 5 : 3,
+                    loggedHours: 0.5,
                     suggestedTotalHours: 5,
                     assignedAt: '2026-10-27',
                     uploadUrls: status === 'completed' ? [completed.url] : [],
@@ -84,6 +87,11 @@ beforeEach(() => {
   httpService.get.mockResolvedValue(grouped('completed'));
 });
 const mount = element => render(<Provider store={store}>{element}</Provider>);
+const expectTotalTimeUnchanged = () => {
+  expect(screen.getByText('Total Time Logged')).toBeInTheDocument();
+  // Both time summary cards currently display the total logged hours.
+  expect(screen.getAllByText('0h 30min')).toHaveLength(2);
+};
 const chooseFile = () =>
   fireEvent.change(screen.getByLabelText('Submission file'), { target: { files: [file] } });
 
@@ -116,6 +124,7 @@ it.each(['Card view', 'List view'])(
     fireEvent.click(await screen.findByRole('button', { name: view }));
     fireEvent.click(await screen.findByRole('button', { name: 'Upload' }));
     chooseFile();
+    expectTotalTimeUnchanged();
     fireEvent.click(screen.getByRole('button', { name: 'Submit file' }));
     await waitFor(() =>
       expect(screen.getByRole('tab', { name: /Completed/ })).toHaveAttribute(
@@ -123,7 +132,12 @@ it.each(['Card view', 'List view'])(
         'true',
       ),
     );
-    expect(screen.getByText('Progress: 5 / 5 hrs (100%)')).toBeInTheDocument();
+    expect(screen.getByText('Progress: 0.5 / 5 hrs (100%)')).toBeInTheDocument();
+    expect(screen.getByText('Submit mathematics assignment')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Mathematics' })).toBeInTheDocument();
+    expect(screen.queryByText('Lesson plan title')).not.toBeInTheDocument();
+    expect(screen.queryByText('Atom title')).not.toBeInTheDocument();
+    expectTotalTimeUnchanged();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(httpService.get).toHaveBeenCalledTimes(2);
     const [endpoint, body, config] = httpService.post.mock.calls[0];
@@ -174,7 +188,7 @@ it('retains confirmed completion when refresh fails', async () => {
   });
   expect(store.getState().studentTasks.taskItems[0]).toMatchObject({
     status: 'completed',
-    logged_hours: 5,
+    logged_hours: 0.5,
   });
   expect(toast.warning).toHaveBeenCalled();
 });
@@ -192,38 +206,48 @@ it('rejects unsupported files before making a request', async () => {
 
 afterEach(() => vi.unstubAllEnvs());
 
-it('simulates only after opt-in, labels completion, and restores API data on refresh', async () => {
-  vi.stubEnv('DEV', true);
-  httpService.get.mockResolvedValue(grouped('in_progress'));
-  mount(<StudentDashboard />);
-  fireEvent.click(await screen.findByRole('button', { name: 'Upload' }));
-  const checkbox = screen.getByRole('checkbox', { name: /Simulate upload locally/ });
-  expect(checkbox).not.toBeChecked();
-  fireEvent.click(checkbox);
-  chooseFile();
-  const readsBefore = httpService.get.mock.calls.length;
-  fireEvent.click(screen.getByRole('button', { name: 'Submit file' }));
-  await waitFor(() =>
-    expect(screen.getByRole('tab', { name: /Completed/ })).toHaveAttribute('aria-selected', 'true'),
-  );
-  expect(screen.getByText('Simulated completion — not saved')).toBeInTheDocument();
-  expect(screen.getByText('Progress: 5 / 5 hrs (100%)')).toBeInTheDocument();
-  expect(httpService.post).not.toHaveBeenCalled();
-  expect(httpService.get).toHaveBeenCalledTimes(readsBefore);
-  expect(store.getState().studentTasks.taskItems[0]).toMatchObject({
-    status: 'completed',
-    logged_hours: 5,
-    completedAt: expect.any(String),
-    simulated_upload: true,
-  });
-  expect(toast.info).toHaveBeenCalledWith(expect.stringContaining('Simulated upload only'));
-  await act(async () => store.dispatch(fetchStudentTasks()));
-  expect(store.getState().studentTasks.taskItems[0]).toMatchObject({
-    status: 'in_progress',
-    logged_hours: 3,
-  });
-  expect(store.getState().studentTasks.taskItems[0].simulated_upload).toBeUndefined();
-});
+it.each(['Card view', 'List view'])(
+  'simulates only after opt-in and preserves hours in %s',
+  async view => {
+    vi.stubEnv('DEV', true);
+    httpService.get.mockResolvedValue(grouped('in_progress'));
+    mount(<StudentDashboard />);
+    fireEvent.click(await screen.findByRole('button', { name: view }));
+    expectTotalTimeUnchanged();
+    fireEvent.click(await screen.findByRole('button', { name: 'Upload' }));
+    const checkbox = screen.getByRole('checkbox', { name: /Simulate upload locally/ });
+    expect(checkbox).not.toBeChecked();
+    fireEvent.click(checkbox);
+    chooseFile();
+    const readsBefore = httpService.get.mock.calls.length;
+    fireEvent.click(screen.getByRole('button', { name: 'Submit file' }));
+    await waitFor(() =>
+      expect(screen.getByRole('tab', { name: /Completed/ })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      ),
+    );
+    expect(screen.getByText('Simulated completion — not saved')).toBeInTheDocument();
+    expect(screen.getByText('Progress: 0.5 / 5 hrs (100%)')).toBeInTheDocument();
+    expectTotalTimeUnchanged();
+    expect(httpService.post).not.toHaveBeenCalled();
+    expect(httpService.get).toHaveBeenCalledTimes(readsBefore);
+    expect(store.getState().studentTasks.taskItems[0]).toMatchObject({
+      status: 'completed',
+      logged_hours: 0.5,
+      completedAt: expect.any(String),
+      simulated_upload: true,
+    });
+    expect(toast.info).toHaveBeenCalledWith(expect.stringContaining('Simulated upload only'));
+    await act(async () => store.dispatch(fetchStudentTasks()));
+    expect(store.getState().studentTasks.taskItems[0]).toMatchObject({
+      status: 'in_progress',
+      logged_hours: 0.5,
+    });
+    expect(store.getState().studentTasks.taskItems[0].simulated_upload).toBeUndefined();
+    expectTotalTimeUnchanged();
+  },
+);
 
 it('does not offer simulation in production', () => {
   vi.stubEnv('DEV', false);
@@ -266,4 +290,25 @@ it('removes the attachment, clears the native input, and allows selecting it aga
   fireEvent.click(screen.getByRole('button', { name: 'Submit file' }));
   await waitFor(() => expect(httpService.post).toHaveBeenCalledTimes(1));
   expect(httpService.post.mock.calls[0][1].get('file')).toBe(file);
+});
+
+it('refreshes memoized progress when only completion status changes', () => {
+  const subtasks = [];
+  const styles = {};
+  const Progress = ({ status }) => {
+    const { progressPercentage, progressText } = useTaskLogic(
+      { ...task, status },
+      styles,
+      subtasks,
+    );
+    return (
+      <output>
+        {progressPercentage}: {progressText}
+      </output>
+    );
+  };
+  const { rerender } = render(<Progress status="in_progress" />);
+  expect(screen.getByRole('status')).toHaveTextContent('10: Progress: 0.5 / 5 hrs (10%)');
+  rerender(<Progress status="completed" />);
+  expect(screen.getByRole('status')).toHaveTextContent('100: Progress: 0.5 / 5 hrs (100%)');
 });

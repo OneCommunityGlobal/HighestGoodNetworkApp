@@ -63,7 +63,6 @@ export default function TaskUploadButton({ task, darkMode = false, onComplete })
           updateStudentTask(task.id || task._id, {
             status: 'completed',
             is_completed: true,
-            logged_hours: task.suggested_total_hours,
             completedAt,
             last_logged_date: completedAt,
             simulated_upload: true,

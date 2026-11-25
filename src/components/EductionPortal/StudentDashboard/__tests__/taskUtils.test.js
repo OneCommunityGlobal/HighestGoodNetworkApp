@@ -1,4 +1,9 @@
-import { getTaskStatusBadge } from '../taskUtils';
+import {
+  calculateProgressPercentage,
+  canMarkTaskAsDone,
+  getMarkAsDoneTooltip,
+  getTaskStatusBadge,
+} from '../taskUtils';
 
 const styles = {
   completedBadge: 'completed',
@@ -79,5 +84,66 @@ it('preserves the subtask completion requirement for the Completed badge', () =>
   expect(getTaskStatusBadge(completedTask, styles, [{ status: 'assigned' }])).toEqual({
     text: 'Pending Review',
     className: styles.pendingBadge,
+  });
+});
+
+describe('manual completion eligibility', () => {
+  it.each([0, -1, null, undefined, NaN, Infinity, '5'])(
+    'rejects invalid suggested hours %s even with completed subtasks',
+    suggestedHours => {
+      const readTask = { ...task, logged_hours: 5, suggested_total_hours: suggestedHours };
+      [[], [{ status: 'completed' }]].forEach(subtasks => {
+        expect(canMarkTaskAsDone(readTask, subtasks)).toBe(false);
+        expect(getMarkAsDoneTooltip(readTask, subtasks)).toBe(
+          'Cannot mark as done: Task type or suggested hours are missing or invalid',
+        );
+      });
+    },
+  );
+
+  it('preserves valid reading hours and subtask checks', () => {
+    expect(canMarkTaskAsDone(task)).toBe(false);
+    expect(canMarkTaskAsDone({ ...task, logged_hours: 5 })).toBe(true);
+    expect(canMarkTaskAsDone({ ...task, logged_hours: 6 })).toBe(true);
+    expect(canMarkTaskAsDone(task, [{ status: 'assigned' }])).toBe(false);
+    expect(canMarkTaskAsDone(task, [{ status: 'completed' }])).toBe(true);
+    expect(canMarkTaskAsDone({ ...task, is_completed: true, logged_hours: 5 })).toBe(false);
+  });
+
+  it('does not enable manual completion for a write task that reaches its hours target', () => {
+    expect(canMarkTaskAsDone({ ...task, task_type: 'write', logged_hours: 5 })).toBe(false);
+  });
+});
+
+describe('Write completion progress', () => {
+  it.each(['completed', 'graded'])(
+    'shows 100 percent for %s Write tasks regardless of hours or subtasks',
+    status => {
+      [0, 0.5, undefined].forEach(hours => {
+        [[], [{ status: 'assigned' }]].forEach(subtasks => {
+          expect(
+            calculateProgressPercentage(
+              { ...task, task_type: 'write', status, logged_hours: hours },
+              subtasks,
+            ),
+          ).toBe(100);
+        });
+      });
+    },
+  );
+
+  it.each(['read', 'write'])(
+    'preserves hours and subtask progress for unfinished %s tasks',
+    taskType => {
+      const activeTask = { ...task, task_type: taskType, status: 'in_progress' };
+      expect(calculateProgressPercentage(activeTask)).toBe(60);
+      expect(
+        calculateProgressPercentage(activeTask, [{ status: 'completed' }, { status: 'assigned' }]),
+      ).toBe(50);
+    },
+  );
+
+  it('preserves completed Read progress calculations', () => {
+    expect(calculateProgressPercentage({ ...task, status: 'completed' })).toBe(60);
   });
 });
