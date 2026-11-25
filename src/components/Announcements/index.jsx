@@ -20,6 +20,7 @@ import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
 import PlurkAutoPoster from './platforms/plurk';
 import SocialMediaComposer from './platforms/social/SocialMediaComposer';
+import InstagramAutoPoster from './platforms/instagram/Instagramautopotser';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -247,6 +248,8 @@ function Announcements({ title, email: initialEmail }) {
               case 'reddit':
                 PlatformComposer = RedditAutoPoster;
                 break;
+              case 'instagram':
+                PlatformComposer = InstagramAutoPoster;
               case 'plurk':
                 PlatformComposer = PlurkAutoPoster;
                 break;
