@@ -106,12 +106,16 @@ export function StatusCardGrid({ cards, showComparison, idPrefix }) {
       {cards.map(button => {
         const unavailableTooltipId = `${idPrefix}-unavailable-${button.metricKey}`;
         return (
-          <div
+          <section
             key={button.metricKey}
+            aria-label={button.title}
             className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
             style={{ backgroundColor: button.bgColor }}
           >
             <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
+            {button.description && (
+              <div className={styles.projectDurationDescription}>{button.description}</div>
+            )}
             <div
               className={`${styles.weeklyStatusButton}`}
               style={{ backgroundColor: button.buttonColor }}
@@ -158,7 +162,7 @@ export function StatusCardGrid({ cards, showComparison, idPrefix }) {
                 {button.change}
               </div>
             )}
-          </div>
+          </section>
         );
       })}
     </div>
@@ -170,6 +174,7 @@ StatusCardGrid.propTypes = {
     PropTypes.shape({
       title: PropTypes.string.isRequired,
       metricKey: PropTypes.string.isRequired,
+      description: PropTypes.string,
       bgColor: PropTypes.string,
       buttonColor: PropTypes.string,
       value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
