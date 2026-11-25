@@ -2,7 +2,13 @@ import { updateBMLesson, deleteBMLesson } from '~/actions/bmdashboard/lessonsAct
 import { likeLessonAction } from '~/actions/bmdashboard/lessonLikesActions';
 import LessonCard from './LessonCard';
 
-function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
+function Lessons({
+  filteredLessons,
+  setFilteredLessons,
+  dispatch,
+  selectedLessonIds,
+  setSelectedLessonIds,
+}) {
   const onEditLessonSummary = (lessonId, updatedSummary) => {
     const updatedData = filteredLessons.map(lesson => {
       if (lesson._id === lessonId) {
@@ -37,6 +43,8 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
 
   return (
     <LessonCard
+      selectedLessonIds={selectedLessonIds}
+      setSelectedLessonIds={setSelectedLessonIds}
       onEditLessonSummary={onEditLessonSummary}
       onDeliteLessonCard={onDeliteLessonCard}
       filteredLessons={filteredLessons}

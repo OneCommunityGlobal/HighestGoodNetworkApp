@@ -8,8 +8,17 @@ import ReactHtmlParser from 'html-react-parser';
 import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 import styles from './LessonCard.module.css';
+import { formatLessonTag } from './lessonTagDisplay';
+import { canEditLesson } from './lessonEditPermissions';
 
-function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, handleLike }) {
+function LessonCard({
+  filteredLessons,
+  onEditLessonSummary,
+  onDeliteLessonCard,
+  handleLike,
+  selectedLessonIds = [],
+  setSelectedLessonIds,
+}) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const maxSummaryLength = 1500;
   const [expandedCards, setExpandedCards] = useState([]);
@@ -77,14 +86,42 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
 
   const lessonCards = (filteredLessons || []).map(lesson => {
     const { isLiked, totalLikes } = getLikeStatus(lesson._id);
+    const editable = canEditLesson(lesson, auth.user);
 
     return (
       <Card key={lesson._id} className={`${styles.lessonCard} ${darkMode ? styles.darkCard : ''}`}>
         <Card.Header
           onClick={() => toggleCardExpansion(lesson._id)}
           style={{ cursor: 'pointer' }}
-          className={styles.lessonCardHeader}
+          className={`${styles.lessonCardHeader} ${
+            setSelectedLessonIds ? styles.selectableHeader : ''
+          }`}
         >
+          {setSelectedLessonIds && (
+            <input
+              type="checkbox"
+              className={styles.lessonSelection}
+              onClick={event => event.stopPropagation()}
+              aria-label={`Select lesson ${lesson.title}`}
+              checked={selectedLessonIds.includes(lesson._id)}
+              title={
+                editable
+                  ? undefined
+                  : 'Only the author, an Admin, or an Owner can edit this lesson.'
+              }
+              disabled={
+                !editable ||
+                (!selectedLessonIds.includes(lesson._id) && selectedLessonIds.length >= 100)
+              }
+              onChange={() =>
+                setSelectedLessonIds(previous =>
+                  previous.includes(lesson._id)
+                    ? previous.filter(id => id !== lesson._id)
+                    : [...previous, lesson._id],
+                )
+              }
+            />
+          )}
           <Nav className={styles.lessonCardNav}>
             <div className={styles.navTitleAndDate}>
               <Nav.Item className={`${styles.lessonCardNavItem} ${styles.navItemTitle}`}>
@@ -103,7 +140,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                       key={`tag-in-header-${tag}-${lesson._id}`}
                       className={`text-muted ${styles.tagItem}`}
                     >
-                      #{tag}
+                      {formatLessonTag(tag)}
                     </span>
                   ))}
               </Nav.Item>
@@ -122,7 +159,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                       key={`tag-in-body-${tag}-${lesson._id}`}
                       className={`text-muted ${styles.tagItem}`}
                     >
-                      #{tag}
+                      {formatLessonTag(tag)}
                     </span>
                   ))}
               </Card.Text>
@@ -172,7 +209,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
               </div>
 
               <div className={styles.lessonCardFooterItems}>
-                {currentUserId === lesson.author?.id && (
+                {editable && (
                   <div>
                     <button
                       className="text-muted"
