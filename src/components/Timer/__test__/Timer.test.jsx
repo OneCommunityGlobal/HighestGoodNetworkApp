@@ -3,6 +3,7 @@ import '@testing-library/jest-dom';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useEffect, useRef, useState } from 'react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import config from '../../../config.json';
 import Timer from '../Timer';
@@ -96,7 +97,7 @@ vi.mock('../../Timelog/TimeEntryForm', () => ({
 
 const mockStore = configureMockStore([]);
 
-const renderTimer = () => {
+const renderTimer = (isPopout = true) => {
   const store = mockStore({
     auth: { user: { userid: 'user-1', role: 'Volunteer' } },
     userProfile: {},
@@ -106,7 +107,9 @@ const renderTimer = () => {
   // is "open", without needing to click through the header dropdown toggle first.
   return render(
     <Provider store={store}>
-      <Timer isPopout darkMode={false} />
+      <MemoryRouter>
+        <Timer isPopout={isPopout} darkMode={false} />
+      </MemoryRouter>
     </Provider>,
   );
 };
@@ -485,6 +488,27 @@ describe('Timer connection loss and recovery', () => {
     });
 
     // No retry gets scheduled at all - exhausted immediately.
+    expect(screen.getByText('Disconnected')).toBeInTheDocument();
+    expect(screen.getByLabelText('Reload timer')).toBeInTheDocument();
+  });
+
+  it('shows retry status in the header preview until the token is unusable', () => {
+    renderTimer(false);
+
+    act(() => {
+      mocks.latestOptions.onClose({ code: 1006, reason: 'mock drop' });
+    });
+    expect(screen.getByText('Reconnecting...')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Reload timer')).not.toBeInTheDocument();
+  });
+
+  it('shows the header reload control when the token is unusable', () => {
+    localStorage.removeItem(config.tokenKey);
+    renderTimer(false);
+
+    act(() => {
+      mocks.latestOptions.onClose({ code: 1006, reason: 'mock drop' });
+    });
     expect(screen.getByText('Disconnected')).toBeInTheDocument();
     expect(screen.getByLabelText('Reload timer')).toBeInTheDocument();
   });
