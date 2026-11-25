@@ -168,8 +168,8 @@ function DonutCard({ title, subtitle, items, emptyMessage, error, colors }) {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  innerRadius={50}
-                  outerRadius={74}
+                  innerRadius={58}
+                  outerRadius={86}
                   paddingAngle={3}
                 >
                   {chartData.map((entry, index) => (

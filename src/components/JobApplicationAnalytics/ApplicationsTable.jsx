@@ -105,7 +105,7 @@ function ApplicationsTable({
       }
     };
 
-    loadDetail();
+    void loadDetail();
     return () => {
       cancelled = true;
     };
@@ -144,7 +144,7 @@ function ApplicationsTable({
       }
     };
 
-    loadQuestions();
+    void loadQuestions();
     return () => {
       cancelled = true;
     };
