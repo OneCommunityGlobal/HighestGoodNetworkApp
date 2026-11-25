@@ -1,8 +1,11 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import Select, { components } from 'react-select';
+import axios from 'axios';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
+import { getUserProfileBasicInfo } from '../../../actions/userManagement';
+import { ENDPOINTS } from '../../../utils/URL';
 import 'chart.js/auto';
 import styles from './issueChart.module.css';
 
@@ -22,6 +25,86 @@ const YEAR_COLORS = [
 ];
 
 const getYearColor = idx => YEAR_COLORS[idx % YEAR_COLORS.length];
+
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+const BREAKDOWN_OPTIONS = [
+  { value: 'month', label: 'Month' },
+  { value: 'project', label: 'Project' },
+  { value: 'subCategory', label: 'Sub-category' },
+];
+
+// Issue title/text are stored as arrays in the BuildingIssue model
+const joinText = value => (Array.isArray(value) ? value.filter(Boolean).join(' ') : value || '');
+
+// Severity levels stored on building issues; older issues without one are "Unspecified"
+const SEVERITY_LEVELS = new Set(['Low', 'Medium', 'High', 'Critical']);
+const UNSPECIFIED_SEVERITY = 'Unspecified';
+const SEVERITY_OPTIONS = [...SEVERITY_LEVELS, UNSPECIFIED_SEVERITY].map(level => ({
+  value: level,
+  label: level,
+}));
+const getSeverity = issue =>
+  SEVERITY_LEVELS.has(issue?.severity) ? issue.severity : UNSPECIFIED_SEVERITY;
+// projectId / createdBy may come back as an id string or a populated object
+const toId = value => String(value?._id ?? value ?? '');
+
+// The chart groups years with UTC ($year in the aggregation), so drill-down does the same
+const getIssueYear = issue => new Date(issue.issueDate).getUTCFullYear();
+
+const formatIssueDate = value => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toISOString().slice(0, 10);
+};
+
+const escapeCsvValue = value => {
+  const text = String(value ?? '');
+  return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+};
+
+// Builds a CSV (opens directly in Excel) and triggers a download
+const downloadCsv = (fileName, header, rows) => {
+  const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(','));
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};
+
+const toFileSlug = value =>
+  String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+const formatTrend = (current, previous) => {
+  const diff = current - previous;
+  if (diff === 0) return { arrow: '▬', text: 'no change', direction: 'Flat' };
+  const pct = previous > 0 ? ` (${Math.round((Math.abs(diff) / previous) * 100)}%)` : '';
+  // More issues is worse, so an increase is shown as a warning colour
+  return diff > 0
+    ? { arrow: '▲', text: `+${diff}${pct}`, direction: 'Up' }
+    : { arrow: '▼', text: `${diff}${pct}`, direction: 'Down' };
+};
 
 const stripNumericSuffix = value => {
   const str = String(value);
@@ -130,7 +213,8 @@ const barValueLabelsPlugin = {
     ctx.fillStyle = pluginOptions.color || '#232323';
 
     chart.data.datasets.forEach((dataset, datasetIndex) => {
-      if (!chart.isDatasetVisible(datasetIndex)) return;
+      // Value labels are for bars only (the trend line has its own tooltip)
+      if (!chart.isDatasetVisible(datasetIndex) || dataset.type === 'line') return;
       const meta = chart.getDatasetMeta(datasetIndex);
 
       meta.data.forEach((bar, index) => {
@@ -159,6 +243,7 @@ const handleLegendClick = (e, legendItem, legend) => {
 const getTooltipLabel = (ctx, chartAnalysis) => {
   const year = ctx.dataset.label;
   const value = Number(ctx.raw) || 0;
+  if (ctx.dataset.type === 'line') return `${year}: ${value}`;
   const total = chartAnalysis.totalByYear?.[year] ?? 0;
   const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
   return `${year}: ${value} (${pct}%)`;
@@ -188,11 +273,26 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
+  const userProfiles = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
   // 'multi' compares several years side by side; 'single' focuses on one year
   const [viewMode, setViewMode] = useState('multi');
   const [singleYear, setSingleYear] = useState(null);
+  // Project and Reported By filters (ids); applied to the individual issue records
+  const [projectFilter, setProjectFilter] = useState([]);
+  const [reporterFilter, setReporterFilter] = useState([]);
+  const [severityFilter, setSeverityFilter] = useState([]);
+  // Drill-down: the bar the user clicked ({ base: issue type, year })
+  const [drill, setDrill] = useState(null);
+  const [breakdownBy, setBreakdownBy] = useState('month');
+  // Individual issue records are only loaded the first time a bar is clicked
+  const [issueRecords, setIssueRecords] = useState(null);
+  const [projectNames, setProjectNames] = useState({});
+  const [recordsLoading, setRecordsLoading] = useState(false);
+  const [recordsError, setRecordsError] = useState('');
+  // Ref (not state) so the chart's click handler always sees whether records were requested
+  const recordsRequestedRef = useRef(false);
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.innerWidth <= 640 : false,
   );
@@ -202,6 +302,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
   useEffect(() => {
     dispatch(fetchIssues());
+    // Names for the Reported By filter
+    dispatch(getUserProfileBasicInfo({ source: 'IssueChart' }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -317,6 +419,94 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       years: [],
     });
     setSingleYear(null);
+    setProjectFilter([]);
+    setReporterFilter([]);
+    setSeverityFilter([]);
+    setDrill(null);
+  };
+
+  const loadIssueRecords = async () => {
+    if (recordsRequestedRef.current) return;
+    recordsRequestedRef.current = true;
+    setRecordsLoading(true);
+    setRecordsError('');
+    try {
+      const [issuesRes, projectsRes] = await Promise.all([
+        axios.get(ENDPOINTS.BM_INJURY_ISSUE),
+        axios.get(`${ENDPOINTS.BM_INJURY_ISSUE}/projects`).catch(() => ({ data: [] })),
+      ]);
+      const names = {};
+      (Array.isArray(projectsRes.data) ? projectsRes.data : []).forEach(project => {
+        const id = project?.projectId || project?._id || project?.id;
+        const name = project?.projectName || project?.name;
+        if (id && name) names[String(id)] = name;
+      });
+      setProjectNames(names);
+      setIssueRecords(Array.isArray(issuesRes.data) ? issuesRes.data : []);
+    } catch {
+      // Allow a retry on the next bar click
+      recordsRequestedRef.current = false;
+      setRecordsError('Could not load issue details. Click the bar again to retry.');
+    } finally {
+      setRecordsLoading(false);
+    }
+  };
+
+  // Records are needed for the Project / Reported By filters, so load them up front
+  useEffect(() => {
+    loadIssueRecords().catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const matchesRecordFilters = issue =>
+    (!projectFilter.length || projectFilter.includes(toId(issue.projectId))) &&
+    (!reporterFilter.length || reporterFilter.includes(toId(issue.createdBy))) &&
+    (!severityFilter.length || severityFilter.includes(getSeverity(issue)));
+
+  const hasRecordFilters =
+    projectFilter.length > 0 || reporterFilter.length > 0 || severityFilter.length > 0;
+
+  // Issue counts in the same { type: { year: count } } shape as the chart API, built from
+  // records so the extra filters apply. Falls back to the API counts until records load.
+  const issueCounts = useMemo(() => {
+    if (!issueRecords) return issues || {};
+    const counts = {};
+    issueRecords.forEach(issue => {
+      if (!isValidIssueType(issue?.issueType) || !matchesRecordFilters(issue)) return;
+      const year = getIssueYear(issue);
+      if (Number.isNaN(year)) return;
+      if (!counts[issue.issueType]) counts[issue.issueType] = {};
+      counts[issue.issueType][year] = (counts[issue.issueType][year] || 0) + 1;
+    });
+    return counts;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [issueRecords, issues, projectFilter, reporterFilter, severityFilter]);
+
+  const projectOptions = useMemo(() => {
+    const ids = new Set((issueRecords || []).map(issue => toId(issue.projectId)).filter(Boolean));
+    return Array.from(ids)
+      .map(id => ({ value: id, label: projectNames[id] || `Project ${id.slice(-6)}` }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [issueRecords, projectNames]);
+
+  const reporterOptions = useMemo(() => {
+    const profiles = Array.isArray(userProfiles) ? userProfiles : [];
+    const nameById = new Map(
+      profiles.map(user => [
+        String(user._id),
+        `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+      ]),
+    );
+    const ids = new Set((issueRecords || []).map(issue => toId(issue.createdBy)).filter(Boolean));
+    return Array.from(ids)
+      .map(id => ({ value: id, label: nameById.get(id) || `User ${id.slice(-6)}` }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [issueRecords, userProfiles]);
+
+  const openDrillDown = (base, year) => {
+    setDrill({ base, year: String(year) });
+    // Errors are handled inside loadIssueRecords (shown in the panel)
+    loadIssueRecords().catch(() => {});
   };
 
   const chartData = useMemo(() => {
@@ -369,7 +559,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       data: labels.map(base =>
         (groupMap[base] || [])
           .filter(type => selectedTypeSet.has(String(type).toLowerCase()))
-          .reduce((sum, type) => sum + (issues[type]?.[year] || 0), 0),
+          .reduce((sum, type) => sum + (issueCounts[type]?.[year] || 0), 0),
       ),
       backgroundColor: yearColorMap[year],
       borderColor: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
@@ -378,7 +568,16 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     }));
 
     return { labels, datasets };
-  }, [issues, filters, uniqueYears, yearColorMap, darkMode, isSingleYearView, selectedSingleYear]);
+  }, [
+    issues,
+    issueCounts,
+    filters,
+    uniqueYears,
+    yearColorMap,
+    darkMode,
+    isSingleYearView,
+    selectedSingleYear,
+  ]);
 
   const chartAnalysis = useMemo(() => {
     const labels = chartData?.labels ?? [];
@@ -423,6 +622,309 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     return { totalByYear, topIssueTypeIndex, insightText };
   }, [chartData]);
 
+  // Summary and year-over-year trend for the current filters
+  const summary = useMemo(() => {
+    const labels = chartData?.labels ?? [];
+    const datasets = chartData?.datasets ?? [];
+    if (!labels.length || !datasets.length) return null;
+
+    const totalIssues = datasets.reduce(
+      (sum, ds) => sum + (ds.data || []).reduce((s, v) => s + (Number(v) || 0), 0),
+      0,
+    );
+    const typeTotals = labels.map((label, idx) => ({
+      label,
+      total: datasets.reduce((sum, ds) => sum + (Number(ds.data?.[idx]) || 0), 0),
+    }));
+    const topType = typeTotals.reduce((best, item) => (item.total > best.total ? item : best));
+
+    // Year totals across all data for the selected issue types (previous year may be filtered out)
+    const selectedTypes = filters.issueTypes.length
+      ? filters.issueTypes
+      : getValidIssueTypes(issues);
+    const totalForYear = (year, base) =>
+      selectedTypes
+        .filter(type => base === undefined || stripNumericSuffix(type) === base)
+        .reduce((sum, type) => sum + (Number(issueCounts?.[type]?.[year]) || 0), 0);
+
+    const latestShownYear = Math.max(...datasets.map(ds => Number(ds.label)));
+    const previousYear = latestShownYear - 1;
+    const hasPreviousYear = uniqueYears.includes(previousYear);
+
+    let yearTrend = null;
+    let biggestIncrease = null;
+    if (hasPreviousYear) {
+      yearTrend = formatTrend(totalForYear(latestShownYear), totalForYear(previousYear));
+      labels.forEach(base => {
+        const diff = totalForYear(latestShownYear, base) - totalForYear(previousYear, base);
+        if (diff > 0 && (!biggestIncrease || diff > biggestIncrease.diff)) {
+          biggestIncrease = { base, diff };
+        }
+      });
+    }
+
+    // Share of currently open issues by type, for the shown types and years
+    let openShare = null;
+    if (issueRecords) {
+      const shownYears = new Set(datasets.map(ds => String(ds.label)));
+      const shownTypes = new Set(selectedTypes.map(type => String(type).toLowerCase()));
+      const openByBase = {};
+      let openTotal = 0;
+      issueRecords.forEach(issue => {
+        if (
+          issue?.status !== 'open' ||
+          !matchesRecordFilters(issue) ||
+          !shownTypes.has(String(issue.issueType).toLowerCase()) ||
+          !shownYears.has(String(getIssueYear(issue)))
+        ) {
+          return;
+        }
+        const base = stripNumericSuffix(issue.issueType);
+        openByBase[base] = (openByBase[base] || 0) + 1;
+        openTotal += 1;
+      });
+      const topOpen = Object.entries(openByBase).sort((a, b) => b[1] - a[1])[0];
+      openShare = topOpen
+        ? { base: topOpen[0], percent: Math.round((topOpen[1] / openTotal) * 100), openTotal }
+        : { base: null, percent: 0, openTotal: 0 };
+    }
+
+    return {
+      openShare,
+      totalIssues,
+      topType,
+      topShare: totalIssues > 0 ? Math.round((topType.total / totalIssues) * 100) : 0,
+      latestShownYear,
+      previousYear,
+      yearTrend,
+      biggestIncrease,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    chartData,
+    filters.issueTypes,
+    issues,
+    issueCounts,
+    uniqueYears,
+    issueRecords,
+    projectFilter,
+    reporterFilter,
+    severityFilter,
+  ]);
+
+  // Drill-down stays open only while its bar is still in the chart
+  const drillActive =
+    Boolean(drill) &&
+    (chartData?.labels ?? []).includes(drill.base) &&
+    (chartData?.datasets ?? []).some(ds => ds.label === drill.year);
+
+  const drilledIssues = useMemo(() => {
+    if (!drillActive || !issueRecords) return [];
+    const selectedTypes = new Set(
+      (filters.issueTypes.length ? filters.issueTypes : getValidIssueTypes(issues)).map(type =>
+        String(type).toLowerCase(),
+      ),
+    );
+    return issueRecords
+      .filter(issue => {
+        const type = String(issue?.issueType ?? '');
+        return (
+          matchesRecordFilters(issue) &&
+          stripNumericSuffix(type) === drill.base &&
+          selectedTypes.has(type.toLowerCase()) &&
+          String(getIssueYear(issue)) === drill.year
+        );
+      })
+      .sort((a, b) => new Date(a.issueDate) - new Date(b.issueDate));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    drillActive,
+    issueRecords,
+    drill,
+    filters.issueTypes,
+    issues,
+    projectFilter,
+    reporterFilter,
+    severityFilter,
+  ]);
+
+  const getProjectName = projectId =>
+    projectNames[String(projectId)] || (projectId ? `Project ${String(projectId).slice(-6)}` : '—');
+
+  const breakdownRows = useMemo(() => {
+    const counts = new Map();
+    drilledIssues.forEach(issue => {
+      let key;
+      if (breakdownBy === 'month') {
+        key = MONTH_NAMES[new Date(issue.issueDate).getUTCMonth()];
+      } else if (breakdownBy === 'project') {
+        key = getProjectName(issue.projectId);
+      } else {
+        key = issue.issueType || 'Unknown';
+      }
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+    const rows = Array.from(counts, ([label, count]) => ({ label, count }));
+    if (breakdownBy === 'month') {
+      return rows.sort((a, b) => MONTH_NAMES.indexOf(a.label) - MONTH_NAMES.indexOf(b.label));
+    }
+    return rows.sort((a, b) => b.count - a.count);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drilledIssues, breakdownBy, projectNames]);
+
+  // Year-over-year change and resolved/unresolved split for one bar, used by the tooltip
+  const statusByBaseYear = useMemo(() => {
+    const map = {};
+    (issueRecords || []).forEach(issue => {
+      if (!isValidIssueType(issue?.issueType) || !matchesRecordFilters(issue)) return;
+      const key = `${stripNumericSuffix(issue.issueType)}|${getIssueYear(issue)}`;
+      if (!map[key]) map[key] = { open: 0, resolved: 0 };
+      // Anything not "open" (closed / close) counts as resolved
+      if (issue.status === 'open') map[key].open += 1;
+      else map[key].resolved += 1;
+    });
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [issueRecords, projectFilter, reporterFilter, severityFilter]);
+
+  const countForBaseYear = (base, year) => {
+    const selectedTypes = filters.issueTypes.length
+      ? filters.issueTypes
+      : getValidIssueTypes(issues);
+    return selectedTypes
+      .filter(type => stripNumericSuffix(type) === base)
+      .reduce((sum, type) => sum + (Number(issueCounts?.[type]?.[year]) || 0), 0);
+  };
+
+  const getTooltipDetails = ctx => {
+    if (ctx.dataset.type === 'line') return [];
+    const base = ctx.label;
+    const year = Number(ctx.dataset.label);
+    const value = Number(ctx.raw) || 0;
+    const lines = [];
+    if (uniqueYears.includes(year - 1)) {
+      const previous = countForBaseYear(base, year - 1);
+      const trend = formatTrend(value, previous);
+      lines.push(`Change vs ${year - 1}: ${trend.arrow} ${trend.text}`);
+    } else {
+      lines.push(`No data for ${year - 1} to compare`);
+    }
+    const status = statusByBaseYear[`${base}|${year}`];
+    if (status) lines.push(`Unresolved: ${status.open} · Resolved: ${status.resolved}`);
+    return lines;
+  };
+
+  // Combo chart: bars per year plus a trend line (average across the shown years)
+  const displayChartData = useMemo(() => {
+    const labels = chartData?.labels ?? [];
+    const datasets = chartData?.datasets ?? [];
+    if (datasets.length < 2) return chartData;
+    const average = labels.map((_, idx) => {
+      const sum = datasets.reduce((total, ds) => total + (Number(ds.data?.[idx]) || 0), 0);
+      return Math.round((sum / datasets.length) * 10) / 10;
+    });
+    return {
+      labels,
+      datasets: [
+        {
+          type: 'line',
+          label: 'Average per year',
+          data: average,
+          borderColor: darkMode ? '#facc15' : '#ca8a04',
+          backgroundColor: darkMode ? '#facc15' : '#ca8a04',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 3,
+          tension: 0.3,
+          // Smooth curve that never overshoots below the data (no dips under 0)
+          cubicInterpolationMode: 'monotone',
+          order: 0,
+        },
+        ...datasets.map(ds => ({ ...ds, type: 'bar', order: 1 })),
+      ],
+    };
+  }, [chartData, darkMode]);
+
+  const chartRef = useRef(null);
+
+  // Copies the chart onto a solid background so the image is readable outside the app
+  const getChartImage = () => {
+    const chart = chartRef.current;
+    if (!chart?.canvas) return null;
+    const source = chart.canvas;
+    const canvas = document.createElement('canvas');
+    canvas.width = source.width;
+    canvas.height = source.height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = darkMode ? '#1c2541' : '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(source, 0, 0);
+    return canvas.toDataURL('image/png');
+  };
+
+  const handleExportPng = () => {
+    const image = getChartImage();
+    if (!image) return;
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = 'issue-chart.png';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  // Opens the browser print dialog with just the chart, where "Save as PDF" can be chosen
+  const handleExportPdf = () => {
+    const image = getChartImage();
+    if (!image) return;
+    const frame = document.createElement('iframe');
+    frame.style.position = 'fixed';
+    frame.style.width = '0';
+    frame.style.height = '0';
+    frame.style.border = '0';
+    frame.onload = () => {
+      frame.contentWindow.focus();
+      frame.contentWindow.print();
+      setTimeout(() => frame.remove(), 1000);
+    };
+    // srcdoc instead of the deprecated document.write
+    frame.srcdoc =
+      `<html><head><title>Issue Chart</title></head><body style="margin:24px;font-family:sans-serif">` +
+      `<h2>Issue Chart</h2>` +
+      `<img src="${image}" style="max-width:100%" /></body></html>`;
+    document.body.appendChild(frame);
+  };
+
+  const handleExportChart = () => {
+    const labels = chartData?.labels ?? [];
+    const datasets = chartData?.datasets ?? [];
+    const header = ['Issue Type', ...datasets.map(ds => ds.label)];
+    const rows = labels.map((label, idx) => [label, ...datasets.map(ds => ds.data?.[idx] ?? 0)]);
+    downloadCsv('issue-chart-summary.csv', header, rows);
+  };
+
+  const handleExportDrillDown = () => {
+    const header = [
+      'Date',
+      'Title',
+      'Description',
+      'Project',
+      'Sub-category',
+      'Severity',
+      'Status',
+    ];
+    const rows = drilledIssues.map(issue => [
+      formatIssueDate(issue.issueDate),
+      joinText(issue.issueTitle),
+      joinText(issue.issueText),
+      getProjectName(issue.projectId),
+      issue.issueType,
+      getSeverity(issue),
+      issue.status,
+    ]);
+    downloadCsv(`issues-${toFileSlug(drill.base)}-${drill.year}.csv`, header, rows);
+  };
+
   const xAxisBackgroundPlugin = dm => ({
     id: 'xAxisBackground',
     beforeDraw: chart => {
@@ -453,6 +955,21 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     () => ({
       responsive: true,
       maintainAspectRatio: false,
+      // Clicking a bar opens the drill-down for that issue type and year
+      onClick: (_event, elements, chart) => {
+        if (!elements?.length) return;
+        const { datasetIndex, index } = elements[0];
+        const dataset = chart.data.datasets?.[datasetIndex];
+        // The trend line is not a single year, so it has no drill-down
+        if (dataset?.type === 'line') return;
+        const base = chart.data.labels?.[index];
+        const year = dataset?.label;
+        if (base !== undefined && year !== undefined) openDrillDown(base, year);
+      },
+      onHover: (event, elements) => {
+        const target = event?.native?.target;
+        if (target) target.style.cursor = elements?.length ? 'pointer' : 'default';
+      },
       layout: {
         padding: {
           // Room above the tallest bar for its value label
@@ -487,6 +1004,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           callbacks: {
             title: items => items?.[0]?.label ?? '',
             label: ctx => getTooltipLabel(ctx, chartAnalysis),
+            afterLabel: ctx => getTooltipDetails(ctx),
           },
         },
         datalabels: {
@@ -555,7 +1073,18 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         },
       },
     }),
-    [darkMode, isMobile, chartAnalysis, chartData, isCardVariant],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      darkMode,
+      isMobile,
+      chartAnalysis,
+      chartData,
+      isCardVariant,
+      statusByBaseYear,
+      issueCounts,
+      filters.issueTypes,
+      uniqueYears,
+    ],
   );
 
   const chartPlugins = useMemo(
@@ -720,8 +1249,10 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     const range =
       yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
 
-    return `${issueTypeCount} Issue Types | ${range}`;
+    const extra = hasRecordFilters ? ' | Project/Reporter/Severity filtered' : '';
+    return `${issueTypeCount} Issue Types | ${range}${extra}`;
   }, [
+    hasRecordFilters,
     filters.issueTypes,
     filters.years,
     issues,
@@ -848,6 +1379,68 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           )}
         </div>
 
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`project-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+          >
+            Project:
+          </label>
+          <Select
+            inputId={`project-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={projectOptions}
+            value={projectOptions.filter(option => projectFilter.includes(option.value))}
+            onChange={selected => setProjectFilter((selected || []).map(option => option.value))}
+            styles={selectStyles}
+            isLoading={recordsLoading}
+            aria-label="Filter issues by project"
+            placeholder="All projects"
+          />
+        </div>
+
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`reporter-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+          >
+            Reported By:
+          </label>
+          <Select
+            inputId={`reporter-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={reporterOptions}
+            value={reporterOptions.filter(option => reporterFilter.includes(option.value))}
+            onChange={selected => setReporterFilter((selected || []).map(option => option.value))}
+            styles={selectStyles}
+            isLoading={recordsLoading}
+            aria-label="Filter issues by reporter"
+            placeholder="Anyone"
+          />
+        </div>
+
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`severity-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+          >
+            Severity Level:
+          </label>
+          <Select
+            inputId={`severity-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={SEVERITY_OPTIONS}
+            value={SEVERITY_OPTIONS.filter(option => severityFilter.includes(option.value))}
+            onChange={selected => setSeverityFilter((selected || []).map(option => option.value))}
+            styles={selectStyles}
+            aria-label="Filter issues by severity level"
+            placeholder="All severities"
+          />
+        </div>
+
         <div style={{ display: 'flex', alignItems: 'flex-end' }}>
           <button
             type="button"
@@ -891,6 +1484,88 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         >
           <div className={styles.activeFilterSummary}>{activeFilterSummary}</div>
 
+          {summary && (
+            <section
+              className={`${styles.issueInsights} ${darkMode ? styles.issueInsightsDark : ''}`}
+              aria-label="Issue summary"
+            >
+              <div className={styles.issueInsightsStats}>
+                <div className={styles.issueInsightsStat}>
+                  <span className={styles.issueInsightsValue}>{summary.totalIssues}</span>
+                  <span className={styles.issueInsightsLabel}>Total issues</span>
+                </div>
+                <div className={styles.issueInsightsStat}>
+                  <span className={styles.issueInsightsValue}>{summary.topType.label}</span>
+                  <span className={styles.issueInsightsLabel}>
+                    Highest-impact type ({summary.topType.total}, {summary.topShare}%)
+                  </span>
+                </div>
+                <div className={styles.issueInsightsStat}>
+                  {summary.yearTrend ? (
+                    <span
+                      className={`${styles.issueInsightsValue} ${
+                        styles[`issueTrend${summary.yearTrend.direction}`]
+                      }`}
+                    >
+                      {summary.yearTrend.arrow} {summary.yearTrend.text}
+                    </span>
+                  ) : (
+                    <span className={styles.issueInsightsValue}>—</span>
+                  )}
+                  <span className={styles.issueInsightsLabel}>
+                    {summary.latestShownYear} vs {summary.previousYear}
+                  </span>
+                </div>
+                {summary.openShare && (
+                  <div className={styles.issueInsightsStat}>
+                    <span className={styles.issueInsightsValue}>
+                      {summary.openShare.base ? `${summary.openShare.percent}%` : '0'}
+                    </span>
+                    <span className={styles.issueInsightsLabel}>
+                      {summary.openShare.base
+                        ? `of ${summary.openShare.openTotal} open issues are ${summary.openShare.base}`
+                        : 'No open issues'}
+                    </span>
+                  </div>
+                )}
+              </div>
+              {summary.biggestIncrease && (
+                <p className={styles.issueInsightsNote}>
+                  Largest increase: <strong>{summary.biggestIncrease.base}</strong> (+
+                  {summary.biggestIncrease.diff} vs {summary.previousYear})
+                </p>
+              )}
+              <div className={styles.issueInsightsActions}>
+                <span className={styles.issueInsightsHint}>
+                  Click a bar to see the issues behind it.
+                </span>
+                <div className={styles.issueExportGroup}>
+                  <button
+                    type="button"
+                    className={styles.issueExportButton}
+                    onClick={handleExportChart}
+                  >
+                    Export chart data (CSV)
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.issueExportButton}
+                    onClick={handleExportPng}
+                  >
+                    Export PNG
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.issueExportButton}
+                    onClick={handleExportPdf}
+                  >
+                    Export PDF
+                  </button>
+                </div>
+              </div>
+            </section>
+          )}
+
           <div
             className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
             style={{
@@ -898,9 +1573,9 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
               height: isCardVariant ? 'clamp(560px, 58vh, 720px)' : '520px',
               maxHeight: isCardVariant ? 'none' : '520px',
               display: 'flex',
-              flex: isCardVariant ? '1 1 auto' : undefined,
+              flex: isCardVariant ? '1 0 auto' : undefined, // don't shrink when the summary is shown
               flexDirection: 'column',
-              minHeight: isCardVariant ? 0 : undefined,
+              minHeight: isCardVariant ? 480 : undefined, // keep the chart readable below the summary
               position: 'relative',
               overflow: 'hidden',
               paddingTop: 12,
@@ -909,7 +1584,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           >
             <div style={{ flex: '1 1 auto', minHeight: 0, position: 'relative' }}>
               <Bar
-                data={chartData}
+                ref={chartRef}
+                data={displayChartData}
                 options={chartOptions}
                 plugins={chartPlugins}
                 aria-labelledby="chart-title"
@@ -927,6 +1603,111 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
               {chartAnalysis.insightText}
             </p>
           </div>
+
+          {drillActive && (
+            <section
+              className={`${styles.issueDrillDown} ${darkMode ? styles.issueDrillDownDark : ''}`}
+              aria-label={`${drill.base} issues in ${drill.year}`}
+            >
+              <div className={styles.issueDrillHeader}>
+                <h3 className={styles.issueDrillTitle}>
+                  {drill.base} · {drill.year}
+                  {!recordsLoading && issueRecords && ` — ${drilledIssues.length} issues`}
+                </h3>
+                <div className={styles.issueDrillActions}>
+                  <button
+                    type="button"
+                    className={styles.issueExportButton}
+                    onClick={handleExportDrillDown}
+                    disabled={recordsLoading || drilledIssues.length === 0}
+                  >
+                    Export CSV
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.issueDrillClose}
+                    onClick={() => setDrill(null)}
+                    aria-label="Close issue details"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              {recordsLoading && <p className={styles.issueDrillMessage}>Loading issues…</p>}
+              {!recordsLoading && recordsError && (
+                <p className={styles.issueDrillError} role="alert">
+                  {recordsError}
+                </p>
+              )}
+
+              {!recordsLoading && !recordsError && issueRecords && (
+                <>
+                  <fieldset className={styles.issueBreakdownToggle} aria-label="Break down by">
+                    {BREAKDOWN_OPTIONS.map(option => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`${styles.issueBreakdownButton} ${
+                          breakdownBy === option.value ? styles.issueBreakdownButtonActive : ''
+                        }`}
+                        aria-pressed={breakdownBy === option.value}
+                        onClick={() => setBreakdownBy(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </fieldset>
+
+                  {breakdownRows.length > 0 ? (
+                    <ul className={styles.issueBreakdownList}>
+                      {breakdownRows.map(row => (
+                        <li key={row.label}>
+                          <span>{row.label}</span>
+                          <strong>{row.count}</strong>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className={styles.issueDrillMessage}>No issue records found for this bar.</p>
+                  )}
+
+                  {drilledIssues.length > 0 && (
+                    <div className={styles.issueDrillTableWrapper}>
+                      <table className={styles.issueDrillTable}>
+                        <thead>
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Project</th>
+                            <th scope="col">Sub-category</th>
+                            <th scope="col">Severity</th>
+                            <th scope="col">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {drilledIssues.map(issue => (
+                            <tr key={issue._id}>
+                              <td>{formatIssueDate(issue.issueDate)}</td>
+                              <td title={joinText(issue.issueText)}>
+                                {joinText(issue.issueTitle) ||
+                                  joinText(issue.issueText).slice(0, 60) ||
+                                  '—'}
+                              </td>
+                              <td>{getProjectName(issue.projectId)}</td>
+                              <td>{issue.issueType}</td>
+                              <td>{getSeverity(issue)}</td>
+                              <td>{issue.status}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
+              )}
+            </section>
+          )}
         </div>
       )}
     </div>
