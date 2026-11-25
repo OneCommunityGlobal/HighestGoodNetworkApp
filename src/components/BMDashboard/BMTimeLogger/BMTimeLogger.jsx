@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom';
 // import Select from 'react-select';
 import moment from 'moment';
 import { Row, Container, Col, Input } from 'reactstrap';
@@ -8,9 +9,16 @@ import BMTimeLogCard from './BMTimeLogCard';
 import BMError from '../shared/BMError';
 import styles from './BMTimeLogger.module.css';
 
+const TIMELOG_PATH = '/bmdashboard/timelog';
+
 function BMTimeLogger() {
   const [isError, setIsError] = useState(false);
-  const [selectedProject, setselectedProject] = useState(null);
+
+  // The selected project lives in the URL (/bmdashboard/timelog/:projectId),
+  // so a refresh, the back button, or a shared link keeps the same project.
+  const { projectId } = useParams();
+  const selectedProject = projectId || '';
+  const history = useHistory();
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
@@ -26,6 +34,11 @@ function BMTimeLogger() {
       setIsError(true);
     }
   }, [errors]);
+
+  const handleProjectChange = e => {
+    const { value } = e.target;
+    history.push(value ? `${TIMELOG_PATH}/${value}` : TIMELOG_PATH);
+  };
 
   return (
     <Container className="justify-content-center">
@@ -46,11 +59,8 @@ function BMTimeLogger() {
             id="projectSelect"
             name="select"
             type="select"
-            value={selectedProject || ''}
-            onChange={e => {
-              const { value } = e.target;
-              setselectedProject(value);
-            }}
+            value={selectedProject}
+            onChange={handleProjectChange}
           >
             <option value="">Select a project</option>
             {projects.map(project => (
@@ -62,7 +72,8 @@ function BMTimeLogger() {
         </Col>
       </Row>
 
-      {selectedProject && <BMTimeLogCard selectedProject={selectedProject} />}
+      {/* key resets the card (search, members, errors) when the project changes */}
+      {selectedProject && <BMTimeLogCard key={selectedProject} selectedProject={selectedProject} />}
       {isError && <BMError errors={errors} />}
     </Container>
   );

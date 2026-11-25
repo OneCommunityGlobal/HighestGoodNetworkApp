@@ -1,57 +1,72 @@
-import { useState, useEffect } from 'react';
-import { Container, Row, Col, InputGroup, Input } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
-import BMError from '../shared/BMError';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Container, Row, Col, InputGroup, Input, Button } from 'reactstrap';
+import { useDispatch } from 'react-redux';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
 import BMTimeLogSummary from './BMTimeLogSummary';
 
-function BMTimeLogCard(props) {
-  const [isError, setIsError] = useState(false);
+// The members endpoint has returned both `members: [...]` and
+// `members: { members: [...] }`, so accept either shape.
+const normalizeMembers = members => {
+  if (Array.isArray(members)) return members;
+  if (Array.isArray(members?.members)) return members.members;
+  return [];
+};
+
+const getLoadErrorMessage = error => {
+  const status = error?.response?.status;
+  if (status === 400)
+    return 'This project link is not valid. Please select a project from the list.';
+  if (status === 404) return 'This project was not found. Please select a project from the list.';
+  return 'Could not load the members for this project.';
+};
+
+function BMTimeLogCard({ selectedProject }) {
   const [memberList, setMemberList] = useState([]);
-  const [isMemberFetched, setIsMemberFetched] = useState(false);
-  const [filteredMembers, setFilteredMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  // 'loading' | 'loaded' | 'error'
+  const [loadStatus, setLoadStatus] = useState('loading');
+  const [loadError, setLoadError] = useState(null);
 
   const dispatch = useDispatch();
-  const errors = useSelector(state => state.errors);
-  const projectInfo = useSelector(state => state.bmProjectMembers);
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    dispatch(fetchBMProjectMembers(props.selectedProject));
-  }, [props.selectedProject, dispatch]);
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
-  useEffect(() => {
-    let members = [];
-    if (projectInfo?.members) {
-      if (Array.isArray(projectInfo.members)) {
-        members = projectInfo.members;
-      } else if (projectInfo.members.members && Array.isArray(projectInfo.members.members)) {
-        members = projectInfo.members.members;
-      }
+  const loadMembers = useCallback(async () => {
+    setLoadStatus('loading');
+    setLoadError(null);
+
+    const result = await dispatch(fetchBMProjectMembers(selectedProject));
+    if (!isMounted.current) return;
+
+    if (result?.ok) {
+      const members = normalizeMembers(result.members);
+      setMemberList(members);
+      setLoadStatus('loaded');
+    } else {
+      setMemberList([]);
+      setLoadError(result?.error ?? null);
+      setLoadStatus('error');
     }
+  }, [dispatch, selectedProject]);
 
-    setMemberList(members);
-    setFilteredMembers(members);
-    setIsMemberFetched(true);
-  }, [projectInfo]);
-
-  // trigger an error state if there is an errors object
   useEffect(() => {
-    if (Object.entries(errors).length > 0) {
-      setIsError(true);
-    }
-  }, [errors]);
+    loadMembers();
+  }, [loadMembers]);
 
-  // Filter members based on search query
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredMembers(memberList);
-      return;
-    }
+  // Filter members based on search query. Computed during render (not in an
+  // effect) so the list never lags one render behind the search box.
+  const filteredMembers = useMemo(() => {
+    if (!searchQuery.trim()) return memberList;
 
     const query = searchQuery.toLowerCase();
-    const filtered = memberList.filter(member => {
+    return memberList.filter(member => {
       // Skip members without valid user data
       if (!member?.user) return false;
 
@@ -78,68 +93,98 @@ function BMTimeLogCard(props) {
         teamMatch
       );
     });
-
-    setFilteredMembers(filtered);
   }, [searchQuery, memberList]);
 
   const handleSearchChange = e => {
     setSearchQuery(e.target.value);
   };
 
+  const handleClearSearch = () => {
+    setSearchQuery('');
+  };
+
+  if (loadStatus === 'loading') {
+    return (
+      <Container fluid>
+        <Row>
+          <Col className="text-center py-4">
+            <i className="fa fa-spinner fa-pulse" aria-hidden="true" /> Loading members...
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
+  if (loadStatus === 'error') {
+    return (
+      <Container fluid>
+        <Row>
+          <Col className="text-center py-4" role="alert">
+            <h5>{getLoadErrorMessage(loadError)}</h5>
+            <Button outline color="primary" className="mt-2" onClick={loadMembers}>
+              Retry
+            </Button>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
   return (
     <Container fluid>
       {/* Time Log Summary Section */}
-      <BMTimeLogSummary projectId={props.selectedProject} />
+      <BMTimeLogSummary projectId={selectedProject} />
 
-      {isMemberFetched && (
-        <>
-          <Row className="my-3">
-            <Col md={6} className="mx-auto">
-              <InputGroup>
-                <Input
-                  type="text"
-                  placeholder="Search by name, role, or team..."
-                  value={searchQuery}
-                  onChange={handleSearchChange}
+      <Row className="my-3">
+        <Col md={6} className="mx-auto">
+          <InputGroup>
+            <Input
+              type="text"
+              placeholder="Search by name, role, or team..."
+              aria-label="Search members by name, role, or team"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+            {searchQuery && (
+              <Button outline color="secondary" onClick={handleClearSearch}>
+                Clear
+              </Button>
+            )}
+          </InputGroup>
+          <small className="text-muted">
+            Found {filteredMembers.length} out of {memberList.length} members
+          </small>
+        </Col>
+      </Row>
+
+      {filteredMembers.length > 0 ? (
+        <Row>
+          {filteredMembers
+            .filter(value => value?.user?._id)
+            .map((value, index) => (
+              <Col md={4} key={value.user._id}>
+                <BMTimeLogDisplayMember
+                  firstName={value.user.firstName || ''}
+                  lastName={value.user.lastName || ''}
+                  role={value.user.role || ''}
+                  index={index}
+                  memberId={value.user._id}
+                  projectId={selectedProject}
                 />
-              </InputGroup>
-              <small className="text-muted">
-                Found {filteredMembers.length} out of {memberList.length} members
-              </small>
-            </Col>
-          </Row>
-
-          {filteredMembers.length > 0 ? (
-            <Row>
-              {filteredMembers
-                .filter(value => value?.user?._id)
-                .map((value, index) => (
-                  <Col md={4} key={value.user._id}>
-                    <BMTimeLogDisplayMember
-                      firstName={value.user.firstName || ''}
-                      lastName={value.user.lastName || ''}
-                      role={value.user.role || ''}
-                      index={index}
-                      memberId={value.user._id}
-                      projectId={props.selectedProject}
-                    />
-                  </Col>
-                ))}
-            </Row>
-          ) : (
-            <Row>
-              <Col className="text-center py-4">
-                {searchQuery.trim() ? (
-                  <h5>No members found matching &quot;{searchQuery}&quot;</h5>
-                ) : (
-                  <h5>No members available for this project</h5>
-                )}
               </Col>
-            </Row>
-          )}
-        </>
+            ))}
+        </Row>
+      ) : (
+        <Row>
+          <Col className="text-center py-4">
+            {searchQuery.trim() ? (
+              <h5>No members found matching &quot;{searchQuery}&quot;</h5>
+            ) : (
+              <h5>No members available for this project</h5>
+            )}
+          </Col>
+        </Row>
       )}
-      {isError && <BMError errors={errors} />}
     </Container>
   );
 }
