@@ -81,7 +81,7 @@ function CommunityCalendar() {
     const holidayEvents = GOVERNMENT_HOLIDAYS.map(holiday => ({
       id: holiday.id,
       title: holiday.title,
-      date: new Date(holiday.date),
+      date: new Date(`${holiday.date}T00:00:00`),
       type: 'Government Holiday',
       status: 'Holiday',
       time: 'All Day',
@@ -89,7 +89,7 @@ function CommunityCalendar() {
       description: `${holiday.title} holiday`,
       location: 'National',
       isHoliday: true,
-      isOver: new Date(holiday.date) < new Date(),
+      isOver: new Date(`${holiday.date}T00:00:00`) < new Date(),
     }));
 
     const communityEvents = events.map(event => {
