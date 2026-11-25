@@ -1,4 +1,4 @@
-// File version: 1.0.0
+// File version: 1.0.1
 // export default WeeklyProjectSummary;
 
 /* eslint-disable import/no-unresolved */
@@ -95,7 +95,7 @@ function WeeklyProjectSummary() {
   const containerRef = useRef(null);
   const userId = useSelector(state => state.auth?.user?.userid);
   const cardPrefsKey = `weeklyProjectSummaryCards:${userId || 'guest'}`;
-  // Saved card selection per user: { visibleKeys, cardLimit }. null = show all.
+  // Saved card selection per user: { visibleKeys, cardLimit, knownKeys }. null = show all.
   const [cardPrefs, setCardPrefs] = useState(null);
 
   useEffect(() => {
@@ -525,14 +525,21 @@ function WeeklyProjectSummary() {
     ],
   );
 
-  const visibleKeys = cardPrefs?.visibleKeys ?? sections.map(section => section.key);
+  const sectionKeys = sections.map(section => section.key);
+  // Cards added after a user saved preferences start visible. Prefs saved before knownKeys
+  // existed predate the Stock-Out Risk card, so treat it as new for them.
+  const knownKeys =
+    cardPrefs?.knownKeys ?? sectionKeys.filter(key => key !== 'Material Stock-Out Risk');
+  const visibleKeys = cardPrefs
+    ? [...cardPrefs.visibleKeys, ...sectionKeys.filter(key => !knownKeys.includes(key))]
+    : sectionKeys;
   const cardLimit = cardPrefs?.cardLimit ?? 'all';
   const selectedSections = sections.filter(section => visibleKeys.includes(section.key));
   const visibleSections =
     cardLimit === 'all' ? selectedSections : selectedSections.slice(0, Number(cardLimit));
 
   const handleCardsChange = (keys, limit) => {
-    const next = { visibleKeys: keys, cardLimit: limit };
+    const next = { visibleKeys: keys, cardLimit: limit, knownKeys: sectionKeys };
     setCardPrefs(next);
     try {
       localStorage.setItem(cardPrefsKey, JSON.stringify(next));
