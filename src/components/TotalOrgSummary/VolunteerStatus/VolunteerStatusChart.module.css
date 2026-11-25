@@ -1,8 +1,11 @@
 /* stylelint-disable  */
 .chartRoot {
+  flex: 1 1 auto;
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  min-height: 0;
 }
 
 .volunteerMentorChartsWrapper {
@@ -10,6 +13,8 @@
   flex-wrap: wrap;
   gap: 24px;
   width: 100%;
+  flex: 1 1 auto;
+  align-items: center;
 }
 
 .chartSection {
@@ -18,9 +23,11 @@
 }
 
 .volunteerMentorFootnote {
-  margin-top: 48px;
+  margin-top: 16px;
+  margin-bottom: 0;
   text-align: center;
   font-size: 0.75rem;
   max-width: 560px;
   align-self: center;
+  flex-shrink: 0;
 }

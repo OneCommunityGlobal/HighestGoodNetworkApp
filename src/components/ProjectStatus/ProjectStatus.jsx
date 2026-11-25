@@ -15,9 +15,13 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const centerTextPlugin = {
   id: 'centerText',
   afterDraw(chart) {
-    if (chart.options.plugins?.centerText === false) return;
-
     const pluginOpts = chart.options.plugins?.centerText;
+    // Only render on charts that explicitly configure this plugin.
+    // Without this guard, plugin text can leak onto other doughnut charts.
+    if (!pluginOpts || pluginOpts === false) {
+      return;
+    }
+
     const { ctx, width, height } = chart;
     const isDarkMode = pluginOpts?.darkMode || false;
     const total = pluginOpts?.total ?? 0;

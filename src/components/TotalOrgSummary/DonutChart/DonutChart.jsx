@@ -128,7 +128,14 @@ function DonutChart(props) {
 
   const options = {
     plugins: {
-      datalabels: { display: false },
+      // Opt out of ProjectStatus centerText if that plugin is registered globally.
+      centerText: false,
+      datalabels: {
+        display: false, // chartjs-plugin-datalabels is registered globally by other
+        // components (RatingDistribution, PRQualityGraph); explicitly disabling it
+        // here prevents their global registration from drawing default labels on
+        // this chart, since values/percentages are already shown in the legend below.
+      },
       legend: { display: false },
       tooltip: buildDonutTooltipOptions(totalCount, darkMode, unitLabel),
       externalLabelGuides: {
