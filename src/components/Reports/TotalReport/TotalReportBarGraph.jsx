@@ -3,8 +3,16 @@ import * as d3 from 'd3';
 import { useSelector } from 'react-redux';
 import styles from './TotalReportBarGraph.module.css';
 
-function TotalReportBarGraph({ barData, range }) {
-  const svgId = `svg-container-${range}`;
+const getReadableLabel = (label, fallbackLabel) => {
+  const text = label === null || label === undefined ? '' : String(label);
+  if (!text || text.includes('NaN') || text === 'Invalid Date') {
+    return fallbackLabel || 'Selected date range';
+  }
+  return text;
+};
+
+function TotalReportBarGraph({ barData, range, idSuffix = '', fallbackLabel = '' }) {
+  const svgId = `svg-container-${range}${idSuffix}`;
   const darkMode = useSelector(state => state.theme.darkMode);
   const containerRef = useRef(null);
 
@@ -15,18 +23,36 @@ function TotalReportBarGraph({ barData, range }) {
       const container = containerRef.current;
       if (!container) return;
 
-      const sortedData = [...barData].sort((a, b) =>
-        String(a.label).localeCompare(String(b.label), undefined, { numeric: true }),
-      );
+      const normalizedData = barData
+        .map(item => {
+          const value = Number(item.value);
+          return {
+            ...item,
+            label: getReadableLabel(item.label, fallbackLabel),
+            value: Number.isFinite(value) ? value : 0,
+          };
+        })
+        .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
+
       const containerWidth = container.getBoundingClientRect().width;
       if (!containerWidth) return;
 
-      const containerHeight = containerWidth;
+      const containerHeight = Math.max(containerWidth * 0.75, 320);
       const margin = { top: 20, right: 12, bottom: 76, left: 24 };
       const width = Math.max(1, containerWidth - margin.left - margin.right);
       const height = Math.max(1, containerHeight - margin.top - margin.bottom);
-      const maxValue = Math.max(1, ...sortedData.map(item => Number(item.value) || 0));
+      const maxValue = Math.max(1, ...normalizedData.map(item => item.value));
       const axisFontSize = containerWidth <= 380 ? 8 : containerWidth <= 600 ? 9 : 11;
+      const isComparisonChart = idSuffix.includes('compare');
+      const barColor = isComparisonChart
+        ? darkMode
+          ? '#f59e0b'
+          : '#d97706'
+        : darkMode
+          ? '#4a90e2'
+          : '#5b6ee1';
+      const aboveBarLabelColor = darkMode ? '#f8fafc' : '#1f2937';
+      const insideLabelMinHeight = 34;
 
       const svg = d3
         // eslint-disable-next-line testing-library/no-node-access
@@ -43,28 +69,31 @@ function TotalReportBarGraph({ barData, range }) {
         .attr('transform', `translate(${margin.left}, ${margin.top})`);
       const xScale = d3
         .scaleBand()
-        .domain(sortedData.map(item => item.label))
+        .domain(normalizedData.map(item => item.label))
         .range([0, width])
         .padding(0.35);
-      const yScale = d3
-        .scaleLinear()
-        .domain([0, maxValue])
-        .range([height, 0]);
+      const yScale = d3.scaleLinear().domain([0, maxValue]).range([height, 0]);
       const colorScale = d3
         .scaleLinear()
         .domain([0, maxValue])
         .range(darkMode ? ['#4a90e2', '#003366'] : ['#f5a3a3', '#c3b6f7']);
 
-      sortedData.forEach(item => {
-        const value = Number(item.value) || 0;
+      normalizedData.forEach(item => {
         const x = xScale(item.label);
-        const y = yScale(value);
+        const y = yScale(item.value);
         const barHeight = height - y;
         const bandwidth = xScale.bandwidth();
         const label = String(item.value);
-        const valueFontSize = Math.min(containerWidth <= 380 ? 9 : 12, Math.max(7, bandwidth * 0.42));
+        const valueFontSize = Math.min(
+          containerWidth <= 380 ? 9 : 12,
+          Math.max(7, bandwidth * 0.42),
+        );
         const labelFitsBar =
-          valueFontSize >= 8 && label.length * valueFontSize * 0.62 <= bandwidth;
+          item.value > 0 &&
+          valueFontSize >= 8 &&
+          label.length * valueFontSize * 0.62 <= bandwidth;
+        const labelInsideBar =
+          barHeight >= Math.max(insideLabelMinHeight, valueFontSize + 4);
 
         const bar = chart
           .append('rect')
@@ -73,19 +102,19 @@ function TotalReportBarGraph({ barData, range }) {
           .attr('y', y)
           .attr('width', bandwidth)
           .attr('height', barHeight)
-          .attr('fill', colorScale(value));
+          .attr('fill', isComparisonChart ? barColor : colorScale(item.value));
 
         bar.append('title').text(`${item.label}: ${label}`);
 
         if (labelFitsBar) {
-          const labelInsideBar = barHeight >= valueFontSize + 4;
           chart
             .append('text')
             .attr('class', 'bar-value')
             .attr('x', x + bandwidth / 2)
-            .attr('y', labelInsideBar ? y + barHeight / 2 : y - 5)
+            .attr('y', labelInsideBar ? y + barHeight / 2 : Math.max(y - 5, 14))
             .attr('text-anchor', 'middle')
-            .style('fill', darkMode ? 'white' : 'black')
+            .attr('dominant-baseline', labelInsideBar ? 'middle' : 'baseline')
+            .style('fill', labelInsideBar ? (darkMode ? 'white' : '#1f2937') : aboveBarLabelColor)
             .style('font-size', `${valueFontSize}px`)
             .style('font-weight', 'bold')
             .text(label);
@@ -93,9 +122,9 @@ function TotalReportBarGraph({ barData, range }) {
       });
 
       const maxVisibleTicks = Math.max(2, Math.floor(width / (containerWidth <= 500 ? 34 : 48)));
-      const tickInterval = Math.max(1, Math.ceil(sortedData.length / maxVisibleTicks));
-      const tickValues = sortedData
-        .filter((_, index) => index % tickInterval === 0 || index === sortedData.length - 1)
+      const tickInterval = Math.max(1, Math.ceil(normalizedData.length / maxVisibleTicks));
+      const tickValues = normalizedData
+        .filter((_, index) => index % tickInterval === 0 || index === normalizedData.length - 1)
         .map(item => item.label);
 
       chart
@@ -114,7 +143,7 @@ function TotalReportBarGraph({ barData, range }) {
     drawChart();
     window.addEventListener('resize', drawChart);
     return () => window.removeEventListener('resize', drawChart);
-  }, [barData, darkMode, svgId]);
+  }, [barData, darkMode, fallbackLabel, idSuffix, svgId]);
 
   return (
     <div ref={containerRef} className={styles.svgContainer}>
