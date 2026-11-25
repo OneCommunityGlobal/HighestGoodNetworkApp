@@ -2,6 +2,45 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+
+export function TrendIndicator({ value, metricLabel, comparisonLabel = 'Last week' }) {
+  const numericValue = typeof value === 'number' ? value : NaN;
+  const available = Number.isFinite(numericValue);
+  let direction = 'unchanged';
+  let symbol = '—';
+  let trendClass = styles.trendNeutral;
+
+  if (available && numericValue > 0) {
+    direction = 'increased';
+    symbol = '▲';
+    trendClass = styles.trendIncrease;
+  } else if (available && numericValue < 0) {
+    direction = 'decreased';
+    symbol = '▼';
+    trendClass = styles.trendDecrease;
+  }
+
+  const formattedValue = available ? `${numericValue > 0 ? '+' : ''}${numericValue}%` : 'N/A';
+  let description = 'trend unavailable';
+  if (available) {
+    description = numericValue === 0
+      ? 'unchanged'
+      : `${direction} by ${Math.abs(numericValue)} percent`;
+  }
+
+  return (
+    <p
+      className={styles.trendRow}
+      aria-label={`${metricLabel} ${description} compared with ${comparisonLabel}`}
+    >
+      <span className={`${styles.trendBadge} ${trendClass}`}>
+        {available && <span aria-hidden="true">{symbol}</span>}
+        <span>{formattedValue}</span>
+      </span>
+      <span className={styles.trendComparison}>{comparisonLabel}</span>
+    </p>
+  );
+}
 import mockEvents from './mockData';
 import { filterEventsByDate } from './FilterByDate';
 
@@ -94,35 +133,19 @@ function DropOffTracking() {
 
       <div className={styles.trackingSummary}>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
-          <p className={styles.trackingRateValue}>
-            +5% <span>Last week</span>
-            {/* People who signed up but did not show up */}
-          </p>
+          <TrendIndicator value={5} metricLabel="Drop-off rate" />
           <p className={styles.trackingRateSubheading}>
             <span>
               <b>Drop-off rate</b>
             </span>
           </p>
-          <p className={styles.trackingRateValue}>
-            <span className={styles.trackingRateValuePositive}>+5%</span>{' '}
-            <span>since Last week</span>
-          </p>
         </div>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
-          <p className={styles.trackingRateValue}>
-            +5% <span>Last week</span>
-            {/* People who did not show up */}
-          </p>
+          <TrendIndicator value={-5} metricLabel="No-show rate" />
           <p className={styles.trackingRateSubheading}>
             <span>
               <b>No-show rate</b>
             </span>
-          </p>
-          <p className={styles.trackingRateValue}>
-            <span className={styles.trackingRateValueNegative}>
-              <b>-5%</b>
-            </span>{' '}
-            <span>since Last week</span>
           </p>
         </div>
       </div>

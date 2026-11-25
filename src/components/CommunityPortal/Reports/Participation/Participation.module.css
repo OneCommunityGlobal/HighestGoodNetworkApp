@@ -234,6 +234,70 @@
   color: #fff;
 }
 
+.trendRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+
+.trendBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.trendIncrease {
+  color: #c62828;
+  background: #ffebee;
+}
+
+.trendDecrease {
+  color: #2e7d32;
+  background: #e8f5e9;
+}
+
+.trendNeutral {
+  color: #616161;
+  background: #eee;
+}
+
+.trendComparison {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.trackingRateDark .trendIncrease > span {
+  color: #ffd5d2 !important;
+}
+
+.trackingRateDark .trendIncrease {
+  background: #7a271a;
+}
+
+.trackingRateDark .trendDecrease > span {
+  color: #abefc6 !important;
+}
+
+.trackingRateDark .trendDecrease {
+  background: #054f31;
+}
+
+.trackingRateDark .trendNeutral {
+  color: #cbd5e1;
+  background: rgb(203 213 225 / 14%);
+}
+
+.trackingRateDark .trendComparison {
+  color: #cbd5e1;
+}
+
 .trackingRateDark .spanDark {
   color: #fff;
   display: inline-block;
