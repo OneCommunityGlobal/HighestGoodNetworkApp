@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { Popover, PopoverBody, PopoverHeader } from 'reactstrap';
+import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './JobApplicationAnalytics.module.css';
 
@@ -33,7 +33,7 @@ function ApplicationsTable({
   const [detailError, setDetailError] = useState('');
 
   const totalPages = Math.max(1, Math.ceil((total || 0) / (limit || 25)));
-  const popoverThemeClass = darkMode ? styles.answersPopoverDark : styles.answersPopoverLight;
+  const modalThemeClass = darkMode ? styles.answersModalDark : styles.answersModalLight;
 
   const formOptions = useMemo(
     () =>
@@ -79,9 +79,7 @@ function ApplicationsTable({
     };
   }, [openId]);
 
-  const toggleView = applicationId => {
-    setOpenId(prev => (prev === applicationId ? null : applicationId));
-  };
+  const closeModal = () => setOpenId(null);
 
   return (
     <section className={styles.tableSection} aria-label="Job applications">
@@ -170,118 +168,108 @@ function ApplicationsTable({
               </tr>
             </thead>
             <tbody>
-              {items.map(item => {
-                const buttonId = `jaa-view-${item._id}`;
-                const isOpen = openId === item._id;
-                return (
-                  <tr key={item._id}>
-                    <td>{formatDate(item.submittedAt)}</td>
-                    <td>{item.respondent || 'Anonymous'}</td>
-                    <td>{item.email || '—'}</td>
-                    <td>{item.formTitle || 'Untitled form'}</td>
-                    <td>{item.answerCount ?? 0}</td>
-                    <td>
-                      {item.resumeUrl ? (
-                        <a
-                          className={styles.resumeLink}
-                          href={item.resumeUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Open
-                        </a>
-                      ) : (
-                        '—'
-                      )}
-                    </td>
-                    <td>
-                      <button
-                        id={buttonId}
-                        type="button"
-                        className={styles.viewBtn}
-                        aria-expanded={isOpen}
-                        aria-controls={`jaa-answers-${item._id}`}
-                        onClick={() => toggleView(item._id)}
+              {items.map(item => (
+                <tr key={item._id}>
+                  <td>{formatDate(item.submittedAt)}</td>
+                  <td>{item.respondent || 'Anonymous'}</td>
+                  <td>{item.email || '—'}</td>
+                  <td>{item.formTitle || 'Untitled form'}</td>
+                  <td>{item.answerCount ?? 0}</td>
+                  <td>
+                    {item.resumeUrl ? (
+                      <a
+                        className={styles.resumeLink}
+                        href={item.resumeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
-                        {isOpen ? 'Hide' : 'View'}
-                      </button>
-                      <Popover
-                        placement="left"
-                        isOpen={isOpen}
-                        target={buttonId}
-                        toggle={() => toggleView(item._id)}
-                        trigger="legacy"
-                        className={`${styles.answersPopover} ${popoverThemeClass}`}
-                        popperClassName={`${styles.answersPopoverPopper} ${popoverThemeClass}`}
-                      >
-                        <PopoverHeader className={styles.answersPopoverHeader}>
-                          Application answers
-                        </PopoverHeader>
-                        <PopoverBody
-                          id={`jaa-answers-${item._id}`}
-                          className={styles.answersPopoverBody}
-                          data-testid="application-detail"
-                        >
-                          {detailLoading && (
-                            <p className={styles.popoverStatus}>Loading answers…</p>
-                          )}
-                          {!detailLoading && detailError && (
-                            <p className={styles.popoverError} role="alert">
-                              {detailError}
-                            </p>
-                          )}
-                          {!detailLoading && !detailError && detail && (
-                            <>
-                              <div className={styles.answersMeta}>
-                                <div>
-                                  <strong>{detail.respondent || 'Anonymous'}</strong>
-                                  {detail.email ? ` · ${detail.email}` : ''}
-                                </div>
-                                <div>{detail.formTitle || 'Untitled form'}</div>
-                                <div>Submitted: {formatDate(detail.submittedAt)}</div>
-                                {detail.resumeUrl ? (
-                                  <a
-                                    className={styles.resumeLink}
-                                    href={detail.resumeUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    Open resume
-                                  </a>
-                                ) : null}
-                              </div>
-                              {Array.isArray(detail.answers) && detail.answers.length > 0 ? (
-                                <ol className={styles.answersList}>
-                                  {detail.answers.map((qa, index) => (
-                                    <li
-                                      key={String(qa.questionId || `${detail._id}-${index}`)}
-                                      className={styles.answerItem}
-                                    >
-                                      <p className={styles.answerQuestion}>
-                                        <span className={styles.answerIndex}>{index + 1}.</span>{' '}
-                                        {qa.questionText}
-                                      </p>
-                                      <p className={styles.answerValue}>{qa.displayValue}</p>
-                                    </li>
-                                  ))}
-                                </ol>
-                              ) : (
-                                <p className={styles.popoverStatus}>
-                                  No question answers were recorded for this application.
-                                </p>
-                              )}
-                            </>
-                          )}
-                        </PopoverBody>
-                      </Popover>
-                    </td>
-                  </tr>
-                );
-              })}
+                        Open
+                      </a>
+                    ) : (
+                      '—'
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className={styles.viewBtn}
+                      aria-haspopup="dialog"
+                      aria-expanded={openId === item._id}
+                      onClick={() => setOpenId(item._id)}
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <Modal
+        isOpen={Boolean(openId)}
+        toggle={closeModal}
+        centered
+        size="lg"
+        scrollable
+        className={`${styles.answersModal} ${modalThemeClass}`}
+        contentClassName={styles.answersModalContent}
+        backdropClassName={styles.answersModalBackdrop}
+      >
+        <ModalHeader toggle={closeModal} className={styles.answersModalHeader}>
+          Application answers
+        </ModalHeader>
+        <ModalBody className={styles.answersModalBody} data-testid="application-detail">
+          {detailLoading && <p className={styles.popoverStatus}>Loading answers…</p>}
+          {!detailLoading && detailError && (
+            <p className={styles.popoverError} role="alert">
+              {detailError}
+            </p>
+          )}
+          {!detailLoading && !detailError && detail && (
+            <>
+              <div className={styles.answersMeta}>
+                <div>
+                  <strong>{detail.respondent || 'Anonymous'}</strong>
+                  {detail.email ? ` · ${detail.email}` : ''}
+                </div>
+                <div>{detail.formTitle || 'Untitled form'}</div>
+                <div>Submitted: {formatDate(detail.submittedAt)}</div>
+                {detail.resumeUrl ? (
+                  <a
+                    className={styles.resumeLink}
+                    href={detail.resumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Open resume
+                  </a>
+                ) : null}
+              </div>
+              {Array.isArray(detail.answers) && detail.answers.length > 0 ? (
+                <ol className={styles.answersList}>
+                  {detail.answers.map((qa, index) => (
+                    <li
+                      key={String(qa.questionId || `${detail._id}-${index}`)}
+                      className={styles.answerItem}
+                    >
+                      <p className={styles.answerQuestion}>
+                        <span className={styles.answerIndex}>{index + 1}.</span> {qa.questionText}
+                      </p>
+                      <p className={styles.answerValue}>{qa.displayValue}</p>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className={styles.popoverStatus}>
+                  No question answers were recorded for this application.
+                </p>
+              )}
+            </>
+          )}
+        </ModalBody>
+      </Modal>
 
       <div className={styles.pagination}>
         <span>
