@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { BrowserRouter } from 'react-router-dom';
-import WeeklySummaries, { moveWeeklySummary } from '../WeeklySummaries';
+import WeeklySummaries, { editWeeklySummary, moveWeeklySummary } from '../WeeklySummaries';
 
 const actionMocks = vi.hoisted(() => ({
   updateWeeklySummaries: vi.fn(() => async () => 200),
@@ -116,6 +116,35 @@ describe('WeeklySummaries Component', () => {
     ];
 
     expect(moveWeeklySummary(weeklySummaries, 0, 1)).toBeNull();
+  });
+
+  it('stamps a fresh upload date on an edited summary, including one added to an empty week', () => {
+    const uploadDate = '2026-10-18T17:00:00.000Z';
+    const weeklySummaries = [
+      { summary: 'Current week', dueDate: '2026-10-25T06:59:59.999Z' },
+      { summary: '', dueDate: '2026-10-18T06:59:59.999Z' },
+      {
+        summary: 'Week before last',
+        dueDate: '2026-10-11T06:59:59.999Z',
+        uploadDate: '2026-10-10T12:00:00.000Z',
+      },
+    ];
+
+    const added = editWeeklySummary(weeklySummaries, 1, 'Late summary', uploadDate);
+    expect(added[1]).toEqual({ ...weeklySummaries[1], summary: 'Late summary', uploadDate });
+    expect(added[0]).toBe(weeklySummaries[0]);
+
+    const edited = editWeeklySummary(weeklySummaries, 2, 'Fixed typo', uploadDate);
+    expect(edited[2].uploadDate).toBe(uploadDate);
+  });
+
+  it('keeps the upload date when an edit is saved without changes', () => {
+    const weeklySummaries = [
+      { summary: 'Same text', uploadDate: '2026-10-10T12:00:00.000Z' },
+    ];
+
+    const result = editWeeklySummary(weeklySummaries, 0, 'Same text', '2026-10-18T17:00:00.000Z');
+    expect(result[0]).toBe(weeklySummaries[0]);
   });
 
   it('renders no summaries message when there are no summaries', () => {
