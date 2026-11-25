@@ -2,10 +2,205 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import { getAllApplicantVolunteerRatios } from '../../services/applicantVolunteerRatioService';
 import styles from './ApplicantVolunteerRatio.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
+
+function LimitedMultiValue(props) {
+  const { index, getValue } = props;
+  const hiddenValueCount = getValue().length - 2;
+
+  if (index < 2) return <components.MultiValue {...props} />;
+
+  if (index === 2) {
+    return (
+      <span className={styles.selectedCount} title={`${hiddenValueCount} more selected`}>
+        + {hiddenValueCount}
+      </span>
+    );
+  }
+
+  return null;
+}
+
+function SelectOption(props) {
+  const { children, isSelected } = props;
+
+  return (
+    <components.Option {...props}>
+      <span className={styles.optionContent}>
+        <span>{children}</span>
+        {isSelected && (
+          <span className={styles.optionCheck} aria-hidden="true">
+            ✓
+          </span>
+        )}
+      </span>
+    </components.Option>
+  );
+}
+
+const roleSelectComponents = { MultiValue: LimitedMultiValue, Option: SelectOption };
+
+function ChartLegend({ viewMode, legendTextColor }) {
+  const legendItem = (color, label) => (
+    <span
+      style={{
+        color: legendTextColor,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+      }}
+    >
+      <span
+        style={{
+          width: '12px',
+          height: '12px',
+          backgroundColor: color,
+          display: 'inline-block',
+          borderRadius: '2px',
+        }}
+      />
+      {label}
+    </span>
+  );
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '16px',
+        marginTop: '12px',
+        fontWeight: 500,
+      }}
+    >
+      {viewMode === 'count' ? (
+        <>
+          {legendItem('#1976d2', 'Total Applications')}
+          {legendItem('#43a047', 'People Hired')}
+        </>
+      ) : (
+        legendItem('#43a047', 'People Hired (%)')
+      )}
+    </div>
+  );
+}
+
+function ChartVisualization({ chartData, viewMode, darkMode, legendTextColor }) {
+  const isPercentageView = viewMode === 'percentage';
+
+  return (
+    <div className={styles.chartContainer}>
+      <ResponsiveContainer width="100%" height={350}>
+        <BarChart
+          data={chartData}
+          layout="vertical"
+          margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
+          barCategoryGap={24}
+          barSize={16}
+        >
+          <XAxis
+            type="number"
+            domain={isPercentageView ? [0, 100] : ['auto', 'auto']}
+            allowDecimals={isPercentageView}
+          />
+          <YAxis
+            dataKey="role"
+            type="category"
+            width={180}
+            label={{ value: 'Role', angle: -90, position: 'insideLeft' }}
+          />
+          <Tooltip
+            content={<ChartTooltip darkMode={darkMode} />}
+            cursor={{ fill: darkMode ? '#52677d' : '#f0f0f0', opacity: 0.35 }}
+          />
+          {isPercentageView ? (
+            <Bar
+              dataKey="hiredPercentage"
+              fill="#43a047"
+              activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
+            >
+              <LabelList
+                dataKey="hiredPercentage"
+                position="right"
+                formatter={value => `${value}%`}
+              />
+            </Bar>
+          ) : (
+            <>
+              <Bar
+                dataKey="applicants"
+                fill="#1976d2"
+                activeBar={{ fill: darkMode ? '#60a5fa' : '#1565c0' }}
+              >
+                <LabelList dataKey="applicants" position="right" />
+              </Bar>
+              <Bar
+                dataKey="hired"
+                fill="#43a047"
+                activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
+              >
+                <LabelList dataKey="hired" position="right" />
+              </Bar>
+            </>
+          )}
+        </BarChart>
+      </ResponsiveContainer>
+      <ChartLegend viewMode={viewMode} legendTextColor={legendTextColor} />
+      <div style={{ textAlign: 'center', marginTop: '10px', fontWeight: 500 }}>
+        {isPercentageView ? 'Percentage of People Hired (%)' : 'Number of Applications / Hires'}
+      </div>
+    </div>
+  );
+}
+
+function ChartSection({ loading, chartData, viewMode, darkMode, legendTextColor }) {
+  if (loading) {
+    return (
+      <output className={styles.loadingContainer} aria-label="Loading chart data">
+        <div className={styles.loadingSpinner} aria-hidden="true" />
+        <span>Loading chart data...</span>
+      </output>
+    );
+  }
+
+  if (!chartData.length) {
+    return (
+      <div className={styles.noData}>
+        No data available. Please add some applicant volunteer ratio data.
+      </div>
+    );
+  }
+
+  return (
+    <ChartVisualization
+      chartData={chartData}
+      viewMode={viewMode}
+      darkMode={darkMode}
+      legendTextColor={legendTextColor}
+    />
+  );
+}
+
+function ChartTooltip({ active, payload, label, darkMode }) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div
+      className={`${styles.chartTooltipContent} ${darkMode ? styles.chartTooltipContentDark : ''}`}
+    >
+      <p className={styles.chartTooltipRole}>{label}</p>
+      {payload.map(entry => (
+        <p key={entry.dataKey} className={styles[`chartTooltip${entry.dataKey}`]}>
+          {entry.name}: {entry.value}
+          {entry.dataKey === 'hiredPercentage' ? '%' : ''}
+        </p>
+      ))}
+    </div>
+  );
+}
 
 function ApplicantVolunteerRatio() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -30,7 +225,7 @@ function ApplicantVolunteerRatio() {
         const roleOptions = uniqueRoles.map(role => ({ label: role, value: role }));
         setAllRoles(roleOptions);
         setSelectedRoles(roleOptions);
-      } catch (err) {
+      } catch {
         setError('Failed to load roles. Please try again.');
       }
     };
@@ -69,7 +264,7 @@ function ApplicantVolunteerRatio() {
         }));
 
         setData(transformedData);
-      } catch (err) {
+      } catch {
         setError('Failed to load data. Please try again.');
       } finally {
         setLoading(false);
@@ -111,15 +306,77 @@ function ApplicantVolunteerRatio() {
   }, [darkMode]);
 
   const legendTextColor = darkMode ? '#e0e0e0' : '#333';
+  const roleSelectStyles = useMemo(
+    () => ({
+      control: (base, state) => {
+        // Sonar fix: extracted nested ternary from original line 173
+        let borderColor = base.borderColor;
+        if (state.isFocused) {
+          borderColor = '#60a5fa';
+        } else if (darkMode) {
+          borderColor = '#52677d';
+        }
 
-  if (loading) {
-    return (
-      <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
-        <h2 className={styles.heading}>Number of People Hired vs. Total Applications</h2>
-        <div className={styles.statusMessage}>Loading...</div>
-      </div>
-    );
-  }
+        return {
+          ...base,
+          backgroundColor: darkMode ? '#243b55' : base.backgroundColor,
+          borderColor,
+          boxShadow: state.isFocused ? '0 0 0 1px #60a5fa' : base.boxShadow,
+          ':hover': {
+            borderColor: darkMode ? '#60a5fa' : '#2684ff',
+          },
+        };
+      },
+      menu: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#243b55' : base.backgroundColor,
+        border: darkMode ? '1px solid #52677d' : base.border,
+      }),
+      menuPortal: base => ({ ...base, zIndex: 10000 }),
+      option: (base, state) => {
+        // Sonar fix: extracted nested ternaries from original lines 188 and 191
+        let optionBackgroundColor = base.backgroundColor;
+        if (state.isSelected && darkMode) {
+          optionBackgroundColor = '#2563eb';
+        } else if (state.isFocused && darkMode) {
+          optionBackgroundColor = '#3a506b';
+        }
+
+        return {
+          ...base,
+          backgroundColor: optionBackgroundColor,
+          color: darkMode ? '#f9fafb' : base.color,
+          ':active': {
+            backgroundColor: darkMode ? '#1d4ed8' : base[':active']?.backgroundColor,
+          },
+        };
+      },
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#3a506b' : base.backgroundColor,
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#f9fafb' : base.color,
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#dbeafe' : base.color,
+        ':hover': {
+          backgroundColor: darkMode ? '#dc2626' : '#ffbdad',
+          color: '#fff',
+        },
+      }),
+      input: base => ({ ...base, color: darkMode ? '#f9fafb' : base.color }),
+      placeholder: base => ({ ...base, color: darkMode ? '#9ca3af' : base.color }),
+      dropdownIndicator: base => ({ ...base, color: darkMode ? '#cbd5e1' : base.color }),
+      indicatorSeparator: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#52677d' : base.backgroundColor,
+      }),
+    }),
+    [darkMode],
+  );
 
   if (error) {
     return (
@@ -178,12 +435,17 @@ function ApplicantVolunteerRatio() {
           <Select
             id="role-select"
             isMulti
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
             options={allRoles}
             value={selectedRoles}
             onChange={setSelectedRoles}
+            components={roleSelectComponents}
             placeholder="Select roles..."
-            classNamePrefix="custom-select"
+            classNamePrefix="applicant-role-select"
+            styles={roleSelectStyles}
             menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+            menuPosition="fixed"
           />
         </div>
       </div>
@@ -193,14 +455,9 @@ function ApplicantVolunteerRatio() {
         <button
           type="button"
           onClick={() => setViewMode('count')}
-          style={{
-            padding: '6px 12px',
-            cursor: 'pointer',
-            backgroundColor: viewMode === 'count' ? '#1976d2' : '#e0e0e0',
-            color: viewMode === 'count' ? '#fff' : '#000',
-            border: 'none',
-            borderRadius: '4px',
-          }}
+          className={`${styles.toggleButton} ${
+            viewMode === 'count' ? styles.toggleButtonActive : ''
+          }`}
         >
           Count View
         </button>
@@ -208,159 +465,21 @@ function ApplicantVolunteerRatio() {
         <button
           type="button"
           onClick={() => setViewMode('percentage')}
-          style={{
-            padding: '6px 12px',
-            cursor: 'pointer',
-            backgroundColor: viewMode === 'percentage' ? '#1976d2' : '#e0e0e0',
-            color: viewMode === 'percentage' ? '#fff' : '#000',
-            border: 'none',
-            borderRadius: '4px',
-          }}
+          className={`${styles.toggleButton} ${
+            viewMode === 'percentage' ? styles.toggleButtonActive : ''
+          }`}
         >
           Percentage View
         </button>
       </div>
 
-      {chartData.length > 0 ? (
-        <div className={styles.chartContainer}>
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={chartData}
-              layout="vertical"
-              margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
-              barCategoryGap={24}
-              barSize={16}
-            >
-              <XAxis
-                type="number"
-                domain={viewMode === 'percentage' ? [0, 100] : ['auto', 'auto']}
-                allowDecimals={viewMode === 'percentage'}
-              />
-
-              <YAxis
-                dataKey="role"
-                type="category"
-                width={180}
-                label={{ value: 'Role', angle: -90, position: 'insideLeft' }}
-              />
-
-              <Tooltip />
-
-              {viewMode === 'count' ? (
-                <>
-                  <Bar dataKey="applicants" fill="#1976d2">
-                    <LabelList dataKey="applicants" position="right" />
-                  </Bar>
-
-                  <Bar dataKey="hired" fill="#43a047">
-                    <LabelList dataKey="hired" position="right" />
-                  </Bar>
-                </>
-              ) : (
-                <Bar dataKey="hiredPercentage" fill="#43a047">
-                  <LabelList
-                    dataKey="hiredPercentage"
-                    position="right"
-                    formatter={value => `${value}%`}
-                  />
-                </Bar>
-              )}
-            </BarChart>
-          </ResponsiveContainer>
-
-          {/* Manual Legend */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '16px',
-              marginTop: '12px',
-              fontWeight: 500,
-            }}
-          >
-            {viewMode === 'count' ? (
-              <>
-                <span
-                  style={{
-                    color: legendTextColor,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '12px',
-                      height: '12px',
-                      backgroundColor: '#1976d2',
-                      display: 'inline-block',
-                      borderRadius: '2px',
-                    }}
-                  />
-                  Total Applications
-                </span>
-
-                <span
-                  style={{
-                    color: legendTextColor,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '12px',
-                      height: '12px',
-                      backgroundColor: '#43a047',
-                      display: 'inline-block',
-                      borderRadius: '2px',
-                    }}
-                  />
-                  People Hired
-                </span>
-              </>
-            ) : (
-              <span
-                style={{
-                  color: legendTextColor,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <span
-                  style={{
-                    width: '12px',
-                    height: '12px',
-                    backgroundColor: '#43a047',
-                    display: 'inline-block',
-                    borderRadius: '2px',
-                  }}
-                />
-                People Hired (%)
-              </span>
-            )}
-          </div>
-
-          {/* Axis Title */}
-          <div
-            style={{
-              textAlign: 'center',
-              marginTop: '10px',
-              fontWeight: 500,
-            }}
-          >
-            {viewMode === 'percentage'
-              ? 'Percentage of People Hired (%)'
-              : 'Number of Applications / Hires'}
-          </div>
-        </div>
-      ) : (
-        <div className={styles.noData}>
-          No data available. Please add some applicant volunteer ratio data.
-        </div>
-      )}
+      <ChartSection
+        loading={loading}
+        chartData={chartData}
+        viewMode={viewMode}
+        darkMode={darkMode}
+        legendTextColor={legendTextColor}
+      />
     </div>
   );
 }

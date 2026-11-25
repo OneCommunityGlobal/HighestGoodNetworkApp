@@ -11,13 +11,29 @@ const getReadableLabel = (label, fallbackLabel) => {
   return text;
 };
 
-function TotalReportBarGraph({ barData, range, idSuffix = '', fallbackLabel = '' }) {
+function TotalReportBarGraph({
+  barData,
+  range,
+  idSuffix = '',
+  fallbackLabel = '',
+}) {
   const svgId = `svg-container-${range}${idSuffix}`;
   const darkMode = useSelector(state => state.theme.darkMode);
   const containerRef = useRef(null);
 
   useEffect(() => {
     if (!barData?.length) return undefined;
+
+    const isComparisonChart = idSuffix.includes('compare');
+    const barColor = isComparisonChart
+      ? darkMode
+        ? '#f59e0b'
+        : '#d97706'
+      : darkMode
+        ? '#4a90e2'
+        : '#5b6ee1';
+    const aboveBarLabelColor = darkMode ? '#f8fafc' : '#1f2937';
+    const insideLabelMinHeight = 34;
 
     const drawChart = () => {
       const container = containerRef.current;
@@ -32,7 +48,9 @@ function TotalReportBarGraph({ barData, range, idSuffix = '', fallbackLabel = ''
             value: Number.isFinite(value) ? value : 0,
           };
         })
-        .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
+        .sort((a, b) =>
+          a.label.localeCompare(b.label, undefined, { numeric: true }),
+        );
 
       const containerWidth = container.getBoundingClientRect().width;
       if (!containerWidth) return;
@@ -42,17 +60,8 @@ function TotalReportBarGraph({ barData, range, idSuffix = '', fallbackLabel = ''
       const width = Math.max(1, containerWidth - margin.left - margin.right);
       const height = Math.max(1, containerHeight - margin.top - margin.bottom);
       const maxValue = Math.max(1, ...normalizedData.map(item => item.value));
-      const axisFontSize = containerWidth <= 380 ? 8 : containerWidth <= 600 ? 9 : 11;
-      const isComparisonChart = idSuffix.includes('compare');
-      const barColor = isComparisonChart
-        ? darkMode
-          ? '#f59e0b'
-          : '#d97706'
-        : darkMode
-          ? '#4a90e2'
-          : '#5b6ee1';
-      const aboveBarLabelColor = darkMode ? '#f8fafc' : '#1f2937';
-      const insideLabelMinHeight = 34;
+      const axisFontSize =
+        containerWidth <= 380 ? 8 : containerWidth <= 600 ? 9 : 11;
 
       const svg = d3
         // eslint-disable-next-line testing-library/no-node-access
@@ -114,17 +123,29 @@ function TotalReportBarGraph({ barData, range, idSuffix = '', fallbackLabel = ''
             .attr('y', labelInsideBar ? y + barHeight / 2 : Math.max(y - 5, 14))
             .attr('text-anchor', 'middle')
             .attr('dominant-baseline', labelInsideBar ? 'middle' : 'baseline')
-            .style('fill', labelInsideBar ? (darkMode ? 'white' : '#1f2937') : aboveBarLabelColor)
+            .style(
+              'fill',
+              labelInsideBar ? (darkMode ? 'white' : '#1f2937') : aboveBarLabelColor,
+            )
             .style('font-size', `${valueFontSize}px`)
             .style('font-weight', 'bold')
             .text(label);
         }
       });
 
-      const maxVisibleTicks = Math.max(2, Math.floor(width / (containerWidth <= 500 ? 34 : 48)));
-      const tickInterval = Math.max(1, Math.ceil(normalizedData.length / maxVisibleTicks));
+      const maxVisibleTicks = Math.max(
+        2,
+        Math.floor(width / (containerWidth <= 500 ? 34 : 48)),
+      );
+      const tickInterval = Math.max(
+        1,
+        Math.ceil(normalizedData.length / maxVisibleTicks),
+      );
       const tickValues = normalizedData
-        .filter((_, index) => index % tickInterval === 0 || index === normalizedData.length - 1)
+        .filter(
+          (_, index) =>
+            index % tickInterval === 0 || index === normalizedData.length - 1,
+        )
         .map(item => item.label);
 
       chart

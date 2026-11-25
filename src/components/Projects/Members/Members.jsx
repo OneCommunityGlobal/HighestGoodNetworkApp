@@ -27,6 +27,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import PropTypes from 'prop-types';
 
+import { permissions } from '../../../utils/constants';
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
   const projectId = props.match.params.projectId;
@@ -68,8 +69,8 @@ const Members = props => {
         .filter(user => !!user.email)
     : [];
 
-  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+  const canAssignProjectToUsers = props.hasPermission(permissions.assignProjectToUsers);
+  const canUnassignUserInProject = props.hasPermission(permissions.unassignUserInProject);
   const [, setAllProjectMembers] = useState([]); 
   const [isValid, setIsValid] = useState(true);
 

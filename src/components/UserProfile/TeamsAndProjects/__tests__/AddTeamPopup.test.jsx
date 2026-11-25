@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import AddTeamPopup from '../AddTeamPopup';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { postNewTeam, getAllUserTeams } from '~/actions/allTeamsAction';
-import { ADD_NEW_TEAM, RECEIVE_ALL_USER_TEAMS } from '~/constants/allTeamsConstants';
+import { ADD_NEW_TEAM, RECEIVE_ALL_USER_TEAMS, FETCH_USER_TEAMS_START } from '~/constants/allTeamsConstants';
 import axios from 'axios';
 import { vi } from 'vitest';
 
@@ -107,6 +107,52 @@ describe('AddTeamPopup component', () => {
     expect(screen.getByText('Add Team')).toBeInTheDocument();
   });
 
+  // Only Teams-page Edit skips the opening fetch; all other mode combinations retain it.
+  it.each([
+    [true, true, false],
+    [true, false, true],
+    [false, false, true],
+    [false, true, true],
+  ])(
+    'opening with isTeamManagement=%s and isEdit=%s refreshes=%s',
+    async (isTeamManagement, isEdit, shouldRefresh) => {
+      const editStore = mockStore(baseState);
+      axios.get.mockResolvedValue({ data: baseState.allTeams });
+      const popup = open => (
+        <Provider store={editStore}>
+          <AddTeamPopup
+            open={open}
+            onClose={onAddTeamPopupClose}
+            teamsData={defaultTeamsData}
+            isTeamManagement={isTeamManagement}
+            isEdit={isEdit}
+            teamName="team11"
+            teamId="aaa123"
+          />
+        </Provider>
+      );
+
+      const { rerender } = render(popup(false));
+      expect(axios.get).not.toHaveBeenCalled();
+      rerender(popup(true));
+
+      if (shouldRefresh) {
+        await waitFor(() => {
+          expect(editStore.getActions()).toEqual([
+            { type: FETCH_USER_TEAMS_START },
+            { type: RECEIVE_ALL_USER_TEAMS, payload: baseState.allTeams },
+          ]);
+        });
+        expect(axios.get).toHaveBeenCalledTimes(1);
+      } else {
+        expect(screen.getByRole('heading', { name: 'Update Team Name' })).toBeInTheDocument();
+        expect(screen.getByDisplayValue('team11')).toBeInTheDocument();
+        expect(axios.get).not.toHaveBeenCalled();
+        expect(editStore.getActions()).toEqual([]);
+      }
+    },
+  );
+
   it('does not render modal elements when addTeamPopupOpen is false', () => {
     renderClosedPopup(emptyTeamsData);
     expect(screen.queryByText('Add Team')).not.toBeInTheDocument();
@@ -195,7 +241,10 @@ describe('AddTeamPopup component', () => {
     });
 
     const actionStore = mockStore({});
-    const expectedActions = [{ type: RECEIVE_ALL_USER_TEAMS, payload: responseData }];
+    const expectedActions = [
+      { type: FETCH_USER_TEAMS_START },
+      { type: RECEIVE_ALL_USER_TEAMS, payload: responseData },
+    ];
 
     await actionStore.dispatch(getAllUserTeams());
     expect(actionStore.getActions()).toEqual(expectedActions);
@@ -229,8 +278,11 @@ describe('AddTeamPopup component', () => {
     axios.get.mockRejectedValue();
 
     const actionStore = mockStore({});
-    const expectedActions = [{ type: RECEIVE_ALL_USER_TEAMS, payload: undefined }];
-
+    const expectedActions = [
+      { type: FETCH_USER_TEAMS_START },
+      { type: RECEIVE_ALL_USER_TEAMS, payload: undefined },
+    ];
+    
     await actionStore.dispatch(getAllUserTeams());
     expect(actionStore.getActions()).toEqual(expectedActions);
   });

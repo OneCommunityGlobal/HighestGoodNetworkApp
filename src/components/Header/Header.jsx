@@ -55,6 +55,7 @@ import {
   PROJECTS,
   REPORTS,
   SEND_EMAILS,
+  SCHEDULE_MEETINGS,
   TEAM_LOCATIONS,
   TEAMS,
   TIMELOG,
@@ -67,7 +68,9 @@ import {
   WEEKLY_SUMMARIES_REPORT,
   WELCOME,
 } from '../../languages/en/ui';
+import { permissions } from '../../utils/constants';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
+import RoutePermissions from '../../utils/routePermissions';
 import PermissionWatcher from '../Auth/PermissionWatcher';
 import Logout from '../Logout/Logout';
 import NotificationCard from '../Notification/notificationCard';
@@ -75,6 +78,7 @@ import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import DisplayBox from '../PRPromotions/DisplayBox';
 import Timer from '../Timer/Timer';
 import BellNotification from './BellNotification';
+import JobApplicationEmailSettings from '../JobApplicationEmailSettings/JobApplicationEmailSettings';
 import DarkModeButton from './DarkModeButton';
 import styles from './Header.module.css';
 import {
@@ -142,6 +146,7 @@ export function Header(props) {
   const { darkMode } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
+  const [jobEmailSettingsOpen, setJobEmailSettingsOpen] = useState(false);
   const { isAuthenticated, user } = props.auth;
   const [firstName, setFirstName] = useState(props.auth.firstName);
   const [profilePic, setProfilePic] = useState(props.auth.profilePic);
@@ -173,60 +178,54 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
   const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
+  // Only the signed-in Owner or Administrator can manage recipients.
+  const canManageApplicationEmailSettings =
+  isAuthenticated &&
+  isAuthUser &&
+  ['Owner', 'Administrator'].includes(user.role);
+// Reports / nav access — prefer RoutePermissions lists (OR any key)
+  const canGetReports = props.hasPermission(RoutePermissions.reports, !isAuthUser);
+  const canGetWeeklySummaries = props.hasPermission(
+    RoutePermissions.weeklySummariesReport,
+    !isAuthUser,
+  );
+  const canGetWeeklyVolunteerSummary = props.hasPermission(
+    permissions.getWeeklySummaries,
+    !isAuthUser,
+  );
+  const canGetJobAnalytics = props.hasPermission(permissions.getJobReports, !isAuthUser);
 
-  const canGetReports = props.hasPermission('getReports', !isAuthUser);
-  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser);
-  const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
-  const canGetJobAnalytics = props.hasPermission('getJobReports');
-
+  // Users — RoutePermissions + setFinalDay (still checked in Header)
   const canAccessUserManagement =
-    props.hasPermission('postUserProfile', !isAuthUser) ||
-    props.hasPermission('deleteUserProfile', !isAuthUser) ||
-    props.hasPermission('changeUserStatus', !isAuthUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser) ||
-    props.hasPermission('setFinalDay', !isAuthUser) ||
-    props.hasPermission('interactWithPauseUserButton', !isAuthUser);
+    props.hasPermission(RoutePermissions.userManagement, !isAuthUser) ||
+    props.hasPermission(permissions.setFinalDay, !isAuthUser);
 
-  const canAccessBadgeManagement =
-    props.hasPermission('seeBadges', !isAuthUser) ||
-    props.hasPermission('createBadges', !isAuthUser) ||
-    props.hasPermission('updateBadges', !isAuthUser) ||
-    props.hasPermission('deleteBadges', !isAuthUser);
-
-  const canAccessProjects =
-    props.hasPermission('postProject', !isAuthUser) ||
-    props.hasPermission('deleteProject', !isAuthUser) ||
-    props.hasPermission('putProject', !isAuthUser) ||
-    props.hasPermission('getProjectMembers', !isAuthUser) ||
-    props.hasPermission('assignProjectToUsers', !isAuthUser) ||
-    props.hasPermission('postWbs', !isAuthUser) ||
-    props.hasPermission('deleteWbs', !isAuthUser) ||
-    props.hasPermission('postTask', !isAuthUser) ||
-    props.hasPermission('updateTask', !isAuthUser) ||
-    props.hasPermission('deleteTask', !isAuthUser);
-
-  const canUpdateTask = props.hasPermission('updateTask', !isAuthUser);
-
-  const canAccessTeams =
-    props.hasPermission('postTeam', !isAuthUser) ||
-    props.hasPermission('putTeam', !isAuthUser) ||
-    props.hasPermission('deleteTeam', !isAuthUser) ||
-    props.hasPermission('assignTeamToUsers', !isAuthUser);
-
+  // Badges / Projects / Teams / Permissions via RoutePermissions
+  const canAccessBadgeManagement = props.hasPermission(
+    RoutePermissions.badgeManagement,
+    !isAuthUser,
+  );
+  const canAccessProjects = props.hasPermission(RoutePermissions.projects, !isAuthUser);
+  const canUpdateTask = props.hasPermission(permissions.updateTask, !isAuthUser);
+  const canAccessTeams = props.hasPermission(RoutePermissions.teams, !isAuthUser);
   const canAccessPopups =
-    props.hasPermission('createPopup', !isAuthUser) ||
-    props.hasPermission('updatePopup', !isAuthUser);
+    props.hasPermission(permissions.createPopup, !isAuthUser) ||
+    props.hasPermission(permissions.updatePopup, !isAuthUser);
+  const canAccessSendEmails = props.hasPermission(
+    RoutePermissions.announcements,
+    !isAuthUser,
+  );
+  const canAccessScheduleMeetings = props.hasPermission(permissions.scheduleMeetings, !isAuthUser);
+  const canAccessPermissionsManagement = props.hasPermission(
+    RoutePermissions.permissionsManagement,
+    !isAuthUser,
+  );
 
-  const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
-
-  const canAccessPermissionsManagement =
-    props.hasPermission('postRole', !isAuthUser) ||
-    props.hasPermission('putRole', !isAuthUser) ||
-    props.hasPermission('deleteRole', !isAuthUser) ||
-    props.hasPermission('putUserProfilePermissions', !isAuthUser);
-
-  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
-  const canAccessPRDashboard = props.hasPermission('accessPRTeamDashboard', !isAuthUser);
+  const canAccessBlueSquareEmailManagement = props.hasPermission(
+    permissions.resendBlueSquareAndSummaryEmails,
+    !isAuthUser,
+  );
+  const canAccessPRDashboard = props.hasPermission(RoutePermissions.prDashboard, !isAuthUser);
 
   const userId = user.userid;
   const viewerTimeZone = resolveUserTimeZone(props.userProfile?.timeZone);
@@ -258,7 +257,20 @@ export function Header(props) {
   const history = useHistory();
 
   useEffect(() => {
-    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/'));
+    const path = location.pathname;
+    // BM Projects accordion: any BM dashboard route.
+    setShowProjectDropdown(path === '/bmdashboard' || path.startsWith('/bmdashboard/'));
+  }, [location.pathname]);
+
+  // Injuries Tracking should only show in real BM Dashboard context — not on Report
+  // pages that happen to live under /bmdashboard/* (e.g. Total Construction Summary).
+  const showInjuriesTrackingLink = useMemo(() => {
+    const path = location.pathname;
+    if (path === '/bmdashboard' || path === '/bmdashboard/') return true;
+    if (path.startsWith('/bmdashboard/injurychart')) return true;
+    if (!path.startsWith('/bmdashboard/')) return false;
+    const excludedPrefixes = ['/bmdashboard/totalconstructionsummary'];
+    return !excludedPrefixes.some(prefix => path.startsWith(prefix));
   }, [location.pathname]);
   const MeetingNotificationAudioRef = useRef(null);
   const dismissedMeetingModalIdRef = useRef(null);
@@ -561,33 +573,6 @@ export function Header(props) {
   }, [user.userid, props.auth.firstName]);
 
   useEffect(() => {
-    const handleResize = () => {
-      const currentWidth = window.innerWidth;
-      // eslint-disable-next-line no-console
-      console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
-      if (currentWidth >= 1728) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
-      } else if (currentWidth >= 1400) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Desktop - Centered layout`);
-      } else if (currentWidth >= 1200) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Medium desktop - Centered layout`);
-      } else if (currentWidth >= 768) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Tablet - Stacked layout`);
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Mobile - Compact vertical layout`);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
@@ -776,6 +761,15 @@ export function Header(props) {
     <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
+
+{canManageApplicationEmailSettings && (
+  <JobApplicationEmailSettings
+    isOpen={jobEmailSettingsOpen}
+    onClose={() => setJobEmailSettingsOpen(false)}
+    darkMode={darkMode}
+  />
+)}
+
         {showPromotionsPopup && (
           // Header launches this modal outside the PR Promotions page, so pass the theme explicitly.
           <DisplayBox onClose={() => setShowPromotionsPopup(false)} darkMode={darkMode} />
@@ -856,7 +850,7 @@ export function Header(props) {
                   </NavItem>
                 )}
 
-                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
+                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement|| canManageApplicationEmailSettings) && (
                   <UncontrolledDropdown
                     nav
                     inNavbar
@@ -867,14 +861,45 @@ export function Header(props) {
                       {canAccessUserManagement && <DropdownItem tag={Link} to="/usermanagement" className={fontColor} disabled={headerDisabled}>{USER_MANAGEMENT}</DropdownItem>}
                       {canAccessBadgeManagement && <DropdownItem tag={Link} to="/badgemanagement" className={fontColor} disabled={headerDisabled}>{BADGE_MANAGEMENT}</DropdownItem>}
                       {canAccessProjects && <DropdownItem tag={Link} to="/projects" className={fontColor} disabled={headerDisabled}>{PROJECTS}</DropdownItem>}
+                      {(canAccessProjects || canUpdateTask) && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/resolvedtasks"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          Resolved Tasks
+                        </DropdownItem>
+                      )}
                       {canAccessTeams && <DropdownItem tag={Link} to="/teams" className={fontColor} disabled={headerDisabled}>{TEAMS}</DropdownItem>}
                       {canAccessSendEmails && <DropdownItem tag={Link} to="/announcements" className={fontColor} disabled={headerDisabled}>{SEND_EMAILS}</DropdownItem>}
+                      {canAccessScheduleMeetings && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/schedulemeetings"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {SCHEDULE_MEETINGS}
+                        </DropdownItem>
+                      )}
                       {canAccessPermissionsManagement && (
                         <>
                           <DropdownItem divider className={styles.hideInMobile} />
                           <DropdownItem tag={Link} to="/permissionsmanagement" className={fontColor} disabled={headerDisabled}>{PERMISSIONS_MANAGEMENT}</DropdownItem>
                         </>
                       )}
+
+{canManageApplicationEmailSettings && (
+  <DropdownItem
+    className={fontColor}
+    disabled={headerDisabled}
+    onClick={() => setJobEmailSettingsOpen(true)}
+  >
+    Job Application Email Settings
+  </DropdownItem>
+)}
+
                       {canAccessBlueSquareEmailManagement && (
                         <DropdownItem tag={Link} to="/bluesquare-email-management" className={fontColor} disabled={headerDisabled}>{BLUE_SQUARE_EMAIL_MANAGEMENT}</DropdownItem>
                       )}
@@ -886,6 +911,17 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
                         BM Dashboard
                       </DropdownItem>
+
+                      {/* Visible only in BM Dashboard context; route stays /bmdashboard/injurychart. */}
+                      {showInjuriesTrackingLink && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bmdashboard/injurychart"
+                          className={`${fontColor} ${styles.bmSubItem}`}
+                        >
+                          Injuries Tracking
+                        </DropdownItem>
+                      )}
 
                       {/* BM Projects accordion — only shown when on a bmdashboard route */}
                       {showProjectDropdown && (

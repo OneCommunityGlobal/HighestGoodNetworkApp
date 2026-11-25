@@ -6,6 +6,7 @@ import PhoneInput from 'react-phone-input-2';
 import { Button, Col, FormFeedback, FormGroup, Input, Label, Row } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
+import { permissions } from '../../../utils/constants';
 //// import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 import { isString } from 'lodash';
@@ -499,10 +500,10 @@ const BasicInformationTab = props => {
   const [newRole, setNewRole] = useState(userProfile.role);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
-  const canEditStatus = dispatch(hasPermission('interactWithPauseUserButton'));
+  const canEditStatus = dispatch(hasPermission(permissions.interactWithPauseUserButton));
 
   const canEditEndDate =
-  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission(permissions.setFinalDay));
 
 
   let topMargin = '6px';
@@ -510,7 +511,7 @@ const BasicInformationTab = props => {
     topMargin = '0px';
   }
 
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission(permissions.addDeleteEditOwners);
   const handleLocation = e => {
     setUserProfile({
       ...userProfile,
@@ -1025,21 +1026,26 @@ const BasicInformationTab = props => {
               {videoCallPreferenceComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>
+            <Row>
               {roleComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{  marginBottom: '10px' }}>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>
               {locationComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginTop: '15px', marginBottom: '10px' }}>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>
               {timeZoneComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
-            <Row style={{ marginBottom: '10px' }}>{statusComponent}<Col md="1"></Col></Row>
-            <Row style={{ marginBottom: '10px' }}>{endDateComponent}<Col md="1"></Col></Row>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>{statusComponent}<Col md="1"></Col></Row>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>{endDateComponent}<Col md="1"></Col></Row>
           </>
         ) : (
           <>

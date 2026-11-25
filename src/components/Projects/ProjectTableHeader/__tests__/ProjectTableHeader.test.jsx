@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
@@ -87,9 +87,9 @@ describe('ProjectTableHeader Component', () => {
     };
     const hasPermission = vi.fn((a) => true)
     stateWithDeletePermission.hasPermission = hasPermission;
-    const { getByText } = renderProjectTableHeader(stateWithDeletePermission);
-    // eslint-disable-next-line testing-library/prefer-screen-queries
-    expect(getByText('Archive')).toBeInTheDocument();
+    renderProjectTableHeader(stateWithDeletePermission);
+
+    expect(screen.getByText('Archive')).toBeInTheDocument();
   });
 
   // Test case to check if the delete column is not shown for users without delete permission
@@ -103,9 +103,9 @@ describe('ProjectTableHeader Component', () => {
     };
     const hasPermission = vi.fn((a) => false)
     stateWithoutDeletePermission.hasPermission = hasPermission;
-    const { queryByText } = renderProjectTableHeader(stateWithoutDeletePermission);
-    // eslint-disable-next-line testing-library/prefer-screen-queries
-    expect(queryByText('Delete')).not.toBeInTheDocument();
+    renderProjectTableHeader(stateWithoutDeletePermission);
+
+    expect(screen.queryByText('Delete')).not.toBeInTheDocument();
   });
 
 });

@@ -115,7 +115,7 @@ function ProjectDetails() {
           {/*           TEAM              */}
           {/* --------------------------- */}
           <DashboardSection icon="👥" title="Team" darkMode={darkMode}>
-            <TeamButtons darkMode={darkMode} />
+            <TeamButtons projectId={projectId} darkMode={darkMode} />
           </DashboardSection>
 
           {/* TOOLS + MATERIALS ROW */}
@@ -160,7 +160,7 @@ function ProjectDetails() {
                 padding: '10px',
               }}
             >
-              <ProjectLog projectId={projectId} />
+              <ProjectLog projectId={projectId} darkMode={darkMode} />
             </div>
           </div>
         </Col>

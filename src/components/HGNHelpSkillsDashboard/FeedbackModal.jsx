@@ -2,13 +2,18 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { ENDPOINTS } from '../../utils/URL';
 import styles from './FeedbackModal.module.css';
 
 function FeedbackModal({ authUser }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const history = useHistory();
+  // This component is only reached by navigating directly to /hgnhelp/feedback
+  // (see routes.jsx), so arriving here is itself the request to open the form -
+  // it must not stay hidden behind the "shouldShow" auto-popup check below.
+  const [isOpen, setIsOpen] = useState(true);
   const [helpRequestId, setHelpRequestId] = useState(null);
   const [receivedHelp, setReceivedHelp] = useState('');
   const [activeMembers, setActiveMembers] = useState([{ name: '', rating: 0, selectedUser: null }]);
@@ -28,22 +33,22 @@ function FeedbackModal({ authUser }) {
   const [showInactiveDropdown, setShowInactiveDropdown] = useState({});
 
   useEffect(() => {
-    const checkModal = async () => {
+    const fetchPendingHelpRequest = async () => {
       try {
         const userId = authUser?.userid || 'test-user-id';
 
         const response = await axios.get(ENDPOINTS.HELP_REQUEST_CHECK_MODAL(userId));
 
-        if (response.data.shouldShow) {
-          setIsOpen(true);
+        if (response.data.helpRequestId) {
           setHelpRequestId(response.data.helpRequestId);
         }
       } catch (error) {
-        // Silently fail - modal simply won't show
+        // No pending help request found for this user - the form can still be
+        // submitted without one, so this is not fatal to showing the page.
       }
     };
 
-    checkModal();
+    fetchPendingHelpRequest();
   }, [authUser]);
 
   // Fetch team members on mount
@@ -63,6 +68,7 @@ function FeedbackModal({ authUser }) {
 
   const handleClose = () => {
     setIsOpen(false);
+    history.push('/dashboard');
   };
 
   const handleClosePermanently = async () => {
@@ -72,6 +78,7 @@ function FeedbackModal({ authUser }) {
       await axios.post(ENDPOINTS.FEEDBACK_CLOSE_PERMANENTLY, { userId });
       toast.success('This modal will not appear again.');
       setIsOpen(false);
+      history.push('/dashboard');
     } catch (error) {
       toast.error('Failed to save. Please try again.');
     }
@@ -119,6 +126,7 @@ function FeedbackModal({ authUser }) {
       await axios.post(ENDPOINTS.FEEDBACK_SUBMIT, feedbackData);
       toast.success('Thank you for your feedback!');
       setIsOpen(false);
+      history.push('/dashboard');
     } catch (error) {
       toast.error('Failed to submit feedback. Please try again.');
     }

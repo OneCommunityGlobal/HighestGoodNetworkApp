@@ -1,0 +1,57 @@
+/* stylelint-disable */
+.wrapper {
+  width: 100%;
+  min-height: 100vh;
+  padding: 1rem 2rem 2rem;
+  overflow-x: hidden;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.cicdList {
+  padding-left: 1.25rem;
+}
+
+.cicdList li {
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  color: #000;
+}
+
+.comment {
+  border: 1px solid #dee2e6;
+}
+
+/* ===== DARK MODE ===== */
+
+.wrapper.dark {
+  background-color: #1b2a41;
+}
+
+.wrapper.dark .title,
+.wrapper.dark .subtitle {
+  color: #fff;
+}
+
+.card.dark {
+  background-color: #24354f;
+  box-shadow: 0 2px 8px rgb(255 255 255 / 10%);
+}
+
+.card.dark h4,
+.card.dark h5,
+.card.dark p,
+.card.dark strong {
+  color: #fff;
+}
+
+.card.dark .comment {
+  border-color: #3b4f6b;
+  color: #e5eaf3;
+}

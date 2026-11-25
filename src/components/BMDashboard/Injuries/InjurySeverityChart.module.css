@@ -151,7 +151,8 @@
    DARK MODE FILTERS
 ========================= */
 
-.oxideDark .filterSelect :global(.ant-select-selector) {
+.oxideDark .filterSelect :global(.ant-select-selector),
+.oxideDark .filterSelect:global(.ant-picker) {
   background-color: #1c2541 !important;
   border-color: rgb(255 255 255 / 35%) !important;
   color: #f5f5f5 !important;
@@ -161,15 +162,30 @@
   color: rgb(245 245 245 / 70%) !important;
 }
 
-.oxideDark .filterSelect :global(.ant-select-selection-item) {
-  background-color: rgb(0 123 255 / 25%) !important;
-  border-color: rgb(0 123 255 / 55%) !important;
-  color: #f5f5f5 !important;
-}
-
 .oxideDark .filterSelect :global(.ant-select-selection-item-content) {
   color: #f5f5f5 !important;
   font-weight: 500;
+}
+
+.oxideDark .filterSelect :global(.ant-select-selection-item) {
+  background-color: #2b3e59 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #f5f5f5 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-select-selection-placeholder),
+.oxideDark .filterSelect :global(.ant-picker-input > input::placeholder) {
+  color: #b0b0b0 !important;
+  opacity: 1 !important;
+  font-weight: 500;
+}
+
+/* Icons and Arrows */
+.oxideDark .filterSelect :global(.ant-select-arrow),
+.oxideDark .filterSelect :global(.ant-picker-suffix),
+.oxideDark .filterSelect :global(.ant-select-clear),
+.oxideDark .filterSelect :global(.ant-picker-clear) {
+  color: #f5f5f5 !important;
 }
 
 .oxideDark .filterSelect :global(.ant-select-selection-item-remove) {
@@ -180,12 +196,12 @@
   color: #f5f5f5 !important;
 }
 
-.oxideDark .filterSelect :global(.ant-select-arrow),
-.oxideDark .filterSelect :global(.ant-select-clear) {
-  color: #f5f5f5 !important;
+.oxideDark .filterSelect :global(.ant-picker-suffix) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-.oxideDark .filterSelect :global(.ant-select-clear) {
+.oxideDark .filterSelect .ant-select-dropdown,
+.oxideDark :global(.ant-picker-dropdown) {
   background-color: #1c2541 !important;
 }
 
@@ -193,6 +209,143 @@
    DARK MODE RANGE PICKER
 ========================= */
 
+/* Dropdown Hover State */
+.oxideDark :global(.ant-select-item-option-active:not(.ant-select-item-option-disabled)) {
+  background-color: #2c3e50 !important;
+}
+
+
+.oxideDark :global(.ant-select-item-option-selected:not(.ant-select-item-option-disabled)) {
+  background-color: #3b5068 !important;
+  color: #ffffff !important;
+}
+
+
+
+.oxideDark :global(.ant-picker-panel-container),
+.oxideDark :global(.ant-picker-panels),
+.oxideDark :global(.ant-picker-panel) {
+  background-color: #1c2541 !important;
+  border: 1px solid #ffffff !important;
+}
+
+.lightCalendar :global(.ant-picker-panel-container),
+.lightCalendar :global(.ant-picker-panels),
+.lightCalendar :global(.ant-picker-panel) {
+  border: 1px solid #000000 !important;
+}
+
+.oxideDark .filterSelect:global(.ant-picker) :global(.ant-picker-input > input) {
+  color: #f5f5f5 !important;
+}
+
+.oxideDark :global(.ant-picker-content th) {
+  background-color: #1c2541 !important;
+  color: #a0a0a0 !important;
+}
+
+.oxideDark :global(.ant-picker-header) {
+  color: #f5f5f5 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.oxideDark :global(.ant-picker-header-view),
+.oxideDark :global(.ant-picker-header button) {
+  color: #f5f5f5 !important;
+}
+
+
+.oxideDark :global(.ant-picker-cell-in-view .ant-picker-cell-inner) {
+  color: #f5f5f5 !important;
+  /* Current month */
+}
+
+.oxideDark :global(.ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner) {
+  color: #666666 !important;
+
+}
+
+.oxideDark :global(.ant-picker-cell-today .ant-picker-cell-inner) {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Calendar Hover / Range Selection Highlights */
+.oxideDark :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-in-view) .ant-picker-cell-inner),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-in-view) .ant-picker-cell-inner) {
+  background-color: #2c3e50 !important;
+}
+
+.oxideDark :global(.ant-picker-cell-range-hover::before),
+.oxideDark :global(.ant-picker-cell-range-hover-start::before),
+.oxideDark :global(.ant-picker-cell-range-hover-end::before) {
+  background-color: #1e40af !important;
+
+}
+
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover-start::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover-end::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-in-range.ant-picker-cell-range-hover::before) {
+  background-color: #1e40af !important;
+}
+
+/* Ant applies the horizontal range strip through in-view cell pseudo-elements. */
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-in-view.ant-picker-cell-in-range::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-in-view.ant-picker-cell-range-hover::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-in-view.ant-picker-cell-range-hover-start::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-in-view.ant-picker-cell-range-hover-end::before) {
+  background-color: #1e40af !important;
+}
+
+.oxideDark :global(.ant-picker-cell-range-hover .ant-picker-cell-inner) {
+  color: #ffffff !important;
+}
+
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover .ant-picker-cell-inner) {
+  color: #ffffff !important;
+}
+
+/* Ant paints the temporary range preview strip on cell pseudo-elements. */
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-date-panel .ant-picker-content tr:hover .ant-picker-cell::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover-start:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover-end:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover-start:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-hover-end:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end):not(.ant-picker-cell-disabled)::before) {
+  background: #1e40af !important;
+}
+
+.oxideDark :global(.ant-picker-cell-in-range::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-in-range::before) {
+  background-color: #1e40af !important;
+}
+
+.oxideDark :global(.ant-picker-cell-range-start::before),
+.oxideDark :global(.ant-picker-cell-range-end::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-start::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-end::before) {
+  background-color: #1e40af !important;
+}
+
+.oxideDark :global(.ant-picker-cell-selected .ant-picker-cell-inner),
+.oxideDark :global(.ant-picker-cell-range-start .ant-picker-cell-inner),
+.oxideDark :global(.ant-picker-cell-range-end .ant-picker-cell-inner),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-selected .ant-picker-cell-inner),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-start .ant-picker-cell-inner),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-range-end .ant-picker-cell-inner) {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.oxideDark :global(.ant-picker-cell-in-range .ant-picker-cell-inner),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-in-range .ant-picker-cell-inner) {
+  color: #ffffff !important;
+}
+
+/* Input Box Target */
 .oxideDark .filterSelect:global(.ant-picker) {
   background-color: #1c2541 !important;
   border-color: rgb(255 255 255 / 20%) !important;
@@ -214,6 +367,10 @@
 
 .oxideDark .filterSelect :global(.ant-picker-suffix) {
   border-bottom: 1px solid rgb(255 255 255 / 10%) !important;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-range-separator) * {
+  padding-right: 5px;
 }
 
 .oxideDark .filterSelect :global(.ant-picker-clear) {
@@ -314,7 +471,7 @@
 }
 
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-in-range::before) {
-  background-color: rgb(0 123 255 / 15%) !important;
+  background-color: #1e40af !important;
 }
 
 :global(
@@ -325,7 +482,7 @@
     .ant-picker-dropdown.oxideDark-dropdown
       .ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before
   ) {
-  background-color: rgb(0 123 255 / 15%) !important;
+  background-color: #1e40af !important;
 }
 
 :global(
@@ -343,7 +500,7 @@
       .ant-picker-cell-range-end
       .ant-picker-cell-inner
   ) {
-  background-color: #007bff !important;
+  background-color: #2563eb !important;
   color: #fff !important;
 }
 
@@ -352,7 +509,7 @@
       .ant-picker-cell-today
       .ant-picker-cell-inner::before
   ) {
-  border-color: #007bff !important;
+  border-color: #2563eb !important;
 }
 
 /* =========================

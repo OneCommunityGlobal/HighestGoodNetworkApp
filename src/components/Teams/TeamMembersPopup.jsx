@@ -22,6 +22,7 @@ import MembersAutoComplete from './MembersAutoComplete';
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
 
+import { permissions } from '../../utils/constants';
 /* ---------- small helpers to reduce cognitive complexity ---------- */
 
 function ValidationAlerts({ duplicateUserAlert, isValidUser }) {
@@ -67,8 +68,8 @@ function applyStatusFilter(list, mode) {
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
-  const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
+  const hasVisibilityIconPermission = hasPermission(permissions.seeVisibilityIcon);
+  const canAssignTeamToUsers = hasPermission(permissions.assignTeamToUsers);
   const [filterMode, setFilterMode] = useState('active'); // 'active' | 'all' | 'inactive'
 
   const [selectedUser, setSelectedUser] = useState(undefined);

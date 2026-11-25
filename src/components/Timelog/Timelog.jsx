@@ -2,7 +2,7 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
 import pdfMake from 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
@@ -69,6 +69,7 @@ import WeeklySummaries from './WeeklySummaries';
 import TimestampsTab from './TimestampsTab';
 import Badge from '../Badge';
 import { ENDPOINTS } from '~/utils/URL';
+import { permissions } from '../../utils/constants';
 // should be clear now too in fixing styling differences
 
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
@@ -94,6 +95,7 @@ const endOfWeek = offset => {
 function Timelog(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const location = useLocation();
+  const history = useHistory();
 
   const normalizeNotes = (raw) => {
     if (!raw) return '';
@@ -252,7 +254,7 @@ const downloadPeriodPdf = () => {
 
 
   // Main Function component
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
 
   // access the store states
   const {
@@ -993,6 +995,9 @@ return (
                       userProfile={displayUserProfile}
                       roles={roles}
                       maxHoursPerEntry={40}
+                      onDuplicateCancel={personId =>
+                        history.push(`/timelog/${personId}#currentWeek`)
+                      }
                     />
 
                     <ReactTooltip id="registerTip" place="bottom" effect="solid">

@@ -17,6 +17,7 @@
   min-height: 100%;
   display: flex;
   flex-direction: column;
+  border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   transition: all 0.3s ease;
   overflow: visible;
@@ -33,6 +34,7 @@
   --focus-border-color: #60a5fa;
   --text-secondary: #94a3b8;
   --error-color: #f87171;
+  border-color: #4a5a77;
 }
 
 .mfkTitle {
@@ -124,6 +126,7 @@
 
 .mfkDatepickerDark::placeholder {
   color: #cbd5e1 !important;
+  opacity: 1;
 }
 
 .mfkDatepicker:hover {
@@ -138,6 +141,7 @@
 
 /* Placeholder alignment */
 .mfkDatepicker::placeholder {
+  color: #64748b;
   text-align: left;
 }
 
@@ -222,7 +226,7 @@
 .mfkChartContainer {
   width: 100%;
   flex: 1;
-  min-height: 340px;
+  min-height: 350px;
   height: 100%;
   position: relative;
   border-radius: 0.5rem;
@@ -234,9 +238,72 @@
   transition: all 0.3s ease;
 }
 
+/* Extra small devices */
+@media (width < 360px) {
+  .mfkChartContainer {
+    min-height: 280px;
+  }
+}
+
+/* Small devices */
+@media (width <= 480px) {
+  .mfkChartContainer {
+    min-height: 300px;
+  }
+}
+
+/* Tablet */
+@media (width <= 768px) {
+  .mfkChartContainer {
+    min-height: 320px;
+  }
+}
+
+/* Large devices */
+@media (width > 768px) {
+  .mfkChartContainer {
+    min-height: 400px;
+  }
+}
+
 .mfkChartContainer svg {
   display: block;
   overflow: visible;
+  pointer-events: none;
+  transform: scale(1.15);
+  transform-origin: center 40%;
+}
+
+/* Adjust scaling for extra small devices */
+@media (width < 360px) {
+  .mfkChartContainer svg {
+    transform: scale(1.08);
+    transform-origin: center 45%;
+  }
+}
+
+/* Adjust scaling for small devices */
+@media (width <= 480px) {
+  .mfkChartContainer svg {
+    transform: scale(1.12);
+    transform-origin: center 42%;
+  }
+}
+
+/* Adjust scaling for tablet */
+@media (width <= 768px) {
+  .mfkChartContainer svg {
+    transform: scale(1.14);
+    transform-origin: center 40%;
+  }
+}
+
+/* Adjust scaling for large devices */
+@media (width > 768px) {
+  .mfkChartContainer svg {
+    transform: scale(1.18);
+    transform-origin: center 38%;
+  }
 }
 
 .mfkCalendarHeader {
@@ -364,13 +431,14 @@
 }
 
 .darkMode .mfkDatepicker {
-  background-color: #334155;
-  border-color: #475569;
-  color: #f8fafc;
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
 }
 
 .darkMode .mfkDatepicker::placeholder {
-  color: #cbd5e1;
+  color: #cbd5e1 !important;
+  opacity: 1;
 }
 
 .darkMode .mfkDatepicker:hover {
@@ -378,8 +446,8 @@
 }
 
 .darkMode .mfkDatepicker:focus {
-  border-color: #64748b;
-  box-shadow: none;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 1px #60a5fa !important;
 }
 
 .darkMode :global(.react-datepicker-wrapper),
