@@ -740,13 +740,14 @@ const TeamMemberTasks = React.memo(props => {
                           icon={faClock}
                           title="Total Remaining Hours"
                         />
-                        <div style={{ background: 'transparent', display: 'flex', gap: '4px' }}>
+                        <div className={styles.taskHeaderActions}>
                           <button
                             type="button"
                             onClick={handleShowTrackers}
                             className={[
                               styles.m1,
                               styles.trackerToggleBtn,
+                              styles.taskHeaderAction,
                               showTrackers ? styles.trackerToggleBtnActive : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
@@ -759,6 +760,7 @@ const TeamMemberTasks = React.memo(props => {
                             className={[
                               styles.m1,
                               styles.trackerToggleBtn,
+                              styles.taskHeaderAction,
                               !showTasks ? styles.trackerToggleBtnActive : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
@@ -771,11 +773,17 @@ const TeamMemberTasks = React.memo(props => {
                             className={[
                               styles.m1,
                               styles.trackerToggleBtn,
+                              styles.taskHeaderAction,
                               showAllTasks ? styles.trackerToggleBtnActive : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
+                            aria-label={
+                              showAllTasks
+                                ? 'Truncate all team member tasks'
+                                : 'Show all team member tasks'
+                            }
                           >
-                            {showAllTasks ? 'Truncate Tasks' : 'Show All Tasks'}
+                            {showAllTasks ? 'Truncate All Tasks' : 'Show All Tasks'}
                           </button>
                         </div>
                       </th>

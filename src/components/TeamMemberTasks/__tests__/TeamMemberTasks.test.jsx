@@ -137,17 +137,21 @@ describe('TeamMemberTasks component', () => {
       </Provider>,
     );
 
-    const showAllTasksButton = screen.getByRole('button', { name: 'Show All Tasks' });
+    const showAllTasksButton = screen.getByRole('button', { name: 'Show all team member tasks' });
+    expect(showAllTasksButton).toHaveTextContent('Show All Tasks');
     expect(screen.getByRole('button', { name: 'Hide Tasks' })).toBeInTheDocument();
 
     fireEvent.click(showAllTasksButton);
 
-    expect(screen.getByRole('button', { name: 'Truncate Tasks' })).toBeInTheDocument();
+    const truncateAllTasksButton = screen.getByRole('button', {
+      name: 'Truncate all team member tasks',
+    });
+    expect(truncateAllTasksButton).toHaveTextContent('Truncate All Tasks');
     expect(screen.getByRole('button', { name: 'Hide Tasks' })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Truncate Tasks' }));
+    fireEvent.click(truncateAllTasksButton);
 
-    expect(screen.getByRole('button', { name: 'Show All Tasks' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Show all team member tasks' })).toBeInTheDocument();
   });
   it('check if Team Member header is displaying as expected', () => {
     axios.get.mockResolvedValue({
