@@ -456,12 +456,118 @@
   color: var(--jaa-muted);
 }
 
-.detailPanel {
-  margin: 0 1.2rem 1rem;
-  padding: 0.9rem 1rem;
-  border-radius: 12px;
+.errorMsg {
+  color: var(--jaa-danger);
+}
+
+.answersPopoverPopper {
+  z-index: 1080;
+  max-width: min(420px, calc(100vw - 1.5rem));
+}
+
+.answersPopoverLight {
+  --jaa-surface: #fff;
+  --jaa-surface-soft: #f8fafc;
+  --jaa-border: #e2e8f0;
+  --jaa-text: #0f172a;
+  --jaa-muted: #64748b;
+  --jaa-accent: #2563eb;
+  --jaa-danger: #b91c1c;
+  --jaa-shadow: 0 1px 2px rgb(15 23 42 / 5%), 0 10px 28px rgb(15 23 42 / 6%);
+}
+
+.answersPopoverDark {
+  --jaa-surface: #162033;
+  --jaa-surface-soft: #1c2a40;
+  --jaa-border: #2b3b55;
+  --jaa-text: #e5eefc;
+  --jaa-muted: #94a3b8;
+  --jaa-accent: #60a5fa;
+  --jaa-danger: #fca5a5;
+  --jaa-shadow: 0 1px 2px rgb(0 0 0 / 28%), 0 14px 32px rgb(0 0 0 / 28%);
+}
+
+.answersPopover {
+  max-width: min(420px, calc(100vw - 1.5rem));
   border: 1px solid var(--jaa-border);
+  border-radius: 14px;
+  box-shadow: var(--jaa-shadow);
+  background: var(--jaa-surface);
+  color: var(--jaa-text);
+}
+
+.answersPopoverHeader {
+  background: var(--jaa-surface-soft) !important;
+  color: var(--jaa-text) !important;
+  border-bottom: 1px solid var(--jaa-border) !important;
+  font-weight: 650;
+}
+
+.answersPopoverBody {
+  max-height: min(420px, 60vh);
+  overflow-y: auto;
+  padding: 0.85rem 1rem !important;
+  background: var(--jaa-surface);
+  color: var(--jaa-text);
+}
+
+.answersMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--jaa-border);
+  font-size: 0.85rem;
+  color: var(--jaa-muted);
+}
+
+.answersList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  counter-reset: none;
+}
+
+.answerItem {
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
   background: var(--jaa-surface-soft);
+  border: 1px solid var(--jaa-border);
+}
+
+.answerQuestion {
+  margin: 0 0 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.answerIndex {
+  color: var(--jaa-accent);
+}
+
+.answerValue {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.popoverStatus {
+  margin: 0;
+  color: var(--jaa-muted);
+  font-size: 0.9rem;
+}
+
+.popoverError {
+  margin: 0;
+  color: var(--jaa-danger);
   font-size: 0.9rem;
 }
 

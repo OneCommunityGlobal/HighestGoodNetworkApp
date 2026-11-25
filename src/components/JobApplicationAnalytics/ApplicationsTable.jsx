@@ -1,5 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { Popover, PopoverBody, PopoverHeader } from 'reactstrap';
+import { ENDPOINTS } from '~/utils/URL';
 import styles from './JobApplicationAnalytics.module.css';
 
 function formatDate(value) {
@@ -22,8 +26,14 @@ function ApplicationsTable({
   onApplyFilters,
   onPageChange,
 }) {
-  const [expandedId, setExpandedId] = useState(null);
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const [openId, setOpenId] = useState(null);
+  const [detail, setDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState('');
+
   const totalPages = Math.max(1, Math.ceil((total || 0) / (limit || 25)));
+  const popoverThemeClass = darkMode ? styles.answersPopoverDark : styles.answersPopoverLight;
 
   const formOptions = useMemo(
     () =>
@@ -36,14 +46,49 @@ function ApplicationsTable({
     [forms],
   );
 
-  const expandedItem = items.find(item => item._id === expandedId);
+  useEffect(() => {
+    if (!openId) {
+      setDetail(null);
+      setDetailError('');
+      setDetailLoading(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    const loadDetail = async () => {
+      setDetailLoading(true);
+      setDetailError('');
+      setDetail(null);
+      try {
+        const { data } = await axios.get(ENDPOINTS.JOB_APPLICATION_DETAIL(openId));
+        if (!cancelled) setDetail(data);
+      } catch (err) {
+        if (!cancelled) {
+          setDetailError(
+            err?.response?.data?.message || 'Unable to load application answers right now.',
+          );
+        }
+      } finally {
+        if (!cancelled) setDetailLoading(false);
+      }
+    };
+
+    loadDetail();
+    return () => {
+      cancelled = true;
+    };
+  }, [openId]);
+
+  const toggleView = applicationId => {
+    setOpenId(prev => (prev === applicationId ? null : applicationId));
+  };
 
   return (
     <section className={styles.tableSection} aria-label="Job applications">
       <div className={styles.tableHeader}>
         <h3 className={styles.panelTitle}>All applications</h3>
         <p className={styles.panelSubtitle}>
-          Search and filter live JobApplications across forms. Resume links open in a new tab.
+          Search and filter live JobApplications across forms. Use View to open formatted answers.
         </p>
       </div>
       <div className={styles.filters}>
@@ -125,52 +170,116 @@ function ApplicationsTable({
               </tr>
             </thead>
             <tbody>
-              {items.map(item => (
-                <tr key={item._id}>
-                  <td>{formatDate(item.submittedAt)}</td>
-                  <td>{item.respondent || 'Anonymous'}</td>
-                  <td>{item.email || '—'}</td>
-                  <td>{item.formTitle || 'Untitled form'}</td>
-                  <td>{item.answerCount ?? 0}</td>
-                  <td>
-                    {item.resumeUrl ? (
-                      <a
-                        className={styles.resumeLink}
-                        href={item.resumeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+              {items.map(item => {
+                const buttonId = `jaa-view-${item._id}`;
+                const isOpen = openId === item._id;
+                return (
+                  <tr key={item._id}>
+                    <td>{formatDate(item.submittedAt)}</td>
+                    <td>{item.respondent || 'Anonymous'}</td>
+                    <td>{item.email || '—'}</td>
+                    <td>{item.formTitle || 'Untitled form'}</td>
+                    <td>{item.answerCount ?? 0}</td>
+                    <td>
+                      {item.resumeUrl ? (
+                        <a
+                          className={styles.resumeLink}
+                          href={item.resumeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Open
+                        </a>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                    <td>
+                      <button
+                        id={buttonId}
+                        type="button"
+                        className={styles.viewBtn}
+                        aria-expanded={isOpen}
+                        aria-controls={`jaa-answers-${item._id}`}
+                        onClick={() => toggleView(item._id)}
                       >
-                        Open
-                      </a>
-                    ) : (
-                      '—'
-                    )}
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      className={styles.viewBtn}
-                      onClick={() => setExpandedId(prev => (prev === item._id ? null : item._id))}
-                    >
-                      {expandedId === item._id ? 'Hide' : 'View'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                        {isOpen ? 'Hide' : 'View'}
+                      </button>
+                      <Popover
+                        placement="left"
+                        isOpen={isOpen}
+                        target={buttonId}
+                        toggle={() => toggleView(item._id)}
+                        trigger="legacy"
+                        className={`${styles.answersPopover} ${popoverThemeClass}`}
+                        popperClassName={`${styles.answersPopoverPopper} ${popoverThemeClass}`}
+                      >
+                        <PopoverHeader className={styles.answersPopoverHeader}>
+                          Application answers
+                        </PopoverHeader>
+                        <PopoverBody
+                          id={`jaa-answers-${item._id}`}
+                          className={styles.answersPopoverBody}
+                          data-testid="application-detail"
+                        >
+                          {detailLoading && (
+                            <p className={styles.popoverStatus}>Loading answers…</p>
+                          )}
+                          {!detailLoading && detailError && (
+                            <p className={styles.popoverError} role="alert">
+                              {detailError}
+                            </p>
+                          )}
+                          {!detailLoading && !detailError && detail && (
+                            <>
+                              <div className={styles.answersMeta}>
+                                <div>
+                                  <strong>{detail.respondent || 'Anonymous'}</strong>
+                                  {detail.email ? ` · ${detail.email}` : ''}
+                                </div>
+                                <div>{detail.formTitle || 'Untitled form'}</div>
+                                <div>Submitted: {formatDate(detail.submittedAt)}</div>
+                                {detail.resumeUrl ? (
+                                  <a
+                                    className={styles.resumeLink}
+                                    href={detail.resumeUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    Open resume
+                                  </a>
+                                ) : null}
+                              </div>
+                              {Array.isArray(detail.answers) && detail.answers.length > 0 ? (
+                                <ol className={styles.answersList}>
+                                  {detail.answers.map((qa, index) => (
+                                    <li
+                                      key={String(qa.questionId || `${detail._id}-${index}`)}
+                                      className={styles.answerItem}
+                                    >
+                                      <p className={styles.answerQuestion}>
+                                        <span className={styles.answerIndex}>{index + 1}.</span>{' '}
+                                        {qa.questionText}
+                                      </p>
+                                      <p className={styles.answerValue}>{qa.displayValue}</p>
+                                    </li>
+                                  ))}
+                                </ol>
+                              ) : (
+                                <p className={styles.popoverStatus}>
+                                  No question answers were recorded for this application.
+                                </p>
+                              )}
+                            </>
+                          )}
+                        </PopoverBody>
+                      </Popover>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        </div>
-      )}
-
-      {expandedItem && (
-        <div className={styles.detailPanel} data-testid="application-detail">
-          <div>
-            <strong>{expandedItem.respondent || 'Anonymous'}</strong>
-            {expandedItem.email ? ` · ${expandedItem.email}` : ''}
-          </div>
-          <div>Form: {expandedItem.formTitle || 'Untitled form'}</div>
-          <div>Submitted: {formatDate(expandedItem.submittedAt)}</div>
-          <div>Answers recorded: {expandedItem.answerCount ?? 0}</div>
         </div>
       )}
 

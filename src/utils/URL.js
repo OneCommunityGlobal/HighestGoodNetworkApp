@@ -573,6 +573,8 @@ export const ENDPOINTS = {
     const baseUrl = `${APIEndpoint}/jobforms/applications`;
     return qs ? `${baseUrl}?${qs}` : baseUrl;
   },
+  JOB_APPLICATION_DETAIL: applicationId =>
+    `${APIEndpoint}/jobforms/applications/${applicationId}`,
   /** Public: distinct job titles for the apply-page position dropdown. */
   GET_JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
 
