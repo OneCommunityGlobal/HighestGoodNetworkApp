@@ -54,9 +54,14 @@ vi.mock('../../../actions/weeklySummariesFilterAction', () => ({
   useUpdateFiltersWithReplacedTeamCodesMutation: () => [vi.fn()],
 }));
 
-vi.mock('../../../utils/questionnaireCompletion', () => ({
-  fetchCompletedQuestionnaireUserIds: () => Promise.resolve([]),
-}));
+vi.mock('../../../utils/questionnaireCompletion', async importOriginal => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    fetchCompletedQuestionnaireUserIds: () => Promise.resolve([]),
+    subscribeToCompletedQuestionnaireUserIds: vi.fn(() => () => {}),
+  };
+});
 
 vi.mock('../../common/SkeletonLoading', () => ({
   __esModule: true,

@@ -79,6 +79,67 @@ const renderComponent = (mockProps, currentStore = store) => {
 };
 
 describe('Team Member Task Component', () => {
+  it('renders all active tasks when Show All Tasks is enabled and truncates them again when disabled', () => {
+    const manyTasks = Array.from({ length: 7 }, (_, index) => ({
+      ...props.tasks[0],
+      _id: `task-${index}`,
+      num: `${index + 1}`,
+      taskName: `Task ${index + 1}`,
+    }));
+    const { rerender } = renderComponent({ ...props, tasks: manyTasks });
+
+    expect(screen.queryByTestId('Task 7')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Show All (7) Tasks' })).toBeInTheDocument();
+
+    rerender(
+      <Provider store={store}>
+        <MemoryRouter>
+          <table>
+            <tbody>
+              <TeamMemberTask
+                user={{ ...props, tasks: manyTasks }}
+                handleMarkAsDoneModal={handleMarkAsDoneModal}
+                handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                handleTaskModalOption={handleTaskModalOption}
+                userRole={props.role}
+                userId={props.personId}
+                updateTaskStatus={updateTaskStatus}
+                showAllTasks
+              />
+            </tbody>
+          </table>
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.getByTestId('Task 7')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /7 Task 7/ })).toBeInTheDocument();
+
+    rerender(
+      <Provider store={store}>
+        <MemoryRouter>
+          <table>
+            <tbody>
+              <TeamMemberTask
+                user={{ ...props, tasks: manyTasks }}
+                handleMarkAsDoneModal={handleMarkAsDoneModal}
+                handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                handleTaskModalOption={handleTaskModalOption}
+                userRole={props.role}
+                userId={props.personId}
+                updateTaskStatus={updateTaskStatus}
+                showAllTasks={false}
+              />
+            </tbody>
+          </table>
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.queryByTestId('Task 7')).not.toBeInTheDocument();
+  });
   it('status circle if committed time is fulfilled and red otherwise', () => {
     renderComponent(props);
 

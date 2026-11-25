@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader, Progress, Table } from 'reactstrap';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import UserStateDisplay from '../UserState/UserStateDisplay';
@@ -57,6 +57,7 @@ const TeamMemberTask = React.memo(
     userStateSelection = [],
     onSelectionChange,
     expandAll = false,
+    showAllTasks = false,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
@@ -123,35 +124,49 @@ const TeamMemberTask = React.memo(
       });
     };
 
-    const totalHoursRemaining = user.tasks.reduce((total, task) => {
-      const userHours = task.hoursLogged || 0;
-      const userEstimatedHours = task.estimatedHours || 0;
-      if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-        return total + Math.max(0, userEstimatedHours - userHours);
-      }
-      return total;
-    }, 0);
+    const totalHoursRemaining = useMemo(
+      () =>
+        user.tasks.reduce((total, task) => {
+          const userHours = task.hoursLogged || 0;
+          const userEstimatedHours = task.estimatedHours || 0;
+          if (task.status !== 'Complete' && task.isAssigned !== 'false') {
+            return total + Math.max(0, userEstimatedHours - userHours);
+          }
+          return total;
+        }, 0),
+      [user.tasks],
+    );
 
-    const activeTasks = user.tasks.filter(
-      task =>
-        !task.resources?.some(
-          resource => resource.userID === user.personId && resource.completedTask,
+    const activeTasks = useMemo(
+      () =>
+        user.tasks.filter(
+          task =>
+            !task.resources?.some(
+              resource => resource.userID === user.personId && resource.completedTask,
+            ),
         ),
+      [user.tasks, user.personId],
     );
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
     useEffect(() => {
-      if (canTruncate) setIsTruncated(!expandAll);
-    }, [expandAll, canTruncate]);
+      if (canTruncate) setIsTruncated(showAllTasks ? false : !expandAll);
+    }, [expandAll, showAllTasks, canTruncate]);
     const [isTimeOffContentOpen, setIsTimeOffContentOpen] = useState(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
     const [showChangeLogModal, setShowChangeLogModal] = useState(false);
     const [selectedTaskForChangeLog, setSelectedTaskForChangeLog] = useState(null);
 
-    const completedTasks = user.tasks.filter(task =>
-      task.resources?.some(resource => resource.userID === user.personId && resource.completedTask),
+    const completedTasks = useMemo(
+      () =>
+        user.tasks.filter(task =>
+          task.resources?.some(
+            resource => resource.userID === user.personId && resource.completedTask,
+          ),
+        ),
+      [user.tasks, user.personId],
     );
     const thisWeekHours = user.totaltangibletime_hrs;
 
@@ -885,6 +900,7 @@ TeamMemberTask.propTypes = {
   userStateSelection: PropTypes.array,
   onSelectionChange: PropTypes.func,
   expandAll: PropTypes.bool,
+  showAllTasks: PropTypes.bool,
 };
 
 TeamMemberTask.displayName = 'TeamMemberTask';

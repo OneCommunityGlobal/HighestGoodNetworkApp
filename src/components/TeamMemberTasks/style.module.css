@@ -353,6 +353,18 @@
   white-space: nowrap;
 }
 
+.taskHeaderActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+.team-clocks-header .taskHeaderAction {
+  flex: 0 0 auto;
+  min-width: max-content;
+}
+
 .team-clocks-header .trackerToggleBtnActive {
   background-color: #17a2b8;
   color: #fff !important;
