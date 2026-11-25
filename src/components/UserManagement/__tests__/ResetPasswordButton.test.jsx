@@ -113,6 +113,31 @@ describe('reset password button ', () => {
         alertSpy.mockRestore();
       }
     });
+    it('should show a permission error, not the strong password hint, when the reset is refused', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordButton
+            isSmallButton
+            user={{ ...userProfileMock, email: 'volunteer@example.com' }}
+            canUpdatePassword
+          />
+        </Provider>,
+      );
+      vi.spyOn(services, 'resetPassword').mockImplementation(() =>
+        Promise.reject({ response: { status: 403 } }),
+      );
+
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      await userEvent.type(screen.getByLabelText(/new password/i), 'ABc@12345!');
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'ABc@12345!');
+      await userEvent.click(screen.getAllByRole('button', { name: /reset password/i })[1]);
+
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith(
+          'You are not authorized to reset this user password.',
+        );
+      });
+    });
     it('should pop a alert when empty password input', async () => {
       render(
         <Provider store={store}>

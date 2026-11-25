@@ -55,7 +55,12 @@ class ResetPasswordButton extends React.PureComponent {
           resetPopupOpen: false,
         });
       })
-      .catch(() => {
+      .catch(error => {
+        // A 403 is a permission refusal, so the "strong password" hint would mislead
+        if (error?.response?.status === 403) {
+          toast.error('You are not authorized to reset this user password.');
+          return;
+        }
         toast.error('Password reset failed ! Please try again with a strong password.');
       });
   };
