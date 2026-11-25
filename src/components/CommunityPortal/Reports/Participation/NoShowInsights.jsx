@@ -97,7 +97,6 @@ function NoShowInsights() {
           className={`${styles.insightsPercentage} ${
             darkMode ? styles.insightsPercentageDark : ''
           }`}
-          style={{ color: 'red' }}
         >
           {item.percentage}%
         </div>

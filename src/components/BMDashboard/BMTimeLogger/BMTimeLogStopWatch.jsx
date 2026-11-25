@@ -21,11 +21,14 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
   const [currentTime, setCurrentTime] = useState('');
   const [startButtonText, setStartButtonText] = useState('START');
   const [isStarted, setIsStarted] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [enableStop, setEnableStop] = useState(true);
   const intervalRef = useRef(null);
   const isStartingNewLogRef = useRef(false);
   const justPausedTimeRef = useRef(null);
   const resumingFromTimeRef = useRef(null);
   const justStoppedTimeRef = useRef(null);
+  const isTimerRunning = currentTimeLog?.status === 'ongoing';
 
   const formatTime = useCallback(totalSeconds => {
     const hrs = Math.floor(totalSeconds / 3600);
@@ -186,6 +189,7 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
 
   // Start/Pause Handler
   const startStop = () => {
+    setEnableStop(false);
     if (!currentTime) {
       setCurrentTime(moment().format('hh:mm:ss A'));
     }
@@ -197,6 +201,10 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
       dispatch(pauseTimeLog(projectId, currentTimeLog._id, memberId))
         .then(() => {
           // UI will be updated by the sync useEffect when the paused log comes back
+          setFeedbackMessage('Timer paused successfully');
+          setTimeout(() => {
+            setFeedbackMessage('');
+          }, 3000);
         })
         .catch(() => {
           // On error, ensure UI still shows the correct time
@@ -204,6 +212,7 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
           setTime(currentElapsedTime);
           setStartButtonText('START');
           setIsStarted(false);
+          setFeedbackMessage('Failed to pause timer');
         });
     } else {
       // Start or resume time log
@@ -222,6 +231,11 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
         setCurrentTime(moment().format('hh:mm:ss A'));
         dispatch(startTimeLog(projectId, memberId, 'Default Task'));
       }
+      setFeedbackMessage('Timer started');
+
+      setTimeout(() => {
+        setFeedbackMessage('');
+      }, 3000);
       setStartButtonText('PAUSE');
       setIsStarted(true);
     }
@@ -229,6 +243,7 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
 
   // Stop Handler
   const stop = () => {
+    setEnableStop(true);
     if (currentTimeLog) {
       // Store the current time before stopping so it remains visible
       const finalTime = time;
@@ -242,50 +257,87 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
       // Don't clear currentTime - keep the start time visible
 
       // Then dispatch the stop action
-      dispatch(stopTimeLog(projectId, currentTimeLog._id, memberId)).catch(() => {
-        // On error, still show the time
-        justStoppedTimeRef.current = null;
-        setTime(finalTime);
-      });
+      dispatch(stopTimeLog(projectId, currentTimeLog._id, memberId))
+        .then(() => {
+          setFeedbackMessage('Time logged successfully');
+
+          setTimeout(() => {
+            setFeedbackMessage('');
+          }, 3000);
+        })
+        .catch(() => {
+          // On error, still show the time
+          justStoppedTimeRef.current = null;
+          setTime(finalTime);
+          setFeedbackMessage('Failed to stop timer');
+        });
     } else {
       // No active log, just reset
-      setTime(0);
-      setCurrentTime('');
-      setStartButtonText('START');
-      setIsStarted(false);
-      initialElapsedTimeRef.current = 0;
+      clear();
     }
   };
 
   // Clear Handler
   const clear = () => {
-    stop();
+    setTime(0);
+    setCurrentTime('');
+    setStartButtonText('START');
+    setIsStarted(false);
+    setEnableStop(true);
+    initialElapsedTimeRef.current = 0;
+    //stop();
+    setFeedbackMessage('Timer cleared');
+    setTimeout(() => {
+      setFeedbackMessage('');
+    }, 3000);
   };
 
   const { hr, min, sec } = formatTime(time);
+  console.log('Current Time', currentTimeLog);
 
   return (
     <CardBody style={{ width: '100%' }}>
       <Container className={`${styles.stopwatchContainer}`}>
-        <Row className="justify-content-center">
+        {feedbackMessage && (
+          <Row className="justify-content-center gap-2 mb-3">
+            <span className="text-info fw-semibold">{feedbackMessage}</span>
+          </Row>
+        )}
+        <Row className="justify-content-center align-items-center">
           <Col xs="auto">
-            <Button className={`${styles.memberStopwatch} mb-2 px-3`}>
+            <span
+              className={isTimerRunning ? 'text-success fw-semibold' : 'text-secondary fw-semibold'}
+            >
+              ● {isTimerRunning ? 'Running' : 'Stopped'}
+            </span>
+          </Col>
+
+          <Col xs="auto">
+            <Button
+              className={`${styles.memberStopwatch} px-4 align-items-center justify-content-center`}
+            >
               {hr.toString().padStart(2, '0')}:{min.toString().padStart(2, '0')}:
               {sec.toString().padStart(2, '0')}
             </Button>
           </Col>
         </Row>
 
-        <Row className="justify-content-between mb-2">
-          <Button className={isStarted ? 'member-pause' : 'member-start mb-1'} onClick={startStop}>
-            <b>{startButtonText}</b>
-          </Button>
-
-          <Button className={`${styles.memberStop}`} onClick={stop}>
-            <b>STOP</b>
-          </Button>
+        <Row className="justify-content-center gap-3">
+          <Col>
+            <Button
+              className={`px-0 ${isStarted ? styles.memberPause : styles.memberStart}`}
+              onClick={startStop}
+            >
+              <b>{startButtonText}</b>
+            </Button>
+          </Col>
+          <Col>
+            <Button className={`${styles.memberStop} px-0`} onClick={stop} disabled={enableStop}>
+              <b>STOP</b>
+            </Button>
+          </Col>
         </Row>
-        <Row className="justify-content-center mb-1">
+        <Row className="justify-content-center align-items-center m-2">
           Start at:
           <Col>
             <b className={`${styles.fontColorGray}`}>{currentTime}</b>
@@ -293,9 +345,19 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
         </Row>
         {/* <Row className="mb-2">Task: </Row> */}
         <Row className="justify-content-center">
-          <Button className={`${styles.memberClear}`} onClick={clear}>
+          <Button
+            className={`${styles.memberClear}  px-2 py-2`}
+            onClick={clear}
+            disabled={isStarted}
+          >
             <b>CLEAR</b>
           </Button>
+        </Row>
+
+        <Row className="mt-3 text-center">
+          <small className="text-muted">
+            Start begins time tracking. Stop saves the session. Clear resets the timer display.
+          </small>
         </Row>
       </Container>
     </CardBody>

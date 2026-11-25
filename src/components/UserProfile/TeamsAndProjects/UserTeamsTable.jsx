@@ -2,11 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Button, Col, Input } from 'reactstrap';
 import hasPermission from '../../../utils/permissions';
 import './TeamsAndProjects.module.css';
-// import styles from './UserTeamsTable.css';
+import styles from './UserTeamsTable.module.css';
 import { connect } from 'react-redux';
 import { boxStyle } from '~/styles';
-
-import './UserTeamsTable.module.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
@@ -278,17 +276,38 @@ const UserTeamsTable = props => {
         <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
           <thead className="user-team-head">
             {props.role && (
-              <tr>
-                <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
-                <th className={darkMode ? 'bg-space-cadet' : ''}>Team Name</th>
-                {canAssignTeamToUsers ? (
-                  <>
-                    <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
-                    <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
-                      {}
-                    </th>
-                  </>
-                ) : null}
+              <tr>                 
+              <th
+                className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                style={{ textAlign: 'center' }}
+              >
+                #
+              </th>
+              <th
+                className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                style={{ textAlign: 'center' }}
+              >
+                Team Name
+              </th>
+
+              {canAssignTeamToUsers ? (
+                <>
+                  <th
+                    className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                    style={{ textAlign: 'center' }}
+                  >
+                    Members
+                  </th>
+
+                  <th
+                    style={{ flex: 2, textAlign: 'center' }}
+                    className={`${styles['table-header']} ${darkMode ? 'bg-space-cadet' : ''}`}
+                  >
+                    {/* Keep the existing header content here */}
+                  </th>
+                </>
+              ) : null}
+
               </tr>
             )}
           </thead>
@@ -296,13 +315,11 @@ const UserTeamsTable = props => {
             {teams.length > 0 ? (
               teams.map((team, index) => (
                 <tr key={index} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
-                  <td style={{ alignContent: 'center' }}>{index + 1}</td>
-                  <td style={{ alignContent: 'center' }}>{`${team.teamName}`}</td>
+                  <td style={{ alignContent: 'center', textAlign: 'center' }}>{index + 1}</td>
+                  <td style={{ alignContent: 'center', textAlign: 'center' }}>{`${team.teamName}`}</td>
                   {props.edit && props.role && (
                     <>
-                      <td
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                      >
+                      <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
                         <button
                           style={darkMode ? { boxShadow: 'none' } : { boxShadow: 'none', ...boxStyle}}
                           disabled={!canAssignTeamToUsers}
@@ -321,6 +338,7 @@ const UserTeamsTable = props => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            textAlign: 'center',
                           }}
                         >
                           <Button

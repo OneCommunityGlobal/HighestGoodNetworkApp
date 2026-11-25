@@ -10,10 +10,16 @@ import axios from 'axios';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { ModalContext } from '~/context/ModalContext';
+import { ENDPOINTS } from '~/utils/URL';
+import { permissions as permissionKeys } from '~/utils/constants';
 import RolePermissions from '../RolePermissions';
 import { toast } from 'react-toastify';
 
 // ---- Local, file-scoped mocks ----
+vi.mock('@tinymce/tinymce-react', () => ({
+  Editor: ({ value }) => <textarea aria-label="Mock Editor" value={value} readOnly />,
+}));
+
 vi.mock('axios', () => {
   const mock = {
     get: vi.fn(),
@@ -72,6 +78,7 @@ beforeEach(() => {
       ],
     },
     theme: { darkMode: false },
+    infoCollections: { infos: [] },
   });
 
   // any GETs on mount should resolve so effects settle
@@ -91,7 +98,7 @@ afterEach(() => {
 const roleName = 'Owner';
 const roleId = 'abc123';
 
-const renderComponent = (newStore, history, newRoleName, newRoleId) =>
+const renderComponent = (newStore, history, newRoleName, newRoleId, darkMode = false) =>
   render(
     <ModalContext.Provider value={mockModalContext}>
       <Router history={history}>
@@ -102,6 +109,7 @@ const renderComponent = (newStore, history, newRoleName, newRoleId) =>
             roleId={newRoleId}
             header={`${newRoleName} Permissions:`}
             permissions={mockAdminState.role.roles[5].permissions}
+            darkMode={darkMode}
           />
         </Provider>
       </Router>
@@ -220,4 +228,128 @@ describe('RolePermissions component', () => {
     fireEvent.change(input, { target: { value: 'Manager' } });
     expect(input).toHaveValue('Manager');
   }, 10000);
+
+  describe('blue info icons next to Save and Delete Role', () => {
+    const ICON_TITLE = 'Click for information about this';
+
+    // the permission rows below have the same icon, so look next to the button only
+    const openInfoNextTo = buttonName => {
+      // eslint-disable-next-line testing-library/no-node-access
+      const buttonGroup = screen.getByText(buttonName).parentElement;
+      fireEvent.click(within(buttonGroup).getByTitle(ICON_TITLE));
+      return screen.getByRole('dialog');
+    };
+
+    // the signed-in person has their own right to edit roles, whatever their role is
+    const storeFor = (signedInRole, extraState = {}) =>
+      mockStore({
+        auth: {
+          user: {
+            permissions: {
+              frontPermissions: [permissionKeys.putRole, permissionKeys.addDeleteEditOwners],
+              backPermissions: [],
+            },
+            role: signedInRole,
+          },
+          permissions: { frontPermissions: [], backPermissions: [] },
+        },
+        role: mockAdminState.role,
+        userProfile: { role: signedInRole },
+        rolePreset: { presets: [] },
+        theme: { darkMode: false },
+        ...extraState,
+      });
+
+    it('opens the Save and Presets box with its list and bold, and no Role Info pop-up', () => {
+      renderComponent(store, createMemoryHistory(), roleName, roleId);
+
+      const box = openInfoNextTo('Save');
+
+      expect(
+        within(box).getByText('Welcome to the Save and Presets Information Page!'),
+      ).toBeInTheDocument();
+      expect(within(box).getAllByRole('listitem')).toHaveLength(2);
+      expect(within(box).getByText('Create New Preset:').tagName).toBe('STRONG');
+      expect(screen.queryByText('Role Info')).not.toBeInTheDocument();
+    }, 10000);
+
+    it('opens the Load Presets and Delete Role box with its list and bold warning', () => {
+      renderComponent(store, createMemoryHistory(), roleName, roleId);
+
+      const box = openInfoNextTo('Delete Role');
+
+      expect(
+        within(box).getByText('Welcome to the Load Presets and Delete Role Information Page!'),
+      ).toBeInTheDocument();
+      expect(within(box).getAllByRole('listitem')).toHaveLength(2);
+      expect(within(box).getByText('WARNING: This action cannot be undone.').tagName).toBe(
+        'STRONG',
+      );
+    }, 10000);
+
+    it("lets an Owner edit and save the box on another role's page", async () => {
+      axios.post.mockResolvedValue({ status: 201 });
+      const ownerStore = storeFor('Owner', { userProfile: { role: 'Volunteer' } });
+      renderComponent(ownerStore, createMemoryHistory(), 'Manager', roleId);
+
+      const box = openInfoNextTo('Save');
+      fireEvent.click(within(box).getByText(/^Here you can create new presets/));
+      fireEvent.click(within(box).getByText('Save'));
+
+      await waitFor(() => {
+        expect(axios.post).toHaveBeenCalledWith(
+          ENDPOINTS.INFO_COLLECTIONS,
+          expect.objectContaining({ infoName: 'Permission Page: save Info' }),
+        );
+      });
+    }, 10000);
+
+    it('lets an Administrator on the Owner page read the box but not edit it', () => {
+      const adminStore = storeFor('Administrator', { userProfile: { role: 'Owner' } });
+      renderComponent(adminStore, createMemoryHistory(), 'Owner', roleId);
+
+      const box = openInfoNextTo('Delete Role');
+      fireEvent.click(within(box).getByText(/^Here you can load saved presets/));
+
+      expect(within(box).getByText(/^Here you can load saved presets/)).toBeInTheDocument();
+      expect(within(box).queryByLabelText('Mock Editor')).not.toBeInTheDocument();
+      expect(within(box).queryByText('Save')).not.toBeInTheDocument();
+    }, 10000);
+
+    it('shows the saved text instead of the starting text', () => {
+      const savedText = {
+        infoName: 'Permission Page: delete role Info',
+        infoContent: '<p>Saved by an Owner</p>',
+        visibility: '0',
+      };
+      const storeWithText = storeFor('Owner', { infoCollections: { infos: [savedText] } });
+      renderComponent(storeWithText, createMemoryHistory(), 'Manager', roleId);
+
+      const box = openInfoNextTo('Delete Role');
+
+      expect(within(box).getByText('Saved by an Owner')).toBeInTheDocument();
+      expect(within(box).queryByText(/^Here you can load saved presets/)).not.toBeInTheDocument();
+    }, 10000);
+
+    it('passes dark mode to both boxes', () => {
+      renderComponent(store, createMemoryHistory(), roleName, roleId, true);
+
+      ['Save', 'Delete Role'].forEach(name => {
+        const box = openInfoNextTo(name);
+        // eslint-disable-next-line testing-library/no-node-access
+        expect(box.querySelector('.modal-body')).toHaveClass('text-light');
+        fireEvent.click(within(box).getByText('Close'));
+      });
+    }, 10000);
+
+    it('asks the server for the info texts once, for the icons and all the rows together', () => {
+      axios.get.mockClear();
+      renderComponent(store, createMemoryHistory(), roleName, roleId);
+
+      const infoRequests = axios.get.mock.calls.filter(
+        ([url]) => url === ENDPOINTS.INFO_COLLECTIONS,
+      );
+      expect(infoRequests).toHaveLength(1);
+    }, 10000);
+  });
 });

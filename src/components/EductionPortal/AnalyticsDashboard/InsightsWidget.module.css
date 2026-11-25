@@ -179,6 +179,24 @@
   color: #ef4444 !important;
 }
 
+.cardChange.changeNeutral {
+  color: #6b7280 !important;
+}
+
+.summaryCard.darkSummaryCard .cardChange.changeNeutral {
+  color: #94a3b8 !important;
+}
+
+/* Override the global dark-mode `body.dark-mode * { color: #fff !important }` rule */
+.cardChange.changePositive .changeIcon,
+.cardChange.changePositive .changeText,
+.cardChange.changeNegative .changeIcon,
+.cardChange.changeNegative .changeText,
+.cardChange.changeNeutral .changeIcon,
+.cardChange.changeNeutral .changeText {
+  color: inherit !important;
+}
+
 .changeIcon {
   font-size: 14px;
   font-weight: bold;
@@ -319,6 +337,16 @@
   font-weight: 600;
 }
 
+.trendNeutral {
+  color: #6b7280 !important;
+  font-weight: 600;
+}
+
+.darkPanel .trendNeutral {
+  color: #94a3b8 !important;
+  font-weight: 600;
+}
+
 /* Life Strategies */
 .strategiesList {
   display: flex;
@@ -345,22 +373,38 @@
 }
 
 .strategyBar {
+  display: block;
   width: 200px;
   height: 20px;
+  border: none;
   background: #e5e7eb;
   border-radius: 10px;
   overflow: hidden;
-  position: relative;
+  appearance: none;
+}
+
+.strategyBar::-webkit-progress-bar {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+.strategyBar::-webkit-progress-value {
+  background: var(--impact-color);
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.strategyBar::-moz-progress-bar {
+  background: var(--impact-color);
+  border-radius: 10px;
 }
 
 .insightPanel.darkPanel .strategyBar {
   background: #334155;
 }
 
-.strategyFill {
-  height: 100%;
-  border-radius: 10px;
-  transition: width 0.6s ease;
+.insightPanel.darkPanel .strategyBar::-webkit-progress-bar {
+  background: #334155;
 }
 
 .strategyValue {

@@ -45,7 +45,7 @@ const UserTableSearchHeader = React.memo(function UserTableSeacrhHeader(props) {
           searchCallback={onFirstNameSearch}
           placeholder=" Search First Name"
           style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
-          className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+          className={darkMode ? 'bg-darkmode-liblack border-0 text-black' : ''}
         />
       </td>
       <td id="user_last_name">
@@ -54,11 +54,11 @@ const UserTableSearchHeader = React.memo(function UserTableSeacrhHeader(props) {
           searchCallback={onLastNameSearch}
           placeholder=" Search Last Name"
           style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
-          className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+          className={darkMode ? 'bg-darkmode-liblack border-0 text-black' : ''}
         />
       </td>
       <td className={styles.userRoleCol}>
-        <DropDownSearchBox width= "100px" className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''} id="role_search" items={props.roles} searchCallback={onRoleSearch} style={{fontSize: isMobile ? mobileFontSize : 'initial'}}/>
+        <DropDownSearchBox width= "100px" placeholder=" Search Role" className={darkMode ? 'bg-darkmode-liblack border-0 text-black' : ''} id="role_search" items={props.roles} searchCallback={onRoleSearch} style={{fontSize: isMobile ? mobileFontSize : 'initial'}}/>
       </td>
       <td className={styles.titleClamp}>
         <div>
@@ -84,8 +84,8 @@ const UserTableSearchHeader = React.memo(function UserTableSeacrhHeader(props) {
         <TextSearchBox
           id="hrs_search"
           style={{ maxWidth: '75px', margin: '0 auto', width: isMobile ? mobileWidth : 'initial' }}
-          searchCallback={onWeeklyHrsSearch}
-          className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+          searchCallback={onWeeklyHrsSearch} placeholder=" Search Hrs"
+          className={darkMode ? 'bg-darkmode-liblack border-0 text-black' : ''}
         />
       </td>
       <td id="user_pause" />
