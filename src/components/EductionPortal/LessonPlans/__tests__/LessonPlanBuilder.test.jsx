@@ -13,7 +13,14 @@ vi.mock('react-redux', () => ({
 }));
 
 vi.mock('react-toastify', () => ({
-  toast: { info: vi.fn(), success: vi.fn(), warn: vi.fn(), error: vi.fn(), dismiss: vi.fn() },
+  toast: {
+    info: vi.fn(() => 'assignment-progress'),
+    success: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    dismiss: vi.fn(),
+    update: vi.fn(),
+  },
 }));
 
 const field = (name, row = 1) => screen.getByLabelText(`Subtask ${row} ${name}`);
@@ -167,6 +174,33 @@ describe('required subtask validation', () => {
     expect(rows[4]).toHaveTextContent('Total');
   });
 
+  it.each([1, 2])(
+    'adds %s rows from the dropdown and resets for repeated selections',
+    async count => {
+      await renderBuilder();
+      const dropdown = screen.getByRole('combobox', { name: 'Add rows' });
+      fireEvent.change(dropdown, { target: { value: String(count) } });
+      expect(dropdown).toHaveValue('');
+      expect(screen.getAllByLabelText(/Subtask \d+ name/)).toHaveLength(3 + count);
+      for (let row = 4; row <= 3 + count; row += 1) {
+        expect(field('name', row)).toHaveValue('');
+        expect(field('type', row)).toHaveValue('Write-only');
+        expect(field('due date', row)).toHaveValue('');
+        expect(field('pass mark', row)).toHaveValue('');
+        expect(field('weight', row)).toHaveValue('');
+      }
+      expect(screen.getByRole('button', { name: 'Save Lesson Plan' })).toBeDisabled();
+      fireEvent.change(dropdown, { target: { value: String(count) } });
+      expect(dropdown).toHaveValue('');
+      expect(screen.getAllByLabelText(/Subtask \d+ name/)).toHaveLength(3 + count * 2);
+      change('name', 'Independent row', 4);
+      expect(field('name', 5)).toHaveValue('');
+      click('Add subtask +');
+      expect(screen.getAllByLabelText(/Subtask \d+ name/)).toHaveLength(4 + count * 2);
+      expect(assignments()).toHaveLength(0);
+    },
+  );
+
   it('renders Add subtask and assignment actions in the same action row', async () => {
     await renderBuilder();
     const actionRow = screen.getByRole('group', { name: 'Lesson plan actions' });
@@ -285,6 +319,34 @@ describe('required subtask validation', () => {
     expect(JSON.parse(assignments()[0][1].body).isAutoAssigned).toBe(false);
   });
 
+  it('uses the local calendar date near midnight for automatic and manual assignments', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2030, 0, 1, 23, 30));
+    try {
+      await renderBuilder();
+      click('Save Lesson Plan');
+      await waitFor(() => expect(assignments()).toHaveLength(1));
+      expect(JSON.parse(assignments()[0][1].body)).toEqual({
+        lessonPlanId: 'saved-plan',
+        assignmentDate: '2030-01-01',
+        isAutoAssigned: true,
+      });
+      await waitFor(() =>
+        expect(screen.getByRole('button', { name: 'Assign Tasks to Students' })).toBeEnabled(),
+      );
+      click('Assign Tasks to Students');
+      click('Confirm');
+      await waitFor(() => expect(assignments()).toHaveLength(2));
+      expect(JSON.parse(assignments()[1][1].body)).toEqual({
+        lessonPlanId: 'saved-plan',
+        assignmentDate: '2030-01-01',
+        isAutoAssigned: false,
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('shows the assigned count after complete success', async () => {
     await renderBuilder();
     await savePlan();
@@ -315,21 +377,44 @@ describe('required subtask validation', () => {
     );
   });
 
-  it('shows an error notification when assignment fails', async () => {
+  it.each([
+    [
+      { error: 'You do not have permission to assign lesson plan tasks.', message: 'Other' },
+      'Forbidden',
+      'You do not have permission to assign lesson plan tasks.',
+    ],
+    [{ message: 'Assignment denied.' }, 'Forbidden', 'Assignment denied.'],
+    [{ error: {}, message: 'Assignment denied.' }, 'Forbidden', 'Assignment denied.'],
+    [{ error: ' ', message: 12 }, 'Forbidden', 'Forbidden (403)'],
+    [null, '', 'HTTP error (403)'],
+    ['invalid-json', 'Forbidden', 'Forbidden (403)'],
+  ])('updates the progress toast for a failed assignment %#', async (body, statusText, message) => {
     await renderBuilder();
     await savePlan();
+    toast.info.mockReturnValue('failed-assignment');
+    toast.dismiss.mockClear();
     vi.mocked(fetch).mockImplementationOnce(async () => ({
       ok: false,
-      status: 500,
-      statusText: 'Internal Server Error',
+      status: 403,
+      statusText,
+      json: async () => {
+        if (body === 'invalid-json') throw new SyntaxError('Invalid JSON');
+        return body;
+      },
     }));
     click('Assign Tasks to Students');
     click('Confirm');
     await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith(
-        'Task assignment failed. Internal Server Error (500)',
-      ),
+      expect(toast.update).toHaveBeenCalledWith('failed-assignment', {
+        render: `Task assignment failed. ${message}`,
+        type: 'error',
+        autoClose: 5000,
+        closeOnClick: true,
+      }),
     );
+    expect(toast.dismiss).not.toHaveBeenCalledWith('failed-assignment');
+    expect(screen.getByRole('button', { name: 'Assign Tasks to Students' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Save Lesson Plan' })).toBeEnabled();
   });
 
   it('cancels manual assignment without sending an API request', async () => {
@@ -431,7 +516,10 @@ describe('lesson plan persistence', () => {
     }));
     click('Save Lesson Plan');
     await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith('Task assignment failed. Unavailable (500)'),
+      expect(toast.update).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ render: 'Task assignment failed. Unavailable (500)' }),
+      ),
     );
     expect(toast.success).toHaveBeenCalledWith('Lesson plan saved successfully.');
     await waitFor(() =>
