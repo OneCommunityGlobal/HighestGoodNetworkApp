@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Spinner } from 'reactstrap';
 
-const ADMIN_ROLES = new Set(['Administrator', 'Owner']);
+const ADMIN_ROLES = new Set(['Administrator', 'Owner', 'Core Team']);
 
 const QuestionnaireResultsAccessGuard = ({ children, getStatus }) => {
   const requestor = useSelector(state => state.auth.user);
