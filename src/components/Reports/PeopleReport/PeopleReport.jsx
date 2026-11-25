@@ -312,7 +312,7 @@ function PeopleReport(props) {
 
       <div className={`${styles.mobilePeopleTable}`}>
         <div className={styles.graphContainer}>
-          <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
+          <div className={`${styles.introDate} ${darkMode ? styles.textLight : ''}`}>
             <h5>Tasks contributed</h5>
           </div>
           {activeTasks.length > 0 ? (
