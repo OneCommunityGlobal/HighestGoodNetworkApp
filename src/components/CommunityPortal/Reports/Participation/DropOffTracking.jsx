@@ -4,7 +4,7 @@ import styles from './Participation.module.css';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 export function TrendIndicator({ value, metricLabel, comparisonLabel = 'Last week' }) {
-  const numericValue = typeof value === 'number' ? value : NaN;
+  const numericValue = value;
   const available = Number.isFinite(numericValue);
   let direction = 'unchanged';
   let symbol = '—';
@@ -20,7 +20,8 @@ export function TrendIndicator({ value, metricLabel, comparisonLabel = 'Last wee
     trendClass = styles.trendDecrease;
   }
 
-  const formattedValue = available ? `${numericValue > 0 ? '+' : ''}${numericValue}%` : 'N/A';
+  const prefix = available && numericValue > 0 ? '+' : '';
+  const formattedValue = available ? `${prefix}${numericValue}%` : 'N/A';
   let description = 'trend unavailable';
   if (available) {
     description =

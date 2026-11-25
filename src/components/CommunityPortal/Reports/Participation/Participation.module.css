@@ -269,7 +269,7 @@
 }
 
 .trendComparison {
-  color: #777;
+  color: #595959;
   font-size: 0.9rem;
 }
 
@@ -290,8 +290,12 @@
 }
 
 .trackingRateDark .trendNeutral {
-  color: #cbd5e1;
-  background: rgb(203 213 225 / 14%);
+  color: #f1f5f9;
+  background: #475569;
+}
+
+.trackingRateDark .trendNeutral > span {
+  color: #f1f5f9 !important;
 }
 
 .trackingRateDark .trendComparison {
