@@ -20,8 +20,20 @@ const CHART_COLORS = ['#22c55e', '#38bdf8', '#f59e0b', '#f43f5e', '#14b8a6', '#8
 
 const TOOLTIP_STYLE = {
   borderRadius: 10,
-  border: '1px solid #e2e8f0',
+  border: '1px solid #334155',
+  backgroundColor: '#0f172a',
+  color: '#f8fafc',
   fontSize: 12,
+  boxShadow: '0 8px 24px rgb(0 0 0 / 35%)',
+};
+
+const TOOLTIP_LABEL_STYLE = {
+  color: '#f8fafc',
+  marginBottom: 4,
+};
+
+const TOOLTIP_ITEM_STYLE = {
+  color: '#e2e8f0',
 };
 
 function formatCount(value) {
@@ -120,6 +132,8 @@ function DonutCard({ title, subtitle, items, emptyMessage, error, colors }) {
                 </Pie>
                 <Tooltip
                   contentStyle={TOOLTIP_STYLE}
+                  labelStyle={TOOLTIP_LABEL_STYLE}
+                  itemStyle={TOOLTIP_ITEM_STYLE}
                   formatter={(value, name) => {
                     const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
                     return [`${formatCount(value)} (${pct}%)`, name];
@@ -190,6 +204,8 @@ function VerticalBarCard({ title, subtitle, items, emptyMessage, error, colors, 
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
+                labelStyle={TOOLTIP_LABEL_STYLE}
+                itemStyle={TOOLTIP_ITEM_STYLE}
                 formatter={value => [formatCount(value), 'Applications']}
               />
               <Bar dataKey="value" radius={[7, 7, 0, 0]}>
@@ -256,6 +272,8 @@ function HorizontalBarCard({ title, subtitle, items, emptyMessage, error, colors
               />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
+                labelStyle={TOOLTIP_LABEL_STYLE}
+                itemStyle={TOOLTIP_ITEM_STYLE}
                 formatter={value => [formatCount(value), 'Applicants']}
               />
               <Bar dataKey="value" radius={[0, 7, 7, 0]} barSize={16}>
@@ -315,6 +333,8 @@ function AreaCard({ title, subtitle, items, emptyMessage, error, stroke, fill })
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
+                labelStyle={TOOLTIP_LABEL_STYLE}
+                itemStyle={TOOLTIP_ITEM_STYLE}
                 formatter={value => [formatCount(value), 'Applications']}
               />
               <Area
