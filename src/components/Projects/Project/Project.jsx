@@ -222,14 +222,14 @@ const Project = props => {
         {canDeleteProject ? (
           <td>
             <button
-            data-testid="delete-button"
-            type="button"
-            className="btn btn-outline-danger"
-            style={darkMode ? boxStyleDark : boxStyle}
-            onClick={onArchiveProject}
-          >
-            {projectData?.isArchived ? UNARCHIVE : ARCHIVE}
-          </button>
+              data-testid="delete-button"
+              type="button"
+              className="btn btn-outline-danger"
+              style={{ ...(darkMode ? boxStyleDark : boxStyle), whiteSpace: 'nowrap' }}
+              onClick={onArchiveProject}
+            >
+              {projectData?.isArchived ? UNARCHIVE : ARCHIVE}
+            </button>
           </td>
         ) : null}
     </tr>
