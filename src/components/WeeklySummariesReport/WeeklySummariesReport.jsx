@@ -1015,7 +1015,7 @@ const WeeklySummariesReport = props => {
     });
 
     if (!Array.isArray(response?.data)) {
-      throw new Error('Weekly summaries request returned an invalid response.');
+      throw new TypeError('Weekly summaries request returned an invalid response.');
     }
 
     return response.data;
@@ -1046,24 +1046,28 @@ const WeeklySummariesReport = props => {
 
     if (requestId !== reportRequestIdRef.current) return;
 
-    setState(prev => ({
-      ...prev,
-      ...(catalogResult.status === 'fulfilled'
-        ? {
-            userStateCatalog: Array.isArray(catalogResult.value?.data?.items)
-              ? catalogResult.value.data.items
-              : [],
-          }
-        : {}),
-      ...(selectionsResult.status === 'fulfilled'
-        ? {
-            userStateSelections: {
-              ...prev.userStateSelections,
-              ...(selectionsResult.value?.data?.selections || {}),
-            },
-          }
-        : {}),
-    }));
+    const catalogItems =
+      catalogResult.status === 'fulfilled'
+        ? Array.isArray(catalogResult.value?.data?.items)
+          ? catalogResult.value.data.items
+          : []
+        : null;
+    const selections =
+      selectionsResult.status === 'fulfilled' ? selectionsResult.value?.data?.selections : null;
+
+    setState(prev => {
+      const nextState = { ...prev };
+
+      if (catalogItems) nextState.userStateCatalog = catalogItems;
+      if (selections && typeof selections === 'object' && !Array.isArray(selections)) {
+        nextState.userStateSelections = {
+          ...prev.userStateSelections,
+          ...selections,
+        };
+      }
+
+      return nextState;
+    });
   };
 
   const loadTabData = async (activeTab, { forceRefresh = false, showPageLoading = false } = {}) => {
@@ -1111,7 +1115,7 @@ const WeeklySummariesReport = props => {
   };
 
   const refreshCurrentTab = () => {
-    loadTabData(state.activeTab, { forceRefresh: true });
+    void loadTabData(state.activeTab, { forceRefresh: true });
   };
 
   const toggleTab = tab => {
@@ -1120,7 +1124,7 @@ const WeeklySummariesReport = props => {
     if (activeTab === tab) return;
 
     reportRequestIdRef.current += 1;
-    const hasCachedData = Object.prototype.hasOwnProperty.call(state.summariesByTab, tab);
+    const hasCachedData = Object.hasOwn(state.summariesByTab, tab);
 
     setState(prevState => ({
       ...prevState,
@@ -1695,7 +1699,7 @@ const WeeklySummariesReport = props => {
     const activeTab = state.activeTab;
     const cachedSummaries = state.summariesByTab[activeTab];
 
-    if (Object.prototype.hasOwnProperty.call(state.summariesByTab, activeTab)) {
+    if (Object.hasOwn(state.summariesByTab, activeTab)) {
       setState(prevState => ({
         ...buildProcessedSummariesState(prevState, cachedSummaries, activeTab),
         loading: false,
@@ -1706,7 +1710,7 @@ const WeeklySummariesReport = props => {
       return undefined;
     }
 
-    loadTabData(activeTab, { showPageLoading: state.loading });
+    void loadTabData(activeTab, { showPageLoading: state.loading });
     return () => {
       reportRequestIdRef.current += 1;
     };
@@ -2308,121 +2312,27 @@ const WeeklySummariesReport = props => {
           >
             {navItems.map((item, index) => (
               <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== state.activeTab}>
-                {state.tabsLoading[item] ? (
-                  <Row className={`text-center py-4 ${styles['mx-max-sm-0']}`}>
-                    <Col>
-                      <Spinner color="primary" />
-                      <p>Loading data...</p>
-                    </Col>
-                  </Row>
-                ) : state.tabsError[item] ? (
-                  <Row className={styles['mx-max-sm-0']}>
-                    <Col>
-                      <Alert color="danger">Error! {state.tabsError[item].message}</Alert>
-                    </Col>
-                  </Row>
-                ) : (
-                  <>
-                    <Row className={styles['mx-max-sm-0']}>
-                      <Col sm="12" md="6" className="mb-2">
-                        From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
-                      </Col>
-                      <Col
-                        sm="12"
-                        md="6"
-                        style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
-                      >
-                        <GeneratePdfReport
-                          summaries={displayedSummaries}
-                          weekIndex={index}
-                          weekDates={weekDates[index]}
-                          darkMode={darkMode}
-                        />
-                        {permissionState.hasSeeBadgePermission && (
-                          <>
-                            <Button
-                              className="btn--dark-sea-green mr-2"
-                              style={darkMode ? boxStyleDark : boxStyle}
-                              onClick={() =>
-                                setState(prev => ({ ...prev, loadBadges: !state.loadBadges }))
-                              }
-                            >
-                              {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
-                            </Button>
-                            <Button
-                              className="btn--dark-sea-green"
-                              style={darkMode ? boxStyleDark : boxStyle}
-                              onClick={() =>
-                                setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))
-                              }
-                            >
-                              {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
-                            </Button>
-                          </>
-                        )}
-                        <Button
-                          className="btn--dark-sea-green mr-2"
-                          style={darkMode ? boxStyleDark : boxStyle}
-                          onClick={refreshCurrentTab}
-                          disabled={state.refreshing}
-                        >
-                          {state.refreshing ? <Spinner size="sm" /> : null} Refresh
-                        </Button>
-                      </Col>
-                    </Row>
-                    {showOnlyMismatched && (
-                      <Row className={styles['mx-max-sm-0']}>
-                        <Col>
-                          <output className={styles.mismatchFilterStatus}>
-                            Showing {displayedSummaries.length} users with mismatched team codes.{' '}
-                            Click the red i again to show all users.
-                          </output>
-                        </Col>
-                      </Row>
-                    )}
-                    {displayedSummaries.length > 0 ? (
-                      <>
-                        <Row>
-                          <Col>
-                            <b>Total Team Members:</b> {displayedSummaries.length}
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <FormattedReport
-                              summaries={displayedSummaries}
-                              weekIndex={index}
-                              bioCanEdit={permissionState.bioEditPermission}
-                              canEditSummaryCount={permissionState.canEditSummaryCount}
-                              allRoleInfo={state.allRoleInfo}
-                              badges={state.badges}
-                              loadBadges={state.loadBadges}
-                              canEditTeamCode={permissionState.codeEditPermission}
-                              auth={props.auth}
-                              canSeeBioHighlight={permissionState.canSeeBioHighlight}
-                              darkMode={darkMode}
-                              handleTeamCodeChange={handleTeamCodeChange}
-                              handleBioStatusChange={handleBioStatusChange}
-                              loadTrophies={state.loadTrophies}
-                              handleSpecialColorDotClick={handleSpecialColorDotClick}
-                              timeOffRequests={props.timeOffRequests}
-                              completedQuestionnaireUserIds={completedQuestionnaireUserIds}
-                              userStateCatalog={state.userStateCatalog}
-                              userStateSelections={state.userStateSelections}
-                              handleUserStateSelectionChange={handleUserStateSelectionChange}
-                            />
-                          </Col>
-                        </Row>
-                      </>
-                    ) : (
-                      <Row>
-                        <Col>
-                          <Alert color="info">No data available for this tab.</Alert>
-                        </Col>
-                      </Row>
-                    )}
-                  </>
-                )}
+                <WeeklySummariesReportTabContent
+                  report={{
+                    index,
+                    weekDate: weekDates[index],
+                    loading: state.tabsLoading[item],
+                    error: state.tabsError[item],
+                    darkMode,
+                    displayedSummaries,
+                    showOnlyMismatched,
+                    permissionState,
+                    state,
+                    props,
+                    refreshCurrentTab,
+                    setState,
+                    handleTeamCodeChange,
+                    handleBioStatusChange,
+                    handleSpecialColorDotClick,
+                    completedQuestionnaireUserIds,
+                    handleUserStateSelectionChange,
+                  }}
+                />
               </WeeklySummariesReportTab>
             ))}
           </TabContent>
@@ -2499,6 +2409,148 @@ const mapDispatchToProps = dispatch => ({
   updateSummaryReportFromServerAction: user => dispatch(updateSummaryReportFromServerAction(user)),
   getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
 });
+
+function WeeklySummariesReportTabContent({ report }) {
+  const {
+    index,
+    weekDate,
+    loading,
+    error,
+    darkMode,
+    displayedSummaries,
+    showOnlyMismatched,
+    permissionState,
+    state,
+    props,
+    refreshCurrentTab,
+    setState,
+    handleTeamCodeChange,
+    handleBioStatusChange,
+    handleSpecialColorDotClick,
+    completedQuestionnaireUserIds,
+    handleUserStateSelectionChange,
+  } = report;
+
+  if (loading) {
+    return (
+      <Row className={`text-center py-4 ${styles['mx-max-sm-0']}`}>
+        <Col>
+          <Spinner color="primary" />
+          <p>Loading data...</p>
+        </Col>
+      </Row>
+    );
+  }
+
+  if (error) {
+    return (
+      <Row className={styles['mx-max-sm-0']}>
+        <Col>
+          <Alert color="danger">Error! {error.message}</Alert>
+        </Col>
+      </Row>
+    );
+  }
+
+  return (
+    <>
+      <Row className={styles['mx-max-sm-0']}>
+        <Col sm="12" md="6" className="mb-2">
+          From <b>{weekDate.fromDate}</b> to <b>{weekDate.toDate}</b>
+        </Col>
+        <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+          <GeneratePdfReport
+            summaries={displayedSummaries}
+            weekIndex={index}
+            weekDates={weekDate}
+            darkMode={darkMode}
+          />
+          {permissionState.hasSeeBadgePermission && (
+            <>
+              <Button
+                className="btn--dark-sea-green mr-2"
+                style={darkMode ? boxStyleDark : boxStyle}
+                onClick={() => setState(prev => ({ ...prev, loadBadges: !state.loadBadges }))}
+              >
+                {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
+              </Button>
+              <Button
+                className="btn--dark-sea-green"
+                style={darkMode ? boxStyleDark : boxStyle}
+                onClick={() => setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))}
+              >
+                {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
+              </Button>
+            </>
+          )}
+          <Button
+            className="btn--dark-sea-green mr-2"
+            style={darkMode ? boxStyleDark : boxStyle}
+            onClick={refreshCurrentTab}
+            disabled={state.refreshing}
+          >
+            {state.refreshing ? <Spinner size="sm" /> : null} Refresh
+          </Button>
+        </Col>
+      </Row>
+      {showOnlyMismatched && (
+        <Row className={styles['mx-max-sm-0']}>
+          <Col>
+            <output className={styles.mismatchFilterStatus}>
+              Showing {displayedSummaries.length} users with mismatched team codes. Click the red i
+              again to show all users.
+            </output>
+          </Col>
+        </Row>
+      )}
+      {displayedSummaries.length > 0 ? (
+        <>
+          <Row>
+            <Col>
+              <b>Total Team Members:</b> {displayedSummaries.length}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <FormattedReport
+                summaries={displayedSummaries}
+                weekIndex={index}
+                bioCanEdit={permissionState.bioEditPermission}
+                canEditSummaryCount={permissionState.canEditSummaryCount}
+                allRoleInfo={state.allRoleInfo}
+                badges={state.badges}
+                loadBadges={state.loadBadges}
+                canEditTeamCode={permissionState.codeEditPermission}
+                auth={props.auth}
+                canSeeBioHighlight={permissionState.canSeeBioHighlight}
+                darkMode={darkMode}
+                handleTeamCodeChange={handleTeamCodeChange}
+                handleBioStatusChange={handleBioStatusChange}
+                loadTrophies={state.loadTrophies}
+                handleSpecialColorDotClick={handleSpecialColorDotClick}
+                timeOffRequests={props.timeOffRequests}
+                completedQuestionnaireUserIds={completedQuestionnaireUserIds}
+                userStateCatalog={state.userStateCatalog}
+                userStateSelections={state.userStateSelections}
+                handleUserStateSelectionChange={handleUserStateSelectionChange}
+              />
+            </Col>
+          </Row>
+        </>
+      ) : (
+        <Row>
+          <Col>
+            <Alert color="info">No data available for this tab.</Alert>
+          </Col>
+        </Row>
+      )}
+    </>
+  );
+}
+
+WeeklySummariesReportTabContent.propTypes = {
+  report: PropTypes.object.isRequired,
+};
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
   return <TabPane tabId={tabId}>{!hidden && children}</TabPane>;
