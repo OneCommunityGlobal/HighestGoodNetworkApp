@@ -362,9 +362,9 @@ function AreaCard({ title, subtitle, items, emptyMessage, error, stroke, fill })
   return (
     <Panel title={title} subtitle={subtitle} error={error}>
       {chartData.length > 0 ? (
-        <div className={styles.chartWrapCompact} aria-hidden="true">
+        <div className={styles.chartFill} aria-hidden="true">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 8, right: 12, left: -8, bottom: 8 }}>
               <defs>
                 <linearGradient id="jaaAreaFill" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={fill || '#22c55e'} stopOpacity={0.45} />
@@ -377,8 +377,14 @@ function AreaCard({ title, subtitle, items, emptyMessage, error, stroke, fill })
                 stroke="currentColor"
                 opacity={0.12}
               />
-              <XAxis dataKey="name" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
-              <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 10 }}
+                interval={2}
+                minTickGap={12}
+                tickMargin={6}
+              />
+              <YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={32} />
               <Tooltip
                 cursor={CHART_CURSOR}
                 content={

@@ -862,4 +862,8 @@
   .chartWrapCompact {
     height: 200px;
   }
+
+  .chartFill {
+    min-height: 200px;
+  }
 }
