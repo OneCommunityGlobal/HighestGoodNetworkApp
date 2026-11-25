@@ -18,28 +18,54 @@ import styles from './JobApplicationAnalytics.module.css';
 /** Soft CRM palette — distinct hues per series, not one flat blue. */
 const CHART_COLORS = ['#22c55e', '#38bdf8', '#f59e0b', '#f43f5e', '#14b8a6', '#818cf8', '#fb7185'];
 
-const TOOLTIP_STYLE = {
-  borderRadius: 10,
-  border: '1px solid #334155',
-  backgroundColor: '#0f172a',
-  color: '#f8fafc',
-  fontSize: 12,
-  boxShadow: '0 8px 24px rgb(0 0 0 / 35%)',
-};
-
-const TOOLTIP_LABEL_STYLE = {
-  color: '#f8fafc',
-  marginBottom: 4,
-};
-
-const TOOLTIP_ITEM_STYLE = {
-  color: '#e2e8f0',
-};
+const CHART_CURSOR = { fill: 'currentColor', opacity: 0.06 };
 
 function formatCount(value) {
   if (value == null || Number.isNaN(Number(value))) return '—';
   return Number(value).toLocaleString();
 }
+
+/** Theme-aware tooltip — uses page CSS vars so light/dark stay readable. */
+function ChartTooltip({ active, payload, label, formatValue }) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className={styles.chartTooltip}>
+      {label != null && String(label) !== '' ? (
+        <div className={styles.chartTooltipLabel}>{label}</div>
+      ) : null}
+      {payload.map(entry => {
+        const formatted = formatValue
+          ? formatValue(entry.value, entry.name, entry)
+          : [formatCount(entry.value), entry.name];
+        const [displayValue, displayName] = Array.isArray(formatted)
+          ? formatted
+          : [formatted, entry.name];
+
+        return (
+          <div key={String(entry.dataKey || entry.name)} className={styles.chartTooltipRow}>
+            <span className={styles.chartTooltipName}>{displayName}</span>
+            <span className={styles.chartTooltipValue}>{displayValue}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+ChartTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(PropTypes.object),
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  formatValue: PropTypes.func,
+};
+
+ChartTooltip.defaultProps = {
+  active: false,
+  payload: [],
+  label: '',
+  formatValue: null,
+};
 
 function itemLabel(item) {
   return item?.label || item?.name || item?.experience || item?.source || item?._id || 'Unknown';
@@ -131,13 +157,15 @@ function DonutCard({ title, subtitle, items, emptyMessage, error, colors }) {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={TOOLTIP_STYLE}
-                  labelStyle={TOOLTIP_LABEL_STYLE}
-                  itemStyle={TOOLTIP_ITEM_STYLE}
-                  formatter={(value, name) => {
-                    const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
-                    return [`${formatCount(value)} (${pct}%)`, name];
-                  }}
+                  cursor={CHART_CURSOR}
+                  content={
+                    <ChartTooltip
+                      formatValue={(value, name) => {
+                        const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
+                        return [`${formatCount(value)} (${pct}%)`, name];
+                      }}
+                    />
+                  }
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -203,10 +231,10 @@ function VerticalBarCard({ title, subtitle, items, emptyMessage, error, colors, 
               <XAxis dataKey="name" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip
-                contentStyle={TOOLTIP_STYLE}
-                labelStyle={TOOLTIP_LABEL_STYLE}
-                itemStyle={TOOLTIP_ITEM_STYLE}
-                formatter={value => [formatCount(value), 'Applications']}
+                cursor={CHART_CURSOR}
+                content={
+                  <ChartTooltip formatValue={value => [formatCount(value), 'Applications']} />
+                }
               />
               <Bar dataKey="value" radius={[7, 7, 0, 0]}>
                 {chartData.map((entry, index) => (
@@ -271,10 +299,8 @@ function HorizontalBarCard({ title, subtitle, items, emptyMessage, error, colors
                 interval={0}
               />
               <Tooltip
-                contentStyle={TOOLTIP_STYLE}
-                labelStyle={TOOLTIP_LABEL_STYLE}
-                itemStyle={TOOLTIP_ITEM_STYLE}
-                formatter={value => [formatCount(value), 'Applicants']}
+                cursor={CHART_CURSOR}
+                content={<ChartTooltip formatValue={value => [formatCount(value), 'Applicants']} />}
               />
               <Bar dataKey="value" radius={[0, 7, 7, 0]} barSize={16}>
                 {chartData.map((entry, index) => (
@@ -332,10 +358,10 @@ function AreaCard({ title, subtitle, items, emptyMessage, error, stroke, fill })
               <XAxis dataKey="name" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip
-                contentStyle={TOOLTIP_STYLE}
-                labelStyle={TOOLTIP_LABEL_STYLE}
-                itemStyle={TOOLTIP_ITEM_STYLE}
-                formatter={value => [formatCount(value), 'Applications']}
+                cursor={CHART_CURSOR}
+                content={
+                  <ChartTooltip formatValue={value => [formatCount(value), 'Applications']} />
+                }
               />
               <Area
                 type="monotone"

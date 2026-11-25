@@ -48,6 +48,7 @@
   font-size: clamp(1.55rem, 2vw, 1.95rem);
   font-weight: 700;
   letter-spacing: -0.025em;
+  color: var(--jaa-text);
 }
 
 .subheading {
@@ -114,6 +115,7 @@
   margin: 0;
   font-size: 1.05rem;
   font-weight: 650;
+  color: var(--jaa-text);
 }
 
 .panelSubtitle {
@@ -175,6 +177,7 @@
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
+  color: var(--jaa-text);
 }
 
 .insightsGrid {
@@ -217,6 +220,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.9rem;
+  color: var(--jaa-text);
 }
 
 .progressValue {
@@ -288,6 +292,46 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--jaa-text);
+}
+
+.chartTooltip {
+  min-width: 7.5rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--jaa-border);
+  background: var(--jaa-surface);
+  color: var(--jaa-text);
+  box-shadow: var(--jaa-shadow);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.chartTooltipLabel {
+  margin: 0 0 0.2rem;
+  font-weight: 650;
+  color: var(--jaa-text);
+}
+
+.chartTooltipRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.85rem;
+  align-items: baseline;
+}
+
+.chartTooltipName {
+  color: var(--jaa-muted);
+}
+
+.chartTooltipValue {
+  font-weight: 650;
+  color: var(--jaa-text);
+}
+
+.page :global(.recharts-cartesian-axis-tick text),
+.page :global(.recharts-text) {
+  fill: var(--jaa-muted);
 }
 
 .legendPct {
@@ -322,8 +366,158 @@
   overflow: hidden;
 }
 
+.tableHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-right: 1.2rem;
+}
+
 .tableHeader {
   padding: 1.15rem 1.2rem 0.25rem;
+}
+
+.rowActions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.15rem;
+  border: none;
+  background: none;
+  color: var(--jaa-accent);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.actionBtn:hover {
+  text-decoration: underline;
+}
+
+.actionBtnDanger {
+  color: var(--jaa-danger);
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--jaa-accent);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.iconBtn:hover {
+  background: var(--jaa-accent-soft);
+  border-color: var(--jaa-border);
+}
+
+.iconBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.iconBtnActive {
+  background: var(--jaa-accent-soft);
+  border-color: var(--jaa-accent);
+  color: var(--jaa-accent);
+}
+
+.answersModalTitleRow {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.editHintBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--jaa-border);
+  background: var(--jaa-accent-soft);
+  color: var(--jaa-accent);
+  font-size: 0.8rem;
+  font-weight: 650;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.editHintBtn:hover {
+  text-decoration: underline;
+}
+
+.editHintBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondaryBtn,
+.dangerBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-weight: 650;
+  cursor: pointer;
+  border: 1px solid var(--jaa-border);
+}
+
+.secondaryBtn {
+  background: var(--jaa-surface-soft);
+  color: var(--jaa-text);
+}
+
+.dangerBtn {
+  background: var(--jaa-danger);
+  border-color: transparent;
+  color: #fff;
+}
+
+.pageDark .dangerBtn {
+  color: #0f172a;
+}
+
+.crudForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.crudForm textarea {
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--jaa-border);
+  background: var(--jaa-surface-soft);
+  color: var(--jaa-text);
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.answersModalFooter {
+  background: var(--jaa-surface-soft);
+  border-top: 1px solid var(--jaa-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
 }
 
 .filters {
@@ -379,6 +573,11 @@
   cursor: not-allowed;
 }
 
+.tableHeaderRow .applyBtn {
+  margin-top: 1.15rem;
+  flex-shrink: 0;
+}
+
 .tableWrap {
   overflow-x: auto;
 }
@@ -395,6 +594,7 @@
   text-align: left;
   border-bottom: 1px solid var(--jaa-border);
   white-space: nowrap;
+  color: var(--jaa-text);
 }
 
 .table th {
@@ -482,6 +682,8 @@
 
 .answersModal {
   max-width: min(720px, calc(100vw - 1.5rem));
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .answersModalContent {
@@ -497,16 +699,29 @@
 }
 
 .answersModalHeader {
-  background: var(--jaa-surface-soft) !important;
-  color: var(--jaa-text) !important;
-  border-bottom: 1px solid var(--jaa-border) !important;
+  background: var(--jaa-surface-soft);
+  color: var(--jaa-text);
+  border-bottom: 1px solid var(--jaa-border);
   font-weight: 650;
+}
+
+.answersModalHeader :global(.close),
+.answersModalHeader :global(.btn-close) {
+  color: var(--jaa-text);
+  opacity: 0.8;
+  text-shadow: none;
+}
+
+.answersModalHeader :global(.close):hover,
+.answersModalHeader :global(.btn-close):hover {
+  opacity: 1;
+  color: var(--jaa-text);
 }
 
 .answersModalBody {
   max-height: min(70vh, 640px);
   overflow-y: auto;
-  padding: 1rem 1.15rem !important;
+  padding: 1rem 1.15rem;
   background: var(--jaa-surface);
   color: var(--jaa-text);
 }
@@ -519,7 +734,7 @@
 
   .answersModalBody {
     max-height: min(78vh, 560px);
-    padding: 0.85rem !important;
+    padding: 0.85rem;
   }
 }
 
@@ -532,6 +747,11 @@
   border-bottom: 1px solid var(--jaa-border);
   font-size: 0.85rem;
   color: var(--jaa-muted);
+}
+
+.answersMeta strong {
+  color: var(--jaa-text);
+  font-weight: 650;
 }
 
 .answersList {
@@ -557,10 +777,14 @@
   font-weight: 650;
   line-height: 1.4;
   white-space: normal;
+  color: var(--jaa-text);
 }
 
+/* Same color as the question in both themes — accent text loses to
+   `body.dark-mode * { color: #fff !important }` in public/index.css. */
 .answerIndex {
-  color: var(--jaa-accent);
+  color: inherit;
+  font-weight: 700;
 }
 
 .answerValue {
@@ -569,6 +793,7 @@
   line-height: 1.45;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  color: var(--jaa-text);
 }
 
 .popoverStatus {

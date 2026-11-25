@@ -45,20 +45,24 @@ function JobApplicationAnalyticsPage() {
   const [listLoading, setListLoading] = useState(true);
   const [listError, setListError] = useState('');
 
-  const loadSummary = useCallback(async () => {
-    setSummaryLoading(true);
-    setSummaryError('');
+  const loadSummary = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setSummaryLoading(true);
+      setSummaryError('');
+    }
     try {
       const { data } = await axios.get(ENDPOINTS.JOB_APPLICATIONS_SUMMARY);
       setSummary(data);
     } catch (err) {
       // Summary cards are non-blocking; CRM table still loads if this fails.
-      setSummary(null);
-      setSummaryError(
-        err?.response?.data?.message || 'Unable to load overview analytics right now.',
-      );
+      if (!silent) {
+        setSummary(null);
+        setSummaryError(
+          err?.response?.data?.message || 'Unable to load overview analytics right now.',
+        );
+      }
     } finally {
-      setSummaryLoading(false);
+      if (!silent) setSummaryLoading(false);
     }
   }, []);
 
@@ -92,34 +96,88 @@ function JobApplicationAnalyticsPage() {
     }
   }, []);
 
-  const loadApplications = useCallback(async () => {
-    setListLoading(true);
-    setListError('');
-    try {
-      const { data } = await axios.get(
-        ENDPOINTS.JOB_APPLICATIONS_LIST({
-          page,
-          limit: 25,
-          q: appliedFilters.q,
-          formId: appliedFilters.formId,
-          from: appliedFilters.from,
-          to: appliedFilters.to,
-        }),
-      );
-      setList({
-        items: data?.items || [],
-        total: data?.total || 0,
-        limit: data?.limit || 25,
-      });
-    } catch (err) {
-      setList({ items: [], total: 0, limit: 25 });
-      setListError(
-        err?.response?.data?.message || 'Unable to load job applications. Please try again.',
-      );
-    } finally {
-      setListLoading(false);
-    }
-  }, [appliedFilters, page]);
+  const loadApplications = useCallback(
+    async ({ silent = false } = {}) => {
+      if (!silent) {
+        setListLoading(true);
+        setListError('');
+      }
+      try {
+        const { data } = await axios.get(
+          ENDPOINTS.JOB_APPLICATIONS_LIST({
+            page,
+            limit: 25,
+            q: appliedFilters.q,
+            formId: appliedFilters.formId,
+            from: appliedFilters.from,
+            to: appliedFilters.to,
+          }),
+        );
+        setList({
+          items: data?.items || [],
+          total: data?.total || 0,
+          limit: data?.limit || 25,
+        });
+      } catch (err) {
+        if (!silent) {
+          setList({ items: [], total: 0, limit: 25 });
+          setListError(
+            err?.response?.data?.message || 'Unable to load job applications. Please try again.',
+          );
+        }
+      } finally {
+        if (!silent) setListLoading(false);
+      }
+    },
+    [appliedFilters, page],
+  );
+
+  const toListItem = useCallback(
+    app => ({
+      _id: app._id,
+      formId: app.formId,
+      formTitle: app.formTitle || 'Untitled form',
+      respondent: app.respondent || 'Anonymous',
+      email: app.email || '',
+      submittedAt: app.submittedAt,
+      resumeUrl: app.resumeUrl || '',
+      answerCount: Array.isArray(app.answers) ? app.answers.length : 0,
+    }),
+    [],
+  );
+
+  const handleApplicationUpdated = useCallback(
+    updated => {
+      if (!updated?._id) return;
+      setList(prev => ({
+        ...prev,
+        items: prev.items.map(item =>
+          item._id === updated._id ? { ...item, ...toListItem(updated) } : item,
+        ),
+      }));
+    },
+    [toListItem],
+  );
+
+  const handleApplicationDeleted = useCallback(applicationId => {
+    setList(prev => ({
+      ...prev,
+      items: prev.items.filter(item => item._id !== applicationId),
+      total: Math.max(0, (prev.total || 0) - 1),
+    }));
+  }, []);
+
+  const handleApplicationCreated = useCallback(
+    created => {
+      if (!created?._id) return;
+      setList(prev => ({
+        ...prev,
+        items: [toListItem(created), ...prev.items].slice(0, prev.limit || 25),
+        total: (prev.total || 0) + 1,
+      }));
+    },
+    [toListItem],
+  );
 
   useEffect(() => {
     if (!canAccess) return undefined;
@@ -189,6 +247,9 @@ function JobApplicationAnalyticsPage() {
             setAppliedFilters(filters);
           }}
           onPageChange={nextPage => setPage(nextPage)}
+          onApplicationUpdated={handleApplicationUpdated}
+          onApplicationDeleted={handleApplicationDeleted}
+          onApplicationCreated={handleApplicationCreated}
         />
       </section>
     </div>

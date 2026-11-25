@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './JobApplicationAnalytics.module.css';
 
@@ -11,6 +13,16 @@ function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
   return date.toLocaleString();
+}
+
+function emptyCreateForm() {
+  return {
+    formId: '',
+    respondent: '',
+    email: '',
+    resumeUrl: '',
+    answers: [],
+  };
 }
 
 function ApplicationsTable({
@@ -25,12 +37,26 @@ function ApplicationsTable({
   onFiltersChange,
   onApplyFilters,
   onPageChange,
+  onApplicationUpdated,
+  onApplicationDeleted,
+  onApplicationCreated,
 }) {
   const darkMode = useSelector(state => state.theme?.darkMode);
   const [openId, setOpenId] = useState(null);
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [editDraft, setEditDraft] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [actionError, setActionError] = useState('');
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createDraft, setCreateDraft] = useState(emptyCreateForm);
+  const [createQuestions, setCreateQuestions] = useState([]);
+  const [createLoadingQuestions, setCreateLoadingQuestions] = useState(false);
+
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const totalPages = Math.max(1, Math.ceil((total || 0) / (limit || 25)));
   const modalThemeClass = darkMode ? styles.answersModalDark : styles.answersModalLight;
@@ -51,6 +77,9 @@ function ApplicationsTable({
       setDetail(null);
       setDetailError('');
       setDetailLoading(false);
+      setEditMode(false);
+      setEditDraft(null);
+      setActionError('');
       return undefined;
     }
 
@@ -59,6 +88,9 @@ function ApplicationsTable({
       setDetailLoading(true);
       setDetailError('');
       setDetail(null);
+      setEditMode(false);
+      setEditDraft(null);
+      setActionError('');
       try {
         const { data } = await axios.get(ENDPOINTS.JOB_APPLICATION_DETAIL(openId));
         if (!cancelled) setDetail(data);
@@ -79,15 +111,169 @@ function ApplicationsTable({
     };
   }, [openId]);
 
-  const closeModal = () => setOpenId(null);
+  useEffect(() => {
+    if (!createOpen || !createDraft.formId) {
+      setCreateQuestions([]);
+      return undefined;
+    }
+
+    let cancelled = false;
+    const loadQuestions = async () => {
+      setCreateLoadingQuestions(true);
+      try {
+        const { data } = await axios.get(ENDPOINTS.GET_JOB_FORM(createDraft.formId));
+        const questions = Array.isArray(data?.form?.questions) ? data.form.questions : [];
+        if (!cancelled) {
+          setCreateQuestions(questions);
+          setCreateDraft(prev => ({
+            ...prev,
+            answers: questions.map(q => ({
+              questionId: q._id,
+              questionText: q.questionText || 'Question',
+              answer: '',
+            })),
+          }));
+        }
+      } catch {
+        if (!cancelled) {
+          setCreateQuestions([]);
+          setCreateDraft(prev => ({ ...prev, answers: [] }));
+        }
+      } finally {
+        if (!cancelled) setCreateLoadingQuestions(false);
+      }
+    };
+
+    loadQuestions();
+    return () => {
+      cancelled = true;
+    };
+  }, [createOpen, createDraft.formId]);
+
+  const closeModal = () => {
+    if (saving) return;
+    setOpenId(null);
+  };
+
+  const startEdit = () => {
+    if (!detail) return;
+    setEditMode(true);
+    setActionError('');
+    setEditDraft({
+      respondent: detail.respondent || '',
+      email: detail.email || '',
+      resumeUrl: detail.resumeUrl || '',
+      answers: (detail.answers || []).map(qa => ({
+        questionId: qa.questionId,
+        questionText: qa.questionText,
+        answer: qa.displayValue === '—' ? '' : qa.displayValue || '',
+      })),
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditMode(false);
+    setEditDraft(null);
+    setActionError('');
+  };
+
+  const saveEdit = async () => {
+    if (!openId || !editDraft) return;
+    setSaving(true);
+    setActionError('');
+    try {
+      const { data } = await axios.put(ENDPOINTS.UPDATE_JOB_APPLICATION(openId), {
+        respondent: editDraft.respondent,
+        email: editDraft.email,
+        resumeUrl: editDraft.resumeUrl,
+        answers: editDraft.answers.map(qa => ({
+          questionId: qa.questionId,
+          answer: qa.answer,
+        })),
+      });
+      setDetail(data);
+      setEditMode(false);
+      setEditDraft(null);
+      onApplicationUpdated?.(data);
+    } catch (err) {
+      setActionError(err?.response?.data?.message || 'Unable to save application changes.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openCreate = () => {
+    setCreateDraft(emptyCreateForm());
+    setCreateQuestions([]);
+    setActionError('');
+    setCreateOpen(true);
+  };
+
+  const closeCreate = () => {
+    if (saving) return;
+    setCreateOpen(false);
+    setActionError('');
+  };
+
+  const saveCreate = async () => {
+    if (!createDraft.formId || !createDraft.email.trim()) {
+      setActionError('Form and email are required.');
+      return;
+    }
+    setSaving(true);
+    setActionError('');
+    try {
+      const { data } = await axios.post(ENDPOINTS.CREATE_JOB_APPLICATION, {
+        formId: createDraft.formId,
+        respondent: createDraft.respondent,
+        email: createDraft.email.trim(),
+        resumeUrl: createDraft.resumeUrl,
+        answers: createDraft.answers
+          .filter(qa => qa.questionId)
+          .map(qa => ({
+            questionId: qa.questionId,
+            answer: qa.answer,
+          })),
+      });
+      setCreateOpen(false);
+      setCreateDraft(emptyCreateForm());
+      onApplicationCreated?.(data);
+    } catch (err) {
+      setActionError(err?.response?.data?.message || 'Unable to create application.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget?._id) return;
+    const deletedId = deleteTarget._id;
+    setSaving(true);
+    setActionError('');
+    try {
+      await axios.delete(ENDPOINTS.DELETE_JOB_APPLICATION(deletedId));
+      if (openId === deletedId) setOpenId(null);
+      setDeleteTarget(null);
+      onApplicationDeleted?.(deletedId);
+    } catch (err) {
+      setActionError(err?.response?.data?.message || 'Unable to delete application.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <section className={styles.tableSection} aria-label="Job applications">
-      <div className={styles.tableHeader}>
-        <h3 className={styles.panelTitle}>All applications</h3>
-        <p className={styles.panelSubtitle}>
-          Search and filter live JobApplications across forms. Use View to open formatted answers.
-        </p>
+      <div className={styles.tableHeaderRow}>
+        <div className={styles.tableHeader}>
+          <h3 className={styles.panelTitle}>All applications</h3>
+          <p className={styles.panelSubtitle}>
+            Search, view, edit, or remove live JobApplications across forms.
+          </p>
+        </div>
+        <button type="button" className={styles.applyBtn} onClick={openCreate}>
+          Add application
+        </button>
       </div>
       <div className={styles.filters}>
         <div className={styles.filterField}>
@@ -164,7 +350,7 @@ function ApplicationsTable({
                 <th scope="col">Form / role</th>
                 <th scope="col">Answers</th>
                 <th scope="col">Resume</th>
-                <th scope="col">View</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -190,15 +376,32 @@ function ApplicationsTable({
                     )}
                   </td>
                   <td>
-                    <button
-                      type="button"
-                      className={styles.viewBtn}
-                      aria-haspopup="dialog"
-                      aria-expanded={openId === item._id}
-                      onClick={() => setOpenId(item._id)}
-                    >
-                      View
-                    </button>
+                    <div className={styles.rowActions}>
+                      <button
+                        type="button"
+                        className={styles.actionBtn}
+                        aria-label={`View or edit application for ${item.respondent ||
+                          'applicant'}`}
+                        aria-haspopup="dialog"
+                        aria-expanded={openId === item._id}
+                        onClick={() => setOpenId(item._id)}
+                      >
+                        <FontAwesomeIcon icon={faEye} aria-hidden="true" />
+                        <span>View</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                        aria-label={`Delete application for ${item.respondent || 'applicant'}`}
+                        onClick={() => {
+                          setActionError('');
+                          setDeleteTarget(item);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faTrash} aria-hidden="true" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -214,11 +417,24 @@ function ApplicationsTable({
         size="lg"
         scrollable
         className={`${styles.answersModal} ${modalThemeClass}`}
-        contentClassName={styles.answersModalContent}
+        contentClassName={`${styles.answersModalContent} ${modalThemeClass}`}
         backdropClassName={styles.answersModalBackdrop}
       >
         <ModalHeader toggle={closeModal} className={styles.answersModalHeader}>
-          Application answers
+          <span className={styles.answersModalTitleRow}>
+            <span>{editMode ? 'Edit application' : 'Application'}</span>
+            {!detailLoading && !detailError && detail && !editMode ? (
+              <button
+                type="button"
+                className={styles.editHintBtn}
+                onClick={startEdit}
+                disabled={saving}
+              >
+                <FontAwesomeIcon icon={faPen} aria-hidden="true" />
+                <span>Click here to edit</span>
+              </button>
+            ) : null}
+          </span>
         </ModalHeader>
         <ModalBody className={styles.answersModalBody} data-testid="application-detail">
           {detailLoading && <p className={styles.popoverStatus}>Loading answers…</p>}
@@ -227,7 +443,12 @@ function ApplicationsTable({
               {detailError}
             </p>
           )}
-          {!detailLoading && !detailError && detail && (
+          {actionError && openId && !deleteTarget && (
+            <p className={styles.popoverError} role="alert">
+              {actionError}
+            </p>
+          )}
+          {!detailLoading && !detailError && detail && !editMode && (
             <>
               <div className={styles.answersMeta}>
                 <div>
@@ -268,7 +489,237 @@ function ApplicationsTable({
               )}
             </>
           )}
+          {!detailLoading && !detailError && detail && editMode && editDraft && (
+            <div className={styles.crudForm}>
+              <div className={styles.filterField}>
+                <label htmlFor="jaa-edit-name">Applicant name</label>
+                <input
+                  id="jaa-edit-name"
+                  type="text"
+                  value={editDraft.respondent}
+                  onChange={e => setEditDraft({ ...editDraft, respondent: e.target.value })}
+                />
+              </div>
+              <div className={styles.filterField}>
+                <label htmlFor="jaa-edit-email">Email</label>
+                <input
+                  id="jaa-edit-email"
+                  type="email"
+                  value={editDraft.email}
+                  onChange={e => setEditDraft({ ...editDraft, email: e.target.value })}
+                />
+              </div>
+              <div className={styles.filterField}>
+                <label htmlFor="jaa-edit-resume">Resume URL</label>
+                <input
+                  id="jaa-edit-resume"
+                  type="url"
+                  value={editDraft.resumeUrl}
+                  onChange={e => setEditDraft({ ...editDraft, resumeUrl: e.target.value })}
+                />
+              </div>
+              {editDraft.answers.map((qa, index) => (
+                <div key={String(qa.questionId || index)} className={styles.filterField}>
+                  <label htmlFor={`jaa-edit-answer-${index}`}>
+                    {index + 1}. {qa.questionText}
+                  </label>
+                  <textarea
+                    id={`jaa-edit-answer-${index}`}
+                    rows={3}
+                    value={qa.answer}
+                    onChange={e => {
+                      const next = [...editDraft.answers];
+                      next[index] = { ...qa, answer: e.target.value };
+                      setEditDraft({ ...editDraft, answers: next });
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </ModalBody>
+        {!detailLoading && !detailError && detail && (
+          <ModalFooter className={styles.answersModalFooter}>
+            {editMode ? (
+              <>
+                <button
+                  type="button"
+                  className={styles.secondaryBtn}
+                  onClick={cancelEdit}
+                  disabled={saving}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className={styles.applyBtn}
+                  onClick={saveEdit}
+                  disabled={saving}
+                >
+                  {saving ? 'Saving…' : 'Save changes'}
+                </button>
+              </>
+            ) : (
+              <button type="button" className={styles.secondaryBtn} onClick={closeModal}>
+                Close
+              </button>
+            )}
+          </ModalFooter>
+        )}
+      </Modal>
+
+      <Modal
+        isOpen={createOpen}
+        toggle={closeCreate}
+        centered
+        size="lg"
+        scrollable
+        className={`${styles.answersModal} ${modalThemeClass}`}
+        contentClassName={`${styles.answersModalContent} ${modalThemeClass}`}
+        backdropClassName={styles.answersModalBackdrop}
+      >
+        <ModalHeader toggle={closeCreate} className={styles.answersModalHeader}>
+          Add application
+        </ModalHeader>
+        <ModalBody className={styles.answersModalBody}>
+          {actionError && createOpen && (
+            <p className={styles.popoverError} role="alert">
+              {actionError}
+            </p>
+          )}
+          <div className={styles.crudForm}>
+            <div className={styles.filterField}>
+              <label htmlFor="jaa-create-form">Form / role</label>
+              <select
+                id="jaa-create-form"
+                value={createDraft.formId}
+                onChange={e =>
+                  setCreateDraft(prev => ({
+                    ...prev,
+                    formId: e.target.value,
+                    answers: [],
+                  }))
+                }
+              >
+                <option value="">Select a form</option>
+                {formOptions.map(form => (
+                  <option key={form.id} value={form.id}>
+                    {form.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.filterField}>
+              <label htmlFor="jaa-create-name">Applicant name</label>
+              <input
+                id="jaa-create-name"
+                type="text"
+                value={createDraft.respondent}
+                onChange={e => setCreateDraft({ ...createDraft, respondent: e.target.value })}
+              />
+            </div>
+            <div className={styles.filterField}>
+              <label htmlFor="jaa-create-email">Email</label>
+              <input
+                id="jaa-create-email"
+                type="email"
+                value={createDraft.email}
+                onChange={e => setCreateDraft({ ...createDraft, email: e.target.value })}
+              />
+            </div>
+            <div className={styles.filterField}>
+              <label htmlFor="jaa-create-resume">Resume URL (optional)</label>
+              <input
+                id="jaa-create-resume"
+                type="url"
+                value={createDraft.resumeUrl}
+                onChange={e => setCreateDraft({ ...createDraft, resumeUrl: e.target.value })}
+              />
+            </div>
+            {createLoadingQuestions && (
+              <p className={styles.popoverStatus}>Loading form questions…</p>
+            )}
+            {!createLoadingQuestions && createDraft.formId && createQuestions.length === 0 && (
+              <p className={styles.popoverStatus}>This form has no questions yet.</p>
+            )}
+            {createDraft.answers.map((qa, index) => (
+              <div key={String(qa.questionId || index)} className={styles.filterField}>
+                <label htmlFor={`jaa-create-answer-${index}`}>
+                  {index + 1}. {qa.questionText}
+                </label>
+                <textarea
+                  id={`jaa-create-answer-${index}`}
+                  rows={3}
+                  value={qa.answer}
+                  onChange={e => {
+                    const next = [...createDraft.answers];
+                    next[index] = { ...qa, answer: e.target.value };
+                    setCreateDraft({ ...createDraft, answers: next });
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </ModalBody>
+        <ModalFooter className={styles.answersModalFooter}>
+          <button
+            type="button"
+            className={styles.secondaryBtn}
+            onClick={closeCreate}
+            disabled={saving}
+          >
+            Cancel
+          </button>
+          <button type="button" className={styles.applyBtn} onClick={saveCreate} disabled={saving}>
+            {saving ? 'Creating…' : 'Create application'}
+          </button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(deleteTarget)}
+        toggle={() => !saving && setDeleteTarget(null)}
+        centered
+        className={`${styles.answersModal} ${modalThemeClass}`}
+        contentClassName={`${styles.answersModalContent} ${modalThemeClass}`}
+        backdropClassName={styles.answersModalBackdrop}
+      >
+        <ModalHeader
+          toggle={() => !saving && setDeleteTarget(null)}
+          className={styles.answersModalHeader}
+        >
+          Delete application
+        </ModalHeader>
+        <ModalBody className={styles.answersModalBody}>
+          {actionError && deleteTarget && (
+            <p className={styles.popoverError} role="alert">
+              {actionError}
+            </p>
+          )}
+          <p className={styles.popoverStatus}>
+            Permanently delete the application from{' '}
+            <strong>{deleteTarget?.respondent || 'Anonymous'}</strong>
+            {deleteTarget?.email ? ` (${deleteTarget.email})` : ''}? This cannot be undone.
+          </p>
+        </ModalBody>
+        <ModalFooter className={styles.answersModalFooter}>
+          <button
+            type="button"
+            className={styles.secondaryBtn}
+            onClick={() => setDeleteTarget(null)}
+            disabled={saving}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className={styles.dangerBtn}
+            onClick={confirmDelete}
+            disabled={saving}
+          >
+            {saving ? 'Deleting…' : 'Delete'}
+          </button>
+        </ModalFooter>
       </Modal>
 
       <div className={styles.pagination}>
@@ -323,6 +774,9 @@ ApplicationsTable.propTypes = {
   onFiltersChange: PropTypes.func.isRequired,
   onApplyFilters: PropTypes.func.isRequired,
   onPageChange: PropTypes.func.isRequired,
+  onApplicationUpdated: PropTypes.func,
+  onApplicationDeleted: PropTypes.func,
+  onApplicationCreated: PropTypes.func,
 };
 
 ApplicationsTable.defaultProps = {
@@ -333,6 +787,9 @@ ApplicationsTable.defaultProps = {
   loading: false,
   error: '',
   forms: [],
+  onApplicationUpdated: undefined,
+  onApplicationDeleted: undefined,
+  onApplicationCreated: undefined,
 };
 
 export default ApplicationsTable;

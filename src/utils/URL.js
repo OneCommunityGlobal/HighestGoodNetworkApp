@@ -578,6 +578,12 @@ export const ENDPOINTS = {
   },
   JOB_APPLICATION_DETAIL: applicationId =>
     `${APIEndpoint}/jobforms/applications/${applicationId}`,
+  /** Owner/Admin CRM: create / update / delete a JobApplication. */
+  CREATE_JOB_APPLICATION: `${APIEndpoint}/jobforms/applications`,
+  UPDATE_JOB_APPLICATION: applicationId =>
+    `${APIEndpoint}/jobforms/applications/${applicationId}`,
+  DELETE_JOB_APPLICATION: applicationId =>
+    `${APIEndpoint}/jobforms/applications/${applicationId}`,
   /** Public: distinct job titles for the apply-page position dropdown. */
   GET_JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
 
