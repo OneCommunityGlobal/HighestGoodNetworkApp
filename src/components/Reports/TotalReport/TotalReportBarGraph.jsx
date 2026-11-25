@@ -25,13 +25,11 @@ function TotalReportBarGraph({
     if (!barData?.length) return undefined;
 
     const isComparisonChart = idSuffix.includes('compare');
-    const barColor = isComparisonChart
-      ? darkMode
-        ? '#f59e0b'
-        : '#d97706'
-      : darkMode
-        ? '#4a90e2'
-        : '#5b6ee1';
+    let barColor = '#5b6ee1';
+    if (darkMode) barColor = '#4a90e2';
+    if (isComparisonChart) {
+      barColor = darkMode ? '#f59e0b' : '#d97706';
+    }
     const aboveBarLabelColor = darkMode ? '#f8fafc' : '#1f2937';
     const insideLabelMinHeight = 34;
 
@@ -60,8 +58,9 @@ function TotalReportBarGraph({
       const width = Math.max(1, containerWidth - margin.left - margin.right);
       const height = Math.max(1, containerHeight - margin.top - margin.bottom);
       const maxValue = Math.max(1, ...normalizedData.map(item => item.value));
-      const axisFontSize =
-        containerWidth <= 380 ? 8 : containerWidth <= 600 ? 9 : 11;
+      let axisFontSize = 11;
+      if (containerWidth <= 600) axisFontSize = 9;
+      if (containerWidth <= 380) axisFontSize = 8;
 
       const svg = d3
         // eslint-disable-next-line testing-library/no-node-access
@@ -103,6 +102,9 @@ function TotalReportBarGraph({
           label.length * valueFontSize * 0.62 <= bandwidth;
         const labelInsideBar =
           barHeight >= Math.max(insideLabelMinHeight, valueFontSize + 4);
+        let valueLabelColor = aboveBarLabelColor;
+        if (labelInsideBar && darkMode) valueLabelColor = 'white';
+        else if (labelInsideBar) valueLabelColor = '#1f2937';
 
         const bar = chart
           .append('rect')
@@ -123,10 +125,7 @@ function TotalReportBarGraph({
             .attr('y', labelInsideBar ? y + barHeight / 2 : Math.max(y - 5, 14))
             .attr('text-anchor', 'middle')
             .attr('dominant-baseline', labelInsideBar ? 'middle' : 'baseline')
-            .style(
-              'fill',
-              labelInsideBar ? (darkMode ? 'white' : '#1f2937') : aboveBarLabelColor,
-            )
+            .style('fill', valueLabelColor)
             .style('font-size', `${valueFontSize}px`)
             .style('font-weight', 'bold')
             .text(label);
