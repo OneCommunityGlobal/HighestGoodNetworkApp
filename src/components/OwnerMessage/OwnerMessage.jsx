@@ -52,6 +52,10 @@ function OwnerMessage({
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
 
   const canEditHeaderMessage = dispatch(hasPermission(permissions.editHeaderMessage));
+  const canManageOwnerMessage =
+    process.env.NODE_ENV === 'development'
+      ? user.role === 'Owner'
+      : user.role === 'Owner' || canEditHeaderMessage;
   const isImageMessage = value => typeof value === 'string' && value.includes(';base64');
 
   function toggle() {
@@ -171,7 +175,7 @@ function OwnerMessage({
     <div className={styles.messageContainer}>
       {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
-      {(user.role === 'Owner' || canEditHeaderMessage) && (
+      {canManageOwnerMessage && (
         <span className={styles.iconWrapper}>
           <button
             type="submit"
