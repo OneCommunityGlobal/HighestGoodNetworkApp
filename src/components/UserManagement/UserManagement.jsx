@@ -550,7 +550,7 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-const canManageTimeOffRequests = this.props.hasPermission(permissions.manageTimeOffRequests);
+    const canManageTimeOffRequests = this.props.hasPermission(permissions.manageTimeOffRequests);
     const hasRolePermission =
       this.props.state.auth.user.role === 'Administrator' || this.props.state.auth.user.role === 'Owner';
     if (canManageTimeOffRequests || hasRolePermission) {
@@ -990,6 +990,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
+  hasPermission: (...args) => dispatch(hasPermission(...args)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   deleteUser: (...args) => dispatch(deleteUser(...args)),
   getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
