@@ -67,6 +67,11 @@ async function renderLoadedPage(options) {
   return view;
 }
 
+async function expectOnlyEvent(visibleTitle, hiddenTitle) {
+  expect(await screen.findByText(visibleTitle)).toBeInTheDocument();
+  await waitFor(() => expect(screen.queryByText(hiddenTitle)).not.toBeInTheDocument());
+}
+
 describe('DatabaseDesign', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -113,24 +118,20 @@ describe('DatabaseDesign', () => {
     await renderLoadedPage();
 
     fireEvent.change(screen.getByLabelText('Event Type'), { target: { value: 'Workshop' } });
-    await screen.findByText('Virtual Workshop');
-    await waitFor(() => expect(screen.queryByText('Office Meeting')).not.toBeInTheDocument());
+    await expectOnlyEvent('Virtual Workshop', 'Office Meeting');
 
     fireEvent.change(screen.getByLabelText('Event Type'), { target: { value: '' } });
     fireEvent.change(screen.getByLabelText('Location'), { target: { value: 'Office' } });
-    expect(await screen.findByText('Office Meeting')).toBeInTheDocument();
-    await waitFor(() => expect(screen.queryByText('Virtual Workshop')).not.toBeInTheDocument());
+    await expectOnlyEvent('Office Meeting', 'Virtual Workshop');
 
     fireEvent.change(screen.getByLabelText('Location'), { target: { value: '' } });
     fireEvent.change(screen.getByLabelText('Format'), { target: { value: 'Virtual' } });
-    expect(await screen.findByText('Virtual Workshop')).toBeInTheDocument();
-    await waitFor(() => expect(screen.queryByText('Office Meeting')).not.toBeInTheDocument());
+    await expectOnlyEvent('Virtual Workshop', 'Office Meeting');
 
     fireEvent.change(screen.getByLabelText('Event Type'), { target: { value: 'Meeting' } });
     fireEvent.change(screen.getByLabelText('Location'), { target: { value: 'Office' } });
     fireEvent.change(screen.getByLabelText('Format'), { target: { value: 'In person' } });
-    expect(await screen.findByText('Office Meeting')).toBeInTheDocument();
-    await waitFor(() => expect(screen.queryByText('Virtual Workshop')).not.toBeInTheDocument());
+    await expectOnlyEvent('Office Meeting', 'Virtual Workshop');
 
     fireEvent.change(screen.getByLabelText('Event Type'), { target: { value: 'Workshop' } });
     expect(await screen.findByText('No events found matching your filters.')).toBeInTheDocument();
@@ -162,28 +163,29 @@ describe('DatabaseDesign', () => {
   });
 
   it.each([
-    ['Confirm Attendance', '/communityportal/Activities/Register/1'],
-    ['Log Activity', '/communityportal/ActivityAttendance'],
-    ['Reports', '/communityportal/reports/participation'],
-  ])('navigates when %s is selected', async (label, destination) => {
+    ['Confirm Attendance', { destination: '/communityportal/Activities/Register/1' }],
+    ['Log Activity', { destination: '/communityportal/ActivityAttendance' }],
+    ['Reports', { destination: '/communityportal/reports/participation' }],
+    ['Confirm Attendance', { error: 'Failed to navigate to attendance confirmation' }],
+    ['Log Activity', { error: 'Failed to navigate to activity logging' }],
+    ['Reports', { error: 'Failed to navigate to reports' }],
+  ])('handles the %s action', async (label, expectation) => {
     const { history } = await renderLoadedPage();
 
-    fireEvent.click(screen.getAllByRole('button', { name: label })[0]);
-    expect(history.location.pathname).toBe(destination);
-  });
-
-  it.each([
-    ['Confirm Attendance', 'Failed to navigate to attendance confirmation'],
-    ['Log Activity', 'Failed to navigate to activity logging'],
-    ['Reports', 'Failed to navigate to reports'],
-  ])('shows an accessible error when %s navigation fails', async (label, message) => {
-    const { history } = await renderLoadedPage();
-    vi.spyOn(history, 'push').mockImplementation(() => {
-      throw new Error('Navigation failed');
-    });
+    if (expectation.error) {
+      vi.spyOn(history, 'push').mockImplementation(() => {
+        throw new Error('Navigation failed');
+      });
+    }
 
     fireEvent.click(screen.getAllByRole('button', { name: label })[0]);
-    expect(await screen.findByRole('alert')).toHaveTextContent(message);
-    expect(toast.error).toHaveBeenCalledWith(message);
+
+    if (expectation.error) {
+      expect(await screen.findByRole('alert')).toHaveTextContent(expectation.error);
+      expect(toast.error).toHaveBeenCalledWith(expectation.error);
+      return;
+    }
+
+    expect(history.location.pathname).toBe(expectation.destination);
   });
 });
