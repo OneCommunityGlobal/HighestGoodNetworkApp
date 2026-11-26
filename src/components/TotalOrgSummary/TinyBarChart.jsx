@@ -31,7 +31,7 @@ export default function TinyBarChart(props) {
           right: 20,
         }}
       >
-        <XAxis dataKey="name" stroke={darkMode ? 'white' : 'gray'} />
+        <XAxis dataKey="name" stroke={darkMode ? 'white' : 'gray'} interval={0} />
         <YAxis
           stroke={darkMode ? 'white' : 'gray'}
           domain={[0, maxY]}
@@ -59,7 +59,10 @@ export default function TinyBarChart(props) {
         */}
         <Bar dataKey="amount" fill="#8884d8">
           {chartData.map((entry, index) => (
-            <Cell key={`cell-${entry.name}-${entry.amount}`} fill={entry.color[index]} />
+            <Cell
+              key={`cell-${entry.name}-${entry.amount}`}
+              fill={Array.isArray(entry.color) ? entry.color[index] : entry.color}
+            />
           ))}
           <LabelList dataKey="amount" content={renderCustomizedLabel} />
         </Bar>
