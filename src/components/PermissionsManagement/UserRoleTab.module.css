@@ -256,3 +256,50 @@
     width: 70%;
   }
 }
+
+/* Open all / Collapse all, above the outer permission list only */
+.openCloseAll {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* keyboard focus ring for the 2 buttons: their boxStyle shadow replaces Bootstrap's own ring.
+   Blue, not currentcolor, because their text is white. */
+.openCloseAll button:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* phones: same right padding as the rows, so the 2 buttons stay in line with Add/Delete */
+@media only screen and (width <= 400px) {
+  .openCloseAll {
+    padding-right: 15px;
+  }
+}
+
+/* A heading name is a button that opens or closes its rows. color and font: inherit keep the
+   heading's green, black or red and its size (dark mode makes all text white anyway);
+   text-indent: 0 stops a double indent. */
+.headingToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-indent: 0;
+  cursor: pointer;
+}
+
+/* keyboard focus ring in the heading's colour, so it shows in light and dark mode */
+.headingToggle:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+  border-radius: 4px;
+}

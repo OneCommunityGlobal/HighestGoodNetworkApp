@@ -229,6 +229,26 @@ describe('RolePermissions component', () => {
     expect(input).toHaveValue('Manager');
   }, 10000);
 
+  it('opens and closes the permission headings without an unsaved changes alert', () => {
+    mockModalContext.updateModalStatus.mockClear();
+    renderComponent(store, createMemoryHistory(), roleName, roleId);
+
+    // case-insensitive, so the test still passes if the headings are written in capitals
+    fireEvent.click(screen.getByRole('button', { name: /^reports$/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Collapse all' }));
+    expect(screen.queryAllByRole('button', { expanded: true })).toHaveLength(0);
+    // the third level was closed too: Project Management > Work Breakdown Structures > Tasks
+    fireEvent.click(screen.getByRole('button', { name: /^project management$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^work breakdown structures$/i }));
+    const tasks = screen.getByRole('button', { name: /^tasks$/i });
+    expect(tasks).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(screen.getByRole('button', { name: 'Open all' }));
+    expect(screen.queryAllByRole('button', { expanded: false })).toHaveLength(0);
+
+    expect(screen.queryByText(/you have unsaved changes/i)).not.toBeInTheDocument();
+    expect(mockModalContext.updateModalStatus).not.toHaveBeenCalled();
+  }, 10000);
+
   describe('blue info icons next to Save and Delete Role', () => {
     const ICON_TITLE = 'Click for information about this';
 
