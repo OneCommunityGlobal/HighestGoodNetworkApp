@@ -16,6 +16,7 @@ vi.mock('axios', () => ({
   default: {
     defaults: { headers: { post: {} } },
     get: vi.fn(),
+    post: vi.fn(),
     patch: vi.fn(),
     put: vi.fn(),
   },
@@ -55,7 +56,7 @@ vi.mock('../../../actions/weeklySummariesFilterAction', () => ({
 }));
 
 vi.mock('../../../utils/questionnaireCompletion', () => ({
-  fetchCompletedQuestionnaireUserIds: () => Promise.resolve([]),
+  subscribeToCompletedQuestionnaireUserIds: () => () => {},
 }));
 
 vi.mock('../../common/SkeletonLoading', () => ({
@@ -172,5 +173,83 @@ describe('WeeklySummariesReport first load', () => {
 
     expect(await screen.findByText('No data available for this tab.')).toBeInTheDocument();
     expect(screen.queryByTestId('page-skeleton')).not.toBeInTheDocument();
+  });
+
+  it('shows a request error instead of treating a failed request as empty data', async () => {
+    axios.get.mockImplementation(url =>
+      url.includes('/reports/weeklysummaries')
+        ? Promise.reject(new Error('weekly summary request failed'))
+        : Promise.resolve({ data: { items: [] } }),
+    );
+
+    renderPage();
+
+    expect(await screen.findByText('Error! weekly summary request failed')).toBeInTheDocument();
+    expect(screen.queryByText('No data available for this tab.')).not.toBeInTheDocument();
+  });
+
+  it('loads the requested week and reuses the correct cached week when switching back', async () => {
+    let reportRequestCount = 0;
+    axios.get.mockImplementation(url => {
+      if (url.includes('/reports/weeklysummaries')) {
+        reportRequestCount += 1;
+        const currentSummary = {
+          ...summary,
+          firstName: reportRequestCount === 1 ? 'Last Person' : 'This Person',
+          lastName: 'Summary',
+        };
+        return Promise.resolve({ status: 200, data: [currentSummary] });
+      }
+      return Promise.resolve({ data: { items: [] } });
+    });
+    axios.post.mockResolvedValue({ data: { selections: {} } });
+
+    renderPage();
+    expect(await screen.findByText('Last Person Summary')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('This Week'));
+    expect(await screen.findByText('This Person Summary')).toBeInTheDocument();
+
+    const reportRequests = axios.get.mock.calls.filter(([url]) =>
+      url.includes('/reports/weeklysummaries'),
+    );
+    expect(reportRequests).toHaveLength(2);
+    expect(reportRequests[0][1].params.week).toBe(1);
+    expect(reportRequests[1][1].params.week).toBe(0);
+
+    fireEvent.click(screen.getByTestId('Last Week'));
+    expect(await screen.findByText('Last Person Summary')).toBeInTheDocument();
+    expect(
+      axios.get.mock.calls.filter(([url]) => url.includes('/reports/weeklysummaries')),
+    ).toHaveLength(2);
+  });
+
+  it('shows loading during refresh and replaces the displayed week with refreshed data', async () => {
+    let resolveRefresh;
+    let reportRequestCount = 0;
+    axios.get.mockImplementation(url => {
+      if (url.includes('/reports/weeklysummaries')) {
+        reportRequestCount += 1;
+        if (reportRequestCount === 1) return Promise.resolve({ status: 200, data: [summary] });
+        return new Promise(resolve => {
+          resolveRefresh = resolve;
+        });
+      }
+      return Promise.resolve({ data: { items: [] } });
+    });
+    axios.post.mockResolvedValue({ data: { selections: {} } });
+
+    renderPage();
+    expect(await screen.findByText('Ada Lovelace')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Refresh/ }));
+    expect(await screen.findByText('Loading data...')).toBeInTheDocument();
+    expect(screen.queryByText('No data available for this tab.')).not.toBeInTheDocument();
+
+    resolveRefresh({
+      status: 200,
+      data: [{ ...summary, firstName: 'Refreshed', lastName: 'User' }],
+    });
+    expect(await screen.findByText('Refreshed User')).toBeInTheDocument();
   });
 });

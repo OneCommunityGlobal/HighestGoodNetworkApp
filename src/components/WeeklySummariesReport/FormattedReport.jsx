@@ -99,6 +99,9 @@ function FormattedReport({
   handleSpecialColorDotClick,
   timeOffRequests,
   completedQuestionnaireUserIds,
+  userStateCatalog,
+  userStateSelections,
+  handleUserStateSelectionChange,
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission(permissions.totalValidWeeklySummaries));
@@ -185,6 +188,9 @@ function FormattedReport({
               handleSpecialColorDotClick={handleSpecialColorDotClick}
               isFinalWeek={isFinalWeek}
               timeOffRequests={timeOffRequests}
+              userStateCatalog={userStateCatalog}
+              userStateSelections={userStateSelections}
+              handleUserStateSelectionChange={handleUserStateSelectionChange}
               questionnaireIncomplete={
                 !!completedQuestionnaireUserIds && !completedQuestionnaireUserIds.has(summary._id)
               }
@@ -309,6 +315,9 @@ function ReportDetails({
   handleSpecialColorDotClick,
   isFinalWeek,
   timeOffRequests,
+  userStateCatalog,
+  userStateSelections,
+  handleUserStateSelectionChange,
   questionnaireIncomplete,
 }) {
   // eslint-disable-next-line no-console
@@ -421,6 +430,10 @@ function ReportDetails({
                 </p>
                 <UserStateDisplay
                   userId={summary._id}
+                  userName={`${summary.firstName} ${summary.lastName}`}
+                  catalog={userStateCatalog}
+                  initialSelected={userStateSelections?.[summary._id] || []}
+                  onSelectionChange={handleUserStateSelectionChange}
                   canEdit={dispatch(hasPermission(permissions.manage_user_state_indicator))}
                 />
               </div>
@@ -1291,11 +1304,26 @@ FormattedReport.propTypes = {
   timeOffRequests: PropTypes.objectOf(PropTypes.array),
   // null until loaded (or if the request fails), so nobody is flagged by mistake
   completedQuestionnaireUserIds: PropTypes.instanceOf(Set),
+  userStateCatalog: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      label: PropTypes.string,
+      emoji: PropTypes.string,
+      color: PropTypes.string,
+    }),
+  ),
+  userStateSelections: PropTypes.objectOf(
+    PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string, selectedAt: PropTypes.string })),
+  ),
+  handleUserStateSelectionChange: PropTypes.func,
 };
 
 FormattedReport.defaultProps = {
   auth: {},
   timeOffRequests: {},
+  userStateCatalog: [],
+  userStateSelections: {},
+  handleUserStateSelectionChange: () => {},
 };
 
 ReportDetails.propTypes = {
@@ -1315,12 +1343,18 @@ ReportDetails.propTypes = {
     }),
   }),
   timeOffRequests: PropTypes.objectOf(PropTypes.array),
+  userStateCatalog: PropTypes.array,
+  userStateSelections: PropTypes.object,
+  handleUserStateSelectionChange: PropTypes.func,
   questionnaireIncomplete: PropTypes.bool,
 };
 
 ReportDetails.defaultProps = {
   auth: {},
   timeOffRequests: {},
+  userStateCatalog: [],
+  userStateSelections: {},
+  handleUserStateSelectionChange: () => {},
 };
 
 export default FormattedReport;

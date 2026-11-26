@@ -118,6 +118,7 @@ const initialState = {
   total: 0,
   COLORS: [],
   loading: true,
+  error: null,
   summaries: [],
   activeTab: navItems[1],
   passwordModalOpen: false,
@@ -147,6 +148,9 @@ const initialState = {
   summariesByTab: {},
   // The first tab is fetched on mount, so it starts out loading.
   tabsLoading: { [navItems[1]]: true },
+  tabsError: {},
+  userStateCatalog: [],
+  userStateSelections: {},
   formattedReportLoading: false,
   loadTrophies: false,
   selectedSpecialColors: {
@@ -294,6 +298,7 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const reportResultsRef = useRef(null);
+  const reportRequestIdRef = useRef(0);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
   const [isTeamCodeFocused, setIsTeamCodeFocused] = useState(false);
 
@@ -1009,28 +1014,108 @@ const WeeklySummariesReport = props => {
       headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
     });
 
-    return Array.isArray(response?.data) ? response.data : [];
+    if (!Array.isArray(response?.data)) {
+      throw new TypeError('Weekly summaries request returned an invalid response.');
+    }
+
+    return response.data;
   };
 
-  const refreshCurrentTab = async () => {
-    const { activeTab } = state;
-    setState(prev => ({ ...prev, refreshing: true }));
+  const getRequestError = error => {
+    const responseMessage = error?.response?.data?.message || error?.response?.data;
+    const message =
+      typeof responseMessage === 'string' ? responseMessage : error?.message || 'Request failed.';
+    return new Error(message);
+  };
+
+  const loadUserStateData = async (summaries, requestId) => {
+    const userIds = summaries.map(summary => summary?._id).filter(Boolean);
+
+    if (userIds.length === 0) return;
+
+    let catalogResult;
+    let selectionsResult;
+    try {
+      [catalogResult, selectionsResult] = await Promise.allSettled([
+        axios.get(ENDPOINTS.USER_STATE_CATALOG),
+        axios.post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds }),
+      ]);
+    } catch {
+      return;
+    }
+
+    if (requestId !== reportRequestIdRef.current) return;
+
+    const catalogItems =
+      catalogResult.status === 'fulfilled'
+        ? Array.isArray(catalogResult.value?.data?.items)
+          ? catalogResult.value.data.items
+          : []
+        : null;
+    const selections =
+      selectionsResult.status === 'fulfilled' ? selectionsResult.value?.data?.selections : null;
+
+    setState(prev => {
+      const nextState = { ...prev };
+
+      if (catalogItems) nextState.userStateCatalog = catalogItems;
+      if (selections && typeof selections === 'object' && !Array.isArray(selections)) {
+        nextState.userStateSelections = {
+          ...prev.userStateSelections,
+          ...selections,
+        };
+      }
+
+      return nextState;
+    });
+  };
+
+  const loadTabData = async (activeTab, { forceRefresh = false, showPageLoading = false } = {}) => {
+    const requestId = ++reportRequestIdRef.current;
+
+    setState(prev => ({
+      ...prev,
+      loading: showPageLoading,
+      error: null,
+      refreshing: forceRefresh,
+      tabsLoading: { ...prev.tabsLoading, [activeTab]: true },
+      tabsError: { ...prev.tabsError, [activeTab]: null },
+    }));
 
     try {
       const rawSummaries = await fetchWeeklySummariesForTab(activeTab);
+
+      if (requestId !== reportRequestIdRef.current) return;
 
       setState(prevState => ({
         ...(rawSummaries.length > 0
           ? buildProcessedSummariesState(prevState, rawSummaries, activeTab)
           : buildEmptySummariesState(prevState, activeTab)),
+        loading: false,
         refreshing: false,
+        error: null,
+        tabsLoading: { ...prevState.tabsLoading, [activeTab]: false },
+        tabsError: { ...prevState.tabsError, [activeTab]: null },
       }));
+
+      void loadUserStateData(rawSummaries, requestId);
     } catch (error) {
-      setState(prevState => ({
-        ...prevState,
+      if (requestId !== reportRequestIdRef.current) return;
+
+      const requestError = getRequestError(error);
+      setState(prev => ({
+        ...prev,
+        loading: false,
         refreshing: false,
+        error: showPageLoading ? requestError : null,
+        tabsLoading: { ...prev.tabsLoading, [activeTab]: false },
+        tabsError: { ...prev.tabsError, [activeTab]: requestError },
       }));
     }
+  };
+
+  const refreshCurrentTab = () => {
+    void loadTabData(state.activeTab, { forceRefresh: true });
   };
 
   const toggleTab = tab => {
@@ -1038,27 +1123,30 @@ const WeeklySummariesReport = props => {
 
     if (activeTab === tab) return;
 
+    reportRequestIdRef.current += 1;
+    const hasCachedData = Object.hasOwn(state.summariesByTab, tab);
+
     setState(prevState => ({
       ...prevState,
       activeTab: tab,
       showOnlyMismatched: false,
-      tabsLoading: {
-        ...prevState.tabsLoading,
-        [tab]: true,
-      },
+      summaries: hasCachedData ? prevState.summaries : [],
+      filteredSummaries: hasCachedData ? prevState.filteredSummaries : [],
+      tabsLoading: { ...prevState.tabsLoading, [tab]: true },
+      tabsError: { ...prevState.tabsError, [tab]: null },
     }));
 
     sessionStorage.setItem('tabSelection', tab);
+  };
 
-    if (state.summariesByTab[tab]) {
-      setState(prevState => ({
-        ...buildProcessedSummariesState(prevState, prevState.summariesByTab[tab], tab),
-        tabsLoading: {
-          ...prevState.tabsLoading,
-          [tab]: false,
-        },
-      }));
-    }
+  const handleUserStateSelectionChange = (userId, selected) => {
+    setState(prev => ({
+      ...prev,
+      userStateSelections: {
+        ...prev.userStateSelections,
+        [userId]: selected,
+      },
+    }));
   };
 
   const handleSelectCodeChange = event => {
@@ -1608,70 +1696,23 @@ const WeeklySummariesReport = props => {
   };
 
   useEffect(() => {
-    let isMounted = true;
+    const activeTab = state.activeTab;
+    const cachedSummaries = state.summariesByTab[activeTab];
 
-    const loadTabData = async () => {
-      const activeTab = state.activeTab;
-
-      if (state.summariesByTab[activeTab]) {
-        setState(prevState => ({
-          ...buildProcessedSummariesState(
-            prevState,
-            prevState.summariesByTab[activeTab],
-            activeTab,
-          ),
-          tabsLoading: {
-            ...prevState.tabsLoading,
-            [activeTab]: false,
-          },
-        }));
-        return;
-      }
-
-      // Show the tab's own spinner. The full-page skeleton (state.loading) is only for
-      // the first load, which starts with loading: true in initialState.
-      setState(prev => ({
-        ...prev,
-        tabsLoading: {
-          ...prev.tabsLoading,
-          [activeTab]: true,
-        },
+    if (Object.hasOwn(state.summariesByTab, activeTab)) {
+      setState(prevState => ({
+        ...buildProcessedSummariesState(prevState, cachedSummaries, activeTab),
+        loading: false,
+        error: null,
+        tabsLoading: { ...prevState.tabsLoading, [activeTab]: false },
+        tabsError: { ...prevState.tabsError, [activeTab]: null },
       }));
+      return undefined;
+    }
 
-      try {
-        const rawSummaries = await fetchWeeklySummariesForTab(activeTab);
-
-        if (!isMounted) return;
-
-        setState(prevState => ({
-          ...(rawSummaries.length > 0
-            ? buildProcessedSummariesState(prevState, rawSummaries, activeTab)
-            : buildEmptySummariesState(prevState, activeTab)),
-          loading: false,
-          tabsLoading: {
-            ...prevState.tabsLoading,
-            [activeTab]: false,
-          },
-        }));
-      } catch (err) {
-        if (!isMounted) return;
-
-        console.error('❌ Failed to fetch data', err);
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-          tabsLoading: {
-            ...prevState.tabsLoading,
-            [activeTab]: false,
-          },
-        }));
-      }
-    };
-
-    loadTabData();
-
+    void loadTabData(activeTab, { showPageLoading: state.loading });
     return () => {
-      isMounted = false;
+      reportRequestIdRef.current += 1;
     };
   }, [state.activeTab]);
 
@@ -1738,7 +1779,7 @@ const WeeklySummariesReport = props => {
   }, [state.teamCodes, props.setTeamCodes]);
 
   const { role, darkMode } = props;
-  const { error } = props;
+  const error = state.error || props.error;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const { authEmailWeeklySummaryRecipient } = props;
   const warningUsers = state.summaries.filter(
@@ -2271,112 +2312,27 @@ const WeeklySummariesReport = props => {
           >
             {navItems.map((item, index) => (
               <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== state.activeTab}>
-                {state.tabsLoading[item] ? (
-                  <Row className={`text-center py-4 ${styles['mx-max-sm-0']}`}>
-                    <Col>
-                      <Spinner color="primary" />
-                      <p>Loading data...</p>
-                    </Col>
-                  </Row>
-                ) : (
-                  <>
-                    <Row className={styles['mx-max-sm-0']}>
-                      <Col sm="12" md="6" className="mb-2">
-                        From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
-                      </Col>
-                      <Col
-                        sm="12"
-                        md="6"
-                        style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
-                      >
-                        <GeneratePdfReport
-                          summaries={displayedSummaries}
-                          weekIndex={index}
-                          weekDates={weekDates[index]}
-                          darkMode={darkMode}
-                        />
-                        {permissionState.hasSeeBadgePermission && (
-                          <>
-                            <Button
-                              className="btn--dark-sea-green mr-2"
-                              style={darkMode ? boxStyleDark : boxStyle}
-                              onClick={() =>
-                                setState(prev => ({ ...prev, loadBadges: !state.loadBadges }))
-                              }
-                            >
-                              {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
-                            </Button>
-                            <Button
-                              className="btn--dark-sea-green"
-                              style={darkMode ? boxStyleDark : boxStyle}
-                              onClick={() =>
-                                setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))
-                              }
-                            >
-                              {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
-                            </Button>
-                          </>
-                        )}
-                        <Button
-                          className="btn--dark-sea-green mr-2"
-                          style={darkMode ? boxStyleDark : boxStyle}
-                          onClick={refreshCurrentTab}
-                          disabled={state.refreshing}
-                        >
-                          {state.refreshing ? <Spinner size="sm" /> : null} Refresh
-                        </Button>
-                      </Col>
-                    </Row>
-                    {showOnlyMismatched && (
-                      <Row className={styles['mx-max-sm-0']}>
-                        <Col>
-                          <output className={styles.mismatchFilterStatus}>
-                            Showing {displayedSummaries.length} users with mismatched team codes.{' '}
-                            Click the red i again to show all users.
-                          </output>
-                        </Col>
-                      </Row>
-                    )}
-                    {displayedSummaries.length > 0 ? (
-                      <>
-                        <Row>
-                          <Col>
-                            <b>Total Team Members:</b> {displayedSummaries.length}
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <FormattedReport
-                              summaries={displayedSummaries}
-                              weekIndex={index}
-                              bioCanEdit={permissionState.bioEditPermission}
-                              canEditSummaryCount={permissionState.canEditSummaryCount}
-                              allRoleInfo={state.allRoleInfo}
-                              badges={state.badges}
-                              loadBadges={state.loadBadges}
-                              canEditTeamCode={permissionState.codeEditPermission}
-                              auth={props.auth}
-                              canSeeBioHighlight={permissionState.canSeeBioHighlight}
-                              darkMode={darkMode}
-                              handleTeamCodeChange={handleTeamCodeChange}
-                              handleBioStatusChange={handleBioStatusChange}
-                              loadTrophies={state.loadTrophies}
-                              handleSpecialColorDotClick={handleSpecialColorDotClick}
-                              timeOffRequests={props.timeOffRequests}
-                              completedQuestionnaireUserIds={completedQuestionnaireUserIds}
-                            />
-                          </Col>
-                        </Row>
-                      </>
-                    ) : (
-                      <Row>
-                        <Col>
-                          <Alert color="info">No data available for this tab.</Alert>
-                        </Col>
-                      </Row>
-                    )}
-                  </>
-                )}
+                <WeeklySummariesReportTabContent
+                  report={{
+                    index,
+                    weekDate: weekDates[index],
+                    loading: state.tabsLoading[item],
+                    error: state.tabsError[item],
+                    darkMode,
+                    displayedSummaries,
+                    showOnlyMismatched,
+                    permissionState,
+                    state,
+                    props,
+                    refreshCurrentTab,
+                    setState,
+                    handleTeamCodeChange,
+                    handleBioStatusChange,
+                    handleSpecialColorDotClick,
+                    completedQuestionnaireUserIds,
+                    handleUserStateSelectionChange,
+                  }}
+                />
               </WeeklySummariesReportTab>
             ))}
           </TabContent>
@@ -2453,6 +2409,148 @@ const mapDispatchToProps = dispatch => ({
   updateSummaryReportFromServerAction: user => dispatch(updateSummaryReportFromServerAction(user)),
   getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
 });
+
+function WeeklySummariesReportTabContent({ report }) {
+  const {
+    index,
+    weekDate,
+    loading,
+    error,
+    darkMode,
+    displayedSummaries,
+    showOnlyMismatched,
+    permissionState,
+    state,
+    props,
+    refreshCurrentTab,
+    setState,
+    handleTeamCodeChange,
+    handleBioStatusChange,
+    handleSpecialColorDotClick,
+    completedQuestionnaireUserIds,
+    handleUserStateSelectionChange,
+  } = report;
+
+  if (loading) {
+    return (
+      <Row className={`text-center py-4 ${styles['mx-max-sm-0']}`}>
+        <Col>
+          <Spinner color="primary" />
+          <p>Loading data...</p>
+        </Col>
+      </Row>
+    );
+  }
+
+  if (error) {
+    return (
+      <Row className={styles['mx-max-sm-0']}>
+        <Col>
+          <Alert color="danger">Error! {error.message}</Alert>
+        </Col>
+      </Row>
+    );
+  }
+
+  return (
+    <>
+      <Row className={styles['mx-max-sm-0']}>
+        <Col sm="12" md="6" className="mb-2">
+          From <b>{weekDate.fromDate}</b> to <b>{weekDate.toDate}</b>
+        </Col>
+        <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+          <GeneratePdfReport
+            summaries={displayedSummaries}
+            weekIndex={index}
+            weekDates={weekDate}
+            darkMode={darkMode}
+          />
+          {permissionState.hasSeeBadgePermission && (
+            <>
+              <Button
+                className="btn--dark-sea-green mr-2"
+                style={darkMode ? boxStyleDark : boxStyle}
+                onClick={() => setState(prev => ({ ...prev, loadBadges: !state.loadBadges }))}
+              >
+                {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
+              </Button>
+              <Button
+                className="btn--dark-sea-green"
+                style={darkMode ? boxStyleDark : boxStyle}
+                onClick={() => setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))}
+              >
+                {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
+              </Button>
+            </>
+          )}
+          <Button
+            className="btn--dark-sea-green mr-2"
+            style={darkMode ? boxStyleDark : boxStyle}
+            onClick={refreshCurrentTab}
+            disabled={state.refreshing}
+          >
+            {state.refreshing ? <Spinner size="sm" /> : null} Refresh
+          </Button>
+        </Col>
+      </Row>
+      {showOnlyMismatched && (
+        <Row className={styles['mx-max-sm-0']}>
+          <Col>
+            <output className={styles.mismatchFilterStatus}>
+              Showing {displayedSummaries.length} users with mismatched team codes. Click the red i
+              again to show all users.
+            </output>
+          </Col>
+        </Row>
+      )}
+      {displayedSummaries.length > 0 ? (
+        <>
+          <Row>
+            <Col>
+              <b>Total Team Members:</b> {displayedSummaries.length}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <FormattedReport
+                summaries={displayedSummaries}
+                weekIndex={index}
+                bioCanEdit={permissionState.bioEditPermission}
+                canEditSummaryCount={permissionState.canEditSummaryCount}
+                allRoleInfo={state.allRoleInfo}
+                badges={state.badges}
+                loadBadges={state.loadBadges}
+                canEditTeamCode={permissionState.codeEditPermission}
+                auth={props.auth}
+                canSeeBioHighlight={permissionState.canSeeBioHighlight}
+                darkMode={darkMode}
+                handleTeamCodeChange={handleTeamCodeChange}
+                handleBioStatusChange={handleBioStatusChange}
+                loadTrophies={state.loadTrophies}
+                handleSpecialColorDotClick={handleSpecialColorDotClick}
+                timeOffRequests={props.timeOffRequests}
+                completedQuestionnaireUserIds={completedQuestionnaireUserIds}
+                userStateCatalog={state.userStateCatalog}
+                userStateSelections={state.userStateSelections}
+                handleUserStateSelectionChange={handleUserStateSelectionChange}
+              />
+            </Col>
+          </Row>
+        </>
+      ) : (
+        <Row>
+          <Col>
+            <Alert color="info">No data available for this tab.</Alert>
+          </Col>
+        </Row>
+      )}
+    </>
+  );
+}
+
+WeeklySummariesReportTabContent.propTypes = {
+  report: PropTypes.object.isRequired,
+};
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
   return <TabPane tabId={tabId}>{!hidden && children}</TabPane>;
