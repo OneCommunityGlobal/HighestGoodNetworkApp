@@ -19,6 +19,19 @@ describe('RehireableStatusControl', () => {
     expect(onConfirm).toHaveBeenCalledWith(false, 'Not a good fit');
   });
 
+  it('keeps Confirm disabled for a whitespace-only reason', () => {
+    const onConfirm = vi.fn();
+    render(<RehireableStatusControl onConfirm={onConfirm} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Rehireable' }));
+    fireEvent.change(screen.getByRole('textbox', { name: /reason for not rehireable status/i }), {
+      target: { value: '   ' },
+    });
+
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled();
+    expect(onConfirm).not.toHaveBeenCalled();
+  });
+
   it('does not change status or save reason when cancelled', () => {
     const onConfirm = vi.fn();
     render(<RehireableStatusControl onConfirm={onConfirm} />);

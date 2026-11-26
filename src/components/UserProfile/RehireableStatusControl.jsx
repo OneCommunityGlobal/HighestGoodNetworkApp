@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import {
+  Button,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from 'reactstrap';
 
 const formatHistoryDate = value => {
   if (!value) return 'Date unavailable';
