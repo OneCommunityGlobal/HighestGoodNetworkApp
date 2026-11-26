@@ -39,7 +39,7 @@ function labelForFilter(mode) {
     case 'active':
       return 'Active';
     case 'inactive':
-      return 'In Active';
+      return 'Inactive';
     default:
       return 'All';
   }
@@ -386,7 +386,7 @@ export const TeamMembersPopup = React.memo(props => {
             <p style={{ fontWeight: 600 }}>
               {`All : ${applyStatusFilter(validation, 'all').length}, `}
               {`Active : ${applyStatusFilter(validation, 'active').length}, `}
-              {`In Active : ${applyStatusFilter(validation, 'inactive').length}`}
+              {`Inactive : ${applyStatusFilter(validation, 'inactive').length}`}
             </p>
           </div>
 

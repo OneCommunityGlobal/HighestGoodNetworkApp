@@ -46,3 +46,13 @@
   }
 
   
+  /* Green status dot, matching the Active Teams card on the Teams page. The
+     two-class !important selector outranks the global
+     `body.dark-mode * { color: #fff !important }` rule. */
+  .card-text .active-dot {
+    color: lawngreen !important;
+  }
+
+  .card-text .archived-dot {
+    color: #dee2e6 !important;
+  }

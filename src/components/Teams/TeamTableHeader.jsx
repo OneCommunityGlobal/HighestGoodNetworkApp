@@ -39,7 +39,7 @@ function TeamTableHeaderComponent({
         onClick={onTeamNameSort}
         style={{ cursor: 'pointer' }}
       >
-        {TEAM_NAME} <span aria-hidden="true">(All | Active | In Active)</span>
+        {TEAM_NAME} <span aria-hidden="true">(All | Active | Inactive)</span>
         <span aria-hidden="true" style={{ float: 'right' }}>
           {getSortIcon(sortTeamNameState)}
         </span>
