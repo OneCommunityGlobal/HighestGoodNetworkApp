@@ -14,6 +14,13 @@ import { Bar } from 'react-chartjs-2';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import styles from './TotalMaterialCostPerProject.module.css';
+import {
+  kToDollars,
+  formatCurrency,
+  formatCompactCurrency,
+  shortenLabels,
+  getDefaultSelection,
+} from './materialCostFormat';
 import { ENDPOINTS } from '~/utils/URL';
 import Loading from '~/components/common/Loading';
 
@@ -49,6 +56,10 @@ function TotalMaterialCostPerProject() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const textColor = darkMode ? '#ffffff' : '#666';
+  // Unique short axis labels; the tooltip shows the full project name.
+  const shortLabels = useMemo(() => shortenLabels(selectedProjects.map(p => p.label)), [
+    selectedProjects,
+  ]);
 
   const options = {
     responsive: true,
@@ -74,8 +85,8 @@ function TotalMaterialCostPerProject() {
         textStrokeWidth: 3,
         // Round only the displayed label text; keep the chart data unchanged.
         formatter: value => {
-          const numericValue = Number(value);
-          return Number.isFinite(numericValue) ? numericValue.toFixed(3) : '0.000';
+          // Data is in thousands of dollars; show real dollars, e.g. "$133K".
+          return formatCompactCurrency(kToDollars(value));
         },
       },
       tooltip: {
@@ -85,9 +96,12 @@ function TotalMaterialCostPerProject() {
         borderColor: darkMode ? '#375071' : '#ccc',
         borderWidth: 1,
         callbacks: {
+          // Full project name (axis labels may be shortened).
+          title(items) {
+            return items.length ? items[0].label : '';
+          },
           label(context) {
-            const value = Number(context.parsed.y ?? 0);
-            return `${context.dataset.label}: ${value.toFixed(3)}`;
+            return `Total material cost: ${formatCurrency(kToDollars(context.parsed.y))}`;
           },
         },
       },
@@ -99,14 +113,16 @@ function TotalMaterialCostPerProject() {
           color: textColor,
           font: { size: 11 },
           callback(val) {
-            const label = this.getLabelForValue(val);
-            return label.length > 20 ? `${label.slice(0, 20)}…` : label;
+            return shortLabels[val] ?? this.getLabelForValue(val);
           },
         },
       },
       y: {
         grid: { color: darkMode ? '#8b949e' : '#ccc' },
-        ticks: { color: textColor },
+        ticks: {
+          color: textColor,
+          callback: value => formatCompactCurrency(kToDollars(value)),
+        },
       },
     },
   };
@@ -125,7 +141,6 @@ function TotalMaterialCostPerProject() {
           value: project._id,
           label: project.name,
         }));
-        setSelectedProjects(projectsFilteredData);
         setAllProjects(projectsFilteredData);
 
         const costResponse = await axios.get(ENDPOINTS.BM_PROJECT_MATERIALS_COST);
@@ -140,6 +155,8 @@ function TotalMaterialCostPerProject() {
           return acc;
         }, {});
         setProjectCosts(projectCostsData);
+        // Leave $0 projects out of the default selection; they can still be picked.
+        setSelectedProjects(getDefaultSelection(projectsFilteredData, projectCostsData));
       } catch (error) {
         toast.error(`Error fetching data: ${error.message}`);
         toast.error('Using mock data as fallback');
@@ -158,7 +175,7 @@ function TotalMaterialCostPerProject() {
       labels: selectedProjects.map(p => p.label),
       datasets: [
         {
-          label: 'Total Material Cost (*1000$)',
+          label: 'Total Material Cost ($)',
           data: selectedProjects.map(p => {
             const cost = Number(projectCosts[p.value]);
             return Number.isFinite(cost) ? cost : 0;

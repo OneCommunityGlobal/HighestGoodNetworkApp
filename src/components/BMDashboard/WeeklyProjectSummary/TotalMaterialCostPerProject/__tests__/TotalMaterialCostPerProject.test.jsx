@@ -163,7 +163,7 @@ describe('TotalMaterialCostPerProject', () => {
     await waitFor(() => expect(toast.error).toHaveBeenCalled());
   });
 
-  it('displays zero for missing or invalid material costs', async () => {
+  it('leaves projects with a missing or invalid cost out of the default selection', async () => {
     axios.get.mockImplementation(url => {
       if (url.includes('/bm/projects')) {
         return Promise.resolve({
@@ -196,10 +196,14 @@ describe('TotalMaterialCostPerProject', () => {
     const chart = await screen.findByTestId('bar-chart');
 
     await waitFor(() => {
-      expect(chart).toHaveTextContent('100,0,0');
+      expect(chart).toHaveTextContent('Project A');
     });
 
-    expect(chart).toHaveTextContent('Project A,Project B,Project C');
+    // Project B (no cost) and Project C (invalid cost) count as $0, so they are
+    // not selected by default; they stay available in the selector.
+    expect(chart).toHaveTextContent('100');
+    expect(chart).not.toHaveTextContent('Project B');
+    expect(chart).not.toHaveTextContent('Project C');
     expect(chart).not.toHaveTextContent('NaN');
   });
 });
