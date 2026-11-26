@@ -82,10 +82,12 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
 
     case types.FETCH_PROJECTS_ACTIVE_USERS_SUCCESS:
       return {
+        ...allMembership,
         activeMemberCounts: action.payload,
       };
     case types.FETCH_PROJECTS_ACTIVE_USERS_ERROR:
       return {
+        ...allMembership,
         error: action.payload,
       };
 

@@ -54,6 +54,12 @@ describe('TimeZoneDropDown Component', () => {
 
   test('handles invalid time zone names provided', () => {
     render(<Provider store={store}><TimeZoneDropDown selected="InvalidTimeZone" /></Provider>);
-    expect(screen.getByTestId('time_zone_dropdown')).toHaveValue('Asia/Kabul');
+    expect(screen.getByTestId('time_zone_dropdown')).toHaveValue('Africa/Abidjan');
+  });
+
+  test("lists time zones in alphabetical order", () => {
+    render(<Provider store={store}><TimeZoneDropDown /></Provider>);
+    const values = screen.getAllByTestId("time_zone_option").map(o => o.value);
+    expect(values).toEqual([...values].sort((a, b) => a.localeCompare(b)));
   });
 });

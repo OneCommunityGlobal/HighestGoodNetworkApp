@@ -6,6 +6,11 @@ export const getPromotionEligibility = async requestor => {
   return res.data;
 };
 
+export const getPromotionPending = async requestor => {
+  const res = await axios.post(ENDPOINTS.PROMOTION_PENDING, { requestor });
+  return res.data;
+};
+
 export const postPromotionEligibility = async (memberIds, requestor) => {
   const res = await axios.post(ENDPOINTS.PROMOTE_MEMBERS, {
     memberIds,

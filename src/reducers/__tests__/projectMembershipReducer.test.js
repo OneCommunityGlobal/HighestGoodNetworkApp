@@ -121,4 +121,27 @@ describe('projectMembershipReducer', () => {
     };
     expect(projectMembershipReducer(initialState, action)).toEqual(expectedState);
   });
+
+  it.each([
+    [types.FETCH_PROJECTS_ACTIVE_USERS_SUCCESS, 'activeMemberCounts', { project1: 3 }],
+    [types.FETCH_PROJECTS_ACTIVE_USERS_ERROR, 'error', new Error('Count request failed')],
+  ])('preserves membership state when handling %s', (type, field, payload) => {
+    const state = {
+      ...initialState,
+      projectName: 'Test Project',
+      members: [{ _id: 'member1' }],
+      foundUsers: [{ _id: 'user1' }],
+      foundProjectMembers: [{ _id: 'member2' }],
+      activeMemberCounts: { existingProject: 2 },
+      fetching: true,
+      fetched: false,
+      error: 'Existing error',
+    };
+    const result = projectMembershipReducer(state, { type, payload });
+    expect(result).toEqual({ ...state, [field]: payload });
+    expect(result[field]).toBe(payload);
+    expect(result.members).toBe(state.members);
+    expect(result.foundUsers).toBe(state.foundUsers);
+    expect(result.foundProjectMembers).toBe(state.foundProjectMembers);
+  });
 });

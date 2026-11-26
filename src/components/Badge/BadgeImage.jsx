@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
-import styles from './Badge.module.css';
+import './Badge.module.css';
 
 function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuffix }) {
   const [isOpen, setOpen] = useState(false);
@@ -9,8 +9,8 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuff
 
   return (
     <>
-      <div className={styles.badge_image_container}>
-        <div className={styles.badge_image_sm}>
+      <div className="badge_image_container">
+        <div className="badge_image_sm">
           <img
             src={badgeData?.imageUrl}
             id={`popover_${time}${index.toString()}`}
@@ -32,7 +32,7 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuff
         target={`popover_${time}${index.toString()}`}
       >
         <Card className="text-center">
-          <CardImg className={styles.badge_image_lg} src={badgeData?.imageUrl} />
+          <CardImg className="badge_image_lg" src={badgeData?.imageUrl} />
           <CardBody>
             <CardTitle
               style={{
@@ -53,28 +53,21 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuff
 }
 
 function BadgeSpan({ badgeType, personalBestMaxHrs, count, cssSuffix }) {
-  const cleanSuffix = cssSuffix?.replace(/^_/, '');
-  const modifierClass = cleanSuffix ? styles[cleanSuffix] : '';
+  const modifierClass = cssSuffix ? cssSuffix.replace(/^_/, '') : '';
 
   if (badgeType === 'Personal Max') {
     return (
-      <span className={`${styles.badge_count_personalmax} ${modifierClass || ''}`}>
+      <span className={`badge_count_personalmax ${modifierClass}`.trim()}>
         {Math.floor(personalBestMaxHrs)}
       </span>
     );
   }
 
   if (count < 100) {
-    return (
-      <span className={`${styles.badge_count} ${modifierClass || ''}`}>{Math.round(count)}</span>
-    );
+    return <span className={`badge_count ${modifierClass}`.trim()}>{Math.round(count)}</span>;
   }
 
-  return (
-    <span className={`${styles.badge_count_3_digit} ${modifierClass || ''}`}>
-      {Math.round(count)}
-    </span>
-  );
+  return <span className={`badge_count_3_digit ${modifierClass}`.trim()}>{Math.round(count)}</span>;
 }
 
 export default BadgeImage;

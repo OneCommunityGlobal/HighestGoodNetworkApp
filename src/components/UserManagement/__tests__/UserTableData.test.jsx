@@ -126,7 +126,7 @@ const setupAxios = mode => {
   });
 };
 
-const renderUserRow = ({ store, user, handlers }) => {
+const renderUserRow = ({ store, user, handlers, questionnaireIncomplete = false }) => {
   renderWithProvider(
     <MemoryRouter initialEntries={['/usermanagement']}>
       <table>
@@ -138,6 +138,7 @@ const renderUserRow = ({ store, user, handlers }) => {
             onActiveInactiveClick={handlers.onActiveInactiveClick}
             onPauseResumeClick={handlers.onPauseResumeClick}
             onDeleteClick={handlers.onDeleteClick}
+            questionnaireIncomplete={questionnaireIncomplete}
           />
         </tbody>
       </table>
@@ -200,6 +201,16 @@ describe.each([
       renderUserRow({ store, user, handlers });
       expect(screen.getByDisplayValue(user.firstName)).toBeInTheDocument();
       expect(screen.getByDisplayValue(user.lastName)).toBeInTheDocument();
+    });
+
+    it('should show the incomplete questionnaire indicator when the questionnaire is incomplete', () => {
+      renderUserRow({ store, user, handlers, questionnaireIncomplete: true });
+      expect(screen.getByTestId('incomplete-questionnaire-indicator')).toBeInTheDocument();
+    });
+
+    it('should NOT show the incomplete questionnaire indicator when the questionnaire is complete', () => {
+      renderUserRow({ store, user, handlers });
+      expect(screen.queryByTestId('incomplete-questionnaire-indicator')).not.toBeInTheDocument();
     });
 
     it('should render the correct email', () => {

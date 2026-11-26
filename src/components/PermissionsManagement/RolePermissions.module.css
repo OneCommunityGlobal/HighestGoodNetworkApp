@@ -76,31 +76,6 @@
   margin-left: 4px;
 }
 
-/* Info icon button */
-.infoIconBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
-}
-
-.infoIconBtn :global(i.fa) {
-  font-size: 18px;
-  line-height: 1;
-}
-
-/* Focus for accessibility */
-.infoIconBtn:focus-visible {
-  outline: 2px solid rgb(0 123 255 / 55%);
-  outline-offset: 2px;
-  border-radius: 6px;
-}
-
 .permissionListTitle {
   margin: 14px 0 0;
   font-size: 40px;

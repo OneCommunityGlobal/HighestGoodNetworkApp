@@ -65,6 +65,7 @@ import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import toolAvailabilityReducer from './bmdashboard/toolAvailabilityReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import materialCostCorrelationReducer from './bmdashboard/materialCostCorrelationReducer';
 
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
@@ -109,6 +110,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { JobsHitsApplicationsReducer } from './jobAnalytics/JobsHitsApplicationsReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { jobExperienceBreakdownReducer } from './jobAnalytics/jobExperienceBreakdownReducer';
 import { toolReplacementReducer } from './toolReplacementReducer';
 
 // Education Dashboard Reducers
@@ -196,6 +198,7 @@ const localReducers = {
   villageDetails: villageDetailsReducer,
 
   bmissuechart: issueReducer,
+  materialCostCorrelation: materialCostCorrelationReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,
 
@@ -219,6 +222,7 @@ const localReducers = {
 
   // job analytics
   hoursPledged: hoursPledgedReducer,
+  jobExperienceBreakdown: jobExperienceBreakdownReducer,
   jobsHitsApplications: JobsHitsApplicationsReducer,
 
   // student tasks

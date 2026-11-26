@@ -95,7 +95,9 @@ export function InventoryTypesList(props) {
               </AccordionToggle>
               <Accordion.Collapse eventKey={index + 1}>
                 <Card.Body className={`${styles.accordionCollapse}`}>
-                  <TypesTable category={category.label} />
+                  <TypesTable
+                    category={category.label === 'Equipment' ? 'Equipments' : category.label}
+                  />
                 </Card.Body>
               </Accordion.Collapse>
             </Card>
