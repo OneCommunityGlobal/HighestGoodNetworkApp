@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getVillageDetailsData } from '~/actions/lbdashboard/villageDetailsAction';
 import logo from '../../../../assets/images/logo2.png';
 import styles from './VillageDetails.module.css';
+import Header from '../../Header';
 
 const NOT_FOUND_STYLE = { textAlign: 'center' };
 
@@ -29,9 +30,21 @@ export default function VillageDetails() {
     }
   }, [dispatch, villageId, village]);
 
-  if (!village) return <h2 style={NOT_FOUND_STYLE}>Village not found</h2>;
-
   const dm = darkMode ? styles.dark : '';
+
+  if (!village) {
+    return (
+      <div className={`${styles.mainContainer} ${dm}`}>
+        <div className={styles.logoContainer}>
+          <img src={logo} alt="One Community Logo" />
+        </div>
+        <div className={`${styles.contentContainer} ${dm}`}>
+          <Header />
+          <h2 style={NOT_FOUND_STYLE}>Village not found</h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.mainContainer} ${dm}`}>
@@ -39,7 +52,7 @@ export default function VillageDetails() {
         <img src={logo} alt="One Community Logo" />
       </div>
       <div className={`${styles.contentContainer} ${dm}`}>
-        <div className={styles.containerTop} />
+        <Header />
         <div className={`${styles.containerMain} ${dm}`}>
           <div className={styles.villageDetailsPage}>
             <div className={styles.detailsContainer}>
