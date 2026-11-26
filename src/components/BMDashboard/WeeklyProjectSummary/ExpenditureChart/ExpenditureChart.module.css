@@ -79,6 +79,10 @@
   flex-direction: row;
   gap: 20px;
   width: 100%;
+
+  /* Keep the two pies close together for comparison instead of at opposite edges */
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 /* ── Comparison mode: each half-panel ─────────────────────── */
