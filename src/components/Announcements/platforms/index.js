@@ -1,6 +1,7 @@
 // Platform exports for Announcements
 export { default as EmailPanel } from './email';
 export { default as SocialMediaComposer } from './social';
+export { default as MediumAutoPoster } from './medium';
 export { default as PlurkAutoPoster } from './plurk';
 
 // Re-export shared components
