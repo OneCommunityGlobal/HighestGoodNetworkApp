@@ -15,10 +15,13 @@ function EngagementBarChart() {
     { month: 'Jun', attendance: 48, engagement: 88, events: 10 },
   ];
 
-  const maxValue = Math.max(
-    ...engagementData.map(item => item.attendance),
-    ...engagementData.map(item => item.engagement),
+  const tickStep = 20;
+  const highestValue = Math.max(
+    ...engagementData.flatMap(({ attendance, engagement }) => [attendance, engagement]),
   );
+  const tickCount = Math.max(1, Math.ceil(highestValue / tickStep));
+  const maxValue = tickCount * tickStep;
+  const ticks = Array.from({ length: tickCount + 1 }, (_, index) => maxValue - index * tickStep);
 
   return (
     <div className={`${styles.barChartSection} ${darkMode ? styles.barChartSectionDark : ''}`}>
@@ -27,10 +30,10 @@ function EngagementBarChart() {
       </h3>
 
       <div className={styles.barChartContainer}>
-        <div className={styles.chartArea}>
+        <div className={`${styles.chartArea} ${styles.engagementChartArea}`}>
           <div className={styles.yAxis}>
             <div className={styles.yAxisValues}>
-              {[0, 20, 40, 60, 80].map(value => (
+              {ticks.map(value => (
                 <div key={value} className={styles.yAxisValue}>
                   {value}
                 </div>
@@ -39,7 +42,7 @@ function EngagementBarChart() {
             <div className={styles.yAxisLabel}>Value</div>
           </div>
 
-          <div className={styles.barsContainer} style={{ position: 'relative', height: '200px' }}>
+          <div className={styles.barsContainer}>
             {tooltip && (
               <div
                 style={{
@@ -70,7 +73,6 @@ function EngagementBarChart() {
               <div
                 key={item.month}
                 className={styles.barGroup}
-                style={{ height: '100%' }}
                 onMouseEnter={e => {
                   const rect = e.currentTarget.parentElement.getBoundingClientRect();
                   const itemRect = e.currentTarget.getBoundingClientRect();
@@ -85,7 +87,7 @@ function EngagementBarChart() {
                 }}
                 onMouseLeave={() => setTooltip(null)}
               >
-                <div className={styles.barWrapper} style={{ height: '100%' }}>
+                <div className={styles.barWrapper}>
                   <div
                     className={`${styles.bar} ${styles.attendanceBar}`}
                     style={{
