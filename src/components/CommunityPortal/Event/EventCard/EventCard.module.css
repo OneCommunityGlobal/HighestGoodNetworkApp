@@ -73,6 +73,12 @@
   background-color: #0056b3;
 }
 
+.primary-button:disabled,
+.primary-button:disabled:hover {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
 .secondary-button {
   background-color: #e9ecef;
   color: #495057;
