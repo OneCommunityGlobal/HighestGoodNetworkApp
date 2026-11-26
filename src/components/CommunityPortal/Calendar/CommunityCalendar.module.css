@@ -1967,3 +1967,47 @@
 .selectedEventTitleDark {
   color: #f7fafc;
 }
+
+.reactCalendar .eventItem.statusHoliday {
+  background-color: #fde8c8;
+  color: #7a3e00;
+}
+
+.reactCalendarDarkMode .eventItem.statusHoliday,
+.reactCalendarDarkMode .eventItem.statusHoliday * {
+  color: #1a1100 !important;
+}
+
+.reactCalendarDarkMode .eventItem.statusHoliday {
+  background-color: #f6c177;
+  border: 1px solid #b7791f;
+}
+
+.reactCalendarDarkMode .eventItem.statusHoliday:hover {
+  background-color: #fbd38d;
+}
+
+.reactCalendar :global(.react-calendar__tile) .eventItem.statusHoliday {
+  background-color: #fde8c8;
+  color: #7a3e00;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusHoliday,
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusHoliday * {
+  color: #1a1100 !important;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusHoliday {
+  background-color: #f6c177;
+}
+
+.statusBadge.statusHoliday {
+  background-color: #fde8c8;
+  color: #7a3e00;
+}
+
+.darkModeStatusBadge.Holiday {
+  background-color: #3d2a0a;
+  border-color: #f6c177;
+  color: #fde8c8 !important;
+}

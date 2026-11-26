@@ -35,6 +35,9 @@ const normalizeStatus = status => {
   return 'New';
 };
 
+const TOOLTIP_WIDTH = 220;
+const TOOLTIP_HEIGHT = 130;
+
 function CommunityCalendar() {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -78,7 +81,7 @@ function CommunityCalendar() {
     const holidayEvents = GOVERNMENT_HOLIDAYS.map(holiday => ({
       id: holiday.id,
       title: holiday.title,
-      date: new Date(holiday.date),
+      date: new Date(`${holiday.date}T00:00:00`),
       type: 'Government Holiday',
       status: 'Holiday',
       time: 'All Day',
@@ -86,7 +89,7 @@ function CommunityCalendar() {
       description: `${holiday.title} holiday`,
       location: 'National',
       isHoliday: true,
-      isOver: new Date(holiday.date) < new Date(),
+      isOver: new Date(`${holiday.date}T00:00:00`) < new Date(),
     }));
 
     const communityEvents = events.map(event => {
@@ -609,7 +612,12 @@ function CommunityCalendar() {
                 }}
                 onMouseEnter={ev => {
                   const r = ev.currentTarget.getBoundingClientRect();
-                  setTooltip({ event: e, x: r.right + 8, y: r.top });
+                  const fitsRight = r.right + 8 + TOOLTIP_WIDTH <= window.innerWidth;
+                  setTooltip({
+                    event: e,
+                    x: fitsRight ? r.right + 8 : Math.max(8, r.left - 8 - TOOLTIP_WIDTH),
+                    y: Math.max(8, Math.min(r.top, window.innerHeight - TOOLTIP_HEIGHT - 8)),
+                  });
                 }}
                 onMouseLeave={() => setTooltip(null)}
               >
@@ -1044,7 +1052,9 @@ function CommunityCalendar() {
               <div className={styles.eventStatus}>
                 <span
                   className={`${darkMode ? styles.darkModeStatusBadge : styles.statusBadge} ${
-                    darkMode ? '' : styles[statusMap[selectedEvent.status]] || ''
+                    darkMode
+                      ? (selectedEvent.isHoliday && styles.Holiday) || ''
+                      : styles[statusMap[selectedEvent.status]] || ''
                   }`}
                 >
                   {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
@@ -1082,16 +1092,18 @@ function CommunityCalendar() {
             </div>
 
             <div className={styles.modalActions}>
-              <button
-                type="button"
-                className={styles.btnPrimary}
-                onClick={handleRegister}
-                disabled={
-                  isRegistering || registeredEventIds.has(selectedEvent?.id) || eventHasEnded
-                }
-              >
-                {registerButtonText}
-              </button>
+              {!selectedEvent.isHoliday && (
+                <button
+                  type="button"
+                  className={styles.btnPrimary}
+                  onClick={handleRegister}
+                  disabled={
+                    isRegistering || registeredEventIds.has(selectedEvent?.id) || eventHasEnded
+                  }
+                >
+                  {registerButtonText}
+                </button>
+              )}
 
               <button type="button" className={styles.btnSecondary} onClick={handleAddToCalendar}>
                 Add to Calendar
