@@ -254,6 +254,8 @@
 }
 
 .eventCard {
+  display: flex;
+  flex-direction: column;
   padding: 20px;
   background: #f8f9fa;
   border-radius: 10px;
@@ -278,14 +280,17 @@
 .eventHeader {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 56px;
+  box-sizing: border-box;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 2px solid #94a3b8;
 }
 
 .eventCardDark .eventHeader {
-  border-bottom-color: #334155;
+  border-bottom-color: #64748b;
 }
 
 .eventName {
@@ -294,6 +299,8 @@
   color: #111;
   margin: 0;
   flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .eventCardDark .eventName {
@@ -307,6 +314,10 @@
   color: #ffffff;
   border-radius: 4px;
   font-weight: 500;
+  flex-shrink: 0;
+  max-width: 50%;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .eventMetrics {
@@ -344,12 +355,14 @@
   font-size: 0.85rem;
   color: #64748b;
   padding-top: 12px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 2px solid #94a3b8;
+  margin-top: auto;
+  min-height: 33px;
 }
 
 .eventCardDark .eventLocation {
   color: #94a3b8;
-  border-top-color: #334155;
+  border-top-color: #64748b;
 }
 
 .locationIcon {
