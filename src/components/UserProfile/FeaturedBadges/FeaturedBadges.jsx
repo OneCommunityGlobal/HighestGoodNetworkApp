@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import styles from '../Badge.module.css';
+import '../Badge.module.css';
 import BadgeImage from '../BadgeImage';
 import { sortBadgeRecords } from '../../Badge/badgeListUtils';
 
@@ -12,7 +12,7 @@ const FeaturedBadges = props => {
   const filteredBadges = useMemo(() => filterBadges(props.badges), [props.badges]);
 
   return (
-    <div data-testid="badge_featured_container" className={styles.badge_featured_container}>
+    <div data-testid="badge_featured_container" className="badge_featured_container">
       {filteredBadges.map((value, index) => (
         <BadgeImage
           personalBestMaxHrs={props.personalBestMaxHrs}
