@@ -24,7 +24,7 @@
 .statusBadge {
   padding: 0.1rem 0.5rem;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.6);
+  border: 1px solid rgb(148 163 184 / 60%);
   font-size: 0.75rem;
 }
 
@@ -72,7 +72,7 @@
 
 /* Bigger screens: side-by-side */
 
-@media (min-width: 900px) {
+@media (width >= 900px) {
   .topRow {
     flex-direction: row;
     align-items: stretch;
@@ -84,7 +84,7 @@
 .filters {
   border-radius: 0.75rem;
   padding: 0.9rem 1rem;
-  border: 1px solid rgba(148, 163, 184, 0.4);
+  border: 1px solid rgb(148 163 184 / 40%);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -112,7 +112,7 @@
 .dateField input[type='date'] {
   padding: 0.35rem 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid rgba(148, 163, 184, 0.7);
+  border: 1px solid rgb(148 163 184 / 70%);
   background: transparent;
   color: inherit;
   font-size: 0.85rem;
@@ -127,7 +127,7 @@
 .presetButton {
   border-radius: 999px;
   padding: 0.3rem 0.8rem;
-  border: 1px solid rgba(148, 163, 184, 0.7);
+  border: 1px solid rgb(148 163 184 / 70%);
   background: transparent;
   color: inherit;
   font-size: 0.8rem;
@@ -156,11 +156,10 @@
 .kpiTile {
   border-radius: 0.75rem;
   padding: 0.9rem 1rem;
-  border: 1.5px solid rgba(148, 163, 184, 0.4);
-  background: rgba(15, 23, 42, 0.4);
+  border: 1.5px solid rgb(148 163 184 / 40%);
+  background: rgb(15 23 42 / 40%);
   display: flex;
   flex-direction: column;
-  
   min-height: 90px;
 }
 
@@ -183,7 +182,7 @@
   margin-top: 0.5rem;
   padding: 1rem;
   border-radius: 0.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.4);
+  border: 1px solid rgb(148 163 184 / 40%);
   background: #314158;
 }
 
@@ -229,14 +228,17 @@
 .tooltipBox {
   color: #1f2937;
 }
+
 .tooltipLabel {
   font-weight: 600;
   margin-bottom: 4px;
   color: #1f2937;
 }
+
 .tooltipValue {
   color: #1f2937;
 }
+
 /* Override any global dark-mode rule that forces light text on tooltips (ID + attribute for max specificity) */
 :global(#weekly-progress-tooltip-root),
 :global(#weekly-progress-tooltip-root) * {
@@ -254,7 +256,7 @@
   padding: 0.6rem 0.8rem;
   border-radius: 0.5rem;
   border: 1px solid #f97373;
-  background: rgba(248, 113, 113, 0.1);
+  background: rgb(248 113 113 / 10%);
   font-size: 0.8rem;
   color: #fecaca;
 }
