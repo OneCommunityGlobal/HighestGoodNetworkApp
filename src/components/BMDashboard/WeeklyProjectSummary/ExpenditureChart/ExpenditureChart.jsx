@@ -26,97 +26,30 @@ function PieChartPanel({ data, title, darkMode, compact }) {
   const hasData = normalizedData.some(d => d.amount > 0);
 
   /**
-   * Renders a label inside each pie slice.
-   * - Color: white in dark mode, black in light mode.
-   * - Single line when the chord width allows ≥ 8 px font.
-   * - Two lines (name / percentage) otherwise, each independently sized to
-   *   fit within the chord so text never overflows the slice.
+   * Renders the slice percentage inside each pie slice. Category names are shown in the
+   * legend, so the short label always fits inside the slice instead of touching its edges.
    */
   const labelRenderer = useCallback(
-    ({ cx, cy, midAngle, outerRadius, percent, name }) => {
-      if (percent === 0) return null;
+    ({ cx, cy, midAngle, outerRadius, percent }) => {
+      // Very thin slices have no room for text; the tooltip still shows their value
+      if (percent < 0.05) return null;
 
       const RADIAN = Math.PI / 180;
-      const labelRadius = outerRadius * 0.65;
+      const labelRadius = outerRadius * 0.6;
       const x = cx + labelRadius * Math.cos(-midAngle * RADIAN);
       const y = cy + labelRadius * Math.sin(-midAngle * RADIAN);
-
-      const fill = darkMode ? '#ffffff' : '#000000';
-      const percentLabel = `${(percent * 100).toFixed(1)}%`;
-      const fullLabel = `${name}: ${percentLabel}`;
-
-      // ── Available horizontal width at the label position ──────────────
-      //
-      // Constraint 1 — circle boundary:
-      //   The pie circle limits how far text can extend left/right at the
-      //   label's y-position. For a label near the left/right edge of the
-      //   pie (e.g. large slices whose mid-angle points sideways), this is
-      //   the binding constraint that the simple arc-chord formula misses.
-      const dy = y - cy;
-      const pieHalfWidth = Math.sqrt(Math.max(0, outerRadius * outerRadius - dy * dy));
-      const circleAvailableWidth = Math.max(0, 2 * (pieHalfWidth - Math.abs(x - cx)));
-
-      // Constraint 2 — angular chord:
-      //   Prevents text from bleeding into adjacent slices. The chord at
-      //   labelRadius is a conservative approximation; it over-constrains
-      //   left/right-oriented slices but that only makes the font slightly
-      //   smaller, which is a safe trade-off.
-      const sliceAngle = percent * 2 * Math.PI;
-      const angularChord = 2 * labelRadius * Math.sin(sliceAngle / 2);
-
-      // The tighter of the two constraints is the actual available width.
-      const availableWidth = Math.min(circleAvailableWidth, angularChord);
-
-      // ── Choose single-line or two-line rendering ──────────────────────
-      // Avg character width ≈ 0.58× font-size for mixed alphanumeric text.
-      const AVG_CHAR_RATIO = 0.58;
-      const singleLineFontSize = availableWidth / (fullLabel.length * AVG_CHAR_RATIO);
-
-      if (singleLineFontSize >= 8) {
-        return (
-          <text
-            x={x}
-            y={y}
-            fill={fill}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize={Math.min(11, singleLineFontSize)}
-            fontWeight="600"
-          >
-            {fullLabel}
-          </text>
-        );
-      }
-
-      // Two-line fallback: name on top, percentage on bottom.
-      // Size to the longer string so both lines stay within availableWidth.
-      const longerLen = Math.max(name.length, percentLabel.length);
-      const twoLineFontSize = Math.max(
-        7,
-        Math.min(11, availableWidth / (longerLen * AVG_CHAR_RATIO)),
-      );
-      const lineSpacing = twoLineFontSize * 1.3;
-
-      // If the minimum legible font (7 px) still can't fit the longer line,
-      // suppress the label entirely rather than rendering unreadable overflow.
-      if (availableWidth < longerLen * AVG_CHAR_RATIO * 7) return null;
 
       return (
         <text
           x={x}
           y={y}
-          fill={fill}
+          fill={darkMode ? '#ffffff' : '#000000'}
           textAnchor="middle"
           dominantBaseline="central"
-          fontSize={twoLineFontSize}
+          fontSize={12}
           fontWeight="600"
         >
-          <tspan x={x} dy={-lineSpacing / 2}>
-            {name}
-          </tspan>
-          <tspan x={x} dy={lineSpacing}>
-            {percentLabel}
-          </tspan>
+          {`${(percent * 100).toFixed(1)}%`}
         </text>
       );
     },

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import ActualVsPlannedCost from '../ActualVsPlannedCost/ActualVsPlannedCost';
-import CostPredictionChart from '../CostPredictionChart';
 import FinancialsTrackingCard from './FinancialsTrackingCard';
 import SingleExpenditureCard from './SingleExpenditureCard';
 import styles from './FinancialsTrackingSection.module.css';
@@ -9,15 +8,16 @@ import styles from './FinancialsTrackingSection.module.css';
  * FinancialsTrackingSection
  *
  * Owns the stacked / comparison layout toggle for the Financials
- * Tracking section. Renders different card grids based on viewMode:
+ * Tracking section. Renders different card layouts based on viewMode:
  *
- * Stacked (default) — 4 independent cards in a 2×2 grid:
- *   [Actual Expenditure]  [Planned Expenditure]
- *   [Actual vs Planned]   [Placeholder]
+ * Stacked (default) — 3 independent cards, one above the other:
+ *   [Actual Expenditure — own project filter]
+ *   [Planned Expenditure — own project filter]
+ *   [Actual vs Planned — full width]
  *
- * Comparison — 3 cards (combined card spans full width at top):
- *   [Combined Expenditure Card — shared filter, both pies S-by-S]
- *   [Actual vs Planned]   [Placeholder]
+ * Comparison — 2 cards:
+ *   [Combined Expenditure Card — shared filter, both pies side by side]
+ *   [Actual vs Planned — full width]
  */
 function FinancialsTrackingSection() {
   const [viewMode, setViewMode] = useState('stacked');
@@ -81,28 +81,24 @@ function FinancialsTrackingSection() {
       </div>
 
       {viewMode === 'stacked' ? (
-        /* ── Stacked: 2×2 grid of independent cards ─────────────── */
+        /* ── Stacked: each card on its own row ─────────────────────── */
         <div className={styles.grid}>
-          <SingleExpenditureCard pieType="actual" />
-          <SingleExpenditureCard pieType="planned" />
-          <div className={styles.chartCard}>
-            <ActualVsPlannedCost />
+          <div className={styles.fullWidth}>
+            <SingleExpenditureCard pieType="actual" />
           </div>
-          <div className={styles.chartCard}>
-            <CostPredictionChart projectId={1} />
+          <div className={styles.fullWidth}>
+            <SingleExpenditureCard pieType="planned" />
+          </div>
+          <div className={`${styles.chartCard} ${styles.fullWidth}`}>
+            <ActualVsPlannedCost />
           </div>
         </div>
       ) : (
-        /* ── Comparison: combined card on top, two cards below ───── */
+        /* ── Comparison: combined card on top, chart below ──────────── */
         <div className={styles.comparisonLayout}>
           <FinancialsTrackingCard />
-          <div className={styles.bottomRow}>
-            <div className={styles.chartCard}>
-              <ActualVsPlannedCost />
-            </div>
-            <div className={styles.chartCard}>
-              <CostPredictionChart projectId={1} />
-            </div>
+          <div className={styles.chartCard}>
+            <ActualVsPlannedCost />
           </div>
         </div>
       )}
