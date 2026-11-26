@@ -53,7 +53,7 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
-// import WriteItForMeModal from './WriteForMeModal';
+import WriteForMeModal from './WriteForMeModal';
 
 // Images are not allowed in weekly summary
 const customImageUploadHandler = () =>
@@ -62,8 +62,24 @@ const customImageUploadHandler = () =>
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
 
+const escapeSummaryText = text =>
+  text
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+
+const hasSummaryContent = value => {
+  const parsedSummary = new DOMParser().parseFromString(value, 'text/html');
+  const summaryText = parsedSummary.body.textContent || '';
+  return summaryText.replaceAll('\u00a0', ' ').trim().length > 0;
+};
+
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
+  summaryEditors = {};
+
   // eslint-disable-next-line react/state-in-constructor
   state = {
     summariesCountShowing: 0,
@@ -516,7 +532,7 @@ export class WeeklySummary extends Component {
   handleEditorChange = (content, editor) => {
     const { errors: _errors, formElements: _formElements } = this.state;
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
-    const filteredContent = content.replace(/<p>&nbsp;<\/p>/g, '');
+    const filteredContent = content.replaceAll('<p>&nbsp;</p>', '');
 
     const wordCount = editor.plugins.wordcount.getCount();
 
@@ -534,6 +550,22 @@ export class WeeklySummary extends Component {
 
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
+  };
+
+  pasteResponse = (draft, summaryName, allowReplace = false) => {
+    const editor = this.summaryEditors[summaryName];
+    if (!editor || !draft) return false;
+
+    const existingText = editor.getContent({ format: 'text' }).trim();
+    if (existingText && !allowReplace) return false;
+
+    const formattedDraft = draft
+      .split(/\n{2,}/)
+      .map(paragraph => `<p>${escapeSummaryText(paragraph).replaceAll('\n', '<br />')}</p>`)
+      .join('');
+    editor.setContent(formattedDraft);
+    this.handleEditorChange(editor.getContent(), editor);
+    return true;
   };
 
   handleCheckboxChange = event => {
@@ -957,6 +989,20 @@ export class WeeklySummary extends Component {
                               userId={displayUserId}
                               darkMode={darkMode}
                             />
+                            {!isNotAllowedToEdit && (
+                              <WriteForMeModal
+                                userId={displayUserId || this.props.currentUser?.userid}
+                                firstName={
+                                  displayUserId ? undefined : this.props.currentUser?.firstName
+                                }
+                                hasExistingContent={hasSummaryContent(
+                                  formElements[summaryName] || '',
+                                )}
+                                pasteResponse={(draft, allowReplace) =>
+                                  this.pasteResponse(draft, summaryName, allowReplace)
+                                }
+                              />
+                            )}
                             {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
                               <UncontrolledDropdown className={styles['summary-dropdown']}>
                                 <DropdownToggle
@@ -1002,14 +1048,6 @@ export class WeeklySummary extends Component {
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                             )}
-                            {/* <div style={{ width: '10rem' }}>
-                            <CurrentPromptModal
-                              userRole={userRole}
-                              userId={displayUserId}
-                              darkMode={darkMode}
-                            />
-                            <WriteItForMeModal pasteResponse={this.pasteResponse} />
-                          </div> */}
                           </div>
                         </div>
                         <Editor
@@ -1019,6 +1057,9 @@ export class WeeklySummary extends Component {
                           name={summaryName}
                           value={formElements[summaryName]}
                           onEditorChange={this.handleEditorChange}
+                          onInit={(event, editor) => {
+                            this.summaryEditors[summaryName] = editor;
+                          }}
                         />
                       </FormGroup>
                       {(errors.summary ||
