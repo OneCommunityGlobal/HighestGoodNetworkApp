@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Card, CardBody, CardImg, CardText, CustomInput, Popover } from 'reactstrap';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
+import styles from './Badge.module.css';
 
 function AssignTableRow(props) {
   // Pull selected badges from Redux if prop is not passed
@@ -52,7 +53,7 @@ function AssignTableRow(props) {
 
   return (
     <tr>
-      <td className="badge_image_mini">
+      <td className={styles.badge_image_mini}>
         <img src={props.badge.imageUrl} id={`popover_${props.index.toString()}`} alt="" />
         <Popover
           trigger="hover"
@@ -61,7 +62,7 @@ function AssignTableRow(props) {
           target={`popover_${props?.index?.toString()}`}
         >
           <Card className="text-center">
-            <CardImg className="badge_image_lg" src={props?.badge.imageUrl} />
+            <CardImg className={styles.badge_image_lg} src={props?.badge.imageUrl} />
             <CardBody>
               <CardText>{props.badge.description}</CardText>
             </CardBody>
