@@ -85,22 +85,36 @@ const formatPercent = (value, digits = 2) => {
   return `${Number.isInteger(num) ? num : num.toFixed(digits)}%`;
 };
 
-const RiskTooltip = ({ active, payload, label, darkMode }) => {
+// Arrow and size of a change, or a single N/A when either end of the period has no value.
+const formatChange = (delta, isPercent = true) => {
+  if (delta === null || delta === undefined) return 'N/A';
+  return `${getArrow(delta)} ${isPercent ? formatPercent(delta) : delta.toFixed(0)}`;
+};
+
+// Long project names are cut on the angled axis; the tooltip still shows the full name.
+const MAX_AXIS_LABEL_LENGTH = 18;
+export const truncateAxisLabel = name =>
+  name && name.length > MAX_AXIS_LABEL_LENGTH
+    ? `${name.slice(0, MAX_AXIS_LABEL_LENGTH - 1)}…`
+    : name;
+
+export const RiskTooltip = ({ active, payload, label, darkMode }) => {
   if (!active || !payload?.length) return null;
   const row = payload[0]?.payload;
   if (!row) return null;
 
   const series = row.__history || [];
-  const first = series[0];
+  const [first] = series;
   const last = series[series.length - 1];
-  const deltas =
-    first && last
-      ? {
-          cost: getNullableDelta(last.predictedCostOverrun, first.predictedCostOverrun),
-          delay: getNullableDelta(last.predictedTimeDelay, first.predictedTimeDelay),
-          issues: last.totalOpenIssues - first.totalOpenIssues,
-        }
-      : { cost: 0, delay: 0, issues: 0 };
+  // A change needs at least two points in the selected period.
+  const hasChange = series.length > 1;
+  const deltas = hasChange
+    ? {
+        cost: getNullableDelta(last.predictedCostOverrun, first.predictedCostOverrun),
+        delay: getNullableDelta(last.predictedTimeDelay, first.predictedTimeDelay),
+        issues: getNullableDelta(last.totalOpenIssues, first.totalOpenIssues),
+      }
+    : null;
 
   const contributor = getStableRiskContributorKey(series);
 
@@ -109,13 +123,15 @@ const RiskTooltip = ({ active, payload, label, darkMode }) => {
       <div className={styles.tooltipTitle}>{label}</div>
       <div>Cost overrun: {formatPercent(row.predictedCostOverrun)}</div>
       <div>Time delay: {formatPercent(row.predictedTimeDelay)}</div>
-      <div>Issues: {row.totalOpenIssues}</div>
+      <div>Issues: {row.totalOpenIssues ?? 'N/A'}</div>
       <hr className={styles.tooltipDivider} />
       <div className={styles.tooltipSubtitle}>Summary (selected period)</div>
       <div>
-        Key drivers of change: Cost {getArrow(deltas.cost)} {formatPercent(deltas.cost)}, Delay{' '}
-        {getArrow(deltas.delay)} {formatPercent(deltas.delay)}, Issues {getArrow(deltas.issues)}{' '}
-        {deltas.issues.toFixed(0)}
+        {deltas
+          ? `Key drivers of change: Cost ${formatChange(deltas.cost)}, Delay ${formatChange(
+              deltas.delay,
+            )}, Issues ${formatChange(deltas.issues, false)}`
+          : 'Key drivers of change: not enough history in this period'}
       </div>
       <div>Largest risk contributor: {contributor || 'N/A'}</div>
     </div>
@@ -446,7 +462,7 @@ export default function ProjectRiskProfileOverview() {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barChartData} margin={{ top: 30, right: 40, left: 20, bottom: 80 }}>
+                <BarChart data={barChartData} margin={{ top: 10, right: 40, left: 20, bottom: 10 }}>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     horizontal={true}
@@ -455,10 +471,12 @@ export default function ProjectRiskProfileOverview() {
                   />
                   <XAxis
                     dataKey="projectName"
-                    tick={{ fontSize: 13, fill: chartColors.text, fontWeight: 500 }}
+                    tick={{ fontSize: 12, fill: chartColors.text, fontWeight: 500 }}
+                    tickFormatter={truncateAxisLabel}
+                    interval={0}
                     angle={-45}
                     textAnchor="end"
-                    height={100}
+                    height={110}
                     axisLine={{ stroke: chartColors.axisLine, strokeWidth: 1.5 }}
                     tickLine={{ stroke: chartColors.axisLine }}
                   />
@@ -472,7 +490,11 @@ export default function ProjectRiskProfileOverview() {
                     content={<RiskTooltip darkMode={darkMode} />}
                     cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
                   />
-                  <Legend wrapperStyle={{ marginTop: 20, color: chartColors.text }} />
+                  {/* Top placement keeps the legend clear of the angled project names. */}
+                  <Legend
+                    verticalAlign="top"
+                    wrapperStyle={{ paddingBottom: 24, color: chartColors.text }}
+                  />
                   <Bar
                     dataKey="predictedCostOverrun"
                     name="Predicted Cost Overrun (%)"
