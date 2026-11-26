@@ -561,6 +561,29 @@ export const ENDPOINTS = {
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
   SUBMIT_JOB_APPLICATION: formId =>
   `${APIEndpoint}/jobforms/${formId}/responses`,
+  /** Owner/Admin CRM: paginated JobApplications across forms. */
+  JOB_APPLICATIONS_SUMMARY: `${APIEndpoint}/jobforms/applications/summary`,
+  JOB_APPLICATIONS_LIST: ({ page, limit, q, formId, from, to, sort } = {}) => {
+    const params = new URLSearchParams();
+    if (page) params.set('page', page);
+    if (limit) params.set('limit', limit);
+    if (q) params.set('q', q);
+    if (formId) params.set('formId', formId);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+    if (sort) params.set('sort', sort);
+    const qs = params.toString();
+    const baseUrl = `${APIEndpoint}/jobforms/applications`;
+    return qs ? `${baseUrl}?${qs}` : baseUrl;
+  },
+  JOB_APPLICATION_DETAIL: applicationId =>
+    `${APIEndpoint}/jobforms/applications/${applicationId}`,
+  /** Owner/Admin CRM: create / update / delete a JobApplication. */
+  CREATE_JOB_APPLICATION: `${APIEndpoint}/jobforms/applications`,
+  UPDATE_JOB_APPLICATION: applicationId =>
+    `${APIEndpoint}/jobforms/applications/${applicationId}`,
+  DELETE_JOB_APPLICATION: applicationId =>
+    `${APIEndpoint}/jobforms/applications/${applicationId}`,
   /** Public: distinct job titles for the apply-page position dropdown. */
   GET_JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
 
