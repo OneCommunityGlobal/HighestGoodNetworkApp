@@ -56,6 +56,7 @@ vi.mock('../../../actions/weeklySummariesFilterAction', () => ({
 
 vi.mock('../../../utils/questionnaireCompletion', () => ({
   fetchCompletedQuestionnaireUserIds: () => Promise.resolve([]),
+  subscribeToCompletedQuestionnaireUserIds: () => vi.fn(),
 }));
 
 vi.mock('../../common/SkeletonLoading', () => ({

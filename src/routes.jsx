@@ -95,7 +95,6 @@ import Activity from './components/CommunityPortal/Activities/activityId/Activit
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import ResolvedTasks from './components/ResolvedTasks/ResolvedTasks';
-import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 import VirtualVsInPerson from './components/CommunityPortal/Reports/Participation/VirtualVsInPerson';
@@ -910,7 +909,11 @@ export default (
         <Route path="/communityportal/login" component={CPLogin} />
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
-        <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
+        <CPProtectedRoute
+          path="/communityportal/database/design"
+          exact
+          component={DatabaseDesign}
+        />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/activities/:activityid/faq"
@@ -1114,11 +1117,6 @@ export default (
           path="/communityportal/activity/:activityid"
           exact
           component={ActivityAgenda}
-        />
-        <CPProtectedRoute
-          path="/communityportal/database/design"
-          exact
-          component={DatabaseDesign}
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
