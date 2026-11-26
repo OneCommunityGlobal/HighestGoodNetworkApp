@@ -1,0 +1,77 @@
+.prGradingModal {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  z-index: 1050;
+  padding: 0;
+  border: none;
+  width: min(1200px, 95vw);
+  max-height: 90vh;
+  background: #fff;
+  color: #222;
+  border-radius: 8px;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.prGradingModal[open] {
+  display: flex;
+}
+
+.prGradingModal::backdrop {
+  background: rgb(0 0 0 / 50%);
+}
+
+.prGradingModalDark {
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.prGradingModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.prGradingModalDark .prGradingModalHeader {
+  border-bottom-color: #444;
+}
+
+.prGradingModalHeader h2 {
+  margin: 0;
+}
+
+.prGradingModalCloseButton {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.prGradingModalCloseButton:focus-visible {
+  outline: 2px solid #4a90e2;
+  outline-offset: 3px;
+}
+
+.prGradingModalContent {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+@media (width<= 768px) {
+  .prGradingModal {
+    width: 95vw;
+    max-height: 95vh;
+  }
+
+  .prGradingModalHeader {
+    padding: 12px 16px;
+  }
+}
