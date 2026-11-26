@@ -87,13 +87,6 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const [isPreviewHovering, setIsPreviewHovering] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const currentDate = new Date();
-  const startDate12MonthsAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
-  const endOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-
-  const [startDate, setStartDate] = useState(startDate12MonthsAgo.toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState(endOfCurrentMonth.toISOString().split('T')[0]);
-
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
@@ -146,23 +139,13 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
         setLoading(true);
         setError(null);
 
-        const projectId = selectedProject.value;
-        const toolsResponseNoFilter = await axios.get(
-          ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId),
-        );
-        const toolsResponse = await axios.get(
-          ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, startDate, endDate),
+        // Current status of every tool record in the project, the same records as the Tools List.
+        const { data: toolsData } = await axios.get(
+          ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(selectedProject.value),
         );
 
-        const toolsDataFiltered = toolsResponse.data;
-        const toolsDataUnfiltered = toolsResponseNoFilter.data;
-        const toolsData =
-          toolsDataFiltered && toolsDataFiltered.length > 0
-            ? toolsDataFiltered
-            : toolsDataUnfiltered;
-
-        if (toolsDataUnfiltered?.length > 0) {
-          const uniqueTools = [...new Set(toolsDataUnfiltered.map(item => item.toolName))]
+        if (toolsData?.length > 0) {
+          const uniqueTools = [...new Set(toolsData.map(item => item.toolName))]
             .filter(Boolean)
             .map(tool => ({
               label: tool,
@@ -187,7 +170,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
     };
 
     fetchToolsData();
-  }, [selectedProject, startDate, endDate]);
+  }, [selectedProject]);
   useEffect(() => {
     let filteredForChart = toolsData;
 
@@ -203,6 +186,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
           inUse: item.inUse || 0,
           needsReplacement: item.needsReplacement || 0,
           yetToReceive: item.yetToReceive || 0,
+          available: item.available || 0,
         })),
       );
     } else {
@@ -215,17 +199,6 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const handleProjectChange = selectedOption => {
     setSelectedProject(selectedOption);
     setSelectedTools([]);
-  };
-
-  const handleStartDateChange = event => setStartDate(event.target.value);
-  const handleEndDateChange = event => setEndDate(event.target.value);
-
-  const handleClearDates = () => {
-    const now = new Date();
-    const start = new Date(now.getFullYear() - 1, now.getMonth(), 1);
-    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    setStartDate(start.toISOString().split('T')[0]);
-    setEndDate(end.toISOString().split('T')[0]);
   };
 
   const sharedSelectStyles = {
@@ -318,38 +291,6 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
             menuPortalTarget={document.body}
             menuPosition="fixed"
           />
-        </div>
-
-        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
-          <label htmlFor="start-date-picker">Date Range</label>
-          <div className={styles['tools-horizontal-bar-chart-date-picker-group']}>
-            <input
-              id="start-date-picker"
-              type="date"
-              className={styles['tools-horizontal-bar-chart-date-picker']}
-              value={startDate}
-              onChange={handleStartDateChange}
-              aria-label="Start date"
-            />
-            <span>to</span>
-            <input
-              id="end-date-picker"
-              type="date"
-              className={styles['tools-horizontal-bar-chart-date-picker']}
-              value={endDate}
-              onChange={handleEndDateChange}
-              aria-label="End date"
-            />
-            <button
-              type="button"
-              className={styles['tools-horizontal-bar-chart-clear-dates-btn']}
-              onClick={handleClearDates}
-              aria-label="Reset date filters"
-              title="Reset to default date range"
-            >
-              ↻
-            </button>
-          </div>
         </div>
       </div>
 
@@ -503,6 +444,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               <Bar dataKey="inUse" stackId="a" fill="#2196F3" name="In Use" />
               <Bar dataKey="needsReplacement" stackId="a" fill="#F44336" name="Needs Replacement" />
               <Bar dataKey="yetToReceive" stackId="a" fill="#FF9800" name="Yet to Receive" />
+              <Bar dataKey="available" stackId="a" fill="#4CAF50" name="Available" />
             </BarChart>
           </ResponsiveContainer>
         </div>
