@@ -74,6 +74,22 @@ const wbsId = 'wbs123';
 const projectId = 'project123';
 const wbsName = 'wbs name 1';
 
+// The Volunteer mock role has no task permissions, so only these count
+const renderWithPermissions = frontPermissions => {
+  axios.get.mockResolvedValue({ status: 200, data: [] });
+  const testStore = mockStore({
+    ...store.getState(),
+    auth: { user: { role: 'Volunteer', permissions: { frontPermissions } } },
+  });
+  render(
+    <Router history={createMemoryHistory()}>
+      <Provider store={testStore}>
+        <WBSTasks match={{ params: { wbsId, projectId, wbsName } }} />
+      </Provider>
+    </Router>,
+  );
+};
+
 describe('WBSTasks component', () => {
   it('check if wbs name is displaying as expected', async () => {
     axios.get.mockResolvedValue({
@@ -245,6 +261,16 @@ describe('WBSTasks component', () => {
       );
     });
     expect(screen.queryByText('Add Task')).not.toBeInTheDocument();
+  });
+  it('check if Import Tasks is displayed when importTask permission is present', async () => {
+    renderWithPermissions(['importTask']);
+    expect(await screen.findByText('Import Tasks')).toBeInTheDocument();
+  });
+  it('check if Import Tasks is not displayed when importTask permission is not present', async () => {
+    renderWithPermissions([]);
+    // Import Tasks only shows after loading, so wait for it to end
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Refresh' })).toBeEnabled());
+    expect(screen.queryByText('Import Tasks')).not.toBeInTheDocument();
   });
   // it('check if refresh button works as expected', async () => {
   //   axios.get.mockResolvedValue({

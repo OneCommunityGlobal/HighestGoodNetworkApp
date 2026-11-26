@@ -87,10 +87,54 @@ describe('<TimeEntry />', () => {
     expect(screen.getByText(statusText)).toBeInTheDocument();
   });
 
+  // userProfileMock is a protected account (devadmin), so default to another email
+  const renderWithRolePermissions = (rolePermissions, email = 'volunteer@example.com') => {
+    renderWithProvider(
+      <TimeEntry
+        data={data}
+        from="WeeklyTab"
+        timeEntryUserProfile={{ ...userProfileMock, email }}
+        tab={0}
+      />,
+      {
+        store: mockStore({
+          auth: authMock,
+          userProjects: userProjectMock,
+          role: { roles: [{ roleName: authMock.user.role, permissions: rolePermissions }] },
+          theme: { darkMode: false },
+        }),
+      },
+    );
+  };
+
   it('should not render DeleteModal button when no permission', () => {
-    renderComponent();
+    renderWithRolePermissions([]);
     const deleteButton = screen.queryByRole('button', { name: /DeleteModal/i });
     expect(deleteButton).toBeNull();
+  });
+
+  it('shows the trash icon with Delete Any Time Entry', () => {
+    renderWithRolePermissions(['deleteTimeEntry']);
+    expect(screen.getByRole('button', { name: /DeleteModal/i })).toBeInTheDocument();
+  });
+
+  it('hides the trash icon with Delete Any Time Entry on a protected account', () => {
+    renderWithRolePermissions(['deleteTimeEntry'], userProfileMock.email);
+    expect(screen.queryByRole('button', { name: /DeleteModal/i })).not.toBeInTheDocument();
+  });
+
+  it.each(['deleteTimeEntryOthers', 'deleteTimeEntryOwn'])('shows the trash icon with %s', key => {
+    renderWithRolePermissions([key]);
+    expect(screen.getByRole('button', { name: /DeleteModal/i })).toBeInTheDocument();
+  });
+
+  it.each([
+    [['deleteTimeEntryOthers']],
+    [['deleteTimeEntryOwn']],
+    [['deleteTimeEntry', 'deleteTimeEntryOthers', 'deleteTimeEntryOwn']],
+  ])('hides the trash icon with %j on a protected account', rolePermissions => {
+    renderWithRolePermissions(rolePermissions, userProfileMock.email);
+    expect(screen.queryByRole('button', { name: /DeleteModal/i })).not.toBeInTheDocument();
   });
 
   it('should not render edit button when no permission', () => {
