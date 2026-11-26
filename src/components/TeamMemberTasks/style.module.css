@@ -291,9 +291,9 @@
 }
 
 .deadlineCount {
-  position: absolute;
-  top: -4px;
-  right: -4px;
+  /* inline beside the info icon; absolute positioning covered the icon */
+  position: static;
+  margin-left: 4px;
   background: #e74c3c;
   color: #fff;
   border-radius: 50%;

@@ -723,7 +723,7 @@ const TeamMemberTask = React.memo(
                                                   {isAllowedToSeeDeadlineCount && (
                                                     <span
                                                       className={styles['deadlineCount']}
-                                                      title="Click to view task change history"
+                                                      title="Times this task's estimated hours were increased. Click to view the change history."
                                                       data-testid={`deadline-${task.taskName}`}
                                                       onClick={() => handleOpenTaskChangeLog(task)}
                                                       onKeyDown={e => {

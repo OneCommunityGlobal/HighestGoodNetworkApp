@@ -89,7 +89,8 @@ function FollowUpInfoModal() {
               box will modify its appearance for all others who can see it.
             </div>
             <div className="mb-3">
-              When a person&apos;s task is at 50%, 75%, or 90% of the deadline, the checkbox
+              Progress is the hours logged compared to the task&apos;s estimated hours (for example,
+              5 of 10 hours is 50%). When a person&apos;s task passes 50%, 75%, or 90%, the checkbox
               automatically clears and changes to a red outline with a light pink filler. This
               visual cue indicates that the person requires follow-up.
             </div>
@@ -109,6 +110,17 @@ function FollowUpInfoModal() {
               If the checkbox is unchecked it resets to the initial state. (If the progress is less
               than 50%, the checkbox will be unchecked and shown in green. If the progress is over
               50%, the checkbox will be unchecked and shown in red.)
+            </div>
+            <div className="mb-3">
+              If more hours are logged after the box was checked, a yellow warning triangle replaces
+              the check mark (hover text: &quot;Time was logged after this task was accepted as
+              complete!&quot;). Click the triangle to clear it, which unchecks the box, then check
+              the box again once you have followed up on the new hours.
+            </div>
+            <div className="mb-3">
+              The red number next to this icon counts how many times the task&apos;s estimated hours
+              were increased. Lowering the estimate does not add to it. Click it to see the
+              task&apos;s change history. Only users with permission can see this number.
             </div>
           </div>,
           document.body,
