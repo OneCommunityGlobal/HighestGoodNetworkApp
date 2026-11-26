@@ -1,6 +1,7 @@
 /* eslint-disable no-case-declarations */
 import {
   START_TIME_LOG,
+  BULK_START_TIME_LOGS,
   PAUSE_TIME_LOG,
   STOP_TIME_LOG,
   GET_CURRENT_TIME_LOG,
@@ -25,6 +26,20 @@ export const bmTimeLoggerReducer = (state = initialState, action) => {
           [startKey]: action.payload, // Store time log specific to member and project
         },
         bmTimeLogHistory: [...state.bmTimeLogHistory, action.payload],
+      };
+
+    case BULK_START_TIME_LOGS:
+      const bulkStartedLogs = {};
+      action.payload.timeLogs.forEach(timeLog => {
+        bulkStartedLogs[`${timeLog.memberId}_${timeLog.projectId}`] = timeLog;
+      });
+      return {
+        ...state,
+        bmTimeLogs: {
+          ...state.bmTimeLogs,
+          ...bulkStartedLogs,
+        },
+        bmTimeLogHistory: [...state.bmTimeLogHistory, ...action.payload.timeLogs],
       };
 
     case PAUSE_TIME_LOG:

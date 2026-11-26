@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, InputGroup, Input } from 'reactstrap';
+import { Alert, Button, Container, Row, Col, InputGroup, Input } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
+import { bulkStartTimeLogs } from '../../../actions/bmdashboard/timeLoggerActions';
+import BMTimeLogCheckInSummary from './BMTimeLogCheckInSummary';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
+import BMTimeLogMemberGroup from './BMTimeLogMemberGroup';
 import BMTimeLogSummary from './BMTimeLogSummary';
+import { groupMembers, GROUP_BY_OPTIONS } from './groupMembers';
+import styles from './BMTimeLogCard.module.css';
+
+const getMemberName = member =>
+  `${member.user.firstName || ''} ${member.user.lastName || ''}`.trim();
 
 function BMTimeLogCard(props) {
   const [isError, setIsError] = useState(false);
@@ -12,6 +20,10 @@ function BMTimeLogCard(props) {
   const [isMemberFetched, setIsMemberFetched] = useState(false);
   const [filteredMembers, setFilteredMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedMemberIds, setSelectedMemberIds] = useState(new Set());
+  const [groupBy, setGroupBy] = useState('none');
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const [checkInMessage, setCheckInMessage] = useState(null);
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
@@ -19,6 +31,9 @@ function BMTimeLogCard(props) {
 
   useEffect(() => {
     dispatch(fetchBMProjectMembers(props.selectedProject));
+    // A selection only makes sense within the project it was made in
+    setSelectedMemberIds(new Set());
+    setCheckInMessage(null);
   }, [props.selectedProject, dispatch]);
 
   useEffect(() => {
@@ -43,6 +58,13 @@ function BMTimeLogCard(props) {
     }
   }, [errors]);
 
+  // Success messages clear themselves; failures stay until dismissed so they are not missed
+  useEffect(() => {
+    if (checkInMessage?.color !== 'success') return undefined;
+    const timer = setTimeout(() => setCheckInMessage(null), 5000);
+    return () => clearTimeout(timer);
+  }, [checkInMessage]);
+
   // Filter members based on search query
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -65,7 +87,7 @@ function BMTimeLogCard(props) {
         member.user.teams && member.user.teams.length > 0
           ? member.user.teams.some(team => {
               if (typeof team === 'string') return team.toLowerCase().includes(query);
-              if (team?.name) return team.name.toLowerCase().includes(query);
+              if (team?.teamName) return team.teamName.toLowerCase().includes(query);
               return false;
             })
           : false;
@@ -86,6 +108,97 @@ function BMTimeLogCard(props) {
     setSearchQuery(e.target.value);
   };
 
+  const validMembers = memberList.filter(value => value?.user?._id);
+  const visibleMembers = filteredMembers.filter(value => value?.user?._id);
+  const allVisibleSelected =
+    visibleMembers.length > 0 &&
+    visibleMembers.every(value => selectedMemberIds.has(value.user._id));
+  const hiddenSelectedCount =
+    selectedMemberIds.size -
+    visibleMembers.filter(value => selectedMemberIds.has(value.user._id)).length;
+
+  const toggleMemberSelected = memberId => {
+    setSelectedMemberIds(previous => {
+      const next = new Set(previous);
+      if (next.has(memberId)) {
+        next.delete(memberId);
+      } else {
+        next.add(memberId);
+      }
+      return next;
+    });
+  };
+
+  // Select All only affects the members the current search is showing
+  const toggleAllVisible = () => {
+    setSelectedMemberIds(previous => {
+      const next = new Set(previous);
+      visibleMembers.forEach(value => {
+        if (allVisibleSelected) {
+          next.delete(value.user._id);
+        } else {
+          next.add(value.user._id);
+        }
+      });
+      return next;
+    });
+  };
+
+  const describeCheckIn = ({ started, resumed, alreadyCheckedIn, failed }) => {
+    const parts = [`Checked in ${started.length + resumed.length}.`];
+    if (alreadyCheckedIn.length > 0) parts.push(`${alreadyCheckedIn.length} already checked in.`);
+    if (failed.length > 0) {
+      const failedNames = failed.map(({ memberId }) => {
+        const member = validMembers.find(value => value.user._id === memberId);
+        return member ? getMemberName(member) : memberId;
+      });
+      parts.push(`Failed: ${failedNames.join(', ')}.`);
+    }
+    return parts.join(' ');
+  };
+
+  const checkInSelected = async () => {
+    setIsCheckingIn(true);
+    setCheckInMessage(null);
+    try {
+      const results = await dispatch(
+        bulkStartTimeLogs(props.selectedProject, [...selectedMemberIds]),
+      );
+      // Failed members stay selected so they can be retried
+      setSelectedMemberIds(new Set(results.failed.map(({ memberId }) => memberId)));
+      setCheckInMessage({
+        color: results.failed.length > 0 ? 'warning' : 'success',
+        text: describeCheckIn(results),
+      });
+    } catch (error) {
+      setCheckInMessage({
+        color: 'danger',
+        text: error.response?.data?.message || 'Error checking in selected members',
+      });
+    } finally {
+      setIsCheckingIn(false);
+    }
+  };
+
+  const renderMemberCards = members => (
+    <Row>
+      {members.map((value, index) => (
+        <Col sm={6} lg={4} key={value.user._id}>
+          <BMTimeLogDisplayMember
+            firstName={value.user.firstName || ''}
+            lastName={value.user.lastName || ''}
+            role={value.user.role || ''}
+            index={index}
+            memberId={value.user._id}
+            projectId={props.selectedProject}
+            isSelected={selectedMemberIds.has(value.user._id)}
+            onToggleSelected={toggleMemberSelected}
+          />
+        </Col>
+      ))}
+    </Row>
+  );
+
   return (
     <Container fluid>
       {/* Time Log Summary Section */}
@@ -93,6 +206,8 @@ function BMTimeLogCard(props) {
 
       {isMemberFetched && (
         <>
+          <BMTimeLogCheckInSummary projectId={props.selectedProject} members={validMembers} />
+
           <Row className="my-3">
             <Col md={6} className="mx-auto">
               <InputGroup>
@@ -109,23 +224,67 @@ function BMTimeLogCard(props) {
             </Col>
           </Row>
 
-          {filteredMembers.length > 0 ? (
-            <Row>
-              {filteredMembers
-                .filter(value => value?.user?._id)
-                .map((value, index) => (
-                  <Col md={4} key={value.user._id}>
-                    <BMTimeLogDisplayMember
-                      firstName={value.user.firstName || ''}
-                      lastName={value.user.lastName || ''}
-                      role={value.user.role || ''}
-                      index={index}
-                      memberId={value.user._id}
-                      projectId={props.selectedProject}
-                    />
-                  </Col>
+          <div className={`${styles.bulkToolbar}`}>
+            <label className={`${styles.bulkToolbarItem} mb-0`}>
+              <input
+                type="checkbox"
+                checked={allVisibleSelected}
+                disabled={visibleMembers.length === 0}
+                onChange={toggleAllVisible}
+              />{' '}
+              {allVisibleSelected ? 'Deselect All' : 'Select All'}
+            </label>
+            <label className={`${styles.bulkToolbarItem} mb-0`}>
+              Group by:{' '}
+              <select value={groupBy} onChange={e => setGroupBy(e.target.value)}>
+                <option value="none">None</option>
+                {Object.entries(GROUP_BY_OPTIONS).map(([value, { label }]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
                 ))}
-            </Row>
+              </select>
+            </label>
+            <Button
+              color="primary"
+              disabled={selectedMemberIds.size === 0 || isCheckingIn}
+              onClick={checkInSelected}
+            >
+              Check In Selected Members ({selectedMemberIds.size})
+            </Button>
+            {hiddenSelectedCount > 0 && (
+              <small className="text-muted">
+                {hiddenSelectedCount} selected not shown by search
+              </small>
+            )}
+          </div>
+
+          {checkInMessage && (
+            <Alert
+              color={checkInMessage.color}
+              className={`${styles.checkInMessage}`}
+              toggle={
+                checkInMessage.color === 'success' ? undefined : () => setCheckInMessage(null)
+              }
+            >
+              {checkInMessage.text}
+            </Alert>
+          )}
+
+          {filteredMembers.length > 0 ? (
+            <>
+              {groupBy !== 'none'
+                ? groupMembers(visibleMembers, GROUP_BY_OPTIONS[groupBy].getGroups).map(group => (
+                    <BMTimeLogMemberGroup
+                      key={group.key}
+                      label={group.label}
+                      memberCount={group.members.length}
+                    >
+                      {renderMemberCards(group.members)}
+                    </BMTimeLogMemberGroup>
+                  ))
+                : renderMemberCards(visibleMembers)}
+            </>
           ) : (
             <Row>
               <Col className="text-center py-4">
