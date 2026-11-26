@@ -4,9 +4,9 @@ import { permissions } from './constants';
 
 const RoutePermissions = {
   reports: [permissions.getReports],
-  weeklySummariesReport: [permissions.getWeeklySummaries],
+  weeklySummariesReport: [permissions.getWeeklySummaries, permissions.requestBio],
+  totalOrgSummary: [permissions.getVolunteerWeeklySummary],
   prDashboard: [permissions.accessPRTeamDashboard],
-  weeklyVolunteerSummary: [permissions.getWeeklyVolunteerSummary],
   userManagement: [
     permissions.getUserProfiles,
     permissions.postUserProfile,

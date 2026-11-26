@@ -20,6 +20,7 @@ function QuickSetupModal(props) {
   const canEditTitle = props.hasPermission(permissions.editTitle);
   const canAddTitle = props.hasPermission(permissions.addNewTitle);
   const canAssignTitle = props.hasPermission(permissions.assignTitle);
+  const canDeleteTitle = props.hasPermission(permissions.deleteTitle);
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
@@ -199,6 +200,7 @@ function QuickSetupModal(props) {
           setTitleOnSet={props.setTitleOnSet}
           refreshModalTitles={refreshModalTitles}
           updateUserProfile={props.updateUserProfile}
+          canDeleteTitle={canDeleteTitle}
         />
       ) : (
         ''

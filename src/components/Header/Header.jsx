@@ -190,7 +190,7 @@ export function Header(props) {
     !isAuthUser,
   );
   const canGetWeeklyVolunteerSummary = props.hasPermission(
-    permissions.getWeeklySummaries,
+    RoutePermissions.totalOrgSummary,
     !isAuthUser,
   );
   const canGetJobAnalytics = props.hasPermission(permissions.getJobReports, !isAuthUser);

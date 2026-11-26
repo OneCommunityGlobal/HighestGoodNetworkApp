@@ -661,30 +661,16 @@ export default (
           exact
           component={TotalOrgSummary}
           fallback
-          allowedRoles={[
-            UserRole.Administrator,
-            UserRole.Manager,
-            UserRole.CoreTeam,
-            UserRole.Owner,
-            UserRole.Mentor,
-          ]}
-          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
-          routePermissions={RoutePermissions.weeklySummariesReport}
+          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
+          routePermissions={RoutePermissions.totalOrgSummary}
         />
         <ProtectedRoute
           path="/TotalOrgSummaryEmail"
           exact
           component={TotalOrgSummaryEmail}
           fallback
-          allowedRoles={[
-            UserRole.Administrator,
-            UserRole.Manager,
-            UserRole.CoreTeam,
-            UserRole.Owner,
-            UserRole.Mentor,
-          ]}
-          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
-          routePermissions={RoutePermissions.weeklySummariesReport}
+          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
+          routePermissions={RoutePermissions.totalOrgSummary}
         />
         <ProtectedRoute
           path="/job-notification-dashboard"

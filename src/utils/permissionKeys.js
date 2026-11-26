@@ -25,23 +25,19 @@ const LEGACY_OR_EXTRA_KEYS = [
   'announcements_manage',
   'assignBadgeOthers',
   'createPopup',
-  'deleteTimeEntry',
   'deleteUserProfile',
   'editProject',
   'editSummaryHoursCount',
   'editTimelogInfo',
-  'getWeeklyVolunteerSummary', // RoutePermissions alias (JSON uses getVolunteerWeeklySummary)
   'infringementAuthorizer',
   'manageAdminLinks',
   'postTeam', // still used for create-team UI; may nest under Teams in Permissions.json
   'rescheduleEvent',
-  'scheduleMeetings',
   'seeProjectManagement',
   'seeQSC',
   'seeSummaryIndicator',
   'seeVisibilityIcon',
   'unassignUserInProject',
-  'updateUserSkillsProfileFollowUp',
 ];
 
 const allKeys = [...new Set([...collectKeys(permissionLabels), ...LEGACY_OR_EXTRA_KEYS])].sort(
