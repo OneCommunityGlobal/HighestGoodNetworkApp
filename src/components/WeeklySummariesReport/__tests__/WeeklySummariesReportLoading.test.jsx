@@ -55,6 +55,9 @@ vi.mock('../../../actions/weeklySummariesFilterAction', () => ({
 }));
 
 vi.mock('../../../utils/questionnaireCompletion', () => ({
+  // The report subscribes to completed-questionnaire updates on mount (#5794);
+  // return an unsubscribe function so the effect cleanup works.
+  subscribeToCompletedQuestionnaireUserIds: vi.fn(() => () => {}),
   fetchCompletedQuestionnaireUserIds: () => Promise.resolve([]),
 }));
 
