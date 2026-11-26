@@ -262,8 +262,11 @@ export default function RentalChart() {
       labels: rentalCostData.map(item => item.date),
       datasets: [
         {
-          label: 'Total Rental Cost',
-          data: rentalCostData.map(item => item.value),
+          label: chartType === 'percentage' ? '% of Materials Cost' : 'Total Rental Cost',
+          // The API returns both the dollar total and its share of materials cost per day
+          data: rentalCostData.map(item =>
+            chartType === 'percentage' ? item.percentage : item.value,
+          ),
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.5)',
           tension: 0.4,
@@ -271,12 +274,15 @@ export default function RentalChart() {
         },
       ],
     }),
-    [rentalCostData],
+    [rentalCostData, chartType],
   );
 
   const stackedBarData = useMemo(
     () => ({
-      labels: costBreakdownData.map(item => item.projectName),
+      // Same names as the Project dropdown, so the selected project is labelled consistently
+      labels: costBreakdownData.map(
+        item => availableProjects.get(item.projectId) || item.projectName,
+      ),
       datasets: [
         {
           label: 'Tools costs due to owned tools',
@@ -290,7 +296,7 @@ export default function RentalChart() {
         },
       ],
     }),
-    [costBreakdownData],
+    [costBreakdownData, availableProjects],
   );
 
   const stackedBarOptions = useMemo(() => {
@@ -421,6 +427,10 @@ export default function RentalChart() {
           params.projectId = selectedProject;
         }
 
+        if (selectedTool !== FILTER_ALL) {
+          params.toolName = selectedTool;
+        }
+
         const breakdownParams = {
           startDate: dateRange.startDate.toISOString(),
           endDate: dateRange.endDate.toISOString(),
@@ -430,7 +440,7 @@ export default function RentalChart() {
           breakdownParams.projects = selectedProject;
         }
 
-        const [rentalResult, breakdownResult, projectsResult] = await Promise.allSettled([
+        const [rentalResult, breakdownResult] = await Promise.allSettled([
           axios.get(ENDPOINTS.BM_RENTAL_COST_OVER_TIME, {
             headers,
             params,
@@ -438,9 +448,6 @@ export default function RentalChart() {
           axios.get(ENDPOINTS.BM_TOOLS_COST_BREAKDOWN, {
             headers,
             params: breakdownParams,
-          }),
-          axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, {
-            headers,
           }),
         ]);
         if (rentalResult.status === 'rejected') {
@@ -459,22 +466,8 @@ export default function RentalChart() {
             ? breakdownResult.value.data
             : [];
 
-        const projects =
-          projectsResult.status === 'fulfilled' && Array.isArray(projectsResult.value.data?.data)
-            ? projectsResult.value.data.data
-            : [];
-
-        const projectNames = new Map(
-          projects.map(project => [project.projectId, project.projectName]),
-        );
-
-        const breakdownWithNames = breakdownData.map(item => ({
-          ...item,
-          projectName: projectNames.get(item.projectId) || item.projectName || 'Unknown Project',
-        }));
-
         setRentalCostData(rentalData);
-        setCostBreakdownData(breakdownWithNames);
+        setCostBreakdownData(breakdownData);
         setError(null);
       } catch {
         toast.error('Error fetching rental cost chart data');
@@ -483,7 +476,7 @@ export default function RentalChart() {
     };
 
     void fetchChartData();
-  }, [selectedProject, dateRange]);
+  }, [selectedProject, selectedTool, dateRange]);
 
   // Track the chart area's width so fonts and labels can shrink on small screens
   useEffect(() => {
@@ -575,7 +568,7 @@ export default function RentalChart() {
           offset: true,
           title: {
             display: true,
-            text: 'Month/Year',
+            text: 'Date',
             color: textColor,
             font: { size: isCompact ? 13 : 18 },
           },
