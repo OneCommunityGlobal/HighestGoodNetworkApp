@@ -30,6 +30,45 @@ const renderDonut = comparisonType =>
   );
 
 describe('DonutChart center hole', () => {
+  it('reserves the hole for comparison text on narrow charts without losing legend values', () => {
+    renderDonut('Month Over Month');
+    const { padding } = lastDoughnutProps.options.layout;
+    const { formatter } = lastDoughnutProps.options.plugins.externalLabelGuides;
+    expect(padding({ chart: { width: 253 } })).toEqual({
+      top: 28,
+      bottom: 28,
+      left: 12,
+      right: 12,
+    });
+    expect(formatter({ value: 464, chart: { width: 253 } })).toBeNull();
+    expect(screen.getByText('Missing Hours: 464 (7.3%)')).toBeInTheDocument();
+    expect(padding({ chart: { width: 640 } })).toEqual({
+      top: 28,
+      bottom: 28,
+      left: 80,
+      right: 80,
+    });
+    expect(formatter({ value: 464, chart: { width: 640 } })).toEqual(['464', '(7.3%)']);
+  });
+
+  it.each([
+    [0.12, '#86efac'],
+    [-0.12, '#fca5a5'],
+  ])('keeps comparison text readable in dark mode for %s', (percentageChange, color) => {
+    render(
+      createElement(DonutChart, {
+        title: 'TOTAL BLUE SQUARES',
+        totalCount: 6385,
+        percentageChange,
+        data: [{ label: 'Missing Hours', value: 464 }],
+        colors: ['#2ec5f5'],
+        comparisonType: 'Month Over Month',
+        darkMode: true,
+      }),
+    );
+    expect(screen.getByText(/MONTH OVER MONTH/)).toHaveStyle({ color });
+  });
+
   it('keeps the default hole when no comparison line is shown', () => {
     renderDonut('No Comparison');
     expect(lastDoughnutProps.options.cutout).toBe('62%');
