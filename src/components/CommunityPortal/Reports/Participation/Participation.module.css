@@ -1,6 +1,8 @@
+/* stylelint-disable no-descending-specificity -- legacy file, selector reordering would change the cascade */
+
 /* ---------- CSS Variables for Dark Mode ---------- */
 :root {
-  --color-text-dark: #ffffff;
+  --color-text-dark: #fff;
   --color-border-dark: #4a5a77;
 }
 
@@ -135,7 +137,7 @@
   color: #fff;
   border-radius: 10px;
   border: 1px solid var(--color-border-dark);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -198,7 +200,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: border-color 0.2s;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
@@ -436,7 +438,7 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
@@ -658,18 +660,12 @@
   transition: width 0.3s ease-in-out;
 }
 
-.insightPercentage {
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #333;
-}
-
 .insightsPercentage {
   flex: 0 0 45px;
   text-align: right;
   font-size: 0.9rem;
-  font-weight: bold;
-  color: #c00;
+  font-weight: 500;
+  color: #d32f2f;
 }
 
 /* Header Section Styles */
@@ -829,8 +825,6 @@
   flex: 0 0 45px;
   text-align: right;
   font-size: 0.9rem;
-  font-weight: bold;
-  color: #ff6b6b;
 }
 
 /* ---------- PDF/Print helpers ---------- */
@@ -2135,8 +2129,8 @@
   color: #e5e7eb;
 }
 
-.insightsDark .insightItem .insightsPercentageDark {
-  color: #ff6b6b;
+:global(body.dark-mode) .insightsDark .insightItem .insightsPercentageDark {
+  color: #ff9494 !important;
 }
 
 .insightIcon {
@@ -2231,6 +2225,17 @@
 
   .cardStats {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .engagementCard,
+  .navigationCard,
+  .valueCard,
+  .trendCard,
+  .performanceCard,
+  .insightFill {
+    transition: none;
   }
 }
 
