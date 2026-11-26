@@ -175,8 +175,8 @@ function EquipmentsTable({ equipment, project }) {
                         {rec.itemType?.name || rec.name || 'View Details'}
                       </Link>
                     </td>
-                    <td>{rec.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>
-                    <td>{rec.purchaseStatus === 'Rental' ? 'Yes' : 'No'}</td>
+                    <td>{['Purchased', 'Purchase'].includes(rec.purchaseStatus) ? 'Yes' : 'No'}</td>
+                    <td>{['Rental', 'Rented'].includes(rec.purchaseStatus) ? 'Yes' : 'No'}</td>
                     <td>{new Date(rec.rentedOnDate).toLocaleDateString()}</td>
                     <td>{new Date(rec.rentalDueDate).toLocaleDateString()}</td>
 
