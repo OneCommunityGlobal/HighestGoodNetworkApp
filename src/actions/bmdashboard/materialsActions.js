@@ -100,7 +100,7 @@ export const statusUpdateError = payload => {
 
 export const fetchAllMaterials = () => {
   return async dispatch => {
-    axios
+    return axios
       .get(ENDPOINTS.BM_MATERIALS)
       // .then(res => {
       //   dispatch(setMaterials(res.data))
