@@ -61,6 +61,12 @@ async function waitForEvents() {
   await screen.findByText('Virtual Workshop');
 }
 
+async function renderLoadedPage(options) {
+  const view = renderPage(options);
+  await waitForEvents();
+  return view;
+}
+
 describe('DatabaseDesign', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -86,8 +92,7 @@ describe('DatabaseDesign', () => {
   });
 
   it('keeps the attendance and report actions visible when capacity is not part of the event schema', async () => {
-    renderPage();
-    await waitForEvents();
+    await renderLoadedPage();
 
     expect(screen.getAllByRole('button', { name: 'Confirm Attendance' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Log Activity' })).toHaveLength(2);
@@ -97,9 +102,7 @@ describe('DatabaseDesign', () => {
   it('falls back to built-in filter options when option endpoints fail', async () => {
     getEventTypes.mockRejectedValue(new Error('Types unavailable'));
     getEventLocations.mockRejectedValue(new Error('Locations unavailable'));
-    renderPage();
-
-    await waitForEvents();
+    await renderLoadedPage();
     expect(screen.getByRole('option', { name: 'Social Gathering' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Webinar' })).toBeInTheDocument();
     expect(screen.getAllByRole('option', { name: 'In person' })).toHaveLength(2);
@@ -107,8 +110,7 @@ describe('DatabaseDesign', () => {
   });
 
   it('filters accurately by type, location, format, and their combination', async () => {
-    renderPage();
-    await waitForEvents();
+    await renderLoadedPage();
 
     fireEvent.change(screen.getByLabelText('Event Type'), { target: { value: 'Workshop' } });
     await screen.findByText('Virtual Workshop');
@@ -148,8 +150,7 @@ describe('DatabaseDesign', () => {
   });
 
   it('renders page sections and event details with dark mode styles', async () => {
-    renderPage({ darkMode: true });
-    await waitForEvents();
+    await renderLoadedPage({ darkMode: true });
 
     expect(screen.getByRole('main')).toHaveClass(styles.darkMode);
     expect(screen.getAllByRole('article')).toHaveLength(2);
@@ -165,8 +166,7 @@ describe('DatabaseDesign', () => {
     ['Log Activity', '/communityportal/ActivityAttendance'],
     ['Reports', '/communityportal/reports/participation'],
   ])('navigates when %s is selected', async (label, destination) => {
-    const { history } = renderPage();
-    await waitForEvents();
+    const { history } = await renderLoadedPage();
 
     fireEvent.click(screen.getAllByRole('button', { name: label })[0]);
     expect(history.location.pathname).toBe(destination);
@@ -177,8 +177,7 @@ describe('DatabaseDesign', () => {
     ['Log Activity', 'Failed to navigate to activity logging'],
     ['Reports', 'Failed to navigate to reports'],
   ])('shows an accessible error when %s navigation fails', async (label, message) => {
-    const { history } = renderPage();
-    await waitForEvents();
+    const { history } = await renderLoadedPage();
     vi.spyOn(history, 'push').mockImplementation(() => {
       throw new Error('Navigation failed');
     });
