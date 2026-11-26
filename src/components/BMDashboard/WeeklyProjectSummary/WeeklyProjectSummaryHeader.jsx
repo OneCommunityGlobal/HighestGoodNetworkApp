@@ -50,7 +50,7 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
   useEffect(() => {
     const { lastWeek } = getLastTwoCompletedWeeks();
     dispatch(setDateRangeFilter(lastWeek));
-    dispatch(setComparisonPeriodFilter('No Comparison'));
+    dispatch(setComparisonPeriodFilter('Week Over Week'));
   }, [dispatch]);
 
   const projectOptions = useMemo(() => ['One Community'], []);
@@ -94,7 +94,7 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
             isOpen={comparisonDropdownOpen}
             toggle={() => setComparisonDropdownOpen(prev => !prev)}
           >
-            <DropdownToggle caret>{comparisonPeriodFilter || 'No Comparison'}</DropdownToggle>
+            <DropdownToggle caret>{comparisonPeriodFilter || 'Week Over Week'}</DropdownToggle>
             <DropdownMenu>
               {comparisonOptions.map(option => (
                 <DropdownItem

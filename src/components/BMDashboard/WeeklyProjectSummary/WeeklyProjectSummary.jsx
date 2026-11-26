@@ -60,7 +60,7 @@ const projectStatusButtons = toCardButtons(projectStatusButtonData).map(button =
   ...button,
   description:
     button.metricKey === 'avgProjectDuration'
-      ? 'Start to completion for projects completed in the selected period.'
+      ? 'Start to completion for projects completed by the end of the selected period.'
       : undefined,
 }));
 
@@ -83,7 +83,7 @@ function WeeklyProjectSummary() {
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
   const comparisonPeriodFilter = useSelector(
-    state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'No Comparison',
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'Week Over Week',
   );
   const projectStatusData = useSelector(state => state.weeklyProjectSummary?.projectStatusData);
   const projectStatusLoading = useSelector(

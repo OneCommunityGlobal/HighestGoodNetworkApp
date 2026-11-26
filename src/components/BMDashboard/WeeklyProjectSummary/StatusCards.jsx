@@ -6,6 +6,7 @@ import styles from './WeeklyProjectSummary.module.css';
 // { value, unit, comparisonType, percentageChange, unavailableReason } from the weekly summary API.
 const PERIOD_COMPARABLE = 'PERIOD_COMPARABLE';
 const UNAVAILABLE = 'UNAVAILABLE';
+const CURRENT_ONLY = 'CURRENT_ONLY';
 
 export function toCardButtons(buttonData) {
   return buttonData.map(([title, metricKey, bgColor, buttonColor, textColor]) => ({
@@ -43,7 +44,16 @@ export function formatProjectStatusValue(metric) {
 }
 
 export function getProjectStatusUnavailableReason(metric) {
-  if (!metric || (metric.comparisonType !== UNAVAILABLE && metric.value !== null)) {
+  if (!metric) {
+    return null;
+  }
+
+  // Current-only metrics have a value but no trend, so the reason explains the missing comparison.
+  if (metric.comparisonType === CURRENT_ONLY) {
+    return metric.unavailableReason || null;
+  }
+
+  if (metric.comparisonType !== UNAVAILABLE && metric.value !== null) {
     return null;
   }
 

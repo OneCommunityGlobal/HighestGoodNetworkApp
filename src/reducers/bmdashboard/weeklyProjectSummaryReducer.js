@@ -10,7 +10,7 @@ import {
 const initialState = {
   projectFilter: 'One Community',
   dateRangeFilter: '',
-  comparisonPeriodFilter: 'No Comparison',
+  comparisonPeriodFilter: 'Week Over Week',
   projectStatusData: null,
   projectStatusLoading: false,
   projectStatusError: null,
