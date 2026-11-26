@@ -4,12 +4,14 @@ import { Container } from 'reactstrap';
 import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
+import ProjectManagementForm from './Projects/ProjectManagementForm';
 import ProjectStatusDonutChart from './ProjectStatus/ProjectStatusDonutChart';
 import BMError from './shared/BMError';
 import styles from './BMDashboard.module.css';
 
 export function BMDashboard() {
   const [isError, setIsError] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState(null);
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors || {});
@@ -26,6 +28,15 @@ export function BMDashboard() {
       setIsError(true);
     }
   }, [errors]);
+
+  useEffect(() => {
+    if (!projectToEdit) return;
+
+    const projectForm = document.getElementById('construction-project-management-form');
+    if (typeof projectForm?.scrollIntoView === 'function') {
+      projectForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [projectToEdit]);
 
   // Enhanced text visibility enforcement for both dark and light modes
   useEffect(() => {
@@ -201,8 +212,12 @@ export function BMDashboard() {
         ) : (
           <>
             <ProjectSelectForm />
+            <ProjectManagementForm
+              projectToEdit={projectToEdit}
+              onClose={() => setProjectToEdit(null)}
+            />
             <ProjectStatusDonutChart />
-            <ProjectsList />
+            <ProjectsList onEditProject={setProjectToEdit} />
           </>
         )}
       </main>

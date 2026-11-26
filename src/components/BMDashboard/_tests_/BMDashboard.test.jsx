@@ -63,6 +63,7 @@ describe('BMDashboard Tests', () => {
   beforeEach(() => {
     const initialState = {
       bmProjects: mockProjects,
+      auth: { user: { role: 'Administrator' } },
       errors: {},
       theme: {
         darkMode: false,
@@ -87,6 +88,23 @@ describe('BMDashboard Tests', () => {
       </Provider>,
     );
     expect(screen.getByText('Building and Inventory Management Dashboard')).toBeInTheDocument();
+  });
+
+  it('opens the edit form with the selected project values', async () => {
+    render(
+      <Provider store={store}>
+        <BMDashboard />
+      </Provider>,
+    );
+
+    await userEvent.click(screen.getAllByRole('button', { name: /edit project/i })[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /edit construction project/i }),
+      ).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Project 1')).toBeInTheDocument();
+    });
   });
 
   // Skipping Test Case 2

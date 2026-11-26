@@ -1,0 +1,170 @@
+.wrapper {
+  width: min(100%, 980px);
+  margin: 1.5rem auto 0;
+  box-sizing: border-box;
+}
+
+.dark {
+  color: #fff;
+}
+
+.form {
+  padding: 1.25rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+}
+
+.dark .form {
+  border-color: #3a506b;
+  background: #1b2a41;
+}
+
+.headingRow,
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.headingRow h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.closeButton {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.helpText {
+  margin: 0.5rem 0 1rem;
+  font-size: 0.9rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.grid input,
+.grid select {
+  min-height: 2.35rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  color: #333;
+  background: #fff;
+  font-weight: 400;
+}
+
+.dark .grid input,
+.dark .grid select {
+  border-color: #3a506b;
+  color: #fff;
+  background: #2a3f5f;
+}
+
+.actions {
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  max-width: 100%;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #2f4f4f;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: normal;
+}
+
+.primaryButton {
+  color: #fff;
+  background: #2f4f4f;
+}
+
+.wrapper > .primaryButton {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.dark .primaryButton {
+  border-color: #3a506b;
+  color: #fff;
+  background: #3a506b;
+}
+
+.dark .primaryButton:focus-visible {
+  outline: 2px solid #6af1ea;
+  outline-offset: 2px;
+}
+
+.dark .primaryButton:disabled {
+  border-color: #3a506b;
+  color: #b5bac5;
+  background: #1c2541;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.dark .primaryButton:hover:not(:disabled) {
+  border-color: #5a7a9b;
+  background: #5a7a9b;
+}
+
+.secondaryButton {
+  color: inherit;
+  background: transparent;
+}
+
+.error {
+  display: block;
+  margin-top: 0.25rem;
+  color: #b42318;
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.dark .error {
+  color: #ffb4ab;
+}
+
+@media (width <= 576px) {
+  .wrapper {
+    width: 100%;
+    padding: 0 0.75rem;
+  }
+
+  .wrapper > .primaryButton {
+    display: block;
+    width: 100%;
+  }
+
+  .headingRow,
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actions .primaryButton,
+  .actions .secondaryButton {
+    width: 100%;
+  }
+}
