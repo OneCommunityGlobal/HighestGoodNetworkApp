@@ -112,9 +112,8 @@ function TotalMaterialCostPerProject() {
         ticks: {
           color: textColor,
           font: { size: 11 },
-          callback(val) {
-            return shortLabels[val] ?? this.getLabelForValue(val);
-          },
+          // On this category axis, val is the bar index (no `this` needed).
+          callback: val => shortLabels[val] ?? selectedProjects[val]?.label ?? '',
         },
       },
       y: {
