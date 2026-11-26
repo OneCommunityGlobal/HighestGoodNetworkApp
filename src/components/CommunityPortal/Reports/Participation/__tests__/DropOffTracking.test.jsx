@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import DropOffTracking from '../DropOffTracking';
+import DropOffTracking, { TrendIndicator } from '../DropOffTracking';
 import { expect, vi, describe, it } from 'vitest';
 
 // Mocking the mockData to provide a "Today" date so the filter doesn't hide rows
@@ -49,7 +49,32 @@ const renderWithStore = (ui, { darkMode = false } = {}) => {
   return render(<Provider store={store}>{ui}</Provider>);
 };
 
+it.each([
+  [5, 'increased by 5 percent', '+5%'],
+  [-5, 'decreased by 5 percent', '-5%'],
+  [0, 'unchanged', '0%'],
+  [null, 'trend unavailable', 'N/A'],
+  [undefined, 'trend unavailable', 'N/A'],
+  [Infinity, 'trend unavailable', 'N/A'],
+])('displays the trend for %s', (value, description, displayValue) => {
+  render(<TrendIndicator value={value} metricLabel="No-show rate" />);
+  expect(
+    screen.getByLabelText(`No-show rate ${description} compared with Last week`),
+  ).toHaveTextContent(displayValue);
+});
+
 describe('DropOffTracking', () => {
+  it('shows semantic trend direction indicators for rate changes', () => {
+    renderWithStore(<DropOffTracking />);
+
+    expect(
+      screen.getByLabelText(/drop-off rate increased by 5 percent compared with last week/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/no-show rate decreased by 5 percent compared with last week/i),
+    ).toBeInTheDocument();
+  });
+
   it('renders the section title', () => {
     renderWithStore(<DropOffTracking />);
     expect(screen.getByText(/Drop-off and no-show rate tracking/i)).toBeInTheDocument();
