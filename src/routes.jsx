@@ -236,6 +236,7 @@ import JobApplicationForm from './components/Collaboration/JobApplicationForm/Jo
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
+import SupplierPerformancePage from './components/BMDashboard/SupplierPerformance/SupplierPerformancePage';
 import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
 import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
@@ -819,6 +820,10 @@ export default (
           component={PurchaseConsumable}
         />
         <BMProtectedRoute path="/bmdashboard/cost-prediction" component={CostPredictionPage} />
+        <BMProtectedRoute
+          path="/bmdashboard/supplierperformance"
+          component={SupplierPerformancePage}
+        />
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/returned-late-chart" component={ReturnedLateChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
