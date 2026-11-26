@@ -301,11 +301,11 @@ export const updateNumList = (wbsId, list) => {
   };
 };
 
-export const moveTasks = (wbsId, fromNum, toNum) => {
+export const moveTasks = (wbsId, fromNum, toNum, taskId) => {
   return async dispatch => {
     const url = ENDPOINTS.MOVE_TASKS(wbsId);
     try {
-      await axios.put(url, { fromNum, toNum });
+      await axios.put(url, { fromNum, toNum, taskId });
     } catch (err) {
       dispatch(setTasksError(err));
     }
