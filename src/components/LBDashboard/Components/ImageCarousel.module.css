@@ -86,11 +86,11 @@
 }
 
 .indicator--dark {
-  background-color: #666 !important;
+  background-color: #8a94a6 !important;
 }
 
 .indicator--dark:hover {
-  background-color: #888 !important;
+  background-color: #aab3c2 !important;
 }
 
 .active--dark {
