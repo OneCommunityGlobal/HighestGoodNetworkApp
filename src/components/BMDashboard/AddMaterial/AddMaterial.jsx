@@ -119,7 +119,6 @@ export default function AddMaterialForm() {
     invoice: Joi.string().required(),
     quantity: Joi.number()
       .min(1)
-      .max(999)
       .integer()
       .required(),
     unitPrice: Joi.number()
