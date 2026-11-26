@@ -1,6 +1,6 @@
-// File version: 1.0.0
+// File version: 1.1.0
 import { StrictMode } from 'react';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import axios from 'axios';
@@ -94,10 +94,15 @@ describe('MaterialStockOutRiskIndicator', () => {
 
     expect(await screen.findByText('No stock-out risk data available')).toBeInTheDocument();
     expect(screen.queryByText('No project selected')).not.toBeInTheDocument();
-    expect(screen.getByRole('group')).toHaveAttribute('aria-disabled', 'false');
+    expect(screen.getByRole('group', { name: 'Material stock-out risk chart' })).toHaveAttribute(
+      'aria-disabled',
+      'false',
+    );
     expect(axios.get).toHaveBeenCalledWith(
       ENDPOINTS.BM_MATERIAL_STOCK_OUT_RISK,
-      expect.objectContaining({ params: { projectIds: projects[0]._id } }),
+      expect.objectContaining({
+        params: { projectIds: projects[0]._id, includeReadiness: 'true' },
+      }),
     );
   });
 
@@ -109,6 +114,7 @@ describe('MaterialStockOutRiskIndicator', () => {
     selectProject();
 
     expect(await screen.findByText('Cement - Building A: 3 days')).toBeInTheDocument();
+    expect(screen.getByText('Data readiness status is unavailable.')).toBeInTheDocument();
     expect(screen.queryByText(/999 days/)).not.toBeInTheDocument();
 
     removeProject();
@@ -127,7 +133,9 @@ describe('MaterialStockOutRiskIndicator', () => {
     await waitFor(() =>
       expect(axios.get).toHaveBeenLastCalledWith(
         ENDPOINTS.BM_MATERIAL_STOCK_OUT_RISK,
-        expect.objectContaining({ params: { projectIds: projects.map(p => p._id).join(',') } }),
+        expect.objectContaining({
+          params: { projectIds: projects.map(p => p._id).join(','), includeReadiness: 'true' },
+        }),
       ),
     );
     await screen.findByText('No stock-out risk data available');
@@ -202,4 +210,39 @@ describe('MaterialStockOutRiskIndicator', () => {
 
     expect(signal.aborted).toBe(true);
   });
+
+  it.each([
+    ['Ready', 1, 1, []],
+    ['Partial', 1, 2, ['Positive available stock is missing.', 'Usage data is missing.']],
+    ['Not Configured', 0, 0, ['No materials are mapped to this project.']],
+  ])(
+    'shows %s status, material counts and inline explanations',
+    async (status, readyMaterialCount, materialCount, missingInputs) => {
+      axios.get.mockResolvedValue({
+        data: {
+          chartData: readyMaterialCount > 0 ? [material] : [],
+          readiness: [
+            {
+              projectId: projects[0]._id,
+              status,
+              readyMaterialCount,
+              materialCount,
+              missingInputs,
+            },
+          ],
+        },
+      });
+      renderIndicator();
+      selectProject();
+
+      const region = await screen.findByRole('region', { name: 'Data Readiness Status' });
+      expect(region).toHaveTextContent(`Building A: ${status}`);
+      expect(region).toHaveTextContent(`${readyMaterialCount} of ${materialCount} materials ready`);
+      missingInputs.forEach(message =>
+        expect(within(region).getByText(message)).toBeInTheDocument(),
+      );
+      expect(within(region).getByText('About data readiness')).toBeInTheDocument();
+      if (readyMaterialCount > 0) expect(screen.getByTestId('risk-chart')).toBeInTheDocument();
+    },
+  );
 });
