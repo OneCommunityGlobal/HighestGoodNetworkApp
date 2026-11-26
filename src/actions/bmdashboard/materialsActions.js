@@ -158,6 +158,18 @@ export const postMaterialUpdateBulk = payload => {
   };
 };
 
+export const fetchSuppliers = async () => {
+  const response = await axios.get(ENDPOINTS.BM_SUPPLIERS);
+  return response.data;
+};
+
+export const createSupplier = async name => {
+  const response = await axios.post(ENDPOINTS.BM_SUPPLIERS, {
+    name,
+  });
+  return response.data;
+};
+
 export const purchaseMaterial = async body => {
   return axios
     .post(ENDPOINTS.BM_MATERIALS, body)
@@ -167,6 +179,31 @@ export const purchaseMaterial = async body => {
       if (err.request) return err.request;
       return err.message;
     });
+};
+
+export const markPurchaseReceived = (purchaseId, actualDeliveryDate) => {
+  return async dispatch => {
+    dispatch(statusUpdateStart());
+
+    try {
+      const response = await axios.post(ENDPOINTS.BM_UPDATE_MATERIAL_STATUS, {
+        purchaseId,
+        status: 'Received',
+        actualDeliveryDate,
+      });
+
+      dispatch(statusUpdateEnd(response.data));
+      toast.success('Purchase marked as received!');
+      dispatch(fetchAllMaterials());
+
+      return response;
+    } catch (error) {
+      const errorPayload = error.response ? error.response.data : error.message;
+      dispatch(statusUpdateError(errorPayload));
+      toast.error(errorPayload?.message || 'Failed to mark purchase as received.');
+      return error.response || null;
+    }
+  };
 };
 
 export const approvePurchase = (purchaseId, quantity) => {
