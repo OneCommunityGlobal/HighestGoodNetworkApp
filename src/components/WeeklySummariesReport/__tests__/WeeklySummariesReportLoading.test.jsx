@@ -56,6 +56,7 @@ vi.mock('../../../actions/weeklySummariesFilterAction', () => ({
 
 vi.mock('../../../utils/questionnaireCompletion', () => ({
   fetchCompletedQuestionnaireUserIds: () => Promise.resolve([]),
+  subscribeToCompletedQuestionnaireUserIds: () => () => {},
 }));
 
 vi.mock('../../common/SkeletonLoading', () => ({
@@ -118,7 +119,7 @@ const renderPage = () =>
 
 describe('WeeklySummariesReport first load', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     sessionStorage.clear();
   });
 
