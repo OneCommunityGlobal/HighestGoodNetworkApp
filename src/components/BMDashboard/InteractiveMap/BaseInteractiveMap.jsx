@@ -26,7 +26,7 @@ function BaseInteractiveMap({
   position = 'bottomleft',
 }) {
   // Use filteredOrgs if provided, otherwise fall back to orgs
-  const displayOrgs = filteredOrgs.length > 0 ? filteredOrgs : orgs;
+  const displayOrgs = showFilters ? filteredOrgs : orgs;
 
   if (loading) {
     return (
