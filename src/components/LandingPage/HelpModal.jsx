@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -8,11 +8,6 @@ import { availableSkills, formatSkillName } from '../HGNHelpSkillsDashboard/File
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './HelpModal.module.css';
-
-const SOFTWARE_DEV_TEAM_ALIASES = new Set([
-  'software development team',
-  'hgn software development team',
-]);
 
 /** Maps common help-category labels to questionnaire skill keys. */
 const TOPIC_TO_SKILL_KEY = {
@@ -64,11 +59,19 @@ function HelpModal({ show, onHide, auth }) {
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [teams, setTeams] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // null = not yet determined (loading or unknown due to a failed request); true/false = backend result
+  const [eligible, setEligible] = useState(null);
+  const [eligibilityLoading, setEligibilityLoading] = useState(true);
+  const [eligibilityError, setEligibilityError] = useState(false);
+  const userId = auth?.user?.userid;
+  const previousShowRef = useRef(show);
+  const previousUserIdRef = useRef(userId);
+  const hasRunEligibilityEffectRef = useRef(false);
+  // Monotonic id so only the most recent eligibility request may update state.
+  const eligibilityRequestIdRef = useRef(0);
 
   const darkMode = useSelector(state => state.theme.darkMode);
-  const userId = auth?.user?.userid;
 
   useEffect(() => {
     const fetchHelpCategories = async () => {
@@ -100,20 +103,54 @@ function HelpModal({ show, onHide, auth }) {
   }, []);
 
   useEffect(() => {
-    if (!userId) return undefined;
+    const isInitialRun = !hasRunEligibilityEffectRef.current;
+    const isReopening = !previousShowRef.current && show;
+    const userChanged = previousUserIdRef.current !== userId;
+    hasRunEligibilityEffectRef.current = true;
+    previousShowRef.current = show;
+    previousUserIdRef.current = userId;
 
-    const fetchUserProfile = async () => {
+    if (!userId) {
+      // Invalidate any in-flight request so it cannot update state for a signed-out user.
+      eligibilityRequestIdRef.current += 1;
+      setEligibilityLoading(false);
+      return undefined;
+    }
+
+    const fetchEligibility = async () => {
+      eligibilityRequestIdRef.current += 1;
+      const requestId = eligibilityRequestIdRef.current;
+      const isLatest = () => requestId === eligibilityRequestIdRef.current;
+      setEligibilityLoading(true);
+      setEligibilityError(false);
       try {
-        const profileResponse = await httpService.get(ENDPOINTS.USER_PROFILE(userId));
-        setTeams(profileResponse.data?.teams || []);
+        const eligibilityResponse = await httpService.get(ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+        if (!isLatest()) return;
+        setEligible(Boolean(eligibilityResponse.data?.eligible));
       } catch {
-        setTeams([]);
+        // A superseded request's failure must not overwrite a newer result.
+        if (!isLatest()) return;
+        // A failed eligibility check is not proof of ineligibility; keep eligible unknown (null).
+        setEligible(null);
+        setEligibilityError(true);
+      } finally {
+        if (isLatest()) setEligibilityLoading(false);
       }
     };
 
-    fetchUserProfile();
-    return undefined;
-  }, [userId]);
+    if (isInitialRun || isReopening || userChanged) {
+      void fetchEligibility();
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void fetchEligibility();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [userId, show]);
 
   const handleSelect = optionValue => {
     setSelectedOption(optionValue);
@@ -135,7 +172,6 @@ function HelpModal({ show, onHide, auth }) {
 
     try {
       await httpService.post(ENDPOINTS.HELP_REQUEST_CREATE, {
-        userId,
         topic: selectedOption,
         description: `Help request for: ${selectedOption}`,
       });
@@ -173,12 +209,6 @@ function HelpModal({ show, onHide, auth }) {
     localStorage.setItem('openSuggestionsModal', 'true');
     onHide();
   };
-
-  const role = auth?.user?.role?.trim().toLowerCase() || '';
-
-  const isSoftwareDevMember =
-    ['owner', 'administrator'].includes(role) ||
-    teams.some(team => SOFTWARE_DEV_TEAM_ALIASES.has(team.teamName?.trim().toLowerCase()));
 
   const selectedLabel =
     options.find(option => option.value === selectedOption)?.label || selectedOption;
@@ -258,9 +288,16 @@ function HelpModal({ show, onHide, auth }) {
       <Modal.Body>
         <div className={styles.selectContainer}>{renderContent()}</div>
 
-        {!isSoftwareDevMember && (
+        {!eligibilityLoading && eligibilityError && (
           <div className="alert alert-warning mt-3">
-            Only members of the Software Development Team can submit requests.
+            Unable to verify your eligibility right now. Please try again later.
+          </div>
+        )}
+
+        {!eligibilityLoading && !eligibilityError && eligible === false && (
+          <div className="alert alert-warning mt-3">
+            You must complete the HGN questionnaire and belong to an eligible HGN team or role to
+            submit a help request.
           </div>
         )}
 
@@ -280,7 +317,7 @@ function HelpModal({ show, onHide, auth }) {
         <Button
           variant="primary"
           onClick={handleSubmit}
-          disabled={!selectedOption || !isSoftwareDevMember || isSubmitting}
+          disabled={!selectedOption || eligibilityLoading || eligible !== true || isSubmitting}
         >
           {isSubmitting ? 'Submitting...' : 'Submit'}
         </Button>

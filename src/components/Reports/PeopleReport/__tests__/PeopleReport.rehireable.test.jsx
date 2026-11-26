@@ -73,7 +73,6 @@ const reasonBox = () => screen.getByRole('textbox', { name: /reason for not rehi
 describe('PeopleReport Rehireable control', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(window, 'alert').mockImplementation(() => {});
     updateRehireableStatus.mockImplementation(() => () => Promise.resolve());
   });
 
@@ -81,25 +80,23 @@ describe('PeopleReport Rehireable control', () => {
     renderReport();
     await openModal('Rehireable');
 
-    expect(screen.getByText(/please enter the reason below/i)).toBeInTheDocument();
+    expect(screen.getByText(/enter the required reason/i)).toBeInTheDocument();
     expect(updateRehireableStatus).not.toHaveBeenCalled();
   });
 
   it.each([
     ['empty', ''],
     ['whitespace-only', '   '],
-  ])('does not update status for an %s reason', async (_label, value) => {
+  ])('keeps Confirm disabled and does not update status for an %s reason', async (_label, value) => {
     renderReport();
     await openModal('Rehireable');
     fireEvent.change(reasonBox(), { target: { value } });
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
 
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled();
     expect(updateRehireableStatus).not.toHaveBeenCalled();
-    expect(screen.getByText(/a reason is required/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Rehireable' })).toBeInTheDocument();
   });
 
-  it('passes a trimmed valid reason and shows the not-rehireable state', async () => {
+  it('passes a trimmed valid reason to the update action', async () => {
     renderReport();
     await openModal('Rehireable');
     fireEvent.change(reasonBox(), { target: { value: '  x  ' } });
@@ -111,23 +108,24 @@ describe('PeopleReport Rehireable control', () => {
       false,
       'x',
     );
-    const control = screen.getByRole('button', { name: 'Not rehireable' });
-    expect(control.title).toBe('x');
-    expect(control.style.border).toBe('2px solid rgb(240, 140, 0)');
   });
 
   it('shows the persisted reason after load', async () => {
     renderReport({ isRehireable: false, notRehireableReason: 'Saved reason' });
 
     const control = await screen.findByRole('button', { name: 'Not rehireable' });
-    expect(control.title).toBe('Saved reason');
+    expect(control.title).toBe('View reason and change history');
     expect(control.style.border).toBe('2px solid rgb(240, 140, 0)');
+
+    fireEvent.click(control);
+    expect(screen.getAllByText('Saved reason').length).toBeGreaterThan(0);
   });
 
-  it('changes back to Rehireable without a reason and clears it', async () => {
+  it('confirms marking the profile rehireable again and clears the reason', async () => {
     renderReport({ isRehireable: false, notRehireableReason: 'Saved reason' });
     await openModal('Not rehireable');
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Mark Rehireable' }));
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
 
     await waitFor(() => expect(toast.success).toHaveBeenCalled());
@@ -136,22 +134,16 @@ describe('PeopleReport Rehireable control', () => {
       true,
       '',
     );
-    const control = screen.getByRole('button', { name: 'Rehireable' });
-    expect(control).toHaveClass('fa-check-square-o');
-    expect(control.style.border).toBe('');
   });
 
-  it('restores the previous state and alerts when the update fails', async () => {
+  it('shows an error toast and does not report success when the update fails', async () => {
     updateRehireableStatus.mockImplementation(() => () => Promise.reject(new Error('fail')));
     renderReport();
     await openModal('Rehireable');
     fireEvent.change(reasonBox(), { target: { value: 'Reason' } });
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
 
-    await waitFor(() => expect(window.alert).toHaveBeenCalled());
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
     expect(toast.success).not.toHaveBeenCalled();
-    const control = screen.getByRole('button', { name: 'Rehireable' });
-    expect(control).toHaveClass('fa-check-square-o');
-    expect(control.style.border).toBe('');
   });
 });

@@ -1,8 +1,9 @@
 /* stylelint-disable declaration-property-value-keyword-no-deprecated */
+
+/* Prefer word boundaries; contain exceptionally long unbroken names. */
 .teamNameCol {
-  width: 55%;
   white-space: normal;
-  word-break: break-all;
+  word-break: normal;
   overflow-wrap: anywhere;
 }
 

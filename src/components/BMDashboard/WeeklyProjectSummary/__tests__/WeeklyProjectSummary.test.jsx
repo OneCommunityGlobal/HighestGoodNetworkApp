@@ -54,6 +54,10 @@ vi.mock('../ExpenditureChart/FinancialsTrackingSection', () => ({
   default: () => <div>Financial Tracking</div>,
 }));
 
+vi.mock('../Financials/FinancialOverview', () => ({
+  default: () => <div>Financial Overview</div>,
+}));
+
 vi.mock('../../InteractiveMap/InteractiveMap', () => ({
   default: () => <div>Interactive Map</div>,
 }));

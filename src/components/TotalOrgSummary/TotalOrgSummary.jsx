@@ -139,6 +139,7 @@ function copyLiveCanvasesToClone(liveCanvases, clonedCanvases) {
 function adjustTitleRowForPDF(clonedContent) {
   const titleRow = clonedContent.querySelector('[data-pdf-title-row]');
   if (!titleRow) return;
+  titleRow.style.setProperty('background-color', '#fff', 'important');
   const titleCol = titleRow.querySelector('[data-pdf-title-col]');
   if (titleCol) titleCol.style.width = '100%';
   const mainTitle = titleRow.querySelector('h3');
@@ -146,7 +147,8 @@ function adjustTitleRowForPDF(clonedContent) {
     mainTitle.style.fontSize = '24pt';
     mainTitle.style.fontWeight = 'bold';
     mainTitle.style.textAlign = 'left';
-    mainTitle.style.color = '#000';
+    mainTitle.style.setProperty('color', '#000', 'important');
+    mainTitle.style.setProperty('text-shadow', 'none', 'important');
     mainTitle.style.margin = '0';
   }
 }
@@ -700,12 +702,25 @@ function TotalOrgSummary(props) {
                 <div
                   className={clsx(
                     styles.totalOrgChartTitle,
+                    styles.mapTitle,
                     darkMode && styles.totalOrgChartTitleDark,
                   )}
                   data-pdf-title
                 >
                   <p>Global Volunteer Network: Uniting Communities Worldwide</p>
                 </div>
+                {!isLoading && volunteerStats?.countryCounts && (
+                  <div className={styles.countryCounts} aria-label="Volunteer country counts">
+                    <p>
+                      All-time contributing countries:{' '}
+                      <strong>{volunteerStats.countryCounts.allTime}</strong>
+                    </p>
+                    <p>
+                      Currently active countries:{' '}
+                      <strong>{volunteerStats.countryCounts.active}</strong>
+                    </p>
+                  </div>
+                )}
                 <GlobalVolunteerMap
                   isLoading={isLoading}
                   locations={volunteerStats?.userLocations}

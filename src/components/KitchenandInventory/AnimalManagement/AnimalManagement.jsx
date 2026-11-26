@@ -1,35 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import styles from './AnimalManagement.module.css';
 
-// --- Hook to detect dark mode from the app's theme ---
+// --- Hook to detect dark mode from the app's theme only ---
 function useDarkMode() {
-  const [darkMode, setDarkMode] = useState(false);
+  const getIsDark = () =>
+    document.body.classList.contains('dark-mode') ||
+    document.documentElement.classList.contains('dark-mode') ||
+    document.body.getAttribute('data-theme') === 'dark' ||
+    document.documentElement.getAttribute('data-theme') === 'dark';
+
+  const [darkMode, setDarkMode] = useState(getIsDark);
 
   useEffect(() => {
-    const checkDarkMode = () => {
-      const isDark =
-        document.body.classList.contains('dark-mode') ||
-        document.body.getAttribute('data-theme') === 'dark' ||
-        document.documentElement.classList.contains('dark-mode') ||
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setDarkMode(isDark);
-    };
+    const checkDarkMode = () => setDarkMode(getIsDark());
 
     checkDarkMode();
 
-    // Watch for class changes on body (theme toggles)
+    // Watch for theme toggles on body and html
     const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-theme'] });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class', 'data-theme'],
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'data-theme'],
+    });
 
-    // Watch for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', checkDarkMode);
-
-    return () => {
-      observer.disconnect();
-      mediaQuery.removeEventListener('change', checkDarkMode);
-    };
+    return () => observer.disconnect();
   }, []);
 
   return darkMode;

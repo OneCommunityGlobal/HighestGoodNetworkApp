@@ -99,6 +99,10 @@ const defaultProps = {
 };
 
 describe('FormattedReport minimal test', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('renders without crashing', () => {
     render(
       <Provider store={store}>
@@ -533,5 +537,142 @@ describe('FormattedReport requested week off notice', () => {
     fireEvent.click(button);
     fireEvent.keyDown(button, { key: 'Escape' });
     expect(screen.queryByText('Family trip')).toBeNull();
+  });
+
+  it('updates the correct report user and applies the warning returned by the API', async () => {
+    const handleTeamCodeChange = vi.fn();
+    axios.patch.mockResolvedValueOnce({
+      data: { updatedUsers: [{ userId: '1', teamCodeWarning: true }] },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} handleTeamCodeChange={handleTeamCodeChange} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const codeInput = screen.getByPlaceholderText('X-XXX');
+    fireEvent.change(codeInput, { target: { value: 'HaHUS' } });
+    fireEvent.blur(codeInput);
+
+    await waitFor(() => expect(handleTeamCodeChange).toHaveBeenCalledWith('1', 'HaHUS', true));
+  });
+
+  describe.each([false, true])('historical badges (darkMode=%s)', darkMode => {
+    const historicalBadgeId = '67919bab07b2a31a54e59265';
+    const badgeData = [
+      {
+        _id: historicalBadgeId,
+        badgeName: '90 FOR 6 WEEK streak',
+        imageUrl: 'https://example.com/test-badge.png',
+      },
+    ];
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-09-19T12:00:00-07:00'));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it.each([
+      ['earlier entry in a multi-week history', ['Sep-12-26', 'Sep-19-26'], 1, true],
+      ['unpadded writer output', ['Sep-6-26', 'Sep-19-26'], 1, true],
+      ['padded single-digit day', ['Sep-06-26'], 1, true],
+      ['ISO calendar date', ['2026-09-06'], 1, true],
+      ['stored ISO timestamp', ['2026-09-05T20:49:24.113Z'], 2, true],
+      ['stored timestamp outside the selected week', ['2026-09-05T20:49:24.113Z'], 1, false],
+      ['inclusive week start', ['2026-09-06T07:00:00.000Z'], 1, true],
+      ['just before week start', ['2026-09-06T06:59:59.999Z'], 1, false],
+      ['inclusive week end', ['2026-09-13T06:59:59.999Z'], 1, true],
+      ['just after week end', ['2026-09-13T07:00:00.000Z'], 1, false],
+      ['timestamp with an explicit offset', ['2026-09-12T23:30:00-07:00'], 1, true],
+      ['next-week calendar date', ['2026-09-13'], 1, false],
+      ['previous-week calendar date', ['Sep-5-26'], 1, false],
+      ['invalid dates', ['garbage', 'Sep-31-26', '2026-09-10Tgarbage'], 1, false],
+      ['multiple matching entries render once', ['Sep-6-26', 'Sep-12-26'], 1, true],
+      ['empty history uses lastModified', [], 1, true],
+      ['missing history uses lastModified', undefined, 1, true],
+    ])('%s', (_label, earnedDate, weekIndex, visible) => {
+      const themeStore = createStore(
+        state => state,
+        { theme: { darkMode } },
+        applyMiddleware(thunk),
+      );
+      const summaryWithHistoricalBadge = {
+        ...dummySummary,
+        badgeCollection: [
+          {
+            count: 1,
+            earnedDate,
+            badge: historicalBadgeId,
+            // A populated history must take precedence over this fallback.
+            lastModified: '2026-09-10T12:00:00.000Z',
+          },
+        ],
+      };
+
+      render(
+        <Provider store={themeStore}>
+          <MemoryRouter>
+            <FormattedReport
+              {...defaultProps}
+              summaries={[summaryWithHistoricalBadge]}
+              weekIndex={weekIndex}
+              badges={badgeData}
+              darkMode={darkMode}
+              loadBadges
+            />
+          </MemoryRouter>
+        </Provider>,
+      );
+
+      expect(
+        screen.queryAllByAltText('', {
+          selector: 'img[src="https://example.com/test-badge.png"]',
+        }),
+      ).toHaveLength(visible ? 1 : 0);
+    });
+  });
+});
+
+describe('FormattedReport incomplete questionnaire indicator', () => {
+  const INDICATOR = 'incomplete-questionnaire-indicator';
+  const renderReport = completedQuestionnaireUserIds =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            completedQuestionnaireUserIds={completedQuestionnaireUserIds}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+  it('shows the indicator right after the name when the person has not completed it', async () => {
+    renderReport(new Set(['someone-else']));
+    const indicator = screen.getByTestId(INDICATOR);
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(screen.getByText(/John Doe/).nextElementSibling).toBe(indicator);
+
+    fireEvent.mouseOver(indicator);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'This person has not completed their questionnaire yet.',
+    );
+  });
+
+  it('hides the indicator when the person has completed it', () => {
+    renderReport(new Set(['1']));
+    expect(screen.queryByTestId(INDICATOR)).toBeNull();
+  });
+
+  it('hides the indicator while completion status is unknown', () => {
+    renderReport(null);
+    expect(screen.queryByTestId(INDICATOR)).toBeNull();
   });
 });
