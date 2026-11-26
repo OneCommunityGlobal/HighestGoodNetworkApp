@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -55,7 +56,11 @@ vi.mock('@tinymce/tinymce-react', async () => {
             id,
             focus: () => {},
             plugins: {
-              wordcount: { body: { getWordCount: () => text.split(/\s+/).filter(Boolean).length } },
+              wordcount: {
+                body: {
+                  getWordCount: () => text.split(/\s+/).filter(Boolean).length,
+                },
+              },
             },
           });
         },
@@ -118,12 +123,19 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     });
   });
 
-  const submitButton = () => screen.getByRole('button', { name: /^(submit|submitting\.\.\.)$/i });
-  const duplicateButton = key => screen.getByRole('button', { name: LABELS[key] });
-  const taskTimeActions = () => store.getActions().filter(a => a.type === TASK_TIME_ACTION);
+  const submitButton = () =>
+    screen.getByRole('button', { name: /^(submit|submitting\.\.\.)$/i });
+
+  const duplicateButton = key =>
+    screen.getByRole('button', { name: LABELS[key] });
+
+  const taskTimeActions = () =>
+    store.getActions().filter(a => a.type === TASK_TIME_ACTION);
 
   const respondWithStatus = (status, code) => {
-    postTimeEntry.mockImplementation(() => async () => (code ? { status, code } : { status }));
+    postTimeEntry.mockImplementation(() => async () =>
+      code ? { status, code } : { status },
+    );
   };
 
   const respondInOrder = (...results) => {
@@ -153,8 +165,13 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
 
     await screen.findByRole('option', { name: project.projectName });
     await screen.findByRole('option', { name: /Mock Task/ });
-    await userEvent.selectOptions(screen.getByLabelText(/project\/task/i), TASK_VALUE);
-    fireEvent.change(screen.getByLabelText(/notes/i), { target: { value: NOTES } });
+    await userEvent.selectOptions(
+      screen.getByLabelText(/project\/task/i),
+      TASK_VALUE,
+    );
+    fireEvent.change(screen.getByLabelText(/notes/i), {
+      target: { value: NOTES },
+    });
     await waitFor(() => expect(submitButton()).toBeEnabled());
   };
 
@@ -173,6 +190,7 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     expect.soft(toast.success).not.toHaveBeenCalled();
     expect.soft(screen.getByLabelText(/project\/task/i)).toHaveValue(TASK_VALUE);
     expect.soft(screen.getByLabelText(/notes/i)).toHaveValue(NOTES);
+
     const [hours, minutes] = screen.getAllByRole('spinbutton');
     expect.soft(hours).toHaveValue(1);
     expect.soft(minutes).toHaveValue(30);
@@ -183,7 +201,11 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     ['project', { projectId: MOCK_TASK.projectId }, MOCK_TASK.projectId],
     [
       'task',
-      { projectId: MOCK_TASK.projectId, wbsId: MOCK_TASK.wbsId, taskId: MOCK_TASK._id },
+      {
+        projectId: MOCK_TASK.projectId,
+        wbsId: MOCK_TASK.wbsId,
+        taskId: MOCK_TASK._id,
+      },
       TASK_VALUE,
     ],
   ])('restores the original %s selection when editing', async (_label, selection, expected) => {
@@ -191,12 +213,18 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
       <TimeEntryForm
         from="WeeklyTab"
         edit
-        data={{ ...data, ...selection, personId: authMock.user.userid, isTangible: true }}
+        data={{
+          ...data,
+          ...selection,
+          personId: authMock.user.userid,
+          isTangible: true,
+        }}
         toggle={toggle}
         isOpen
       />,
       { store },
     );
+
     await screen.findByRole('option', { name: /Mock Task/ });
     expect(screen.getByLabelText(/project\/task/i)).toHaveValue(expected);
     expect(screen.getByText('Tangible', { selector: 'span' })).toBeInTheDocument();
@@ -220,6 +248,7 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
       }),
       expect.objectContaining({ detailed: true }),
     );
+
     expect(sendStop).toHaveBeenCalledTimes(1);
     expect(onTimeSubmitted).toHaveBeenCalledTimes(1);
     expect(taskTimeActions()).toHaveLength(1);
@@ -227,14 +256,28 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     expect(toast.error).not.toHaveBeenCalled();
   });
 
-  it.each([400, 403, 409, 500])('uses ordinary failure behavior for HTTP %i', async status => {
-    respondWithStatus(status);
+  it.each([400, 403, 409, 500])(
+    'uses ordinary failure behavior for HTTP %i',
+    async status => {
+      respondWithStatus(status);
+      await fillAndSubmit();
+
+      expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument();
+      expectFailedSubmissionLeftEverythingIntact();
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining(`request failed with status ${status}`),
+      );
+    },
+  );
+
+  it('shows a specific error when the server rejects a non-today date', async () => {
+    respondWithStatus(400, 'INVALID_TIME_ENTRY_DATE');
     await fillAndSubmit();
 
     expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument();
     expectFailedSubmissionLeftEverythingIntact();
     expect(toast.error).toHaveBeenCalledWith(
-      expect.stringContaining(`request failed with status ${status}`),
+      'You can only log time for today.',
     );
   });
 
@@ -257,7 +300,9 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
 
     expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument();
     expectFailedSubmissionLeftEverythingIntact();
-    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('status 409'));
+    expect(toast.error).toHaveBeenCalledWith(
+      'An error occurred while attempting to submit your time entry. Error: SOME_OTHER_CONFLICT',
+    );
   });
 
   it('preserves failure behavior for a network rejection', async () => {
@@ -267,7 +312,9 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     await fillAndSubmit();
 
     expectFailedSubmissionLeftEverythingIntact();
-    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Network Error'));
+    expect(toast.error).toHaveBeenCalledWith(
+      expect.stringContaining('Network Error'),
+    );
   });
 
   it('CANCEL closes the form and delegates current-week navigation without stopping the timer', async () => {
@@ -291,13 +338,16 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
 
     await userEvent.click(duplicateButton('edit'));
 
-    await waitFor(() => expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument(),
+    );
     expect(toggle).not.toHaveBeenCalled();
     expect(sendStop).not.toHaveBeenCalled();
     expect(screen.getByLabelText(/notes/i)).toHaveValue(NOTES);
     await waitFor(() => expect(screen.getByLabelText(/notes/i)).toHaveFocus());
     expect(screen.getByLabelText(/project\/task/i)).toHaveValue(TASK_VALUE);
     expect(screen.getByLabelText(/date/i)).toHaveValue(originalWorkDate);
+
     const [hours, minutes] = screen.getAllByRole('spinbutton');
     expect(hours).toHaveValue(1);
     expect(minutes).toHaveValue(30);
@@ -305,12 +355,17 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
   });
 
   it('allows a revised description to be resubmitted after EDIT', async () => {
-    respondInOrder({ status: 409, code: 'DUPLICATE_TIME_ENTRY' }, { status: 200 });
+    respondInOrder(
+      { status: 409, code: 'DUPLICATE_TIME_ENTRY' },
+      { status: 200 },
+    );
     await fillAndSubmit();
     await userEvent.click(duplicateButton('edit'));
 
     const revisedNotes = `${NOTES} and added a new project reference`;
-    fireEvent.change(screen.getByLabelText(/notes/i), { target: { value: revisedNotes } });
+    fireEvent.change(screen.getByLabelText(/notes/i), {
+      target: { value: revisedNotes },
+    });
     await userEvent.click(submitButton());
 
     await waitFor(() => expect(postTimeEntry).toHaveBeenCalledTimes(2));
@@ -322,29 +377,43 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
   it('Escape chooses EDIT and never retries or stops the timer', async () => {
     respondWithStatus(409, 'DUPLICATE_TIME_ENTRY');
     await fillAndSubmit();
+
     const editButton = duplicateButton('edit');
     await waitFor(() => expect(editButton).toHaveFocus());
 
     fireEvent.keyDown(editButton, { key: 'Escape', keyCode: 27 });
     fireEvent.keyUp(editButton, { key: 'Escape', keyCode: 27 });
 
-    await waitFor(() => expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument(),
+    );
     expect(postTimeEntry).toHaveBeenCalledTimes(1);
     expect(sendStop).not.toHaveBeenCalled();
     expect(screen.getByLabelText(/notes/i)).toHaveValue(NOTES);
   });
 
   it('PROCEED retries the original snapshot plus boolean allowDuplicate and cleans up once', async () => {
-    respondInOrder({ status: 409, code: 'DUPLICATE_TIME_ENTRY' }, { status: 200 });
+    respondInOrder(
+      { status: 409, code: 'DUPLICATE_TIME_ENTRY' },
+      { status: 200 },
+    );
     await fillAndSubmit();
+
     const originalPayload = postTimeEntry.mock.calls[0][0];
-    fireEvent.change(screen.getByLabelText(/notes/i), { target: { value: 'Changed after warning' } });
+    fireEvent.change(screen.getByLabelText(/notes/i), {
+      target: { value: 'Changed after warning' },
+    });
 
     await userEvent.click(duplicateButton('proceed'));
 
     await waitFor(() => expect(postTimeEntry).toHaveBeenCalledTimes(2));
-    expect(postTimeEntry.mock.calls[1][0]).toEqual({ ...originalPayload, allowDuplicate: true });
-    await waitFor(() => expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument());
+    expect(postTimeEntry.mock.calls[1][0]).toEqual({
+      ...originalPayload,
+      allowDuplicate: true,
+    });
+    await waitFor(() =>
+      expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument(),
+    );
     expect(sendStop).toHaveBeenCalledTimes(1);
     expect(onTimeSubmitted).toHaveBeenCalledTimes(1);
     expect(taskTimeActions()).toHaveLength(1);
@@ -374,45 +443,71 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
 
   it('allows only one in-flight PROCEED request after rapid repeated clicks', async () => {
     let resolveProceed;
+
     respondInOrder(
       { status: 409, code: 'DUPLICATE_TIME_ENTRY' },
-      new Promise(resolve => { resolveProceed = resolve; }),
+      new Promise(resolve => {
+        resolveProceed = resolve;
+      }),
     );
     await fillAndSubmit();
-    const proceed = duplicateButton('proceed');
 
+    const proceed = duplicateButton('proceed');
     fireEvent.click(proceed);
     fireEvent.click(proceed);
+
     await waitFor(() => expect(postTimeEntry).toHaveBeenCalledTimes(2));
     resolveProceed({ status: 200 });
+
     await waitFor(() => expect(sendStop).toHaveBeenCalledTimes(1));
     expect(postTimeEntry).toHaveBeenCalledTimes(2);
   });
 
   it('shows duplicate confirmation after intangible confirmation and does not show it twice', async () => {
-    respondInOrder({ status: 409, code: 'DUPLICATE_TIME_ENTRY' }, { status: 200 });
+    respondInOrder(
+      { status: 409, code: 'DUPLICATE_TIME_ENTRY' },
+      { status: 200 },
+    );
     await renderAndFill({ isTangible: false });
     await userEvent.click(submitButton());
 
-    expect(screen.getByText(/If you are logging Intangible Time/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: /Yep, totally did that! Please proceed/ }));
+    expect(
+      screen.getByText(/If you are logging Intangible Time/),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /Yep, totally did that! Please proceed/,
+      }),
+    );
+
     await waitFor(() => expect(postTimeEntry).toHaveBeenCalledTimes(1));
     expect(screen.getByText(DUPLICATE_WARNING)).toBeInTheDocument();
+
     await userEvent.click(duplicateButton('proceed'));
 
     await waitFor(() => expect(postTimeEntry).toHaveBeenCalledTimes(2));
     await waitFor(() =>
-      expect(screen.queryByText(/If you are logging Intangible Time/)).not.toBeInTheDocument(),
+      expect(
+        screen.queryByText(/If you are logging Intangible Time/),
+      ).not.toBeInTheDocument(),
     );
-    expect(postTimeEntry.mock.calls[1][0]).toMatchObject({ isTangible: false, allowDuplicate: true });
+
+    expect(postTimeEntry.mock.calls[1][0]).toMatchObject({
+      isTangible: false,
+      allowDuplicate: true,
+    });
   });
 
   it('uses the target user for CANCEL when opened from the Timelog page', async () => {
     respondWithStatus(409, 'DUPLICATE_TIME_ENTRY');
     await fillAndSubmit({ from: 'TimeLog' });
+
     await userEvent.click(duplicateButton('cancel'));
 
-    expect(onDuplicateCancel).toHaveBeenCalledWith(postTimeEntry.mock.calls[0][0].personId);
+    expect(onDuplicateCancel).toHaveBeenCalledWith(
+      postTimeEntry.mock.calls[0][0].personId,
+    );
     expect(sendStop).not.toHaveBeenCalled();
   });
 });

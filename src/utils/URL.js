@@ -100,6 +100,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/dashboard/questionaire/checkUserFoundHelpSomewhere`,
   QUESTIONNAIRE_USER_NAMES_LIST: () => `${APIEndpoint}/dashboard/questionaire/userNamesList`,
 
+
+  SERVER_TIME: `${APIEndpoint}/servertime`,
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USERS_HOURS_PERIOD: `${APIEndpoint}/TimeEntry/users/totalHours`,

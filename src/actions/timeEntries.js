@@ -10,6 +10,7 @@ import {
   GET_TIME_ENTRIES_PERIOD_BULK,
 } from '../constants/timeEntries';
 import { ENDPOINTS } from '~/utils/URL';
+import { fetchServerTime } from '../utils/serverTime';
 
 export const setTimeEntriesForWeek = (data, offset) => ({
   type: GET_TIME_ENTRIES_WEEK,
@@ -47,6 +48,7 @@ export const getTimeEntriesForWeek = (userId, offset) => {
     .format('YYYY-MM-DDTHH:mm:ss');
 
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
+  
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
@@ -197,20 +199,56 @@ export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => {
     }
   };
 };
-export const postTimeEntry = (timeEntry, { displayedUserId, detailed = false } = {}) => {
+
+export const postTimeEntry = (
+  timeEntry,
+  { displayedUserId, detailed = false } = {},
+) => {
   const url = ENDPOINTS.TIME_ENTRY();
+
   return async dispatch => {
+    let serverData;
+
+    try {
+      serverData = await fetchServerTime();
+
+      if (!serverData?.date) {
+        throw new Error('Server date is unavailable');
+      }
+    } catch (error) {
+      // Server-time verification failure prevents safe date validation.
+      // Return 500 so the caller can retry instead of posting the entry.
+      toast.error('Unable to verify server time. Please try again.');
+      return detailed ? { status: 500 } : 500;
+    }
+
+    const selectedDate = timeEntry.dateOfWork;
+
+    if (selectedDate !== serverData.date) {
+      console.error('Time entry date validation failed:', {
+        selectedDate,
+        serverDate: serverData.date,
+      });
+      return detailed ? { status: 400, code: 'INVALID_TIME_ENTRY_DATE' } : 400;
+    }
+
     try {
       const res = await axios.post(url, timeEntry);
+
       if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
         dispatch(updateTimeEntries(timeEntry, undefined, displayedUserId));
       }
+
       return detailed ? { status: res.status } : res.status;
-    } catch (e) {
-      const { status, data } = e.response;
-      if (!detailed) return status;
-      // Only a string code is exposed; the rest of the response body stays private.
-      return typeof data?.code === 'string' ? { status, code: data.code } : { status };
+    } catch (error) {
+      const status = error.response?.status ?? 500;
+      const code = error.response?.data?.code;
+
+      if (detailed) {
+        return typeof code === 'string' ? { status, code } : { status };
+      }
+
+      return status;
     }
   };
 };
