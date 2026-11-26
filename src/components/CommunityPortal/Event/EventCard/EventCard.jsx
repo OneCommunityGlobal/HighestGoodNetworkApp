@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Card } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -13,9 +16,13 @@ import { format } from 'date-fns';
 import { getUserTimezone, formatEventTimeWithTimezone } from '../../../../utils/timezoneUtils';
 import styles from './EventCard.module.css';
 
+const getResourceUserId = resource => String(resource?.userID?._id ?? resource?.userID ?? '');
+
 function EventCard(props) {
   const { event, darkMode } = props;
   const [expanded, setExpanded] = useState(false);
+  const history = useHistory();
+  const userId = useSelector(state => state.auth?.user?.userid);
   const {
     title = '',
     description = '',
@@ -29,6 +36,10 @@ function EventCard(props) {
     currentAttendees = 0,
     maxAttendees = 0,
   } = event;
+
+  // The logged-in user is registered if they appear in the event's resources (by the API)
+  const isRegistered =
+    Boolean(userId) && resources.some(resource => getResourceUserId(resource) === String(userId));
 
   const attendanceRate = Math.round((currentAttendees / maxAttendees) * 100) || 0;
 
@@ -95,9 +106,14 @@ function EventCard(props) {
     }
   };
 
-  const handleConfirmation = async () => {
-    // TODO: Replace with actual registration endpoint once available
-    // Will use: POST /api/register/create
+  const handleConfirmation = () => {
+    if (isRegistered) return;
+    const eventId = event._id || event.id;
+    if (!eventId) {
+      toast.error('Unable to open registration: this event is missing an ID.');
+      return;
+    }
+    history.push(`/communityportal/Activities/Register/${eventId}`);
   };
 
   return (
@@ -220,8 +236,9 @@ function EventCard(props) {
             type="button"
             className={`${styles['action-button']} ${styles['primary-button']}`}
             onClick={handleConfirmation}
+            disabled={isRegistered}
           >
-            Confirm attendance
+            {isRegistered ? 'Registered' : 'Confirm attendance'}
           </button>
           <button
             type="button"
