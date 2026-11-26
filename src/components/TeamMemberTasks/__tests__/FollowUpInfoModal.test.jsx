@@ -28,15 +28,15 @@ describe('FollowUpInfoModal', () => {
     renderModal();
     fireEvent.mouseEnter(screen.getByRole('button', { name: 'Follow up info' }));
     const text = screen.getByText(/yellow warning triangle/i).textContent;
-    expect(text).toMatch(/more time is logged on the task after the box was checked/i);
-    expect(text).toMatch(/Uncheck and re-check the box to clear it/i);
+    expect(text).toMatch(/more hours are logged after the box was checked/i);
+    expect(text).toMatch(/Click the triangle to clear it, which unchecks the box/i);
   });
 
   it('explains the red number next to the icon', () => {
     renderModal(true);
     fireEvent.focus(screen.getByRole('button', { name: 'Follow up info' }));
     expect(
-      screen.getByText(/how many times the task's estimated hours\s+have been changed/i),
+      screen.getByText(/how many times the task's estimated\s+hours were increased/i),
     ).toBeInTheDocument();
   });
 });

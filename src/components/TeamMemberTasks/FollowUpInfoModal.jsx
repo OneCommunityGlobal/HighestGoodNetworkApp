@@ -112,14 +112,15 @@ function FollowUpInfoModal() {
               50%, the checkbox will be unchecked and shown in red.)
             </div>
             <div className="mb-3">
-              If more time is logged on the task after the box was checked, a yellow warning
-              triangle appears on the checkbox. Hover over it to see &quot;Time was logged after
-              this task was accepted as complete!&quot; Uncheck and re-check the box to clear it.
+              If more hours are logged after the box was checked, a yellow warning triangle replaces
+              the check mark (hover text: &quot;Time was logged after this task was accepted as
+              complete!&quot;). Click the triangle to clear it, which unchecks the box, then check
+              the box again once you have followed up on the new hours.
             </div>
             <div className="mb-3">
-              The red number next to this icon shows how many times the task&apos;s estimated hours
-              have been changed. Click it to see the task&apos;s change history. Only users with
-              permission to see it can view this number.
+              The red number next to this icon counts how many times the task&apos;s estimated hours
+              were increased. Lowering the estimate does not add to it. Click it to see the
+              task&apos;s change history. Only users with permission can see this number.
             </div>
           </div>,
           document.body,
