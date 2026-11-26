@@ -9,10 +9,33 @@ import { getEvents } from '../../../../actions/eventActions';
 import CreateEventModal from './CreateEventModal';
 import { filterEventsByDate } from './FilterByDate';
 
+const formatEventSchedule = (eventDate, startTime, endTime) => {
+  const start = new Date(startTime || NaN);
+  const end = new Date(endTime || NaN);
+  const hasStart = !Number.isNaN(start.getTime());
+  const date = hasStart ? start : new Date(eventDate || NaN);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const dateOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+  const timeOptions = { hour: 'numeric', minute: '2-digit' };
+  const dateLabel = date.toLocaleDateString(undefined, dateOptions);
+  if (!hasStart) return dateLabel;
+
+  const startLabel = start.toLocaleTimeString(undefined, timeOptions);
+  if (Number.isNaN(end.getTime())) return `${dateLabel}, ${startLabel}`;
+
+  const endLabel =
+    start.toDateString() === end.toDateString()
+      ? end.toLocaleTimeString(undefined, timeOptions)
+      : end.toLocaleString(undefined, { ...dateOptions, ...timeOptions });
+
+  return `${dateLabel}, ${startLabel} – ${endLabel}`;
+};
+
 function MyCases() {
   const [events, setEvents] = useState([]);
   const [view, setView] = useState('card');
-  const [filter, setFilter] = useState('All Time');
+  const [filter, setFilter] = useState('This Week');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -42,12 +65,9 @@ function MyCases() {
         id: event._id,
         eventName: event.title,
         eventType: event.type,
-        eventDate: event.date,
+        eventDate: event.startTime || event.date,
         startTime: event.startTime,
-        eventTime: new Date(event.startTime).toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
+        eventTime: formatEventSchedule(event.date, event.startTime, event.endTime),
         attendees: event.currentAttendees || 0,
         image: event.coverImage,
       }));
@@ -63,7 +83,7 @@ function MyCases() {
   }, [loadEvents]);
 
   const filteredEvents = filterEventsByDate(events, filter).filter(
-    event => new Date(event.startTime).getTime() >= now.getTime(),
+    event => new Date(event.eventDate).getTime() >= now.getTime(),
   );
 
   const handleEventCreated = createdEvent => {
@@ -78,17 +98,15 @@ function MyCases() {
         eventType: createdEvent.type || 'all',
         eventDate: new Date(eventDate).toISOString(),
         startTime: eventDate,
-        eventTime: new Date(eventDate).toLocaleString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true,
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        }),
+        eventTime: formatEventSchedule(
+          createdEvent.date,
+          createdEvent.startTime,
+          createdEvent.endTime,
+        ),
         eventName: createdEvent.title,
         attendees: 0,
         location: createdEvent.location,
+        image: createdEvent.coverImage,
       },
       ...prev,
     ]);
@@ -153,29 +171,12 @@ function MyCases() {
     }
 
     return (
-      <div
-        className={`case-cards-global ${styles.caseCards} ${
-          expanded || isExporting ? styles.expanded : ''
-        }`}
-      >
+      <div className={`${styles.caseCards} ${expanded || isExporting ? styles.expanded : ''}`}>
         {visibleEvents.map(event => (
           <div
-            className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
+            className={`${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
             key={event.id}
           >
-            <span className={styles.eventBadge} data-type={event.eventType}>
-              {event.eventType}
-            </span>
-
-            <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
-              {event.eventTime}
-            </span>
-
-            <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
-              {isEventToday(event.eventDate) ? "Today's " : ''}
-              {event.eventName}
-            </span>
-
             <div className={styles.eventImageContainer}>
               <img
                 src={getEventImage(event)}
@@ -188,29 +189,48 @@ function MyCases() {
                 }}
               />
             </div>
-            <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
-              <div className={styles.avatars}>
-                <img
-                  alt="profile img"
-                  src="/pfp-default-header.png"
-                  width="24"
-                  height="24"
-                  crossOrigin="anonymous"
-                  loading="lazy"
-                  onError={e => {
-                    e.currentTarget.src = FALLBACK_IMG;
-                  }}
-                />
-              </div>
-
-              <span
-                className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
-                title="Number of members who attended this event"
-                data-tooltip="Members Attended"
-              >
-                <FontAwesomeIcon icon={faUsers} className="me-2" />
-                {`+${event.attendees}`} Attendees
+            <div className={styles.cardDetails}>
+              <span className={styles.eventBadge} data-type={event.eventType}>
+                {event.eventType}
               </span>
+
+              <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
+                {event.eventTime}
+              </span>
+
+              <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+                {isEventToday(event.eventDate) ? "Today's " : ''}
+                {event.eventName}
+              </span>
+
+              <div
+                className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}
+              >
+                <div className={styles.avatars}>
+                  <img
+                    alt="profile img"
+                    src="/pfp-default-header.png"
+                    width="24"
+                    height="24"
+                    crossOrigin="anonymous"
+                    loading="lazy"
+                    onError={e => {
+                      e.currentTarget.src = FALLBACK_IMG;
+                    }}
+                  />
+                </div>
+
+                <span
+                  className={`${styles.attendeesCount} ${
+                    darkMode ? styles.attendeesCountDark : ''
+                  }`}
+                  title="Number of members who attended this event"
+                  data-tooltip="Members Attended"
+                >
+                  <FontAwesomeIcon icon={faUsers} className="me-2" />
+                  {event.attendees} Attendees
+                </span>
+              </div>
             </div>
           </div>
         ))}
@@ -224,16 +244,10 @@ function MyCases() {
     }
 
     return (
-      <ul
-        className={`case-list-global ${styles.caseList} ${
-          expanded || isExporting ? styles.expanded : ''
-        }`}
-      >
+      <ul className={`${styles.caseList} ${expanded || isExporting ? styles.expanded : ''}`}>
         {visibleEvents.map(event => (
           <li
-            className={`case-list-item-global ${styles.caseListItem} ${
-              darkMode ? styles.caseListItemDark : ''
-            }`}
+            className={`${styles.caseListItem} ${darkMode ? styles.caseListItemDark : ''}`}
             key={event.id}
           >
             <span className={`${styles.eventType} ${darkMode ? styles.eventTypeDark : ''}`}>
@@ -252,7 +266,7 @@ function MyCases() {
               data-tooltip="Members Attended"
             >
               <FontAwesomeIcon icon={faUsers} className="me-2" />
-              {`+${event.attendees}`} Attendees
+              {event.attendees} Attendees
             </span>
           </li>
         ))}
@@ -382,9 +396,7 @@ function MyCases() {
   );
 
   return (
-    <div
-      className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
-    >
+    <div className={`${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}>
       <header className={styles.header}>
         <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
           Upcoming Events
@@ -417,7 +429,7 @@ function MyCases() {
             </button>
           </div>
 
-          <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
+          <div className={styles.filterWrapper}>
             <select
               className={`${styles.filterDropdown} ${
                 darkMode ? styles.filterDropdownDarkMode : ''
@@ -441,11 +453,7 @@ function MyCases() {
           </button>
 
           {filteredEvents.length > 10 && !isExporting && (
-            <button
-              type="button"
-              className={`more-btn-global ${styles.moreBtn}`}
-              onClick={() => setExpanded(!expanded)}
-            >
+            <button type="button" className={styles.moreBtn} onClick={() => setExpanded(!expanded)}>
               {expanded ? 'Show Less' : 'More'}
             </button>
           )}
