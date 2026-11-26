@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styles from './KIDashboard.module.css';
 import FoodCategoriesPieChart from './FoodCategoriesPieChart/FoodCategoriesPieChart';
+import FoodSourcesPieChart from './FoodSourcesPieChart/FoodSourcesPieChart';
+import SeasonalTrendsLineChart from './SeasonalTrendsLineChart/SeasonalTrendsLineChart';
 
 // These are temporary frontend values.
 // They can be replaced with API data when the backend is ready.
@@ -401,6 +403,14 @@ const KIDashboard = () => {
       {/* Food Categories Pie Chart from PR #5719 */}
       <section className={styles.overviewCard}>
         <FoodCategoriesPieChart />
+      </section>
+
+      <section className={styles.overviewCard}>
+        <FoodSourcesPieChart />
+      </section>
+
+      <section className={styles.overviewCard}>
+        <SeasonalTrendsLineChart />
       </section>
 
       {/* Upcoming Harvests */}

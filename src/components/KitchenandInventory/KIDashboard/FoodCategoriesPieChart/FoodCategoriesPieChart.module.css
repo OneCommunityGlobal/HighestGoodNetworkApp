@@ -1,5 +1,6 @@
 .container {
   color-scheme: light;
+
   --fc-bg: #fff;
   --fc-muted-bg: #f5f7fb;
   --fc-text: #1f1f1f;
@@ -33,6 +34,7 @@
 
 .darkMode {
   color-scheme: dark;
+
   --fc-bg: #0f1522;
   --fc-muted-bg: #111a2b;
   --fc-text: #f1f3f7;
@@ -121,68 +123,6 @@ select.control {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23d8dfef' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
 }
 
-/* ---------- Date inputs with custom calendar icon ---------- */
-.dateWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.dateInput {
-  padding-right: 2.6rem;
-  cursor: pointer;
-  color-scheme: light;
-}
-
-/* Overrides global input background/colors in dark mode (higher specificity, no !important) */
-.container.darkMode .dateInput[type='date'] {
-  color-scheme: dark;
-  background-color: var(--fc-bg);
-  color: var(--fc-text);
-  border-color: var(--fc-border);
-}
-
-/* Ensure WebKit internal text segments remain visible */
-.container.darkMode .dateInput[type='date']::-webkit-datetime-edit,
-.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-fields-wrapper,
-.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-text,
-.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-month-field,
-.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-day-field,
-.container.darkMode .dateInput[type='date']::-webkit-datetime-edit-year-field {
-  color: var(--fc-text);
-}
-
-/* Confine native picker icon to the right side and make it an invisible hit-box */
-.dateInput::-webkit-calendar-picker-indicator {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 2.5rem;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  opacity: 0;
-  cursor: pointer;
-  z-index: 2;
-}
-
-/* React Calendar Icon */
-.dateIcon {
-  position: absolute;
-  right: 0.9rem;
-  width: 1.1rem;
-  height: 1.1rem;
-  color: var(--fc-icon);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.dateInput:hover ~ .dateIcon,
-.dateInput:focus ~ .dateIcon {
-  color: var(--fc-accent);
-}
-
 /* ---------- Reset button ---------- */
 .buttonCell {
   display: flex;
@@ -209,17 +149,17 @@ select.control {
   transition: background-color 0.15s ease, transform 0.05s ease;
 }
 
+.resetBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .resetBtn:hover:not(:disabled) {
   background-color: var(--fc-reset-hover);
 }
 
 .resetBtn:active:not(:disabled) {
   transform: translateY(1px);
-}
-
-.resetBtn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
 }
 
 .dateRangeError {
