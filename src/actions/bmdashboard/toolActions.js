@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { GET_TOOL_BY_ID, GET_TOOLS, GET_TOOL_AVAILABILITY } from '../../constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from '../../constants/errors';
 import { ENDPOINTS } from '~/utils/URL';
@@ -66,6 +67,41 @@ export const purchaseTools = async body => {
       if (err.request) return err.request;
       return err.message;
     });
+};
+
+export const approveToolPurchase = (purchaseId, quantity) => {
+  return async dispatch => {
+    try {
+      const res = await axios.post(ENDPOINTS.BM_UPDATE_TOOL_STATUS, {
+        purchaseId,
+        status: 'Approved',
+        quantity,
+      });
+      toast.success('Tool purchase approved.', { toastId: 'toolApproveSuccess' });
+      dispatch(fetchTools());
+      return res;
+    } catch {
+      toast.error('Failed to approve tool purchase.', { toastId: 'toolApproveError' });
+      return null;
+    }
+  };
+};
+
+export const rejectToolPurchase = purchaseId => {
+  return async dispatch => {
+    try {
+      const res = await axios.post(ENDPOINTS.BM_UPDATE_TOOL_STATUS, {
+        purchaseId,
+        status: 'Rejected',
+      });
+      toast.success('Tool purchase rejected.', { toastId: 'toolRejectSuccess' });
+      dispatch(fetchTools());
+      return res;
+    } catch {
+      toast.error('Failed to reject tool purchase.', { toastId: 'toolRejectError' });
+      return null;
+    }
+  };
 };
 
 export const fetchToolAvailability = (toolId = '', projectId = '') => {
