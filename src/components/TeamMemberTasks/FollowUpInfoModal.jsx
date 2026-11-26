@@ -106,6 +106,10 @@ function FollowUpInfoModal() {
               checkbox remains checked until the person reaches over 90% progress.
             </div>
             <div className="mb-3">
+              If a person is followed up with after 90% progress, the checkbox clears again as soon
+              as more time is logged on the task.
+            </div>
+            <div className="mb-3">
               If the checkbox is unchecked it resets to the initial state. (If the progress is less
               than 50%, the checkbox will be unchecked and shown in green. If the progress is over
               50%, the checkbox will be unchecked and shown in red.)
