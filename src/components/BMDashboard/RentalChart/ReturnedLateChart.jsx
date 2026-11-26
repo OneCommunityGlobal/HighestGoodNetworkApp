@@ -1,3 +1,4 @@
+// Version 1.0.0
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
@@ -92,18 +93,17 @@ export default function ReturnedLateChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [sortOption, setSortOption] = useState('DESC');
   const isMultiProjectView = selectedProject === 'All';
-  // Tools are picked per project, so the list only has the selected project's tools
+  // Group saved project-prefixed names under one tool choice across projects.
   const availableTools = useMemo(() => {
-    if (isMultiProjectView) return [];
-    // The value stays the saved name, since the API filters on it; only the label is shortened
-    const toolOptions = new Map();
+    const toolOptions = new Set();
     allToolsData
-      .filter(item => item.projectId === selectedProject && item.toolName)
+      .filter(item => (isMultiProjectView || item.projectId === selectedProject) && item.toolName)
       .forEach(item => {
-        toolOptions.set(item.toolName, stripProjectPrefix(item.toolName, item.projectName));
+        const name = stripProjectPrefix(item.toolName, item.projectName);
+        toolOptions.add(name);
       });
     return [...toolOptions]
-      .map(([value, label]) => ({ label, value }))
+      .map(value => ({ label: value, value }))
       .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
   }, [allToolsData, isMultiProjectView, selectedProject]);
   const visibleDatasets = useMemo(
@@ -205,13 +205,23 @@ export default function ReturnedLateChart() {
     if (selectedProject && selectedProject !== 'All') params.push(`projectId=${selectedProject}`);
     if (dateRange.startDate) params.push(`startDate=${dateRange.startDate.toISOString()}`);
     if (dateRange.endDate) params.push(`endDate=${dateRange.endDate.toISOString()}`);
-    if (selectedTools && selectedTools.length > 0)
-      params.push(`tools=${selectedTools.map(t => t.value).join(',')}`);
+    if (selectedTools.length > 0) {
+      const names = allToolsData
+        .filter(item => isMultiProjectView || item.projectId === selectedProject)
+        .filter(item =>
+          selectedTools.some(
+            tool => tool.value === stripProjectPrefix(item.toolName, item.projectName),
+          ),
+        )
+        .map(item => item.toolName);
+      params.push(`tools=${encodeURIComponent([...new Set(names)].join(','))}`);
+    }
 
     return `${ENDPOINTS.BM_TOOLS_RETURNED_LATE}${params.length ? `?${params.join('&')}` : ''}`;
   };
 
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -222,6 +232,8 @@ export default function ReturnedLateChart() {
             Authorization: localStorage.getItem('token'),
           },
         });
+        // A slower previous filter request must not overwrite the current selection.
+        if (cancelled) return;
         const data = getArrayPayload(res.data);
         const normalized = data.map(item => ({
           toolName: stripProjectPrefix(
@@ -315,6 +327,7 @@ export default function ReturnedLateChart() {
           });
         }
       } catch (err) {
+        if (cancelled) return;
         const errorMessage =
           err.response?.data?.error ||
           err.response?.data?.message ||
@@ -322,12 +335,23 @@ export default function ReturnedLateChart() {
           'Failed to fetch returned-late data';
         setError(errorMessage);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     // Errors are handled inside fetchData
     fetchData().catch(() => {});
-  }, [availableProjects, darkMode, selectedProject, dateRange, selectedTools, sortOption]);
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    availableProjects,
+    allToolsData,
+    darkMode,
+    selectedProject,
+    dateRange,
+    selectedTools,
+    sortOption,
+  ]);
 
   useEffect(() => {
     if (!isMultiProjectView) {
@@ -569,22 +593,18 @@ export default function ReturnedLateChart() {
           >
             Tools:
           </label>
-          {/* MultiSelect has no title prop, so the wrapper shows the disabled hint */}
-          <div title={isMultiProjectView ? 'Select a project to filter by tool' : undefined}>
+          <div>
             <MultiSelect
               options={availableTools}
               value={selectedTools}
               onChange={setSelectedTools}
-              disabled={isMultiProjectView}
               labelledBy="tools-select"
               overrideStrings={{
                 selectSomeItems: 'All Tools',
                 allItemsAreSelected: 'All Tools',
                 search: 'Search tools',
               }}
-              className={`${styles['returned-late-tools-select']} ${
-                isMultiProjectView ? styles['returned-late-tools-select-disabled'] : ''
-              }`}
+              className={styles['returned-late-tools-select']}
             />
           </div>
         </div>
