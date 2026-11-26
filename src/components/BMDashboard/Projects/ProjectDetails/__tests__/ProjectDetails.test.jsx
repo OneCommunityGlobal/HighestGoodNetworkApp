@@ -12,6 +12,9 @@ vi.mock('../LogBar', () => ({
   LoggingButtons: () => null,
   AddItemButtons: () => null,
   TeamButtons: ({ projectId }) => <a href={`/bmdashboard/issues/add/${projectId}`}>Log Issue</a>,
+  BudgetButtons: ({ projectId }) => (
+    <a href={`/bmdashboard/projects/${projectId}/budget`}>Set Budget</a>
+  ),
 }));
 
 vi.mock('../RentedTools/RentedToolsDisplay', () => ({
@@ -50,6 +53,11 @@ describe('ProjectDetails', () => {
     expect(screen.getByRole('link', { name: 'Log Issue' })).toHaveAttribute(
       'href',
       `/bmdashboard/issues/add/${projectId}`,
+    );
+    expect(screen.getByText('Budget')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Set Budget' })).toHaveAttribute(
+      'href',
+      `/bmdashboard/projects/${projectId}/budget`,
     );
   });
 });

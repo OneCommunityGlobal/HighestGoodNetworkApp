@@ -21,7 +21,10 @@ function normalizeData(data) {
  * PieChartPanel — renders one pie (Actual or Planned).
  * Works as a standalone stacked card and as one half of the comparison layout.
  */
-function PieChartPanel({ data, title, darkMode, compact }) {
+const DEFAULT_EMPTY_MESSAGE = 'No expenditure data for this project';
+const NO_BUDGET_MESSAGE = 'No budget set for this project';
+
+function PieChartPanel({ data, title, darkMode, compact, emptyMessage = DEFAULT_EMPTY_MESSAGE }) {
   const normalizedData = normalizeData(data);
   const hasData = normalizedData.some(d => d.amount > 0);
 
@@ -179,9 +182,7 @@ function PieChartPanel({ data, title, darkMode, compact }) {
         </div>
       ) : (
         // <output> is the semantic element for role="status"; aria-live="polite" is implicit
-        <output className={styles['chart-pane__empty']}>
-          No expenditure data for this project
-        </output>
+        <output className={styles['chart-pane__empty']}>{emptyMessage}</output>
       )}
     </div>
   );
@@ -197,6 +198,7 @@ PieChartPanel.propTypes = {
   title: PropTypes.string.isRequired,
   darkMode: PropTypes.bool,
   compact: PropTypes.bool,
+  emptyMessage: PropTypes.string,
 };
 
 /**
@@ -211,7 +213,14 @@ PieChartPanel.propTypes = {
  *   viewMode   ('stacked'|'comparison')       — ignored when pieType is set
  *   pieType    ('actual'|'planned'|undefined) — when set, renders one pie only
  */
-function ComparisonView({ actual, planned, darkMode, activeTab, setActiveTab }) {
+function ComparisonView({
+  actual,
+  planned,
+  plannedEmptyMessage,
+  darkMode,
+  activeTab,
+  setActiveTab,
+}) {
   return (
     <div className={styles['expenditure-chart-comparison']}>
       <div
@@ -265,7 +274,13 @@ function ComparisonView({ actual, planned, darkMode, activeTab, setActiveTab }) 
             activeTab === 'planned' ? '' : styles['expenditure-chart-panel--hidden-mobile']
           }`}
         >
-          <PieChartPanel data={planned} title="Planned Expenditure" darkMode={darkMode} compact />
+          <PieChartPanel
+            data={planned}
+            title="Planned Expenditure"
+            darkMode={darkMode}
+            compact
+            emptyMessage={plannedEmptyMessage}
+          />
         </div>
       </div>
     </div>
@@ -275,6 +290,7 @@ function ComparisonView({ actual, planned, darkMode, activeTab, setActiveTab }) 
 ComparisonView.propTypes = {
   actual: PropTypes.array,
   planned: PropTypes.array,
+  plannedEmptyMessage: PropTypes.string,
   darkMode: PropTypes.bool,
   activeTab: PropTypes.string,
   setActiveTab: PropTypes.func,
@@ -285,6 +301,8 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
 
   const [actual, setActual] = useState([]);
   const [planned, setPlanned] = useState([]);
+  // Planned amounts come from the project's budget; false when none has been set
+  const [hasBudget, setHasBudget] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   // activeTab controls which panel is shown on mobile in comparison mode
@@ -303,6 +321,7 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
         if (!cancelled) {
           setActual(Array.isArray(data.actual) ? data.actual : []);
           setPlanned(Array.isArray(data.planned) ? data.planned : []);
+          setHasBudget(data.hasBudget !== false);
         }
       })
       .catch(() => {
@@ -345,11 +364,19 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
     );
   }
 
+  const plannedEmptyMessage = hasBudget ? DEFAULT_EMPTY_MESSAGE : NO_BUDGET_MESSAGE;
+
   // ── Single-pie mode (used by SingleExpenditureCard) ──────────
   if (pieType) {
-    const panelData = pieType === 'actual' ? actual : planned;
-    const panelTitle = pieType === 'actual' ? 'Actual Expenditure' : 'Planned Expenditure';
-    return <PieChartPanel data={panelData} title={panelTitle} darkMode={darkMode} />;
+    const isActual = pieType === 'actual';
+    return (
+      <PieChartPanel
+        data={isActual ? actual : planned}
+        title={isActual ? 'Actual Expenditure' : 'Planned Expenditure'}
+        darkMode={darkMode}
+        emptyMessage={isActual ? DEFAULT_EMPTY_MESSAGE : plannedEmptyMessage}
+      />
+    );
   }
 
   // ── Comparison mode ──────────────────────────────────────────
@@ -358,6 +385,7 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
       <ComparisonView
         actual={actual}
         planned={planned}
+        plannedEmptyMessage={plannedEmptyMessage}
         darkMode={darkMode}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -372,7 +400,12 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
         <PieChartPanel data={actual} title="Actual Expenditure" darkMode={darkMode} />
       </div>
       <div className={styles['expenditure-chart-card']}>
-        <PieChartPanel data={planned} title="Planned Expenditure" darkMode={darkMode} />
+        <PieChartPanel
+          data={planned}
+          title="Planned Expenditure"
+          darkMode={darkMode}
+          emptyMessage={plannedEmptyMessage}
+        />
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
   ResponsiveContainer,
   BarChart,
@@ -204,6 +205,8 @@ function ActualVsPlannedCost() {
   // Component state
   const [breakdown, setBreakdown] = useState([]);
   const [totals, setTotals] = useState({ actual: 0, planned: 0 });
+  // Planned costs come from the project's budget; false when none has been set
+  const [hasBudget, setHasBudget] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
 
@@ -251,6 +254,7 @@ function ActualVsPlannedCost() {
             actual: Math.round(data.totalActualCost),
             planned: Math.round(data.totalPlannedCost),
           });
+          setHasBudget(data.hasBudget !== false);
           setBreakdown(
             data.breakdown.map(item => ({
               category: item.category,
@@ -262,6 +266,7 @@ function ActualVsPlannedCost() {
         .catch(() => {
           setTotals({ actual: 0, planned: 0 });
           setBreakdown([]);
+          setHasBudget(true);
         })
         .finally(() => setLoading(false));
     }
@@ -356,9 +361,17 @@ function ActualVsPlannedCost() {
         </div>
       </div>
 
+      {!loading && !hasBudget && selectedProject && (
+        <p className={styles.noBudgetNote} role="note">
+          No budget set for this project, so planned costs show as 0.{' '}
+          <Link to={`/bmdashboard/projects/${selectedProject}/budget`}>Set a budget</Link>
+        </p>
+      )}
+
       {chartContent}
 
-      {!loading && !isFiltering && hasData && (
+      {/* Variance against a missing budget is meaningless, so it is only shown with a budget */}
+      {!loading && !isFiltering && hasData && hasBudget && (
         <div className={styles.varianceSummaryContainer}>
           <div className={styles.varianceSummaryHeader}>
             <h3 className={styles.varianceSummaryTitle}>Variance and Budget Indicators</h3>
