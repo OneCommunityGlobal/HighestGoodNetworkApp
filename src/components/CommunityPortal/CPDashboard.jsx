@@ -17,6 +17,13 @@ import { isTomorrow, isComingWeekend } from './utils';
 
 const RECENT_SEARCHES_KEY = 'cp_recent_searches';
 const MAX_RECENT_SEARCHES = 10;
+const formatDateInputValue = date => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
 
 function useRecentSearches(key = RECENT_SEARCHES_KEY, maxItems = MAX_RECENT_SEARCHES) {
   const [recentSearches, setRecentSearches] = useState(() => {
@@ -150,6 +157,7 @@ export function CPDashboard() {
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+  const todayDate = formatDateInputValue(new Date());
   const [onlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -513,6 +521,7 @@ export function CPDashboard() {
                   placeholder="Select Date"
                   className={styles.dateFilter}
                   value={selectedDate}
+                  min={todayDate}
                   onChange={e => setSelectedDate(e.target.value)}
                   style={{ marginTop: '10px' }}
                 />
