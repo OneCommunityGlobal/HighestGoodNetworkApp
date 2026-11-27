@@ -286,7 +286,6 @@ function QuantityOfMaterialsUsed({
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [legendColors, setLegendColors] = useState([]);
   const chartContainerRef = useRef(null);
-  const [visibleRange, setVisibleRange] = useState([0, 30]);
   const [selectedMaterialKey, setSelectedMaterialKey] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -679,19 +678,6 @@ function QuantityOfMaterialsUsed({
   const rowCount = chartData?.labels?.length || 0;
   const chartHeight = Math.max(240, rowCount * ROW_HEIGHT + CHART_PADDING_HEIGHT);
 
-  // The chart scrolls vertically; work out which material rows are visible for the legend
-  const handleScroll = () => {
-    if (!rowCount) return;
-    const container = chartContainerRef.current;
-    if (!container) return;
-    const { scrollTop, clientHeight } = container;
-
-    const startIndex = Math.floor(scrollTop / ROW_HEIGHT);
-    const endIndex = Math.min(Math.ceil((scrollTop + clientHeight) / ROW_HEIGHT), rowCount);
-
-    setVisibleRange([startIndex, endIndex]);
-  };
-
   const chartOptions = useMemo(
     () =>
       createChartOptions({
@@ -900,7 +886,9 @@ function QuantityOfMaterialsUsed({
             Materials with no usage in the selected periods are hidden unless you select them.
           </li>
           <li>Scroll down inside the chart to view more materials.</li>
-          <li>The legend below shows the top 10 visible materials in the current scroll range.</li>
+          <li>
+            The legend below lists the top 10 materials by quantity, out of all materials shown.
+          </li>
           <li>
             Legend colors match chart bars. Dots are color-coded based on change:
             <ul style={{ paddingLeft: '16px' }}>
@@ -1062,11 +1050,7 @@ function QuantityOfMaterialsUsed({
         </div>
       )}
 
-      <div
-        className={`${styles.quantityOfMaterialsUsedChartContainer}`}
-        ref={chartContainerRef}
-        onScroll={handleScroll}
-      >
+      <div className={`${styles.quantityOfMaterialsUsedChartContainer}`} ref={chartContainerRef}>
         {!chartData && <p>Loading data...</p>}
         {chartData && rowCount === 0 && (
           <p className={`${styles.quantityOfMaterialsUsedEmptyText}`}>
@@ -1107,7 +1091,7 @@ function QuantityOfMaterialsUsed({
       </div>
 
       {/* Fixed legend below label */}
-      {chartData && chartData.labels && rowCount > 0 && visibleRange && (
+      {chartData && chartData.labels && rowCount > 0 && (
         <div
           className={`${styles.quantityOfMaterialsUsedCustomLegendContainer}`}
           style={{
@@ -1115,18 +1099,16 @@ function QuantityOfMaterialsUsed({
           }}
         >
           <strong className={darkMode ? 'text-light' : ''}>
-            Visible Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
+            Top {Math.min(10, rowCount)} of {rowCount} materials ({selectedDate}):{' '}
           </strong>
           {chartData.datasets[0].data
-            .slice(visibleRange[0], visibleRange[1])
             .map((usage, index) => ({
-              name: chartData.labels[visibleRange[0] + index],
+              name: chartData.labels[index],
               usage,
               color:
-                legendColors[visibleRange[0] + index] ||
-                chartData.datasets[0].backgroundColor?.[visibleRange[0] + index] ||
-                chartData.datasets[0].pointBackgroundColor?.[visibleRange[0] + index],
-              actualIndex: visibleRange[0] + index,
+                legendColors[index] ||
+                chartData.datasets[0].backgroundColor?.[index] ||
+                chartData.datasets[0].pointBackgroundColor?.[index],
             }))
             .filter(item => item.name != null && item.usage != null)
             .sort((a, b) => b.usage - a.usage)
