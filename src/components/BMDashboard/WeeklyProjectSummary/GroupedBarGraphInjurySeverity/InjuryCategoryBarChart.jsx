@@ -192,6 +192,36 @@ const computeInsights = (displayData, visibleSeriesIds) => {
   };
 };
 
+// Light / dark colors and classes used by the chart, so the component has no theme conditions
+const getChartTheme = darkMode =>
+  darkMode
+    ? {
+        containerClass: `${styles.injuryChartContainer} ${styles.injuryChartDark}`,
+        calendarClass: styles.injuryDarkCalendar,
+        toggleClass: `${styles.injuryViewToggle} ${styles.injuryViewToggleDark}`,
+        highlight: '#f87171',
+        axisText: '#fff',
+        valueLabel: '#f3f4f6',
+        chartBackground: '#1e2a3a',
+        axisLine: '#888',
+        tooltipBackground: '#2b3e59',
+        tooltipBorder: '1px solid #555',
+        barStroke: '#E5E7EB',
+      }
+    : {
+        containerClass: styles.injuryChartContainer,
+        calendarClass: undefined,
+        toggleClass: styles.injuryViewToggle,
+        highlight: '#b91c1c',
+        axisText: '#000',
+        valueLabel: '#374151',
+        chartBackground: '#fff',
+        axisLine: '#000',
+        tooltipBackground: '#fff',
+        tooltipBorder: '1px solid #ccc',
+        barStroke: '#ffffff',
+      };
+
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
 
@@ -437,15 +467,14 @@ function InjuryCategoryBarChart() {
 
   const selectStyles = useMemo(() => buildSelectStyles(darkMode), [darkMode]);
 
-  const containerClassName = `${styles.injuryChartContainer} ${
-    darkMode ? styles.injuryChartDark : ''
-  }`;
+  const theme = getChartTheme(darkMode);
+  const containerClassName = theme.containerClass;
   // Applied to the calendar popup itself so dark styles don't depend on global classes
-  const calendarClassName = darkMode ? styles.injuryDarkCalendar : undefined;
+  const calendarClassName = theme.calendarClass;
 
-  const highlightColor = darkMode ? '#f87171' : '#b91c1c';
-  const axisTextColor = darkMode ? '#fff' : '#000';
-  const valueLabelColor = darkMode ? '#f3f4f6' : '#374151';
+  const highlightColor = theme.highlight;
+  const axisTextColor = theme.axisText;
+  const valueLabelColor = theme.valueLabel;
 
   // Abbreviates long category names (full name on hover) and highlights the top category
   const renderCategoryTick = ({ x, y, payload }) => {
@@ -509,6 +538,9 @@ function InjuryCategoryBarChart() {
 
   const viewToggleButtonClass = isActive =>
     `${styles.injuryViewToggleButton} ${isActive ? styles.injuryViewToggleButtonActive : ''}`;
+
+  const showChart = !loading && !error && chartData.length > 0;
+  const showEmptyState = !loading && !error && chartData.length === 0;
 
   const topProjectLabel = insights?.topProjectId
     ? projectNameById.get(insights.topProjectId) || 'Unknown Project'
@@ -630,10 +662,7 @@ function InjuryCategoryBarChart() {
       </div>
 
       {/* Switch between comparing projects and seeing total impact per category */}
-      <fieldset
-        className={`${styles.injuryViewToggle} ${darkMode ? styles.injuryViewToggleDark : ''}`}
-        aria-label="Bar layout"
-      >
+      <fieldset className={theme.toggleClass} aria-label="Bar layout">
         <button
           type="button"
           className={viewToggleButtonClass(!isStacked)}
@@ -655,7 +684,7 @@ function InjuryCategoryBarChart() {
       {loading && <p className={styles.injuryStatusText}>Loading…</p>}
       {!loading && error && <p className={styles.injuryErrorText}>Error: {String(error)}</p>}
 
-      {!loading && !error && chartData.length > 0 && (
+      {showChart && (
         <div className={styles.chartArea}>
           <ResponsiveContainer key={chartKey} width="100%" height="100%">
             <BarChart
@@ -663,7 +692,7 @@ function InjuryCategoryBarChart() {
               barGap={BAR_GAP}
               margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
               style={{
-                backgroundColor: darkMode ? '#1e2a3a' : '#fff',
+                backgroundColor: theme.chartBackground,
                 borderRadius: '8px',
                 padding: '8px',
               }}
@@ -673,14 +702,14 @@ function InjuryCategoryBarChart() {
                 interval={0}
                 height={xTickAngle ? 70 : 40}
                 tick={renderCategoryTick}
-                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+                axisLine={{ stroke: theme.axisLine }}
+                tickLine={{ stroke: theme.axisLine }}
               />
               <YAxis
                 allowDecimals={false}
-                tick={{ fill: darkMode ? '#fff' : '#000' }}
-                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+                tick={{ fill: theme.axisText }}
+                axisLine={{ stroke: theme.axisLine }}
+                tickLine={{ stroke: theme.axisLine }}
               />
               <Tooltip
                 //tooltip only; no shaded hover overlay across the chart
@@ -691,12 +720,12 @@ function InjuryCategoryBarChart() {
                   return (
                     <div
                       style={{
-                        backgroundColor: darkMode ? '#2b3e59' : '#fff',
-                        border: darkMode ? '1px solid #555' : '1px solid #ccc',
+                        backgroundColor: theme.tooltipBackground,
+                        border: theme.tooltipBorder,
                         padding: 10,
                       }}
                     >
-                      <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
+                      <div style={{ color: theme.axisText, margin: 0 }}>{label}</div>
                       {payload
                         .filter(entry => Number(entry.value) > 0)
                         .map(entry => {
@@ -723,7 +752,7 @@ function InjuryCategoryBarChart() {
                 // Legend sits above the chart; click an entry to hide/show that project
                 verticalAlign="top"
                 wrapperStyle={{
-                  color: darkMode ? '#fff' : '#000',
+                  color: theme.axisText,
                   paddingBottom: 10,
                   cursor: 'pointer',
                 }}
@@ -743,7 +772,7 @@ function InjuryCategoryBarChart() {
                   stackId={isStacked ? 'injuries' : undefined}
                   hide={hiddenSeries.includes(pid)}
                   fill={projectColorById.get(pid)}
-                  stroke={darkMode ? '#E5E7EB' : '#ffffff'}
+                  stroke={theme.barStroke}
                   strokeWidth={1}
                   shape={isStacked ? undefined : barProps => renderPackedBar(pid, barProps)}
                 >
@@ -763,7 +792,7 @@ function InjuryCategoryBarChart() {
         </div>
       )}
 
-      {!loading && !error && chartData.length > 0 && (
+      {showChart && (
         <section className={styles.injuryInsights} aria-label="Key insights">
           <h4 className={styles.injuryInsightsTitle}>Key Insights</h4>
           {insights ? (
@@ -791,7 +820,7 @@ function InjuryCategoryBarChart() {
         </section>
       )}
 
-      {!loading && !error && chartData.length === 0 && (
+      {showEmptyState && (
         <div className={styles.injuryEmptyText}>
           No injury records match the selected filters. Try widening the date range or clearing some
           filters.
