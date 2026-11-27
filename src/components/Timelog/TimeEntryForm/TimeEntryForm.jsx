@@ -613,89 +613,51 @@ export function TimeEntryForm(props) {
     if (closed === true && isOpen) toggle();
   };
 
-  // Extracted out of submitTimeEntry to keep that function's cognitive complexity down
-  // (SonarQube S3776) - this is the Timer-sourced stop-then-save flow on its own. Returns
-  // 'already-stopped' | 'failed' | 'duplicate' | 'saved' so the caller can drive its own
-  // form/submitting state.
-  const submitTimerTimeEntry = async (
+  // Extracted out of submitTimerTimeEntry to keep its cognitive complexity down (SonarQube
+  // S3776) - computes the authoritative elapsed hours/minutes from a GET_TIMER resync (the
+  // CLIENT's own ticked countdown can lag the server's truth, e.g. a backgrounded/throttled
+  // tab), falling back to the form's own values if the resync didn't come back in time.
+  // Returns null if the resync shows the session was already stopped/logged elsewhere.
+  const resolveAuthoritativeElapsed = async (formHours, formMinutes) => {
+    const resynced = sendGetTimerAndConfirm ? await sendGetTimerAndConfirm() : null;
+    // Only an EXPLICIT "started: false" from the server means another tab really did
+    // stop/log this session already - abort rather than risk a duplicate entry. A
+    // timeout/no-response (resynced === null) is not that signal - it just means we
+    // couldn't confirm either way (e.g. a slow connection, or a backend that hasn't
+    // picked up the GET_TIMER requestId echo yet). Treating a timeout as "definitely
+    // stopped elsewhere" used to abort the WHOLE submission before sendStop() was ever
+    // called - the timer kept running and the form never closed, looking exactly like
+    // a hung save. Proceed with best effort instead; sendStop() right below is itself
+    // a real, authoritative check.
+    if (resynced?.started === false) return null;
+
+    let authoritativeHours = formHours;
+    let authoritativeMinutes = formMinutes;
+    if (resynced) {
+      const resyncedGoalMs = Number(resynced.goal);
+      const resyncedTimeMs = Number(resynced.time);
+      const trueRemainingMs = resynced.paused
+        ? resyncedTimeMs
+        : Math.max(0, resyncedTimeMs - (Date.now() - new Date(resynced.startAt).getTime()));
+      const elapsedMs = Math.max(0, resyncedGoalMs - trueRemainingMs);
+      authoritativeHours = Math.floor(elapsedMs / 3600000);
+      authoritativeMinutes = Math.floor((elapsedMs % 3600000) / 60000);
+    }
+    return { authoritativeHours, authoritativeMinutes };
+  };
+
+  // Extracted out of submitTimerTimeEntry to keep its cognitive complexity down (SonarQube
+  // S3776) - submits the authoritative entry and classifies the result, including the
+  // duplicate-409 case the non-Timer path's postNewTimeEntry also handles. Returns
+  // 'duplicate' | 'failed' | 'saved'.
+  const saveTimerEntry = async (
     timeEntry,
-    formHours,
-    formMinutes,
+    authoritativeHours,
+    authoritativeMinutes,
     personId,
     taskId,
-    allowDuplicate = false,
+    allowDuplicate,
   ) => {
-    let authoritativeHours;
-    let authoritativeMinutes;
-
-    if (confirmedStopRef.current) {
-      // A prior attempt in this same form session already computed its authoritative elapsed
-      // time and sent (or tried to send) STOP_TIMER, whether or not that stop was confirmed in
-      // time - reuse it and skip straight to saving. Re-running GET_TIMER here would read back
-      // the server's now-stopped state and be mistaken for "stopped elsewhere" (see below),
-      // discarding time that only failed to *save* or whose stop ack simply arrived late.
-      ({ hours: authoritativeHours, minutes: authoritativeMinutes } = confirmedStopRef.current);
-    } else {
-      const resynced = sendGetTimerAndConfirm ? await sendGetTimerAndConfirm() : null;
-      // Only an EXPLICIT "started: false" from the server means another tab really did
-      // stop/log this session already - abort rather than risk a duplicate entry. A
-      // timeout/no-response (resynced === null) is not that signal - it just means we
-      // couldn't confirm either way (e.g. a slow connection, or a backend that hasn't
-      // picked up the GET_TIMER requestId echo yet). Treating a timeout as "definitely
-      // stopped elsewhere" used to abort the WHOLE submission before sendStop() was ever
-      // called - the timer kept running and the form never closed, looking exactly like
-      // a hung save. Proceed with best effort instead; sendStop() right below is itself
-      // a real, authoritative check.
-      if (resynced?.started === false) {
-        toast.info('This timer session was already stopped or logged elsewhere - please refresh.');
-        return 'already-stopped';
-      }
-
-      // The form's own hours/minutes are the CLIENT's own locally-ticked countdown, which can
-      // lag behind the server's truth (e.g. a backgrounded/throttled tab) - use the resync's
-      // authoritative goal/time/startAt instead, the same way updateRemaining() derives the
-      // live countdown, so a stale local clock can no longer log less than was actually
-      // worked. stopTimer() itself can't be used for this - once stopped, goal/time become
-      // the *leftover*, not the elapsed amount. Falls back to the form's own values if the
-      // resync didn't come back in time.
-      authoritativeHours = formHours;
-      authoritativeMinutes = formMinutes;
-      if (resynced) {
-        const resyncedGoalMs = Number(resynced.goal);
-        const resyncedTimeMs = Number(resynced.time);
-        const trueRemainingMs = resynced.paused
-          ? resyncedTimeMs
-          : Math.max(0, resyncedTimeMs - (Date.now() - new Date(resynced.startAt).getTime()));
-        const elapsedMs = Math.max(0, resyncedGoalMs - trueRemainingMs);
-        authoritativeHours = Math.floor(elapsedMs / 3600000);
-        authoritativeMinutes = Math.floor((elapsedMs % 3600000) / 60000);
-      }
-
-      // Bypasses validateForm (which only checks the form's own input fields), so the
-      // same 1-minute/5-hour bounds are enforced here before this gets anywhere near
-      // sendStop()/postTimeEntry.
-      if (!isElapsedTimeWithinBounds(authoritativeHours, authoritativeMinutes)) {
-        toast.error(
-          `Could not log an invalid elapsed time (${authoritativeHours}h ${authoritativeMinutes}m). Please refresh and try again.`,
-        );
-        return 'failed';
-      }
-
-      // Cache BEFORE calling sendStop(), not after it resolves true - sendStop() gives up
-      // and resolves false after a flat timeout even if the server actually processed
-      // STOP_TIMER just after that window closed. Caching early means a retry after that
-      // kind of timeout still has the authoritative elapsed time to fall back on.
-      confirmedStopRef.current = { hours: authoritativeHours, minutes: authoritativeMinutes };
-
-      const timerStopped = await sendStop();
-      if (!timerStopped) {
-        toast.error('Could not confirm the timer stopped - your time was NOT logged. Please try again.');
-        return 'failed'; // cached above - a retry skips this branch and saves directly
-      }
-    }
-    timeEntry.hours = authoritativeHours;
-    timeEntry.minutes = authoritativeMinutes;
-
     let saveStatus;
     let saveCode;
     try {
@@ -746,6 +708,70 @@ export function TimeEntryForm(props) {
     return 'saved';
   };
 
+  // This is the Timer-sourced stop-then-save flow on its own. Returns
+  // 'already-stopped' | 'failed' | 'duplicate' | 'saved' so the caller can drive its own
+  // form/submitting state.
+  const submitTimerTimeEntry = async (
+    timeEntry,
+    formHours,
+    formMinutes,
+    personId,
+    taskId,
+    allowDuplicate = false,
+  ) => {
+    let authoritativeHours;
+    let authoritativeMinutes;
+
+    if (confirmedStopRef.current) {
+      // A prior attempt in this same form session already computed its authoritative elapsed
+      // time and sent (or tried to send) STOP_TIMER, whether or not that stop was confirmed in
+      // time - reuse it and skip straight to saving. Re-running GET_TIMER here would read back
+      // the server's now-stopped state and be mistaken for "stopped elsewhere" (see below),
+      // discarding time that only failed to *save* or whose stop ack simply arrived late.
+      ({ hours: authoritativeHours, minutes: authoritativeMinutes } = confirmedStopRef.current);
+    } else {
+      const resolved = await resolveAuthoritativeElapsed(formHours, formMinutes);
+      if (!resolved) {
+        toast.info('This timer session was already stopped or logged elsewhere - please refresh.');
+        return 'already-stopped';
+      }
+      ({ authoritativeHours, authoritativeMinutes } = resolved);
+
+      // Bypasses validateForm (which only checks the form's own input fields), so the
+      // same 1-minute/5-hour bounds are enforced here before this gets anywhere near
+      // sendStop()/postTimeEntry.
+      if (!isElapsedTimeWithinBounds(authoritativeHours, authoritativeMinutes)) {
+        toast.error(
+          `Could not log an invalid elapsed time (${authoritativeHours}h ${authoritativeMinutes}m). Please refresh and try again.`,
+        );
+        return 'failed';
+      }
+
+      // Cache BEFORE calling sendStop(), not after it resolves true - sendStop() gives up
+      // and resolves false after a flat timeout even if the server actually processed
+      // STOP_TIMER just after that window closed. Caching early means a retry after that
+      // kind of timeout still has the authoritative elapsed time to fall back on.
+      confirmedStopRef.current = { hours: authoritativeHours, minutes: authoritativeMinutes };
+
+      const timerStopped = await sendStop();
+      if (!timerStopped) {
+        toast.error('Could not confirm the timer stopped - your time was NOT logged. Please try again.');
+        return 'failed'; // cached above - a retry skips this branch and saves directly
+      }
+    }
+    timeEntry.hours = authoritativeHours;
+    timeEntry.minutes = authoritativeMinutes;
+
+    return saveTimerEntry(
+      timeEntry,
+      authoritativeHours,
+      authoritativeMinutes,
+      personId,
+      taskId,
+      allowDuplicate,
+    );
+  };
+
   // Extracted out of submitTimeEntry to keep that function's cognitive complexity down
   // (SonarQube S3776) - runs the from-specific side effects (refresh lists, bump the task's
   // tracked time, etc.) after a non-Timer save has already gone through.
@@ -794,6 +820,38 @@ export function TimeEntryForm(props) {
     }
   };
 
+  // Extracted out of submitTimeEntry to keep its cognitive complexity down (SonarQube
+  // S3776) - Timer-sourced entries go through submitTimerTimeEntry and its own three
+  // outcomes instead of the non-Timer save/duplicate/postSubmit flow below.
+  const handleTimerSubmit = async (
+    timeEntry,
+    formHours,
+    formMinutes,
+    personId,
+    taskId,
+    allowDuplicate,
+    handleFormReset,
+  ) => {
+    const result = await submitTimerTimeEntry(
+      timeEntry,
+      formHours,
+      formMinutes,
+      personId,
+      taskId,
+      allowDuplicate,
+    );
+    if (result === 'already-stopped') {
+      handleFormReset();
+    } else if (result === 'saved') {
+      // Closes the modal (not just clearing its fields) - the save is done and the timer is
+      // stopped, so there's nothing left for the user to see here; leaving it open after a
+      // slow save looked exactly like the save had silently failed or hung.
+      clearForm(true);
+    }
+    setSubmitting(false);
+    if (!edit) postRequestInFlightRef.current = false;
+  };
+
   const submitTimeEntry = async ({ retryPayload, allowDuplicate = false } = {}) => {
     if (!edit && postRequestInFlightRef.current) return;
     if (!edit) {
@@ -837,27 +895,15 @@ export function TimeEntryForm(props) {
     // first so a stale tab - whose own local "started" flag may not have caught up with
     // another tab already stopping/logging this same session - doesn't save a duplicate.
     if (from === 'Timer') {
-      const result = await submitTimerTimeEntry(
+      await handleTimerSubmit(
         timeEntry,
         formHours,
         formMinutes,
         personId,
         taskId,
         allowDuplicate,
+        handleFormReset,
       );
-      if (result === 'already-stopped') {
-        handleFormReset();
-        if (!edit) postRequestInFlightRef.current = false;
-        return;
-      }
-      if (result === 'saved') {
-        // Closes the modal (not just clearing its fields) - the save is done and the timer is
-        // stopped, so there's nothing left for the user to see here; leaving it open after a
-        // slow save looked exactly like the save had silently failed or hung.
-        clearForm(true);
-      }
-      setSubmitting(false);
-      if (!edit) postRequestInFlightRef.current = false;
       return;
     }
 
