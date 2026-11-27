@@ -66,7 +66,65 @@
 }
 
 .colorColumn {
+  min-width: 64px;
   text-align: center;
+}
+
+.colorCell {
+  position: relative;
+}
+
+.submittedLinkIcon {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: calc(50% + 10px);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #5b2a86;
+  cursor: pointer;
+}
+
+.submittedLinkIcon:hover,
+.submittedLinkIcon:focus-visible {
+  background-color: #f4ecff;
+  color: #5b2a86;
+}
+
+.submittedLinkIconDark {
+  color: #e8d4ff;
+}
+
+.submittedLinkIconDark:hover,
+.submittedLinkIconDark:focus-visible {
+  background-color: #36265a;
+  color: #e8d4ff;
+}
+
+.submittedLinksList {
+  margin-bottom: 0;
+  padding-inline-start: 1.5rem;
+  overflow-wrap: anywhere;
+}
+
+.submittedLinksModalDark {
+  background-color: #1b2a41;
+  color: #f9fafb;
+}
+
+.submittedLinksModalDark a {
+  color: #bdcdff;
+}
+
+:global(.modal-content).submittedLinksModalDark > :is(:global(.modal-header), :global(.modal-footer)) {
+  border-color: #48566b;
 }
 
 .hoursColumn {

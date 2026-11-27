@@ -67,14 +67,15 @@ export const getTimeEntriesForWeek = (userId, offset) => {
   };
 };
 
-export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
+export const getTimeEntriesForPeriod = (userId, fromDate, toDate, { includeTaskLinks } = {}) => {
   toDate = moment(toDate)
     .endOf('day')
     .format('YYYY-MM-DDTHH:mm:ss');
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
-    const res = await axios.get(url).catch(error => {
+    const request = includeTaskLinks ? axios.get(url, { params: { includeTaskLinks } }) : axios.get(url);
+    const res = await request.catch(error => {
       if (error.status === 401) {
         // logout error
         loggedOut = true;

@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useId, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTable } from 'react-table';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Cell, Label, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { FiChevronDown, FiChevronUp, FiFolder } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp, FiFolder, FiLink } from 'react-icons/fi';
+import { clsx } from 'clsx';
 import { CHART_RADIUS, CHART_SIZE } from '../../common/PieChart/constants';
 import { generateArrayOfUniqColors } from '../../common/PieChart/colorsGenerator';
 import { peopleTasksPieChartViewData } from './selectors';
@@ -13,13 +15,154 @@ import styles from './CompletedTasksPieChart.module.css';
 // get screenshotted into work confirmation letters and the bottom edge has to line up.
 export const MAX_VISIBLE_TASKS = 20;
 
-export function ColorSwatchCell({ value, column }) {
+function getSubmittedLinks(relatedWorkLinks) {
+  if (!Array.isArray(relatedWorkLinks)) return [];
+
+  const links = new Set();
+  relatedWorkLinks.forEach(value => {
+    if (typeof value !== 'string') return;
+    const link = value.trim();
+    // The submission form also accepts hostnames without an explicit scheme.
+    const url = /^[\w-]+(?:\.[\w-]+)+(?:[/:?#]|$)/.test(link) ? `https://${link}` : link;
+    if (!/^https?:\/\/[^/\s]/i.test(url)) return;
+
+    try {
+      links.add(new URL(url).href);
+    } catch {
+      // Skip malformed historical entries.
+    }
+  });
+  return [...links];
+}
+
+function openLinkWindow(url) {
+  // Opening a blank window lets us detect blocking and clear its opener before navigating.
+  const popup = window.open('', '_blank', 'popup,width=1000,height=750');
+  if (!popup) return false;
+  popup.opener = null;
+  popup.location.replace(url);
+  return true;
+}
+
+function SubmittedTaskLinks({ links, taskName, darkMode }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [blockedCount, setBlockedCount] = useState(0);
+  const titleId = useId();
+  const [firstLink] = links;
+  const multiple = links.length > 1;
+  const label = `Open submitted ${multiple ? 'links' : 'link'} for ${taskName}`;
+  const iconClassName = clsx(styles.submittedLinkIcon, darkMode && styles.submittedLinkIconDark);
+
+  const openSingle = event => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (!openLinkWindow(firstLink)) {
+      setBlockedCount(1);
+      setIsOpen(true);
+    }
+  };
+
+  const openAll = () => {
+    const blockedLinks = links.filter(link => !openLinkWindow(link));
+    setBlockedCount(blockedLinks.length);
+  };
+
+  const close = () => {
+    setIsOpen(false);
+    setBlockedCount(0);
+  };
+
   return (
-    <div
-      data-testid="color-swatch"
-      className={styles['project-chart-legend']}
-      style={{ backgroundColor: column.colorScale[value] }}
-    />
+    <>
+      {multiple ? (
+        <button
+          type="button"
+          className={iconClassName}
+          aria-label={label}
+          aria-haspopup="dialog"
+          title={label}
+          onClick={() => setIsOpen(true)}
+        >
+          <FiLink aria-hidden="true" />
+        </button>
+      ) : (
+        <a
+          className={iconClassName}
+          href={firstLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={label}
+          title={label}
+          onClick={openSingle}
+        >
+          <FiLink aria-hidden="true" />
+        </a>
+      )}
+      {isOpen && (
+        <Modal
+          isOpen
+          labelledBy={titleId}
+          backdrop="static"
+          keyboard={false}
+          scrollable
+          trapFocus
+          fade={false}
+          contentClassName={darkMode ? styles.submittedLinksModalDark : undefined}
+        >
+          <ModalHeader id={titleId}>Submitted Links</ModalHeader>
+          <ModalBody>
+            {blockedCount > 0 && (
+              <p role="status">
+                {blockedCount === 1
+                  ? 'Your browser blocked a window.'
+                  : `Your browser blocked ${blockedCount} windows.`}{' '}
+                Open links individually below or allow pop-ups for this site.
+              </p>
+            )}
+            <ul className={styles.submittedLinksList}>
+              {links.map(link => (
+                <li key={link}>
+                  <a href={link} target="_blank" rel="noopener noreferrer">
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </ModalBody>
+          <ModalFooter>
+            {multiple && (
+              <Button color="primary" onClick={openAll}>
+                Open All
+              </Button>
+            )}
+            <Button color="secondary" onClick={close}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+    </>
+  );
+}
+
+export function ColorSwatchCell({ value, column, row }) {
+  const links = getSubmittedLinks(row?.original.relatedWorkLinks);
+
+  return (
+    <div className={styles.colorCell}>
+      <div
+        data-testid="color-swatch"
+        className={styles['project-chart-legend']}
+        style={{ backgroundColor: column.colorScale[value] }}
+      />
+      {links.length > 0 && (
+        <SubmittedTaskLinks
+          links={links}
+          taskName={row.original.projectName}
+          darkMode={column.darkMode}
+        />
+      )}
+    </div>
   );
 }
 
@@ -107,6 +250,7 @@ function CompletedTasksPieChart({ darkMode }) {
         headerClassName: styles.colorColumn,
         cellClassName: styles.colorRow,
         colorScale,
+        darkMode,
         Cell: ColorSwatchCell,
       },
       {
@@ -124,7 +268,7 @@ function CompletedTasksPieChart({ darkMode }) {
         Cell: ({ value }) => value.toFixed(2),
       },
     ],
-    [colorScale],
+    [colorScale, darkMode],
   );
   const {
     getTableProps,
