@@ -2,12 +2,7 @@
   display: none;
 }
 
-.taskName {
-  height: auto;
-  text-align: left !important;
-}
-
-@media (width <= 1024px) {
+@media (width <= 768px) {
   .desktop {
     display: none;
   }
@@ -17,43 +12,145 @@
   }
 }
 
-.centered-col {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.projectTable {
+  background-color: #fafafa;
 }
 
-.div-addproject {
-  display: inline-block;
+.projectHeaderContainer {
+  padding: 0;
 }
 
-.div-addproject .btn-addproject[disabled] {
-  pointer-events: none;
+.projectHeaderRow {
+  width: 100%;
+  margin: 0;
 }
 
-.projects-and-tasks-header {
+.sectionHeader {
   margin-bottom: 10px;
 }
 
-.table-container {
+.sectionTitle {
+  font-size: x-large;
+  font-weight: 700;
+}
+
+.assignProjectButton {
+  width: 100%;
+  margin-bottom: 10px;
+  z-index: 10;
+}
+
+.assignProject .assignProjectButton:disabled {
+  pointer-events: none;
+}
+
+.tableContainer {
   max-height: 300px;
   overflow: auto;
   margin: 2px;
 }
 
-.table-header {
+.tableHeader {
   width: 50px;
 }
 
-.table-cell {
+.tableCell {
   width: 103px;
   text-align: center;
 }
 
-.opacity-70{
-  opacity: 0.70;
+.taskHeader {
+  flex-wrap: wrap;
 }
 
-.fs-18{
+.taskFilters {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  padding-block: 0.5rem;
+}
+
+.taskFilters [aria-pressed='true'] {
+  text-decoration: underline;
+}
+
+.taskName {
+  height: auto;
+  text-align: left !important;
+}
+
+.taskDetails {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.taskDescription {
+  min-width: 0;
+  margin-right: auto;
+  overflow-wrap: anywhere;
+}
+
+.projectName {
+  opacity: 0.7;
+}
+
+.taskTitle {
   font-size: 18px;
+}
+
+.darkMode a.taskTitle {
+  color: #cde0ff;
+}
+
+.taskStatus {
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.active {
+  color: #10489a;
+  background-color: #e2edff;
+}
+
+.resolved {
+  color: #19582d;
+  background-color: #def4e4;
+}
+
+.submittedLinkIcon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid currentcolor;
+  border-radius: 0.25rem;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.submittedLinkIcon:hover {
+  color: inherit;
+  background: rgb(128 128 128 / 20%);
+}
+
+.submittedLinks {
+  padding-left: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.submittedLinks a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.submittedLinks li + li {
+  margin-top: 0.5rem;
 }

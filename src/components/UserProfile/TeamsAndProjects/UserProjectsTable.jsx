@@ -1,534 +1,321 @@
-import PropTypes from "prop-types";
-import React, { useEffect, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { Button, Col, UncontrolledTooltip } from 'reactstrap';
-import hasPermission from '../../../utils/permissions';
-import { permissions } from '../../../utils/constants';
-// import styles from './UserProjectsTable.css';
 import { connect } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
+import { clsx } from 'clsx';
+import hasPermission from '../../../utils/permissions';
+import { permissions } from '../../../utils/constants';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import appStyles from '~/App.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
+import SubmittedTaskLinks from './SubmittedTaskLinks';
+import styles from './UserProjectsTable.module.css';
 
+const taskFilters = [
+  { value: 'all', label: 'All', color: 'primary' },
+  { value: 'active', label: 'Active', color: 'success' },
+  { value: 'resolved', label: 'Resolved', color: 'danger' },
+];
 
 // eslint-disable-next-line react/display-name
 const UserProjectsTable = React.memo(props => {
-  const {darkMode} = props;
-  const ensureArray = (value, fallback = []) => {
-    if (Array.isArray(value)) return value;
-    if (value === null || value === undefined) return fallback;
-    return fallback;
-  };
+  const { darkMode, userId, role, edit, disabled } = props;
+  const userProjects = Array.isArray(props.userProjectsById) ? props.userProjectsById : [];
+  const userTasks = Array.isArray(props.userTasks) ? props.userTasks : [];
+  const [taskFilter, setTaskFilter] = useState('active');
+  const { pathname } = useLocation();
+  const showTasks = pathname !== '/usermanagement';
 
-  const getProjectId = project => project?._id || project?.projectId;
-
-  const [tooltipOpen, setTooltip] = useState(false);
   const canAssignProjectToUsers = props.hasPermission(permissions.assignProjectToUsers);
   const canUpdateTask = props.hasPermission(permissions.updateTask);
   const canDeleteProjects = props.hasPermission(permissions.deleteProject);
-  const canDeleteTasks = props.hasPermission(permissions.deleteTask)
+  const canDeleteTasks = props.hasPermission(permissions.deleteTask);
   const canPostTask = props.hasPermission(permissions.postTask);
+  const showEditActions = edit && role;
+  const buttonStyle = darkMode ? boxStyleDark : boxStyle;
+  const headerBackground = darkMode && appStyles['bg-space-cadet'];
+  const tableBackground = darkMode && appStyles['bg-yinmn-blue'];
 
-  const userProjects = ensureArray(props.userProjectsById);
-  const userTasks = ensureArray(props.userTasks);
-  const [actualType, setActualType] = useState('active');
+  const sortedTasks = [...userTasks].sort(
+    (firstTask, secondTask) => firstTask.num - secondTask.num,
+  );
+  const filteredTasks = sortedTasks
+    .map(task => {
+      const resource = task.resources?.find(assignee => assignee.userID === userId);
+      return { task, resolved: resource?.completedTask === true };
+    })
+    .filter(({ resolved }) => taskFilter === 'all' || resolved === (taskFilter === 'resolved'));
 
-  const location = useLocation();
-  const currentRoute = location.pathname;
-  const isUserProfilePage = currentRoute === '/usermanagement';
-
-  // const toggleTooltip = () => setTooltip(!tooltipOpen);
-
-  //Situation can be all, active, or complete
-  const filterTasksAndUpdateFilter = situation => {
-    setActualType(situation);
+  const reopenTask = task => {
+    const resources = task.resources.map(resource =>
+      resource.userID === userId
+        ? { ...resource, completedTask: false, reviewStatus: 'Unsubmitted' }
+        : resource,
+    );
+    props.updateTask(task._id, { resources, status: 'Started' }, 'add');
   };
 
-  const sortedTasksByNumber = useMemo(() => {
-    return userTasks?.sort((task1, task2) => task1.num - task2.num);
-}, [userTasks]);
+  const renderProjects = desktop => (
+    <div className={clsx(styles.projectTable, tableBackground)}>
+      <div className={clsx(desktop && 'container', styles.projectHeaderContainer)}>
+        <div className={clsx(desktop && 'row', styles.projectHeaderRow)}>
+          <Col
+            md="12"
+            className={clsx(
+              'd-flex',
+              styles.sectionHeader,
+              headerBackground,
+              !desktop && darkMode && 'text-light',
+            )}
+          >
+            <span className={clsx(styles.sectionTitle, 'mr-auto pt-2')}>Projects</span>
+            {showEditActions && canAssignProjectToUsers && (
+              <div
+                className={clsx(desktop ? 'py-2' : 'pt-2', !desktop && styles.assignProject)}
+                title={desktop ? undefined : 'Please save changes before assign project'}
+              >
+                <Button
+                  className={styles.assignProjectButton}
+                  id={desktop && disabled ? 'btn-assignproject' : undefined}
+                  color="primary"
+                  disabled={disabled}
+                  onClick={props.onButtonClick}
+                  style={buttonStyle}
+                >
+                  Assign Project
+                </Button>
+              </div>
+            )}
+          </Col>
+        </div>
+      </div>
+      <div className={clsx(styles.tableContainer, tableBackground)}>
+        <table
+          className={clsx(
+            'table table-bordered',
+            desktop && 'table-responsive-sm',
+            darkMode && 'text-light',
+          )}
+        >
+          {role && (
+            <thead className={clsx(headerBackground)}>
+              <tr>
+                <th className={styles.tableHeader}>#</th>
+                <th>Project Name</th>
+                {desktop && canPostTask && (
+                  <th style={{ width: '100px' }}>
+                    <div className="d-flex align-items-center">
+                      <span className="mr-2">WBS</span>
+                      <EditableInfoModal
+                        areaName="ProjectTableHeaderWBS"
+                        areaTitle="WBS"
+                        fontSize={24}
+                        isPermissionPage
+                        role={role}
+                        className="p-2"
+                        darkMode={darkMode}
+                      />
+                    </div>
+                  </th>
+                )}
+                {canAssignProjectToUsers && <th className={styles.tableCell} />}
+              </tr>
+            </thead>
+          )}
+          <tbody>
+            {userProjects.map((project, index) => {
+              const projectId = project._id || project.projectId;
+              const tooltipId = `wbs-tooltip-${projectId}`;
+              return (
+                <tr key={projectId} className={clsx(desktop && tableBackground)}>
+                  <td>{index + 1}</td>
+                  <td className={styles.taskName}>{project.projectName}</td>
+                  {desktop && role && canPostTask && (
+                    <td className={styles.tableCell}>
+                      <Button
+                        tag={Link}
+                        to={`/project/wbs/${projectId}`}
+                        id={tooltipId}
+                        color="info"
+                        outline
+                        aria-label={`Work breakdown structures for ${project.projectName}`}
+                        style={darkMode ? undefined : boxStyle}
+                      >
+                        <i className="fa fa-tasks" aria-hidden="true" />
+                      </Button>
+                      <UncontrolledTooltip
+                        placement="left"
+                        target={tooltipId}
+                        delay={{ show: 250, hide: 100 }}
+                      >
+                        Click to access the Work Breakdown Structures (WBSs) for this project
+                      </UncontrolledTooltip>
+                    </td>
+                  )}
+                  {showEditActions && canDeleteProjects && (
+                    <td className={styles.tableCell}>
+                      <Button
+                        color="danger"
+                        disabled={!canUpdateTask}
+                        onClick={() => props.onDeleteClick(projectId)}
+                        style={buttonStyle}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 
-  const tasksByProject = userProjects?.map(project => {
-    const projectId = getProjectId(project);
-    const tasks = sortedTasksByNumber?.filter(task => task.projectId?.includes(projectId));
-    return { ...project, projectId, tasks };
-  });
-
-  const filterTasksByUserTaskSituation = useMemo(() => {
-    return (situation) => {
-      if (sortedTasksByNumber) {
-        return userProjects?.map(project => {
-          const projectId = getProjectId(project);
-          const filteredTasks = sortedTasksByNumber.filter(task => {
-            const isTaskForProject = task.projectId?.includes(projectId);
-            const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
-    
-            if (isTaskForProject) {
-              if (situation === 'active' && !isCompletedTask) {
-                return true;
-              } else if (situation === 'complete' && isCompletedTask) {
-                return true;
-              } else if (situation === 'all') {
-                return true;
-              }
-            }
-            return false;
-          });
-    
-          return { ...project, projectId, tasks: filteredTasks };
-        });
-      }
-    };
-  }, [sortedTasksByNumber, props.userId, userProjects]);
-
-  const [filteredTasks, setFilteredTasks] = useState(filterTasksByUserTaskSituation('active'));
-
-  useEffect(() => {
-    setFilteredTasks(() => filterTasksByUserTaskSituation(actualType));
-  }, [sortedTasksByNumber, actualType]);
-
-const removeOrAddTaskFromUser = (task, method) => {
-
-  let newResources = task.resources;
-
-  if (method === "remove") {
-    // REMOVE the user completely
-    newResources = task.resources.filter(r => r.userID !== props.userId);
-  } else if (method === "add") {
-    // RE-ADD user as uncompleted resource
-    newResources = [
-      ...task.resources,
-      {
-        userID: props.userId,
-        completedTask: method === 'remove',
-        reviewStatus: "Unsubmitted",
-        startedDatetime: new Date().toISOString()
-      }
-    ];
-  }
-
-  const updatedTask = {
-    ...task,
-      resources: newResources,
-      status: method === 'remove' ? 'Complete' : 'Started'
-  };
-
-  props.updateTask(task._id, updatedTask, method);
-};
-
-  //For updating tasks visually but not saving until user clicks save changes
-  const deleteTasksTemporarily = (projectId) => {
-    setFilteredTasks(filteredTasks?.filter(project => getProjectId(project) !== projectId));
-  };
-
-  useEffect(()=>{
-    setFilteredTasks(() => filterTasksByUserTaskSituation('active'));
-  }, [props.userProjectsById], filteredTasks);
-
+  const renderTasks = desktop => (
+    <>
+      <div className={styles.projectTable}>
+        <Col
+          md="12"
+          className={clsx(
+            'd-flex',
+            styles.sectionHeader,
+            styles.taskHeader,
+            headerBackground,
+            darkMode && 'text-light',
+          )}
+        >
+          <span className={clsx(styles.sectionTitle, 'mr-auto py-2')}>Tasks</span>
+          <div className={styles.taskFilters} role="group" aria-label="Task status">
+            {taskFilters.map(({ value, label, color }) => (
+              <Button
+                key={value}
+                type="button"
+                color={color}
+                size="sm"
+                aria-pressed={taskFilter === value}
+                onClick={() => setTaskFilter(value)}
+                style={buttonStyle}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+        </Col>
+      </div>
+      <div
+        className={clsx(styles.tableContainer, tableBackground, darkMode && styles.darkMode)}
+        data-testid={desktop ? 'userProjectTaskTest' : undefined}
+      >
+        <table
+          className={clsx(
+            'table table-bordered',
+            desktop && 'table-responsive-sm',
+            darkMode && 'text-light',
+          )}
+        >
+          {role && (
+            <thead className={clsx(headerBackground)}>
+              <tr>
+                <th className={styles.tableHeader}>#</th>
+                <th>Task Name</th>
+                {showEditActions && (canAssignProjectToUsers || canDeleteTasks) && (
+                  <th className={styles.tableCell} />
+                )}
+              </tr>
+            </thead>
+          )}
+          <tbody>
+            {userProjects.map(project => {
+              const projectId = project._id || project.projectId;
+              return filteredTasks
+                .filter(({ task }) =>
+                  Array.isArray(task.projectId)
+                    ? task.projectId.includes(projectId)
+                    : task.projectId === projectId,
+                )
+                .map(({ task, resolved }) => {
+                  const taskName = task.taskName && `\u2003 ↳ ${task.taskName}`;
+                  return (
+                    <tr key={task._id}>
+                      <td>{task.num}</td>
+                      <td className={styles.taskName}>
+                        <div className={styles.taskDetails}>
+                          <div className={styles.taskDescription}>
+                            <span className={styles.projectName}>{project.projectName}</span>
+                            <br />
+                            {desktop ? (
+                              <a className={styles.taskTitle} href={`/wbs/tasks/${task._id}`}>
+                                {taskName}
+                              </a>
+                            ) : (
+                              <span className={styles.taskTitle}>{taskName}</span>
+                            )}
+                          </div>
+                          <span
+                            className={clsx(
+                              styles.taskStatus,
+                              resolved ? styles.resolved : styles.active,
+                            )}
+                          >
+                            {resolved ? 'Resolved' : 'Active'}
+                          </span>
+                          <SubmittedTaskLinks
+                            taskName={task.taskName}
+                            links={task.relatedWorkLinks}
+                            darkMode={darkMode}
+                          />
+                        </div>
+                      </td>
+                      {showEditActions && (resolved || canDeleteTasks) && (
+                        <td>
+                          <Button
+                            color={resolved ? 'success' : 'danger'}
+                            style={{ ...buttonStyle, width: '72px' }}
+                            disabled={!canAssignProjectToUsers}
+                            onClick={() =>
+                              resolved
+                                ? reopenTask(task)
+                                : props.updateTask(task._id, undefined, 'remove')
+                            }
+                          >
+                            {resolved ? 'Add' : 'Delete'}
+                          </Button>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                });
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
 
   return (
     <div>
-      <div className="desktop" data-testid='userProjectTest'>
-        <div className={`projecttable-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-          <div className="container">
-            <div className="row mr-auto">
-              <Col
-                md='12'
-                className={`projects-and-tasks-header d-flex ${darkMode  ? 'bg-space-cadet' : ''}`}
-              >
-                <span className="projects-span mr-auto pt-2" style={{fontSize: 'x-large', fontWeight: 700}}>Projects</span>
-                {props.edit && props.role && canAssignProjectToUsers && (
-                  <div className="py-2">
-                    {props.disabled ? (
-                      <Button className="btn-addproject" id="btn-assignproject" color="primary" style={darkMode ? boxStyleDark : boxStyle} disabled>
-                        Assign Project
-                      </Button>
-                    ) : (
-                      <Button
-                        className="btn-addproject"
-                        color="primary"
-                        onClick={() => props.onButtonClick()}
-                        style={darkMode ? boxStyleDark : boxStyle}
-                      >
-                        Assign Project
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </Col>
-            </div>
-          </div>
-          <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-            <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
-              <thead className={darkMode ? 'bg-space-cadet' : ''}>
-                {props.role && (
-                  <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                    <th className='table-header'>#</th>
-                    <th>Project Name</th>
-                    {canPostTask && 
-                    <th style={{width: '100px'}}>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">WBS</span>
-                          <EditableInfoModal
-                            areaName="ProjectTableHeaderWBS"
-                            areaTitle="WBS"
-                            fontSize={24}
-                            isPermissionPage={true}
-                            role={props.role}
-                            className="p-2"
-                            darkMode={darkMode}
-                          />
-                      </div>
-                    </th>}
-                    {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
-                  </tr>
-                )}
-              </thead>
-              <tbody>
-                {props.userProjectsById.length > 0 ? (
-                  tasksByProject?.map((project, index) => {
-                    const projectId = getProjectId(project);
-                    return (
-                    <tr key={projectId} className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      <td>{index + 1}</td>
-                      <td className="taskName">{project.projectName}</td>
-                      {props.role && canPostTask && (
-                        <td className='table-cell'>
-                          <Link to={`/project/wbs/${projectId}`}>
-                            <button
-                              id={`wbs-tooltip-${projectId}`}
-                              type="button"
-                              className="btn btn-outline-info"
-                              style={darkMode ? {} : boxStyle}
-                            >
-                              <i className="fa fa-tasks" aria-hidden="true"></i>
-                            </button>
-                          </Link>
-
-                          <UncontrolledTooltip
-                            placement="left"
-                            target={`wbs-tooltip-${projectId}`}
-                            delay={{ show: 250, hide: 100 }} // Optional: smoother UX
-                          >
-                            Click to access the Work Breakdown Structures &#40;WBSs&#41; for this project
-                          </UncontrolledTooltip>
-                        </td>
-                      )}
-                      {props.edit && props.role && canDeleteProjects && (
-                        <td className='table-cell'>
-                          <Button
-                            color="danger"
-                            disabled={!canUpdateTask}
-                            onClick={e => {
-                              props.onDeleteClick(projectId);
-                              deleteTasksTemporarily(projectId);
-                            }}
-                            style={darkMode ? boxStyleDark : boxStyle}
-                          >
-                            Delete
-                          </Button>
-                        </td>
-                      )}
-                    </tr>
-                    );
-                  })
-                ) : (
-                  <></>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        {!isUserProfilePage && (
-          <>
-            <div className="projecttable-container">
-              <Col
-                md={'12'}
-                className={`projects-and-tasks-header d-flex flex-row ${darkMode  ? 'bg-space-cadet' : ''}`}
-              >
-                <span className="projects-span py-2 mr-auto" style={{fontSize: 'x-large', fontWeight: 700}}>Tasks</span>
-                <div
-                className="justify-content-end d-flex py-2"
-                style={{ gap: '4px'}}
-                >
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    onClick={() => filterTasksAndUpdateFilter('all')}
-                    style={darkMode ? boxStyleDark : boxStyle}
-                  >
-                    All
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-success btn-sm"
-                    onClick={() => filterTasksAndUpdateFilter('active')}
-                    style={darkMode ? boxStyleDark : boxStyle}
-                  >
-                    Active
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger btn-sm"
-                    onClick={() => filterTasksAndUpdateFilter('complete')}
-                    style={darkMode ? boxStyleDark : boxStyle}
-                  >
-                    Complete
-                  </button>
-                </div>
-              </Col>
-            </div>
-            <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`} data-testid='userProjectTaskTest'>
-              <table className={`table table-bordered table-responsive-sm ${darkMode ?'text-light' : ''}`}>
-                <thead className={darkMode  ? 'bg-space-cadet' : ''}>
-                  {props.role && (
-                    <tr className={darkMode  ? 'bg-space-cadet' : ''}>
-                      <th className='table-header'>#</th>
-                      <th>Task Name</th>
-                      {canAssignProjectToUsers ? <th className='table-cell'>{}</th> : null}
-                    </tr>
-                  )}
-                </thead>
-                <tbody>
-                  {props.userProjectsById.length > 0 ? (
-                    filteredTasks?.map(project =>
-                      project?.tasks?.map(task => {
-                        const isCompletedTask = task?.resources?.find(
-                          ({ userID }) => userID === props.userId,
-                        )?.completedTask;
-                        return (
-                          <tr key={task._id}>
-                            <td>{task.num}</td>
-                            <td className='taskName'>
-                              <span className='opacity-70'>{project.projectName} </span>
-                              <br />
-                              <a className="fs-18" href={`/wbs/tasks/${task._id}`}>
-                                {task.taskName && `\u2003 ↳ ${task.taskName}`}
-                              </a>
-                            </td>
-                            {!isCompletedTask && props.edit && props.role && canDeleteTasks && (
-                              <td>
-                                <Button
-                                  color="danger"
-                                  style={darkMode ? { ...boxStyleDark, width: '72px' } : { ...boxStyle, width: '72px' }}
-                                  disabled={!canAssignProjectToUsers}
-                                  onClick={e => removeOrAddTaskFromUser(task, 'remove')}
-                                >
-                                  Delete
-                                </Button>
-                              </td>
-                            )}
-                            {isCompletedTask && props.edit && props.role && (
-                              <td>
-                                <Button
-                                  color="success"
-                                  style={darkMode ? { ...boxStyleDark, width: '72px' } : { ...boxStyle, width: '72px' }}
-                                  disabled={!canAssignProjectToUsers}
-                                  onClick={e => removeOrAddTaskFromUser(task, 'add')}
-                                >
-                                  Add
-                                </Button>
-                              </td>
-                            )}
-                          </tr>
-                        );
-                      }),
-                    )
-                  ) : (
-                    <></>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
+      <div className={styles.desktop} data-testid="userProjectTest">
+        {renderProjects(true)}
+        {showTasks && renderTasks(true)}
       </div>
-      <div className="tablet">
-        <div className={`projecttable-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <Col
-              md="12"
-              className={`d-flex projects-and-tasks-header ${darkMode  ? 'bg-space-cadet text-light' : ''}`}
-            >
-              <span className="projects-span mr-auto pt-2" style={{fontSize: 'x-large', fontWeight: 700}}>Projects</span>
-              {props.edit && props.role && (
-              <div
-                className="pt-2"
-              >
-                {canAssignProjectToUsers && (
-                    <div
-                      className="div-addproject"
-                      title="Please save changes before assign project"
-                      display={props.disabled ? "none" : "block"}
-                    >
-                      <Button
-                        className="btn-addproject"
-                        color="primary"
-                        disabled={props.disabled ? true : false}
-                        onClick={() => {
-                          props.onButtonClick();
-                        }}
-                        style={darkMode ? boxStyleDark : boxStyle}
-                        >
-                        Assign Project
-                      </Button>
-                    </div>
-                  )}
-              </div>
-            )}
-            </Col>
-          </div>
-          <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-            <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
-              <thead className={darkMode ? 'bg-space-cadet' : ''}>
-                {props.role && (
-                  <tr>
-                    <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
-                    <th className={darkMode ? 'bg-space-cadet' : ''}>Project Name</th>
-                    {canAssignProjectToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>{}</th> : null}
-                  </tr>
-                )}
-              </thead>
-              <tbody>
-                {props.userProjectsById.length > 0 ? (
-                  filteredTasks?.map((project, index) => (
-                    <tr key={getProjectId(project)}>
-                      <td>{index + 1}</td>
-                      <td className="taskName">{`${project.projectName}`}</td>
-                      {props.edit && props.role && canDeleteProjects && (
-                        <td className='table-cell'>
-                          <Button
-                            color="danger"
-                            disabled={!canUpdateTask}
-                            onClick={e => {
-                              props.onDeleteClick(getProjectId(project));
-                            }}
-                            style={darkMode ? boxStyleDark : boxStyle}
-                          >
-                            Delete
-                          </Button>
-                        </td>
-                      )}
-                    </tr>
-                  ))
-                ) : (
-                  <></>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        {!isUserProfilePage && (
-          <>
-            <div className="projecttable-container">
-              <div>
-                <Col
-                  md={'12'}
-                  className={`projects-and-tasks-header d-flex ${darkMode ? 'bg-space-cadet text-light' : ''}`}
-                >
-                  <span className="projects-span mr-auto pt-2" style={{fontSize: 'x-large', fontWeight: 700}}>Tasks</span>
-                  <div className="justify-content-end d-flex py-2" style={{ gap: '4px' }}>
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm"
-                      onClick={() => filterTasksAndUpdateFilter('all')}
-                      style={darkMode ? boxStyleDark : boxStyle}
-                    >
-                      All
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-success btn-sm"
-                      onClick={() => filterTasksAndUpdateFilter('active')}
-                      style={darkMode ? boxStyleDark : boxStyle}
-                    >
-                      Active
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => filterTasksAndUpdateFilter('complete')}
-                      style={darkMode ? boxStyleDark : boxStyle}
-                    >
-                      Complete
-                    </button>
-                  </div>
-                </Col>
-              </div>
-            </div>
-            <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-              <table className="table table-bordered">
-                <thead className={darkMode ? 'text-light' : ''}>
-                  {props.role && (
-                    <tr>
-                      <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
-                      <th className={`taskName ${darkMode ? 'bg-space-cadet' : ''}`}>Task Name</th>
-                      {canAssignProjectToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>{}</th> : null}
-                    </tr>
-                  )}
-                </thead>
-                <tbody className={darkMode ? 'text-light' : ''}>
-                  {props.userProjectsById.length > 0 ? (
-                    filteredTasks?.map(project =>
-                      project?.tasks?.map(task => {
-                        const isCompletedTask = task?.resources?.find(
-                          ({ userID }) => userID === props.userId,
-                        )?.completedTask;
-                        return (
-                          <tr key={task._id}>
-                            <td>{task.num}</td>
-                            <td>
-                              <span className='opacity-70'>{project.projectName}</span>
-                              <br />
-                              <span className='fs-18'>{task.taskName && `\u2003 ↳ ${task.taskName}`}</span>
-                            </td>
-                            {!isCompletedTask && props.edit && props.role && canDeleteTasks && (
-                              <td>
-                                <Button
-                                  color="danger"
-                                  style={darkMode ? { ...boxStyleDark, width: '72px' } : { ...boxStyle, width: '72px' }}
-                                  disabled={!canAssignProjectToUsers}
-                                  onClick={e => removeOrAddTaskFromUser(task, 'remove')}
-                                >
-                                  Delete
-                                </Button>
-                              </td>
-                            )}
-                            {isCompletedTask && props.edit && props.role && (
-                              <td>
-                                <Button
-                                  color="success"
-                                  style={darkMode ? { ...boxStyleDark, width: '72px' } : { ...boxStyle, width: '72px' }}
-                                  disabled={!canAssignProjectToUsers}
-                                  onClick={e => removeOrAddTaskFromUser(task, 'add')}
-                                >
-                                  Add
-                                </Button>
-                              </td>
-                            )}
-                          </tr>
-                        );
-                      }),
-                    )
-                  ) : (
-                    <></>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
+      <div className={styles.tablet} data-testid="userProjectTabletTest">
+        {renderProjects(false)}
+        {showTasks && renderTasks(false)}
       </div>
     </div>
   );
 });
 
-export default connect(null, { hasPermission })(UserProjectsTable);
 UserProjectsTable.propTypes = {
   userId: PropTypes.string,
   userProjectsById: PropTypes.array,
   userTasks: PropTypes.array,
   role: PropTypes.string,
   edit: PropTypes.bool,
+  disabled: PropTypes.bool,
   hasPermission: PropTypes.func,
   onButtonClick: PropTypes.func,
   onDeleteClick: PropTypes.func,
@@ -536,4 +323,4 @@ UserProjectsTable.propTypes = {
   darkMode: PropTypes.bool,
 };
 
-
+export default connect(null, { hasPermission })(UserProjectsTable);
