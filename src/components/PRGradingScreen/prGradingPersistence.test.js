@@ -12,14 +12,17 @@ vi.mock('axios');
 
 const teamData = {
   teamName: '91NePRT',
-  dateRange: { start: '5/18/2025', end: '5/25/2025' },
+  weekStart: '2025-05-18',
+  dateRange: { start: 'May 18, 2025', end: 'May 24, 2025' },
 };
 
 describe('PR grading persistence', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('loads saved PRs for the displayed team and week', async () => {
-    axios.get.mockResolvedValue({ data: [{ reviewer: 'Alice', gradedPrs: [] }] });
+    axios.get.mockResolvedValue({
+      data: [{ reviewer: 'Alice', gradedPrs: [] }],
+    });
 
     await expect(loadSavedGradings(teamData)).resolves.toHaveLength(1);
     expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.WEEKLY_GRADING, {

@@ -47,6 +47,8 @@ const barValueLabelPlugin = {
     ctx.font = `600 ${fontSize}px Arial`;
     ctx.fillStyle = darkMode ? '#f5f5f5' : '#333333';
 
+    const drawn = [];
+
     chart.data.datasets.forEach((dataset, datasetIndex) => {
       if (!chart.isDatasetVisible(datasetIndex)) return;
 
@@ -58,12 +60,32 @@ const barValueLabelPlugin = {
         const { x, y, width } = bar.getProps(['x', 'y', 'width'], true);
         const textWidth = ctx.measureText(label).width;
 
-        if (textWidth <= width + LABEL_GAP) {
+        const fitsHorizontally = textWidth <= width + LABEL_GAP;
+        if (!fitsHorizontally && fontSize > width + 2) return;
+
+        const box = fitsHorizontally
+          ? {
+              l: x - textWidth / 2,
+              r: x + textWidth / 2,
+              t: y - LABEL_GAP - fontSize,
+              b: y - LABEL_GAP,
+            }
+          : {
+              l: x - fontSize / 2,
+              r: x + fontSize / 2,
+              t: y - LABEL_GAP - textWidth,
+              b: y - LABEL_GAP,
+            };
+        const collides = drawn.some(d => box.l < d.r && box.r > d.l && box.t < d.b && box.b > d.t);
+        if (collides) return;
+        drawn.push(box);
+
+        if (fitsHorizontally) {
           // Wide bar: horizontal label centered above it
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom';
           ctx.fillText(label, x, y - LABEL_GAP);
-        } else if (fontSize <= width + 2) {
+        } else {
           // Narrow bar: rotate the label upward so it never spills onto neighbouring bars
           ctx.save();
           ctx.translate(x, y - LABEL_GAP);
@@ -73,7 +95,6 @@ const barValueLabelPlugin = {
           ctx.fillText(label, 0, 0);
           ctx.restore();
         }
-        // Bars too thin for even a rotated label rely on the tooltip instead
       });
     });
 
@@ -286,6 +307,78 @@ const generateSelectStyles = darkMode => ({
   }),
 });
 
+const LaborCostSummary = ({
+  hasData,
+  darkMode,
+  textColor,
+  displayTotalBudget,
+  displayTotalCost,
+  absoluteVariance,
+  variancePercentage,
+  varianceClass,
+  componentStyles,
+}) => {
+  if (!hasData) {
+    return (
+      <div className={componentStyles.emptyState}>No data available for the selected filters.</div>
+    );
+  }
+
+  return (
+    <div
+      className={`${componentStyles.summaryContainer} ${
+        darkMode ? componentStyles.darkSummaryContainer : ''
+      }`}
+    >
+      <div className={componentStyles.summaryItem}>
+        <span className={componentStyles.summaryLabel}>Total Budget</span>
+        <span className={componentStyles.summaryValue} style={{ color: textColor }}>
+          $
+          {displayTotalBudget.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </span>
+      </div>
+      <div className={componentStyles.summaryItem}>
+        <span className={componentStyles.summaryLabel}>Total Actual</span>
+        <span className={componentStyles.summaryValue} style={{ color: textColor }}>
+          $
+          {displayTotalCost.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </span>
+      </div>
+      <div className={componentStyles.summaryItem}>
+        <span className={componentStyles.summaryLabel}>Variance</span>
+        <span className={`${componentStyles.summaryValue} ${varianceClass}`}>
+          $
+          {absoluteVariance.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{' '}
+          ({variancePercentage > 0 ? '+' : ''}
+          {variancePercentage.toFixed(1)}%)
+        </span>
+      </div>
+    </div>
+  );
+};
+
+LaborCostSummary.propTypes = {
+  hasData: PropTypes.bool.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  textColor: PropTypes.string.isRequired,
+  displayTotalBudget: PropTypes.number.isRequired,
+  displayTotalCost: PropTypes.number.isRequired,
+  absoluteVariance: PropTypes.number.isRequired,
+  variancePercentage: PropTypes.number.isRequired,
+  varianceClass: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  componentStyles: PropTypes.object.isRequired,
+};
+
 const MultiValue = () => null;
 
 const ValueContainer = ({ children, ...props }) => {
@@ -389,6 +482,8 @@ const buildChartOptions = (textColor, darkMode) => ({
   layout: { padding: { top: 48, left: 10, right: 10, bottom: 4 } },
   plugins: {
     barValueLabelPlugin: { darkMode },
+    // chartjs-plugin-datalabels is registered globally by other charts and would draw raw values inside the bars
+    datalabels: { display: false },
     // One entry per bar crowded out the plot; a per-task HTML legend is rendered below instead
     legend: { display: false },
     tooltip: {
@@ -409,7 +504,13 @@ const buildChartOptions = (textColor, darkMode) => ({
   scales: {
     x: {
       grid: { display: false },
-      ticks: { font: { size: 12 }, color: textColor },
+      ticks: {
+        font: { size: 12 },
+        color: textColor,
+        autoSkip: false,
+        maxRotation: 45,
+        minRotation: 0,
+      },
       offset: true,
     },
     y: {
@@ -661,40 +762,17 @@ export default function PaidLaborCost() {
         )}
       </div>
 
-      <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Total Budget</span>
-          <span className={styles.summaryValue} style={{ color: textColor }}>
-            $
-            {displayTotalBudget.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
-        </div>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Total Actual</span>
-          <span className={styles.summaryValue} style={{ color: textColor }}>
-            $
-            {displayTotalCost.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
-        </div>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Variance</span>
-          <span className={`${styles.summaryValue} ${varianceClass}`}>
-            $
-            {absoluteVariance.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{' '}
-            ({variancePercentage > 0 ? '+' : ''}
-            {variancePercentage.toFixed(1)}%)
-          </span>
-        </div>
-      </div>
+      <LaborCostSummary
+        hasData={labels.length > 0}
+        darkMode={darkMode}
+        textColor={textColor}
+        displayTotalBudget={displayTotalBudget}
+        displayTotalCost={displayTotalCost}
+        absoluteVariance={absoluteVariance}
+        variancePercentage={variancePercentage}
+        varianceClass={varianceClass}
+        componentStyles={styles}
+      />
     </div>
   );
 }
