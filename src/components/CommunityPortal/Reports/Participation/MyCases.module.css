@@ -222,23 +222,31 @@
 
 .caseCards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 12px;
 }
 
 .caseCard {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 28%) minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
   transition:
     box-shadow 0.2s,
     transform 0.2s;
-  min-height: 180px;
+}
+
+.cardDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .caseCardDark > * {
@@ -250,12 +258,11 @@
 }
 
 .eventBadge {
-  display: inline-block;
+  align-self: flex-start;
   font-size: 12px;
   font-weight: bold;
-  padding: 5px 10px;
+  padding: 3px 8px;
   border-radius: 20px;
-  margin-bottom: 10px;
   background-color: #e9f7ef;
   color: #1e7e34;
 }
@@ -320,10 +327,17 @@
   color: #333;
 }
 
+.caseCard .eventTime,
+.caseCard .eventName {
+  margin-bottom: 0;
+}
+
 .attendeesInfo {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .avatars img {
@@ -514,10 +528,9 @@
 /* ---------- Event Image Styles ---------- */
 .eventImageContainer {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 88px;
   overflow: hidden;
   border-radius: 6px;
-  margin-bottom: 12px;
   background: #f2f2f2;
 }
 
