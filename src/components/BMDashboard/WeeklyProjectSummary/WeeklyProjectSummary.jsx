@@ -317,7 +317,7 @@ function WeeklyProjectSummary() {
         content: (
           <MaterialConsumptionCards
             quantityOfMaterialsUsedData={quantityOfMaterialsUsedData}
-            comparisonMode={comparisonPeriodFilter}
+            comparisonMode={comparisonEnabled ? comparisonPeriodFilter : 'No Comparison'}
             currentDateRange={currentDateRange}
             comparisonDateRange={comparisonDateRange}
           />

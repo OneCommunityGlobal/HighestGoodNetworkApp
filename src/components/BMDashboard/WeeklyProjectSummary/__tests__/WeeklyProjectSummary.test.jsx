@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -87,7 +87,11 @@ vi.mock('../ActualVsPlannedCost/ActualVsPlannedCost', () => ({
 }));
 
 vi.mock('../MaterialConsumption/MaterialConsumption', () => ({
-  MaterialConsumptionCards: () => <div>Material Consumption</div>,
+  MaterialConsumptionCards: props => (
+    <div data-testid="material-consumption-mock" data-comparison-mode={props.comparisonMode}>
+      Material Consumption
+    </div>
+  ),
 }));
 
 vi.mock('../Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart', () => ({
@@ -146,6 +150,36 @@ describe('WeeklyProjectSummary regression tests', () => {
     }).not.toThrow();
 
     expect(screen.getByTestId('weekly-project-summary-header')).toBeInTheDocument();
+  });
+
+  it('passes "No Comparison" to MaterialConsumptionCards when a comparison period is selected but the compare checkbox is unchecked', () => {
+    store = mockStore({
+      materials: {
+        materialslist: [{ _id: 'material-1' }],
+      },
+      bmProjects: [],
+      theme: {
+        darkMode: false,
+      },
+      weeklyProjectSummary: {
+        projectFilter: '',
+        dateRangeFilter: '',
+        comparisonPeriodFilter: 'Oct 11, 26 - Oct 17, 26',
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        <WeeklyProjectSummary />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Material Consumption/i }));
+
+    expect(screen.getByTestId('material-consumption-mock')).toHaveAttribute(
+      'data-comparison-mode',
+      'No Comparison',
+    );
   });
 
   it('dispatches initial data-loading actions when data is empty', () => {
