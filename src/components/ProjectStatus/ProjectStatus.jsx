@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -40,6 +40,16 @@ const COLORS = {
   completed: '#5EEAD4',
   delayed: '#FB923C',
 };
+
+const STATUS_DETAILS = [
+  { key: 'active', label: 'Active', description: 'Projects currently marked Active.' },
+  { key: 'completed', label: 'Completed', description: 'Projects currently marked Completed.' },
+  {
+    key: 'delayed',
+    label: 'Delayed',
+    description: 'Projects currently marked Delayed; they need attention.',
+  },
+];
 
 const getTooltipTransform = deg => {
   if (deg >= -45 && deg <= 45) {
@@ -107,22 +117,58 @@ export default function ProjectStatus() {
   const [error, setError] = useState('');
   const [dateError, setDateError] = useState('');
   const [hoverInfo, setHoverInfo] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [comparison, setComparison] = useState({ status: 'range' });
+  const requestId = useRef(0);
 
   const load = async (opts = {}) => {
+    const id = ++requestId.current;
     setPending(true);
     setError('');
+    setHoverInfo(null);
+    setHoveredIndex(null);
+    setSelectedIndex(null);
+    setComparison({ status: 'range' });
     try {
       const res = await fetchProjectStatusSummary(opts);
+      if (id !== requestId.current) return;
       setData(res);
+      if (opts.startDate && opts.endDate) {
+        const days =
+          dayjs(opts.endDate)
+            .startOf('day')
+            .diff(dayjs(opts.startDate).startOf('day'), 'day') + 1;
+        const previousEnd = dayjs(opts.startDate).subtract(1, 'day');
+        const previousStart = previousEnd.subtract(days - 1, 'day');
+        try {
+          const previous = await fetchProjectStatusSummary({
+            startDate: previousStart,
+            endDate: previousEnd,
+          });
+          if (id !== requestId.current) return;
+          setComparison({
+            status: previous?.totalProjects > 0 ? 'ready' : 'empty',
+            data: previous,
+            startDate: previousStart.format('YYYY-MM-DD'),
+            endDate: previousEnd.format('YYYY-MM-DD'),
+          });
+        } catch {
+          if (id === requestId.current) setComparison({ status: 'error' });
+        }
+      }
     } catch (e) {
-      setError(e.message || 'Failed to load project status data');
+      if (id === requestId.current) setError(e.message || 'Failed to load project status data');
     } finally {
-      setPending(false);
+      if (id === requestId.current) setPending(false);
     }
   };
 
   useEffect(() => {
     load({});
+    return () => {
+      requestId.current += 1;
+    };
   }, []);
 
   const chartData = useMemo(() => {
@@ -190,6 +236,12 @@ export default function ProjectStatus() {
   const chartOptions = useMemo(
     () => ({
       responsive: true,
+      maintainAspectRatio: false,
+      onHover: (event, elements) => setHoveredIndex(elements[0]?.index ?? null),
+      onClick: (event, elements) => {
+        const index = elements[0]?.index ?? null;
+        setSelectedIndex(current => (current === index ? null : index));
+      },
       cutout: '65%',
       layout: { padding: 12 },
       plugins: {
@@ -210,6 +262,39 @@ export default function ProjectStatus() {
     }),
     [data, darkMode],
   );
+
+  const comparisonMessage = pending
+    ? 'Loading comparison...'
+    : error
+    ? 'Comparison unavailable.'
+    : comparison.status === 'range'
+    ? 'Select both dates to compare equal-length ranges.'
+    : comparison.status === 'empty'
+    ? 'No projects in the previous range; comparison unavailable.'
+    : comparison.status === 'error'
+    ? 'Previous range unavailable. Apply again to retry.'
+    : `Compared with ${comparison.startDate} to ${comparison.endDate}.`;
+
+  const getChange = key => {
+    if (pending || error || comparison.status !== 'ready') return '—';
+    const current = data?.[`${key}Projects`];
+    const previous = comparison.data?.[`${key}Projects`];
+    if (!Number.isFinite(current) || !Number.isFinite(previous)) return 'Unavailable';
+    if (previous === 0) return current === 0 ? '0.0% · No change' : 'New · Previous count was 0';
+    const delta = current - previous;
+    const percentage = ((Math.abs(delta) / previous) * 100).toFixed(1);
+    if (delta === 0) return '0.0% · No change';
+    return `${delta > 0 ? '↑' : '↓'} ${percentage}%`;
+  };
+
+  const delayedDelta =
+    !pending &&
+    !error &&
+    comparison.status === 'ready' &&
+    Number.isFinite(data?.delayedProjects) &&
+    Number.isFinite(comparison.data?.delayedProjects)
+      ? data.delayedProjects - comparison.data.delayedProjects
+      : null;
 
   const hasData = (data?.totalProjects ?? 0) > 0;
 
@@ -314,7 +399,15 @@ export default function ProjectStatus() {
           <>
             {hasData ? (
               <>
-                <div className={styles.chartWrapper}>
+                <div
+                  className={styles.chartWrapper}
+                  role="group"
+                  aria-label="Project status chart"
+                  onMouseLeave={() => {
+                    setHoveredIndex(null);
+                    setHoverInfo(null);
+                  }}
+                >
                   <Doughnut data={chartData} options={chartOptions} plugins={[centerTextPlugin]} />
                   {hoverInfo && (
                     <div
@@ -335,18 +428,22 @@ export default function ProjectStatus() {
                   )}
                 </div>
                 <div className={styles.legend}>
-                  <span className={styles.legendItem}>
-                    <span className={styles.swatch} style={{ background: COLORS.active }} />
-                    <span>Active</span>
-                  </span>
-                  <span className={styles.legendItem}>
-                    <span className={styles.swatch} style={{ background: COLORS.completed }} />
-                    <span>Completed</span>
-                  </span>
-                  <span className={styles.legendItem}>
-                    <span className={styles.swatch} style={{ background: COLORS.delayed }} />
-                    <span>Delayed</span>
-                  </span>
+                  {STATUS_DETAILS.map(({ key, label }, index) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className={styles.legendItem}
+                      aria-pressed={selectedIndex === index}
+                      onClick={() =>
+                        setSelectedIndex(current => (current === index ? null : index))
+                      }
+                      onFocus={() => setHoveredIndex(index)}
+                      onBlur={() => setHoveredIndex(null)}
+                    >
+                      <span className={styles.swatch} style={{ background: COLORS[key] }} />
+                      <span>{label}</span>
+                    </button>
+                  ))}
                 </div>
               </>
             ) : (
@@ -364,17 +461,51 @@ export default function ProjectStatus() {
       {/* Right stats panel */}
       {!dateError && (
         <aside className={styles.panel}>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>ACTIVE PROJECTS</span>
-            <span className={styles.statValue}>{data?.activeProjects ?? 0}</span>
+          {STATUS_DETAILS.map(({ key, label, description }, index) => (
+            <div
+              key={key}
+              role="group"
+              aria-label={`${label} projects`}
+              className={`${styles.stat} ${
+                (hoveredIndex ?? selectedIndex) === index ? styles.statHighlighted : ''
+              }`}
+            >
+              <span className={styles.statLabel}>
+                {label.toUpperCase()} PROJECTS
+                <button
+                  type="button"
+                  className={styles.infoButton}
+                  aria-label={`About ${label.toLowerCase()} projects`}
+                  aria-describedby={`project-status-${key}-help`}
+                >
+                  ⓘ
+                  <span
+                    id={`project-status-${key}-help`}
+                    role="tooltip"
+                    className={styles.kpiTooltip}
+                  >
+                    {description}
+                  </span>
+                </button>
+              </span>
+              <span className={styles.statValue}>{data?.[`${key}Projects`] ?? 0}</span>
+              <span className={styles.statChange} aria-label={`${label} change: ${getChange(key)}`}>
+                {getChange(key)}
+              </span>
+            </div>
+          ))}
+          <div className={styles.comparisonNote} role="status">
+            <div>{comparisonMessage}</div>
+            <div>Current statuses grouped by project start date; not historical snapshots.</div>
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>COMPLETED PROJECTS</span>
-            <span className={styles.statValue}>{data?.completedProjects ?? 0}</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>DELAYED PROJECTS</span>
-            <span className={styles.statValue}>{data?.delayedProjects ?? 0}</span>
+          <div className={styles.delayedTrend}>
+            {delayedDelta === null
+              ? 'Delayed trend unavailable'
+              : delayedDelta === 0
+              ? '→ Delayed count unchanged'
+              : delayedDelta > 0
+              ? '↑ Delayed count increasing'
+              : '↓ Delayed count decreasing'}
           </div>
         </aside>
       )}
