@@ -24,19 +24,23 @@ function MyCases() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const loadEvents = useCallback(async () => {
-    try {
-      const response = await getEvents({
-        page: 1,
-        limit: 200,
-        sortBy: 'date',
-        sortOrder: 'desc',
-      });
-
+    const fetchPage = async page => {
+      const response = await getEvents({ page, limit: 200, sortBy: 'date' });
       if (response?.status && response.status >= 400) {
         throw new Error(response.message || 'Failed to fetch events');
       }
+      return response?.data || {};
+    };
 
-      const backendEvents = response?.data?.events || [];
+    try {
+      // The API sorts oldest first, so upcoming events sit on the last pages.
+      // Fetch every page so they are never cut off.
+      const firstPage = await fetchPage(1);
+      const totalPages = firstPage.pagination?.totalPages || 1;
+      const remainingPages = await Promise.all(
+        Array.from({ length: totalPages - 1 }, (_, i) => fetchPage(i + 2)),
+      );
+      const backendEvents = [firstPage, ...remainingPages].flatMap(data => data.events || []);
 
       const formattedEvents = backendEvents.map(event => ({
         id: event._id,
