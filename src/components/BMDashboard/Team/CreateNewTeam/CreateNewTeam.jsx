@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Form, FormGroup, Label, Input, Button, Badge, Tooltip } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import Select from 'react-select';
 import axios from 'axios';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
@@ -383,20 +384,47 @@ export default function CreateNewTeam() {
               At least one member is required. Select from dropdown and click Add.
             </Tooltip>
             <div className={styles.selectContainer}>
-              <Input
-                id="members-select"
-                type="select"
-                value={selectedMember}
-                onChange={handleMemberChange}
-              >
-                <option value="">Select a Member</option>
-                {Array.isArray(members) &&
-                  members.map(user => (
-                    <option key={user._id} value={user._id}>
-                      {user.firstName} {user.lastName}
-                    </option>
-                  ))}
-              </Input>
+              <Select
+                inputId="members-select"
+                options={members}
+                getOptionLabel={user => `${user.firstName} ${user.lastName}`}
+                getOptionValue={user => user._id}
+                value={members.find(user => user._id === selectedMember) || null}
+                onChange={user => handleMemberChange({ target: { value: user?._id || '' } })}
+                placeholder="Select a Member"
+                isSearchable
+                styles={{
+                  container: base => ({
+                    ...base,
+                    flex: 1,
+                    minWidth: 0,
+                    '--member-bg': '#fff',
+                    '--member-text': '#333',
+                    '--member-muted': '#666',
+                    '--member-hover': '#fef0db',
+                    'body.dark-mode &, body.bm-dashboard-dark &': {
+                      '--member-bg': '#2e5061',
+                      '--member-text': '#fff',
+                      '--member-muted': '#b8c5d1',
+                      '--member-hover': '#3a506b',
+                    },
+                  }),
+                  input: base => ({ ...base, '& input': { boxShadow: 'none !important' } }),
+                }}
+                theme={theme => ({
+                  ...theme,
+                  borderRadius: 6,
+                  colors: {
+                    ...theme.colors,
+                    neutral0: 'var(--member-bg)',
+                    neutral80: 'var(--member-text)',
+                    neutral50: 'var(--member-muted)',
+                    primary25: 'var(--member-hover)',
+                    primary50: 'var(--member-hover)',
+                    primary: '#f49441',
+                  },
+                })}
+              />
               <Button onClick={handleAddMember} type="button" className={styles.addBtn}>
                 Add
               </Button>
