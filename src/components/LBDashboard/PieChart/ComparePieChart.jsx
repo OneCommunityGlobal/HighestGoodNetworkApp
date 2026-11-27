@@ -7,6 +7,7 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import styles from '../LBDashboard.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import { BIDDING_ONLY_METRICS } from '../lbMetrics';
 
 const COLORS = ['#3B82F6', '#EF4444', '#F59E0B', '#10B981', '#FF6B35'];
 
@@ -191,9 +192,6 @@ const LISTING_OPTIONS = {
   LISTING: 'listing',
   BIDDING: 'bidding',
 };
-
-// Metrics that require bidding functionality
-const BIDDING_ONLY_METRICS = new Set(['numBids', 'avgBid', 'finalPrice']);
 
 // Sample data indexed by [comparisonType][listingType]
 const SAMPLE_DATA = {

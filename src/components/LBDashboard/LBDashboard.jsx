@@ -13,7 +13,6 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Card,
   Row,
   Col,
 } from 'reactstrap';
@@ -29,22 +28,7 @@ import UserManagementSection from './UserManagement/UserManagement';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 import { randomInt } from './lbUtils';
 import { ComparePieChart } from './PieChart/ComparePieChart';
-
-const METRIC_OPTIONS = {
-  DEMAND: [
-    { key: 'pageVisits', label: 'Page Visits', biddingOnly: false },
-    { key: 'numBids', label: 'Number of Bids', biddingOnly: true },
-    { key: 'avgRating', label: 'Average Rating', biddingOnly: false },
-  ],
-  REVENUE: [
-    { key: 'avgBid', label: 'Average Bid', biddingOnly: true },
-    { key: 'finalPrice', label: 'Final Price / Income', biddingOnly: true },
-  ],
-  VACANCY: [
-    { key: 'occupancyRate', label: 'Occupancy Rate (% days not vacant)', biddingOnly: false },
-    { key: 'avgStay', label: 'Average Duration of Stay', biddingOnly: false },
-  ],
-};
+import { METRIC_OPTIONS } from './lbMetrics';
 
 const METRIC_MAPPING = {
   pageVisits: 'pageVisits',
@@ -64,31 +48,6 @@ const DEFAULTS = {
 
 const getClassNames = (baseClass, darkClass, darkMode) =>
   `${baseClass} ${darkMode ? darkClass : ''}`;
-function GraphCard({ title, metricLabel, darkMode }) {
-  return (
-    <Card className={`${styles.graphCard} ${darkMode ? styles.darkCard : ''}`}>
-      <div>
-        <div className={styles.graphTitle}>
-          <span className={darkMode ? styles.darkText : ''}>{title}</span>
-          <span className={`${styles.metricPill} ${darkMode ? styles.darkMetricPill : ''}`}>
-            {metricLabel}
-          </span>
-        </div>
-        <div className={`${styles.graphPlaceholder} ${darkMode ? styles.darkPlaceholder : ''}`}>
-          <span className={`${styles.placeholderText} ${darkMode ? styles.darkText : ''}`}>
-            Graph area
-          </span>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-GraphCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  metricLabel: PropTypes.string,
-  darkMode: PropTypes.bool,
-};
 
 const CategoryControls = ({
   categoryKey,
