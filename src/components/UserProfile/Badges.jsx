@@ -29,7 +29,6 @@ import { permissions } from '../../utils/constants';
 import BadgeReport from '../Badge/BadgeReport/BadgeReport';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import AssignBadgePopup from './AssignBadgePopup';
-import '../Badge/Badge.css';
 import styles from './Badge.module.css';
 import FeaturedBadges from './FeaturedBadges';
 import { sortBadgeRecords } from '../Badge/badgeListUtils';
