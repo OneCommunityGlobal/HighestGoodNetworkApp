@@ -119,6 +119,19 @@ function TimeEntryFormHeader({
     </ModalHeader>
   );
 }
+// A Timer-sourced submission computes its own hours/minutes from the server's resync
+// (see submitTimerTimeEntry) instead of going through validateForm, which only ever
+// checks the form's own input fields - so it needs the same 1-minute-minimum/5-hour-
+// maximum bounds applied explicitly before that computed time is saved.
+const TIMER_MAX_HOURS = 5;
+const isElapsedTimeWithinBounds = (hours, minutes) => {
+  // hours/minutes can fall back to the form's OWN input values (see submitTimerTimeEntry),
+  // which are strings - '1' + '43' / 60 silently string-concatenates instead of adding,
+  // so these must be coerced to numbers before the arithmetic bounds check below.
+  const h = Number(hours) || 0;
+  const m = Number(minutes) || 0;
+  return (h > 0 || m > 0) && h + m / 60 <= TIMER_MAX_HOURS;
+};
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -263,6 +276,7 @@ export function TimeEntryForm(props) {
   const {
     from,
     sendStop,
+    sendGetTimerAndConfirm,
     edit,
     data,
     toggle,
@@ -280,6 +294,16 @@ export function TimeEntryForm(props) {
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
+
+  // Set as soon as a Timer-sourced submit computes its authoritative elapsed hours/minutes -
+  // BEFORE sendStop() is even called, not only once it resolves true. sendStop() gives up and
+  // resolves false after a flat timeout (see Timer.jsx), even when the server actually
+  // processed STOP_TIMER just after that window closed - without caching this early, a timed-
+  // out-but-actually-successful stop had nothing cached, so a retry re-ran the GET_TIMER check
+  // below, read back the server's now-stopped state, and discarded the time as "stopped
+  // elsewhere" instead of retrying the save. Also read by the `data` sync effect further down,
+  // to stop the live Timer countdown from clobbering the Hours/Minutes fields mid-retry.
+  const confirmedStopRef = useRef(null);
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
   const userTimeZone = userProfile?.timeZone || 'America/Los_Angeles';
@@ -499,32 +523,58 @@ export function TimeEntryForm(props) {
     }));
   };
 
-  const validateForm = isTimeModified => {
+  // Extracted out of validateForm to keep its cognitive complexity down (SonarQube S3776) -
+  // these checks are independent of each other, so each is its own `if`.
+  const getBasicValidationErrors = () => {
     const errorObj = {};
-    const remindObj = { ...reminder, remind: '' };
     const date = moment(formValues.dateOfWork);
-    const isDateValid = date.isValid();
 
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required';
-    if (!isDateValid) errorObj.dateOfWork = 'Invalid date';
+    if (!date.isValid()) errorObj.dateOfWork = 'Invalid date';
     if (from !== 'Timer' && from !== 'WeeklyTab' && !canChangeTime)
       errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
     if (!formValues.hours && !formValues.minutes)
       errorObj.time = 'Time should be greater than 0 minutes';
     if (!formValues.projectId) errorObj.projectId = 'Project/Task is required';
 
+    return errorObj;
+  };
+
+  // Extracted out of validateForm to keep its cognitive complexity down (SonarQube S3776) -
+  // early returns instead of an if/else-if chain keep each check at the same nesting level.
+  const getNotesValidation = () => {
     if (!reminder.enoughWords) {
-      remindObj.remind =
-        'Please write a more detailed description of your work completed, write at least 1-2 sentences.';
-      errorObj.notes = 'Description and reference link are required';
-    } else if (!reminder.hasLink && !reminder.hasDropboxLink) {
-      remindObj.remind =
-        'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)';
-      errorObj.notes = 'Description and reference link are required';
-    } else if (!reminder.hasLink && reminder.hasDropboxLink) {
-      remindObj.remind =
-        'Halt, Link Wrangler! You’ve tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox “Share” option to create a link that is guest-friendly!';
-      errorObj.notes = 'A valid Dropbox link from the “Share” option is required';
+      return {
+        remind:
+          'Please write a more detailed description of your work completed, write at least 1-2 sentences.',
+        notesError: 'Description and reference link are required',
+      };
+    }
+    if (!reminder.hasLink && !reminder.hasDropboxLink) {
+      return {
+        remind:
+          'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)',
+        notesError: 'Description and reference link are required',
+      };
+    }
+    if (!reminder.hasLink && reminder.hasDropboxLink) {
+      return {
+        remind:
+          'Halt, Link Wrangler! You’ve tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox “Share” option to create a link that is guest-friendly!',
+        notesError: 'A valid Dropbox link from the “Share” option is required',
+      };
+    }
+    return null;
+  };
+
+  const validateForm = isTimeModified => {
+    const errorObj = getBasicValidationErrors();
+    const remindObj = { ...reminder, remind: '' };
+
+    const notesValidation = getNotesValidation();
+    if (notesValidation) {
+      remindObj.remind = notesValidation.remind;
+      errorObj.notes = notesValidation.notesError;
     }
 
     setErrors(errorObj);
@@ -561,6 +611,245 @@ export function TimeEntryForm(props) {
     setErrors({});
     setProjectOrTaskId('defaultProject');
     if (closed === true && isOpen) toggle();
+  };
+
+  // Extracted out of submitTimerTimeEntry to keep its cognitive complexity down (SonarQube
+  // S3776) - computes the authoritative elapsed hours/minutes from a GET_TIMER resync (the
+  // CLIENT's own ticked countdown can lag the server's truth, e.g. a backgrounded/throttled
+  // tab), falling back to the form's own values if the resync didn't come back in time.
+  // Returns null if the resync shows the session was already stopped/logged elsewhere.
+  const resolveAuthoritativeElapsed = async (formHours, formMinutes) => {
+    const resynced = sendGetTimerAndConfirm ? await sendGetTimerAndConfirm() : null;
+    // Only an EXPLICIT "started: false" from the server means another tab really did
+    // stop/log this session already - abort rather than risk a duplicate entry. A
+    // timeout/no-response (resynced === null) is not that signal - it just means we
+    // couldn't confirm either way (e.g. a slow connection, or a backend that hasn't
+    // picked up the GET_TIMER requestId echo yet). Treating a timeout as "definitely
+    // stopped elsewhere" used to abort the WHOLE submission before sendStop() was ever
+    // called - the timer kept running and the form never closed, looking exactly like
+    // a hung save. Proceed with best effort instead; sendStop() right below is itself
+    // a real, authoritative check.
+    if (resynced?.started === false) return null;
+
+    let authoritativeHours = formHours;
+    let authoritativeMinutes = formMinutes;
+    if (resynced) {
+      const resyncedGoalMs = Number(resynced.goal);
+      const resyncedTimeMs = Number(resynced.time);
+      const trueRemainingMs = resynced.paused
+        ? resyncedTimeMs
+        : Math.max(0, resyncedTimeMs - (Date.now() - new Date(resynced.startAt).getTime()));
+      const elapsedMs = Math.max(0, resyncedGoalMs - trueRemainingMs);
+      authoritativeHours = Math.floor(elapsedMs / 3600000);
+      authoritativeMinutes = Math.floor((elapsedMs % 3600000) / 60000);
+    }
+    return { authoritativeHours, authoritativeMinutes };
+  };
+
+  // Extracted out of submitTimerTimeEntry to keep its cognitive complexity down (SonarQube
+  // S3776) - submits the authoritative entry and classifies the result, including the
+  // duplicate-409 case the non-Timer path's postNewTimeEntry also handles. Returns
+  // 'duplicate' | 'failed' | 'saved'.
+  const saveTimerEntry = async (
+    timeEntry,
+    authoritativeHours,
+    authoritativeMinutes,
+    personId,
+    taskId,
+    allowDuplicate,
+  ) => {
+    let saveStatus;
+    let saveCode;
+    try {
+      const payload = allowDuplicate ? { ...timeEntry, allowDuplicate: true } : timeEntry;
+      const saveResult = await props.postTimeEntry(payload, {
+        displayedUserId: props.displayedUserId,
+        detailed: true,
+      });
+      ({ status: saveStatus, code: saveCode } = saveResult || {});
+    } catch (error) {
+      // The timer is already safely stopped server-side, so retrying here only re-attempts
+      // the save - it cannot log the same worked time twice.
+      toast.error(`The timer was stopped, but logging the time failed. Please try again. Error: ${error}`);
+      return 'failed'; // form stays open with hours/minutes intact for retry
+    }
+    // The timer is already safely stopped server-side, so a duplicate the user confirms via
+    // PROCEED only needs to retry the save (with allowDuplicate) - not re-stop the timer.
+    if (!allowDuplicate && saveStatus === 409 && saveCode === 'DUPLICATE_TIME_ENTRY') {
+      pendingDuplicatePayloadRef.current = { ...timeEntry };
+      setDuplicateModalVisible(true);
+      return 'duplicate'; // form stays open; the duplicate modal takes over from here
+    }
+    // postTimeEntry swallows HTTP errors and resolves with the response status instead of
+    // throwing, so a 500 would otherwise fall straight through to the "success" path below
+    // and tell the user their time was logged when it was not.
+    if (!saveStatus || saveStatus < 200 || saveStatus >= 300) {
+      toast.error(`The timer was stopped, but logging the time failed (status ${saveStatus}). Please try again.`);
+      return 'failed'; // form stays open with hours/minutes intact for retry
+    }
+
+    confirmedStopRef.current = null;
+    if (onTimeSubmitted) {
+      onTimeSubmitted({
+        hours: authoritativeHours,
+        minutes: authoritativeMinutes,
+        sessionId,
+        timestamp: new Date().toISOString(),
+        userProfile: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim(),
+      });
+    }
+    dispatch(
+      updateIndividualTaskTime({
+        newTime: { hours: authoritativeHours, minutes: authoritativeMinutes },
+        taskId,
+        personId,
+      }),
+    );
+    return 'saved';
+  };
+
+  // This is the Timer-sourced stop-then-save flow on its own. Returns
+  // 'already-stopped' | 'failed' | 'duplicate' | 'saved' so the caller can drive its own
+  // form/submitting state.
+  const submitTimerTimeEntry = async (
+    timeEntry,
+    formHours,
+    formMinutes,
+    personId,
+    taskId,
+    allowDuplicate = false,
+  ) => {
+    let authoritativeHours;
+    let authoritativeMinutes;
+
+    if (confirmedStopRef.current) {
+      // A prior attempt in this same form session already computed its authoritative elapsed
+      // time and sent (or tried to send) STOP_TIMER, whether or not that stop was confirmed in
+      // time - reuse it and skip straight to saving. Re-running GET_TIMER here would read back
+      // the server's now-stopped state and be mistaken for "stopped elsewhere" (see below),
+      // discarding time that only failed to *save* or whose stop ack simply arrived late.
+      ({ hours: authoritativeHours, minutes: authoritativeMinutes } = confirmedStopRef.current);
+    } else {
+      const resolved = await resolveAuthoritativeElapsed(formHours, formMinutes);
+      if (!resolved) {
+        toast.info('This timer session was already stopped or logged elsewhere - please refresh.');
+        return 'already-stopped';
+      }
+      ({ authoritativeHours, authoritativeMinutes } = resolved);
+
+      // Bypasses validateForm (which only checks the form's own input fields), so the
+      // same 1-minute/5-hour bounds are enforced here before this gets anywhere near
+      // sendStop()/postTimeEntry.
+      if (!isElapsedTimeWithinBounds(authoritativeHours, authoritativeMinutes)) {
+        toast.error(
+          `Could not log an invalid elapsed time (${authoritativeHours}h ${authoritativeMinutes}m). Please refresh and try again.`,
+        );
+        return 'failed';
+      }
+
+      // Cache BEFORE calling sendStop(), not after it resolves true - sendStop() gives up
+      // and resolves false after a flat timeout even if the server actually processed
+      // STOP_TIMER just after that window closed. Caching early means a retry after that
+      // kind of timeout still has the authoritative elapsed time to fall back on.
+      confirmedStopRef.current = { hours: authoritativeHours, minutes: authoritativeMinutes };
+
+      const timerStopped = await sendStop();
+      if (!timerStopped) {
+        toast.error('Could not confirm the timer stopped - your time was NOT logged. Please try again.');
+        return 'failed'; // cached above - a retry skips this branch and saves directly
+      }
+    }
+    timeEntry.hours = authoritativeHours;
+    timeEntry.minutes = authoritativeMinutes;
+
+    return saveTimerEntry(
+      timeEntry,
+      authoritativeHours,
+      authoritativeMinutes,
+      personId,
+      taskId,
+      allowDuplicate,
+    );
+  };
+
+  // Extracted out of submitTimeEntry to keep that function's cognitive complexity down
+  // (SonarQube S3776) - runs the from-specific side effects (refresh lists, bump the task's
+  // tracked time, etc.) after a non-Timer save has already gone through.
+  const runPostSubmitActions = async (timeEntry, formHours, formMinutes, personId, taskId, isTangible) => {
+    switch (from) {
+      case 'WeekEnd':
+        // Handle week-end time log completion
+        if (props.onComplete) {
+          await props.onComplete(timeEntry);
+        }
+        clearForm();
+        break;
+      case 'TimeLog': {
+        const date = moment(formValues.dateOfWork);
+        const today = moment().tz('America/Los_Angeles');
+        const offset = today.week() - date.week();
+        props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
+        clearForm();
+
+        if (isTangible) {
+          dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: formHours, minutes: formMinutes },
+              taskId,
+              personId,
+            }),
+          );
+        }
+        break;
+      }
+      case 'WeeklyTab':
+        await Promise.all([
+          props.getUserProfile(timeEntryUserId),
+          props.getTimeEntriesForWeek(timeEntryUserId, tab),
+        ]);
+        break;
+      default:
+        break;
+    }
+
+    if (from !== 'WeekEnd' && !reminder.editLimitNotification) {
+      setReminder(r => ({
+        ...r,
+        editLimitNotification: !r.editLimitNotification,
+      }));
+    }
+  };
+
+  // Extracted out of submitTimeEntry to keep its cognitive complexity down (SonarQube
+  // S3776) - Timer-sourced entries go through submitTimerTimeEntry and its own three
+  // outcomes instead of the non-Timer save/duplicate/postSubmit flow below.
+  const handleTimerSubmit = async (
+    timeEntry,
+    formHours,
+    formMinutes,
+    personId,
+    taskId,
+    allowDuplicate,
+    handleFormReset,
+  ) => {
+    const result = await submitTimerTimeEntry(
+      timeEntry,
+      formHours,
+      formMinutes,
+      personId,
+      taskId,
+      allowDuplicate,
+    );
+    if (result === 'already-stopped') {
+      handleFormReset();
+    } else if (result === 'saved') {
+      // Closes the modal (not just clearing its fields) - the save is done and the timer is
+      // stopped, so there's nothing left for the user to see here; leaving it open after a
+      // slow save looked exactly like the save had silently failed or hung.
+      clearForm(true);
+    }
+    setSubmitting(false);
+    if (!edit) postRequestInFlightRef.current = false;
   };
 
   const submitTimeEntry = async ({ retryPayload, allowDuplicate = false } = {}) => {
@@ -600,77 +889,23 @@ export function TimeEntryForm(props) {
       setSubmitting(false);
     };
 
-    const handlePostSubmitActions = async () => {
-      switch (from) {
-        case 'Timer': {
-          const timerStopped = await sendStop();
-          if (!timerStopped) {
-            toast.warning(
-              'Time was logged, but the timer stop could not be confirmed. Refresh the timer before continuing.',
-            );
-          }
-          clearForm();
-          // Enhanced callback with additional data
-          if (onTimeSubmitted) {
-            onTimeSubmitted({
-              hours: formHours,
-              minutes: formMinutes,
-              sessionId,
-              timestamp: new Date().toISOString(),
-              userProfile: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim(),
-            });
-          }
-          dispatch(
-            updateIndividualTaskTime({
-              newTime: { hours: formHours, minutes: formMinutes },
-              taskId,
-              personId,
-            }),
-          );
-          break;
-        }
-        case 'WeekEnd':
-          // Handle week-end time log completion
-          if (props.onComplete) {
-            await props.onComplete(timeEntry);
-          }
-          clearForm();
-          break;
-        case 'TimeLog': {
-          const date = moment(timeEntry.dateOfWork);
-          const today = moment().tz('America/Los_Angeles');
-          const offset = today.week() - date.week();
-          props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
-          clearForm();
-
-          if(isTangible) {
-            dispatch(
-              updateIndividualTaskTime({
-                newTime: { hours: formHours, minutes: formMinutes },
-                taskId,
-                personId,
-              }),
-            );
-          }
-          break;
-        }
-        case 'WeeklyTab':
-          await Promise.all([
-            props.getUserProfile(timeEntryUserId),
-            props.getTimeEntriesForWeek(timeEntryUserId, tab),
-          ]);
-          break;
-        default:
-          break;
-      }
-
-      if (from !== 'Timer' && from !== 'WeekEnd' && !reminder.editLimitNotification) {
-        setReminder(r => ({
-          ...r,
-          editLimitNotification: !r.editLimitNotification,
-        }));
-      }
-    };
+    // Timer-sourced entries: stop the timer (server-confirmed) BEFORE saving, not after -
+    // the old order saved first and stopped second, so a failed/late stop (or a stale second
+    // tab) could leave the exact same worked time logged twice. A fresh GET_TIMER resync goes
+    // first so a stale tab - whose own local "started" flag may not have caught up with
+    // another tab already stopping/logging this same session - doesn't save a duplicate.
+    if (from === 'Timer') {
+      await handleTimerSubmit(
+        timeEntry,
+        formHours,
+        formMinutes,
+        personId,
+        taskId,
+        allowDuplicate,
+        handleFormReset,
+      );
+      return;
+    }
 
     const postNewTimeEntry = async () => {
       const payload = allowDuplicate ? { ...timeEntry, allowDuplicate: true } : timeEntry;
@@ -701,7 +936,7 @@ export function TimeEntryForm(props) {
         return;
       }
 
-      await handlePostSubmitActions();
+      await runPostSubmitActions(timeEntry, formHours, formMinutes, personId, taskId, isTangible);
       pendingDuplicatePayloadRef.current = null;
       handleFormReset();
     } catch (error) {
@@ -936,6 +1171,7 @@ export function TimeEntryForm(props) {
       setEditorKey(prev => prev + 1);
       setActualDate(null);
       getActualDate();
+      confirmedStopRef.current = null;
     }
   }, [isOpen]);
 
@@ -951,7 +1187,22 @@ export function TimeEntryForm(props) {
   }, [actualDate, edit]);
 
   useEffect(() => {
-    setFormValues(prev => ({ ...prev, ...data }));
+    setFormValues(prev => {
+      const next = { ...prev, ...data };
+      // Once a Timer-sourced stop has been computed/sent for THIS submission attempt,
+      // the authoritative elapsed time lives in confirmedStopRef, not in this live `data`
+      // prop. Timer.jsx's logTimer keeps recalculating from the live countdown, so the
+      // moment a late STOP_TIMER ack lands the leftover/zeroed session time flows back
+      // down here as a new `data` object - overwriting the Hours/Minutes fields with 0
+      // right while the form sits open waiting for the user to retry a failed save, and
+      // (since those fields are disabled for Timer entries) leaving them with no way to
+      // fix it back and nothing to resubmit.
+      if (confirmedStopRef.current) {
+        next.hours = prev.hours;
+        next.minutes = prev.minutes;
+      }
+      return next;
+    });
   }, [data]);
 
   const { fontColor, headerBg, bodyBg, modalClass, modalStyle, buttonStyle } = timeEntryTheme(darkMode);
@@ -1231,6 +1482,7 @@ export function TimeEntryForm(props) {
 TimeEntryForm.propTypes = {
   from: PropTypes.string,
   sendStop: PropTypes.func,
+  sendGetTimerAndConfirm: PropTypes.func,
   edit: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,

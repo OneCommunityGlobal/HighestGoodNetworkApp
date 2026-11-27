@@ -106,7 +106,11 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     toggle = vi.fn();
-    sendStop = vi.fn();
+    // Timer-sourced submissions now stop the timer BEFORE saving and gate the save on that
+    // stop being server-confirmed (see submitTimerTimeEntry in TimeEntryForm.jsx) - resolve
+    // truthy by default so these duplicate-submission-workflow tests (most of which submit
+    // via from: 'Timer') reach postTimeEntry instead of being blocked by an unconfirmed stop.
+    sendStop = vi.fn().mockResolvedValue(true);
     onTimeSubmitted = vi.fn();
     onDuplicateCancel = vi.fn();
     store = mockStore({
@@ -166,7 +170,12 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
   };
 
   const expectFailedSubmissionLeftEverythingIntact = () => {
-    expect.soft(sendStop).not.toHaveBeenCalled();
+    // Timer-sourced entries stop (server-confirmed) BEFORE saving, so by the time a save
+    // fails for any reason the stop has already happened - the form staying intact here is
+    // about the SAVE failing, not about the timer never having been touched. The elapsed
+    // time is cached (confirmedStopRef in TimeEntryForm.jsx) so a retry reuses it rather
+    // than stopping again.
+    expect.soft(sendStop).toHaveBeenCalledTimes(1);
     expect.soft(toggle).not.toHaveBeenCalled();
     expect.soft(onTimeSubmitted).not.toHaveBeenCalled();
     expect.soft(taskTimeActions()).toHaveLength(0);
@@ -233,8 +242,10 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
 
     expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument();
     expectFailedSubmissionLeftEverythingIntact();
+    // Timer-sourced saves use submitTimerTimeEntry's own wording (it also tells the user
+    // the timer was already stopped), not postNewTimeEntry's generic "request failed" text.
     expect(toast.error).toHaveBeenCalledWith(
-      expect.stringContaining(`request failed with status ${status}`),
+      expect.stringContaining(`status ${status}`),
     );
   });
 
@@ -270,7 +281,7 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Network Error'));
   });
 
-  it('CANCEL closes the form and delegates current-week navigation without stopping the timer', async () => {
+  it('CANCEL closes the form and delegates current-week navigation without a second stop or save', async () => {
     respondWithStatus(409, 'DUPLICATE_TIME_ENTRY');
     await fillAndSubmit();
 
@@ -279,7 +290,10 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     expect(onDuplicateCancel).toHaveBeenCalledWith(authMock.user.userid);
     expect(toggle).toHaveBeenCalledTimes(1);
     expect(postTimeEntry).toHaveBeenCalledTimes(1);
-    expect(sendStop).not.toHaveBeenCalled();
+    // Timer-sourced entries stop (server-confirmed) BEFORE saving - by the time a duplicate
+    // is detected, the stop has already happened and its elapsed time is cached (see
+    // confirmedStopRef in TimeEntryForm.jsx) so a retry never needs to stop again.
+    expect(sendStop).toHaveBeenCalledTimes(1);
     expect(onTimeSubmitted).not.toHaveBeenCalled();
     expect(taskTimeActions()).toHaveLength(0);
   });
@@ -293,7 +307,9 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
 
     await waitFor(() => expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument());
     expect(toggle).not.toHaveBeenCalled();
-    expect(sendStop).not.toHaveBeenCalled();
+    // Already stopped (server-confirmed) before this duplicate was detected; EDIT doesn't
+    // trigger a second stop.
+    expect(sendStop).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText(/notes/i)).toHaveValue(NOTES);
     await waitFor(() => expect(screen.getByLabelText(/notes/i)).toHaveFocus());
     expect(screen.getByLabelText(/project\/task/i)).toHaveValue(TASK_VALUE);
@@ -319,7 +335,7 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
     expect(toggle).toHaveBeenCalledTimes(1);
   });
 
-  it('Escape chooses EDIT and never retries or stops the timer', async () => {
+  it('Escape chooses EDIT and never retries the save or stops the timer again', async () => {
     respondWithStatus(409, 'DUPLICATE_TIME_ENTRY');
     await fillAndSubmit();
     const editButton = duplicateButton('edit');
@@ -330,7 +346,7 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
 
     await waitFor(() => expect(screen.queryByText(DUPLICATE_WARNING)).not.toBeInTheDocument());
     expect(postTimeEntry).toHaveBeenCalledTimes(1);
-    expect(sendStop).not.toHaveBeenCalled();
+    expect(sendStop).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText(/notes/i)).toHaveValue(NOTES);
   });
 
@@ -362,7 +378,9 @@ describe('<TimeEntryForm /> duplicate submission workflow', () => {
 
     await waitFor(() => expect(toast.error).toHaveBeenCalled());
     expect(screen.getByLabelText(/notes/i)).toHaveValue(NOTES);
-    expect(sendStop).not.toHaveBeenCalled();
+    // Stopped once (server-confirmed) on the very first attempt; the PROCEED retry and the
+    // 500 it got back both reuse that cached stop rather than stopping again.
+    expect(sendStop).toHaveBeenCalledTimes(1);
     expect(onTimeSubmitted).not.toHaveBeenCalled();
     expect(taskTimeActions()).toHaveLength(0);
     expect(submitButton()).toBeEnabled();
