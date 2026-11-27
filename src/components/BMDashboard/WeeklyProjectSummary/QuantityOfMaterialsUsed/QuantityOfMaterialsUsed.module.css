@@ -17,7 +17,8 @@
 /* Chart Container */
 .quantityOfMaterialsUsedChartContainer {
   width: 100%;
-  overflow: auto hidden;
+  overflow: hidden auto;
+  max-height: 420px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
@@ -31,6 +32,7 @@
 
 /* WebKit Browsers (Chrome, Safari) */
 .quantityOfMaterialsUsedChartContainer::-webkit-scrollbar {
+  width: 4px;
   height: 4px;
   background: transparent;
 }
@@ -463,4 +465,11 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.quantityOfMaterialsUsedEmptyText {
+  padding: 2rem 0;
+  font-size: 12px;
+  text-align: center;
+  color: var(--text-color);
 }
