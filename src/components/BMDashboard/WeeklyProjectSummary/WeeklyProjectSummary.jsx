@@ -74,6 +74,157 @@ function getProjectStatusErrorMessage(error) {
   );
 }
 
+// ---------- Share PDF helpers ----------
+// Landscape A4, so wide sections (several charts in a row) stay readable
+const PDF_PAGE = { width: 297, height: 210, margin: 10 };
+const PDF_SECTION_TITLE_HEIGHT = 9;
+const PDF_LOAD_TIMEOUT_MS = 20000;
+const PDF_LOAD_POLL_MS = 400;
+const PDF_STABLE_CHECKS = 3;
+const PDF_CHART_SETTLE_MS = 800;
+
+const waitFor = ms =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+
+// True while a chart or card in the element is still loading
+const isStillLoading = element => {
+  if (
+    element.querySelector(
+      '.spinner-border, .spinner-grow, [role="progressbar"], [aria-busy="true"]',
+    )
+  ) {
+    return true;
+  }
+  return /\bloading\b/i.test(element.innerText || '');
+};
+
+// Waits until nothing in the element shows a loading state for a few checks in a row
+// (or the time limit passes), so charts and cards are captured with their data
+const waitForContentToLoad = async element => {
+  const start = Date.now();
+  let stableChecks = 0;
+  while (Date.now() - start < PDF_LOAD_TIMEOUT_MS && stableChecks < PDF_STABLE_CHECKS) {
+    stableChecks = isStillLoading(element) ? 0 : stableChecks + 1;
+    // eslint-disable-next-line no-await-in-loop
+    await waitFor(PDF_LOAD_POLL_MS);
+  }
+  // Let chart animations finish drawing
+  await waitFor(PDF_CHART_SETTLE_MS);
+};
+
+// Applied only to html2canvas's copy of the page: hides filters, dropdowns and their labels, and
+// resets text spacing settings that make html2canvas drop the spaces between words
+const PDF_EXPORT_STYLES = `
+  * {
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+    font-variant-ligatures: none !important;
+    text-rendering: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  .no-print,
+  .react-datepicker-wrapper,
+  .react-datepicker__input-container,
+  [role="combobox"],
+  [aria-haspopup="listbox"],
+  [class*="-control"],
+  [class*="indicatorContainer"],
+  [class*="select__"],
+  [class*="dropdown" i],
+  [class*="select" i]:not(svg):not(svg *),
+  div:has(> input),
+  div:has(> select),
+  div:has(> [role="combobox"]) {
+    display: none !important;
+  }
+`;
+
+const captureElement = element =>
+  html2canvas(element, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+    onclone: clonedDocument => {
+      const style = clonedDocument.createElement('style');
+      style.textContent = PDF_EXPORT_STYLES;
+      clonedDocument.head.appendChild(style);
+    },
+  });
+
+// Adds a section title (as real, searchable PDF text) and its image, starting a new page when
+// the section does not fit, and splitting sections taller than a page across pages.
+// Returns the vertical position after the section.
+const addSectionToPdf = (pdf, title, canvas, startY) => {
+  const { width, height, margin } = PDF_PAGE;
+  const contentWidth = width - margin * 2;
+  const pageContentHeight = height - margin * 2;
+  const pxPerMm = canvas.width / contentWidth;
+  const sectionHeight = canvas.height / pxPerMm + PDF_SECTION_TITLE_HEIGHT;
+
+  let y = startY;
+  const fitsOnPage = sectionHeight <= pageContentHeight;
+  const needsNewPage = fitsOnPage ? y + sectionHeight > height - margin : y > height / 2;
+  if (y > margin && needsNewPage) {
+    pdf.addPage();
+    y = margin;
+  }
+
+  pdf.setFontSize(13);
+  pdf.setTextColor(33, 37, 41);
+  pdf.text(title, margin, y + 6);
+  y += PDF_SECTION_TITLE_HEIGHT;
+
+  let offsetPx = 0;
+  while (offsetPx < canvas.height) {
+    if (height - margin - y < 15) {
+      pdf.addPage();
+      y = margin;
+    }
+    const sliceHeightPx = Math.min(
+      canvas.height - offsetPx,
+      Math.floor((height - margin - y) * pxPerMm),
+    );
+    const slice = document.createElement('canvas');
+    slice.width = canvas.width;
+    slice.height = sliceHeightPx;
+    slice
+      .getContext('2d')
+      .drawImage(
+        canvas,
+        0,
+        offsetPx,
+        canvas.width,
+        sliceHeightPx,
+        0,
+        0,
+        canvas.width,
+        sliceHeightPx,
+      );
+
+    const sliceHeightMm = sliceHeightPx / pxPerMm;
+    pdf.addImage(
+      slice.toDataURL('image/jpeg', 0.92),
+      'JPEG',
+      margin,
+      y,
+      contentWidth,
+      sliceHeightMm,
+    );
+    offsetPx += sliceHeightPx;
+    y += sliceHeightMm;
+  }
+  return y + 6;
+};
+
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -549,7 +700,7 @@ function WeeklyProjectSummary() {
     setIsGeneratingPDF(true);
 
     // Show loading toast
-    const loadingToastId = toast.info('Generating PDF...', {
+    const loadingToastId = toast.info('Generating PDF... charts are loading', {
       position: 'top-right',
       autoClose: false,
       closeOnClick: false,
@@ -557,121 +708,67 @@ function WeeklyProjectSummary() {
     });
 
     try {
-      // Open all sections for PDF export
+      // Open all sections, so their charts load before the export
       const allSectionsOpen = {};
       sections.forEach(section => {
         allSectionsOpen[section.key] = true;
       });
       setOpenSections(allSectionsOpen);
 
-      // Wait for sections to render
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Try to find the container using ref first, then fallback to querySelector
-      const contentElement =
-        containerRef.current || document.querySelector(`.${styles.weeklyProjectSummaryContainer}`);
+      // Wait for the sections to render, then for their charts and cards to finish loading
+      await waitFor(500);
+      const contentElement = containerRef.current;
       if (!contentElement) {
         throw new Error(
           'Weekly project summary container not found. Please refresh the page and try again.',
         );
       }
+      await waitForContentToLoad(contentElement);
 
-      // Create PDF container
-      const pdfContainer = document.createElement('div');
-      pdfContainer.id = 'pdf-export-container';
-      Object.assign(pdfContainer.style, {
-        width: '420mm',
-        padding: '10mm',
-        backgroundColor: '#fff',
-        position: 'absolute',
-        left: '-9999px',
-        top: '0',
-        boxSizing: 'border-box',
-        zIndex: '-1',
-      });
-
-      // Clone the content
-      const clonedContent = contentElement.cloneNode(true);
-
-      clonedContent
-        .querySelectorAll(
-          'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
-        )
-        .forEach(el => {
-          el.remove();
-        });
-
-      // Add styles for PDF
-      const styleElem = document.createElement('style');
-      styleElem.textContent = `
-        img, svg {
-          height: auto !important;
-          page-break-inside: avoid !important;
-        }
-        * {
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-      `;
-
-      clonedContent.prepend(styleElem);
-      pdfContainer.appendChild(clonedContent);
-      document.body.appendChild(pdfContainer);
-
-      // Wait a bit for styles to apply
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      // Generate canvas from HTML
-      const canvas = await html2canvas(pdfContainer, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#fff',
-        windowWidth: pdfContainer.scrollWidth,
-        windowHeight: pdfContainer.scrollHeight,
-        logging: false,
-        allowTaint: false,
-      });
-
-      if (!canvas) {
-        throw new Error('Failed to capture content as image. Please try again.');
+      const sectionElements = Array.from(contentElement.querySelectorAll('[data-pdf-section]'));
+      if (!sectionElements.length) {
+        throw new Error('No sections to export. Choose at least one card and try again.');
       }
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-      if (!imgData || imgData === 'data:,') {
-        throw new Error('Failed to generate image data. Please try again.');
-      }
-
-      const pdfWidth = 210; // A4 width in mm
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      // Create PDF
       // eslint-disable-next-line new-cap
-      const pdf = new jsPDF({
-        orientation: imgHeight > pdfWidth ? 'portrait' : 'landscape',
-        unit: 'mm',
-        format: [pdfWidth, imgHeight],
-      });
-
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
-
-      // Generate filename with project and date range
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const { margin } = PDF_PAGE;
       const now = new Date();
       const dateStr = now.toISOString().slice(0, 10);
+
+      // Report header as real text (searchable, no overlapping dates)
+      pdf.setFontSize(18);
+      pdf.setTextColor(33, 37, 41);
+      pdf.text('Weekly Project Summary', margin, margin + 6);
+      pdf.setFontSize(10);
+      pdf.setTextColor(90, 90, 90);
+      pdf.text(
+        `Project: ${projectFilter || 'All Projects'}    Date range: ${dateRangeFilter ||
+          'Not selected'}    Generated: ${dateStr}`,
+        margin,
+        margin + 13,
+      );
+      let y = margin + 20;
+
+      // Capture section by section from the live page, so canvas charts keep their drawing
+      for (const sectionElement of sectionElements) {
+        const title = sectionElement.dataset.pdfTitle || '';
+        const sectionContent = sectionElement.querySelector('[data-pdf-content]');
+        if (sectionContent) {
+          // eslint-disable-next-line no-await-in-loop
+          const canvas = await captureElement(sectionContent);
+          if (canvas?.width && canvas?.height) {
+            y = addSectionToPdf(pdf, title, canvas, y);
+          }
+        }
+      }
+
+      // Generate filename with project and date range
       const projectName = projectFilter || 'All-Projects';
       const dateRange = dateRangeFilter
         ? dateRangeFilter.replaceAll(/\s+/g, '-').replaceAll(/,/g, '')
         : dateStr;
-      const fileName = `weekly-project-summary-${projectName}-${dateRange}.pdf`;
-
-      pdf.save(fileName);
-
-      // Clean up
-      if (document.body.contains(pdfContainer)) {
-        pdfContainer.remove();
-      }
+      pdf.save(`weekly-project-summary-${projectName}-${dateRange}.pdf`);
 
       // Dismiss loading toast and show success
       toast.dismiss(loadingToastId);
@@ -682,29 +779,15 @@ function WeeklyProjectSummary() {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('PDF generation failed:', err);
-      // eslint-disable-next-line no-alert
-      alert('Failed to generate PDF. Please try again.');
-      // Dismiss loading toast
       toast.dismiss(loadingToastId);
-
-      // Show error message
-      const errorMessage =
+      toast.error(
         err?.message ||
-        'Failed to generate PDF. Please try again or contact support if the issue persists.';
-      toast.error(errorMessage, {
-        position: 'top-right',
-        autoClose: 5000,
-      });
-
-      // Log error for debugging
-      // eslint-disable-next-line no-console
-      console.error('PDF generation failed:', err);
-
-      // Clean up PDF container if it exists
-      const pdfContainer = document.getElementById('pdf-export-container');
-      if (pdfContainer && document.body.contains(pdfContainer)) {
-        pdfContainer.remove();
-      }
+          'Failed to generate PDF. Please try again or contact support if the issue persists.',
+        {
+          position: 'top-right',
+          autoClose: 5000,
+        },
+      );
     } finally {
       setOpenSections(currentOpenSections);
       setIsGeneratingPDF(false);
@@ -746,6 +829,8 @@ function WeeklyProjectSummary() {
             <div
               key={key}
               className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
+              data-pdf-section={key}
+              data-pdf-title={title}
             >
               <button
                 type="button"
@@ -755,7 +840,10 @@ function WeeklyProjectSummary() {
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                <div
+                  className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}
+                  data-pdf-content
+                >
                   {content}
                 </div>
               )}
