@@ -1333,3 +1333,22 @@ export const createAuthMocks = (permissions) => {
   const allOtherPermissions = {...authTemplate, permissions: {frontPermissions: allPermissionsExcept(permissions)}};
   return [onlyPermissions, allOtherPermissions];
 };
+
+// Shared axios `get` mock for TimeEntryForm-related tests (project/task/user-profile
+// lookups) - several test files were each inlining an identical copy of this. Lives here
+// (rather than __tests__/utils.jsx) because it needs to be safely referenceable from
+// inside a hoisted `vi.mock('axios', ...)` factory, and this module's own import graph
+// (unlike utils.jsx, which pulls in the Redux store) is lightweight enough for that.
+export const createProjectTaskProfileAxiosGetMock = (userProjectMock, userProfileMock) =>
+  vi.fn(url => {
+    if (url.includes('/userProjects')) {
+      return Promise.resolve({ data: userProjectMock.projects });
+    }
+    if (url.includes('/tasks')) {
+      return Promise.resolve({ data: [] });
+    }
+    if (url.includes('/userProfile')) {
+      return Promise.resolve({ data: userProfileMock });
+    }
+    return Promise.resolve({ data: [] });
+  });

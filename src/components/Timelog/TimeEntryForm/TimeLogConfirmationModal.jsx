@@ -1,62 +1,92 @@
-import { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment-timezone';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input, Label, FormGroup } from 'reactstrap';
 
-function TimeLogConfirmationModal({
-  isOpen,
-  toggleModal,
-  onConfirm,
-  onReject,
-  onIntangible,
-  darkMode,
-}) {
-  const [, setUserChoice] = useState('');
+const MIN_REASON_WORDS = 10;
 
-  const handleUserAction = choice => {
-    setUserChoice(choice);
-    toggleModal();
+const countWords = text =>
+  text
+    .trim()
+    .split(/\s+/)
+    .filter(word => word.length > 0).length;
 
-    // Call corresponding action based on user's choice
-    if (choice === 'confirmed') {
-      onConfirm();
-    } else if (choice === 'rejected') {
-      onReject();
-    } else if (choice === 'intangible') {
-      onIntangible();
+function TimeLogConfirmationModal({ isOpen, toggleModal, onBack, onSubmit, darkMode }) {
+  const [reason, setReason] = useState('');
+  const [dateBelongsOn, setDateBelongsOn] = useState(moment().format('YYYY-MM-DD'));
+
+  useEffect(() => {
+    if (isOpen) {
+      setReason('');
+      setDateBelongsOn(moment().format('YYYY-MM-DD'));
     }
+  }, [isOpen]);
+
+  const isReasonValid = countWords(reason) >= MIN_REASON_WORDS;
+  const isDateValid = Boolean(dateBelongsOn);
+  const canSubmit = isReasonValid && isDateValid;
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    onSubmit(reason.trim(), dateBelongsOn);
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggleModal} className={darkMode ? 'dark-mode' : ''}>
-      <ModalHeader toggle={toggleModal}>HOLD ON TIGER!</ModalHeader>
+      <ModalHeader toggle={toggleModal}>INTANGIBLE TIME REASON</ModalHeader>
       <ModalBody>
-        If you are logging Intangible Time that you want converted to Tangible, you must include the
-        reason why you didn’t use the required timer.
+        <p>
+          If you are logging Intangible Time that you want converted to Tangible, you must include a
+          reason why you didn&apos;t use the required timer.
+        </p>
+        <FormGroup>
+          <Input
+            type="textarea"
+            id="intangibleTimeReason"
+            name="intangibleTimeReason"
+            placeholder="Detailed reason (10-word minimum)"
+            value={reason}
+            onChange={e => setReason(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="intangibleTimeDate">DATE THIS BELONGS ON:</Label>
+          <Input
+            type="date"
+            id="intangibleTimeDate"
+            name="intangibleTimeDate"
+            value={dateBelongsOn}
+            onChange={e => setDateBelongsOn(e.target.value)}
+          />
+        </FormGroup>
       </ModalBody>
       <ModalFooter>
-        <Button
-          color="success"
-          onClick={() => handleUserAction('confirmed')}
-          style={{ flex: 1, marginRight: '10px' }}
-        >
-          Yep, totally did that! Please proceed.
-        </Button>
-        <Button
-          color="danger"
-          onClick={() => handleUserAction('rejected')}
-          style={{ flex: 1, marginRight: '10px' }}
-        >
-          Oops, didn’t do that! Take me back.
+        <Button color="danger" onClick={onBack} style={{ flex: 1, marginRight: '10px' }}>
+          Whoops, take me back to edit this.
         </Button>
         <Button
           color="info"
-          onClick={() => handleUserAction('intangible')}
-          style={{ flex: 1, marginRight: '10px' }}
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+          style={{ flex: 1 }}
         >
-          Time is meant as Intangible. Please proceed.
+          I&apos;ve added all the specifics, submit!
         </Button>
       </ModalFooter>
     </Modal>
   );
 }
+
+TimeLogConfirmationModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggleModal: PropTypes.func.isRequired,
+  onBack: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+TimeLogConfirmationModal.defaultProps = {
+  darkMode: false,
+};
 
 export default TimeLogConfirmationModal;
