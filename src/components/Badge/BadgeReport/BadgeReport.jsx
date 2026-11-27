@@ -11,11 +11,6 @@ import { toast } from 'react-toastify';
 import {
   Button,
   ButtonGroup,
-  Card,
-  CardBody,
-  CardImg,
-  CardText,
-  CardTitle,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -23,7 +18,6 @@ import {
   Input,
   Table,
   UncontrolledDropdown,
-  UncontrolledPopover,
   UncontrolledTooltip,
 } from 'reactstrap';
 import { changeBadgesByUserID } from '~/actions/badgeManagement';
@@ -33,6 +27,7 @@ import { permissions } from '~/utils/constants';
 import { formatDate } from '~/utils/formatDate';
 import hasPermission from '~/utils/permissions';
 import BadgeImage from '../BadgeImage';
+import BadgePopoverCard from '../BadgePopoverCard';
 import '../Badge.module.css';
 import '../BadgeReport.module.css';
 import DeleteBadgeModal from './DeleteBadgeModal';
@@ -367,24 +362,7 @@ function BadgeReport(props) {
                       </span>
                     </td>
 
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index}>
-                      <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value.badge?.imageUrl} />
-                        <CardBody>
-                          <CardTitle
-                            style={{
-                              fontWeight: 'bold',
-                              fontSize: 18,
-                              color: '#285739',
-                              marginBottom: 15,
-                            }}
-                          >
-                            {value.badge?.badgeName}
-                          </CardTitle>
-                          <CardText>{value.badge?.description}</CardText>
-                        </CardBody>
-                      </Card>
-                    </UncontrolledPopover>
+                    <BadgePopoverCard target={'popover_' + index} badge={value.badge} />
 
                     <td>{value.badge.badgeName}</td>
                     <td>{displayModified(value.lastModified)}</td>

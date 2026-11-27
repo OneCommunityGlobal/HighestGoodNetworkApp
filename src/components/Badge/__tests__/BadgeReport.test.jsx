@@ -53,15 +53,22 @@ const getBadgeReportProps = overrides => ({
 
 const renderBadgeReport = overrides => render(<BadgeReport {...getBadgeReportProps(overrides)} />);
 
-const expectBadgeInfoVisible = mockBadge => {
-  const badgeName = mockBadge.badge.badgeName;
-  const badgeModifiedDate = mockBadge.lastModified;
-  const badgeCount = mockBadge.count;
-
-  expect(screen.getAllByText(badgeName).length).toBeGreaterThan(0);
-  expect(screen.getAllByText(formatDate(badgeModifiedDate)).length).toBeGreaterThan(0);
-  expect(screen.getAllByText(badgeCount).length).toBeGreaterThan(0);
-  expect(screen.getAllByRole('img').length).toBeGreaterThan(0);
+const extraMockBadge = {
+  badge: {
+    badgeName: 'test name 2',
+    description: 'test desc 2',
+    imageUrl: 'test url 2',
+    ranking: 1,
+    showReport: null,
+    type: 'test type 2',
+    _id: 'test id',
+  },
+  count: 5,
+  earnedDate: ['May-15-24'],
+  featured: false,
+  hasBadgeDeletionImpact: false,
+  lastModified: '2024-04-16T16:15:49.158Z',
+  _id: '664254c72adc89187008ac78',
 };
 
 describe('BadgeReport Component', () => {
@@ -108,37 +115,19 @@ describe('BadgeReport Component', () => {
     expect(noBadgesPlaceHolder).toHaveLength(2);
   });
 
-  test('renders all the badge information correctly', () => {
-    renderBadgeReport();
+  test.each([
+    ['a single badge', () => mockBadges],
+    ['multiple badges', () => [...mockBadges, extraMockBadge]],
+  ])('renders all the badge information correctly for %s', (_label, getBadges) => {
+    const badges = getBadges();
+    renderBadgeReport({ badges });
 
-    mockBadges.forEach(expectBadgeInfoVisible);
-  });
-
-  test('test for multiple badges', () => {
-    mockBadges = [
-      ...mockBadges,
-      {
-        badge: {
-          badgeName: 'test name 2',
-          description: 'test desc 2',
-          imageUrl: 'test url 2',
-          ranking: 1,
-          showReport: null,
-          type: 'test type 2',
-          _id: 'test id',
-        },
-        count: 5,
-        earnedDate: ['May-15-24'],
-        featured: false,
-        hasBadgeDeletionImpact: false,
-        lastModified: '2024-04-16T16:15:49.158Z',
-        _id: '664254c72adc89187008ac78',
-      },
-    ];
-
-    renderBadgeReport();
-
-    mockBadges.forEach(expectBadgeInfoVisible);
+    badges.forEach(mockBadge => {
+      expect(screen.getAllByText(mockBadge.badge.badgeName).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(formatDate(mockBadge.lastModified)).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(mockBadge.count).length).toBeGreaterThan(0);
+      expect(screen.getAllByRole('img').length).toBeGreaterThan(0);
+    });
   });
 
   test('disables selected export until a badge is featured', () => {

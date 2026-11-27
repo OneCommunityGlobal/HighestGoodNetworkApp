@@ -6,9 +6,6 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
-  CardImg,
-  CardText,
-  CardTitle,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -19,7 +16,6 @@ import {
   Button as ReactStrapButton,
   Table,
   UncontrolledDropdown,
-  UncontrolledPopover,
   UncontrolledTooltip,
 } from 'reactstrap';
 import { clearSelected } from '~/actions/badgeManagement';
@@ -27,11 +23,21 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '../../utils/permissions';
 import { permissions } from '../../utils/constants';
 import BadgeReport from '../Badge/BadgeReport/BadgeReport';
+import BadgePopoverCard from '../Badge/BadgePopoverCard';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import AssignBadgePopup from './AssignBadgePopup';
 import styles from './Badge.module.css';
 import FeaturedBadges from './FeaturedBadges';
 import { sortBadgeRecords } from '../Badge/badgeListUtils';
+
+const getBadgesEarnedCount = sortedBadges =>
+  sortedBadges.reduce((acc, badge) => {
+    if (!badge || !badge.badge) return acc;
+    if (badge.badge.badgeName === 'Personal Max' || badge.badge.type === 'Personal Max') {
+      return acc + 1;
+    }
+    return acc + (Math.round(Number(badge.count)) || 0);
+  }, 0);
 
 const formatLastModified = lastModified => {
   if (!lastModified || Number.isNaN(new Date(lastModified).getTime())) return '—';
@@ -46,24 +52,7 @@ function BadgeHistoryRow({ value, darkMode, showEarnedDates }) {
         {' '}
         <img src={value.badge.imageUrl} id={`popover_${value.badge._id}`} alt="badge" />
       </td>
-      <UncontrolledPopover trigger="hover" target={`popover_${value.badge._id}`}>
-        <Card className="text-center">
-          <CardImg className="badge_image_lg" src={value.badge?.imageUrl} />
-          <CardBody>
-            <CardTitle
-              style={{
-                fontWeight: 'bold',
-                fontSize: 18,
-                color: '#285739',
-                marginBottom: 15,
-              }}
-            >
-              {value.badge?.badgeName}
-            </CardTitle>
-            <CardText>{value.badge?.description}</CardText>
-          </CardBody>
-        </Card>
-      </UncontrolledPopover>
+      <BadgePopoverCard target={`popover_${value.badge._id}`} badge={value.badge} />
       <td>{value.badge.badgeName}</td>
       <td>{formatLastModified(value.lastModified)}</td>
       {showEarnedDates && (
@@ -105,6 +94,184 @@ function BadgeHistoryRow({ value, darkMode, showEarnedDates }) {
   );
 }
 
+function BadgeHistoryTableBody({ sortedBadges, darkMode, authUser, displayUserId, showEarnedDates }) {
+  if (sortedBadges.length === 0) {
+    return (
+      <tr>
+        <td colSpan={showEarnedDates ? 5 : 4} style={{ textAlign: 'center' }}>{`${
+          authUser.userid === displayUserId ? 'You have' : 'This person has'
+        } no badges${showEarnedDates ? ' ' : ''}.`}</td>
+      </tr>
+    );
+  }
+  return sortedBadges.map(value => (
+    <BadgeHistoryRow
+      key={value.badge._id}
+      value={value}
+      darkMode={darkMode}
+      showEarnedDates={showEarnedDates}
+    />
+  ));
+}
+
+function BadgeHistoryModal({
+  isOpen,
+  toggleBadge,
+  darkMode,
+  sortedBadges,
+  authUser,
+  displayUserId,
+}) {
+  return (
+    <Modal size="lg" isOpen={isOpen} toggle={toggleBadge} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <div>
+          {/* --- DESKTOP VERSION OF MODAL --- */}
+          <div className="desktop">
+            <div style={{ overflowY: 'scroll', height: '75vh' }}>
+              <Table className={darkMode ? 'text-light dark-mode' : ''}>
+                <thead style={{ zIndex: '10' }}>
+                  <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
+                    <th style={{ width: '93px' }}>Badge</th>
+                    <th>Name</th>
+                    <th style={{ width: '110px' }}>Modified</th>
+                    <th style={{ width: '110px' }}>Earned Dates</th>
+                    <th style={{ width: '90px' }}>Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <BadgeHistoryTableBody
+                    sortedBadges={sortedBadges}
+                    darkMode={darkMode}
+                    authUser={authUser}
+                    displayUserId={displayUserId}
+                    showEarnedDates
+                  />
+                </tbody>
+              </Table>
+            </div>
+          </div>
+          {/* --- TABLET VERSION OF MODAL --- */}
+          <div className="tablet">
+            <div style={{ overflow: 'auto', height: '68vh' }}>
+              <Table className={darkMode ? 'text-light dark-mode' : ''}>
+                <thead style={{ zIndex: '10' }}>
+                  <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
+                    <th style={{ width: '25%' }}>Badge</th>
+                    <th style={{ width: '25%' }}>Name</th>
+                    <th style={{ width: '25%' }}>Modified</th>
+                    <th style={{ width: '25%', zIndex: '10' }}>Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <BadgeHistoryTableBody
+                    sortedBadges={sortedBadges}
+                    darkMode={darkMode}
+                    authUser={authUser}
+                    displayUserId={displayUserId}
+                    showEarnedDates={false}
+                  />
+                </tbody>
+              </Table>
+            </div>
+          </div>
+        </div>
+      </ModalBody>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <div className="badge_summary_viz_footer">
+          <ReactStrapButton
+            className={`${styles['btn--dark-sea-green']} ${styles['badge_summary_viz_button']}`}
+            onClick={toggleBadge}
+          >
+            Close
+          </ReactStrapButton>
+        </div>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+function SelectFeaturedControl({ visible, toggle, isOpen, isSavingBadges, darkMode, badgeReportProps }) {
+  if (!visible) return null;
+  return (
+    <>
+      <Button
+        className={styles['btn--dark-sea-green']}
+        onClick={toggle}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        Select Featured
+      </Button>
+      <Modal
+        size="lg"
+        isOpen={isOpen}
+        keyboard={!isSavingBadges}
+        backdrop={isSavingBadges ? 'static' : true}
+        toggle={toggle}
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader
+          toggle={isSavingBadges ? undefined : toggle}
+          className={darkMode ? 'bg-space-cadet' : ''}
+        >
+          Full View of Badge History
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <BadgeReport {...badgeReportProps} />
+        </ModalBody>
+      </Modal>
+    </>
+  );
+}
+
+function AssignBadgesControl({ visible, assignToggle, isAssignOpen, darkMode, assignPopupProps }) {
+  if (!visible) return null;
+  return (
+    <>
+      <Button
+        className={`${styles['btn--dark-sea-green']} mr-2`}
+        onClick={assignToggle}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        Assign Badges
+      </Button>
+      <Modal
+        size="lg"
+        isOpen={isAssignOpen}
+        toggle={assignToggle}
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={assignToggle}>
+          Assign Badges
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <AssignBadgePopup {...assignPopupProps} />
+        </ModalBody>
+      </Modal>
+    </>
+  );
+}
+
+function CongratulatoryFooterMessage({ badgesEarned, subject, verb, object, onBadgesClick }) {
+  if (!badgesEarned) {
+    return (
+      <div>
+        {subject} {verb} {object}.
+      </div>
+    );
+  }
+  return (
+    <div>
+      Bravo! {subject} earned {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+      <a href="#" onClick={onBadgesClick}>
+        {badgesEarned}
+      </a>{' '}
+      {object}!
+    </div>
+  );
+}
+
 export const Badges = props => {
   const { auth, darkMode, displayUserId, authUser } = props;
 
@@ -132,6 +299,11 @@ export const Badges = props => {
     props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
   // const canAssignBadges = props.hasPermission(permissions.assignBadges);
   const canModifyBadgeAmount = props.hasPermission(permissions.modifyBadgeAmount);
+  const canSelectFeatured =
+    props.canEdit ||
+    canUpdateBadges ||
+    canModifyBadgeAmount ||
+    props.hasPermission(permissions.assignBadges);
 
   const toggle = () => {
     if (!savingBadgesRef.current) setOpen(open => !open);
@@ -153,21 +325,11 @@ export const Badges = props => {
   }, [isOpen, isAssignOpen]);
 
   // Determines what congratulatory text should displayed.
-  const badgesEarned = sortedBadges.reduce((acc, badge) => {
-    if (!badge || !badge.badge) return acc;
-    if (badge.badge.badgeName === 'Personal Max' || badge.badge.type === 'Personal Max') {
-      return acc + 1;
-    }
-    return acc + (Math.round(Number(badge.count)) || 0);
-  }, 0);
+  const badgesEarned = getBadgesEarnedCount(sortedBadges);
 
   const subject = props.isUserSelf ? 'You have' : 'This person has';
   const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
-  let congratulatoryText = `${subject} ${verb} ${object}`;
-  congratulatoryText = badgesEarned
-    ? `Bravo! ${subject} <a href="#" onclick="handleClick()">${verb} ${object}</a>!`
-    : `${subject} ${verb} ${object}.`;
 
   return (
     <>
@@ -196,85 +358,44 @@ export const Badges = props => {
             </span>
 
             <div className="d-flex">
-              {(props.canEdit ||
-                canUpdateBadges ||
-                canModifyBadgeAmount ||
-                props.hasPermission(permissions.assignBadges)) && (
-                <>
-                  <Button
-                    className={styles['btn--dark-sea-green']}
-                    onClick={toggle}
-                    style={darkMode ? boxStyleDark : boxStyle}
-                  >
-                    Select Featured
-                  </Button>
-                  <Modal
-                    size="lg"
-                    isOpen={isOpen}
-                    keyboard={!isSavingBadges}
-                    backdrop={isSavingBadges ? 'static' : true}
-                    toggle={toggle}
-                    className={darkMode ? 'text-light dark-mode' : ''}
-                  >
-                    <ModalHeader
-                      toggle={isSavingBadges ? undefined : toggle}
-                      className={darkMode ? 'bg-space-cadet' : ''}
-                    >
-                      Full View of Badge History
-                    </ModalHeader>
-                    <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      <BadgeReport
-                        canEdit={props.canEdit}
-                        onSavingChange={onSavingChange}
-                        badges={props.userProfile.badgeCollection}
-                        userId={props.userProfile._id}
-                        role={props.role}
-                        firstName={props.userProfile.firstName}
-                        lastName={props.userProfile.lastName}
-                        close={toggle}
-                        setUserProfile={props.setUserProfile}
-                        setOriginalUserProfile={props.setOriginalUserProfile}
-                        handleSubmit={props.handleSubmit}
-                        isUserSelf={props.isUserSelf}
-                        isRecordBelongsToJaeAndUneditable={isRecordBelongsToJaeAndUneditable}
-                        darkMode={darkMode}
-                        personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
-                      />
-                    </ModalBody>
-                  </Modal>
-                </>
-              )}
-              {canAssignBadges && (
-                <>
-                  <Button
-                    className={`${styles['btn--dark-sea-green']} mr-2`}
-                    onClick={assignToggle}
-                    style={darkMode ? boxStyleDark : boxStyle}
-                  >
-                    Assign Badges
-                  </Button>
-                  <Modal
-                    size="lg"
-                    isOpen={isAssignOpen}
-                    toggle={assignToggle}
-                    className={darkMode ? 'text-light dark-mode' : ''}
-                  >
-                    <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={assignToggle}>
-                      Assign Badges
-                    </ModalHeader>
-                    <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      <AssignBadgePopup
-                        allBadgeData={props.allBadgeData}
-                        userProfile={props.userProfile}
-                        setUserProfile={props.setUserProfile}
-                        close={assignToggle}
-                        handleSubmit={props.handleSubmit}
-                        isRecordBelongsToJaeAndUneditable={isRecordBelongsToJaeAndUneditable}
-                      />
-                    </ModalBody>
-                  </Modal>
-                </>
-              )}
+              <SelectFeaturedControl
+                visible={canSelectFeatured}
+                toggle={toggle}
+                isOpen={isOpen}
+                isSavingBadges={isSavingBadges}
+                darkMode={darkMode}
+                badgeReportProps={{
+                  canEdit: props.canEdit,
+                  onSavingChange,
+                  badges: props.userProfile.badgeCollection,
+                  userId: props.userProfile._id,
+                  role: props.role,
+                  firstName: props.userProfile.firstName,
+                  lastName: props.userProfile.lastName,
+                  close: toggle,
+                  setUserProfile: props.setUserProfile,
+                  setOriginalUserProfile: props.setOriginalUserProfile,
+                  handleSubmit: props.handleSubmit,
+                  isUserSelf: props.isUserSelf,
+                  isRecordBelongsToJaeAndUneditable,
+                  darkMode,
+                  personalBestMaxHrs: props.userProfile.personalBestMaxHrs,
+                }}
+              />
+              <AssignBadgesControl
+                visible={canAssignBadges}
+                assignToggle={assignToggle}
+                isAssignOpen={isAssignOpen}
+                darkMode={darkMode}
+                assignPopupProps={{
+                  allBadgeData: props.allBadgeData,
+                  userProfile: props.userProfile,
+                  setUserProfile: props.setUserProfile,
+                  close: assignToggle,
+                  handleSubmit: props.handleSubmit,
+                  isRecordBelongsToJaeAndUneditable,
+                }}
+              />
             </div>
           </div>
         </CardHeader>
@@ -292,21 +413,13 @@ export const Badges = props => {
               color: darkMode ? '#fff' : '#285739',
             }}
           >
-            <div>
-              {badgesEarned ? (
-                <div>
-                  Bravo! {subject} earned {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a href="#" onClick={toggleBadge}>
-                    {badgesEarned}
-                  </a>{' '}
-                  {object}!
-                </div>
-              ) : (
-                <div>
-                  {subject} {verb} {object}.
-                </div>
-              )}
-            </div>
+            <CongratulatoryFooterMessage
+              badgesEarned={badgesEarned}
+              subject={subject}
+              verb={verb}
+              object={object}
+              onBadgesClick={toggleBadge}
+            />
           </span>
           <span className="ml-2">
             <EditableInfoModal
@@ -320,90 +433,14 @@ export const Badges = props => {
           </span>
         </CardFooter>
       </Card>
-      <Modal
-        size="lg"
+      <BadgeHistoryModal
         isOpen={isBadgeOpen}
-        toggle={toggleBadge}
-        className={darkMode ? 'text-light' : ''}
-      >
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div>
-            {/* --- DESKTOP VERSION OF MODAL --- */}
-            <div className="desktop">
-              <div style={{ overflowY: 'scroll', height: '75vh' }}>
-                <Table className={darkMode ? 'text-light dark-mode' : ''}>
-                  <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
-                      <th style={{ width: '93px' }}>Badge</th>
-                      <th>Name</th>
-                      <th style={{ width: '110px' }}>Modified</th>
-                      <th style={{ width: '110px' }}>Earned Dates</th>
-                      <th style={{ width: '90px' }}>Count</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedBadges.length > 0 ? (
-                      sortedBadges.map(value => (
-                        <BadgeHistoryRow
-                          key={value.badge._id}
-                          value={value}
-                          darkMode={darkMode}
-                          showEarnedDates
-                        />
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={5} style={{ textAlign: 'center' }}>{`${
-                          authUser.userid === displayUserId ? 'You have' : 'This person has'
-                        } no badges .`}</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </Table>
-              </div>
-            </div>
-            {/* --- TABLET VERSION OF MODAL --- */}
-            <div className="tablet">
-              <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table className={darkMode ? 'text-light dark-mode' : ''}>
-                  <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
-                      <th style={{ width: '25%' }}>Badge</th>
-                      <th style={{ width: '25%' }}>Name</th>
-                      <th style={{ width: '25%' }}>Modified</th>
-                      <th style={{ width: '25%', zIndex: '10' }}>Count</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedBadges.length > 0 ? (
-                      sortedBadges.map(value => (
-                        <BadgeHistoryRow key={value.badge._id} value={value} darkMode={darkMode} />
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={4} style={{ textAlign: 'center' }}>{`${
-                          authUser.userid === displayUserId ? 'You have' : 'This person has'
-                        } no badges.`}</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </Table>
-              </div>
-            </div>
-          </div>
-        </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div className="badge_summary_viz_footer">
-            <ReactStrapButton
-              className={`${styles['btn--dark-sea-green']} ${styles['badge_summary_viz_button']}`}
-              onClick={toggleBadge}
-            >
-              Close
-            </ReactStrapButton>
-          </div>
-        </ModalFooter>
-      </Modal>
+        toggleBadge={toggleBadge}
+        darkMode={darkMode}
+        sortedBadges={sortedBadges}
+        authUser={authUser}
+        displayUserId={displayUserId}
+      />
       {/* <UncontrolledTooltip
         placement="right"
         target="FeaturedBadgeInfo"
