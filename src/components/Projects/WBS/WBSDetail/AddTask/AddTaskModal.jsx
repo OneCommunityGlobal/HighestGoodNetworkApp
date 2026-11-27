@@ -10,6 +10,7 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
+import { toast } from 'react-toastify';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { addNewTask } from '../../../../../actions/task';
@@ -621,6 +622,8 @@ function AddTaskModal(props) {
   const toggle = () => setModal(!modal);
 
   const openModal = () => {
+    // Start a new draft here, not when background task data finishes loading.
+    clear();
     if (!props.isOpen && props.setIsOpen) props.setIsOpen(true);
     toggle();
   };
@@ -875,9 +878,17 @@ useEffect(() => {
       intentInfo,
       endstateInfo,
     };
-    await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
-    toggle();
-    setIsLoading(false);
+    try {
+      const savedTask = await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
+      // The action returns null after a failed request; keep the draft available.
+      if (!savedTask) return;
+    } catch {
+      toast.error('Failed to add new task');
+      return;
+    } finally {
+      setIsLoading(false);
+    }
+    setModal(false);
     props.load();
   };
 
@@ -901,11 +912,9 @@ useEffect(() => {
       // eslint-disable-next-line no-alert
       // alert('Database changed since your page loaded , click OK to get the newest data!');
       props.load();
-    } else {
-      clear();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error, tasksList.length]);
+  }, [error]);
 
   useEffect(() => {
     if (!modal) {
@@ -1029,7 +1038,7 @@ useEffect(() => {
                   <div className={styles.resourceRow}>
                     <div className={styles.tagsWrapper}>
                       <TagsSearch
-                        key={`tags-${props.projectId}-${activeMembers.length}`}
+                        key={`tags-${props.projectId}`}
                         placeholder="Add resources"
                         members={activeMembers}
                         addResources={addResources}

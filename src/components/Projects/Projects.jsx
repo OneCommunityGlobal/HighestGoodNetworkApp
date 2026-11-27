@@ -244,8 +244,8 @@ const Projects = function(props) {
         // Helper function to safely retrieve active member count, supporting various ID types (string, number, or object)
         const getCount = (projectId) => {
           if (!projectId) return 0;
-          return activeMemberCounts[projectId] || 
-                 activeMemberCounts[String(projectId)] || 
+          return activeMemberCounts[projectId] ||
+                 activeMemberCounts[String(projectId)] ||
                  activeMemberCounts[projectId.toString()] || 0;
         };
 

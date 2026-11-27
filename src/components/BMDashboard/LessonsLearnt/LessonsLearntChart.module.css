@@ -32,8 +32,9 @@
 }
 
 .filterRow {
-  display: flex;
-  flex-wrap: wrap;
+  /* Project, From and To on one even row */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
   margin-bottom: 1rem;
   align-items: flex-end;
@@ -43,8 +44,17 @@
 .filter {
   display: flex;
   flex-direction: column;
-  flex: 1 1 140px;
-  min-width: 120px;
+  min-width: 0;
+}
+
+.filter :global(.react-datepicker-wrapper) {
+  width: 100%;
+}
+
+.filter :global(.react-datepicker__input-container input) {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 38px;
 }
 
 .filterLabel {
@@ -192,28 +202,6 @@
   padding: 2rem 0;
 }
 
-.percentageLabels {
-  position: absolute;
-  top: -1.25rem;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  pointer-events: none;
-}
-
-.percentageLabel {
-  position: absolute;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--accent-color, #10b981);
-  transition: color 0.3s ease;
-}
-
-.darkMode .percentageLabel {
-  color: #34d399;
-}
-
 /* Responsive */
 @media (width <= 768px) {
   .chartContainer {
@@ -224,9 +212,8 @@
     gap: 0.5rem;
   }
 
-  .filter {
-    min-width: 100px;
-    flex: 1 1 100%;
+  .filterRow {
+    grid-template-columns: 1fr;
   }
 
   .barContainer {

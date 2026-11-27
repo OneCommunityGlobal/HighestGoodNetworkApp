@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
@@ -13,6 +13,9 @@ function CPLogin(props) {
   const [enterPassword, setEnteredPassword] = useState('');
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
+  const redirectTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(redirectTimer.current), []);
 
   // get the previous location from the state if available
   // If access login page from URL directly, redirect to CP Dashboard
@@ -42,7 +45,10 @@ function CPLogin(props) {
 
   const handleChange = ({ target }) => {
     // clears validationError only if error input is being edited
-    if (validationError && target.name === validationError.label) {
+    if (
+      validationError &&
+      (target.name === validationError.label || validationError.label === 'form')
+    ) {
       setValidationError(null);
     }
     if (target.name === 'email') {
@@ -70,14 +76,20 @@ function CPLogin(props) {
     }
     const res = await dispatch(loginAction);
     // server side error validation
-    if (!res || res.statusText !== 'OK') {
-      if (res?.status === 422 && res?.data) {
+    if (res?.status !== 200 || !res?.data?.token) {
+      if (
+        ['email', 'password'].includes(res?.data?.label) &&
+        typeof res.data.message === 'string'
+      ) {
         return setValidationError({
           label: res.data.label,
           message: res.data.message,
         });
       }
-      return setValidationError(null);
+      return setValidationError({
+        label: 'form',
+        message: 'Unable to verify your login right now. Please try again.',
+      });
     }
     // initiate push to CP Dashboard if validated (ie received token)
     // The auth state will be updated by loginBMUser, which will trigger the useEffect
@@ -85,7 +97,7 @@ function CPLogin(props) {
     if (res?.data && res.data?.token) {
       setHasAccess(true);
       // Small delay to ensure auth state is updated
-      setTimeout(() => {
+      redirectTimer.current = setTimeout(() => {
         history.push(prevLocation.pathname);
       }, 100);
     }
@@ -104,6 +116,11 @@ function CPLogin(props) {
           Enter your current user credentials to access the Community Portal Dashboard
         </FormText>
         <p>Note: You must use your Production/Main credentials for this login.</p>
+        {validationError?.label === 'form' && (
+          <div className="alert alert-danger" role="alert">
+            {validationError.message}
+          </div>
+        )}
         <FormGroup>
           <Label for="email">Email</Label>
           <Input

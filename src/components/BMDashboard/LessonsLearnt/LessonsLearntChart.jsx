@@ -6,6 +6,7 @@ import axios from 'axios';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './LessonsLearntChart.module.css';
@@ -111,6 +112,16 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
 
 const BAR_COLOR_LIGHT = '#10b981';
 const BAR_COLOR_DARK = '#34d399';
+// Dark text stays readable on both green bar shades
+const BAR_LABEL_COLOR = '#063a2a';
+const MAX_TICK_LABEL = 14;
+
+const changeColor = (change, darkMode) => {
+  const value = Number.parseFloat(String(change || '0').replace('%', ''));
+  if (value > 0) return darkMode ? '#7ee08a' : '#2e7d32';
+  if (value < 0) return darkMode ? '#ff8a80' : '#c62828';
+  return darkMode ? '#94a3b8' : '#6b7280';
+};
 
 function LessonsLearntChart({ darkMode: propDarkMode }) {
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
@@ -172,9 +183,36 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
     return {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { left: 8, right: 8 } },
       plugins: {
         title: { display: false },
+        legend: { labels: { color: tickColor } },
+        // Count inside each bar; month-over-month change just above it, aligned to its bar
+        datalabels: {
+          labels: {
+            count: {
+              anchor: 'center',
+              align: 'center',
+              color: BAR_LABEL_COLOR,
+              font: { weight: 'bold', size: 12 },
+              display: ctx => ctx.dataset.data[ctx.dataIndex] > 0,
+            },
+            change: {
+              anchor: 'end',
+              align: 'end',
+              offset: 2,
+              font: { weight: 'bold', size: 11 },
+              formatter: (_value, ctx) => lessonsData[ctx.dataIndex]?.changePercentage || '0%',
+              color: ctx => changeColor(lessonsData[ctx.dataIndex]?.changePercentage, darkMode),
+            },
+          },
+        },
         tooltip: {
+          backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+          titleColor: darkMode ? '#f8fafc' : '#111827',
+          bodyColor: darkMode ? '#e2e8f0' : '#374151',
+          borderColor: darkMode ? '#475569' : '#d1d5db',
+          borderWidth: 1,
           callbacks: {
             afterLabel: context => {
               const { dataIndex } = context;
@@ -189,11 +227,22 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
       scales: {
         y: {
           beginAtZero: true,
+          grace: '12%', // room above the tallest bar for its change label
           ticks: { stepSize: 1, color: tickColor },
           grid: { color: gridColor },
         },
         x: {
-          ticks: { color: tickColor },
+          ticks: {
+            color: tickColor,
+            autoSkip: false,
+            maxRotation: 45,
+            // Shorten long project names (tooltip shows the full name). On a category
+            // axis `value` is the bar index, so the name comes from the data.
+            callback: value => {
+              const name = lessonsData[value]?.projectName || 'Unknown';
+              return name.length > MAX_TICK_LABEL ? `${name.slice(0, MAX_TICK_LABEL - 1)}…` : name;
+            },
+          },
           grid: { color: gridColor },
         },
       },
@@ -242,6 +291,22 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
       input: base => ({
         ...base,
         color: darkMode ? '#f1f5f9' : '#000',
+      }),
+      dropdownIndicator: base => ({
+        ...base,
+        color: darkMode ? '#cbd5e1' : base.color,
+      }),
+      clearIndicator: base => ({
+        ...base,
+        color: darkMode ? '#cbd5e1' : base.color,
+      }),
+      indicatorSeparator: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#475569' : base.backgroundColor,
+      }),
+      noOptionsMessage: base => ({
+        ...base,
+        color: darkMode ? '#cbd5e1' : base.color,
       }),
       placeholder: base => ({
         ...base,
@@ -317,20 +382,7 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
         {!isLoading && !error && Array.isArray(lessonsData) && lessonsData.length > 0 && (
           <>
             <div className={styles.barContainer}>
-              <Bar data={chartData} options={chartOptions} />
-            </div>
-            <div className={styles.percentageLabels}>
-              {lessonsData.map((d, idx) => (
-                <span
-                  key={d?.projectId || idx}
-                  className={styles.percentageLabel}
-                  style={{
-                    left: `${(idx + 0.5) * (100 / lessonsData.length)}%`,
-                  }}
-                >
-                  {d?.changePercentage || '0%'}
-                </span>
-              ))}
+              <Bar data={chartData} options={chartOptions} plugins={[ChartDataLabels]} />
             </div>
           </>
         )}
