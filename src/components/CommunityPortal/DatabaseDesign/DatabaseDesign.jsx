@@ -96,7 +96,6 @@ function DatabaseDesign() {
         location: filters.location,
         page: 1,
         limit: 50,
-        userId,
       });
 
       if (response.data && response.data.events) {
@@ -112,15 +111,13 @@ function DatabaseDesign() {
         setEvents(sortedEvents);
         previousEventsRef.current = sortedEvents;
 
-        // Detect spot opening
         sortedEvents.forEach(event => {
           const prev = previousEvents.find(e => e._id === event._id);
 
-          const wasFull = prev?.currentAttendees >= prev?.maxAttendees;
-          const isNowAvailable = event.currentAttendees < event.maxAttendees;
-
-          if (wasFull && isNowAvailable && event.userWaitlistPosition) {
-            toast.info(`A spot opened for "${event.title}"! You can now join.`);
+          if (prev?.userWaitlistPosition && event.isUserRegistered) {
+            toast.success(
+              `A spot opened for "${event.title}" and you have been moved off the waitlist into the event.`,
+            );
           }
         });
       } else if (response.status && response.status >= 400) {
@@ -212,7 +209,6 @@ function DatabaseDesign() {
         await fetchEvents();
       }
     } catch (err) {
-      console.error('Waitlist error:', err);
       const errorMsg =
         err.response?.data?.details ||
         err.response?.data?.error ||
@@ -224,11 +220,7 @@ function DatabaseDesign() {
     }
   };
 
-  const isAlreadyInWaitlist = event => {
-    if (!event.waitlist || !userId) return false;
-
-    return event.waitlist.some(entry => entry?.userId === userId || entry?.userId?._id === userId);
-  };
+  const isAlreadyInWaitlist = event => Boolean(userId && event.userWaitlistPosition);
 
   const handleLeaveWaitlist = async eventId => {
     setActionLoading(prev => ({ ...prev, [`waitlist-${eventId}`]: true }));
@@ -298,8 +290,6 @@ function DatabaseDesign() {
       </div>
     );
   }
-
-  // ONLY the return JSX part is fixed — rest unchanged
 
   return (
     <div className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}>
@@ -439,6 +429,8 @@ function DatabaseDesign() {
 
                 const capacity = event.maxAttendees || 0;
                 const currentAttendees = event.currentAttendees || 0;
+                const showWaitlistAction =
+                  !event.isUserRegistered && (currentAttendees >= capacity || alreadyJoined);
 
                 return (
                   <div
@@ -498,9 +490,11 @@ function DatabaseDesign() {
                         <span>
                           {currentAttendees} / {capacity} attendees
                           {event.waitlistCount > 0 && <> • {event.waitlistCount} on waitlist</>}
-                          {event.waitlistEnabled && !event.userWaitlistPosition && (
-                            <div className={styles.waitlistAvailable}>Waitlist available</div>
-                          )}
+                          {event.waitlistEnabled &&
+                            !event.userWaitlistPosition &&
+                            !event.isUserRegistered && (
+                              <span className={styles.waitlistAvailable}>Waitlist available</span>
+                            )}
                         </span>
                       </div>
                     </div>
@@ -521,7 +515,7 @@ function DatabaseDesign() {
                     )}
 
                     <div className={styles.eventActions}>
-                      {currentAttendees >= capacity || alreadyJoined ? (
+                      {showWaitlistAction ? (
                         <button
                           onClick={() =>
                             alreadyJoined

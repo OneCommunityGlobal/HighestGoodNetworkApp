@@ -14,9 +14,8 @@ import { ENDPOINTS } from '~/utils/URL';
  */
 export async function getEvents(params = {}) {
   try {
-    const { type = '', location = '', page = 1, limit = 9, sortBy = 'date', sortOrder = 'asc', userId = '' } = params;
+    const { type = '', location = '', page = 1, limit = 9, sortBy = 'date', sortOrder = 'asc' } = params;
     const queryParams = new URLSearchParams();
-    if (userId) queryParams.append('userId', userId);
     if (type) queryParams.append('type', type);
     if (location) queryParams.append('location', location);
     queryParams.append('page', page);

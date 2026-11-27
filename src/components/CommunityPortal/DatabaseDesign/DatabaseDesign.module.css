@@ -600,22 +600,44 @@
 }
 
 .waitlistBadge {
-  background-color: #f0ad4e;
-  color: white;
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 12px;
-  margin-left: 8px;
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.darkMode .waitlistBadge {
+  background-color: #78350f;
+  color: #fde68a;
+  border-color: #92400e;
 }
 
 .waitlistPosition {
   font-size: 13px;
-  color: #6c757d;
-  margin-top: 4px;
+  font-weight: 500;
+  color: #1e40af;
+  background: #eff6ff;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 12px;
+}
+
+.darkMode .waitlistPosition {
+  color: #bfdbfe;
+  background: #1e3a8a;
 }
 
 .waitlistAvailable {
+  display: block;
   font-size: 13px;
-  color: #f0ad4e;
+  color: #b45309;
   margin-top: 4px;
+}
+
+.darkMode .waitlistAvailable {
+  color: #fcd34d;
 }
