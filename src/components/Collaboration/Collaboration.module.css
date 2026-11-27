@@ -274,6 +274,36 @@
   letter-spacing: 0.5px;
 }
 
+.categoryBrowseHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.backToCategories {
+  border: none;
+  background: transparent;
+  color: #2b6ee8;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  text-decoration: underline;
+}
+
+.backToCategories:hover {
+  color: #1a4fb0;
+}
+
+.jobLandingDark .backToCategories {
+  color: #9ec1ff;
+}
+
+.jobLandingDark .backToCategories:hover {
+  color: #c9dcff;
+}
+
 .jobAd:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgb(0 0 0 / 20%);

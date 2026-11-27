@@ -24,6 +24,16 @@ import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+// Short dollar labels ($52k, $1.2M) so they fit above narrow bars
+const formatCompactCurrency = value => {
+  const abs = Math.abs(value);
+  if (abs >= 1e6) return `$${Number((value / 1e6).toFixed(1))}M`;
+  if (abs >= 1e3) return `$${Number((value / 1e3).toFixed(1))}k`;
+  return `$${Math.round(value)}`;
+};
+
+const LABEL_GAP = 4;
+
 const barValueLabelPlugin = {
   id: 'barValueLabelPlugin',
   afterDatasetsDraw(chart, _args, pluginOptions) {
@@ -31,34 +41,60 @@ const barValueLabelPlugin = {
     if (!chartArea) return;
 
     const { darkMode } = pluginOptions;
+    const fontSize = chart.width < 480 ? 10 : 11;
 
     ctx.save();
-    ctx.font = '600 11px Arial';
-    ctx.textAlign = 'center';
+    ctx.font = `600 ${fontSize}px Arial`;
+    ctx.fillStyle = darkMode ? '#f5f5f5' : '#333333';
+
+    const drawn = [];
 
     chart.data.datasets.forEach((dataset, datasetIndex) => {
-      const meta = chart.getDatasetMeta(datasetIndex);
-      if (meta.hidden) return;
+      if (!chart.isDatasetVisible(datasetIndex)) return;
 
-      meta.data.forEach((bar, index) => {
+      chart.getDatasetMeta(datasetIndex).data.forEach((bar, index) => {
         const value = dataset.data[index];
         if (!value) return;
 
-        const label = `$${(value * 1000).toLocaleString()}`;
-        const { x, y, base } = bar.getProps(['x', 'y', 'base'], true);
+        const label = formatCompactCurrency(value);
+        const { x, y, width } = bar.getProps(['x', 'y', 'width'], true);
+        const textWidth = ctx.measureText(label).width;
 
-        const barHeight = Math.abs(base - y);
-        const isSmallBar = barHeight < 28;
+        const fitsHorizontally = textWidth <= width + LABEL_GAP;
+        if (!fitsHorizontally && fontSize > width + 2) return;
 
-        const insideColor = darkMode ? '#ffffff' : '#111111';
-        const outsideColor = darkMode ? '#f5f5f5' : '#666666';
+        const box = fitsHorizontally
+          ? {
+              l: x - textWidth / 2,
+              r: x + textWidth / 2,
+              t: y - LABEL_GAP - fontSize,
+              b: y - LABEL_GAP,
+            }
+          : {
+              l: x - fontSize / 2,
+              r: x + fontSize / 2,
+              t: y - LABEL_GAP - textWidth,
+              b: y - LABEL_GAP,
+            };
+        const collides = drawn.some(d => box.l < d.r && box.r > d.l && box.t < d.b && box.b > d.t);
+        if (collides) return;
+        drawn.push(box);
 
-        ctx.fillStyle = isSmallBar ? outsideColor : insideColor;
-
-        const textY = isSmallBar ? y - 8 : y + 8;
-        ctx.textBaseline = isSmallBar ? 'bottom' : 'top';
-
-        ctx.fillText(label, x, textY);
+        if (fitsHorizontally) {
+          // Wide bar: horizontal label centered above it
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(label, x, y - LABEL_GAP);
+        } else {
+          // Narrow bar: rotate the label upward so it never spills onto neighbouring bars
+          ctx.save();
+          ctx.translate(x, y - LABEL_GAP);
+          ctx.rotate(-Math.PI / 2);
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(label, 0, 0);
+          ctx.restore();
+        }
       });
     });
 
@@ -271,6 +307,78 @@ const generateSelectStyles = darkMode => ({
   }),
 });
 
+const LaborCostSummary = ({
+  hasData,
+  darkMode,
+  textColor,
+  displayTotalBudget,
+  displayTotalCost,
+  absoluteVariance,
+  variancePercentage,
+  varianceClass,
+  componentStyles,
+}) => {
+  if (!hasData) {
+    return (
+      <div className={componentStyles.emptyState}>No data available for the selected filters.</div>
+    );
+  }
+
+  return (
+    <div
+      className={`${componentStyles.summaryContainer} ${
+        darkMode ? componentStyles.darkSummaryContainer : ''
+      }`}
+    >
+      <div className={componentStyles.summaryItem}>
+        <span className={componentStyles.summaryLabel}>Total Budget</span>
+        <span className={componentStyles.summaryValue} style={{ color: textColor }}>
+          $
+          {displayTotalBudget.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </span>
+      </div>
+      <div className={componentStyles.summaryItem}>
+        <span className={componentStyles.summaryLabel}>Total Actual</span>
+        <span className={componentStyles.summaryValue} style={{ color: textColor }}>
+          $
+          {displayTotalCost.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </span>
+      </div>
+      <div className={componentStyles.summaryItem}>
+        <span className={componentStyles.summaryLabel}>Variance</span>
+        <span className={`${componentStyles.summaryValue} ${varianceClass}`}>
+          $
+          {absoluteVariance.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{' '}
+          ({variancePercentage > 0 ? '+' : ''}
+          {variancePercentage.toFixed(1)}%)
+        </span>
+      </div>
+    </div>
+  );
+};
+
+LaborCostSummary.propTypes = {
+  hasData: PropTypes.bool.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  textColor: PropTypes.string.isRequired,
+  displayTotalBudget: PropTypes.number.isRequired,
+  displayTotalCost: PropTypes.number.isRequired,
+  absoluteVariance: PropTypes.number.isRequired,
+  variancePercentage: PropTypes.number.isRequired,
+  varianceClass: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  componentStyles: PropTypes.object.isRequired,
+};
+
 const MultiValue = () => null;
 
 const ValueContainer = ({ children, ...props }) => {
@@ -321,16 +429,23 @@ Option.propTypes = {
   label: PropTypes.string.isRequired,
 };
 
-const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
-  return tasksToInclude.flatMap((task, idx) => {
-    const hue = Math.round((idx * 360) / Math.max(1, tasksToInclude.length));
-    const saturation = 65;
-    const lightness = darkMode ? 65 : 50;
+const getTaskColors = (idx, taskCount, darkMode) => {
+  const hue = Math.round((idx * 360) / Math.max(1, taskCount));
+  const saturation = 65;
+  const lightness = darkMode ? 65 : 50;
 
-    const actualColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    const budgetColor = darkMode
+  return {
+    actualColor: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
+    budgetColor: darkMode
       ? `hsla(${hue}, ${saturation}%, ${lightness + 20}%, 0.8)`
-      : `hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`;
+      : `hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`,
+  };
+};
+
+const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode, hiddenTasks) => {
+  return tasksToInclude.flatMap((task, idx) => {
+    const { actualColor, budgetColor } = getTaskColors(idx, tasksToInclude.length, darkMode);
+    const hidden = hiddenTasks.includes(task);
 
     return [
       {
@@ -341,6 +456,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
         maxBarThickness: 40,
         categoryPercentage: 0.8,
         barPercentage: 0.9,
+        hidden,
       },
       {
         label: `${task} (Budget)`,
@@ -353,6 +469,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
         maxBarThickness: 40,
         categoryPercentage: 0.8,
         barPercentage: 0.9,
+        hidden,
       },
     ];
   });
@@ -361,26 +478,14 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
 const buildChartOptions = (textColor, darkMode) => ({
   responsive: true,
   maintainAspectRatio: false,
-  layout: { padding: { top: 35, left: 15, right: 15, bottom: 10 } },
+  // Top padding leaves room for rotated value labels above the tallest bar
+  layout: { padding: { top: 48, left: 10, right: 10, bottom: 4 } },
   plugins: {
     barValueLabelPlugin: { darkMode },
-    legend: {
-      position: 'top',
-      labels: { font: { size: 12 }, color: textColor, padding: 20, usePointStyle: true },
-    },
-    datalabels: {
-      anchor: 'end',
-      align: 'top',
-      offset: 2,
-      color: darkMode ? '#ffffff' : '#333333',
-      font: { weight: '600', size: 11 },
-      textStrokeColor: darkMode ? '#1e293b' : '#ffffff',
-      textStrokeWidth: 3,
-      formatter: value => {
-        if (!value) return '';
-        return value >= 1000 ? `$${(value / 1000).toFixed(1).replace('.0', '')}k` : `$${value}`;
-      },
-    },
+    // chartjs-plugin-datalabels is registered globally by other charts and would draw raw values inside the bars
+    datalabels: { display: false },
+    // One entry per bar crowded out the plot; a per-task HTML legend is rendered below instead
+    legend: { display: false },
     tooltip: {
       backgroundColor: darkMode ? '#1e293b' : '#ffffff',
       titleColor: darkMode ? '#f8fafc' : '#0f172a',
@@ -399,7 +504,13 @@ const buildChartOptions = (textColor, darkMode) => ({
   scales: {
     x: {
       grid: { display: false },
-      ticks: { font: { size: 12 }, color: textColor },
+      ticks: {
+        font: { size: 12 },
+        color: textColor,
+        autoSkip: false,
+        maxRotation: 45,
+        minRotation: 0,
+      },
       offset: true,
     },
     y: {
@@ -410,7 +521,7 @@ const buildChartOptions = (textColor, darkMode) => ({
       ticks: {
         font: { size: 12 },
         color: textColor,
-        callback: value => (value >= 1000 ? `$${value / 1000}k` : `$${value}`),
+        callback: value => formatCompactCurrency(value),
       },
     },
   },
@@ -426,6 +537,7 @@ export default function PaidLaborCost() {
   const [taskFilter, setTaskFilter] = useState([]); // Array of selected task names, empty = all tasks
   const [projectFilter, setProjectFilter] = useState('All Projects');
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
+  const [hiddenTasks, setHiddenTasks] = useState([]); // Tasks toggled off from the legend
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -489,9 +601,12 @@ export default function PaidLaborCost() {
   const selectStyles = useMemo(() => generateSelectStyles(darkMode), [darkMode]);
 
   const taskDatasets = useMemo(
-    () => buildChartDatasets(tasksToInclude, labels, aggregation, darkMode),
-    [tasksToInclude, labels, aggregation, darkMode],
+    () => buildChartDatasets(tasksToInclude, labels, aggregation, darkMode, hiddenTasks),
+    [tasksToInclude, labels, aggregation, darkMode, hiddenTasks],
   );
+
+  const toggleTaskVisibility = task =>
+    setHiddenTasks(prev => (prev.includes(task) ? prev.filter(t => t !== task) : [...prev, task]));
 
   const chartData = { labels, datasets: taskDatasets };
   const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
@@ -606,42 +721,58 @@ export default function PaidLaborCost() {
             <Bar data={chartData} options={options} plugins={[barValueLabelPlugin]} />
           )}
         </div>
+
+        {labels.length > 0 && (
+          <div className={styles.chartLegend}>
+            <div className={styles.legendKey}>
+              <span className={styles.legendKeyItem}>
+                <span className={`${styles.legendKeySwatch} ${styles.legendKeyActual}`} />
+                Actual
+              </span>
+              <span className={styles.legendKeyItem}>
+                <span className={`${styles.legendKeySwatch} ${styles.legendKeyBudget}`} />
+                Budget
+              </span>
+            </div>
+            <ul className={styles.legendTasks}>
+              {tasksToInclude.map((task, idx) => {
+                const { actualColor } = getTaskColors(idx, tasksToInclude.length, darkMode);
+                const isHidden = hiddenTasks.includes(task);
+                return (
+                  <li key={task}>
+                    <button
+                      type="button"
+                      className={`${styles.legendTask} ${isHidden ? styles.legendTaskHidden : ''}`}
+                      onClick={() => toggleTaskVisibility(task)}
+                      aria-pressed={!isHidden}
+                      title={isHidden ? `Show ${task}` : `Hide ${task}`}
+                    >
+                      <span
+                        className={styles.legendTaskSwatch}
+                        style={{ backgroundColor: actualColor }}
+                        aria-hidden="true"
+                      />
+                      <span className={styles.legendTaskLabel}>{task}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
 
-      <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Total Budget</span>
-          <span className={styles.summaryValue} style={{ color: textColor }}>
-            $
-            {displayTotalBudget.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
-        </div>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Total Actual</span>
-          <span className={styles.summaryValue} style={{ color: textColor }}>
-            $
-            {displayTotalCost.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
-        </div>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Variance</span>
-          <span className={`${styles.summaryValue} ${varianceClass}`}>
-            $
-            {absoluteVariance.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{' '}
-            ({variancePercentage > 0 ? '+' : ''}
-            {variancePercentage.toFixed(1)}%)
-          </span>
-        </div>
-      </div>
+      <LaborCostSummary
+        hasData={labels.length > 0}
+        darkMode={darkMode}
+        textColor={textColor}
+        displayTotalBudget={displayTotalBudget}
+        displayTotalCost={displayTotalCost}
+        absoluteVariance={absoluteVariance}
+        variancePercentage={variancePercentage}
+        varianceClass={varianceClass}
+        componentStyles={styles}
+      />
     </div>
   );
 }

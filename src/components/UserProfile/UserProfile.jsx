@@ -53,7 +53,12 @@ import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateCompany } from '~/utils/formatDate';
 import { fetchAllProjects } from '../../actions/projects';
-import { toggleVisibility, updateRehireableStatus } from '../../actions/userManagement';
+import {
+  toggleVisibility,
+  updateRehireableStatus,
+  updateStatusNote,
+  getStatusNoteErrorMessage,
+} from '../../actions/userManagement';
 import { updateUserProfile } from "../../actions/userProfile";
 import BlueSquareLayout from './BlueSquareLayout';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
@@ -81,6 +86,9 @@ import { clearCachedTeamMembers } from '../Teams/teamMembersCache';
 import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
+import RehireableStatusControl from './RehireableStatusControl';
+import IncompleteQuestionnaireIndicator from '../common/IncompleteQuestionnaireIndicator';
+import { subscribeToCompletedQuestionnaireUserIds } from '../../utils/questionnaireCompletion';
 
 import { permissions } from '../../utils/constants';
 function UserProfile(props) {
@@ -136,6 +144,8 @@ function UserProfile(props) {
   const [showSelect, setShowSelect] = useState(false);
   const [summaries, setSummaries] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
+  // null until known (or if the request fails), so the indicator is never shown by mistake
+  const [questionnaireIncomplete, setQuestionnaireIncomplete] = useState(null);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
   const [originalTasks, setOriginalTasks] = useState([]);
 
@@ -162,9 +172,7 @@ function UserProfile(props) {
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
-  const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
   const [specialWarnings, setSpecialWarnings] = useState([]);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
@@ -219,7 +227,7 @@ function UserProfile(props) {
     dispatch(getAllUserTeams());
     dispatch(getAllTimeOffRequests());
     dispatch(getAllTeamCode());
-    fetchSpecialWarnings(controller.signal);
+    void fetchSpecialWarnings(controller.signal);
 
     return () => {
       controller.abort();
@@ -865,16 +873,15 @@ setUpdatedTasks(prev => {
   const fetchSpecialWarnings = async signal => {
     const userId = props?.match?.params?.userId;
     try {
-      dispatch(getSpecialWarnings(userId, signal)).then(res => {
-        if (signal?.aborted) return;
+      const res = await dispatch(getSpecialWarnings(userId, signal));
+      if (signal?.aborted) return;
 
-        if (res.error) {
-          // eslint-disable-next-line no-console
-          console.error('Error fetching special warnings:', res.error);
-          return;
-        }
-        setSpecialWarnings(res);
-      });
+      if (res.error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching special warnings:', res.error);
+        return;
+      }
+      setSpecialWarnings(res);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Error in fetchSpecialWarnings:', err);
@@ -1054,12 +1061,22 @@ setUpdatedTasks(prev => {
     const controller = new AbortController();
 
     setShowLoading(true);
-    loadUserProfile(controller.signal);
-    loadUserTasks(controller.signal);
+    void loadUserProfile(controller.signal);
+    void loadUserTasks(controller.signal);
 
     return () => {
       controller.abort();
     };
+  }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
+    const userId = props?.match?.params?.userId;
+    setQuestionnaireIncomplete(null);
+    if (!userId) return undefined;
+
+    return subscribeToCompletedQuestionnaireUserIds(completedUserIds =>
+      setQuestionnaireIncomplete(!completedUserIds.has(userId)),
+    );
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
@@ -1083,7 +1100,10 @@ setUpdatedTasks(prev => {
       }
     };
 
-    refreshProfile();
+    void refreshProfile().catch(error => {
+      // eslint-disable-next-line no-console
+      console.error('Error refreshing user profile:', error);
+    });
 
     return () => {
       controller.abort();
@@ -1132,30 +1152,49 @@ setUpdatedTasks(prev => {
     history.push(`/peoplereport/${to}`);
   };
 
-  const handleRehireableChange = () => {
-    const newRehireableStatus = !isRehireable;
-    setPendingRehireableStatus(newRehireableStatus);
-    setShowConfirmDialog(true);
-  };
-
-  const handleConfirmChange = async () => {
-    setShowConfirmDialog(false);
+  const handleConfirmRehireableChange = async (newRehireableStatus, notRehireableReason) => {
     const updatedUserProfile = {
       ...userProfile,
-      isRehireable: pendingRehireableStatus,
+      isRehireable: newRehireableStatus,
     };
+    const savedReason =
+      !newRehireableStatus && typeof notRehireableReason === 'string'
+        ? notRehireableReason.trim()
+        : '';
+    if (savedReason) updatedUserProfile.notRehireableReason = savedReason;
+    else delete updatedUserProfile.notRehireableReason;
+
     try {
-      await dispatch(updateRehireableStatus(updatedUserProfile, pendingRehireableStatus));
-      setIsRehireable(pendingRehireableStatus);
-      setUserProfile(updatedUserProfile);
-      setOriginalUserProfile(updatedUserProfile);
+      const savedUserProfile = await dispatch(
+        updateRehireableStatus(updatedUserProfile, newRehireableStatus, savedReason),
+      );
+      setIsRehireable(newRehireableStatus);
+      const profileWithSavedHistory = savedUserProfile || updatedUserProfile;
+      setUserProfile(profileWithSavedHistory);
+      setOriginalUserProfile(profileWithSavedHistory);
+      return true;
     } catch (error) {
       toast.error('Unable change rehireable status');
+      return false;
     }
   };
 
-  const handleCancelChange = () => {
-    setShowConfirmDialog(false);
+  const handleSaveStatusNote = async statusNote => {
+    try {
+      const savedUserProfile = await dispatch(updateStatusNote(userProfile, statusNote));
+      const noteFields = {
+        statusNote: savedUserProfile.statusNote,
+        statusNoteHistory: savedUserProfile.statusNoteHistory,
+      };
+      // Only the note fields change, so unsaved profile edits are kept
+      setUserProfile(prev => ({ ...prev, ...noteFields }));
+      setOriginalUserProfile(prev => (prev ? { ...prev, ...noteFields } : prev));
+      toast.success(statusNote.trim() ? 'Note saved.' : 'Note deleted.');
+      return true;
+    } catch (error) {
+      toast.error(getStatusNoteErrorMessage(error));
+      return false;
+    }
   };
 
   /**
@@ -1330,6 +1369,9 @@ setUpdatedTasks(prev => {
         }}
         onCancelScheduledDeactivation={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
         onReactivateUser={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
+        statusNote={userProfile.statusNote || ''}
+        statusNoteHistory={userProfile.statusNoteHistory || []}
+        onSaveStatusNote={handleSaveStatusNote}
       />
 
       <SetUpFinalDayPopUp
@@ -1473,7 +1515,7 @@ setUpdatedTasks(prev => {
             setUserProfile={setUserProfile}
             userProfile={userProfile}
             userTeams={teams || []}
-            teamsData={props?.allTeams?.allTeamsData || []}
+            teamsData={props?.allTeams?.allTeams || []}
             projectsData={props?.allProjects?.projects || []}
             titleOnSet={titleOnSet}
             setTitleOnSet={setTitleOnSet}
@@ -1490,6 +1532,12 @@ setUpdatedTasks(prev => {
           ) : null} */}
           <div className="profile-head">
             <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
+            {questionnaireIncomplete && (
+              <IncompleteQuestionnaireIndicator
+                id={targetUserId}
+                className="profile-questionnaire-indicator mr-2"
+              />
+            )}
             <div style={{ marginTop: '6px' }}>
               <EditableInfoModal
                 areaName="UserProfileInfoModal"
@@ -1507,6 +1555,7 @@ setUpdatedTasks(prev => {
                 user={userProfile}
                 endDate={userProfile.endDate}
                 reactivationDate={userProfile.reactivationDate}
+                statusNote={userProfile.statusNote}
                 canChange={canChangeUserStatus}
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
@@ -1577,15 +1626,13 @@ setUpdatedTasks(prev => {
               </span>
             )}
             {canChangeRehireableStatus && (
-              <span className="mr-2">
-                <i
-                  className={isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'}
-                  aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                  title="Click to change rehirable status"
-                  onClick={handleRehireableChange}
-                />
-              </span>
+              <RehireableStatusControl
+                isRehireable={Boolean(isRehireable)}
+                notRehireableReason={userProfile?.notRehireableReason || ''}
+                notRehireableReasonHistory={userProfile?.notRehireableReasonHistory || []}
+                darkMode={darkMode}
+                onConfirm={handleConfirmRehireableChange}
+              />
             )}
             <Button
               onClick={() => {
@@ -1959,31 +2006,6 @@ setUpdatedTasks(prev => {
               >
                 Basic Information
               </Button>
-              <Modal
-                isOpen={showConfirmDialog}
-                toggle={handleCancelChange}
-                className={darkMode ? 'text-light dark-mode' : ''}
-              >
-                <ModalHeader
-                  toggle={handleCancelChange}
-                  className={darkMode ? 'bg-space-cadet' : ''}
-                >
-                  Confirm Status Change
-                </ModalHeader>
-                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  {`Are you sure you want to change the user status to ${
-                    pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'
-                  }?`}
-                </ModalBody>
-                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Button color="primary" onClick={handleConfirmChange}>
-                    Confirm
-                  </Button>{' '}
-                  <Button color="secondary" onClick={handleCancelChange}>
-                    Cancel
-                  </Button>
-                </ModalFooter>
-              </Modal>
               <Modal
                 isOpen={menuModalTabletScreen === 'Basic Information'}
                 toggle={toggle}
@@ -2494,7 +2516,7 @@ UserProfile.propTypes = {
 
  const mapStateToProps = state => ({
    allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array
-   allTeams: state.allTeams || {},
+   allTeams: state.allTeamsData || {},
    auth: state.auth,
    role: state.role || {},
  });

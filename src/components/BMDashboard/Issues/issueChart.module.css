@@ -11,7 +11,7 @@
 }
 
 .issueChartEventContainerDark {
-  background: #1C2541;
+  background: #1c2541;
   box-shadow: 0 4px 12px rgb(0 0 0 / 90%);
   color: #ccd1dc;
 }
@@ -34,7 +34,7 @@
 }
 
 .chartWrapperDark {
-  background: #3A506B;
+  background: #3a506b;
   box-shadow: 0 0 15px rgb(0 0 0 / 90%);
   color: #ccd1dc;
 }
@@ -143,143 +143,195 @@
     font-size: 20px;
   }
 
-/* Wrapper to keep year bars aligned even when data is missing */
-.yearGroupWrapper {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-end;
-  min-height: 260px;
-}
+  /* Wrapper to keep year bars aligned even when data is missing */
+  .yearGroupWrapper {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-end;
+    min-height: 260px;
+  }
 
-/* ================================
+  /* ================================
    PLACEHOLDER / EMPTY YEAR BARS
    ================================ */
 
-/* Faint placeholder bar for years with no data */
-.placeholderBar {
-  width: 18px;
-  height: 100%;
-  border: 2px dashed rgb(120 120 120 / 35%);
-  background: transparent;
-  border-radius: 4px;
-}
+  /* Faint placeholder bar for years with no data */
+  .placeholderBar {
+    width: 18px;
+    height: 100%;
+    border: 2px dashed rgb(120 120 120 / 35%);
+    background: transparent;
+    border-radius: 4px;
+  }
 
-/* Dark mode placeholder */
-.placeholderBarDark {
-  border-color: rgb(200 200 200 / 25%);
-}
+  /* Dark mode placeholder */
+  .placeholderBarDark {
+    border-color: rgb(200 200 200 / 25%);
+  }
 
-/* ================================
+  /* ================================
    YEAR BAR VISIBILITY ENHANCEMENTS
    ================================ */
 
-/* Adds subtle outline to each year's bar */
-.yearBarOutline {
-  border: 1.5px solid rgb(0 0 0 / 25%);
-  border-radius: 4px;
-}
+  /* Adds subtle outline to each year's bar */
+  .yearBarOutline {
+    border: 1.5px solid rgb(0 0 0 / 25%);
+    border-radius: 4px;
+  }
 
-/* Dark mode outline */
-.yearBarOutlineDark {
-  border-color: rgb(255 255 255 / 35%);
-}
+  /* Dark mode outline */
+  .yearBarOutlineDark {
+    border-color: rgb(255 255 255 / 35%);
+  }
 
-/* ================================
+  /* ================================
    X-AXIS LABEL ALIGNMENT
    ================================ */
 
-/* ================================
+  /* ================================
    LIGHT / DARK MODE CONSISTENCY
    ================================ */
 
-.issueChartEventContainerDark .placeholderBar {
-  border-color: rgb(200 200 200 / 25%);
-}
+  .issueChartEventContainerDark .placeholderBar {
+    border-color: rgb(200 200 200 / 25%);
+  }
 
-.issueChartEventContainerDark .yearBarOutline {
-  border-color: rgb(255 255 255 / 35%);
-}
+  .issueChartEventContainerDark .yearBarOutline {
+    border-color: rgb(255 255 255 / 35%);
+  }
 
-/* ================================
+  /* ================================
    X-AXIS GROUP DIFFERENTIATION
    Alternating background bands
    ================================ */
 
-/* Container that holds the chart canvas */
-.xAxisGroupBackground {
-  position: relative;
-}
+  /* Container that holds the chart canvas */
+  .xAxisGroupBackground {
+    position: relative;
+  }
 
-/* Create subtle vertical banding using pseudo-elements */
-.xAxisGroupBackground::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image: repeating-linear-gradient(
-    90deg,
-    rgb(0 0 0 / 3.5%) 0%,
-    rgb(0 0 0 / 3.5%) 10%,
-    transparent 10%,
-    transparent 20%
-  );
-}
+  /* Create subtle vertical banding using pseudo-elements */
+  .xAxisGroupBackground::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgb(0 0 0 / 3.5%) 0%,
+      rgb(0 0 0 / 3.5%) 10%,
+      transparent 10%,
+      transparent 20%
+    );
+  }
 
-/* ---------- LIGHT MODE – FIX HEADER ---------- */
+  /* ---------- LIGHT MODE – FIX HEADER ---------- */
 
-:global(.react-datepicker.lightCalendar .react-datepicker__header) {
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-}
+  :global(.react-datepicker.lightCalendar .react-datepicker__header) {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+  }
 
-/* Ensure chart canvas renders above background bands */
-.xAxisGroupBackground canvas {
-  position: relative;
-  z-index: 1;
-}
+  /* Ensure chart canvas renders above background bands */
+  .xAxisGroupBackground canvas {
+    position: relative;
+    z-index: 1;
+  }
 
-/* Dark mode banding */
-.issueChartEventContainerDark .xAxisGroupBackground::before {
-  background-image: repeating-linear-gradient(
-    90deg,
-    rgb(255 255 255 / 5%) 0%,
-    rgb(255 255 255 / 5%) 10%,
-    transparent 10%,
-    transparent 20%
-  );
-}
+  /* Dark mode banding */
+  .issueChartEventContainerDark .xAxisGroupBackground::before {
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgb(255 255 255 / 5%) 0%,
+      rgb(255 255 255 / 5%) 10%,
+      transparent 10%,
+      transparent 20%
+    );
+  }
 
-/* ================================
+  /* ================================
    FINAL VISUAL CONSISTENCY FIXES
    ================================ */
 
-/* Stronger, consistent spacing per issue type */
-.issueChartYearGroup,
-.issueChartYearGroupDark {
-  margin-bottom: 32px;
+  /* Stronger, consistent spacing per issue type */
+  .issueChartYearGroup,
+  .issueChartYearGroupDark {
+    margin-bottom: 32px;
+  }
+
+  :global(.react-datepicker.lightCalendar .react-datepicker__navigation-icon::before) {
+    border-color: #0f172a;
+
+    /* Generic year bar outline (applies to all years) */
+  }
+
+  .yearBar {
+    border: 1.5px solid rgb(0 0 0 / 30%);
+    border-radius: 4px;
+  }
+
+  /* Dark mode year bar outline */
+  .issueChartEventContainerDark .yearBar {
+    border-color: rgb(255 255 255 / 35%);
+  }
+
+  /* Placeholder look for years with no data */
+  .yearBarPlaceholder {
+    background-color: transparent !important;
+    border-style: dashed;
+    opacity: 0.7;
+  }
 }
 
-:global(.react-datepicker.lightCalendar .react-datepicker__navigation-icon::before) {
-  border-color: #0f172a;
+/* ================================
+   SINGLE-YEAR / COMPARE-YEARS TOGGLE
+   ================================ */
 
-/* Generic year bar outline (applies to all years) */
+.issueChartViewToggle {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin: 0 auto 12px;
+  width: fit-content;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.yearBar {
-  border: 1.5px solid rgb(0 0 0 / 30%);
-  border-radius: 4px;
+.issueChartViewToggleButton {
+  padding: 6px 14px;
+  border: none;
+  background: #ffffff;
+  color: #333;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
-/* Dark mode year bar outline */
-.issueChartEventContainerDark .yearBar {
-  border-color: rgb(255 255 255 / 35%);
+.issueChartViewToggleButton + .issueChartViewToggleButton {
+  border-left: 1px solid #cbd5e1;
 }
 
-/* Placeholder look for years with no data */
-.yearBarPlaceholder {
-  background-color: transparent !important;
-  border-style: dashed;
-  opacity: 0.7;
+.issueChartViewToggleButtonActive {
+  background: #007fff;
+  color: #ffffff;
 }
+
+.issueChartViewToggleDark {
+  border-color: #3d444d;
+}
+
+.issueChartViewToggleDark .issueChartViewToggleButton {
+  background: #22272e;
+  color: #cfd7e3;
+}
+
+.issueChartViewToggleDark .issueChartViewToggleButton + .issueChartViewToggleButton {
+  border-left-color: #3d444d;
+}
+
+.issueChartViewToggleDark .issueChartViewToggleButtonActive {
+  background: #007fff;
+  color: #ffffff;
 }

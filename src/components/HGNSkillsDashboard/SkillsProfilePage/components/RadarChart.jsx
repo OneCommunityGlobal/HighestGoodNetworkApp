@@ -24,6 +24,7 @@ const SKILL_MAPPINGS = [
   },
   {
     label: 'Leadership Skills',
+    shortLabel: 'Leadership Skl',
     value: (general, frontend, backend) => general?.leadership_skills || 0,
     description: 'Skills in team leadership and management',
   },
@@ -153,6 +154,7 @@ const SKILL_MAPPINGS = [
   },
   {
     label: 'Markdown & Graphs',
+    shortLabel: 'Markdown/Graphs',
     value: (general, frontend, backend) => frontend?.Documentation || general?.markdown_graphs || 0,
     description: 'Markdown writing and data visualization',
   },
@@ -234,7 +236,10 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
   const { general = {}, frontend = {}, backend = {} } = profileData?.skillInfo || {};
 
   const chartData = {
-    labels: skillsData.map(skill => (compact ? skill.shortLabel || skill.label : skill.label)),
+    // Always prefer the abbreviated label: with 28 dimensions, the wrap-around
+    // labels at the top (last <-> first) sit within a ~26deg arc and collide
+    // regardless of chart size, so shortening text is what actually buys room.
+    labels: skillsData.map(skill => skill.shortLabel || skill.label),
     datasets: [
       {
         label: 'Skills',
@@ -300,6 +305,7 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
         },
 
         pointLabels: {
+          centerPointLabels: true,
           font: {
             size: function(context) {
               const w = context.chart.width;
@@ -321,7 +327,9 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
         },
         ticks: {
           stepSize: 2,
-          display: compact ? false : true,
+          // Always shown: the radial scale numbers are information, not chrome,
+          // so (like labels above) they shouldn't be gated behind compact.
+          display: true,
           color: darkMode ? '#dcdcdc' : '#666',
           font: { size: 10 },
           backdropColor: darkMode ? '#1f1f1f' : '#ffffff',

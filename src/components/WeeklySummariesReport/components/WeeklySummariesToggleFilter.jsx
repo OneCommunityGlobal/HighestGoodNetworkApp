@@ -3,7 +3,7 @@ import ReactTooltip from 'react-tooltip';
 import styles from '../WeeklySummariesReport.module.css';
 import { toggleField } from '~/utils/stateHelper';
 import { permissions } from '~/utils/constants';
-import { BIO_MIN_DAYS_IN_TEAM, BIO_MIN_TANGIBLE_HOURS } from '~/utils/bioQualification';
+import { BIO_MIN_TANGIBLE_HOURS, BIO_MIN_VALID_SUMMARIES } from '~/utils/bioQualification';
 import { SlideToggle } from '../components';
 
 export default function WeeklySummariesToggleFilter({
@@ -23,9 +23,8 @@ export default function WeeklySummariesToggleFilter({
   };
 
   // Bio Status is a plain on/off filter: off shows everyone, on narrows the list to
-  // users still eligible to post a bio. The rule lives in isQualifiedForBio and is
-  // tenure-based, not summary-count based — see the note there on the 2026-05-12
-  // regression. The thresholds below are read from that module so this label cannot
+  // users still eligible to post a bio. The rule lives in isQualifiedForBio (tangible
+  // hours plus valid weekly summaries, not tenure). The thresholds below are read from that module so this label cannot
   // drift away from the filter it describes.
   const handleBioStatusToggle = () => toggle('selectedBioStatus');
   const handleTrophyToggleChange = () => toggle('selectedTrophies');
@@ -57,8 +56,9 @@ export default function WeeklySummariesToggleFilter({
               </div>
               <ReactTooltip id={`${formId}-bioFilterTooltip`} place="top" effect="solid">
                 <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
-                  Show users eligible for bio posting (tangible hours &gt; {BIO_MIN_TANGIBLE_HOURS},
-                  days in team &gt; {BIO_MIN_DAYS_IN_TEAM}, bio not yet posted)
+                  Show users eligible for bio posting (tangible hours at least{' '}
+                  {BIO_MIN_TANGIBLE_HOURS}, valid weekly summaries at least{' '}
+                  {BIO_MIN_VALID_SUMMARIES}, bio not yet posted)
                 </span>
               </ReactTooltip>
             </div>

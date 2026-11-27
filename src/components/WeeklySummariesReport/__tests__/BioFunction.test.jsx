@@ -9,7 +9,7 @@ const colors = {
 const baseProps = {
   bioPosted: 'default',
   totalTangibleHrs: 100,
-  daysInTeam: 70,
+  weeklySummariesCount: 10,
   textColors: colors,
   summary: { weeklySummaryOption: 'option1' },
   bioCanEdit: true,

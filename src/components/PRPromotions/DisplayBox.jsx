@@ -1,47 +1,115 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { getPromotionPending, postPromotionEligibility } from '../../actions/promotionActions';
 import styles from './DisplayBox.module.css';
 
 const VIBGYOR_COLOR_COUNT = 7;
+const MONGO_ID_PATTERN = /^[a-fA-F0-9]{24}$/;
 
-const MOCK_PROMOTION_DATA = [
-  {
-    prReviewer: 'Akshay - Jayram',
-    teamCode: '123',
-    teamReviewerName: 'Team Leader 1',
-    weeklyPRs: [
-      { week: '2024-06-01', prCount: 12 },
-      { week: '2024-06-08', prCount: 15 },
-      { week: '2024-06-15', prCount: 10 },
-      { week: '2024-06-22', prCount: 18 },
-      { week: '2024-06-29', prCount: 14 },
-      { week: '2024-07-06', prCount: 16 },
-      { week: '2024-07-13', prCount: 20 },
-    ],
-  },
-  {
-    prReviewer: 'Ghazi1212',
-    teamCode: '456',
-    teamReviewerName: 'Team Leader 2',
-    weeklyPRs: [
-      { week: '2024-06-01', prCount: 12 },
-      { week: '2024-06-08', prCount: 15 },
-      { week: '2024-06-15', prCount: 10 },
-      { week: '2024-06-22', prCount: 18 },
-      { week: '2024-06-29', prCount: 14 },
-    ],
-  },
-];
+function buildRequestor(user) {
+  if (!user?.userid) {
+    return null;
+  }
+
+  return {
+    requestorId: user.userid,
+    role: user.role,
+  };
+}
+
+function normalizeId(value) {
+  if (value == null || value === '') {
+    return undefined;
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (typeof value === 'object') {
+    if (value.$oid) {
+      return String(value.$oid);
+    }
+    if (value._id) {
+      return normalizeId(value._id);
+    }
+  }
+  return String(value);
+}
+
+function getPromotableIds(promotions, checkedItems) {
+  return promotions
+    .filter((_, index) => checkedItems[index])
+    .map(promotion => normalizeId(promotion.reviewerId))
+    .filter(id => id && MONGO_ID_PATTERN.test(id));
+}
+
+function getWeeklyPrCount(pr) {
+  return pr?.count ?? pr?.prCount ?? 0;
+}
 
 export default function DisplayBox({ onClose, darkMode = false }) {
-  const [checkedItems, setCheckedItems] = useState(() => MOCK_PROMOTION_DATA.map(() => true));
+  const authUser = useSelector(state => state.auth?.user);
+  const [promotions, setPromotions] = useState([]);
+  const [checkedItems, setCheckedItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   const masterCheckboxRef = useRef(null);
 
-  const allChecked = checkedItems.length > 0 && checkedItems.every(Boolean);
-
+  const allChecked =
+    promotions.length > 0 && checkedItems.length > 0 && checkedItems.every(Boolean);
   const someChecked = checkedItems.some(Boolean);
+  const confirmDisabled = isLoading || isConfirming || !someChecked;
+
+  const applyPendingRows = useCallback(rows => {
+    const nextPromotions = Array.isArray(rows) ? rows : [];
+    setPromotions(nextPromotions);
+    setCheckedItems(nextPromotions.map(() => true));
+  }, []);
+
+  const loadPendingPromotions = useCallback(async () => {
+    const requestor = buildRequestor(authUser);
+    if (!requestor) {
+      throw new Error('Missing requestor');
+    }
+
+    const rows = await getPromotionPending(requestor);
+    applyPendingRows(rows);
+    return Array.isArray(rows) ? rows : [];
+  }, [applyPendingRows, authUser]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setIsLoading(true);
+      setStatusMessage('');
+
+      try {
+        await loadPendingPromotions();
+      } catch {
+        if (!cancelled) {
+          applyPendingRows([]);
+          const message = 'Failed to load pending promotions.';
+          setStatusMessage(message);
+          toast.error(message);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyPendingRows, loadPendingPromotions]);
 
   useEffect(() => {
     if (masterCheckboxRef.current) {
@@ -51,7 +119,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
 
   useEffect(() => {
     const handleKeyDown = event => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && !isConfirming) {
         onClose();
       }
     };
@@ -61,7 +129,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onClose]);
+  }, [isConfirming, onClose]);
 
   const handleCheckedBoxChange = index => {
     setCheckedItems(currentItems =>
@@ -75,16 +143,43 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     setCheckedItems(currentItems => currentItems.map(() => shouldSelectAll));
   };
 
-  const handleConfirm = () => {
-    const selectedReviewers = MOCK_PROMOTION_DATA.filter((_, index) => checkedItems[index]);
+  const handleConfirm = async () => {
+    const selectedCount = checkedItems.filter(Boolean).length;
+    const selectedIds = getPromotableIds(promotions, checkedItems);
+    const requestor = buildRequestor(authUser);
 
-    console.log('Selected reviewers:', selectedReviewers);
+    if (selectedIds.length === 0) {
+      const message = 'No valid reviewers selected for promotion.';
+      setStatusMessage(message);
+      toast.error(message);
+      return;
+    }
 
-    onClose();
+    setIsConfirming(true);
+    setStatusMessage('');
+
+    try {
+      await postPromotionEligibility(selectedIds, requestor);
+      const nextPromotions = await loadPendingPromotions();
+
+      const message = `Successfully promoted ${selectedCount} reviewer(s).`;
+      setStatusMessage(message);
+      toast.success(message);
+
+      if (nextPromotions.length === 0) {
+        onClose();
+      }
+    } catch {
+      const message = 'Failed to process promotions.';
+      setStatusMessage(message);
+      toast.error(message);
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   const handleOverlayMouseDown = event => {
-    if (event.target === event.currentTarget) {
+    if (event.target === event.currentTarget && !isConfirming) {
       onClose();
     }
   };
@@ -96,12 +191,17 @@ export default function DisplayBox({ onClose, darkMode = false }) {
   const getBadgeClassName = index =>
     [styles.prCountBadge, styles[`color-${index % VIBGYOR_COLOR_COUNT}`]].filter(Boolean).join(' ');
 
+  const emptyMessage = isLoading
+    ? 'Loading pending promotions...'
+    : 'No PR reviewers left to promote.';
+
   return (
     <div className={styles.overlay} onMouseDown={handleOverlayMouseDown}>
       <dialog
         open
         className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}
         aria-labelledby="promotion-dialog-heading"
+        aria-busy={isLoading || isConfirming}
       >
         <h2
           id="promotion-dialog-heading"
@@ -109,6 +209,8 @@ export default function DisplayBox({ onClose, darkMode = false }) {
         >
           Are you sure you want to promote these PR reviewers?
         </h2>
+
+        {statusMessage && <output className={styles.statusMessage}>{statusMessage}</output>}
 
         <table className={tableClassName}>
           <thead>
@@ -120,6 +222,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
                   type="checkbox"
                   checked={allChecked}
                   onChange={handleSelectAll}
+                  disabled={promotions.length === 0 || isLoading || isConfirming}
                   aria-label="Select all reviewers"
                 />
               </th>
@@ -127,37 +230,59 @@ export default function DisplayBox({ onClose, darkMode = false }) {
               <th>PR Reviewer</th>
               <th>Team Code</th>
               <th>Team Leader Name</th>
-              <th>Weekly PR Counts</th>
+              <th>Weekly PRs</th>
             </tr>
           </thead>
 
           <tbody>
-            {MOCK_PROMOTION_DATA.map((promotion, index) => (
-              <tr key={`${promotion.prReviewer}-${promotion.teamCode}`}>
+            {promotions.length === 0 && (
+              <tr>
+                <td colSpan="5" className={styles.messageCell}>
+                  {emptyMessage}
+                </td>
+              </tr>
+            )}
+            {promotions.map((promotion, index) => (
+              <tr
+                key={
+                  normalizeId(promotion.reviewerId) ||
+                  `${promotion.prReviewer}-${promotion.teamCode}-${index}`
+                }
+              >
                 <td>
                   <input
                     className={styles.checkbox}
                     type="checkbox"
-                    checked={checkedItems[index]}
+                    checked={Boolean(checkedItems[index])}
                     onChange={() => handleCheckedBoxChange(index)}
+                    disabled={isLoading || isConfirming}
                     aria-label={`Select reviewer ${promotion.prReviewer}`}
                   />
                 </td>
 
                 <td>{promotion.prReviewer}</td>
                 <td>{promotion.teamCode}</td>
-                <td>{promotion.teamReviewerName}</td>
+                <td>{promotion.teamLeaderName}</td>
 
                 <td>
-                  <div className={styles.prBadgeRow}>
-                    {promotion.weeklyPRs.map((pr, prIndex) => (
-                      <span
-                        key={`${promotion.prReviewer}-${pr.week}`}
-                        className={getBadgeClassName(prIndex)}
-                      >
-                        {pr.prCount}
-                      </span>
-                    ))}
+                  <div
+                    className={styles.prBadgeRow}
+                    aria-label={`Weekly PRs for ${promotion.prReviewer}`}
+                  >
+                    {(promotion.weeklyPRs || []).map((pr, prIndex) => {
+                      const prCount = getWeeklyPrCount(pr);
+                      return (
+                        <span
+                          key={`${normalizeId(promotion.reviewerId) || promotion.prReviewer}-${
+                            pr.week
+                          }-${prIndex}`}
+                          className={getBadgeClassName(prIndex)}
+                          title={`Week ${pr.week}: ${prCount} PRs`}
+                        >
+                          {prCount}
+                        </span>
+                      );
+                    })}
                   </div>
                 </td>
               </tr>
@@ -170,6 +295,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
             type="button"
             className={`${styles.button} ${styles.cancelButton}`}
             onClick={onClose}
+            disabled={isConfirming}
           >
             Cancel
           </button>
@@ -177,10 +303,10 @@ export default function DisplayBox({ onClose, darkMode = false }) {
           <button
             type="button"
             className={`${styles.button} ${styles.confirmButton}`}
-            disabled={!someChecked}
+            disabled={confirmDisabled}
             onClick={handleConfirm}
           >
-            Confirm
+            {isConfirming ? 'Confirming...' : 'Confirm'}
           </button>
         </div>
       </dialog>
