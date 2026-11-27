@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import {
   BarChart,
   Bar,
@@ -7,6 +7,7 @@ import {
   Tooltip,
   Legend,
   LabelList,
+  Rectangle,
   ResponsiveContainer,
 } from 'recharts';
 import Select from 'react-select';
@@ -28,6 +29,42 @@ const toYMD = d =>
         d.getDate(),
       ).padStart(2, '0')}`
     : '';
+
+// The injury project list groups projects by name, because legacy injury rows can use several
+// project IDs for one project. Use the same normalized name as the project key everywhere, so
+// one project is always one series, one legend entry and one color.
+const normalizeName = value =>
+  String(value ?? '')
+    .trim()
+    .toLowerCase();
+const projectKeyOf = project => normalizeName(project?.name) || String(project?._id ?? '');
+// Rows with no project name and no single matching project are shown as one "Unknown Project"
+const UNKNOWN_PROJECT_KEY = '__unknown_project__';
+
+// Distinct colors so projects never share one; extra projects get evenly spread hues.
+const COLOR_PALETTE = [
+  '#34D399', // green
+  '#2563EB', // blue
+  '#F472B6', // pink
+  '#FBBF24', // amber
+  '#A78BFA', // purple
+  '#FB923C', // orange
+  '#F87171', // red
+  '#38BDF8', // cyan
+  '#84CC16', // lime
+  '#D946EF', // fuchsia
+  '#14B8A6', // teal
+  '#A16207', // brown
+  '#6366F1', // indigo
+  '#94A3B8', // slate
+];
+const getSeriesColor = index =>
+  index < COLOR_PALETTE.length
+    ? COLOR_PALETTE[index]
+    : `hsl(${Math.round((index * 137.508) % 360)}, 65%, 55%)`;
+
+// Gap between bars in a group (also passed to BarChart so the packed positions line up)
+const BAR_GAP = 4;
 
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
@@ -80,39 +117,31 @@ function InjuryCategoryBarChart() {
 
   useEffect(() => {
     if (!hasProjectListFilters && projects.length) {
-      // Keep the original project set so duplicate-name labels do not change after filtering.
+      // Keep the original project set so colors and labels stay stable while filtering.
       setUnfilteredProjects(projects);
     }
   }, [hasProjectListFilters, projects]);
 
+  // Display name per project key
   const projectLabelById = useMemo(() => {
-    const labelSourceProjects = unfilteredProjects.length ? unfilteredProjects : projects;
-    const nameCounts = new Map();
-    for (const p of labelSourceProjects) {
-      const name = p?.name ?? '';
-      if (name) nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
-    }
-
     const labels = new Map();
-    for (const p of labelSourceProjects) {
-      const name = p?.name ?? '';
-      const id = String(p?._id ?? '');
-      if (!name || !id) continue;
-
-      // Use project identity from the unfiltered set so duplicate labels stay stable.
-      labels.set(id, nameCounts.get(name) > 1 ? `${name} (${id.slice(0, 6)})` : name);
+    for (const p of [...unfilteredProjects, ...projects]) {
+      const key = projectKeyOf(p);
+      const name = String(p?.name ?? '').trim();
+      if (key && name && !labels.has(key)) labels.set(key, name);
     }
     return labels;
   }, [projects, unfilteredProjects]);
 
   const projectNameOptions = useMemo(() => {
     const opts = [];
+    const seen = new Set();
     for (const p of projects) {
-      const id = String(p?._id ?? '');
-      // Reuse the stable label when filtered options are rebuilt from project IDs.
-      const label = projectLabelById.get(id);
-      if (!id || !label) continue;
-      opts.push({ value: id, label });
+      const key = projectKeyOf(p);
+      const label = projectLabelById.get(key);
+      if (!key || !label || seen.has(key)) continue;
+      seen.add(key);
+      opts.push({ value: key, label });
     }
     return opts.sort((a, b) => a.label.localeCompare(b.label));
   }, [projects, projectLabelById]);
@@ -127,56 +156,112 @@ function InjuryCategoryBarChart() {
   const severityOptions = useMemo(() => sevList.map(s => ({ value: s, label: s })), [sevList]);
   const typeOptions = useMemo(() => typeList.map(t => ({ value: t, label: t })), [typeList]);
 
+  // Project ID -> project key, for rows saved without a project name. Only IDs used by a single
+  // project are mapped, since some legacy IDs are shared by several project names.
+  const projectKeyById = useMemo(() => {
+    const keysById = new Map();
+    for (const p of [...unfilteredProjects, ...projects]) {
+      const key = projectKeyOf(p);
+      const ids = Array.isArray(p?.projectIds) && p.projectIds.length ? p.projectIds : [p?._id];
+      ids.forEach(id => {
+        if (!id) return;
+        const idString = String(id);
+        if (!keysById.has(idString)) keysById.set(idString, new Set());
+        keysById.get(idString).add(key);
+      });
+    }
+    const result = new Map();
+    keysById.forEach((keys, id) => {
+      if (keys.size === 1) result.set(id, [...keys][0]);
+    });
+    return result;
+  }, [projects, unfilteredProjects]);
+
+  const rowKeyOf = useCallback(
+    row =>
+      normalizeName(row?.projectName) ||
+      projectKeyById.get(String(row?.projectId ?? '')) ||
+      UNKNOWN_PROJECT_KEY,
+    [projectKeyById],
+  );
+
+  const selectedProjectKeys = useMemo(() => new Set(projectNameFilter.map(p => p.value)), [
+    projectNameFilter,
+  ]);
+
+  // Every project ID recorded under the selected project names, so no injuries are left out
+  const selectedProjectIdsParam = useMemo(() => {
+    if (!selectedProjectKeys.size) return '';
+    const ids = new Set();
+    for (const p of [...unfilteredProjects, ...projects]) {
+      if (!selectedProjectKeys.has(projectKeyOf(p))) continue;
+      const projectIds =
+        Array.isArray(p?.projectIds) && p.projectIds.length ? p.projectIds : [p?._id];
+      projectIds.forEach(id => id && ids.add(String(id)));
+    }
+    return Array.from(ids).join(',');
+  }, [selectedProjectKeys, unfilteredProjects, projects]);
+
   useEffect(() => {
     const params = {
-      projectIds: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
+      projectIds: selectedProjectIdsParam,
       startDate: toYMD(startDate),
       endDate: toYMD(endDate),
       severities: severityFilter.map(s => s.value).join(','),
       types: injuryTypeFilter.map(t => t.value).join(','),
     };
     dispatch(fetchInjuryData(params));
-  }, [dispatch, projectNameFilter, severityFilter, injuryTypeFilter, startDate, endDate]);
+  }, [dispatch, selectedProjectIdsParam, severityFilter, injuryTypeFilter, startDate, endDate]);
+
+  // Rows of the selected projects only (a legacy project ID can also be used by another name)
+  const projectRows = useMemo(
+    () =>
+      selectedProjectKeys.size ? data.filter(r => selectedProjectKeys.has(rowKeyOf(r))) : data,
+    [data, selectedProjectKeys, rowKeyOf],
+  );
 
   const projectNameById = useMemo(() => {
-    const m = new Map();
-    for (const p of projects) m.set(String(p._id), p.name);
-    for (const r of data) {
-      const pid = String(r?.projectId ?? 'unknown');
-      if (!m.has(pid) && r?.projectName) m.set(pid, r.projectName);
+    const m = new Map(projectLabelById);
+    m.set(UNKNOWN_PROJECT_KEY, 'Unknown Project');
+    for (const r of projectRows) {
+      const key = rowKeyOf(r);
+      const name = String(r?.projectName ?? '').trim();
+      if (!m.has(key) && name) m.set(key, name);
     }
     return m;
-  }, [projects, data]);
+  }, [projectLabelById, projectRows, rowKeyOf]);
 
   const chartData = useMemo(() => {
     const acc = Object.create(null);
-    for (const r of data) {
+    for (const r of projectRows) {
       const workerCategory = r?.workerCategory ?? 'Unknown';
-      const pid = String(r?.projectId ?? 'unknown');
+      const key = rowKeyOf(r);
       const total = Number(r?.totalInjuries) || 0;
       if (!acc[workerCategory]) acc[workerCategory] = { workerCategory };
-      acc[workerCategory][pid] = (acc[workerCategory][pid] || 0) + total;
+      acc[workerCategory][key] = (acc[workerCategory][key] || 0) + total;
     }
     return Object.values(acc);
-  }, [data]);
+  }, [projectRows, rowKeyOf]);
 
   const seriesProjectIds = useMemo(() => {
-    const set = new Set(data.map(d => String(d?.projectId ?? 'unknown')));
-    return Array.from(set);
-  }, [data]);
+    const set = new Set(projectRows.map(rowKeyOf));
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [projectRows, rowKeyOf]);
   const allSeriesProjectIds = useMemo(() => {
-    const set = new Set(projects.map(p => String(p._id)));
+    const set = new Set();
+    for (const p of projects) {
+      const key = projectKeyOf(p);
+      if (!selectedProjectKeys.size || selectedProjectKeys.has(key)) set.add(key);
+    }
     // Include projects that have bars but are missing from the project list, so the legend matches the chart
-    for (const pid of seriesProjectIds) set.add(pid);
-    return Array.from(set);
-  }, [projects, seriesProjectIds]);
+    for (const key of seriesProjectIds) set.add(key);
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [projects, selectedProjectKeys, seriesProjectIds]);
   const colorProjectIds = useMemo(() => {
-    const source = unfilteredProjects.length ? unfilteredProjects : projects;
-    const set = new Set(source.map(project => String(project._id)));
-    // Every project shown (current list or bars) needs a palette color; otherwise it renders black,
-    // which is invisible on the dark-mode chart background
-    for (const p of projects) set.add(String(p._id));
-    for (const pid of seriesProjectIds) set.add(pid);
+    const set = new Set([...unfilteredProjects, ...projects].map(projectKeyOf));
+    // Every project shown needs its own color; otherwise it renders black, which is invisible
+    // on the dark-mode chart background
+    for (const key of seriesProjectIds) set.add(key);
     return Array.from(set);
   }, [unfilteredProjects, projects, seriesProjectIds]);
 
@@ -237,23 +322,12 @@ function InjuryCategoryBarChart() {
   // Rotate x-axis labels only when there are many categories
   const xTickAngle = displayData.length > 6 ? -35 : 0;
 
-  const COLOR_PALETTE = [
-    '#34D399', // green
-    '#2563EB', // blue
-    '#F472B6', // pink
-    '#FBBF24', // amber
-    '#A78BFA', // purple
-    '#FB923C', // orange
-    '#F87171', // red
-    '#38BDF8', // cyan
-  ];
-
+  // Sorted by project key so colors do not depend on API or filter response order
   const projectColorById = new Map();
   [...colorProjectIds]
     .sort((a, b) => a.localeCompare(b))
     .forEach((pid, index) => {
-      // Sort by project ID so colors do not depend on API or filter response order.
-      projectColorById.set(pid, COLOR_PALETTE[index % COLOR_PALETTE.length]);
+      projectColorById.set(pid, getSeriesColor(index));
     });
 
   // Force a resize/reflow after data/filter changes so chart draws immediately (no hover needed)
@@ -336,6 +410,7 @@ function InjuryCategoryBarChart() {
 
   const highlightColor = darkMode ? '#f87171' : '#b91c1c';
   const axisTextColor = darkMode ? '#fff' : '#000';
+  const valueLabelColor = darkMode ? '#f3f4f6' : '#374151';
 
   // Abbreviates long category names (full name on hover) and highlights the top category
   const renderCategoryTick = ({ x, y, payload }) => {
@@ -360,13 +435,53 @@ function InjuryCategoryBarChart() {
     );
   };
 
+  // Grouped view: Recharts reserves a slot for every project in every category, which leaves
+  // gaps where a project has no injuries. Pack each category's bars together (centered) and
+  // draw the value label on the packed bar.
+  const renderPackedBar = (pid, props) => {
+    const { x, y, width, height, fill, stroke, payload } = props;
+    const value = Number(payload?.[pid]) || 0;
+    if (!(value > 0) || !(height > 0)) return null;
+
+    const slot = visibleSeriesIds.indexOf(pid);
+    const presentIds = visibleSeriesIds.filter(id => Number(payload?.[id]) > 0);
+    const presentIndex = presentIds.indexOf(pid);
+    const step = width + BAR_GAP;
+    const groupLeft = x - slot * step;
+    const centeringOffset = ((visibleSeriesIds.length - presentIds.length) * step) / 2;
+    const packedX = groupLeft + centeringOffset + presentIndex * step;
+
+    return (
+      <g>
+        <Rectangle
+          x={packedX}
+          y={y}
+          width={width}
+          height={height}
+          fill={fill}
+          stroke={stroke}
+          strokeWidth={1}
+        />
+        {showLabels && (
+          <text
+            x={packedX + width / 2}
+            y={y - 6}
+            textAnchor="middle"
+            fill={valueLabelColor}
+            fontSize={12}
+          >
+            {value}
+          </text>
+        )}
+      </g>
+    );
+  };
+
   const viewToggleButtonClass = isActive =>
     `${styles.injuryViewToggleButton} ${isActive ? styles.injuryViewToggleButtonActive : ''}`;
 
   const topProjectLabel = insights?.topProjectId
-    ? projectLabelById.get(insights.topProjectId) ||
-      projectNameById.get(insights.topProjectId) ||
-      'Unknown Project'
+    ? projectNameById.get(insights.topProjectId) || 'Unknown Project'
     : null;
 
   return (
@@ -515,6 +630,7 @@ function InjuryCategoryBarChart() {
           <ResponsiveContainer key={chartKey} width="100%" height="100%">
             <BarChart
               data={displayData}
+              barGap={BAR_GAP}
               margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
               style={{
                 backgroundColor: darkMode ? '#1e2a3a' : '#fff',
@@ -551,25 +667,24 @@ function InjuryCategoryBarChart() {
                       }}
                     >
                       <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
-                      {payload.map(entry => {
-                        const projectId = String(entry.dataKey);
-                        const projectColor =
-                          projectColorById.get(projectId) || entry.color || '#000';
-                        const projectLabel =
-                          projectLabelById.get(projectId) ||
-                          projectNameById.get(projectId) ||
-                          'Unknown Project';
+                      {payload
+                        .filter(entry => Number(entry.value) > 0)
+                        .map(entry => {
+                          const projectId = String(entry.dataKey);
+                          const projectColor =
+                            projectColorById.get(projectId) || entry.color || '#000';
+                          const projectLabel = projectNameById.get(projectId) || 'Unknown Project';
 
-                        return (
-                          <div
-                            key={projectId}
-                            className={styles.tooltipSeriesRow}
-                            style={{ '--tooltip-series-color': projectColor }}
-                          >
-                            {projectLabel} : {entry.value}
-                          </div>
-                        );
-                      })}
+                          return (
+                            <div
+                              key={projectId}
+                              className={styles.tooltipSeriesRow}
+                              style={{ '--tooltip-series-color': projectColor }}
+                            >
+                              {projectLabel} : {entry.value}
+                            </div>
+                          );
+                        })}
                     </div>
                   );
                 }}
@@ -588,7 +703,7 @@ function InjuryCategoryBarChart() {
                   type: 'square',
                   color: projectColorById.get(pid),
                   inactive: hiddenSeries.includes(pid),
-                  value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
+                  value: projectNameById.get(pid) || 'Unknown Project',
                 }))}
               />
               {seriesProjectIds.map(pid => (
@@ -600,23 +715,15 @@ function InjuryCategoryBarChart() {
                   fill={projectColorById.get(pid)}
                   stroke={darkMode ? '#E5E7EB' : '#ffffff'}
                   strokeWidth={1}
+                  shape={isStacked ? undefined : barProps => renderPackedBar(pid, barProps)}
                 >
-                  {showLabels && (
-                    <LabelList
-                      dataKey={pid}
-                      position="top"
-                      formatter={v => (v > 0 ? v : '')}
-                      // Readable value labels in both themes (were dim gray in dark mode)
-                      fill={darkMode ? '#f3f4f6' : '#374151'}
-                    />
-                  )}
                   {/* Stacked view: show the category total on top of the stack */}
                   {isStacked && pid === lastVisibleSeriesId && (
                     <LabelList
                       position="top"
                       valueAccessor={entry => entry?.payload?.__total}
                       formatter={v => (v > 0 ? v : '')}
-                      fill={darkMode ? '#f3f4f6' : '#374151'}
+                      fill={valueLabelColor}
                     />
                   )}
                 </Bar>
