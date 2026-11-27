@@ -1,4 +1,6 @@
-import { Table } from 'reactstrap';
+import { useState } from 'react';
+import { Button, Table } from 'reactstrap';
+import EquipmentRecordModal from './EquipmentRecordModal';
 import styles from './EquipmentDetailPage.module.css';
 
 const formatDate = value => {
@@ -13,18 +15,21 @@ const formatPerson = person => {
 };
 
 const newestFirst = records =>
-  [...(Array.isArray(records) ? records : [])].sort(
-    (first, second) => new Date(second.date || 0) - new Date(first.date || 0),
-  );
+  (Array.isArray(records) ? records : [])
+    .map((record, index) => ({ ...record, index }))
+    .sort((first, second) => new Date(second.date || 0) - new Date(first.date || 0));
 
-function EquipmentRecordSections({ equipment }) {
+function EquipmentRecordSections({ equipment, onSaved }) {
+  const [editor, setEditor] = useState(null);
   const updates = newestFirst(equipment?.updateRecord);
   const purchases = newestFirst(equipment?.purchaseRecord);
+  const openEditor = (kind, record) => setEditor({ kind, record });
 
   return (
     <section className={styles.recordSections} aria-label="Equipment records">
       <details className={styles.recordSection}>
         <summary>Updates ({updates.length})</summary>
+        {onSaved && <Button onClick={() => openEditor('updates')}>Add update</Button>}
         {updates.length === 0 ? (
           <p className={styles.emptyRecords}>No updates recorded.</p>
         ) : (
@@ -34,6 +39,7 @@ function EquipmentRecordSections({ equipment }) {
                 <th scope="col">Date</th>
                 <th scope="col">Updated by</th>
                 <th scope="col">Condition</th>
+                {onSaved && <th scope="col">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -42,6 +48,13 @@ function EquipmentRecordSections({ equipment }) {
                   <td>{formatDate(record.date)}</td>
                   <td>{formatPerson(record.createdBy)}</td>
                   <td>{record.condition || 'Not available'}</td>
+                  {onSaved && (
+                    <td>
+                      <Button size="sm" onClick={() => openEditor('updates', record)}>
+                        Edit update
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -51,6 +64,7 @@ function EquipmentRecordSections({ equipment }) {
 
       <details className={styles.recordSection}>
         <summary>Purchases ({purchases.length})</summary>
+        {onSaved && <Button onClick={() => openEditor('purchases')}>Add purchase</Button>}
         {purchases.length === 0 ? (
           <p className={styles.emptyRecords}>No purchases recorded.</p>
         ) : (
@@ -61,6 +75,7 @@ function EquipmentRecordSections({ equipment }) {
                 <th scope="col">Requested by</th>
                 <th scope="col">Status</th>
                 <th scope="col">Priority</th>
+                {onSaved && <th scope="col">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -70,12 +85,27 @@ function EquipmentRecordSections({ equipment }) {
                   <td>{formatPerson(record.requestedBy)}</td>
                   <td>{record.status || 'Not available'}</td>
                   <td>{record.priority || 'Not available'}</td>
+                  {onSaved && (
+                    <td>
+                      <Button size="sm" onClick={() => openEditor('purchases', record)}>
+                        Edit purchase
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </Table>
         )}
       </details>
+      {editor && (
+        <EquipmentRecordModal
+          equipmentId={equipment._id}
+          editor={editor}
+          onClose={() => setEditor(null)}
+          onSaved={onSaved}
+        />
+      )}
     </section>
   );
 }

@@ -292,3 +292,15 @@ button.descriptionItem_button:hover {
 :global(body.bm-dashboard-dark) .recordTable {
   color: #e0eaf5;
 }
+.attachmentPdf {
+  width: 100%;
+  height: 65vh;
+  border: 0;
+}
+
+.attachmentImage {
+  display: block;
+  max-width: 100%;
+  max-height: 65vh;
+  margin: auto;
+}

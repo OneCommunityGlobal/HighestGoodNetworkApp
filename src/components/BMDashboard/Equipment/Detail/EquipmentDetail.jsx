@@ -8,6 +8,7 @@ import { fetchEquipmentTypes } from '~/actions/bmdashboard/invTypeActions';
 import { v4 as uuidv4 } from 'uuid';
 import EquipmentModal from '../EquipmentModal';
 import EquipmentAuditHistory from './EquipmentAuditHistory';
+import EquipmentAttachments from './EquipmentAttachments';
 import EquipmentRecordSections from './EquipmentRecordSections';
 import styles from './EquipmentDetailPage.module.css';
 
@@ -455,7 +456,16 @@ function EquipmentDetail() {
 
         {details.filter(Boolean).map(renderDetails)}
 
-        {!isEditing && <EquipmentRecordSections equipment={equipment} />}
+        {!isEditing && equipment?._id === equipmentId && (
+          <>
+            <EquipmentRecordSections
+              key={equipmentId}
+              equipment={equipment}
+              onSaved={() => dispatch(fetchEquipmentById(equipmentId))}
+            />
+            <EquipmentAttachments key={equipmentId} equipmentId={equipmentId} />
+          </>
+        )}
         {!isEditing && equipment?._id === equipmentId && (
           <EquipmentAuditHistory
             equipmentId={equipmentId}
