@@ -90,10 +90,10 @@ describe('FinancialOverview', () => {
       />,
     );
 
-    expect(await screen.findByText('+16% week over week')).toBeInTheDocument();
-    expect(screen.getByText('-1% week over week')).toBeInTheDocument();
-    expect(screen.getByText('-45% week over week')).toBeInTheDocument();
-    expect(screen.getAllByText('No week over week comparison available')).toHaveLength(3);
+    expect(await screen.findByText('+16% vs Week Over Week')).toBeInTheDocument();
+    expect(screen.getByText('-1% vs Week Over Week')).toBeInTheDocument();
+    expect(screen.getByText('-45% vs Week Over Week')).toBeInTheDocument();
+    expect(screen.getAllByText('No comparison data available for Week Over Week')).toHaveLength(3);
   });
 
   it('explains why a card has no value', async () => {
