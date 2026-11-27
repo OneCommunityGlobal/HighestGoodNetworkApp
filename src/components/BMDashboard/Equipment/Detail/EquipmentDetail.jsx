@@ -457,7 +457,11 @@ function EquipmentDetail() {
 
         {!isEditing && <EquipmentRecordSections equipment={equipment} />}
         {!isEditing && equipment?._id === equipmentId && (
-          <EquipmentAuditHistory entries={equipment.auditHistory} />
+          <EquipmentAuditHistory
+            equipmentId={equipmentId}
+            entries={equipment.auditHistory}
+            projectOptions={projectOptions}
+          />
         )}
 
         {isEditing && (
