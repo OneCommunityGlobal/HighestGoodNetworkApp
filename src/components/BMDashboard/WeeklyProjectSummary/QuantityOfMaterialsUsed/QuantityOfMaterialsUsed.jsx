@@ -1091,7 +1091,7 @@ function QuantityOfMaterialsUsed({
       </div>
 
       {/* Fixed legend below label */}
-      {chartData && chartData.labels && rowCount > 0 && (
+      {chartData?.labels && rowCount > 0 && (
         <div
           className={`${styles.quantityOfMaterialsUsedCustomLegendContainer}`}
           style={{
