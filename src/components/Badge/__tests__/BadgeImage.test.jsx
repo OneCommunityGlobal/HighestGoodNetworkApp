@@ -27,5 +27,30 @@ describe('BadgeImage Component', () => {
     render(<BadgeImage {...mockProps} />);
     const badgeCount = screen.getByText('50');
     expect(badgeCount).toBeInTheDocument();
+    expect(badgeCount).toHaveClass('badge_count_personalmax');
+  });
+
+  test('uses the standard style for counts below 100', () => {
+    render(
+      <BadgeImage {...mockProps} badgeData={{ ...mockBadgeData, type: 'Hours' }} count={99} />,
+    );
+
+    expect(screen.getByText('99')).toHaveClass('badge_count');
+  });
+
+  test('uses the compact style for counts of 100 or more', () => {
+    render(
+      <BadgeImage {...mockProps} badgeData={{ ...mockBadgeData, type: 'Hours' }} count={100} />,
+    );
+
+    expect(screen.getByText('100')).toHaveClass('badge_count_3_digit');
+  });
+
+  test('applies a modifier class from cssSuffix alongside the base class', () => {
+    render(<BadgeImage {...mockProps} cssSuffix="_report" />);
+
+    const badgeCount = screen.getByText('50');
+    expect(badgeCount).toHaveClass('badge_count_personalmax');
+    expect(badgeCount).toHaveClass('report');
   });
 });

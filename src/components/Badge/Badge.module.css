@@ -62,6 +62,16 @@
   box-shadow: 2px 2px 4px 1px black;
 }
 
+/* Modifier classes for BadgeSpan's cssSuffix prop (e.g. "_report" from BadgeReport.jsx),
+   applied alongside the base badge_count* class, not in place of it. */
+:global(.report) {
+  border: 2px solid white;
+}
+
+:global(.mini) {
+  transform: scale(0.8);
+}
+
 /* This is just only for displaying 'Personal Max hours' badge hours position */
 :global(.badge_count_personalmax) {
   padding-top: 4px;
@@ -89,6 +99,12 @@
   right: 5px;
   bottom: 5px;
   z-index: 10;
+}
+
+:global(.badge_featured_container) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 :global(.new_badges) {

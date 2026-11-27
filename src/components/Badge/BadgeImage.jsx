@@ -53,17 +53,21 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuff
 }
 
 function BadgeSpan({ badgeType, personalBestMaxHrs, count, cssSuffix }) {
+  const modifierClass = cssSuffix ? cssSuffix.replace(/^_/, '') : '';
+
   if (badgeType === 'Personal Max') {
     return (
-      <span className={`badge_count_personalmax${cssSuffix}`}>
+      <span className={`badge_count_personalmax ${modifierClass}`.trim()}>
         {Math.floor(personalBestMaxHrs)}
       </span>
     );
   }
+
   if (count < 100) {
-    return <span className={`badge_count${cssSuffix}`}>{Math.round(count)}</span>;
+    return <span className={`badge_count ${modifierClass}`.trim()}>{Math.round(count)}</span>;
   }
-  return <span className={`badge_count_3_digit${cssSuffix}`}>{Math.round(count)}</span>;
+
+  return <span className={`badge_count_3_digit ${modifierClass}`.trim()}>{Math.round(count)}</span>;
 }
 
 export default BadgeImage;
