@@ -751,8 +751,7 @@ function WeeklyProjectSummary() {
       let y = margin + 20;
 
       // Capture section by section from the live page, so canvas charts keep their drawing
-      for (let index = 0; index < sectionElements.length; index += 1) {
-        const sectionElement = sectionElements[index];
+      for (const sectionElement of sectionElements) {
         const title = sectionElement.dataset.pdfTitle || '';
         const sectionContent = sectionElement.querySelector('[data-pdf-content]');
         if (sectionContent) {
