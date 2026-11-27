@@ -130,6 +130,54 @@
   outline: none;
 }
 
+.viewSelector {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  background: #f7fafc;
+}
+
+.viewButton {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #2d3748;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.viewButton:hover,
+.viewButton:focus-visible {
+  border-color: #3182ce;
+  outline: 2px solid rgb(49 130 206 / 25%);
+  outline-offset: 1px;
+}
+
+.viewButtonActive {
+  background: #1e40af;
+  color: #fff;
+}
+
+.viewButtonDark {
+  color: #e2e8f0;
+}
+
+.viewSelectorDark {
+  border-color: #4a5568;
+  background: #2d3748;
+}
+
+.viewButtonDark.viewButtonActive {
+  background: #4a9eff;
+  color: #0f172a;
+}
+
 .tileEvents {
   position: relative;
 }
@@ -602,6 +650,19 @@
 
 .reactCalendarDarkMode .hasEvents.selectedDate {
   background: #1a2332 !important;
+}
+
+.yearEventIndicator {
+  display: block;
+  margin-top: 8px;
+  color: #1e40af;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.reactCalendarDarkMode .yearEventIndicator {
+  color: #bfdbfe;
 }
 
 .selectedDatePanel {
@@ -1212,13 +1273,13 @@
 }
 
 .calendarActivityItemDarkMode {
-  background-color: #2d3e5f;
-  color: #fff;
-  border-left-color: #4dabf7;
+  background-color: #1f2937 !important;
+  color: #f7fafc;
+  border-left-color: #60a5fa;
 }
 
 .calendarActivitySection .calendarActivityItemDarkMode {
-  color: #fff;
+  color: #f7fafc;
   border-bottom: 1px solid #ccc;
 }
 
@@ -1611,81 +1672,126 @@
   color: #cbd5e0;
 }
 
-.weekGridRoot {
+.weekGridContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
   min-width: 0;
-}
-
-/* Week Grid Styles */
-.weekGridRoot .weekGridContainer {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
+  height: 700px;
+  margin-bottom: 20px;
+  overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  height: 700px;
-  max-width: 100%;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-.weekGridRoot .weekGridBody {
-  flex: 1;
-  overflow-y: scroll;
   background: #fff;
 }
 
-@media (width <= 1024px) {
-  .calendarContainer {
-    flex-direction: column;
-  }
-
-  .reactCalendar {
-    padding: 1rem;
-  }
-
-  .weekGridRoot .weekGridContainer {
-    height: auto;
-    min-height: 500px;
-  }
+.weekGridToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.dateLabel {
-  font-size: 1.1rem;
-  font-weight: 600;
+.weekGridTitle {
+  margin: 0;
   color: #1e293b;
+  font-size: 1rem;
+  text-align: center;
 }
 
-.weekGridRoot .hourRow {
+.gridNavigationButton {
+  min-width: 40px;
+  min-height: 36px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  background: #f7fafc;
+  color: #1e293b;
+  cursor: pointer;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.gridNavigationButton:hover,
+.gridNavigationButton:focus-visible {
+  border-color: #3182ce;
+  outline: 2px solid rgb(49 130 206 / 25%);
+  outline-offset: 1px;
+}
+
+.weekGridBody {
+  flex: 1;
+  overflow: auto;
+  background: #fff;
+}
+
+.weekGridHeader,
+.allDayRow,
+.hourRow {
   display: grid;
-  grid-template-columns: 80px repeat(7, minmax(0, 1fr));
-  min-height: 80px;
-  border-bottom: 1px solid #f1f5f9;
+  grid-template-columns: 80px repeat(7, minmax(100px, 1fr));
   width: 100%;
 }
 
-.timeLabel {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  text-align: right;
-  padding-right: 12px;
-  padding-top: 8px;
-  font-weight: 500;
-  border-right: 1px solid #e2e8f0;
+.weekGridHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  min-height: 58px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
 }
 
-.weekGridRoot .gridCell {
-  min-width: 0;              /* CRITICAL */
-  max-width: 100%;          /* CRITICAL */
-  overflow: hidden;         /* prevents bleed */
-  border-left: 1px solid #f1f5f9;
-  position: relative;
+.timeGutter,
+.dayColumnHeader {
+  padding: 8px;
+}
+
+.dayColumnHeader {
+  border-left: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.dayLabel {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.dateLabel {
+  color: #1e293b;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.allDayRow {
+  min-height: 46px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.hourRow {
+  min-height: 80px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.timeLabel {
+  padding: 8px 12px 0 4px;
+  border-right: 1px solid #e2e8f0;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+.gridCell {
+  min-width: 0;
+  min-height: 100%;
+  overflow: hidden;
   padding: 4px;
+  border-left: 1px solid #f1f5f9;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
 }
 
 .gridCell:hover {
@@ -1693,33 +1799,50 @@
 }
 
 .gridEvent {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  overflow: hidden;          /* CRITICAL */
-  box-sizing: border-box;
-  background: #dcfce7;
+  overflow: hidden;
+  margin-bottom: 4px;
+  padding: 6px;
+  border: 0;
   border-left: 4px solid #22c55e;
   border-radius: 6px;
-  padding: 6px;
-  font-size: 0.75rem;
-  cursor: pointer;
+  background: #dcfce7;
   box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
-  margin-bottom: 4px;
+  color: #166534;
+  cursor: pointer;
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.gridEvent:hover,
+.gridEvent:focus-visible {
+  outline: 2px solid #3182ce;
+  outline-offset: 1px;
 }
 
 .gridEventTitle {
-  font-weight: 600;
-  color: #166534;
-  white-space: nowrap;
   overflow: hidden;
+  color: #166534;
+  font-weight: 600;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Dark Mode Support */
+.gridEventTime {
+  overflow: hidden;
+  color: #166534;
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .weekGridContainerDark {
-  background: #1a2332;
   border-color: #2d3748;
+  background: #1a2332;
 }
 
 .weekGridContainerDark .weekGridBody {
@@ -1727,25 +1850,38 @@
 }
 
 .weekGridHeaderDark {
+  border-bottom-color: #2d3748;
   background: #232d3f;
+}
+
+.weekGridContainerDark .weekGridToolbar {
   border-bottom-color: #2d3748;
 }
 
-.dayLabelDark {
-  color: #a0aec0;
-}
-
+.weekGridContainerDark .weekGridToolbar h2,
+.dayLabelDark,
 .dateLabelDark {
-  color: #fff;
+  color: #f8fafc;
 }
 
+.weekGridContainerDark .gridNavigationButton {
+  border-color: #4a5568;
+  background: #2d3748;
+  color: #f8fafc;
+}
+
+.allDayRowDark,
 .hourRowDark {
   border-bottom-color: #2d3748;
 }
 
+.allDayRowDark {
+  background: #1e293b;
+}
+
 .timeLabelDark {
-  color: #718096;
   border-right-color: #2d3748;
+  color: #a0aec0;
 }
 
 .gridCellDark {
@@ -1757,17 +1893,54 @@
 }
 
 .gridEventDark {
+  border-left-color: #10b981;
   background: #064e3b;
-  border-left: 4px solid #10b981;
   box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
 }
 
-.gridEventTitleDark {
+.gridEventTitleDark,
+.gridEventTimeDark {
   color: #d1fae5;
 }
 
-.gridEventTimeDark {
-  color: #a7f3d0;
+@media (width <= 1024px) {
+  .calendarContainer {
+    flex-direction: column;
+  }
+
+  .reactCalendar {
+    padding: 1rem;
+  }
+
+  .weekGridContainer {
+    height: 600px;
+  }
+}
+
+@media (width <= 640px) {
+  .viewSelector {
+    width: 100%;
+  }
+
+  .viewButton {
+    flex: 1;
+    padding-inline: 8px;
+  }
+
+  .weekGridContainer {
+    height: 520px;
+  }
+
+  .weekGridHeader,
+  .allDayRow,
+  .hourRow {
+    grid-template-columns: 58px repeat(7, minmax(88px, 1fr));
+  }
+
+  .timeLabel {
+    padding-right: 6px;
+    font-size: 0.65rem;
+  }
 }
 
 .metaIcon {
@@ -1965,5 +2138,21 @@
 }
 
 .selectedEventTitleDark {
+  color: #f7fafc;
+}
+
+.calendarActivitySectionDarkMode .calendarActivityItem {
+  background-color: #1f2937 !important;
+  color: #f7fafc;
+  border-left-color: #60a5fa;
+}
+
+.calendarActivitySectionDarkMode .activityEventTime,
+.calendarActivitySectionDarkMode .activityLocAndType,
+.calendarActivitySectionDarkMode .calendarActivityItem small {
+  color: #cbd5e0;
+}
+
+.calendarActivitySectionDarkMode .activityEventTitle {
   color: #f7fafc;
 }

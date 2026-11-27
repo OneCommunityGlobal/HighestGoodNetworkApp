@@ -93,6 +93,17 @@ describe.each([false, true])('Community Calendar details (dark mode: %s)', darkM
       expect(dialog).toHaveTextContent('Virtual');
       expect(dialog).toHaveTextContent('Plan the community launch.');
       expect(dialog).not.toHaveTextContent('Practice a different activity.');
+      const expectedStart = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      }).format(new Date(events[0].startTime));
+      const expectedEnd = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      }).format(new Date(events[0].endTime));
+      expect(dialog).toHaveTextContent(`${expectedStart} - ${expectedEnd}`);
       for (const label of ['Type:', 'Location:', 'Date:', 'Time:']) {
         expect(within(dialog).getByText(label)).toBeInTheDocument();
       }
@@ -116,4 +127,44 @@ describe.each([false, true])('Community Calendar details (dark mode: %s)', darkM
     expect(dialog).toHaveTextContent('Practice a different activity.');
     expect(dialog).not.toHaveTextContent('Plan the community launch.');
   });
+});
+
+test('supports all calendar views, year indicators, local time slots, and selected-date preservation', async () => {
+  renderCalendar(false);
+  await screen.findByRole('heading', { name: 'Community Calendar', level: 1 });
+
+  fireEvent.click(screen.getByRole('button', { name: 'Year', exact: true }));
+  expect(screen.getByRole('button', { name: 'Year', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  expect(screen.getAllByLabelText(/events? scheduled/).length).toBeGreaterThan(0);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Week', exact: true }));
+  expect(screen.getByRole('region', { name: 'Week calendar' })).toBeInTheDocument();
+  const expectedHour = new Date(events[0].startTime).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+  });
+  const expectedDate = new Date(events[0].startTime).toDateString();
+  const expectedGridCell = screen.getByRole('gridcell', {
+    name: `${expectedDate} at ${expectedHour}`,
+  });
+  expect(
+    within(expectedGridCell).getByRole('button', { name: /Open event Planning session/ }),
+  ).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Day', exact: true }));
+  expect(screen.getByRole('region', { name: 'Day calendar' })).toBeInTheDocument();
+  expect(
+    screen.getAllByRole('heading', { name: 'Friday, November 13, 2026' }).length,
+  ).toBeGreaterThan(0);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Month', exact: true }));
+  expect(screen.getByRole('button', { name: 'Month', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  expect(
+    screen.getAllByRole('heading', { name: 'Friday, November 13, 2026' }).length,
+  ).toBeGreaterThan(0);
 });
