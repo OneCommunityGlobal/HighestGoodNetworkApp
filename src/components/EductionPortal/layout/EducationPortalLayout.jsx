@@ -18,6 +18,9 @@ export default function EducationPortalLayout({ children }) {
     return 'Education Portal';
   }, []);
 
+  // The student dashboard owns its full-page navigation and header.
+  if (location.pathname === '/educationportal/dashboard') return children;
+
   return (
     <div className={`${darkMode ? styles.darkMode : ''}`}>
       <div className={`${styles.shell}`}>
