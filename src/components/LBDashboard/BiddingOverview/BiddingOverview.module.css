@@ -333,6 +333,10 @@ input[type='date'] {
   }
 }
 /* Image zoom */
+.biddingImage .zoomTrigger:not(:disabled) {
+  cursor: zoom-in;
+}
+
 .zoomTrigger {
   position: relative;
   display: block;
@@ -340,7 +344,6 @@ input[type='date'] {
   padding: 0;
   border: none;
   background: none;
-  cursor: zoom-in;
 }
 
 .zoomHint {
