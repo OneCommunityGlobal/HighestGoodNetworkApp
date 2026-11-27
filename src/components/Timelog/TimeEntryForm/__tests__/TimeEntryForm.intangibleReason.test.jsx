@@ -8,6 +8,7 @@ import {
   userProfileMock,
   userProjectMock,
   rolesMock,
+  createProjectTaskProfileAxiosGetMock,
 } from '../../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../../__tests__/utils';
 import TimeEntryForm from '../TimeEntryForm';
@@ -27,18 +28,7 @@ vi.mock('axios', async () => {
   return {
     __esModule: true,
     ...actual,
-    get: vi.fn(url => {
-      if (url.includes('/userProjects')) {
-        return Promise.resolve({ data: userProjectMock.projects });
-      }
-      if (url.includes('/tasks')) {
-        return Promise.resolve({ data: [] });
-      }
-      if (url.includes('/userProfile')) {
-        return Promise.resolve({ data: userProfileMock });
-      }
-      return Promise.resolve({ data: [] });
-    }),
+    get: createProjectTaskProfileAxiosGetMock(userProjectMock, userProfileMock),
   };
 });
 
