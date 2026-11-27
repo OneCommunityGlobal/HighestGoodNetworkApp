@@ -116,6 +116,82 @@ const getPackedBarX = ({ x, width, pid, payload, visibleSeriesIds }) => {
   return groupLeft + centeringOffset + presentIds.indexOf(pid) * step;
 };
 
+// Theme-aware react-select styles for both modes. Styling lives here instead of global
+// CSS overrides so it cannot leak into other dropdowns in the app.
+const buildSelectStyles = darkMode => {
+  const textColor = darkMode ? '#ffffff' : '#111827';
+  const mutedColor = darkMode ? '#cbd5e1' : '#6b7280';
+  const surfaceColor = darkMode ? '#2b3e59' : '#ffffff';
+  const borderColor = darkMode ? '#6b7280' : '#d1d5db';
+
+  return {
+    control: (base, state) => ({
+      ...base,
+      backgroundColor: surfaceColor,
+      borderColor: state.isFocused ? '#3b82f6' : borderColor,
+      boxShadow: state.isFocused ? '0 0 0 1px #3b82f6' : 'none',
+      '&:hover': { borderColor: '#3b82f6' },
+    }),
+    placeholder: base => ({ ...base, color: mutedColor }),
+    // Typed search text stays readable in dark mode (was black on dark before)
+    input: base => ({ ...base, color: textColor }),
+    singleValue: base => ({ ...base, color: textColor }),
+    multiValue: base => ({ ...base, backgroundColor: darkMode ? '#375071' : '#e5e7eb' }),
+    multiValueLabel: base => ({ ...base, color: textColor }),
+    multiValueRemove: base => ({
+      ...base,
+      color: textColor,
+      ':hover': { backgroundColor: '#0d55b3', color: '#ffffff' },
+    }),
+    indicatorSeparator: base => ({ ...base, backgroundColor: borderColor }),
+    dropdownIndicator: base => ({ ...base, color: mutedColor, ':hover': { color: textColor } }),
+    clearIndicator: base => ({ ...base, color: mutedColor, ':hover': { color: textColor } }),
+    menu: base => ({ ...base, backgroundColor: surfaceColor, zIndex: 5 }),
+    option: (base, state) => {
+      let backgroundColor = surfaceColor;
+      if (state.isFocused) backgroundColor = darkMode ? '#334155' : '#e2e8f0';
+      if (state.isSelected) backgroundColor = darkMode ? '#1d4ed8' : '#dbeafe';
+      return {
+        ...base,
+        backgroundColor,
+        color: textColor,
+        ':active': { backgroundColor: darkMode ? '#0d55b3' : '#bfdbfe' },
+      };
+    },
+    noOptionsMessage: base => ({ ...base, color: mutedColor }),
+  };
+};
+
+// Key Insights from the visible data: total, top worker category and top project
+const computeInsights = (displayData, visibleSeriesIds) => {
+  const grandTotal = displayData.reduce((sum, row) => sum + row.__total, 0);
+  if (grandTotal === 0) return null;
+
+  const topCategoryRow = displayData.reduce((best, row) =>
+    row.__total > best.__total ? row : best,
+  );
+
+  let topProjectId = null;
+  let topProjectTotal = 0;
+  visibleSeriesIds.forEach(pid => {
+    const total = displayData.reduce((sum, row) => sum + (Number(row[pid]) || 0), 0);
+    if (total > topProjectTotal) {
+      topProjectTotal = total;
+      topProjectId = pid;
+    }
+  });
+
+  return {
+    grandTotal,
+    categoryCount: displayData.filter(row => row.__total > 0).length,
+    topCategory: topCategoryRow.workerCategory,
+    topCategoryTotal: topCategoryRow.__total,
+    topCategoryShare: Math.round((topCategoryRow.__total / grandTotal) * 100),
+    topProjectId,
+    topProjectTotal,
+  };
+};
+
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
 
@@ -311,34 +387,10 @@ function InjuryCategoryBarChart() {
     [chartData, visibleSeriesIds],
   );
 
-  const insights = useMemo(() => {
-    const grandTotal = displayData.reduce((sum, row) => sum + row.__total, 0);
-    if (grandTotal === 0) return null;
-
-    const topCategoryRow = displayData.reduce((best, row) =>
-      row.__total > best.__total ? row : best,
-    );
-
-    let topProjectId = null;
-    let topProjectTotal = 0;
-    visibleSeriesIds.forEach(pid => {
-      const total = displayData.reduce((sum, row) => sum + (Number(row[pid]) || 0), 0);
-      if (total > topProjectTotal) {
-        topProjectTotal = total;
-        topProjectId = pid;
-      }
-    });
-
-    return {
-      grandTotal,
-      categoryCount: displayData.filter(row => row.__total > 0).length,
-      topCategory: topCategoryRow.workerCategory,
-      topCategoryTotal: topCategoryRow.__total,
-      topCategoryShare: Math.round((topCategoryRow.__total / grandTotal) * 100),
-      topProjectId,
-      topProjectTotal,
-    };
-  }, [displayData, visibleSeriesIds]);
+  const insights = useMemo(() => computeInsights(displayData, visibleSeriesIds), [
+    displayData,
+    visibleSeriesIds,
+  ]);
 
   const topCategory = insights?.topCategory;
 
@@ -383,51 +435,7 @@ function InjuryCategoryBarChart() {
     hiddenSeries.length,
   ]);
 
-  // Theme-aware react-select styles for both modes. Styling lives here instead of global
-  // CSS overrides so it cannot leak into other dropdowns in the app.
-  const selectStyles = useMemo(() => {
-    const textColor = darkMode ? '#ffffff' : '#111827';
-    const mutedColor = darkMode ? '#cbd5e1' : '#6b7280';
-    const surfaceColor = darkMode ? '#2b3e59' : '#ffffff';
-    const borderColor = darkMode ? '#6b7280' : '#d1d5db';
-
-    return {
-      control: (base, state) => ({
-        ...base,
-        backgroundColor: surfaceColor,
-        borderColor: state.isFocused ? '#3b82f6' : borderColor,
-        boxShadow: state.isFocused ? '0 0 0 1px #3b82f6' : 'none',
-        '&:hover': { borderColor: '#3b82f6' },
-      }),
-      placeholder: base => ({ ...base, color: mutedColor }),
-      // Typed search text stays readable in dark mode (was black on dark before)
-      input: base => ({ ...base, color: textColor }),
-      singleValue: base => ({ ...base, color: textColor }),
-      multiValue: base => ({ ...base, backgroundColor: darkMode ? '#375071' : '#e5e7eb' }),
-      multiValueLabel: base => ({ ...base, color: textColor }),
-      multiValueRemove: base => ({
-        ...base,
-        color: textColor,
-        ':hover': { backgroundColor: '#0d55b3', color: '#ffffff' },
-      }),
-      indicatorSeparator: base => ({ ...base, backgroundColor: borderColor }),
-      dropdownIndicator: base => ({ ...base, color: mutedColor, ':hover': { color: textColor } }),
-      clearIndicator: base => ({ ...base, color: mutedColor, ':hover': { color: textColor } }),
-      menu: base => ({ ...base, backgroundColor: surfaceColor, zIndex: 5 }),
-      option: (base, state) => {
-        let backgroundColor = surfaceColor;
-        if (state.isFocused) backgroundColor = darkMode ? '#334155' : '#e2e8f0';
-        if (state.isSelected) backgroundColor = darkMode ? '#1d4ed8' : '#dbeafe';
-        return {
-          ...base,
-          backgroundColor,
-          color: textColor,
-          ':active': { backgroundColor: darkMode ? '#0d55b3' : '#bfdbfe' },
-        };
-      },
-      noOptionsMessage: base => ({ ...base, color: mutedColor }),
-    };
-  }, [darkMode]);
+  const selectStyles = useMemo(() => buildSelectStyles(darkMode), [darkMode]);
 
   const containerClassName = `${styles.injuryChartContainer} ${
     darkMode ? styles.injuryChartDark : ''
