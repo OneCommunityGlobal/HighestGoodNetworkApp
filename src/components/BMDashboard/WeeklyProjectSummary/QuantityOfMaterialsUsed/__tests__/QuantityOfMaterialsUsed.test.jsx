@@ -123,7 +123,8 @@ describe('Quantity of Materials Used chart', () => {
   it('shows no materials for a project that has none', () => {
     renderChart();
     pickProject('Building 3');
-    expect(chartValues()).toEqual({});
+    expect(screen.queryByTestId('quantity-chart')).toBeNull();
+    expect(screen.getByText('No material usage in the selected period.')).toBeTruthy();
   });
 
   it('adds up only the projects that are selected', () => {

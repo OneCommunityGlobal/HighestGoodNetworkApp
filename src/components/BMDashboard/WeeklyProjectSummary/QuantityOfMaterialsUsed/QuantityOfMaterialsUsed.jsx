@@ -64,10 +64,24 @@ const colorPalette = [
   '#F4D35E',
 ];
 
+// Height of one material row in the horizontal bar chart (px)
+const ROW_HEIGHT = 28;
+// Extra chart height for the value axis and padding (px)
+const CHART_PADDING_HEIGHT = 60;
+// Long material names are shortened on the axis; the tooltip shows the full name
+const MAX_AXIS_LABEL_LENGTH = 22;
+
 // Generates a random color if colors exceed 25
 function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
+
+const shortenLabel = label => {
+  const text = String(label ?? '');
+  return text.length > MAX_AXIS_LABEL_LENGTH
+    ? `${text.slice(0, MAX_AXIS_LABEL_LENGTH - 1)}…`
+    : text;
+};
 
 // Materials are grouped by their material type ID, so two types that share a name stay apart
 export const getMaterialKey = material => {
@@ -184,6 +198,77 @@ const createSelectStyles = darkMode => ({
   }),
 });
 
+// Chart options: horizontal bars with names on the left, and value labels only on bars above 0.
+// Value labels are set here because another dashboard chart registers the labels plugin for
+// every chart; without these settings each bar (even 0) got a default, centered label.
+const createChartOptions = ({ darkMode, onBarClick }) => {
+  const textColor = darkMode ? '#e5e7eb' : '#333';
+  const gridColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
+  return {
+    indexAxis: 'y',
+    maintainAspectRatio: false,
+    responsive: true,
+    layout: { padding: { right: 40 } },
+    onClick: onBarClick,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        bodyColor: '#fff',
+        titleColor: '#fff',
+      },
+      datalabels: {
+        display: context =>
+          context.dataset.type !== 'line' && Number(context.dataset.data[context.dataIndex]) > 0,
+        anchor: 'end',
+        align: 'end',
+        offset: 4,
+        clamp: true,
+        color: textColor,
+        font: { size: 10, weight: 'bold' },
+        formatter: value => Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 }),
+      },
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: {
+          color: textColor,
+        },
+        grid: {
+          color: gridColor,
+        },
+      },
+      y: {
+        ticks: {
+          color: textColor,
+          font: { size: 11 },
+          autoSkip: false,
+          // Category axis: the tick value is the row index, so look up the material name
+          callback(value) {
+            return shortenLabel(this.getLabelForValue(value));
+          },
+        },
+        grid: {
+          display: false,
+        },
+      },
+    },
+    animation: {
+      duration: 100,
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 100,
+        },
+      },
+    },
+  };
+};
+
 function QuantityOfMaterialsUsed({
   data,
   comparisonMode = 'No Comparison',
@@ -201,7 +286,6 @@ function QuantityOfMaterialsUsed({
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [legendColors, setLegendColors] = useState([]);
   const chartContainerRef = useRef(null);
-  const [visibleRange, setVisibleRange] = useState([0, 30]);
   const [selectedMaterialKey, setSelectedMaterialKey] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -473,6 +557,10 @@ function QuantityOfMaterialsUsed({
 
     if (selectedMaterials.length > 0) {
       sortedMaterials = sortedMaterials.filter(m => selectedMaterials.includes(m.name));
+    } else {
+      // Without a material selection, leave out materials with no usage in either period, so the
+      // chart is not filled with empty rows
+      sortedMaterials = sortedMaterials.filter(m => m.totalUsage > 0 || m.previousTotal > 0);
     }
 
     const displayKeys = sortedMaterials.map(m => m.name);
@@ -551,6 +639,7 @@ function QuantityOfMaterialsUsed({
           data: usageData,
           backgroundColor: assignedColors,
           borderRadius: 4,
+          maxBarThickness: 18,
           type: 'bar',
           order: 2,
         },
@@ -586,27 +675,22 @@ function QuantityOfMaterialsUsed({
     comparisonEnabled,
   ]);
 
-  const barWidth = 12;
-  // Subtract the 40-px y-axis offset
-  const axisOffset = 35;
+  const rowCount = chartData?.labels?.length || 0;
+  const chartHeight = Math.max(240, rowCount * ROW_HEIGHT + CHART_PADDING_HEIGHT);
 
-  const handleScroll = () => {
-    if (!chartData || !chartData.labels?.length) return;
-    const container = chartContainerRef.current;
-    const { scrollLeft } = container;
-    const containerWidth = container.clientWidth;
-    const totalBars = chartData.labels.length;
-
-    const effectiveScrollLeft = Math.max(0, scrollLeft - axisOffset);
-
-    const startIndex = Math.floor(effectiveScrollLeft / barWidth);
-    const endIndex = Math.min(
-      Math.ceil((effectiveScrollLeft + containerWidth) / barWidth),
-      totalBars,
-    );
-
-    setVisibleRange([startIndex, endIndex]);
-  };
+  const chartOptions = useMemo(
+    () =>
+      createChartOptions({
+        darkMode,
+        onBarClick: (event, elements) => {
+          if (!elements.length) return;
+          const { index } = elements[0];
+          setSelectedMaterialKey(chartData?.keys?.[index]);
+          setShowModal(true);
+        },
+      }),
+    [darkMode, chartData],
+  );
 
   const getMaterialUsageDetails = materialKey => {
     // All records of this material type in the selected projects
@@ -773,12 +857,13 @@ function QuantityOfMaterialsUsed({
         <div>This chart compares material quantities across two time periods.</div>
         <ul style={{ paddingLeft: '16px', marginTop: '4px' }}>
           <li>
-            Bars represent the selected time period (e.g., <em>Last Week</em>).
+            Bars represent the selected time period (e.g., <em>Last Week</em>), with the quantity at
+            the end of each bar.
           </li>
           <li>
             Dots represent the previous corresponding period (e.g., <em>Before Last Week</em>).
           </li>
-          <li>Hover over bars or dots to view exact quantities.</li>
+          <li>Hover over bars or dots to view exact quantities and full material names.</li>
           <li>
             <strong className={darkMode ? 'text-light' : ''}>Click on a bar </strong> to view
             detailed usage:
@@ -798,9 +883,12 @@ function QuantityOfMaterialsUsed({
           </li>
           <li>When using custom date ranges, the two periods can be swapped or reversed.</li>
           <li>
-            Use the horizontal scroll bar to view more materials if the chart exceeds visible width.
+            Materials with no usage in the selected periods are hidden unless you select them.
           </li>
-          <li>The legend below shows the top 10 visible materials in the current scroll range.</li>
+          <li>Scroll down inside the chart to view more materials.</li>
+          <li>
+            The legend below lists the top 10 materials by quantity, out of all materials shown.
+          </li>
           <li>
             Legend colors match chart bars. Dots are color-coded based on change:
             <ul style={{ paddingLeft: '16px' }}>
@@ -962,83 +1050,20 @@ function QuantityOfMaterialsUsed({
         </div>
       )}
 
-      <div
-        className={`${styles.quantityOfMaterialsUsedChartContainer}`}
-        ref={chartContainerRef}
-        onScroll={handleScroll}
-      >
-        {chartData ? (
+      <div className={`${styles.quantityOfMaterialsUsedChartContainer}`} ref={chartContainerRef}>
+        {!chartData && <p>Loading data...</p>}
+        {chartData && rowCount === 0 && (
+          <p className={`${styles.quantityOfMaterialsUsedEmptyText}`}>
+            No material usage in the selected period.
+          </p>
+        )}
+        {chartData && rowCount > 0 && (
           <div
             className={`${styles.quantityOfMaterialsUsedChartInnerScrollable}`}
-            style={{
-              minWidth: `${chartData.labels.length * barWidth}px`,
-            }}
-            onScroll={handleScroll}
+            style={{ height: `${chartHeight}px` }}
           >
-            <Bar
-              data={chartData}
-              key={uuidv4()}
-              options={{
-                maintainAspectRatio: false,
-                responsive: true,
-                onClick: (event, elements) => {
-                  if (!elements.length) return;
-                  const { index } = elements[0];
-                  setSelectedMaterialKey(chartData.keys?.[index]);
-                  setShowModal(true);
-                },
-                plugins: {
-                  legend: {
-                    display: false,
-                    labels: {
-                      color: darkMode ? '#000' : '#fff', // legend labels (if shown)
-                    },
-                  },
-                  tooltip: {
-                    bodyColor: '#fff',
-                    titleColor: '#fff',
-                  },
-                },
-                scales: {
-                  x: {
-                    ticks: {
-                      display: true,
-                      color: darkMode ? '#e5e7eb' : '#333',
-                      font: { size: 11 },
-                      autoSkip: false,
-                      maxRotation: 60,
-                      minRotation: 45,
-                    },
-                    grid: {
-                      color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-                    },
-                  },
-                  y: {
-                    beginAtZero: true,
-                    ticks: {
-                      color: darkMode ? '#e5e7eb' : '#333',
-                    },
-                    grid: {
-                      color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-                    },
-                  },
-                },
-                animation: {
-                  duration: 100,
-                },
-                type: 'bar',
-                transitions: {
-                  active: {
-                    animation: {
-                      duration: 100,
-                    },
-                  },
-                },
-              }}
-            />
+            <Bar data={chartData} key={uuidv4()} options={chartOptions} />
           </div>
-        ) : (
-          <p>Loading data...</p>
         )}
       </div>
       {/* Fixed label below chart */}
@@ -1066,7 +1091,7 @@ function QuantityOfMaterialsUsed({
       </div>
 
       {/* Fixed legend below label */}
-      {chartData && chartData.labels && visibleRange && (
+      {chartData?.labels && rowCount > 0 && (
         <div
           className={`${styles.quantityOfMaterialsUsedCustomLegendContainer}`}
           style={{
@@ -1074,18 +1099,16 @@ function QuantityOfMaterialsUsed({
           }}
         >
           <strong className={darkMode ? 'text-light' : ''}>
-            Visible Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
+            Top {Math.min(10, rowCount)} of {rowCount} materials ({selectedDate}):{' '}
           </strong>
           {chartData.datasets[0].data
-            .slice(visibleRange[0], visibleRange[1])
             .map((usage, index) => ({
-              name: chartData.labels[visibleRange[0] + index],
+              name: chartData.labels[index],
               usage,
               color:
-                legendColors[visibleRange[0] + index] ||
-                chartData.datasets[0].backgroundColor?.[visibleRange[0] + index] ||
-                chartData.datasets[0].pointBackgroundColor?.[visibleRange[0] + index],
-              actualIndex: visibleRange[0] + index,
+                legendColors[index] ||
+                chartData.datasets[0].backgroundColor?.[index] ||
+                chartData.datasets[0].pointBackgroundColor?.[index],
             }))
             .filter(item => item.name != null && item.usage != null)
             .sort((a, b) => b.usage - a.usage)
