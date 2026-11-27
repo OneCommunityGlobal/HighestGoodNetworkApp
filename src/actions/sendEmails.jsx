@@ -102,7 +102,7 @@ export const updateEmailSubscription = (subscription = true) => {
 
   return async () => {
     try {
-      const response = await axios.post(url, { subscription });
+      await axios.post(url, { subscription });
 
       // Display a success toast
       toast.success('Successfully changed email subcription', {

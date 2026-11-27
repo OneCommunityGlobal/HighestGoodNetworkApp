@@ -61,6 +61,7 @@ import {
   validateEmail as validateEmailUtil,
 } from './utils';
 import { validateTemplateVariables, validateVariable, Validators } from './validation';
+import WeeklyUpdateComposer from './WeeklyUpdateComposer';
 
 const LazyEditor = lazy(() =>
   import('@tinymce/tinymce-react').then(module => ({ default: module.Editor })),
@@ -1565,37 +1566,39 @@ const IntegratedEmailSender = ({
               flexWrap: 'wrap',
             }}
           >
-            <Button
-              color="primary"
-              size="sm"
-              onClick={handleSendEmail}
-              disabled={
-                previewLoading ||
-                isSending ||
-                isRetrying ||
-                (useTemplate &&
-                  selectedTemplate &&
-                  Object.keys(validationErrors).some(key =>
-                    selectedTemplate?.variables?.some(
-                      v => v?.name === key && !!validationErrors[key],
-                    ),
-                  )) ||
-                (!useTemplate && !customContent) ||
-                (useTemplate && !selectedTemplate)
-              }
-            >
-              {previewLoading ? (
-                <>
-                  <FaSpinner className="fa-spin me-1" />
-                  Loading Preview...
-                </>
-              ) : (
-                <>
-                  <FaEye className="me-1" />
-                  Preview & Send
-                </>
-              )}
-            </Button>
+            {emailMode !== EMAIL_MODES.WEEKLY_UPDATE && (
+              <Button
+                color="primary"
+                size="sm"
+                onClick={handleSendEmail}
+                disabled={
+                  previewLoading ||
+                  isSending ||
+                  isRetrying ||
+                  (useTemplate &&
+                    selectedTemplate &&
+                    Object.keys(validationErrors).some(key =>
+                      selectedTemplate?.variables?.some(
+                        v => v?.name === key && !!validationErrors[key],
+                      ),
+                    )) ||
+                  (!useTemplate && !customContent) ||
+                  (useTemplate && !selectedTemplate)
+                }
+              >
+                {previewLoading ? (
+                  <>
+                    <FaSpinner className="fa-spin me-1" />
+                    Loading Preview...
+                  </>
+                ) : (
+                  <>
+                    <FaEye className="me-1" />
+                    Preview & Send
+                  </>
+                )}
+              </Button>
+            )}
             {onClose && (
               <Button color="secondary" size="sm" onClick={onClose}>
                 <FaTimes className="me-1" />
@@ -1636,6 +1639,13 @@ const IntegratedEmailSender = ({
             <small>{validationErrors.general}</small>
           </div>
         </Alert>
+      )}
+
+      {/* Weekly Update Composer */}
+      {emailMode === EMAIL_MODES.WEEKLY_UPDATE && (
+        <div style={{ marginTop: '1.5rem' }}>
+          <WeeklyUpdateComposer onClose={onClose} />
+        </div>
       )}
 
       {/* Form */}

@@ -107,7 +107,7 @@
   border-color: #0056b3;
 }
 
-.mode-buttons .btn-outline-primary:hover {
+:global(.mode-buttons) :global(.btn-outline-primary):hover {
   background: #0056b3;
   color: white;
 }
@@ -124,7 +124,7 @@
   border-color: #1e7e34;
 }
 
-.mode-buttons .btn-outline-success:hover {
+:global(.mode-buttons) :global(.btn-outline-success):hover {
   background: #1e7e34;
   color: white;
 }
@@ -141,7 +141,7 @@
   border-color: #0f6674;
 }
 
-.mode-buttons .btn-outline-info:hover {
+:global(.mode-buttons) :global(.btn-outline-info):hover {
   background: #0f6674;
   color: white;
 }
@@ -905,7 +905,7 @@ body.dark-mode .alert-warning * {
   border-color: #4a5568;
 }
 
-.dark-mode .mode-buttons .btn-outline-primary:hover {
+:global(.dark-mode) :global(.mode-buttons) :global(.btn-outline-primary):hover {
   background: #0056b3;
   color: white;
   border-color: #0056b3;
@@ -917,7 +917,7 @@ body.dark-mode .alert-warning * {
   border-color: #4a5568;
 }
 
-.dark-mode .mode-buttons .btn-outline-success:hover {
+:global(.dark-mode) :global(.mode-buttons) :global(.btn-outline-success):hover {
   background: #1e7e34;
   color: white;
   border-color: #1e7e34;
@@ -929,7 +929,7 @@ body.dark-mode .alert-warning * {
   border-color: #4a5568;
 }
 
-.dark-mode .mode-buttons .btn-outline-info:hover {
+:global(.dark-mode) :global(.mode-buttons) :global(.btn-outline-info):hover {
   background: #0f6674;
   color: white;
   border-color: #0f6674;
