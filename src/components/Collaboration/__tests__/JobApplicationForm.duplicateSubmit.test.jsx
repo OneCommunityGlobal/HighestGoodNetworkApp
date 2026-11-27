@@ -79,6 +79,10 @@ describe('JobApplicationForm duplicate application handling', () => {
       ),
     );
     expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.post.mock.calls[0][1].get('resume')).toMatchObject({
+      name: 'resume.pdf',
+      type: 'application/pdf',
+    });
     expect(screen.getByLabelText(/^Email/)).toHaveValue('');
     expect(screen.getByLabelText(/^First Name/)).toHaveValue('');
     expect(toast.error).not.toHaveBeenCalled();

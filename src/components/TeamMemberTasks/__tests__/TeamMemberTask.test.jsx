@@ -79,6 +79,14 @@ const renderComponent = (mockProps, currentStore = store) => {
 };
 
 describe('Team Member Task Component', () => {
+  it('lays out the row with the same column widths as the header table', () => {
+    // The header and each member row are separate tables. Without the same colgroup,
+    // the row split its columns 1/6, 2/6, 3/6 and the Task(s), Progress and Status
+    // cells drifted right of their headers.
+    renderComponent(props);
+    const widths = screen.getAllByTestId('task-table-col').map(col => col.style.width);
+    expect(widths).toEqual(['11.67%', '11.67%', '11.66%', '21.67%', '21.67%', '21.66%']);
+  });
   it('status circle if committed time is fulfilled and red otherwise', () => {
     renderComponent(props);
 

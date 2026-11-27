@@ -1,4 +1,17 @@
 /* stylelint-disable  */
+.accordion-wrapper:global(.Collapsible) {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.accordion-wrapper > :global(.Collapsible__contentOuter) > :global(.Collapsible__contentInner) {
+  padding: 24px 10px 10px;
+}
+
+.accordion-wrapper :global(.Collapsible__contentInner) > :global(.row) {
+  row-gap: 24px;
+}
+
 :global(.Collapsible) {
   background-color: white;
   border: none;
