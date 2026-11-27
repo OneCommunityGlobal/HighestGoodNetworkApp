@@ -299,6 +299,43 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     [extractYouTubeId],
   );
 
+  const getYouTubeValidationError = useCallback(
+    url => {
+      if (!url.trim()) {
+        return 'YouTube link is required';
+      }
+
+      return extractYouTubeId(url) ? '' : 'Please enter a valid YouTube URL';
+    },
+    [extractYouTubeId],
+  );
+
+  const getRecipientValidationResult = useCallback(
+    recipientText => {
+      if (!recipientText.trim()) {
+        return { error: 'Please enter at least one recipient', recipientEmails: [] };
+      }
+
+      const recipientEmails = parseRecipients(recipientText);
+
+      if (recipientEmails.length === 0) {
+        return { error: 'Please enter at least one valid email address', recipientEmails };
+      }
+
+      const invalidEmails = recipientEmails.filter(email => !validateEmail(email));
+
+      if (invalidEmails.length > 0) {
+        return {
+          error: `Invalid email addresses: ${invalidEmails.join(', ')}`,
+          recipientEmails,
+        };
+      }
+
+      return { error: '', recipientEmails };
+    },
+    [parseRecipients, validateEmail],
+  );
+
   // Validate form
   const validateForm = useCallback(() => {
     const errors = {};
@@ -311,10 +348,9 @@ const WeeklyUpdateComposer = ({ onClose }) => {
       errors.introParagraph = 'Intro paragraph is required';
     }
 
-    if (!youtubeLink.trim()) {
-      errors.youtubeLink = 'YouTube link is required';
-    } else if (!extractYouTubeId(youtubeLink)) {
-      errors.youtubeLink = 'Please enter a valid YouTube URL';
+    const youtubeError = getYouTubeValidationError(youtubeLink);
+    if (youtubeError) {
+      errors.youtubeLink = youtubeError;
     }
 
     if (!closingParagraph.trim()) {
@@ -323,19 +359,12 @@ const WeeklyUpdateComposer = ({ onClose }) => {
 
     // Validate recipients for specific distribution
     if (emailDistribution === 'specific') {
-      if (!recipients.trim()) {
-        errors.recipients = 'Please enter at least one recipient';
+      const { error, recipientEmails } = getRecipientValidationResult(recipients);
+
+      if (error) {
+        errors.recipients = error;
       } else {
-        const recipientEmails = parseRecipients(recipients);
-        if (recipientEmails.length === 0) {
-          errors.recipients = 'Please enter at least one valid email address';
-        } else {
-          const invalidEmails = recipientEmails.filter(email => !validateEmail(email));
-          if (invalidEmails.length > 0) {
-            errors.recipients = `Invalid email addresses: ${invalidEmails.join(', ')}`;
-          }
-          setRecipientList(recipientEmails);
-        }
+        setRecipientList(recipientEmails);
       }
     }
 
@@ -348,9 +377,8 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     closingParagraph,
     emailDistribution,
     recipients,
-    parseRecipients,
-    validateEmail,
-    extractYouTubeId,
+    getRecipientValidationResult,
+    getYouTubeValidationError,
   ]);
 
   // Generate HTML email content - using CSS classes
