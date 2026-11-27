@@ -66,6 +66,56 @@ const getSeriesColor = index =>
 // Gap between bars in a group (also passed to BarChart so the packed positions line up)
 const BAR_GAP = 4;
 
+// All project IDs recorded under one project-list entry
+const getProjectIds = project =>
+  Array.isArray(project?.projectIds) && project.projectIds.length
+    ? project.projectIds
+    : [project?._id];
+
+// Project ID -> project key, for rows saved without a project name. Only IDs used by a single
+// project are mapped, since some legacy IDs are shared by several project names.
+const buildProjectKeyById = projectList => {
+  const keysById = new Map();
+  for (const p of projectList) {
+    const key = projectKeyOf(p);
+    for (const id of getProjectIds(p)) {
+      if (id) {
+        const idString = String(id);
+        if (!keysById.has(idString)) keysById.set(idString, new Set());
+        keysById.get(idString).add(key);
+      }
+    }
+  }
+  const result = new Map();
+  keysById.forEach((keys, id) => {
+    if (keys.size === 1) result.set(id, [...keys][0]);
+  });
+  return result;
+};
+
+// Every project ID recorded under the selected project names, as a comma-separated list
+const buildSelectedProjectIdsParam = (projectList, selectedKeys) => {
+  if (!selectedKeys.size) return '';
+  const ids = new Set();
+  for (const p of projectList) {
+    if (selectedKeys.has(projectKeyOf(p))) {
+      getProjectIds(p).forEach(id => id && ids.add(String(id)));
+    }
+  }
+  return Array.from(ids).join(',');
+};
+
+// Grouped view: x position of a bar once the bars with a value in its category are packed
+// together and centered (Recharts otherwise reserves a slot for every visible project).
+const getPackedBarX = ({ x, width, pid, payload, visibleSeriesIds }) => {
+  const slot = visibleSeriesIds.indexOf(pid);
+  const presentIds = visibleSeriesIds.filter(id => Number(payload?.[id]) > 0);
+  const step = width + BAR_GAP;
+  const groupLeft = x - slot * step;
+  const centeringOffset = ((visibleSeriesIds.length - presentIds.length) * step) / 2;
+  return groupLeft + centeringOffset + presentIds.indexOf(pid) * step;
+};
+
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
 
@@ -156,26 +206,10 @@ function InjuryCategoryBarChart() {
   const severityOptions = useMemo(() => sevList.map(s => ({ value: s, label: s })), [sevList]);
   const typeOptions = useMemo(() => typeList.map(t => ({ value: t, label: t })), [typeList]);
 
-  // Project ID -> project key, for rows saved without a project name. Only IDs used by a single
-  // project are mapped, since some legacy IDs are shared by several project names.
-  const projectKeyById = useMemo(() => {
-    const keysById = new Map();
-    for (const p of [...unfilteredProjects, ...projects]) {
-      const key = projectKeyOf(p);
-      const ids = Array.isArray(p?.projectIds) && p.projectIds.length ? p.projectIds : [p?._id];
-      ids.forEach(id => {
-        if (!id) return;
-        const idString = String(id);
-        if (!keysById.has(idString)) keysById.set(idString, new Set());
-        keysById.get(idString).add(key);
-      });
-    }
-    const result = new Map();
-    keysById.forEach((keys, id) => {
-      if (keys.size === 1) result.set(id, [...keys][0]);
-    });
-    return result;
-  }, [projects, unfilteredProjects]);
+  const projectKeyById = useMemo(() => buildProjectKeyById([...unfilteredProjects, ...projects]), [
+    projects,
+    unfilteredProjects,
+  ]);
 
   const rowKeyOf = useCallback(
     row =>
@@ -190,17 +224,10 @@ function InjuryCategoryBarChart() {
   ]);
 
   // Every project ID recorded under the selected project names, so no injuries are left out
-  const selectedProjectIdsParam = useMemo(() => {
-    if (!selectedProjectKeys.size) return '';
-    const ids = new Set();
-    for (const p of [...unfilteredProjects, ...projects]) {
-      if (!selectedProjectKeys.has(projectKeyOf(p))) continue;
-      const projectIds =
-        Array.isArray(p?.projectIds) && p.projectIds.length ? p.projectIds : [p?._id];
-      projectIds.forEach(id => id && ids.add(String(id)));
-    }
-    return Array.from(ids).join(',');
-  }, [selectedProjectKeys, unfilteredProjects, projects]);
+  const selectedProjectIdsParam = useMemo(
+    () => buildSelectedProjectIdsParam([...unfilteredProjects, ...projects], selectedProjectKeys),
+    [selectedProjectKeys, unfilteredProjects, projects],
+  );
 
   useEffect(() => {
     const params = {
@@ -441,15 +468,10 @@ function InjuryCategoryBarChart() {
   const renderPackedBar = (pid, props) => {
     const { x, y, width, height, fill, stroke, payload } = props;
     const value = Number(payload?.[pid]) || 0;
-    if (!(value > 0) || !(height > 0)) return null;
+    const barHeight = Number(height) || 0;
+    if (value <= 0 || barHeight <= 0) return null;
 
-    const slot = visibleSeriesIds.indexOf(pid);
-    const presentIds = visibleSeriesIds.filter(id => Number(payload?.[id]) > 0);
-    const presentIndex = presentIds.indexOf(pid);
-    const step = width + BAR_GAP;
-    const groupLeft = x - slot * step;
-    const centeringOffset = ((visibleSeriesIds.length - presentIds.length) * step) / 2;
-    const packedX = groupLeft + centeringOffset + presentIndex * step;
+    const packedX = getPackedBarX({ x, width, pid, payload, visibleSeriesIds });
 
     return (
       <g>
@@ -457,7 +479,7 @@ function InjuryCategoryBarChart() {
           x={packedX}
           y={y}
           width={width}
-          height={height}
+          height={barHeight}
           fill={fill}
           stroke={stroke}
           strokeWidth={1}
