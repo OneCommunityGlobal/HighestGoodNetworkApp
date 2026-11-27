@@ -523,32 +523,58 @@ export function TimeEntryForm(props) {
     }));
   };
 
-  const validateForm = isTimeModified => {
+  // Extracted out of validateForm to keep its cognitive complexity down (SonarQube S3776) -
+  // these checks are independent of each other, so each is its own `if`.
+  const getBasicValidationErrors = () => {
     const errorObj = {};
-    const remindObj = { ...reminder, remind: '' };
     const date = moment(formValues.dateOfWork);
-    const isDateValid = date.isValid();
 
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required';
-    if (!isDateValid) errorObj.dateOfWork = 'Invalid date';
+    if (!date.isValid()) errorObj.dateOfWork = 'Invalid date';
     if (from !== 'Timer' && from !== 'WeeklyTab' && !canChangeTime)
       errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
     if (!formValues.hours && !formValues.minutes)
       errorObj.time = 'Time should be greater than 0 minutes';
     if (!formValues.projectId) errorObj.projectId = 'Project/Task is required';
 
+    return errorObj;
+  };
+
+  // Extracted out of validateForm to keep its cognitive complexity down (SonarQube S3776) -
+  // early returns instead of an if/else-if chain keep each check at the same nesting level.
+  const getNotesValidation = () => {
     if (!reminder.enoughWords) {
-      remindObj.remind =
-        'Please write a more detailed description of your work completed, write at least 1-2 sentences.';
-      errorObj.notes = 'Description and reference link are required';
-    } else if (!reminder.hasLink && !reminder.hasDropboxLink) {
-      remindObj.remind =
-        'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)';
-      errorObj.notes = 'Description and reference link are required';
-    } else if (!reminder.hasLink && reminder.hasDropboxLink) {
-      remindObj.remind =
-        'Halt, Link Wrangler! You’ve tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox “Share” option to create a link that is guest-friendly!';
-      errorObj.notes = 'A valid Dropbox link from the “Share” option is required';
+      return {
+        remind:
+          'Please write a more detailed description of your work completed, write at least 1-2 sentences.',
+        notesError: 'Description and reference link are required',
+      };
+    }
+    if (!reminder.hasLink && !reminder.hasDropboxLink) {
+      return {
+        remind:
+          'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)',
+        notesError: 'Description and reference link are required',
+      };
+    }
+    if (!reminder.hasLink && reminder.hasDropboxLink) {
+      return {
+        remind:
+          'Halt, Link Wrangler! You’ve tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox “Share” option to create a link that is guest-friendly!',
+        notesError: 'A valid Dropbox link from the “Share” option is required',
+      };
+    }
+    return null;
+  };
+
+  const validateForm = isTimeModified => {
+    const errorObj = getBasicValidationErrors();
+    const remindObj = { ...reminder, remind: '' };
+
+    const notesValidation = getNotesValidation();
+    if (notesValidation) {
+      remindObj.remind = notesValidation.remind;
+      errorObj.notes = notesValidation.notesError;
     }
 
     setErrors(errorObj);
@@ -589,8 +615,16 @@ export function TimeEntryForm(props) {
 
   // Extracted out of submitTimeEntry to keep that function's cognitive complexity down
   // (SonarQube S3776) - this is the Timer-sourced stop-then-save flow on its own. Returns
-  // 'already-stopped' | 'failed' | 'saved' so the caller can drive its own form/submitting state.
-  const submitTimerTimeEntry = async (timeEntry, formHours, formMinutes, personId, taskId) => {
+  // 'already-stopped' | 'failed' | 'duplicate' | 'saved' so the caller can drive its own
+  // form/submitting state.
+  const submitTimerTimeEntry = async (
+    timeEntry,
+    formHours,
+    formMinutes,
+    personId,
+    taskId,
+    allowDuplicate = false,
+  ) => {
     let authoritativeHours;
     let authoritativeMinutes;
 
@@ -663,13 +697,26 @@ export function TimeEntryForm(props) {
     timeEntry.minutes = authoritativeMinutes;
 
     let saveStatus;
+    let saveCode;
     try {
-      saveStatus = await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
+      const payload = allowDuplicate ? { ...timeEntry, allowDuplicate: true } : timeEntry;
+      const saveResult = await props.postTimeEntry(payload, {
+        displayedUserId: props.displayedUserId,
+        detailed: true,
+      });
+      ({ status: saveStatus, code: saveCode } = saveResult || {});
     } catch (error) {
       // The timer is already safely stopped server-side, so retrying here only re-attempts
       // the save - it cannot log the same worked time twice.
       toast.error(`The timer was stopped, but logging the time failed. Please try again. Error: ${error}`);
       return 'failed'; // form stays open with hours/minutes intact for retry
+    }
+    // The timer is already safely stopped server-side, so a duplicate the user confirms via
+    // PROCEED only needs to retry the save (with allowDuplicate) - not re-stop the timer.
+    if (!allowDuplicate && saveStatus === 409 && saveCode === 'DUPLICATE_TIME_ENTRY') {
+      pendingDuplicatePayloadRef.current = { ...timeEntry };
+      setDuplicateModalVisible(true);
+      return 'duplicate'; // form stays open; the duplicate modal takes over from here
     }
     // postTimeEntry swallows HTTP errors and resolves with the response status instead of
     // throwing, so a 500 would otherwise fall straight through to the "success" path below
@@ -790,7 +837,14 @@ export function TimeEntryForm(props) {
     // first so a stale tab - whose own local "started" flag may not have caught up with
     // another tab already stopping/logging this same session - doesn't save a duplicate.
     if (from === 'Timer') {
-      const result = await submitTimerTimeEntry(timeEntry, formHours, formMinutes, personId, taskId);
+      const result = await submitTimerTimeEntry(
+        timeEntry,
+        formHours,
+        formMinutes,
+        personId,
+        taskId,
+        allowDuplicate,
+      );
       if (result === 'already-stopped') {
         handleFormReset();
         if (!edit) postRequestInFlightRef.current = false;

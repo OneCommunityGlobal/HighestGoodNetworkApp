@@ -78,7 +78,7 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     });
     postTimeEntry.mockImplementation((...args) => () => {
       callOrder.push('save');
-      return Promise.resolve(200);
+      return Promise.resolve({ status: 200 });
     });
     store = mockStore({
       auth: authMock,
@@ -140,7 +140,7 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     postTimeEntry.mockImplementation((payload) => () => {
       callOrder.push('save');
       savedPayload = payload;
-      return Promise.resolve(200);
+      return Promise.resolve({ status: 200 });
     });
 
     renderForm();
@@ -166,7 +166,7 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     postTimeEntry.mockImplementation((payload) => () => {
       callOrder.push('save');
       savedPayload = payload;
-      return Promise.resolve(200);
+      return Promise.resolve({ status: 200 });
     });
 
     renderForm();
@@ -245,7 +245,7 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     // resolves with 500 must still be treated as failed, not fall through to the success path.
     postTimeEntry.mockImplementation(() => () => {
       callOrder.push('save');
-      return Promise.resolve(500);
+      return Promise.resolve({ status: 500 });
     });
     renderForm();
     await clickSubmit();
@@ -274,7 +274,9 @@ describe('<TimeEntryForm from="Timer"/> stop-before-save ordering', () => {
     postTimeEntry.mockImplementation(() => () => {
       callOrder.push('save');
       saveAttempts += 1;
-      return saveAttempts === 1 ? Promise.reject(new Error('network error')) : Promise.resolve(200);
+      return saveAttempts === 1
+        ? Promise.reject(new Error('network error'))
+        : Promise.resolve({ status: 200 });
     });
 
     renderForm();
