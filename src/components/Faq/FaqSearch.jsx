@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { debounce } from 'lodash';
+import { useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { getAllFAQs, searchFAQs, logUnansweredQuestion } from './api';
@@ -11,6 +12,14 @@ function FaqSearch() {
   const [notFound, setNotFound] = useState(false);
   const [logging, setLogging] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  // Remembers what is in the search box right now (without redrawing the page)
+  const latestQueryRef = useRef('');
+  // Dark mode colours (same as the Unanswered FAQs page), light colours unchanged
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const borderColor = darkMode ? '#4b5563' : '#ddd';
+  const textColor = darkMode ? '#f3f4f6' : '#111827';
+  const cardBackground = darkMode ? '#1f2937' : '#f9f9f9';
+  const expandedBackground = darkMode ? '#374151' : '#e0e0e0';
 
   useEffect(() => {
     let isMounted = true;
@@ -35,24 +44,38 @@ function FaqSearch() {
     };
   }, []);
 
-  const fetchSuggestions = debounce(async query => {
-    try {
-      const response = await searchFAQs(query);
-      setSuggestions(response.data);
-      setNotFound(response.data.length === 0);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error fetching FAQ suggestions:', error);
-    }
-  }, 300);
+  // Build the search delay once, so typing sends one request after a pause instead of one per letter
+  const fetchSuggestions = useMemo(
+    () =>
+      debounce(async query => {
+        try {
+          const response = await searchFAQs(query);
+          // Ignore a late reply if the search box has changed since this search was sent
+          if (latestQueryRef.current !== query) return;
+          setSuggestions(response.data);
+          setNotFound(response.data.length === 0);
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('Error fetching FAQ suggestions:', error);
+        }
+      }, 300),
+    [],
+  );
+
+  // Cancel a waiting search when the page is closed
+  useEffect(() => () => fetchSuggestions.cancel(), [fetchSuggestions]);
 
   const handleSearchChange = e => {
     const query = e.target.value;
     setSearchQuery(query);
-
-    if (query.length >= 1) {
-      fetchSuggestions(query);
+    // Remove spaces at both ends, so a search of only spaces counts as empty and shows all FAQs
+    const trimmedQuery = query.trim();
+    latestQueryRef.current = trimmedQuery;
+    if (trimmedQuery.length >= 1) {
+      fetchSuggestions(trimmedQuery);
     } else {
+      // Box is empty: cancel any waiting search and show the full list again
+      fetchSuggestions.cancel();
       setSuggestions(allFAQs);
       setNotFound(false);
     }
@@ -91,7 +114,9 @@ function FaqSearch() {
           padding: '10px',
           marginBottom: '20px',
           borderRadius: '5px',
-          border: '1px solid #ccc',
+          border: `1px solid ${borderColor}`,
+          backgroundColor: darkMode ? '#1f2937' : '#fff',
+          color: textColor,
         }}
       />
 
@@ -104,10 +129,11 @@ function FaqSearch() {
                 onClick={() => toggleFAQ(faq._id)}
                 style={{
                   padding: '10px',
-                  border: '1px solid #ddd',
+                  border: `1px solid ${borderColor}`,
                   borderRadius: '5px',
                   cursor: 'pointer',
-                  backgroundColor: expandedFAQ === faq._id ? '#e0e0e0' : '#f9f9f9',
+                  backgroundColor: expandedFAQ === faq._id ? expandedBackground : cardBackground,
+                  color: textColor,
                   transition: 'background-color 0.3s',
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -125,10 +151,11 @@ function FaqSearch() {
                 <div
                   style={{
                     padding: '10px',
-                    border: '1px solid #ddd',
+                    border: `1px solid ${borderColor}`,
                     borderRadius: '5px',
                     marginTop: '5px',
-                    backgroundColor: '#fff',
+                    backgroundColor: darkMode ? '#1f2937' : '#fff',
+                    color: textColor,
                   }}
                 >
                   <p>{faq.answer}</p>
@@ -137,7 +164,10 @@ function FaqSearch() {
                       href="https://onecommunityglobal.org/collaboration/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: '#007bff', textDecoration: 'underline' }}
+                      style={{
+                        color: darkMode ? '#93c5fd' : '#007bff',
+                        textDecoration: 'underline',
+                      }}
                     >
                       Visit here to learn more
                     </a>

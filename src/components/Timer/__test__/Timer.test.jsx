@@ -3,6 +3,7 @@ import '@testing-library/jest-dom';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useEffect, useRef, useState } from 'react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import config from '../../../config.json';
 import Timer from '../Timer';
@@ -30,6 +31,8 @@ const mocks = vi.hoisted(() => ({
   // How many of the next (re)connection attempts - including the very first
   // mount - should fail instead of succeeding. Decremented on each attempt.
   failNextAttempts: 0,
+  sendJsonMessage: vi.fn(),
+  timeEntryProps: null,
 }));
 
 // Timer.jsx talks to the backend only through react-use-websocket. Mocking it
@@ -64,7 +67,7 @@ function useMockWebSocket(_url, options) {
 
   return {
     sendMessage: vi.fn(),
-    sendJsonMessage: vi.fn(),
+    sendJsonMessage: mocks.sendJsonMessage,
     lastJsonMessage,
     getWebSocket: () => ({ readyState: 1, close: vi.fn() }),
   };
@@ -80,17 +83,21 @@ vi.mock('react-use-websocket', async () => {
 
 // TimeEntryForm is the actual Log Time form - heavy (its own API calls, child
 // modals, etc.) and not what these tests are about. Stubbing it lets us assert
-// on exactly the one prop Timer.jsx got wrong: the `data` (hours/minutes) it
-// prefills the form with.
+// on the time it prefills and the session-specific stop contract passed to it.
 vi.mock('../../Timelog/TimeEntryForm', () => ({
   // eslint-disable-next-line react/prop-types
-  default: ({ data, isOpen }) =>
-    isOpen ? <div data-testid="time-entry-form-data">{`${data.hours}:${data.minutes}`}</div> : null,
+  default: props => {
+    mocks.timeEntryProps = props;
+    const { data, isOpen } = props;
+    return isOpen ? (
+      <div data-testid="time-entry-form-data">{`${data.hours}:${data.minutes}`}</div>
+    ) : null;
+  },
 }));
 
 const mockStore = configureMockStore([]);
 
-const renderTimer = () => {
+const renderTimer = (isPopout = true) => {
   const store = mockStore({
     auth: { user: { userid: 'user-1', role: 'Volunteer' } },
     userProfile: {},
@@ -100,7 +107,9 @@ const renderTimer = () => {
   // is "open", without needing to click through the header dropdown toggle first.
   return render(
     <Provider store={store}>
-      <Timer isPopout darkMode={false} />
+      <MemoryRouter>
+        <Timer isPopout={isPopout} darkMode={false} />
+      </MemoryRouter>
     </Provider>,
   );
 };
@@ -127,6 +136,8 @@ beforeEach(() => {
   mocks.setLastJsonMessage = null;
   mocks.latestOptions = null;
   mocks.failNextAttempts = 0;
+  mocks.sendJsonMessage.mockClear();
+  mocks.timeEntryProps = null;
   localStorage.setItem(
     config.tokenKey,
     makeFakeToken(new Date(Date.now() + 86400000).toISOString()),
@@ -219,6 +230,66 @@ const pushRunningMessage = goal => {
     });
   });
 };
+
+describe('Timer split-session stop confirmation', () => {
+  it.each([false, true])(
+    'uses the server session and matching acknowledgement (stopRejected: %s)',
+    async stopRejected => {
+      renderTimer();
+      const batchId = 'server-session-for-split';
+      const message = {
+        started: true,
+        paused: true,
+        chiming: false,
+        forcedPause: false,
+        time: 0,
+        goal: 120000,
+        initialGoal: 120000,
+        startAt: null,
+        loggingSessionId: batchId,
+      };
+      act(() => mocks.setLastJsonMessage(message));
+      fireEvent.click(await screen.findByLabelText('Stop timer and log timer'));
+      expect(mocks.timeEntryProps.timerSessionId).toBe(batchId);
+
+      let pending;
+      const confirmed = vi.fn();
+      act(() => {
+        pending = mocks.timeEntryProps.sendStop(batchId);
+        pending.then(confirmed);
+      });
+      const [request, queue] = mocks.sendJsonMessage.mock.calls.find(
+        ([sent]) => sent.action === 'STOP_TIMER',
+      );
+      expect(request).toEqual({
+        action: 'STOP_TIMER',
+        loggingSessionId: batchId,
+        requestId: expect.any(String),
+      });
+      expect(queue).toBe(false);
+
+      await act(async () => {
+        mocks.setLastJsonMessage({ ...message, started: false, requestId: 'unrelated-stop' });
+      });
+      expect(confirmed).not.toHaveBeenCalled();
+      await act(async () => {
+        mocks.setLastJsonMessage({ heartbeat: 'pong', requestId: request.requestId });
+      });
+      expect(confirmed).not.toHaveBeenCalled();
+      await act(async () => {
+        mocks.setLastJsonMessage({
+          ...message,
+          started: false,
+          requestId: request.requestId,
+          stopRejected,
+        });
+        await Promise.resolve();
+      });
+      await expect(pending).resolves.toBe(!stopRejected);
+      expect(confirmed).toHaveBeenCalledWith(!stopRejected);
+    },
+  );
+});
 
 describe('Timer connection loss and recovery', () => {
   beforeEach(() => {
@@ -417,6 +488,27 @@ describe('Timer connection loss and recovery', () => {
     });
 
     // No retry gets scheduled at all - exhausted immediately.
+    expect(screen.getByText('Disconnected')).toBeInTheDocument();
+    expect(screen.getByLabelText('Reload timer')).toBeInTheDocument();
+  });
+
+  it('shows retry status in the header preview until the token is unusable', () => {
+    renderTimer(false);
+
+    act(() => {
+      mocks.latestOptions.onClose({ code: 1006, reason: 'mock drop' });
+    });
+    expect(screen.getByText('Reconnecting...')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Reload timer')).not.toBeInTheDocument();
+  });
+
+  it('shows the header reload control when the token is unusable', () => {
+    localStorage.removeItem(config.tokenKey);
+    renderTimer(false);
+
+    act(() => {
+      mocks.latestOptions.onClose({ code: 1006, reason: 'mock drop' });
+    });
     expect(screen.getByText('Disconnected')).toBeInTheDocument();
     expect(screen.getByLabelText('Reload timer')).toBeInTheDocument();
   });

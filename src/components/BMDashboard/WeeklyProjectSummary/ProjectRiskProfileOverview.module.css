@@ -127,10 +127,13 @@
   padding: 8px 12px;
   border-radius: 5px;
   transition: all 0.25s ease;
+  box-sizing: border-box;
 }
 
 .dateInput {
-  min-width: 150px;
+  display: block;
+  width: 100%;
+  min-width: 170px;
 }
 
 .dropdownButton:hover,
@@ -208,6 +211,8 @@
 .trendSection {
   margin-top: 28px;
   padding: 24px;
+  min-width: 0;
+  box-sizing: border-box;
   background: #fafafa;
   border-radius: 8px;
   border: 1px solid #e8e8e8;
@@ -233,7 +238,7 @@
 
 .trendGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -243,6 +248,8 @@
   border-radius: 6px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .darkMode .trendCard {
@@ -257,6 +264,7 @@
   margin-bottom: 12px;
   border-bottom: 1px solid #eee;
   padding-bottom: 8px;
+  overflow-wrap: break-word;
 }
 
 .darkMode .projectName {
@@ -274,6 +282,8 @@
 
 .trendRow span:first-child {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: #666;
   font-weight: 500;
 }
@@ -285,6 +295,7 @@
   color: #1a1a1a;
   min-width: 50px;
   text-align: right;
+  flex-shrink: 0;
 }
 .darkMode .trendRow span:last-child {
   color: #ddd;
@@ -319,6 +330,8 @@
 
 .attributeRow .label {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: #666;
   font-weight: 500;
 }
@@ -337,6 +350,8 @@
 .tableScroll {
   width: 100%;
   overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 4px;
 }
 
 .table {
@@ -351,6 +366,28 @@
 
 .darkMode .tableHeadRow {
   background: #1b2a41;
+}
+
+.table tbody tr:hover {
+  background-color: #e8f0fe;
+}
+
+.table tbody tr:hover .td,
+.table tbody tr:hover .tdProject,
+.table tbody tr:hover .deltaText,
+.table tbody tr:hover .indicatorSub {
+  color: #1a1a1a;
+}
+
+.darkMode .table tbody tr:hover {
+  background-color: #3a506b;
+}
+
+.darkMode .table tbody tr:hover .td,
+.darkMode .table tbody tr:hover .tdProject,
+.darkMode .table tbody tr:hover .deltaText,
+.darkMode .table tbody tr:hover .indicatorSub {
+  color: #fff;
 }
 
 .th {
@@ -369,10 +406,12 @@
 .td {
   padding: 12px;
   border-bottom: 1px solid #eee;
+  color: #1a1a1a;
 }
 
 .darkMode .td {
   border-bottom: 1px solid #404040;
+  color: #e5e7eb;
 }
 
 .tdProject {
@@ -380,10 +419,12 @@
   border-bottom: 1px solid #eee;
   white-space: nowrap;
   font-weight: 500;
+  color: #1a1a1a;
 }
 
 .darkMode .tdProject {
   border-bottom: 1px solid #404040;
+  color: #e5e7eb;
 }
 
 .sparkRow {
