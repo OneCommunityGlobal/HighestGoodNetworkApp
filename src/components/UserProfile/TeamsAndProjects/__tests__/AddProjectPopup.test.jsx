@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import AddProjectPopup from '../AddProjectPopup';
 
 /** TEST DATA **/
@@ -13,7 +13,7 @@ const handleSubmitMock = vi.fn();
 const projectsMock = [{ _id: 'proj1', projectName: 'Project 1' }];
 const userProjectsByIdMock = [];
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 const initialState = {
   theme: { darkMode: false },
 };

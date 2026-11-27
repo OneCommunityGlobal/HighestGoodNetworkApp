@@ -197,7 +197,7 @@ export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => {
     }
   };
 };
-export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
+export const postTimeEntry = (timeEntry, { displayedUserId, detailed = false } = {}) => {
   const url = ENDPOINTS.TIME_ENTRY();
   return async dispatch => {
     try {
@@ -205,9 +205,12 @@ export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
       if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
         dispatch(updateTimeEntries(timeEntry, undefined, displayedUserId));
       }
-      return res.status;
+      return detailed ? { status: res.status } : res.status;
     } catch (e) {
-      return e.response.status;
+      const { status, data } = e.response;
+      if (!detailed) return status;
+      // Only a string code is exposed; the rest of the response body stays private.
+      return typeof data?.code === 'string' ? { status, code: data.code } : { status };
     }
   };
 };

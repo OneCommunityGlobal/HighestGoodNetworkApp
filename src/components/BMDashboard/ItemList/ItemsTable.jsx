@@ -4,7 +4,11 @@ import { Table, Button, Badge } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
+
 import RecordsModal from './RecordsModal';
+import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
+import StockHealthIndicator from '../MaterialList/StockHealthIndicator';
+import UsagePercentageBar from '../MaterialList/UsagePercentageBar';
 import styles from './ItemListView.module.css';
 
 const rowsPerPageOptions = [25, 50, 100];
@@ -34,12 +38,18 @@ export default function ItemsTable({
   endRow,
   onPageChange,
   onRowsPerPageChange,
+  selectedRowId,
+  onRowSelect,
 }) {
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
+  const [showChartModal, setShowChartModal] = useState(false);
+  const [chartProjectId, setChartProjectId] = useState(null);
+
+  const isMaterialsView = itemType === 'Materials';
 
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
@@ -49,13 +59,32 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
+    if (isMaterialsView && type === 'UsageRecord') {
+      const projectId = data.project?._id || data.projectId;
+
+      if (projectId) {
+        setChartProjectId(projectId);
+        setShowChartModal(true);
+        return;
+      }
+    }
+
     setModal(true);
     setRecord(data);
     setRecordType(type);
   };
 
-  const getNestedValue = (obj, path) =>
-    path ? path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj) : null;
+  const getNestedValue = (obj, path) => {
+    if (!path) return null;
+    if (path === 'product id') return obj['product id'] ?? obj.productId ?? 'N/A';
+    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+  };
+
+  const filteredDynamicColumns = (dynamicColumns || []).filter(
+    col => col.label !== 'Project' && col.label !== 'Name',
+  );
+
+  const emptyStateColSpan = 2 + filteredDynamicColumns.length + (isMaterialsView ? 5 : 2);
 
   const getIconFor = key => {
     if (!sortConfig?.key || sortConfig.key !== key) return faSort;
@@ -71,6 +100,7 @@ export default function ItemsTable({
   };
 
   const numericKeys = new Set(['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted']);
+  const isMaterials = itemType === 'Materials';
 
   const getColumnStyle = (key, isAction = false) => {
     const base = { verticalAlign: 'middle' };
@@ -92,11 +122,26 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
+      {showChartModal && chartProjectId && (
+        <MaterialUsageChart
+          projectId={chartProjectId}
+          toggle={() => setShowChartModal(false)}
+          darkMode={darkMode}
+        />
+      )}
       {UpdateItemModal && (
         <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       )}
 
-      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
+      <div
+        className={[
+          styles.itemsTableContainer,
+          darkMode ? styles.darkTableWrapper : '',
+          isMaterialsView ? styles.materialsTableScroll : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <Table className={darkMode ? styles.darkTable : ''}>
           <thead className={styles.stickyThead}>
             <tr>
@@ -114,7 +159,7 @@ export default function ItemsTable({
               >
                 Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
               </th>
-              {(dynamicColumns || []).map(({ label, key }) => {
+              {filteredDynamicColumns.map(({ label, key }) => {
                 const sortKey = dynamicSortKeyByLabel[label];
                 const clickable = Boolean(sortKey);
                 return (
@@ -128,9 +173,13 @@ export default function ItemsTable({
                   </th>
                 );
               })}
-              <th style={getColumnStyle(null, true)} title="View usage history and charts">
-                Usage Record
-              </th>
+              {isMaterialsView && <th style={getColumnStyle(null)}>Usage %</th>}
+              {isMaterialsView && <th style={getColumnStyle(null)}>Stock Health</th>}
+              {isMaterialsView && (
+                <th style={getColumnStyle(null, true)} title="View usage history and charts">
+                  Usage Record
+                </th>
+              )}
               <th
                 style={{ verticalAlign: 'middle', textAlign: 'center' }}
                 title="View history of manual updates"
@@ -148,10 +197,19 @@ export default function ItemsTable({
           <tbody>
             {filteredItems && filteredItems.length > 0 ? (
               filteredItems.map(el => (
-                <tr key={el._id}>
+                <tr
+                  key={el._id}
+                  className={[
+                    isMaterials ? styles.selectableRow : '',
+                    isMaterials && el._id === selectedRowId ? styles.selectedRow : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onClick={isMaterials ? () => onRowSelect?.(el) : undefined}
+                >
                   <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
                   <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
-                  {(dynamicColumns || []).map(({ label, key }) => {
+                  {filteredDynamicColumns.map(({ label, key }) => {
                     const value = getNestedValue(el, key);
                     if (
                       key === 'stockAvailable' &&
@@ -179,58 +237,76 @@ export default function ItemsTable({
                       </td>
                     );
                   })}
-                  <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
-                    <button
-                      type="button"
-                      onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
-                      aria-label="Edit Record"
-                    >
-                      <BiPencil />
-                    </button>
-                    <Button
-                      color="primary"
-                      outline
-                      size="sm"
-                      onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                    >
-                      View
-                    </Button>
-                  </td>
+                  {isMaterialsView && (
+                    <td style={getColumnStyle(null)}>
+                      <UsagePercentageBar material={el} darkMode={darkMode} />
+                    </td>
+                  )}
+                  {isMaterialsView && (
+                    <td style={getColumnStyle(null)}>
+                      <StockHealthIndicator material={el} darkMode={darkMode} />
+                    </td>
+                  )}
+                  {isMaterialsView && (
+                    <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
+                      <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                        <button
+                          type="button"
+                          onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                          aria-label="Edit Record"
+                        >
+                          <BiPencil />
+                        </button>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                        >
+                          View
+                        </Button>
+                      </span>
+                    </td>
+                  )}
                   <td
                     className={styles.itemsCell}
                     style={{ verticalAlign: 'middle', textAlign: 'center' }}
                   >
-                    <button
-                      type="button"
-                      onClick={() => handleEditRecordsClick(el, 'Update')}
-                      aria-label="Edit Record"
-                    >
-                      <BiPencil />
-                    </button>
-                    <Button
-                      color="primary"
-                      outline
-                      size="sm"
-                      onClick={() => handleViewRecordsClick(el, 'Update')}
-                    >
-                      View
-                    </Button>
+                    <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'Update')}
+                        aria-label="Edit Record"
+                      >
+                        <BiPencil />
+                      </button>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'Update')}
+                      >
+                        View
+                      </Button>
+                    </span>
                   </td>
                   <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                    <Button
-                      color="primary"
-                      outline
-                      size="sm"
-                      onClick={() => handleViewRecordsClick(el, 'Purchase')}
-                    >
-                      View
-                    </Button>
+                    <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
+                      >
+                        View
+                      </Button>
+                    </span>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={(dynamicColumns?.length || 0) + 5} style={{ textAlign: 'center' }}>
+                <td colSpan={emptyStateColSpan} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>
@@ -307,19 +383,31 @@ export default function ItemsTable({
 ItemsTable.propTypes = {
   selectedProject: PropTypes.string,
   selectedItem: PropTypes.string,
-  filteredItems: PropTypes.arrayOf(PropTypes.object),
+  filteredItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      itemType: PropTypes.shape({
+        name: PropTypes.string,
+        unit: PropTypes.string,
+      }),
+      project: PropTypes.shape({
+        _id: PropTypes.string,
+        name: PropTypes.string,
+      }),
+    }),
+  ),
   UpdateItemModal: PropTypes.elementType,
   dynamicColumns: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string,
       key: PropTypes.string,
     }),
-  ).isRequired,
+  ),
   darkMode: PropTypes.bool,
   itemType: PropTypes.string,
   sortConfig: PropTypes.shape({
     key: PropTypes.string,
-    direction: PropTypes.string,
+    direction: PropTypes.oneOf(['asc', 'desc']),
   }),
   onSort: PropTypes.func,
   totalItems: PropTypes.number,
@@ -330,4 +418,25 @@ ItemsTable.propTypes = {
   endRow: PropTypes.number,
   onPageChange: PropTypes.func,
   onRowsPerPageChange: PropTypes.func,
+  selectedRowId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onRowSelect: PropTypes.func,
+};
+
+ItemsTable.defaultProps = {
+  selectedProject: '',
+  selectedItem: '',
+  filteredItems: [],
+  UpdateItemModal: null,
+  dynamicColumns: [],
+  darkMode: false,
+  itemType: '',
+  sortConfig: { key: null, direction: 'asc' },
+  totalItems: 0,
+  currentPage: 1,
+  totalPages: 1,
+  rowsPerPage: 25,
+  startRow: 0,
+  endRow: 0,
+  selectedRowId: null,
+  onRowSelect: null,
 };

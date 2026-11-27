@@ -2,7 +2,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { renderWithProvider } from '../../../__tests__/utils';
 import DeleteUserPopup from '../DeleteUserPopup';
 import { UserDeleteType } from '../../../utils/enums';
@@ -17,7 +17,7 @@ import {
   USER_DELETE_OPTION_HEADING,
 } from '../../../languages/en/messages';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 const onClose = vi.fn();
 const onDelete = vi.fn();
 let store;

@@ -1,0 +1,29 @@
+.darkContent {
+  background-color: #1C2541 !important;
+  color: #E8ECF1 !important;
+  border: 1px solid #3A506B !important;
+}
+
+.darkContent :global(.btn-close) {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Header */
+.darkHeader,
+.darkHeader * {
+  filter: none !important;
+  color: #E8ECF1 !important;
+}
+
+/* Body */
+.darkBody,
+.darkBody * {
+  color: #E8ECF1 !important;
+}
+
+/* Footer */
+.darkFooter {
+  background-color: #3A506B !important;
+  color: #E8ECF1 !important;
+  border-top: 1px solid #1C2541 !important;
+}

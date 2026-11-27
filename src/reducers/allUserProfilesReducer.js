@@ -80,11 +80,38 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
 export const enableUserInfoEditReducer = (userProfile = userProfilesInitial, action) => {
   switch (action.type) {
     case 'ENABLE_USER_PROFILE_EDIT':
-      return updateObject(userProfile, { ...userProfile, editable: action.payload });
+      return updateObject(userProfile, { editable: action.payload });
+
     case 'DISABLE_USER_PROFILE_EDIT':
       return updateObject(userProfile, { editable: action.payload });
+
     case 'START_USER_INFO_UPDATE':
-      return { ...userProfile, newUserData: userProfile.newUserData.concat(action.payload) };
+      return {
+        ...userProfile,
+        newUserData: userProfile.newUserData.concat(action.payload),
+      };
+
+    case types.FINISH_USER_INFO_UPDATE:
+      return {
+        ...userProfile,
+        newUserData: [],
+      };
+
+    case types.RESET_USER_PROFILE_EDIT:
+      return {
+        ...userProfile,
+        editable: {
+          first: 1,
+          last: 1,
+          role: 1,
+          jobTitle: 1,
+          email: 1,
+          weeklycommittedHours: 1,
+          startDate: 1,
+          endDate: 1,
+        },
+      };
+
     default:
       return userProfile;
   }

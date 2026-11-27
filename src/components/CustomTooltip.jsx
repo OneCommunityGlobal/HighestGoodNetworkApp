@@ -32,16 +32,28 @@ const getTooltipData = (payload, label) => {
     name: data._id || data.name || label || '',
     percentage: data.percentage,
     hoursValue: data.value,
+    valueType: data.valueType,
     totalHours: data.totalHours !== undefined ? data.totalHours : data.value,
     change: data.change,
   };
 };
 
-function CustomTooltip({ active, payload, label, tooltipType, darkMode = false }) {
+function CustomTooltip({
+  active,
+  payload,
+  label,
+  tooltipType,
+  darkMode = false,
+  valueLabel = 'Total Hours',
+  formatValue = false,
+}) {
   if (!active || !payload || !payload.length) return null;
 
   const isDarkMode = darkMode;
-  const { name, percentage, hoursValue, totalHours, change } = getTooltipData(payload, label);
+  const { name, percentage, hoursValue, valueType, totalHours, change } = getTooltipData(
+    payload,
+    label,
+  );
   const textColor = isDarkMode ? '#fff' : '#222';
 
   const renderMainValue = () => {
@@ -49,15 +61,22 @@ function CustomTooltip({ active, payload, label, tooltipType, darkMode = false }
       const exactHours = formatNumber(hoursValue);
       const compactHours = formatCompactNumber(hoursValue);
       const showCompactAndExact = compactHours.toLowerCase().includes('k');
+      const displayValue = showCompactAndExact ? `${compactHours} (${exactHours})` : exactHours;
+      const valueLabel = valueType === 'volunteers' ? 'Volunteers' : 'Hours';
       return (
         <div style={{ color: textColor, fontWeight: 'bold' }}>
-          Hours: {showCompactAndExact ? `${compactHours} (${exactHours})` : exactHours}
+          {valueLabel}: {displayValue}
         </div>
       );
     }
 
     if (totalHours !== undefined) {
-      return <div style={{ color: textColor, fontWeight: 'bold' }}>Total Hours: {totalHours}</div>;
+      const displayValue = formatValue ? formatNumber(totalHours) : totalHours;
+      return (
+        <div style={{ color: textColor, fontWeight: 'bold' }}>
+          {valueLabel}: {displayValue}
+        </div>
+      );
     }
 
     return null;
@@ -65,7 +84,7 @@ function CustomTooltip({ active, payload, label, tooltipType, darkMode = false }
 
   const renderChange = () => {
     if (change === undefined) return null;
-    const changeColor = change < 0 ? 'red' : isDarkMode ? 'lightgreen' : 'green';
+    const changeColor = Number.parseFloat(change) < 0 ? 'red' : isDarkMode ? 'lightgreen' : 'green';
     return <div style={{ color: changeColor, fontWeight: 'bold' }}>Change: {change}</div>;
   };
 
@@ -96,6 +115,8 @@ CustomTooltip.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   tooltipType: PropTypes.string,
   darkMode: PropTypes.bool,
+  valueLabel: PropTypes.string,
+  formatValue: PropTypes.bool,
 };
 
 CustomTooltip.defaultProps = {
@@ -103,6 +124,8 @@ CustomTooltip.defaultProps = {
   payload: null,
   label: '',
   tooltipType: undefined,
+  valueLabel: 'Total Hours',
+  formatValue: false,
   darkMode: false,
 };
 

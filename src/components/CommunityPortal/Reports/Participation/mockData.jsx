@@ -51,6 +51,7 @@ for (let month = 0; month < 12; month++) {
         noShowRate: `${secureRandInt(5, 94)}%`,
         dropOffRate: `${secureRandInt(10, 79)}%`,
         location: locations[(id + t) % locations.length],
+        capacity: secureRandInt(1, 40),
       });
     }
   }
@@ -58,9 +59,15 @@ for (let month = 0; month < 12; month++) {
 
 // Mock data generation for today
 const today = new Date();
-for (let t = 0; t < 6; t++) {
-  const eventDate = new Date(today);
-  eventDate.setHours(10 + t * 2, 0, 0, 0);
+const endOfToday = new Date(today);
+endOfToday.setHours(23, 59, 0, 0);
+const remainingMinutesToday = Math.max(14, Math.floor((endOfToday - today) / (1000 * 60)));
+const todayEventSpacingMinutes = Math.max(1, Math.floor(remainingMinutesToday / 14));
+
+for (let t = 0; t < 13; t++) {
+  const eventDate = new Date(today.getTime() + todayEventSpacingMinutes * (t + 1) * 60 * 1000);
+  eventDate.setSeconds(0, 0);
+
   mockEvents.push({
     id: id++,
     eventType: eventTypes[t % eventTypes.length],
@@ -71,7 +78,21 @@ for (let t = 0; t < 6; t++) {
     noShowRate: `${secureRandInt(5, 94)}%`,
     dropOffRate: `${secureRandInt(10, 79)}%`,
     location: locations[id % locations.length],
+    capacity: secureRandInt(1, 40),
   });
 }
+
+mockEvents.push({
+  id: id++,
+  eventType: 'Fitness Bootcamp',
+  eventDate: new Date(2026, 0, 21, 8, 0, 0, 0).toISOString(),
+  eventTime: formatDisplayTime(new Date(2026, 0, 21, 8, 0, 0, 0)),
+  eventName: 'Sold Out Event',
+  attendees: 50,
+  noShowRate: '18%',
+  dropOffRate: '40%',
+  location: 'Chicago',
+  capacity: 0,
+});
 
 export default mockEvents;

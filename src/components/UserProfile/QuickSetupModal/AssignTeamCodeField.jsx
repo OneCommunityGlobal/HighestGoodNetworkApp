@@ -23,7 +23,6 @@ const AssignTeamCodeField = React.memo(props => {
   });
   const [isOpen, toggle] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
-  
   useEffect(() => {
     if (selectedTeamCode && selectedTeamCode !== searchText) {
       onSelectTeamCode(undefined);
@@ -44,8 +43,10 @@ const AssignTeamCodeField = React.memo(props => {
         value={searchText}
         onFocus={() => toggle(true)}
         onChange={e => {
-          onInputChange(e.target.value);
-          toggle(true);
+        const nextValue = e.target.value;
+        onInputChange(nextValue);
+        toggle(true);
+        onDropDownSelect(nextValue);
         }}
         style={{
           borderColor: isError ? 'red' : '',
@@ -64,9 +65,12 @@ const AssignTeamCodeField = React.memo(props => {
           style={{ marginTop: '0px', width: '100%' }}
         >
           {teamCodeData
-            .filter(teamCode => {
-              return teamCode.value.toLowerCase().includes(searchText.toLowerCase());
-            })
+          .filter(teamCode => {
+          return teamCode.value
+          .trim()
+          .toLowerCase()
+          .includes(searchText.trim().toLowerCase());
+          })
             .slice(0, 10)
             .map((teamCode, index) => (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions

@@ -32,6 +32,14 @@
   color: green;
 }
 
+.teamCodeResultsSmall {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 .emp-profile {
   padding-top: 20px;
   padding-left: 3%;
@@ -73,6 +81,11 @@
   color: #0062cc;
 }
 
+.profile-head .profile-questionnaire-indicator {
+  font-size: 20px;
+  margin-top: 6px;
+}
+
 .profile-head {
   display: flex;
   align-items: center;
@@ -101,10 +114,6 @@
   color: #495057;
   font-size: 15px;
   font-weight: 600;
-}
-
-.profile-tabs .nav-tabs {
-  margin-bottom: 5%;
 }
 
 .profile-tabs .nav-tabs .nav-link {
@@ -161,7 +170,7 @@
 }
 
 .profileEditButtonContainer {
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
 .profileEditButton {
@@ -352,6 +361,43 @@
   visibility: visible;
 }
 
+.Schedule-Reason-div {
+  cursor: default;
+}
+
+.Schedule-Reason-div:has(button:disabled) {
+  cursor: not-allowed;
+}
+
+.Schedule-Reason-tooltip {
+  visibility: hidden;
+  background-color: white;
+  color: black;
+  text-align: center;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  position: relative;
+  z-index: 1;
+  font-size: 0.8rem;
+  top: 10px;
+}
+
+.Schedule-Reason-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent black;
+}
+
+.Schedule-Reason-div:hover .Schedule-Reason-tooltip {
+  visibility: visible;
+}
+
 @media only screen and (width <= 1024px) {
   .profileContainer {
     justify-content: space-around;
@@ -468,6 +514,10 @@ button.btn.btn-outline-primary {
   background-color: transparent;
 }
 
+#myTabContent {
+  padding: 10px 0px 5px 5px;
+}
+
 /* Mobile & Tablet Layout */
 @media (width <= 767px) {
 @media (width <= 767px) {
@@ -503,6 +553,22 @@ button.btn.btn-outline-primary {
 
 .tablet {
   display: none;
+}
+
+/* Minimal Dark Mode Hover & Active Fix */
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active,
+body.bm-dashboard-dark .nav-link:hover,
+body.bm-dashboard-dark .nav-link.active {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.dark-mode .nav-link:hover *,
+body.dark-mode .nav-link.active *,
+body.bm-dashboard-dark .nav-link:hover *,
+body.bm-dashboard-dark .nav-link.active * {
+  color: #000000 !important;
 }
 
 @media (max-width: 768px) {

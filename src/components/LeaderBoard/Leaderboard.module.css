@@ -9,17 +9,20 @@
 }
 
 .dark-leaderboard-row {
-  background-color: #3a506b;
-  color: white;
+  background-color: #3a506b !important;
+  color: white !important;
 }
 
 .dark-leaderboard-row th {
-  background-color: #3a506b;
-  color: white;
+  background-color: #3a506b !important;
+  color: white !important;
 }
 
-.dark-leaderboard-row:hover {
-  background-color: #111831;
+.dark-leaderboard-row:hover,
+.dark-leaderboard-row:hover td,
+.dark-leaderboard-row:hover th {
+  background-color: #111831 !important;
+  color: #fff !important;
 }
 
 .light-leaderboard-row {

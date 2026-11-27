@@ -1,5 +1,32 @@
 /* stylelint-disable no-descending-specificity */
 
+/* ==========================================================================
+   REACTSTRAP DARK MODE GLOBAL OVERRIDES
+   ========================================================================== */
+:global(.bg-dark-modal) {
+  background-color: #1a1d23 !important;
+  border-color: #2d3748 !important;
+}
+
+:global(.bg-dark-modal .modal-header) {
+  background-color: #1a1d23 !important;
+  border-bottom: 1px solid #2d3748 !important;
+  color: #fff !important;
+}
+
+:global(.bg-dark-modal .close) {
+  color: #cbd5e0 !important;
+  text-shadow: none !important;
+}
+
+:global(.bg-dark-modal .close:hover) {
+  color: #fff !important;
+}
+
+/* ==========================================================================
+   BASE STYLES 
+   ========================================================================== */
+
 /* Modal Container */
 .materialChartModal :global(.modal-dialog) {
   max-width: 800px;
@@ -12,34 +39,28 @@
   box-shadow: 0 4px 20px rgb(0 0 0 / 15%);
 }
 
-/* Header */
+/* Header Base */
 .materialChartHeader {
-  background: #f8f9fa;
-  color: #212529;
-  border-bottom: 1px solid #dee2e6;
   padding: 1rem 1.5rem;
   font-size: 1.25rem;
   font-weight: 600;
 }
 
 .materialChartHeader :global(.close) {
-  color: #6c757d;
-  opacity: 0.7;
   font-size: 1.5rem;
+  opacity: 0.7;
 }
 
 .materialChartHeader :global(.close):hover {
   opacity: 1;
-  color: #495057;
 }
 
-/* Body */
+/* Body Base */
 .materialChartBody {
   padding: 0;
   display: flex;
   flex-direction: column;
   min-height: 500px;
-  background: #fff;
 }
 
 /* Main Chart Container */
@@ -56,14 +77,14 @@
   flex: 1;
   position: relative;
   min-height: 350px;
-  background: #fff;
   border-radius: 8px;
   padding: 1rem;
-  border: 1px solid #e9ecef;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: visible;
+  border-width: 1px;
+  border-style: solid;
 }
 
 /* Center Label */
@@ -74,7 +95,6 @@
   transform: translate(-50%, -50%);
   text-align: center;
   z-index: 10;
-  background: #fff;
   padding: 1rem;
   border-radius: 50%;
   width: 100px;
@@ -83,21 +103,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-  border: 1px solid #f1f3f4;
+  border-width: 1px;
+  border-style: solid;
 }
 
 .centerLabelValue {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #2c3e50;
   margin: 0;
   line-height: 1.2;
 }
 
 .centerLabelSubtitle {
   font-size: 0.75rem;
-  color: #6c757d;
   margin-top: 0.25rem;
   font-weight: 500;
 }
@@ -109,9 +127,9 @@
   gap: 1.5rem;
   flex-wrap: wrap;
   padding: 1rem;
-  background: #f8f9fa;
   border-radius: 6px;
-  border: 1px solid #e9ecef;
+  border-width: 1px;
+  border-style: solid;
 }
 
 .legendItem {
@@ -119,9 +137,9 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.8rem;
-  background: #fff;
   border-radius: 4px;
-  border: 1px solid #dee2e6;
+  border-width: 1px;
+  border-style: solid;
   transition: all 0.2s ease;
 }
 
@@ -146,12 +164,11 @@
 .legendText {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #495057;
   white-space: nowrap;
 }
 
 /* Loading States */
-.chartLoadingContainer {
+.statusContainer {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -159,118 +176,206 @@
   justify-content: center;
   gap: 1rem;
   padding: 2rem;
-}
-
-.chartLoadingText {
-  font-size: 1rem;
-  color: #6c757d;
-  font-weight: 500;
-}
-
-/* Error States */
-.chartErrorContainer {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 2rem;
-}
-
-.chartErrorText {
-  font-size: 1rem;
-  color: #dc3545;
-  text-align: center;
-  margin: 0;
-  font-weight: 500;
-  max-width: 400px;
-  line-height: 1.5;
 }
 
 .chartRetryButton {
-  background: #007bff;
-  color: white;
-  border: none;
   padding: 0.5rem 1.5rem;
   border-radius: 4px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.9rem;
-}
-
-.chartRetryButton:hover {
-  background: #0056b3;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgb(0 123 255 / 30%);
+  border: none;
 }
 
 .chartRetryButton:active {
   transform: translateY(0);
 }
 
-/* Empty State */
-.chartEmptyContainer {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+
+/* ==========================================================================
+   DYNAMIC THEME CLASSES (ADDED FIXES)
+   ========================================================================== */
+
+/* --- DARK MODE (#1a1d23) --- */
+.modalContentDark {
+  background-color: #1a1d23 !important;
+  border-color: #2d3748 !important;
 }
 
-.chartEmptyText {
-  font-size: 1rem;
+.headerDark {
+  background-color: #1a1d23 !important;
+  border-bottom: 1px solid #2d3748 !important;
+  color: #fff !important; /* Keeps wrapper white */
+}
+
+/* Pierce Reactstrap's internal heading tag */
+.headerDark :global(.modal-title) {
+  color: #fff !important;
+  filter: none !important;
+}
+
+.headerDark :global(.close) {
+  color: #cbd5e0 !important;
+}
+
+.headerDark :global(.close):hover {
+  color: #fff !important;
+}
+
+.bodyDark {
+  background-color: #1a1d23;
+}
+
+.textDark {
+  color: #fff;
+}
+
+.subTextDark {
+  color: #a0aec0;
+}
+
+.wrapperDark {
+  background-color: #1a1d23;
+  border-color: #2d3748;
+}
+
+.centerLabelDark {
+  background-color: #1a1d23;
+  border-color: #2d3748;
+}
+
+.legendAreaDark {
+  background-color: #1a1d23;
+  border-color: #2d3748;
+}
+
+.legendItemDark {
+  border-color: #2d3748;
+  color: #e2e8f0;
+}
+
+.errorTextDark {
+  color: #fc8181;
+}
+
+.btnDark {
+  background-color: #4a5568;
+  color: #fff;
+}
+
+.btnDark:hover {
+  background-color: #2d3748;
+}
+
+/* --- LIGHT MODE --- */
+.modalContentLight {
+  background-color: #fff !important;
+}
+
+.headerLight {
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+.headerLight :global(.close) {
   color: #6c757d;
-  margin: 0;
-  font-weight: 500;
 }
 
-/* Responsive Design */
+.bodyLight {
+  background-color: #fff;
+}
+
+.textLight {
+  color: #212529;
+}
+
+.subTextLight {
+  color: #6c757d;
+}
+
+.wrapperLight {
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+.centerLabelLight {
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+.legendAreaLight {
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+.legendItemLight {
+  border-color: #dee2e6;
+  color: #212529;
+}
+
+.errorTextLight {
+  color: #dc3545;
+}
+
+.btnLight {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.btnLight:hover {
+  background-color: #004085;
+}
+
+
+/* ==========================================================================
+   RESPONSIVE DESIGN 
+   ========================================================================== */
 @media (width <= 768px) {
   .materialChartModal :global(.modal-dialog) {
     max-width: 95%;
     margin: 0.5rem auto;
   }
-  
+
   .materialChartHeader {
     padding: 0.75rem 1rem;
     font-size: 1.1rem;
   }
-  
+
   .chartMainContainer {
     padding: 1rem;
     gap: 1rem;
   }
-  
+
   .pieChartWrapper {
     min-height: 300px;
     padding: 0.5rem;
   }
-  
+
   .centerLabel {
     width: 80px;
     height: 80px;
     padding: 0.75rem;
   }
-  
+
   .centerLabelValue {
     font-size: 0.9rem;
   }
-  
+
   .centerLabelSubtitle {
     font-size: 0.65rem;
   }
-  
+
   .chartLegend {
     gap: 1rem;
     padding: 0.75rem;
   }
-  
+
   .legendItem {
     padding: 0.3rem 0.6rem;
   }
-  
+
   .legendText {
     font-size: 0.8rem;
   }
@@ -281,151 +386,56 @@
     margin: 0.25rem auto;
     max-width: 98%;
   }
-  
+
   .materialChartBody {
     min-height: 450px;
   }
-  
+
   .pieChartWrapper {
     min-height: 280px;
     padding: 0.25rem;
   }
-  
+
   .centerLabel {
     width: 80px;
     height: 80px;
     padding: 0.6rem;
   }
-  
+
   .centerLabelValue {
     font-size: 0.9rem;
   }
-  
+
   .centerLabelSubtitle {
     font-size: 0.65rem;
   }
-  
+
   .chartLegend {
     flex-direction: column;
     align-items: center;
     gap: 0.8rem;
     padding: 0.75rem;
   }
-  
+
   .legendItem {
     width: 100%;
     max-width: 200px;
     justify-content: center;
     padding: 0.5rem 0.75rem;
   }
-  
+
   .legendText {
     font-size: 0.8rem;
   }
-  
-  .chartLoadingText,
-  .chartErrorText,
-  .chartEmptyText {
-    font-size: 0.9rem;
-  }
-  
-  .chartRetryButton {
-    padding: 0.4rem 1.25rem;
-    font-size: 0.85rem;
-  }
 }
 
-/* Dark Mode */
-.darkMode :global(.modal-content) {
-  background-color: #1a1a1a;
-  border-color: #333;
-}
-
-.darkMode .materialChartHeader {
-  background: #2d3748;
-  color: #fff;
-  border-bottom-color: #4a5568;
-}
-
-.darkMode .materialChartHeader :global(.close) {
-  color: #cbd5e0;
-}
-
-.darkMode .materialChartHeader :global(.close):hover {
-  color: #fff;
-}
-
-.darkMode .materialChartBody {
-  background: #1a202c;
-}
-
-.darkMode .pieChartWrapper {
-  background: #2d3748;
-  border-color: #4a5568;
-}
-
-.darkMode .centerLabel {
-  background: #2d3748;
-  border-color: #4a5568;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
-}
-
-.darkMode .centerLabelValue {
-  color: #fff;
-}
-
-.darkMode .centerLabelSubtitle {
-  color: #cbd5e0;
-}
-
-.darkMode .chartLegend {
-  background: #2d3748;
-  border-color: #4a5568;
-}
-
-.darkMode .legendItem {
-  background: #4a5568;
-  border-color: #718096;
-}
-
-.darkMode .legendText {
-  color: #e2e8f0;
-}
-
-.darkMode .chartLoadingText {
-  color: #a0aec0;
-}
-
-.darkMode .chartErrorText {
-  color: #fc8181;
-}
-
-.darkMode .chartEmptyText {
-  color: #a0aec0;
-}
-
-.darkMode .chartRetryButton {
-  background: #3182ce;
-}
-
-.darkMode .chartRetryButton:hover {
-  background: #2c5aa0;
-}
-
-/* Accessibility */
-.chartRetryButton:focus {
-  outline: 2px solid #007bff;
-  outline-offset: 2px;
-}
-
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .legendItem,
   .legendColor,
   .chartRetryButton {
     transition: none;
   }
-  
+
   .legendItem:hover,
   .chartRetryButton:hover {
     transform: none;

@@ -1,5 +1,6 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button } from 'react-bootstrap';
+import styles from './ExportConfirmationModal.module.css';
 
 function ExportConfirmationModal({
   showExportModal,
@@ -14,15 +15,15 @@ function ExportConfirmationModal({
     <Modal
       isOpen={showExportModal}
       toggle={() => setShowExportModal(false)}
-      className={darkMode ? 'text-light dark-mode' : ''}
+      contentClassName={darkMode ? styles.darkContent : ''}
     >
       <ModalHeader
         toggle={() => setShowExportModal(false)}
-        className={darkMode ? 'bg-space-cadet' : ''}
+        className={darkMode ? styles.darkHeader : ''}
       >
         Export Lesson Data
       </ModalHeader>
-      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <ModalBody className={darkMode ? styles.darkBody : ''}>
         <p>
           You are about to export <strong>{filteredLessonsCount}</strong> lesson(s) to a CSV file.
         </p>
@@ -39,7 +40,7 @@ function ExportConfirmationModal({
           Click &quot;Confirm Export&quot; to proceed with the download.
         </p>
       </ModalBody>
-      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <ModalFooter className={darkMode ? styles.darkFooter : ''}>
         <Button
           variant="primary"
           onClick={() => {
@@ -50,11 +51,7 @@ function ExportConfirmationModal({
         >
           {isExporting ? 'Exporting...' : 'Confirm Export'}
         </Button>
-        <Button
-          variant="secondary"
-          onClick={() => setShowExportModal(false)}
-          disabled={isExporting}
-        >
+        <Button variant="danger" onClick={() => setShowExportModal(false)} disabled={isExporting}>
           Cancel
         </Button>
       </ModalFooter>

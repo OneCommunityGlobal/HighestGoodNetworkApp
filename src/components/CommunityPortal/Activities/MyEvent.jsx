@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styles from './styles.module.css';
+import styles from './Activitiesstyles.module.css';
 
 function MyEvent() {
   const mockEvents = [
@@ -80,7 +80,6 @@ function MyEvent() {
         {filteredEvents.map(event => (
           <tr key={event.date}>
             {' '}
-            {/* Use event.date as the key */}
             <td>
               <div className={`${styles.dateBox}`}>
                 <span className={`${styles.day}`}>{event.day}</span>
@@ -91,12 +90,16 @@ function MyEvent() {
               {event.event}
               <div className={`${styles.eventTime}`}>{event.time}</div>
             </td>
-            <td className={`${styles.status} ${styles[event.status.toLowerCase()]}`}>
-              {event.status}
+            <td>
+              <span className={`${styles.status} ${styles[event.status.toLowerCase()]}`}>
+                {event.status}
+              </span>
             </td>
             <td>{event.registration}</td>
-            <td className={`${styles.resource} ${styles[event.resource.toLowerCase()]}`}>
-              {event.resource}
+            <td>
+              <span className={`${styles.resource} ${styles[event.resource.toLowerCase()]}`}>
+                {event.resource}
+              </span>
             </td>
             <td>{event.location}</td>
           </tr>
@@ -106,7 +109,7 @@ function MyEvent() {
   );
 
   const displayCalendarView = () => (
-    <div className="calendarView">
+    <div className={`${styles.calendarView}`}>
       <h3>Calendar View</h3>
       <p>Events displayed in a calendar format will go here.</p>
     </div>
@@ -114,19 +117,19 @@ function MyEvent() {
 
   return (
     <div className={`${styles.myEvent}`}>
-      <h2 className={styles.headerTitle}>My Event</h2>
+      <h2>My Event</h2>
       <div className={`${styles.eventControls}`}>
         <div className={`${styles.viewToggle}`}>
           <button
             type="button"
-            className={view === 'list' ? styles.activeView : styles.inactiveView}
+            className={view === 'list' ? `${styles.activeView}` : `${styles.inactiveView}`}
             onClick={() => setView('list')}
           >
             List
           </button>
           <button
             type="button"
-            className={view === 'calendar' ? styles.activeView : styles.inactiveView}
+            className={view === 'calendar' ? `${styles.activeView}` : `${styles.inactiveView}`}
             onClick={() => setView('calendar')}
           >
             Calendar
@@ -162,7 +165,7 @@ function MyEvent() {
           </button>
         </div>
       </div>
-      <div className="eventDisplayOption">
+      <div className={`${styles.eventDisplayOption}`}>
         {view === 'list' ? displayListView() : displayCalendarView()}
       </div>
     </div>

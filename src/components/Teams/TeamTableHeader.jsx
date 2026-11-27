@@ -5,6 +5,7 @@ import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 
 import styles from './TeamTableHeader.module.css';
 
+import { permissions } from '../../utils/constants';
 function TeamTableHeaderComponent({
   onTeamNameSort,
   onTeamActiveSort,
@@ -13,8 +14,8 @@ function TeamTableHeaderComponent({
   darkMode,
   ...props
 }) {
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission(permissions.deleteTeam);
+  const canPutTeam = props.hasPermission(permissions.putTeam);
 
   const getSortIcon = sortState => {
     switch (sortState) {
@@ -60,7 +61,9 @@ function TeamTableHeaderComponent({
         {MEMBERS}
       </th>
       {(canDeleteTeam || canPutTeam) && (
-        <th scope="col" id="teams__delete" data-testid="teams__delete" />
+        <th scope="col" id="teams__delete" data-testid="teams__delete">
+          Actions
+        </th>
       )}
     </tr>
   );

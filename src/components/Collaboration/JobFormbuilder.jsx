@@ -1,83 +1,74 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Prompt } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
+import hasPermission from '~/utils/permissions';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
 import FormPreviewModal from './FormPreviewModal';
+import useJobFormSelection from './useJobFormSelection';
+import questionnaireLabel from './jobFormSelectionLabels';
+import {
+  normalizeQuestionType,
+  resolveInputType,
+  STANDARD_APPLICANT_FIELDS,
+  buildJobFormRequestor,
+  isFieldRequired,
+  normalizeQuestionForApi,
+  normalizeLoadedQuestions,
+  isDuplicateQuestion,
+  numberedQuestionLabel,
+  stripLeadingQuestionNumber,
+} from './jobFormQuestionUtils';
+import { hasUnsavedJobFormChanges } from './jobFormDirtyState';
+
+import { permissions } from '../../utils/constants';
+
+const initialNewField = {
+  questionText: '',
+  questionType: 'textbox',
+  options: [],
+  visible: true,
+  isRequired: false,
+  required: false,
+};
 
 function JobFormBuilder() {
-  const { role } = useSelector(state => state.auth.user);
+  const dispatch = useDispatch();
+  const { auth } = useSelector(state => state);
+  const frontPermissions = auth?.user?.permissions?.frontPermissions;
+  const rolePermissions = useSelector(state => state.role?.roles);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const canManageJobForms = useMemo(() => dispatch(hasPermission(permissions.manageJobForms)), [
+    dispatch,
+    frontPermissions,
+    rolePermissions,
+  ]);
+
+  const getRequestor = () => buildJobFormRequestor(auth?.user);
   const [formFields, setFormFields] = useState([]);
   const [initialFormFields, setInitialFormFields] = useState([]);
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [currentFormId, setCurrentFormId] = useState(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
-  const [newField, setNewField] = useState({
-    questionText: '',
-    questionType: 'textbox',
-    options: [],
-    visible: true,
-  });
-
-  const initialNewField = {
-    questionText: '',
-    questionType: 'textbox',
-    options: [],
-    visible: true,
-  };
+  const [newField, setNewField] = useState(initialNewField);
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
-  const jobPositions = [
-    'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
-    'APPLIED THROUGH SITE - GENERAL',
-    'APPLIED THROUGH SITE - ADMINISTRATIVE ASSISTANT',
-    'APPLIED THROUGH SITE - GRAPHIC DESIGNER',
-    'SEEKING SOFTWARE POSITION',
-    'SEEKING ADMINISTRATIVE ASSISTANT',
-    'EARTHBAG 4-DOME CLUSTER PLUMBING DESIGNS',
-    'PLUMBING ENGINEER/MEP FOR EARTHBAG VILLAGE',
-    'CIVIL ENGINEER FOR COST ANALYSIS OF FOOD PRODUCTION STRUCTURES',
-    'CIVIL ENGINEER TO FINALIZE TEST MATERIALS AND EQUIPMENT FOR FOOD PRODUCTION STRUCTURES',
-    'MECHANICAL ENGINEER FOR HVAC FOR FOOD PRODUCTION STRUCTURES',
-    'CITY CENTER PLUMBING DESIGNS',
-    'ELECTRICAL DESIGNER FOR EARTHBAG VILLAGE',
-    'ELECTRICAL DESIGNER FOR STRAW BALE CLASSROOM',
-    'ELECTRICAL ENGINEER/DESIGNER FOR DUPLICABLE CITY CENTER',
-    'CITY CENTER GEODESIC DOME AUTODESK INVENTOR SIMULATIONS',
-    '4-DOME CLUSTER ELECTRICAL DESIGN',
-    'PHOTOSHOP/GRAPHIC DESIGNER',
-    'PASSIVE GREENHOUSE DESIGN',
-    'LANDSCAPE ARCHITECT FOR AQUAPINI/WALIPINI STRUCTURES',
-    'SEEKING VIRTUAL ASSISTANT',
-    'FUNDRAISING HELP',
-    'STRAW BALE CLASSROOM STRUCTURAL',
-    'PERMACULTURALIST FOR SOIL AMENDMENT',
-    'NUTRITIONIST FOR NUTRITION CALCULATIONS AND MENU PLANNING',
-    'CHEF OR CULINARY PROFESSIONAL FOR MENU IMPLEMENTATION TUTORIALS',
-    'CHEF OR CULINARY PROFESSIONAL TO HELP WITH REMOTE/DISASTER KITCHEN SUPPLY AND STORAGE PLAN',
-    'LUMION 2024.1.1 OR HIGHER FOR CITY CENTER',
-    'GENERAL',
-    'VERMICULTURE',
-    'MASTER CARPENTER',
-    'FINAL CUT PRO VIDEO EDITOR',
-    'INDUSTRIAL DESIGNER FOR DORMER',
-    'LANDSCAPE ARCHITECT FOR SKETCHUP AND LUMION RENDER HELP',
-    'T.A.S.T. - NEED RESUME & WORK SAMPLES',
-    'T.A.S.T. - ENGINEER/ARCHITECT OFFERING POSITION',
-    'T.A.S.T. - HGN',
-    'ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER',
-    'ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER - APPLIED THROUGH SITE',
-    'DATA ANALYST APPLICATION',
-  ];
+  const [initialJobTitle, setInitialJobTitle] = useState('Please Choose an option');
+  const [searchTitle, setSearchTitle] = useState('');
+  const [searchError, setSearchError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const mutationInFlight = useRef(false);
+  const editorVersion = useRef(0);
 
   const [newOption, setNewOption] = useState('');
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -85,10 +76,105 @@ function JobFormBuilder() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const markAsSaved = fields => {
+  const markAsSaved = useCallback((fields, savedJobTitle) => {
     setInitialFormFields(structuredClone(fields));
+    if (savedJobTitle !== undefined) setInitialJobTitle(savedJobTitle);
     setHasUnsavedChanges(false);
+  }, []);
+
+  const resetRole = useCallback(
+    title => {
+      editorVersion.current += 1;
+      setCurrentFormId(null);
+      setFormFields([]);
+      setJobTitle(title);
+      markAsSaved([], title);
+      setNewField(initialNewField);
+      setNewOption('');
+      setTemplateName('');
+      setSelectedTemplate('');
+      setEditModalOpen(false);
+      setEditingQuestion(null);
+      setEditingIndex(null);
+      setShowPreviewModal(false);
+    },
+    [markAsSaved],
+  );
+
+  const loadRole = useCallback(
+    form => {
+      const questions = normalizeLoadedQuestions(form.questions);
+      setFormFields(questions);
+      setJobTitle(form.title);
+      markAsSaved(questions, form.title);
+      setCurrentFormId(form._id || form.id);
+    },
+    [markAsSaved],
+  );
+
+  const selection = useJobFormSelection({
+    enabled: canManageJobForms,
+    onReset: resetRole,
+    onLoad: loadRole,
+  });
+  const version = editorVersion.current;
+  const canEdit = canManageJobForms && selection.status === 'ready' && Boolean(currentFormId);
+  const canEditCurrentRole = () =>
+    canEdit && version === editorVersion.current && !mutationInFlight.current;
+
+  const selectRole = (title, targetId) => {
+    if (mutationInFlight.current) return;
+    if (hasUnsavedChanges && !window.confirm('Discard unsaved changes and switch job roles?'))
+      return;
+    setSearchError('');
+    setSearchTitle('');
+    selection.selectRole(title, targetId);
   };
+
+  const searchRole = event => {
+    event.preventDefault();
+    const query = searchTitle.trim().toLowerCase();
+    if (!query) {
+      if (selection.selectedTitle) selectRole(selection.selectedTitle);
+      return;
+    }
+    const exact = selection.options.find(title => title.toLowerCase() === query);
+    const matches = exact
+      ? [exact]
+      : selection.options.filter(title => title.toLowerCase().includes(query));
+    if (matches.length === 1) selectRole(matches[0]);
+    else
+      setSearchError(
+        matches.length
+          ? 'Several roles match. Choose the intended role from the dropdown.'
+          : 'No matching job role was found.',
+      );
+  };
+
+  const startMutation = () => {
+    if (!canEditCurrentRole()) return false;
+    mutationInFlight.current = true;
+    setIsSaving(true);
+    return true;
+  };
+
+  const finishMutation = () => {
+    mutationInFlight.current = false;
+    setIsSaving(false);
+  };
+
+  // Prevent refresh while unsaved changes exist
+  useEffect(() => {
+    const handler = event => {
+      if (hasUnsavedChanges) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+
+    globalThis.addEventListener('beforeunload', handler);
+    return () => globalThis.removeEventListener('beforeunload', handler);
+  }, [hasUnsavedChanges]);
 
   // Reset builder after template is saved
   const resetBuilderState = () => {
@@ -98,73 +184,33 @@ function JobFormBuilder() {
       questionType: 'textbox',
       options: [],
       visible: true,
+      isRequired: false,
+      required: false,
     });
     setNewOption('');
   };
 
-  // Auto-load existing form on component mount
-  useEffect(() => {
-    const loadFirstAvailableForm = async () => {
-      try {
-        const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
-
-        if (response.data && response.data.length > 0) {
-          const firstForm = response.data[0];
-          const formId = firstForm._id || firstForm.id;
-
-          setCurrentFormId(formId);
-          setFormFields(firstForm.questions || []);
-          setJobTitle(firstForm.title || 'Please Choose an option');
-          markAsSaved(firstForm.questions || []);
-          setNewField(initialNewField);
-
-          console.log('Auto-loaded form:', formId);
-        }
-      } catch (error) {
-        console.error('Error auto-loading form:', error);
-      }
-    };
-
-    loadFirstAvailableForm();
-  }, []);
-
   // Detect unsaved changes
   useEffect(() => {
-    const changed =
-      JSON.stringify(formFields) !== JSON.stringify(initialFormFields) ||
-      JSON.stringify(newField) !== JSON.stringify(initialNewField) ||
-      templateName !== '' ||
-      selectedTemplate !== '';
+    const changed = hasUnsavedJobFormChanges({
+      formFields,
+      initialFormFields,
+      newField,
+      initialNewField,
+      templateName,
+      jobTitle,
+      initialJobTitle,
+    });
 
     setHasUnsavedChanges(changed);
-  }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
+  }, [formFields, initialFormFields, newField, templateName, jobTitle, initialJobTitle]);
 
-  // CRUD Functions with Dynamic Form ID
-  const cloneField = async (field, index) => {
-    const clonedField = JSON.parse(JSON.stringify(field));
-
-    // Update local state immediately
-    const newFields = [
-      ...formFields.slice(0, index + 1),
-      clonedField,
-      ...formFields.slice(index + 1),
-    ];
-    setFormFields(newFields);
-
-    // Sync with backend if form exists
-    if (currentFormId) {
-      try {
-        await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-          question: clonedField,
-          position: index + 1,
-        });
-        markAsSaved(newFields);
-      } catch (error) {
-        console.error('Error cloning question on server:', error);
-      }
-    }
+  // A per-question save must not mark unrelated local template/visibility changes as persisted.
+  const markQuestionChangeSaved = fields => {
+    if (JSON.stringify(formFields) === JSON.stringify(initialFormFields)) markAsSaved(fields);
   };
 
+  // CRUD Functions with Dynamic Form ID
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
 
@@ -172,6 +218,7 @@ function JobFormBuilder() {
       (direction === 'up' && index > 0) ||
       (direction === 'down' && index < formFields.length - 1)
     ) {
+      if (!startMutation()) return;
       // Update local state immediately
       const newFields = [...formFields];
       [newFields[index], newFields[newIndex]] = [newFields[newIndex], newFields[index]];
@@ -183,16 +230,20 @@ function JobFormBuilder() {
           await axios.put(ENDPOINTS.REORDER_QUESTIONS(currentFormId), {
             fromIndex: index,
             toIndex: newIndex,
+            requestor: getRequestor(),
           });
-          markAsSaved(newFields);
+          markQuestionChangeSaved(newFields);
         } catch (error) {
           console.error('Error reordering questions on server:', error);
+        } finally {
+          finishMutation();
         }
       }
     }
   };
 
   const deleteField = async index => {
+    if (!startMutation()) return;
     // Update local state immediately
     const newFields = [...formFields];
     newFields.splice(index, 1);
@@ -201,22 +252,27 @@ function JobFormBuilder() {
     // Sync with backend if form exists
     if (currentFormId) {
       try {
-        await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index));
-        markAsSaved(newFields);
+        await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index), {
+          data: { requestor: getRequestor() },
+        });
+        markQuestionChangeSaved(newFields);
         console.log('Question deleted successfully');
       } catch (error) {
         console.error('Error deleting question on server:', error);
+      } finally {
+        finishMutation();
       }
     }
   };
 
   const editField = (field, index) => {
+    if (!canEditCurrentRole()) return;
     // Transform the field structure to match what QuestionEditModal expects
     const questionForEdit = {
-      label: field.questionText,
+      label: stripLeadingQuestionNumber(field.questionText),
       type: field.questionType,
       options: field.options,
-      required: field.required || false,
+      required: isFieldRequired(field),
       placeholder: field.placeholder || '',
     };
 
@@ -226,14 +282,17 @@ function JobFormBuilder() {
   };
 
   const handleSaveEditedQuestion = async editedQuestion => {
-    const updatedField = {
+    if (editingIndex === null || !startMutation()) return;
+    const isRequired = Boolean(editedQuestion.required || editedQuestion.isRequired);
+    const updatedField = normalizeQuestionForApi({
       ...formFields[editingIndex],
       questionText: editedQuestion.label,
       questionType: editedQuestion.type,
       options: editedQuestion.options || [],
-      required: editedQuestion.required,
+      isRequired,
+      required: isRequired,
       placeholder: editedQuestion.placeholder,
-    };
+    });
 
     // Update local state immediately
     const updatedFields = [...formFields];
@@ -243,11 +302,16 @@ function JobFormBuilder() {
     // Sync with backend if form exists
     if (currentFormId) {
       try {
-        await axios.put(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), updatedField);
-        markAsSaved(updatedFields);
+        await axios.patch(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), {
+          ...updatedField,
+          requestor: getRequestor(),
+        });
+        markQuestionChangeSaved(updatedFields);
         console.log('Question updated successfully');
       } catch (error) {
         console.error('Error updating question on server:', error);
+      } finally {
+        finishMutation();
       }
     }
 
@@ -265,7 +329,8 @@ function JobFormBuilder() {
 
   // Import questions from template
   const importQuestions = questions => {
-    setFormFields(questions);
+    if (!canEditCurrentRole()) return;
+    setFormFields(normalizeLoadedQuestions(questions));
   };
 
   const handleAddOption = () => {
@@ -281,6 +346,7 @@ function JobFormBuilder() {
   };
 
   const handleAddField = async () => {
+    if (!canEditCurrentRole()) return;
     if (newField.questionText.trim() === '') {
       alert('Field label is required!');
       return;
@@ -294,27 +360,44 @@ function JobFormBuilder() {
       return;
     }
 
-    // Update local state immediately
-    const updatedFields = [...formFields, newField];
+    const fieldToAdd = normalizeQuestionForApi(newField);
+
+    if (isDuplicateQuestion(fieldToAdd, formFields)) {
+      const confirmAdd = window.confirm('You already have a similar question. Add Anyway?');
+      if (!confirmAdd) return;
+    }
+    if (!startMutation()) return;
+    const updatedFields = [...formFields, fieldToAdd];
     setFormFields(updatedFields);
 
     // Sync with backend if form exists
     if (currentFormId) {
       try {
         await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-          question: newField,
+          question: fieldToAdd,
           position: formFields.length,
+          requestor: getRequestor(),
         });
-        markAsSaved(updatedFields);
+        markQuestionChangeSaved(updatedFields);
       } catch (error) {
         console.error('Error adding question to server:', error);
+      } finally {
+        finishMutation();
       }
     }
 
-    setNewField({ questionText: '', questionType: 'textbox', options: [], visible: true });
+    setNewField({
+      questionText: '',
+      questionType: 'textbox',
+      options: [],
+      visible: true,
+      isRequired: false,
+      required: false,
+    });
   };
 
   const changeVisiblity = (event, field) => {
+    if (!canEditCurrentRole()) return;
     const updatedFields = formFields.map(item =>
       item.questionText === field.questionText && item.questionType === field.questionType
         ? { ...item, visible: event.target.checked }
@@ -326,26 +409,58 @@ function JobFormBuilder() {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    const formIdToUse = currentFormId || '6753982566fcf3275f129eb4';
+    if (!canEditCurrentRole()) {
+      alert('No form loaded to save. Please refresh or select a job position.');
+      return;
+    }
+    if (
+      !window.confirm(
+        `Replace the active questionnaire for ${jobTitle} with these ${formFields.length} questions?`,
+      )
+    )
+      return;
+    if (!startMutation()) return;
 
     try {
       await axios.put(ENDPOINTS.UPDATE_JOB_FORM, {
-        formId: formIdToUse,
+        formId: currentFormId,
         title: jobTitle,
-        questions: formFields,
-        description: '',
+        questions: formFields.map(normalizeQuestionForApi),
+        requestor: getRequestor(),
       });
 
+      markAsSaved(formFields, jobTitle);
       console.log('Form updated successfully');
       alert('Form saved successfully!');
     } catch (error) {
       console.error('Error updating form:', error);
-      alert('Failed to save form. Please try again.');
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error?.message ||
+        'Failed to save form. Please try again.';
+      alert(message);
+    } finally {
+      finishMutation();
     }
   };
 
+  let roleStatusText = 'Select a role to load its saved questionnaire.';
+  if (canEdit) roleStatusText = `Editing questionnaire for: ${jobTitle}`;
+  else if (selection.status === 'loading') {
+    const target = selection.selectedTitle ? ` for: ${selection.selectedTitle}` : ' roles';
+    roleStatusText = `Loading questionnaire${target}…`;
+  } else if (selection.selectedTitle) {
+    roleStatusText = selection.selectedFormId
+      ? `Questionnaire unavailable for: ${selection.selectedTitle}`
+      : `Choose a saved questionnaire for: ${selection.selectedTitle}`;
+  }
+
   return (
     <div className={`${styles.pageWrapper} ${darkMode ? styles.darkMode : ''}`}>
+      <Prompt
+        when={hasUnsavedChanges}
+        message="You have unsaved changes. Are you sure you want to leave this page?"
+      />
       <div className={styles.formBuilderContainer}>
         <img
           src={OneCommunityImage}
@@ -354,44 +469,112 @@ function JobFormBuilder() {
           className={styles.oneCommunityGlobalImg}
         />
         <div className={styles.jobformNavbar}>
-          <div>
-            <input placeholder="Enter Job Title" className={styles.jobformInput} />
-            <button type="button" className={styles.goButton}>
+          <form onSubmit={searchRole} className={styles.roleSearch} aria-label="Find a job role">
+            <input
+              placeholder="Enter Job Title"
+              aria-label="Search job roles"
+              value={searchTitle}
+              onChange={event => setSearchTitle(event.target.value)}
+              className={styles.jobformInput}
+              disabled={selection.catalogLoading || isSaving || !canManageJobForms}
+            />
+            <button
+              type="submit"
+              className={styles.goButton}
+              disabled={selection.catalogLoading || isSaving || !canManageJobForms}
+            >
               Go
             </button>
-          </div>
+          </form>
           <div>
             <select
-              value={jobTitle}
-              onChange={q => setJobTitle(q.target.value)}
+              value={selection.selectedTitle}
+              onChange={event => selectRole(event.target.value)}
+              aria-label="Job role"
+              disabled={selection.catalogLoading || isSaving || !canManageJobForms}
               className={styles.jobformSelect}
             >
-              <option value="Please Choose an option">Please Choose an Option</option>
-              {jobPositions.map(e => (
-                <option key={uuidv4()} value={e}>
+              <option value="" disabled>
+                Please Choose an Option
+              </option>
+              {selection.options.map(e => (
+                <option key={e} value={e}>
                   {e}
                 </option>
               ))}
             </select>
           </div>
         </div>
-        {console.log(role)}
-        <h1 className={styles.jobformTitle}>FORM CREATION</h1>
-        {role === 'Owner' || role === 'Administrator' ? (
-          <div className={styles.customForm}>
+        {canManageJobForms && (
+          <>
+            <output className={styles.roleContext}>{roleStatusText}</output>
+            {(selection.error || searchError) && (
+              <p className={styles.roleError} role="alert">
+                {selection.error || searchError}
+              </p>
+            )}
+            {selection.matchingForms.length > 1 && (
+              <div className={styles.roleContext}>
+                <label htmlFor="saved-questionnaire">
+                  Several saved forms have this role name. Choose the questionnaire to edit.
+                </label>
+                <select
+                  id="saved-questionnaire"
+                  aria-label="Saved questionnaire"
+                  className={styles.jobformSelect}
+                  value={selection.selectedFormId}
+                  disabled={isSaving || selection.status === 'loading'}
+                  onChange={event => selectRole(selection.selectedTitle, event.target.value)}
+                >
+                  <option value="" disabled>
+                    Choose a saved questionnaire
+                  </option>
+                  {selection.matchingForms.map(form => (
+                    <option key={form._id || form.id} value={form._id || form.id}>
+                      {questionnaireLabel(form, selection.matchingForms)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {selection.status === 'error' && selection.selectedFormId && (
+              <button type="button" className={styles.retryButton} onClick={selection.retryForm}>
+                Retry questionnaire
+              </button>
+            )}
+            {selection.error && !selection.selectedTitle && (
+              <button type="button" className={styles.retryButton} onClick={selection.retryCatalog}>
+                Retry loading roles
+              </button>
+            )}
+            {canEdit && (
+              <p className={styles.overwriteWarning}>
+                Question actions update this role immediately. Save Form replaces the active
+                questionnaire for {jobTitle} and requires confirmation.
+              </p>
+            )}
+          </>
+        )}
+        <h1 className={styles.jobformTitle}>Job Question Set Builder</h1>
+        {canManageJobForms ? (
+          <fieldset
+            className={`${styles.customForm} ${styles.editorFields}`}
+            disabled={!canEdit || isSaving}
+            aria-label="Questionnaire editor"
+          >
             <p className={styles.jobformDesc}>
-              Fill the form with questions about a specific position you want to create an ad for.
-              The default questions will automatically appear and are alredy selected. You can pick
-              and choose them with the checkbox.
+              Select a job role to edit its saved questionnaire. You can customize that role&apos;s
+              questions by adding, removing, or rearranging fields.
             </p>
             <QuestionSetManager
+              key={version}
               formFields={formFields}
               setFormFields={setFormFields}
               onImportQuestions={fields => {
                 importQuestions(fields);
-                markAsSaved(fields);
               }}
               onTemplateSaved={() => {
+                if (!canEditCurrentRole()) return;
                 markAsSaved(formFields);
                 resetBuilderState();
               }}
@@ -401,66 +584,120 @@ function JobFormBuilder() {
               selectedTemplate={selectedTemplate}
               setSelectedTemplate={setSelectedTemplate}
             />
-            <form>
-              {formFields.map((field, index) => (
-                <div className={styles.formDiv} key={uuidv4()}>
-                  <QuestionFieldActions
-                    field={field}
-                    index={index}
-                    className={styles.formDivCheckbox}
-                    totalFields={formFields.length}
-                    onMove={moveField}
-                    onDelete={deleteField}
-                    onEdit={editField}
-                    visible={field.visible}
-                    onVisibilityChange={event => changeVisiblity(event, field)}
-                  />
-                  <div className={styles.formField} key={uuidv4()}>
+            <div className={styles.standardApplicantSection}>
+              <p className={styles.standardApplicantNote}>
+                These profile fields always appear on the application form (including required
+                email).
+              </p>
+              <div className={styles.standardApplicantGrid}>
+                {STANDARD_APPLICANT_FIELDS.map(field => (
+                  <div key={field.label} className={styles.standardApplicantField}>
                     <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                      {field.questionText}
+                      {field.label}
+                      {field.required && (
+                        <span className={styles.requiredMark} aria-hidden="true">
+                          {' '}
+                          *
+                        </span>
+                      )}
                     </label>
-                    <div className={styles.fieldOptions}>
-                      {field.questionType === 'textbox' && (
-                        <input
-                          type="text"
-                          placeholder="Enter Text here"
-                          className={styles.jobformInput}
-                        />
-                      )}
-                      {field.questionType === 'date' && (
-                        <input
-                          type="date"
-                          placeholder="Enter date"
-                          className={styles.jobformInput}
-                        />
-                      )}
-                      {field.questionType === 'textarea' && (
-                        <textarea className={styles.jobformTextarea} />
-                      )}
-                      {['checkbox', 'radio'].includes(field.questionType) &&
-                        field.options.map(option => (
-                          <div key={uuidv4()} className={styles.optionItem}>
-                            <input
-                              type={field.questionType}
-                              name={`field-${index}`}
-                              className={styles.jobformInput}
-                            />
-                            <label className={styles.jbformLabel}>{option}</label>
-                          </div>
-                        ))}
-                      {field.questionType === 'dropdown' && (
-                        <select className={styles.jobformSelect}>
-                          {field.options.map(option => (
-                            <option key={uuidv4()} value={option}>
-                              {option}
-                            </option>
+                    <input
+                      type={field.inputType}
+                      readOnly
+                      tabIndex={-1}
+                      placeholder={
+                        field.inputType === 'email'
+                          ? 'Applicant enters email here'
+                          : `Applicant enters ${field.label.toLowerCase()}`
+                      }
+                      className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
+                      aria-label={`${field.label} preview`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <form>
+              {formFields.map((field, index) => {
+                const questionType = normalizeQuestionType(field);
+
+                return (
+                  <div className={styles.formDiv} key={`${index}-${field.questionText}`}>
+                    <QuestionFieldActions
+                      field={field}
+                      index={index}
+                      totalFields={formFields.length}
+                      onMove={moveField}
+                      onDelete={deleteField}
+                      onEdit={editField}
+                      visible={field.visible}
+                      onVisibilityChange={event => changeVisiblity(event, field)}
+                      darkMode={darkMode}
+                    />
+                    <div className={styles.formField}>
+                      <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
+                        {numberedQuestionLabel(field.questionText, index)}
+                        {isFieldRequired(field) && (
+                          <span className={styles.requiredMark} aria-hidden="true">
+                            {' '}
+                            *
+                          </span>
+                        )}
+                      </label>
+                      <div className={styles.fieldOptions}>
+                        {questionType === 'textbox' && (
+                          <input
+                            type={resolveInputType(field)}
+                            placeholder={
+                              resolveInputType(field) === 'email'
+                                ? 'Enter email address'
+                                : 'Enter text here'
+                            }
+                            className={styles.jobformInput}
+                          />
+                        )}
+                        {questionType === 'date' && (
+                          <input
+                            type="date"
+                            placeholder="Enter date"
+                            className={styles.jobformInput}
+                          />
+                        )}
+                        {questionType === 'textarea' && (
+                          <textarea
+                            className={styles.jobformTextarea}
+                            placeholder="Enter long-form response here"
+                            rows={4}
+                          />
+                        )}
+                        {questionType === 'file' && (
+                          <input type="file" disabled className={styles.jobformInput} />
+                        )}
+                        {['checkbox', 'radio'].includes(questionType) &&
+                          field.options.map(option => (
+                            <div key={`${index}-${option}`} className={styles.optionItem}>
+                              <input
+                                type={questionType}
+                                name={`field-${index}`}
+                                className={styles.jobformInput}
+                              />
+                              <label className={styles.jbformLabel}>{option}</label>
+                            </div>
                           ))}
-                        </select>
-                      )}
+                        {questionType === 'dropdown' && (
+                          <select className={styles.jobformSelect}>
+                            {field.options.map(option => (
+                              <option key={`${index}-${option}`} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </form>
 
             <div className={styles.newFieldSection}>
@@ -494,9 +731,10 @@ function JobFormBuilder() {
                       }));
                     }}
                   >
-                    <option value="textbox">TextBox</option>
-                    <option value="textarea">Textarea</option>
-                    <option value="checkbox">Checkbox</option>
+                    <option value="textbox">Text Box</option>
+                    <option value="email">Email</option>
+                    <option value="textarea">Text Area</option>
+                    <option value="checkbox">Check Box</option>
                     <option value="radio">Radio</option>
                     <option value="dropdown">Dropdown</option>
                     <option value="date">Date</option>
@@ -535,6 +773,23 @@ function JobFormBuilder() {
                 </div>
               )}
 
+              <div>
+                <label className={styles.jbformLabel}>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(newField.isRequired || newField.required)}
+                    onChange={e =>
+                      setNewField(prev => ({
+                        ...prev,
+                        isRequired: e.target.checked,
+                        required: e.target.checked,
+                      }))
+                    }
+                  />{' '}
+                  Required field
+                </label>
+              </div>
+
               <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
                 Add Field
               </button>
@@ -551,7 +806,12 @@ function JobFormBuilder() {
             </div>
 
             <div className={styles.saveSection}>
-              <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
+              <button
+                type="button"
+                className={styles.jobSubmitButton}
+                onClick={handleSubmit}
+                disabled={!canEdit || isSaving}
+              >
                 Save Form
               </button>
             </div>
@@ -561,10 +821,22 @@ function JobFormBuilder() {
                 question={editingQuestion}
                 onSave={handleSaveEditedQuestion}
                 onCancel={handleCancelEdit}
+                darkMode={darkMode}
               />
             )}
+          </fieldset>
+        ) : (
+          <div className={styles.customForm}>
+            <div className="alert alert-warning" role="alert">
+              <h4 className="alert-heading">Access restricted</h4>
+              <p>
+                You do not have permission to manage job application forms. An Owner can grant
+                &quot;Manage Job Forms&quot; or related job form permissions in Permissions
+                Management.
+              </p>
+            </div>
           </div>
-        ) : null}
+        )}
         <FormPreviewModal
           isOpen={showPreviewModal}
           onClose={() => setShowPreviewModal(false)}

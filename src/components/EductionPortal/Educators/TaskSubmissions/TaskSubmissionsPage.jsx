@@ -1,50 +1,162 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import axios from 'axios';
 import SubmissionCard from './SubmissionCard';
 import styles from './TaskSubmissionsPage.module.css';
 import { FiChevronDown, FiChevronUp, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
+const isLateSubmission = sub => {
+  const { submittedAt, dueAt } = sub;
+  return (
+    submittedAt &&
+    dueAt &&
+    !Number.isNaN(new Date(submittedAt).getTime()) &&
+    !Number.isNaN(new Date(dueAt).getTime()) &&
+    new Date(submittedAt) > new Date(dueAt)
+  );
+};
+
+// Remembers which course/task/filter the educator had open so that navigating to a
+// submission's review page and back (or hitting the browser back button) restores the
+// same view instead of the page picking a fresh default on remount.
+const VIEW_STATE_STORAGE_KEY = 'educatorTaskSubmissions:lastView';
+
+const loadStoredViewState = () => {
+  try {
+    const raw = sessionStorage.getItem(VIEW_STATE_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
 const TaskSubmissionsPage = () => {
+  const storedViewState = useRef(loadStoredViewState()).current;
+
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
-  const [activeClassId, setActiveClassId] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [expandedTasks, setExpandedTasks] = useState({});
+  const [activeClassId, setActiveClassId] = useState(storedViewState?.activeClassId || '');
+  const [filterStatus, setFilterStatus] = useState(storedViewState?.filterStatus || 'submissions');
+  const [expandedTasks, setExpandedTasks] = useState(storedViewState?.expandedTasks || {});
+  // Every course tab the educator has, independent of the current filter. Populated once
+  // on mount from every status the UI can filter by, so a course is never missing from
+  // the tab strip just because its tasks don't match whichever filter is selected.
+  const [knownClasses, setKnownClasses] = useState(new Map());
+  const isFirstLoad = useRef(true);
+  const tabsContainerRef = useRef(null);
+
+  const mergeKnownClasses = subs => {
+    setKnownClasses(prevKnownClasses => {
+      const nextKnownClasses = new Map(prevKnownClasses);
+      subs.forEach(sub => {
+        if (sub.lessonPlanId && !nextKnownClasses.has(sub.lessonPlanId)) {
+          nextKnownClasses.set(
+            sub.lessonPlanId,
+            sub.lessonPlanTitle || `Class ${String(sub.lessonPlanId).slice(-6)}`,
+          );
+        }
+      });
+      return nextKnownClasses;
+    });
+  };
+
+  useEffect(() => {
+    const discoverAllClasses = async () => {
+      const statuses = ['completed', 'assigned', 'graded'];
+      const responses = await Promise.all(
+        statuses.map(status =>
+          axios
+            .get(`${process.env.REACT_APP_APIENDPOINT}/educationportal/educator/task-submissions`, {
+              params: { status },
+            })
+            .then(res => res.data || [])
+            .catch(() => []),
+        ),
+      );
+      mergeKnownClasses(responses.flat());
+    };
+    discoverAllClasses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        setLoading(true);
+        if (isFirstLoad.current) {
+          setLoading(true);
+        } else {
+          setRefreshing(true);
+        }
+        const params = (() => {
+          if (filterStatus === 'pending_submissions') return { status: 'pending submissions' };
+          if (filterStatus === 'graded') return { status: 'graded' };
+          return {};
+        })();
         const res = await axios.get(
           `${process.env.REACT_APP_APIENDPOINT}/educationportal/educator/task-submissions`,
+          { params },
         );
-        const fetchedSubmissions = res.data || [];
+        const rawSubmissions = res.data || [];
+        const fetchedSubmissions =
+          filterStatus === 'late' ? rawSubmissions.filter(isLateSubmission) : rawSubmissions;
         setSubmissions(fetchedSubmissions);
 
-        if (fetchedSubmissions.length > 0) {
-          const uniqueClassIds = [
-            ...new Set(fetchedSubmissions.map(sub => sub.lessonPlanId)),
-          ].filter(Boolean);
-          if (uniqueClassIds.length > 0) {
-            setActiveClassId(uniqueClassIds[0]);
+        const classTitleById = new Map();
+        fetchedSubmissions.forEach(sub => {
+          if (sub.lessonPlanId && !classTitleById.has(sub.lessonPlanId)) {
+            classTitleById.set(
+              sub.lessonPlanId,
+              sub.lessonPlanTitle || `Class ${String(sub.lessonPlanId).slice(-6)}`,
+            );
+          }
+        });
+        const defaultClassId =
+          [...classTitleById.keys()].sort((a, b) =>
+            classTitleById.get(a).localeCompare(classTitleById.get(b)),
+          )[0] || '';
+
+        mergeKnownClasses(fetchedSubmissions);
+
+        // Keep whatever course the user already has selected, even if this filter has
+        // zero matches for it -- only pick a default course on the very first load.
+        setActiveClassId(prevActiveClassId => prevActiveClassId || defaultClassId);
+
+        setExpandedTasks(prevExpandedTasks => {
+          const availableTaskNames = new Set(fetchedSubmissions.map(sub => sub.taskName));
+          const preserved = Object.fromEntries(
+            Object.entries(prevExpandedTasks).filter(([taskName]) =>
+              availableTaskNames.has(taskName),
+            ),
+          );
+          if (Object.keys(preserved).length > 0 || !isFirstLoad.current) {
+            return preserved;
           }
 
-          const firstClassTasks = fetchedSubmissions.filter(
-            sub => sub.lessonPlanId === uniqueClassIds[0],
-          );
-          if (firstClassTasks.length > 0) {
-            setExpandedTasks({ [firstClassTasks[0].taskName]: true });
-          }
-        }
+          const firstTaskName = fetchedSubmissions.find(sub => sub.lessonPlanId === defaultClassId)
+            ?.taskName;
+          return firstTaskName ? { [firstTaskName]: true } : {};
+        });
       } catch (err) {
         setError('Failed to load submissions. Please try again.');
       } finally {
         setLoading(false);
+        setRefreshing(false);
+        isFirstLoad.current = false;
       }
     };
     fetchSubmissions();
-  }, []);
+  }, [filterStatus]);
+
+  // Fallback: if the current filter's own fetch found nothing to select a default from,
+  // but other statuses discovered courses, select one as soon as any become known.
+  useEffect(() => {
+    if (activeClassId || knownClasses.size === 0) return;
+    const firstKnownClassId = [...knownClasses.keys()].sort((a, b) =>
+      knownClasses.get(a).localeCompare(knownClasses.get(b)),
+    )[0];
+    setActiveClassId(firstKnownClassId);
+  }, [knownClasses, activeClassId]);
 
   const groupedData = useMemo(() => {
     const data = {};
@@ -52,7 +164,6 @@ const TaskSubmissionsPage = () => {
       if (!sub.lessonPlanId || !sub.taskName) return;
 
       const classId = sub.lessonPlanId;
-      // const className = sub.lessonPlanTitle || `Class ${classId.slice(-6)}`;
       const className = sub.lessonPlanTitle || `Class ${String(classId).slice(-6)}`;
 
       if (!data[classId]) {
@@ -70,29 +181,31 @@ const TaskSubmissionsPage = () => {
     return activeClassId ? groupedData[activeClassId]?.tasks || {} : {};
   }, [activeClassId, groupedData]);
 
-  const filteredTasks = useMemo(() => {
-    const filtered = {};
-    Object.entries(activeClassTasks).forEach(([taskName, subs]) => {
-      // const filteredSubs = subs.filter(sub => {
-      //   if (filterStatus === 'all') return true;
-      //   if (filterStatus === 'pending_review' && sub.status === 'Pending Review') return true;
-      //   if (filterStatus === 'graded' && sub.status === 'Graded') return true;
-      //   return false;
-      // });
-      const filteredSubs = subs.filter(sub => {
-        const status = sub.status?.toLowerCase();
-        if (filterStatus === 'all') return true;
-        if (filterStatus === 'pending_review') return status === 'pending review';
-        if (filterStatus === 'graded') return status === 'graded';
-        return false;
-      });
+  const sortedClassIds = useMemo(() => {
+    return [...knownClasses.keys()].sort((a, b) =>
+      knownClasses.get(a).localeCompare(knownClasses.get(b)),
+    );
+  }, [knownClasses]);
 
-      if (filteredSubs.length > 0) {
-        filtered[taskName] = filteredSubs;
-      }
-    });
-    return filtered;
-  }, [activeClassTasks, filterStatus]);
+  useEffect(() => {
+    if (!activeClassId || !tabsContainerRef.current) return;
+    const activeTabButton = tabsContainerRef.current.querySelector(`.${styles.activeTab}`);
+    if (activeTabButton) {
+      activeTabButton.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, [activeClassId]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        VIEW_STATE_STORAGE_KEY,
+        JSON.stringify({ activeClassId, filterStatus, expandedTasks }),
+      );
+    } catch {
+      // sessionStorage may be unavailable (e.g. private browsing); losing view-state
+      // persistence is a minor UX regression, not worth failing the page over.
+    }
+  }, [activeClassId, filterStatus, expandedTasks]);
 
   const handleExpand = taskName => {
     setExpandedTasks(prev => ({
@@ -154,16 +267,18 @@ const TaskSubmissionsPage = () => {
             onChange={e => setFilterStatus(e.target.value)}
             className={styles.filterSelect}
             aria-label="Filter Submissions"
+            disabled={refreshing}
           >
-            <option value="all">All Submissions</option>
-            <option value="pending_review">Submissions Pending</option>
-            <option value="graded">Submissions Received</option>
+            <option value="submissions">Submissions</option>
+            <option value="pending_submissions">Pending submissions</option>
+            <option value="graded">Graded</option>
+            <option value="late">Late Submissions</option>
           </select>
           <FiChevronDown className={styles.filterIcon} />
         </div>
       </div>
 
-      <div className={styles.tabsContainer}>
+      <div className={`${styles.tabsContainer} ${refreshing ? styles.refreshing : ''}`}>
         <button
           type="button"
           className={styles.scrollButton}
@@ -173,15 +288,15 @@ const TaskSubmissionsPage = () => {
           <FiChevronLeft size={20} />
         </button>
 
-        <div className={styles.tabs}>
-          {Object.keys(groupedData).map(classId => (
+        <div className={styles.tabs} ref={tabsContainerRef}>
+          {sortedClassIds.map(classId => (
             <button
               key={classId}
               type="button"
               className={`${styles.tab} ${activeClassId === classId ? styles.activeTab : ''}`}
               onClick={() => setActiveClassId(classId)}
             >
-              {groupedData[classId].className}
+              {knownClasses.get(classId)}
             </button>
           ))}
         </div>
@@ -196,13 +311,17 @@ const TaskSubmissionsPage = () => {
         </button>
       </div>
 
-      <div className={styles.content}>
-        {Object.keys(filteredTasks).length === 0 ? (
+      <div className={`${styles.content} ${refreshing ? styles.refreshing : ''}`}>
+        {Object.keys(activeClassTasks).length === 0 ? (
           <div className={styles.noData}>
-            <p>No submissions match the current filter.</p>
+            <p>
+              {activeClassId
+                ? 'No tasks in this course match the current filter.'
+                : 'No submissions match the current filter.'}
+            </p>
           </div>
         ) : (
-          Object.entries(filteredTasks).map(([taskName, subs]) => (
+          Object.entries(activeClassTasks).map(([taskName, subs]) => (
             <div key={taskName} className={styles.taskSection}>
               <div
                 className={styles.sectionHeader}
@@ -241,13 +360,6 @@ const TaskSubmissionsPage = () => {
               </div>
               {expandedTasks[taskName] && (
                 <div className={styles.cardsGrid}>
-                  {/* {subs.map(submission => (
-                    //<SubmissionCard key={submission._id} submission={submission} />
-                    <SubmissionCard
-                      key={submission._id || `${submission.studentEmail}-${submission.taskName}`}
-                      submission={submission}
-                    />
-                    ))} */}
                   {subs.map(submission => (
                     <SubmissionCard
                       key={

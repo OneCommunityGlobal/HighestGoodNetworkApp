@@ -1,6 +1,6 @@
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as reduxHooks from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { themeMock } from '../../../__tests__/mockStates';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from '../actions';
@@ -41,7 +41,7 @@ describe('TaskEditSuggestions', () => {
     },
     theme: themeMock,
   };
-  const mockStore = configureStore();
+  const mockStore = configureMockStore();
   let store;
   let mockDispatch;
 
@@ -123,7 +123,7 @@ describe('TaskEditSuggestions loading', () => {
     },
     theme: themeMock,
   };
-  const mockStore = configureStore();
+  const mockStore = configureMockStore();
   let store;
   let mockDispatch;
 

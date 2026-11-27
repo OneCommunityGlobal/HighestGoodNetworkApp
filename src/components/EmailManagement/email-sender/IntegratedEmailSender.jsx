@@ -1555,18 +1555,16 @@ const IntegratedEmailSender = ({
               📰 Weekly Update
             </Button>
           </div>
-
-          {/* Action Buttons */}
-          <div
-            className="action-buttons"
-            style={{
-              display: 'flex',
-              gap: '0.75rem',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-            }}
-          >
-            {emailMode !== EMAIL_MODES.WEEKLY_UPDATE && (
+          {emailMode !== EMAIL_MODES.WEEKLY_UPDATE && (
+            <div
+              className="action-buttons"
+              style={{
+                display: 'flex',
+                gap: '0.75rem',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
               <Button
                 color="primary"
                 size="sm"
@@ -1598,25 +1596,27 @@ const IntegratedEmailSender = ({
                   </>
                 )}
               </Button>
-            )}
-            {onClose && (
-              <Button color="secondary" size="sm" onClick={onClose}>
-                <FaTimes className="me-1" />
-                Close
-              </Button>
-            )}
-            {hasDraft() && (
-              <Button
-                color="outline-danger"
-                size="sm"
-                onClick={handleClearDraft}
-                title="Clear saved draft"
-              >
-                <FaTimes className="me-1" />
-                Clear Draft
-              </Button>
-            )}
-          </div>
+
+              {onClose && (
+                <Button color="secondary" size="sm" onClick={onClose}>
+                  <FaTimes className="me-1" />
+                  Close
+                </Button>
+              )}
+
+              {hasDraft() && (
+                <Button
+                  color="outline-danger"
+                  size="sm"
+                  onClick={handleClearDraft}
+                  title="Clear saved draft"
+                >
+                  <FaTimes className="me-1" />
+                  Clear Draft
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -1640,13 +1640,7 @@ const IntegratedEmailSender = ({
           </div>
         </Alert>
       )}
-
-      {/* Weekly Update Composer */}
-      {emailMode === EMAIL_MODES.WEEKLY_UPDATE && (
-        <div style={{ marginTop: '1.5rem' }}>
-          <WeeklyUpdateComposer onClose={onClose} />
-        </div>
-      )}
+      {emailMode === EMAIL_MODES.WEEKLY_UPDATE && <WeeklyUpdateComposer onClose={onClose} />}
 
       {/* Form */}
       {emailMode !== EMAIL_MODES.WEEKLY_UPDATE && (

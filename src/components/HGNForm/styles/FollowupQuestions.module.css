@@ -259,6 +259,12 @@
   border-color: #8aa0b4;
 }
 
+.darkContainer .followUp textarea {
+  background-color: transparent;
+  color: #fff;
+  border-color: #8aa0b4;
+}
+
 .darkContainer .finalButtonContainer button {
   border-color: #3a506b;
   color: #fff;

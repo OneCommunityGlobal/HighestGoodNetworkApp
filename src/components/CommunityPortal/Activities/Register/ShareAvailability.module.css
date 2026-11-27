@@ -1,0 +1,364 @@
+/* =========================
+   THEME VARIABLES
+========================= */
+.overlay {
+  --bg-modal: #fff;
+  --bg-preview: #f8fafc;
+  --bg-input: #fff;
+  --text-main: #1f2937;
+  --text-muted: #334155;
+  --border-color: #d1d5db;
+  --btn-secondary: #e5e7eb;
+  --overlay-color: rgb(0 0 0 / 60%);
+
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  padding: 20px;
+}
+
+/* =========================
+   DARK MODE
+========================= */
+.overlay.darkMode {
+  --bg-modal: #111827;
+  --bg-preview: #1f2937;
+  --bg-input: #1f2937;
+  --text-main: #f9fafb;
+  --text-muted: #e2e8f0;
+  --border-color: #4b5563;
+  --btn-secondary: #374151;
+  --overlay-color: rgb(0 0 0 / 85%);
+}
+
+/* =========================
+   SHARE BUTTON
+========================= */
+.shareButton {
+  background: #0029e2;
+  color: #fff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgb(0 41 226 / 30%);
+  margin-top: 10px;
+}
+
+.shareButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgb(0 41 226 / 40%);
+}
+
+/* =========================
+   MODAL
+========================= */
+.modal {
+  background-color: var(--bg-modal);
+  color: var(--text-main);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 20%);
+  display: flex;
+  flex-direction: column;
+  animation: modal-slide-in 0.25s ease-out;
+}
+
+@keyframes modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modalHeader {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  color: var(--text-muted);
+}
+
+/* =========================
+   EVENT PREVIEW
+========================= */
+.eventPreview {
+  padding: 16px 20px;
+  background: var(--bg-preview);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.previewTitle {
+  color: var(--text-main);
+}
+
+.previewDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.spotsBadge {
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.overlay.darkMode .spotsBadge {
+  color: #93c5fd;
+}
+
+/* =========================
+   CONTENT
+========================= */
+.shareContent {
+  padding: 20px;
+}
+
+.contentLabel {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.actionDescription {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =========================
+   OPTIONS
+========================= */
+.shareOptions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.shareOption {
+  padding: 14px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-modal);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  transition: 0.2s ease;
+}
+
+.shareOption:hover,
+.shareOptionActive {
+  border-color: #4f46e5;
+  background: #e0e7ff;
+  color: #312e81;
+}
+
+.darkMode .shareOption:hover,
+.darkMode .shareOptionActive {
+  background: #312e81;
+  border-color: #818cf8;
+  color: #eef2ff;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.urlInput,
+.textArea,
+.emailInput {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.urlInput::placeholder,
+.textArea::placeholder,
+.emailInput::placeholder {
+  color: var(--text-muted);
+}
+
+.textArea {
+  min-height: 100px;
+  font-family: monospace;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.copyButton {
+  width: 100%;
+  padding: 12px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.copyButton:hover {
+  background: #4338ca;
+}
+
+.socialButtons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.socialButton {
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.twitter {
+  background: #374151;
+}
+
+.twitter:hover {
+  background: #4b5563;
+}
+
+.facebook {
+  background: #1858d6;
+}
+
+.linkedin {
+  background: #005582;
+}
+
+.whatsapp {
+  background: #15803d;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.modalFooter {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.disclaimer {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 70%;
+}
+
+.closeModalButton {
+  padding: 10px 16px;
+  border: none;
+  background: var(--btn-secondary);
+  color: var(--text-main);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* =========================
+   MESSAGES
+========================= */
+.shareMessage {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.shareMessageSuccess {
+  background: #dcfce7;
+  color: #14532d;
+}
+
+.shareMessageError {
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
+.overlay.darkMode .shareMessageSuccess {
+  background: #14532d;
+  color: #dcfce7;
+}
+
+.overlay.darkMode .shareMessageError {
+  background: #7f1d1d;
+  color: #fee2e2;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (width <= 640px) {
+  .shareOptions,
+  .socialButtons {
+    grid-template-columns: 1fr;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .disclaimer {
+    max-width: 100%;
+  }
+}

@@ -1,11 +1,8 @@
-// ...existing code...
-import CustomTooltip from '../CustomTooltip';
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
   ResponsiveContainer,
   Cell,
   LabelList,
@@ -53,8 +50,13 @@ export default function TinyBarChart(props) {
             style: { textAnchor: 'middle' },
           }}
         />
-        {/*<Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />*/}
-        <Tooltip content={<CustomTooltip darkMode={darkMode} />} cursor={{ fill: 'transparent' }} />
+        {/*
+          The hover Tooltip (CustomTooltip) has been removed. It duplicated
+          the amount/percentage/change that renderCustomizedLabel already
+          renders permanently above each bar, and its floating position
+          overlapped that always-visible label whenever a bar was tall
+          enough to push the label down into the tooltip's path.
+        */}
         <Bar dataKey="amount" fill="#8884d8">
           {chartData.map((entry, index) => (
             <Cell key={`cell-${entry.name}-${entry.amount}`} fill={entry.color[index]} />

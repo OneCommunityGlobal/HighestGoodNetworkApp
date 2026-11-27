@@ -9,6 +9,7 @@ import {
   postNewWarning as postNewWarningAction,
   deleteWarningDescription as deleteWarningDescriptionAction,
   updateWarningDescription as updateWarningDescriptionAction,
+  reorderWarningDescriptions as reorderWarningDescriptionsAction,
   editWarningDescription as editWarningDescriptionAction,
 } from '../constants/warning';
 
@@ -28,15 +29,19 @@ export const getWarningsByUserId = userId => {
     }
   };
 };
-export const getSpecialWarnings = userId => {
+export const getSpecialWarnings = (userId, signal) => {
   const url = ENDPOINTS.GET_SPECIAL_WARNINGS(userId);
 
   return async dispatch => {
     try {
-      const res = await axios.get(url);
+      const res = await axios.get(url, { signal });
       const response = await dispatch(getSpecialWarningsAction(res.data.warnings));
       return response.payload;
     } catch (error) {
+      if (signal?.aborted || error?.code === 'ERR_CANCELED') {
+        return { error: 'Request canceled' };
+      }
+
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
       }
@@ -156,6 +161,21 @@ export const updateWarningDescription = warningDescriptionId => {
     try {
       const res = await axios.put(url, { warningDescriptionId });
       const response = await dispatch(updateWarningDescriptionAction(res.data));
+
+      return response.payload;
+    } catch (error) {
+      return { error: error.message };
+    }
+  };
+};
+
+export const reorderWarningDescriptions = warningDescriptions => {
+  const url = ENDPOINTS.REORDER_WARNING_DESCRIPTIONS(warningDescriptions);
+
+  return async dispatch => {
+    try {
+      const res = await axios.put(url, { warningDescriptions });
+      const response = await dispatch(reorderWarningDescriptionsAction(res.data));
 
       return response.payload;
     } catch (error) {
