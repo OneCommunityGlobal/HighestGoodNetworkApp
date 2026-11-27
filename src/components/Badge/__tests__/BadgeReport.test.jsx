@@ -53,6 +53,17 @@ const getBadgeReportProps = overrides => ({
 
 const renderBadgeReport = overrides => render(<BadgeReport {...getBadgeReportProps(overrides)} />);
 
+const expectBadgeInfoVisible = mockBadge => {
+  const badgeName = mockBadge.badge.badgeName;
+  const badgeModifiedDate = mockBadge.lastModified;
+  const badgeCount = mockBadge.count;
+
+  expect(screen.getAllByText(badgeName).length).toBeGreaterThan(0);
+  expect(screen.getAllByText(formatDate(badgeModifiedDate)).length).toBeGreaterThan(0);
+  expect(screen.getAllByText(badgeCount).length).toBeGreaterThan(0);
+  expect(screen.getAllByRole('img').length).toBeGreaterThan(0);
+};
+
 describe('BadgeReport Component', () => {
   test('renders component without any errors', () => {
     renderBadgeReport();
@@ -100,16 +111,7 @@ describe('BadgeReport Component', () => {
   test('renders all the badge information correctly', () => {
     renderBadgeReport();
 
-    mockBadges.forEach((mockBadge, index) => {
-      const badgeName = mockBadge.badge.badgeName;
-      const badgeModifiedDate = mockBadge.lastModified;
-      const badgeCount = mockBadge.count;
-
-      expect(screen.getAllByText(badgeName).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(formatDate(badgeModifiedDate)).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(badgeCount).length).toBeGreaterThan(0);
-      expect(screen.getAllByRole('img').length).toBeGreaterThan(0);
-    });
+    mockBadges.forEach(expectBadgeInfoVisible);
   });
 
   test('test for multiple badges', () => {
@@ -136,16 +138,7 @@ describe('BadgeReport Component', () => {
 
     renderBadgeReport();
 
-    mockBadges.forEach((mockBadge, index) => {
-      const badgeName = mockBadge.badge.badgeName;
-      const badgeModifiedDate = mockBadge.lastModified;
-      const badgeCount = mockBadge.count;
-
-      expect(screen.getAllByText(badgeName).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(formatDate(badgeModifiedDate)).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(badgeCount).length).toBeGreaterThan(0);
-      expect(screen.getAllByRole('img').length).toBeGreaterThan(0);
-    });
+    mockBadges.forEach(expectBadgeInfoVisible);
   });
 
   test('disables selected export until a badge is featured', () => {

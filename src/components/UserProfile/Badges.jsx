@@ -33,6 +33,78 @@ import styles from './Badge.module.css';
 import FeaturedBadges from './FeaturedBadges';
 import { sortBadgeRecords } from '../Badge/badgeListUtils';
 
+const formatLastModified = lastModified => {
+  if (!lastModified || Number.isNaN(new Date(lastModified).getTime())) return '—';
+  if (typeof lastModified === 'string') return lastModified.substring(0, 10);
+  return lastModified.toLocaleString().substring(0, 10);
+};
+
+function BadgeHistoryRow({ value, darkMode, showEarnedDates }) {
+  return (
+    <tr key={value.badge._id}>
+      <td className="badge_image_sm">
+        {' '}
+        <img src={value.badge.imageUrl} id={`popover_${value.badge._id}`} alt="badge" />
+      </td>
+      <UncontrolledPopover trigger="hover" target={`popover_${value.badge._id}`}>
+        <Card className="text-center">
+          <CardImg className="badge_image_lg" src={value.badge?.imageUrl} />
+          <CardBody>
+            <CardTitle
+              style={{
+                fontWeight: 'bold',
+                fontSize: 18,
+                color: '#285739',
+                marginBottom: 15,
+              }}
+            >
+              {value.badge?.badgeName}
+            </CardTitle>
+            <CardText>{value.badge?.description}</CardText>
+          </CardBody>
+        </Card>
+      </UncontrolledPopover>
+      <td>{value.badge.badgeName}</td>
+      <td>{formatLastModified(value.lastModified)}</td>
+      {showEarnedDates && (
+        <td style={{ display: 'flex', alignItems: 'center' }}>
+          <>
+            {' '}
+            <UncontrolledDropdown className="me-2" direction="down">
+              <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
+                Dates
+              </DropdownToggle>
+              <DropdownMenu>
+                {(Array.isArray(value.earnedDate) ? value.earnedDate : []).map((date, index) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <DropdownItem key={`date-${value._id}-${index}`}>{date}</DropdownItem>
+                ))}
+              </DropdownMenu>
+            </UncontrolledDropdown>
+            {value?.hasBadgeDeletionImpact === true && (
+              <>
+                <span id="mismatchExplainationTooltip" style={{ paddingLeft: '3px' }}>
+                  {'  '} *
+                </span>
+                <UncontrolledTooltip
+                  placement="bottom"
+                  target="mismatchExplainationTooltip"
+                  style={{ maxWidth: '300px' }}
+                >
+                  This record contains a mismatch in the badge count and associated dates. It
+                  indicates that a badge has been deleted. Despite the deletion, we retain the
+                  earned date to ensure a record of the badge earned for historical purposes.
+                </UncontrolledTooltip>
+              </>
+            )}
+          </>
+        </td>
+      )}
+      <td>{value.count}</td>
+    </tr>
+  );
+}
+
 export const Badges = props => {
   const { auth, darkMode, displayUserId, authUser } = props;
 
@@ -272,103 +344,14 @@ export const Badges = props => {
                   </thead>
                   <tbody>
                     {sortedBadges.length > 0 ? (
-                      sortedBadges &&
-                      sortedBadges.map(
-                        value =>
-                          value &&
-                          value.badge && (
-                            <tr key={value.badge._id}>
-                              <td className="badge_image_sm">
-                                {' '}
-                                <img
-                                  src={value.badge.imageUrl}
-                                  id={`popover_${value.badge._id}`}
-                                  alt="badge"
-                                />
-                              </td>
-                              <UncontrolledPopover
-                                trigger="hover"
-                                target={`popover_${value.badge._id}`}
-                              >
-                                <Card className="text-center">
-                                  <CardImg
-                                    className="badge_image_lg"
-                                    src={value?.badge?.imageUrl}
-                                  />
-                                  <CardBody>
-                                    <CardTitle
-                                      style={{
-                                        fontWeight: 'bold',
-                                        fontSize: 18,
-                                        color: '#285739',
-                                        marginBottom: 15,
-                                      }}
-                                    >
-                                      {value.badge?.badgeName}
-                                    </CardTitle>
-                                    <CardText>{value.badge?.description}</CardText>
-                                  </CardBody>
-                                </Card>
-                              </UncontrolledPopover>
-                              <td>{value.badge.badgeName}</td>
-                              <td>
-                                {!value.lastModified ||
-                                Number.isNaN(new Date(value.lastModified).getTime())
-                                  ? '—'
-                                  : typeof value.lastModified === 'string'
-                                  ? value.lastModified.substring(0, 10)
-                                  : value.lastModified.toLocaleString().substring(0, 10)}
-                              </td>
-                              <td style={{ display: 'flex', alignItems: 'center' }}>
-                                <>
-                                  {' '}
-                                  <UncontrolledDropdown className="me-2" direction="down">
-                                    <DropdownToggle
-                                      caret
-                                      color="primary"
-                                      style={darkMode ? boxStyleDark : boxStyle}
-                                    >
-                                      Dates
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                      {(Array.isArray(value.earnedDate)
-                                        ? value.earnedDate
-                                        : []
-                                      ).map((date, index) => (
-                                        // eslint-disable-next-line react/no-array-index-key
-                                        <DropdownItem key={`date-${value._id}-${index}`}>
-                                          {date}
-                                        </DropdownItem>
-                                      ))}
-                                    </DropdownMenu>
-                                  </UncontrolledDropdown>
-                                  {value?.hasBadgeDeletionImpact &&
-                                  value?.hasBadgeDeletionImpact === true ? (
-                                    <>
-                                      <span
-                                        id="mismatchExplainationTooltip"
-                                        style={{ paddingLeft: '3px' }}
-                                      >
-                                        {'  '} *
-                                      </span>
-                                      <UncontrolledTooltip
-                                        placement="bottom"
-                                        target="mismatchExplainationTooltip"
-                                        style={{ maxWidth: '300px' }}
-                                      >
-                                        This record contains a mismatch in the badge count and
-                                        associated dates. It indicates that a badge has been
-                                        deleted. Despite the deletion, we retain the earned date to
-                                        ensure a record of the badge earned for historical purposes.
-                                      </UncontrolledTooltip>
-                                    </>
-                                  ) : null}
-                                </>
-                              </td>
-                              <td>{value.count}</td>
-                            </tr>
-                          ),
-                      )
+                      sortedBadges.map(value => (
+                        <BadgeHistoryRow
+                          key={value.badge._id}
+                          value={value}
+                          darkMode={darkMode}
+                          showEarnedDates
+                        />
+                      ))
                     ) : (
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center' }}>{`${
@@ -393,54 +376,10 @@ export const Badges = props => {
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedBadges.length ? (
-                      sortedBadges &&
-                      sortedBadges.map(
-                        value =>
-                          value && (
-                            <tr key={value._id}>
-                              <td className="badge_image_sm">
-                                {' '}
-                                <img
-                                  src={value?.badge.imageUrl}
-                                  id={`popover_${value._id}`}
-                                  alt="badge"
-                                />
-                              </td>
-                              <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                                <Card className="text-center">
-                                  <CardImg
-                                    className="badge_image_lg"
-                                    src={value?.badge?.imageUrl}
-                                  />
-                                  <CardBody>
-                                    <CardTitle
-                                      style={{
-                                        fontWeight: 'bold',
-                                        fontSize: 18,
-                                        color: '#285739',
-                                        marginBottom: 15,
-                                      }}
-                                    >
-                                      {value?.badge?.badgeName}
-                                    </CardTitle>
-                                    <CardText>{value?.badge?.description}</CardText>
-                                  </CardBody>
-                                </Card>
-                              </UncontrolledPopover>
-                              <td>{value?.badge?.badgeName}</td>
-                              <td>
-                                {!value.lastModified ||
-                                Number.isNaN(new Date(value.lastModified).getTime())
-                                  ? '—'
-                                  : typeof value.lastModified === 'string'
-                                  ? value.lastModified.substring(0, 10)
-                                  : value.lastModified.toLocaleString().substring(0, 10)}
-                              </td>
-                              <td>{value?.count}</td>
-                            </tr>
-                          ),
-                      )
+                    {sortedBadges.length > 0 ? (
+                      sortedBadges.map(value => (
+                        <BadgeHistoryRow key={value.badge._id} value={value} darkMode={darkMode} />
+                      ))
                     ) : (
                       <tr>
                         <td colSpan={4} style={{ textAlign: 'center' }}>{`${
