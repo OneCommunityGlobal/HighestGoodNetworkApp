@@ -1231,6 +1231,67 @@
   background-color: #4caf50;
 }
 
+.engagementChartArea {
+  --plot-height: 200px;
+  align-items: flex-start;
+}
+
+.engagementChartArea .yAxisValues,
+.engagementChartArea .barWrapper {
+  height: var(--plot-height);
+}
+
+.engagementChartArea .yAxisValues {
+  gap: 0;
+}
+
+.engagementChartArea .yAxisValue {
+  line-height: 0;
+}
+
+.engagementChartArea .barsContainer {
+  position: relative;
+  align-items: flex-start;
+  height: auto;
+}
+
+.engagementChartArea .bar {
+  min-height: 0;
+}
+
+@media (width <= 600px) {
+  .engagementChartArea {
+    gap: 0.5rem;
+    padding-left: 0;
+  }
+
+  .engagementChartArea .yAxis {
+    min-width: 0;
+    padding-left: 0;
+  }
+
+  .engagementChartArea .yAxisLabel {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    transform: none;
+  }
+
+  .engagementChartArea .barsContainer {
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .engagementChartArea .barGroup {
+    min-width: 0;
+  }
+
+  .engagementChartArea .bar {
+    width: clamp(4px, 2vw, 12px);
+  }
+}
+
 .barLabel {
   font-size: 0.8rem;
   color: #666;
