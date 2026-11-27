@@ -61,6 +61,7 @@ function DateCell({ date, isAvailable, isSelected, darkMode, onDateSelect }) {
     isAvailable && styles.availableDate,
     isAvailable && darkMode && styles.availableDateDark,
     isSelected && styles.selectedDate,
+    isSelected && darkMode && styles.selectedDateDark,
   ]
     .filter(Boolean)
     .join(' ');

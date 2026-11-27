@@ -58,10 +58,11 @@
 }
 
 .highlightCircle {
-  width: 18px;
-  height: 18px;
-  background-color: #ff741e33;
-  border-radius: 9.1px;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background-color: #b84a00;
+  border-radius: 50%;
 }
 
 .dateNumber {
@@ -115,7 +116,7 @@
 .availableDate {
   cursor: pointer;
   border-radius: 4px;
-  min-height: 28px;
+  min-height: 32px;
   background-color: #cfe0ff;
   border: 2px solid #003f87;
 }
@@ -148,31 +149,25 @@
   padding: 0;
 }
 
-.availableDate:hover .dateNumber {
-  text-decoration: underline;
-}
-
-.availableDate.selectedDate {
-  background-color: #003f87;
-  border-color: #003f87;
-  cursor: default;
-}
-
-.availableDate.selectedDate .dateNumber {
-  color: #fff;
-}
-
-.availableDateDark.selectedDate {
-  background-color: #ffd54f;
-  border-color: #ffd54f;
-}
-
-.availableDateDark.selectedDate .dateNumber {
-  color: #0b1a30;
-}
-
 .selectedDate {
   cursor: default;
+}
+
+.selectedDate .dateNumber {
+  color: #fff;
+  font-weight: 600;
+}
+
+.selectedDateDark .highlightCircle {
+  background-color: #ff741e;
+}
+
+.selectedDateDark .dateNumber {
+  color: #000;
+}
+
+.availableDate:hover .dateNumber {
+  text-decoration: underline;
 }
 
 @keyframes fade-in {
