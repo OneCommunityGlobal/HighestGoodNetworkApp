@@ -19,7 +19,6 @@ import { mockActivities } from './mockActivities';
 function ActivityList() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -54,29 +53,14 @@ function ActivityList() {
     };
   }, [darkMode]);
 
-  // Fetch activities (mock fallback)
+  // Load local activities while the API is unavailable.
   useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        throw new Error('API not implemented yet');
-      } catch (err) {
-        setError(err.message);
-
-        const parsed = mockActivities.map(a => ({
-          ...a,
-          _dateObj: new Date(`${a.date}T00:00:00`),
-        }));
-
-        setActivities(parsed);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchActivities();
+    const parsed = mockActivities.map(a => ({
+      ...a,
+      _dateObj: new Date(`${a.date}T00:00:00`),
+    }));
+    setActivities(parsed);
+    setLoading(false);
   }, []);
 
   // Reset pagination on filter/sort change
