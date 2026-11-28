@@ -199,3 +199,17 @@ describe('lesson API and Redux integration', () => {
     expect(store.getState().lessons.lessons).toEqual([item]);
   });
 });
+
+it('rejects over-limit queries without HTTP calls or disturbing the active valid request', async () => {
+  const store = makeStore();
+  await store.dispatch(fetchBMLessons({ tags: ['Safety'], sort: 'likes' }));
+  const state = store.getState().lessons;
+  axios.get.mockClear();
+  expect(
+    await store.dispatch(
+      fetchBMLessons({ tags: Array.from({ length: 21 }, (_, index) => `Tag${index}`) }),
+    ),
+  ).toEqual({ ok: false, error: 'Select at most 20 filter tags.' });
+  expect(axios.get).not.toHaveBeenCalled();
+  expect(store.getState().lessons).toBe(state);
+});

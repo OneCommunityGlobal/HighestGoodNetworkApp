@@ -9,7 +9,8 @@ import {
   DATE_FILTERS,
   LESSON_SORTS,
   serializeLessonQuery,
-  readLessonTags,
+  readLessonTagSelection,
+  MAX_LESSON_FILTER_TAGS,
   normalizeLessonTagCounts,
 } from '~/utils/lessonListQuery';
 import { ENDPOINTS } from '~/utils/URL';
@@ -22,8 +23,10 @@ import LessonListRemovableTag from './LessonListRemovableTag';
 import LessonTagPicker from './LessonTagPicker';
 
 function LessonList({ lessons, darkMode, dispatch, request }) {
+  const [savedSelection] = useState(readLessonTagSelection);
+  const [showRestoreNotice, setShowRestoreNotice] = useState(savedSelection.limitExceeded);
   const [filters, setFilters] = useState(() => ({
-    tags: readLessonTags(),
+    tags: savedSelection.tags,
     tagFilterLogic: 'AND',
     filterOption: '1',
     sortOption: '1',
@@ -120,26 +123,24 @@ function LessonList({ lessons, darkMode, dispatch, request }) {
   const changeFilters = patch => setFilters(previous => ({ ...previous, ...patch }));
   const addTag = tag => {
     setFilters(previous =>
-      previous.tags.length >= 50 ||
-      previous.tags.some(value => value.toLowerCase() === tag.toLowerCase())
+      previous.tags.length >= MAX_LESSON_FILTER_TAGS || previous.tags.includes(tag)
         ? previous
         : { ...previous, tags: [...previous.tags, tag] },
     );
     setInputValue('');
   };
-  const removeTag = tag =>
+  const removeTag = tag => {
     setFilters(previous => ({ ...previous, tags: previous.tags.filter(value => value !== tag) }));
+    setShowRestoreNotice(false);
+  };
   const addDeleteTag = tag => {
-    setTagsToDelete(previous =>
-      previous.some(value => value.toLowerCase() === tag.toLowerCase())
-        ? previous
-        : [...previous, tag],
-    );
+    setTagsToDelete(previous => (previous.includes(tag) ? previous : [...previous, tag]));
     setDeleteInputValue('');
   };
   const removeDeleteTag = tag =>
     setTagsToDelete(previous => previous.filter(value => value !== tag));
   const resetAll = () => {
+    setShowRestoreNotice(false);
     setFilters({ tags: [], tagFilterLogic: 'AND', filterOption: '1', sortOption: '1' });
     setInputValue('');
     setDeleteInputValue('');
@@ -538,13 +539,15 @@ function LessonList({ lessons, darkMode, dispatch, request }) {
                 selectedTags={tags}
                 counts={tagCounts}
                 onSelect={addTag}
-                disabled={
-                  catalogueLoading || Boolean(catalogueError) || isDeleting || tags.length >= 50
-                }
+                maxSelected={MAX_LESSON_FILTER_TAGS}
+                disabled={catalogueLoading || Boolean(catalogueError) || isDeleting}
                 resetKey={resetKey}
               />
-              {tags.length >= 50 && (
-                <output className="d-block mb-3">A maximum of 50 tags can be selected.</output>
+              {showRestoreNotice && (
+                <output className="d-block mb-3">
+                  Your saved filters exceeded the {MAX_LESSON_FILTER_TAGS}-tag limit. Only the first{' '}
+                  {MAX_LESSON_FILTER_TAGS} distinct tags were restored.
+                </output>
               )}
               {tags.length > 0 && (
                 <div

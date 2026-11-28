@@ -3,6 +3,9 @@ import {
   normalizeLessonResponse,
   readLessonTags,
   normalizeLessonTagCounts,
+  MAX_LESSON_FILTER_TAGS,
+  validateLessonFilterTags,
+  readLessonTagSelection,
 } from '../lessonListQuery';
 beforeEach(() => localStorage.clear());
 describe('lesson query contract', () => {
@@ -47,16 +50,17 @@ describe('lesson query contract', () => {
       'lessonListSelectedTags',
       JSON.stringify(['Safety', 'safety', null, '', ' ', ' a ', 'x'.repeat(101)]),
     );
-    expect(readLessonTags()).toEqual(['Safety', ' a ']);
+    expect(readLessonTags()).toEqual(['Safety', 'safety', ' a ']);
     localStorage.setItem('lessonListSelectedTags', '{bad');
     expect(readLessonTags()).toEqual([]);
   });
-  it('limits restored selections to 50', () => {
+  it('limits restored selections to 20 and exposes the saved-filter migration', () => {
     localStorage.setItem(
       'lessonListSelectedTags',
       JSON.stringify(Array.from({ length: 60 }, (_, i) => `t${i}`)),
     );
-    expect(readLessonTags()).toHaveLength(50);
+    expect(readLessonTags()).toHaveLength(MAX_LESSON_FILTER_TAGS);
+    expect(readLessonTagSelection().limitExceeded).toBe(true);
   });
 });
 
@@ -97,4 +101,36 @@ describe('global tag-count contract', () => {
   ])('rejects malformed global counts %j', body =>
     expect(() => normalizeLessonTagCounts(body)).toThrow('Invalid tag-count response.'),
   );
+});
+
+describe('twenty-tag filter boundary and exact identity', () => {
+  const tags = length => Array.from({ length }, (_, index) => `Tag${index}`);
+  it.each([19, 20])('serializes all %i tags as repeated parameters without truncation', length => {
+    const values = tags(length);
+    const params = new URLSearchParams(
+      serializeLessonQuery({ tags: values, tagMatch: 'all', sort: 'likes' }),
+    );
+    expect(params.getAll('tags')).toEqual(values);
+    expect(validateLessonFilterTags(values)).toEqual(values);
+    expect(values).toHaveLength(length);
+  });
+  it('rejects 21 distinct tags instead of silently reducing the query', () => {
+    const values = tags(21);
+    expect(MAX_LESSON_FILTER_TAGS).toBe(20);
+    expect(() => serializeLessonQuery({ tags: values })).toThrow('Select at most 20 filter tags.');
+    expect(values).toHaveLength(21);
+  });
+  it.each(['Safety', null, [null], [1], ['x'.repeat(101)]])(
+    'rejects malformed filter tags %j',
+    value => expect(() => validateLessonFilterTags(value)).toThrow('Filter tags must be strings'),
+  );
+  it('deduplicates exact tags without merging distinct casing or trimming identities', () => {
+    expect(
+      new URLSearchParams(
+        serializeLessonQuery({ tags: ['Safety', 'safety', 'Safety', ' a ', ' '] }),
+      ).getAll('tags'),
+    ).toEqual(['Safety', 'safety', ' a ']);
+    localStorage.setItem('lessonListSelectedTags', JSON.stringify(['Safety', 'safety', 'Safety']));
+    expect(readLessonTagSelection()).toEqual({ tags: ['Safety', 'safety'], limitExceeded: false });
+  });
 });

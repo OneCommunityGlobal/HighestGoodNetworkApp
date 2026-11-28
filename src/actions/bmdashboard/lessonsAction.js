@@ -102,9 +102,15 @@ async function enrichLessons(lessons) {
 }
 
 export const fetchBMLessons = (query = {}, { signal } = {}) => async (dispatch, getState) => {
+  let queryKey;
+  try {
+    queryKey = serializeLessonQuery(query);
+  } catch (error) {
+    // Invalid callers must not send a partial query or replace the current valid request.
+    return { ok: false, error: error.message };
+  }
   const requestId = ++lessonRequestSequence;
   const activeQuery = { ...query, ...(query.tags ? { tags: [...query.tags] } : {}) };
-  const queryKey = serializeLessonQuery(activeQuery);
   dispatch({ type: BM_LESSONS_REQUEST, requestId, query: activeQuery, queryKey });
   try {
     const queryString = queryKey ? `?${queryKey}` : '';

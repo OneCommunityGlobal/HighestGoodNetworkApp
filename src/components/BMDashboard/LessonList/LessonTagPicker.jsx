@@ -22,6 +22,7 @@ export default function LessonTagPicker({
   onSelect,
   disabled,
   resetKey,
+  maxSelected,
 }) {
   const root = useRef(null);
   const activeOption = useRef(null);
@@ -31,9 +32,7 @@ export default function LessonTagPicker({
     () =>
       availableTags
         .filter(
-          tag =>
-            tag.toLowerCase().includes(value.toLowerCase()) &&
-            !selectedTags.some(selected => selected.toLowerCase() === tag.toLowerCase()),
+          tag => tag.toLowerCase().includes(value.toLowerCase()) && !selectedTags.includes(tag),
         )
         .sort((a, b) => (counts ? (counts[b] || 0) - (counts[a] || 0) : 0)),
     [availableTags, selectedTags, value, counts],
@@ -51,12 +50,14 @@ export default function LessonTagPicker({
     document.addEventListener('pointerdown', outside);
     return () => document.removeEventListener('pointerdown', outside);
   }, []);
+  const limitReached = maxSelected !== undefined && selectedTags.length >= maxSelected;
   const select = tag => {
+    if (disabled || limitReached || selectedTags.includes(tag)) return;
     onSelect(tag);
     setOpen(false);
     setActive(0);
   };
-  const expanded = open && !disabled;
+  const expanded = open && !disabled && !limitReached;
   const highlighted = Math.min(active, Math.max(options.length - 1, 0));
   useEffect(() => {
     if (expanded) activeOption.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
@@ -82,14 +83,19 @@ export default function LessonTagPicker({
         type="text"
         value={value}
         disabled={disabled}
+        readOnly={limitReached}
+        aria-disabled={disabled || limitReached}
+        aria-describedby={limitReached ? `${id}-limit` : undefined}
         className={`form-control ${styles.formControl}`}
         placeholder="Search or select a tag"
         onChange={event => {
+          if (limitReached) return;
           onInputChange(event.target.value);
           setOpen(true);
           setActive(0);
         }}
         onFocus={() => setOpen(true)}
+        onClick={() => setOpen(true)}
         onKeyDown={event => {
           if (event.key === 'Escape') {
             event.preventDefault();
@@ -106,6 +112,12 @@ export default function LessonTagPicker({
           }
         }}
       />
+      {limitReached && (
+        <output id={`${id}-limit`} className="d-block mt-2">
+          A maximum of {maxSelected} tags can be selected. Remove a tag or use Reset All to select
+          others.
+        </output>
+      )}
       {expanded && (
         <div
           id={`${id}-options`}

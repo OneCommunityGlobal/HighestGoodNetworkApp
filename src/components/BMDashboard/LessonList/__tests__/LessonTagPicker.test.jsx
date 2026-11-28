@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import LessonTagPicker from '../LessonTagPicker';
+import userEvent from '@testing-library/user-event';
 let scroll;
 let original;
 beforeEach(() => {
@@ -60,4 +61,39 @@ it('requests scrolling as keyboard navigation moves beyond the visible portion o
   fireEvent.keyDown(input, { key: 'Escape' });
   expect(input.getAttribute('aria-expanded')).toBe('false');
   expect(input.getAttribute('aria-activedescendant')).toBeNull();
+});
+
+it('reopens on click while focused for consecutive mouse and keyboard selections', async () => {
+  render(<Picker />);
+  const input = screen.getByRole('combobox');
+  await userEvent.click(input);
+  await userEvent.click(screen.getByRole('option', { name: 'Tag 00' }));
+  expect(input).toHaveFocus();
+  expect(screen.queryByRole('listbox')).toBeNull();
+  await userEvent.click(input);
+  expect(screen.getByRole('listbox')).toBeTruthy();
+  expect(screen.queryByRole('option', { name: 'Tag 00' })).toBeNull();
+  await userEvent.click(screen.getByRole('option', { name: 'Tag 01' }));
+  expect(input).toHaveFocus();
+  await userEvent.click(input);
+  fireEvent.keyDown(input, { key: 'Enter' });
+  expect(screen.queryByRole('listbox')).toBeNull();
+  expect(input).toHaveFocus();
+  fireEvent.keyDown(input, { key: 'ArrowDown' });
+  expect(screen.queryByRole('option', { name: 'Tag 02' })).toBeNull();
+  expect(screen.getByRole('option', { name: 'Tag 03' })).toBeTruthy();
+});
+it('allows reopening after Escape and still dismisses on outside pointer interaction', async () => {
+  render(<Picker />);
+  const input = screen.getByRole('combobox');
+  await userEvent.click(input);
+  fireEvent.keyDown(input, { key: 'Escape' });
+  expect(input).toHaveFocus();
+  expect(input.getAttribute('aria-expanded')).toBe('false');
+  await userEvent.click(input);
+  expect(input.getAttribute('aria-expanded')).toBe('true');
+  fireEvent.pointerDown(document.body);
+  expect(input.getAttribute('aria-expanded')).toBe('false');
+  await userEvent.click(input);
+  expect(screen.getByRole('listbox')).toBeTruthy();
 });

@@ -11,6 +11,7 @@ import LessonList from '../LessonListForm';
 import LessonTagPicker from '../LessonTagPicker';
 import { updateBMLesson, deleteBMLesson } from '~/actions/bmdashboard/lessonsAction';
 import postNewLesson from '~/actions/bmdashboard/lessonActions';
+import { likeLessonAction } from '~/actions/bmdashboard/lessonLikesActions';
 
 vi.mock('axios', () => ({
   default: { get: vi.fn(), delete: vi.fn(), put: vi.fn(), post: vi.fn() },
@@ -266,10 +267,10 @@ describe('Lesson List backend filters', () => {
     results = Array.from({ length: 105 }, (_, index) => ({
       _id: String(index),
       title: `Server row ${index}`,
-      tags: ['Safety'],
+      tags: ['Safety', 'safety'],
       content: '<p>Content, "quoted"</p>',
     }));
-    localStorage.setItem('lessonListSelectedTags', JSON.stringify(['Safety', 'Wood']));
+    localStorage.setItem('lessonListSelectedTags', JSON.stringify(['Safety', 'safety']));
     let blob;
     URL.createObjectURL = vi.fn(value => {
       blob = value;
@@ -292,7 +293,8 @@ describe('Lesson List backend filters', () => {
     expect(csv).toContain('Server row 104');
     expect(csv.indexOf('Server row 0')).toBeLessThan(csv.indexOf('Server row 104'));
     expect(csv).toContain('Tag Frequency');
-    expect(csv).toContain('AND');
+    expect(csv).toContain('Tags (AND): Safety, safety');
+    expect(csv).toContain('Safety; safety');
     expect(csv).toContain('""quoted""');
     expect(listQueries()).toHaveLength(2);
     click.mockRestore();
@@ -318,14 +320,15 @@ describe('accessible tag suggestions', () => {
       />
     );
   }
-  it('ranks global counts, excludes selected tags case-insensitively and selects by keyboard', () => {
+  it('ranks global counts, excludes exact selected tags and selects by keyboard', () => {
     render(<Picker />);
     const input = screen.getByRole('combobox');
     fireEvent.focus(input);
-    expect(screen.queryByRole('option', { name: 'Safety (0)' })).toBeNull();
+    expect(screen.getByRole('option', { name: 'Safety (0)' })).toBeTruthy();
     expect(screen.getAllByRole('option').map(option => option.textContent)).toEqual([
       'Metal (4)',
       'Wood (1)',
+      'Safety (0)',
     ]);
     fireEvent.keyDown(input, { key: 'ArrowDown' });
     fireEvent.keyDown(input, { key: 'Enter' });
@@ -386,14 +389,27 @@ describe('global tag-count metadata', () => {
         .getAll('tags'),
     ).toEqual(['safety']);
     fireEvent.focus(input);
+    fireEvent.click(screen.getByRole('option', { name: 'Safety (3)' }));
+    await ready();
+    expect(
+      listQueries()
+        .at(-1)
+        .getAll('tags'),
+    ).toEqual(['safety', 'Safety']);
+    expect(JSON.parse(localStorage.getItem('lessonListSelectedTags'))).toEqual([
+      'safety',
+      'Safety',
+    ]);
+    fireEvent.focus(input);
     expect(screen.queryByRole('option', { name: 'Safety (3)' })).toBeNull();
+    expect(screen.queryByRole('option', { name: 'safety (1)' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Remove safety tag' }));
     await ready();
     expect(
       listQueries()
         .at(-1)
         .getAll('tags'),
-    ).toEqual([]);
+    ).toEqual(['Safety']);
   });
   it('accepts an empty collection without substituting counts from lesson results', async () => {
     const fallback = axios.get.getMockImplementation();
@@ -424,7 +440,7 @@ describe('global tag-count metadata', () => {
     await ready();
     expect(countRequests()).toHaveLength(2);
   });
-  it('refreshes after successful create, edit and delete but not failed mutations or query refreshes', async () => {
+  it('refreshes after creation/deletion but not content edits, likes, or failed mutations', async () => {
     const { store } = mount();
     await ready();
     await act(async () => {
@@ -436,17 +452,28 @@ describe('global tag-count metadata', () => {
       await store.dispatch(updateBMLesson('second', 'Edited'));
     });
     await ready();
-    expect(countRequests()).toHaveLength(3);
+    expect(countRequests()).toHaveLength(2);
+    await act(async () => {
+      await store.dispatch(updateBMLesson('not-in-results', 'Edited outside this filter'));
+    });
+    await ready();
+    expect(countRequests()).toHaveLength(2);
+    axios.put.mockResolvedValueOnce({ status: 200, data: { status: 'success' } });
+    await act(async () => {
+      await store.dispatch(likeLessonAction('second', 'user'));
+    });
+    await ready();
+    expect(countRequests()).toHaveLength(2);
     await act(async () => {
       await store.dispatch(deleteBMLesson('second'));
     });
     await ready();
-    expect(countRequests()).toHaveLength(4);
+    expect(countRequests()).toHaveLength(3);
     axios.put.mockRejectedValueOnce(Error('offline'));
     await act(async () => {
       await store.dispatch(updateBMLesson('second', 'Not saved'));
     });
-    expect(countRequests()).toHaveLength(4);
+    expect(countRequests()).toHaveLength(3);
   });
   it('ignores an older metadata response after a newer mutation refresh', async () => {
     const fallback = axios.get.getMockImplementation();
@@ -531,4 +558,144 @@ it('neutralizes formula text in the downloaded CSV without truncating or changin
   expect(csv).toContain('"\'+SUM(1,2)"');
   expect(csv.indexOf("'=1+1")).toBeLessThan(csv.indexOf('Server second'));
   click.mockRestore();
+});
+
+describe('filter selection limit', () => {
+  const allTags = Array.from({ length: 21 }, (_, index) => `Tag ${String(index).padStart(2, '0')}`);
+  const catalogue = () => {
+    const fallback = axios.get.getMockImplementation();
+    axios.get.mockImplementation(url =>
+      url === ENDPOINTS.BM_TAG_COUNTS
+        ? Promise.resolve({ data: allTags.map((tag, index) => ({ tag, count: 21 - index })) })
+        : fallback(url),
+    );
+  };
+  const selectedTags = () =>
+    listQueries()
+      .at(-1)
+      .getAll('tags');
+  it('supports selecting the nineteenth tag without prematurely showing the limit', async () => {
+    catalogue();
+    localStorage.setItem('lessonListSelectedTags', JSON.stringify(allTags.slice(0, 18)));
+    mount();
+    await ready();
+    choose('Filter tags', 'Tag 18 (3)');
+    await ready();
+    expect(selectedTags()).toEqual(allTags.slice(0, 19));
+    expect(screen.queryByText(/A maximum of 20 tags/)).toBeNull();
+  });
+  it.each(['mouse', 'keyboard'])(
+    'blocks a 21st tag through %s while keeping chips removable',
+    async interaction => {
+      catalogue();
+      localStorage.setItem('lessonListSelectedTags', JSON.stringify(allTags.slice(0, 19)));
+      mount();
+      await ready();
+      const input = screen.getByRole('combobox', { name: 'Filter tags' });
+      fireEvent.focus(input);
+      const twenty = screen.getByRole('option', { name: 'Tag 19 (2)' });
+      const twentyOne = screen.getByRole('option', { name: 'Tag 20 (1)' });
+      if (interaction === 'mouse') {
+        fireEvent.click(twenty);
+        fireEvent.click(twentyOne);
+      } else {
+        fireEvent.keyDown(input, { key: 'Enter' });
+        fireEvent.keyDown(input, { key: 'ArrowDown' });
+        fireEvent.keyDown(input, { key: 'Enter' });
+      }
+      await ready();
+      expect(selectedTags()).toEqual(allTags.slice(0, 20));
+      expect(input.readOnly).toBe(true);
+      expect(input.getAttribute('aria-disabled')).toBe('true');
+      expect(input.getAttribute('aria-describedby')).toBe('tagInput-limit');
+      expect(screen.getByText(/A maximum of 20 tags can be selected/)).toBeTruthy();
+      expect(screen.queryByRole('listbox')).toBeNull();
+      fireEvent.click(input);
+      expect(screen.queryByRole('listbox')).toBeNull();
+      fireEvent.change(input, { target: { value: 'Tag 20' } });
+      fireEvent.keyDown(input, { key: 'Enter' });
+      fireEvent.click(twentyOne);
+      expect(listQueries().every(params => params.getAll('tags').length <= 20)).toBe(true);
+      expect(screen.getByRole('button', { name: 'Remove Tag 00 tag' })).toBeTruthy();
+    },
+  );
+  it('allows replacement after exact removal and Reset All clears a full selection', async () => {
+    catalogue();
+    localStorage.setItem('lessonListSelectedTags', JSON.stringify(allTags.slice(0, 20)));
+    mount(true);
+    await ready();
+    const input = screen.getByRole('combobox', { name: 'Filter tags' });
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Tag 00 tag' }));
+    await ready();
+    expect(input.readOnly).toBe(false);
+    fireEvent.change(input, { target: { value: 'Tag 20' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    await ready();
+    expect(selectedTags()).toEqual([...allTags.slice(1, 20), 'Tag 20']);
+    fireEvent.click(screen.getByLabelText('Match ANY tag (OR)'));
+    await ready();
+    fireEvent.click(screen.getByRole('button', { name: 'Reset All' }));
+    await ready();
+    expect(selectedTags()).toEqual([]);
+    expect(
+      listQueries()
+        .at(-1)
+        .get('tagMatch'),
+    ).toBe('all');
+    expect(input.value).toBe('');
+    expect(input.readOnly).toBe(false);
+    expect(localStorage.getItem('lessonListSelectedTags')).toBeNull();
+    expect(screen.queryByText(/A maximum of 20 tags/)).toBeNull();
+    expect(axios.get.mock.calls.filter(([url]) => url === ENDPOINTS.BM_TAG_COUNTS)).toHaveLength(1);
+  });
+  it('announces migration of oversized saved selections before sending a valid query', async () => {
+    catalogue();
+    localStorage.setItem('lessonListSelectedTags', JSON.stringify(allTags));
+    mount();
+    await ready();
+    expect(screen.getByText(/Only the first 20 distinct tags were restored/)).toBeTruthy();
+    expect(selectedTags()).toEqual(allTags.slice(0, 20));
+    fireEvent.click(screen.getByRole('button', { name: 'Reset All' }));
+    await ready();
+    expect(screen.queryByText(/Your saved filters exceeded/)).toBeNull();
+  });
+  it('does not apply the filter cap to the Delete Tags workflow', async () => {
+    catalogue();
+    mount();
+    await ready();
+    const deleteInput = screen.getByRole('combobox', { name: 'Tags to delete' });
+    for (const tag of allTags) {
+      fireEvent.click(deleteInput);
+      fireEvent.click(screen.getByRole('option', { name: tag }));
+    }
+    expect(screen.getByRole('combobox', { name: 'Tags to delete' }).readOnly).toBe(false);
+    expect(screen.queryByText(/A maximum of 20 tags/)).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm deletion' }));
+    await waitFor(() => expect(axios.delete).toHaveBeenCalledTimes(21));
+    await ready();
+    expect(axios.get.mock.calls.filter(([url]) => url === ENDPOINTS.BM_TAG_COUNTS)).toHaveLength(2);
+  });
+});
+
+it('deletes an exact tag without dropping a differently cased selected filter', async () => {
+  localStorage.setItem('lessonListSelectedTags', JSON.stringify(['Safety', 'safety']));
+  mount();
+  await ready();
+  choose('Tags to delete', 'Safety');
+  fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Confirm deletion' }));
+  await waitFor(() =>
+    expect(
+      listQueries()
+        .at(-1)
+        .getAll('tags'),
+    ).toEqual(['safety']),
+  );
+  await ready();
+  expect(axios.delete).toHaveBeenCalledWith(`${ENDPOINTS.BM_TAGS}/Safety`);
+  expect(screen.queryByRole('button', { name: 'Remove Safety tag' })).toBeNull();
+  expect(screen.getByRole('button', { name: 'Remove safety tag' })).toBeTruthy();
+  expect(JSON.parse(localStorage.getItem('lessonListSelectedTags'))).toEqual(['safety']);
+  expect(axios.get.mock.calls.filter(([url]) => url === ENDPOINTS.BM_TAG_COUNTS)).toHaveLength(2);
 });

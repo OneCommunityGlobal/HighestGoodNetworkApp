@@ -54,12 +54,11 @@ function updateLessonContent(state, action) {
 
     return {
       ...state,
-      tagMetadataVersion: (state.tagMetadataVersion || 0) + 1,
       lessons: [...state.lessons.slice(0, index), updatedLesson, ...state.lessons.slice(index + 1)],
     };
   }
 
-  return { ...state, tagMetadataVersion: (state.tagMetadataVersion || 0) + 1 };
+  return state;
 }
 
 function startOptimisticLike(state, action) {
