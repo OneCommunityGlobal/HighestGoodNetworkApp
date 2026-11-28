@@ -8,6 +8,7 @@ const TaskCardView = ({
   tasks,
   onMarkAsDone,
   onLogTime,
+  onUploadComplete,
   intermediateTasks,
   expandedTasks,
   onToggleIntermediateTasks,
@@ -30,6 +31,7 @@ const TaskCardView = ({
           task={task}
           onMarkAsDone={onMarkAsDone}
           onLogTime={onLogTime}
+          onUploadComplete={onUploadComplete}
           intermediateTasks={intermediateTasks[task.id] || []}
           isExpanded={expandedTasks[task.id] || false}
           onToggleIntermediateTasks={onToggleIntermediateTasks}

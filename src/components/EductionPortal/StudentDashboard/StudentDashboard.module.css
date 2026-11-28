@@ -12,6 +12,12 @@
   padding: 2rem 1rem;
 }
 
+@media (width >= 1200px) {
+  .dashboard .mainContainer {
+    max-width: 100%;
+  }
+}
+
 .header {
   text-align: center;
   margin-bottom: 3rem;

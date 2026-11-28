@@ -190,6 +190,7 @@ const StudentDashboard = () => {
     tasks: filteredTasks,
     onMarkAsDone: handleMarkAsDone,
     onLogTime: handleLogTime,
+    onUploadComplete: () => setActiveFilter('completed'),
     intermediateTasks,
     expandedTasks,
     onToggleIntermediateTasks: toggleIntermediateTasks,
