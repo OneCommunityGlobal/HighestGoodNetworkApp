@@ -169,19 +169,27 @@
   border-color: rgba(156, 231, 203, 0.45);
 }
 
+/* Solid dark tints (not translucent), so the cards stay dark on any parent background */
 .darkMode .varianceOverrun {
-  background: rgba(231, 74, 59, 0.18);
-  border-color: rgba(255, 183, 175, 0.3);
+  background: #3a2328;
+  border-color: rgb(255 183 175 / 45%);
 }
 
 .darkMode .varianceUnder {
-  background: rgba(28, 200, 138, 0.18);
-  border-color: rgba(156, 231, 203, 0.3);
+  background: #1d3a33;
+  border-color: rgb(156 231 203 / 45%);
 }
 
 .darkMode .varianceNeutral {
-  background: rgba(160, 170, 190, 0.12);
-  border-color: rgba(160, 170, 190, 0.28);
+  background: #2b3445;
+  border-color: rgb(160 170 190 / 40%);
+}
+
+.darkMode .varianceCardCategory,
+.darkMode .varianceCardRow,
+.darkMode .varianceCardPct,
+.darkMode .varianceCardStatus {
+  color: #f3f4f6;
 }
 
 /* Keep dashed grid lines visible in dark mode. Overrides the app-wide

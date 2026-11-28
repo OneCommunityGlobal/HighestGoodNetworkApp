@@ -848,11 +848,18 @@
   border-color: rgb(255 255 255 / 10%) !important;
 }
 
-/* Keep all Project Status text readable on the preserved pastel status cards in dark mode. */
-.darkMode .statusCard .projectDurationDescription,
-.darkMode .statusCard .weeklyCardTitle,
+/* Pills stay pastel in both themes, so the value stays dark */
 .darkMode .statusCard .weeklyStatusValue {
   color: #000 !important;
+}
+
+/* Dark cards: light title and description */
+.darkMode .statusCard .weeklyCardTitle {
+  color: #f3f4f6 !important;
+}
+
+.darkMode .statusCard .projectDurationDescription {
+  color: #cbd5e1 !important;
 }
 
 .darkMode .statusCard .projectStatusUnavailableInfo {
@@ -863,9 +870,10 @@
   color: #000 !important;
 }
 
-/* Preserve semantic comparison colors against broad dark-mode inherited text rules. */
+/* Preserve semantic comparison colors against broad dark-mode inherited text rules,
+   using lighter versions that stay readable on the dark cards. */
 .darkMode .statusCard :global(.weekly-status-change) {
-  color: var(--project-status-change-color) !important;
+  color: var(--project-status-change-color-dark, var(--project-status-change-color)) !important;
 }
 
 /* Tooltip styles */
@@ -1323,4 +1331,24 @@
 
 .darkMode .noCardsMessage {
   color: #cfd7e3;
+}
+
+/* Status cards (Project Status and Financials: Overview): pastel in light mode.
+   The colors come from CSS variables set on each card, so dark mode can override them. */
+.weeklyProjectSummaryCard.statusCard {
+  background-color: var(--status-card-bg, #fff);
+}
+
+.statusCard .weeklyStatusButton {
+  background-color: var(--status-button-bg, #e5e7eb);
+}
+
+/* Dark mode: dark card with a colored top accent; the value pill keeps its color */
+.darkMode .weeklyProjectSummaryCard.statusCard {
+  background-color: var(--card-bg);
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-top: 4px solid var(--status-button-bg, #64748b);
+
+  /* !important: the earlier dark-mode .statusCard rule sets every border color with !important */
+  border-top-color: var(--status-button-bg, #64748b) !important;
 }
