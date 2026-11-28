@@ -1277,8 +1277,16 @@ export default (
         />
         {/* /*  for support team*/}
         <Route path="/support/login" component={SupportLogin} />
-        <Route path="/support/dashboard" component={SupportDashboard} />
-        <Route path="/support/log/:studentId" component={SupportLogViewer} />
+        <ProtectedRoute
+          path="/support/dashboard"
+          component={SupportDashboard}
+          routePermissions={[permissions.readActivityLogs]}
+        />
+        <ProtectedRoute
+          path="/support/log/:studentId"
+          component={SupportLogViewer}
+          routePermissions={[permissions.readActivityLogs]}
+        />
         {/* PR Routes */}
         <ProtectedRoute
           path="/pr-team-analytics/popular-prs"
