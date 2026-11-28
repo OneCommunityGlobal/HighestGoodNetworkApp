@@ -20,14 +20,14 @@ const fileTypes = { 'application/pdf': 'PDF', 'image/jpeg': 'JPG', 'image/png': 
 const maxSize = 5 * 1024 * 1024;
 const uploadError = 'Choose a PDF, JPG or PNG file up to 5 MB.';
 
-function EquipmentAttachments({ equipmentId }) {
+function EquipmentAttachments({ equipmentId, canManage, onAuditLoaded }) {
   const path = `${ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId)}/attachments`;
   const [files, setFiles] = useState(null);
   const [revision, setRevision] = useState(0);
   const [listError, setListError] = useState('');
   const [actionError, setActionError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [uploadOpen, setUploadOpen] = useState(false);
+  const [editor, setEditor] = useState(null);
   const [preview, setPreview] = useState(null);
   const [category, setCategory] = useState('');
   const [file, setFile] = useState(null);
@@ -38,7 +38,10 @@ function EquipmentAttachments({ equipmentId }) {
     axios
       .get(path)
       .then(({ data }) => {
-        if (current) setFiles(data);
+        if (current) {
+          setFiles(data.files);
+          onAuditLoaded({ equipmentId, entries: data.auditHistory });
+        }
       })
       .catch(() => {
         if (current) setListError('Could not load attachments.');
@@ -46,7 +49,7 @@ function EquipmentAttachments({ equipmentId }) {
     return () => {
       current = false;
     };
-  }, [path, revision]);
+  }, [path, revision, equipmentId, onAuditLoaded]);
 
   useEffect(
     () => () => {
@@ -55,23 +58,36 @@ function EquipmentAttachments({ equipmentId }) {
     [preview],
   );
 
-  const upload = async event => {
+  const save = async event => {
     event.preventDefault();
-    if (!file || !Object.hasOwn(fileTypes, file.type) || file.size === 0 || file.size > maxSize) {
+    if (
+      editor.mode === 'add' &&
+      (!file || !Object.hasOwn(fileTypes, file.type) || file.size === 0 || file.size > maxSize)
+    ) {
       setActionError(uploadError);
       return;
     }
     setBusy(true);
     setActionError('');
-    const data = new FormData();
-    data.append('category', category);
-    data.append('file', file);
     try {
-      await axios.post(path, data, { headers: { 'Content-Type': 'multipart/form-data' } });
-      setUploadOpen(false);
+      if (editor.mode === 'edit') {
+        await axios.patch(`${path}/${editor.attachment._id}`, {
+          category,
+          originalCategory: editor.attachment.category,
+        });
+      } else if (editor.mode === 'remove') {
+        await axios.delete(`${path}/${editor.attachment._id}`);
+      } else {
+        const data = new FormData();
+        data.append('category', category);
+        data.append('file', file);
+        await axios.post(path, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+      }
+      setEditor(null);
+      onAuditLoaded(null);
       setRevision(value => value + 1);
     } catch (error) {
-      setActionError(error.response?.data?.message || 'Could not upload the attachment.');
+      setActionError(error.response?.data?.message || 'Could not save the attachment change.');
     } finally {
       setBusy(false);
     }
@@ -101,26 +117,33 @@ function EquipmentAttachments({ equipmentId }) {
     }
   };
 
-  const openUpload = () => {
+  const openEditor = (mode, attachment) => {
     setActionError('');
     setFile(null);
-    setCategory('');
-    setUploadOpen(true);
+    setCategory(attachment?.category || '');
+    setEditor({ mode, attachment });
+  };
+  const editorLabels = {
+    add: { title: 'Add attachment', submit: 'Upload' },
+    edit: { title: 'Edit attachment category', submit: 'Save' },
+    remove: { title: 'Remove attachment', submit: 'Remove' },
   };
 
   return (
     <section className={styles.recordSections} aria-labelledby="equipment-attachments">
       <div className={styles.recordSection}>
         <h2 id="equipment-attachments">Attachments</h2>
-        <Button onClick={openUpload} disabled={busy}>
-          Add attachment
-        </Button>
+        {canManage && (
+          <Button onClick={() => openEditor('add')} disabled={busy}>
+            Add attachment
+          </Button>
+        )}
         {listError && (
           <p role="alert">
             {listError} <Button onClick={() => setRevision(value => value + 1)}>Retry</Button>
           </p>
         )}
-        {!uploadOpen && actionError && <p role="alert">{actionError}</p>}
+        {!editor && actionError && <p role="alert">{actionError}</p>}
         {!files && !listError && <p role="status">Loading attachments…</p>}
         {files?.length === 0 && <p>No attachments uploaded.</p>}
         {files?.length > 0 && (
@@ -172,6 +195,28 @@ function EquipmentAttachments({ equipmentId }) {
                     >
                       Download
                     </Button>
+                    {canManage && (
+                      <>
+                        <Button
+                          color="link"
+                          size="sm"
+                          disabled={busy}
+                          aria-label={`Edit category for ${attachment.name}`}
+                          onClick={() => openEditor('edit', attachment)}
+                        >
+                          Edit category
+                        </Button>
+                        <Button
+                          color="link"
+                          size="sm"
+                          disabled={busy}
+                          aria-label={`Remove ${attachment.name}`}
+                          onClick={() => openEditor('remove', attachment)}
+                        >
+                          Remove
+                        </Button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -179,46 +224,63 @@ function EquipmentAttachments({ equipmentId }) {
           </Table>
         )}
       </div>
-      {uploadOpen && (
-        <Modal isOpen toggle={busy ? undefined : () => setUploadOpen(false)}>
-          <Form onSubmit={upload}>
-            <ModalHeader>Add attachment</ModalHeader>
+      {editor && (
+        <Modal
+          isOpen
+          labelledBy="equipment-attachment-editor"
+          toggle={busy ? undefined : () => setEditor(null)}
+        >
+          <Form onSubmit={save}>
+            <ModalHeader id="equipment-attachment-editor">
+              {editorLabels[editor.mode].title}
+            </ModalHeader>
             <ModalBody>
-              <FormGroup>
-                <Label for="equipment-attachment-category">Category</Label>
-                <Input
-                  id="equipment-attachment-category"
-                  type="select"
-                  value={category}
-                  required
-                  disabled={busy}
-                  onChange={event => setCategory(event.target.value)}
-                >
-                  <option value="">Select a category</option>
-                  {categories.map(choice => (
-                    <option key={choice}>{choice}</option>
-                  ))}
-                </Input>
-              </FormGroup>
-              <FormGroup>
-                <Label for="equipment-attachment-file">File (PDF, JPG or PNG, up to 5 MB)</Label>
-                <Input
-                  id="equipment-attachment-file"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  required
-                  disabled={busy}
-                  onChange={event => setFile(event.target.files[0])}
-                />
-              </FormGroup>
+              {editor.mode === 'remove' && (
+                <p>Remove {editor.attachment.name} from this equipment?</p>
+              )}
+              {editor.mode !== 'remove' && (
+                <FormGroup>
+                  <Label for="equipment-attachment-category">Category</Label>
+                  <Input
+                    id="equipment-attachment-category"
+                    type="select"
+                    value={category}
+                    required
+                    disabled={busy}
+                    onChange={event => setCategory(event.target.value)}
+                  >
+                    <option value="">Select a category</option>
+                    {categories.map(choice => (
+                      <option key={choice}>{choice}</option>
+                    ))}
+                  </Input>
+                </FormGroup>
+              )}
+              {editor.mode === 'add' && (
+                <FormGroup>
+                  <Label for="equipment-attachment-file">File (PDF, JPG or PNG, up to 5 MB)</Label>
+                  <Input
+                    id="equipment-attachment-file"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    required
+                    disabled={busy}
+                    onChange={event => setFile(event.target.files[0])}
+                  />
+                </FormGroup>
+              )}
               {actionError && <p role="alert">{actionError}</p>}
             </ModalBody>
             <ModalFooter>
-              <Button type="button" disabled={busy} onClick={() => setUploadOpen(false)}>
+              <Button type="button" disabled={busy} onClick={() => setEditor(null)}>
                 Cancel
               </Button>
-              <Button type="submit" color="primary" disabled={busy}>
-                {busy ? 'Uploading…' : 'Upload'}
+              <Button
+                type="submit"
+                color={editor.mode === 'remove' ? 'danger' : 'primary'}
+                disabled={busy}
+              >
+                {busy ? 'Working…' : editorLabels[editor.mode].submit}
               </Button>
             </ModalFooter>
           </Form>

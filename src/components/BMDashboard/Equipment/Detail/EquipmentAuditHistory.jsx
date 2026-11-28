@@ -46,8 +46,15 @@ function downloadAuditHistory(equipmentId, entries) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function EquipmentAuditHistory({ equipmentId, entries = [], projectOptions = [] }) {
-  const newestFirst = [...entries].reverse();
+function EquipmentAuditHistory({
+  equipmentId,
+  entries = [],
+  projectOptions = [],
+  exportReady = true,
+}) {
+  const newestFirst = [...entries]
+    .reverse()
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   const projectNames = new Map(projectOptions.map(({ value, label }) => [value, label]));
   const displayValue = (field, value) => {
     if (!value) return '—';
@@ -61,7 +68,7 @@ function EquipmentAuditHistory({ equipmentId, entries = [], projectOptions = [] 
           type="button"
           color="secondary"
           outline
-          disabled={entries.length === 0}
+          disabled={!exportReady || entries.length === 0}
           onClick={() => downloadAuditHistory(equipmentId, newestFirst)}
         >
           Export CSV

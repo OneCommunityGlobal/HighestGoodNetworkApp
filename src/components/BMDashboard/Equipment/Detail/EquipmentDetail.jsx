@@ -116,6 +116,9 @@ function EquipmentDetail() {
   const dispatch = useDispatch();
 
   const equipment = useSelector(state => state.bmEquipments.singleEquipment);
+  const role = useSelector(state => state.auth.user?.role);
+  const canManage = ['Owner', 'Administrator', 'Manager'].includes(role);
+  const [attachmentAudit, setAttachmentAudit] = useState(null);
   const { loading: updateLoading } = useSelector(state => state.bmEquipments.updateEquipment);
   const projects = useSelector(state => state.bmProjects);
   const equipmentTypes = useSelector(state => state.bmInvTypes.list);
@@ -437,7 +440,7 @@ function EquipmentDetail() {
     >
       <header className={styles.equipmentDetailPageHeader}>
         <h1>Equipment Detail Page</h1>
-        {!isEditing && (
+        {!isEditing && canManage && (
           <Button color="primary" className={styles.editBtn} onClick={handleEdit}>
             Edit
           </Button>
@@ -461,15 +464,24 @@ function EquipmentDetail() {
             <EquipmentRecordSections
               key={equipmentId}
               equipment={equipment}
-              onSaved={() => dispatch(fetchEquipmentById(equipmentId))}
+              onSaved={canManage ? () => dispatch(fetchEquipmentById(equipmentId)) : undefined}
             />
-            <EquipmentAttachments key={equipmentId} equipmentId={equipmentId} />
+            <EquipmentAttachments
+              key={equipmentId}
+              equipmentId={equipmentId}
+              canManage={canManage}
+              onAuditLoaded={setAttachmentAudit}
+            />
           </>
         )}
         {!isEditing && equipment?._id === equipmentId && (
           <EquipmentAuditHistory
             equipmentId={equipmentId}
-            entries={equipment.auditHistory}
+            exportReady={attachmentAudit?.equipmentId === equipmentId}
+            entries={[
+              ...(equipment.auditHistory || []),
+              ...(attachmentAudit?.equipmentId === equipmentId ? attachmentAudit.entries : []),
+            ]}
             projectOptions={projectOptions}
           />
         )}
