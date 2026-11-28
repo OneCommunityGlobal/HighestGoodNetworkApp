@@ -968,6 +968,9 @@ const WeeklySummariesReport = props => {
   const buildProcessedSummariesState = (prevState, rawSummaries, activeTab) => {
     const processedData = processRawSummaries(rawSummaries, activeTab);
     const { summaries: summariesCopy, teamCodes, colorOptions, tableData } = processedData;
+    const updatedSelectedCodes = (prevState.selectedCodes || [])
+      .map(selected => teamCodes.find(code => code.value === selected.value))
+      .filter(Boolean);
 
     return {
       ...prevState,
@@ -977,6 +980,7 @@ const WeeklySummariesReport = props => {
         summary => summary.isActive && summary.teamCodeWarning,
       ),
       teamCodes,
+      selectedCodes: updatedSelectedCodes,
       colorOptions,
       tableData,
       badges: props.allBadgeData || prevState.badges,
@@ -1062,21 +1066,11 @@ const WeeklySummariesReport = props => {
   };
 
   const handleSelectCodeChange = event => {
-    const selectedValues = event.map(e => e.value);
-
-    setState(prev => {
-      const reorderedTeamCodes = [
-        ...prev.teamCodes.filter(code => selectedValues.includes(code.value)),
-        ...prev.teamCodes.filter(code => !selectedValues.includes(code.value)),
-      ];
-
-      return {
-        ...prev,
-        selectedCodes: event,
-        teamCodes: reorderedTeamCodes,
-        bulkSelectedColors: { purple: false, green: false, navy: false },
-      };
-    });
+    setState(prev => ({
+      ...prev,
+      selectedCodes: event,
+      bulkSelectedColors: { purple: false, green: false, navy: false },
+    }));
 
     if (currentAppliedFilter && event.length === 0) {
       setCurrentAppliedFilter(null);
@@ -1090,7 +1084,7 @@ const WeeklySummariesReport = props => {
     }));
   };
 
-  const handleTeamCodeChange = (userId, newTeamCode, teamCodeWarning) => {
+  const handleTeamCodeChange = async (userId, newTeamCode, teamCodeWarning) => {
     setState(prevState => {
       const summaries = prevState.summaries.map(summary => {
         if (summary._id === userId) {
@@ -1166,6 +1160,7 @@ const WeeklySummariesReport = props => {
         selectedCodes: updatedSelectedCodes,
       };
     });
+    await refreshCurrentTab();
   };
 
   // `state.summaries` is local component state, so the Redux update dispatched by
@@ -1267,6 +1262,11 @@ const WeeklySummariesReport = props => {
             })`,
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
+        updatedTeamCodes.sort((a, b) => {
+          if (a.value === '') return 1;
+          if (b.value === '') return -1;
+          return a.value.localeCompare(b.value);
+        });
 
         props.setTeamCodes(updatedTeamCodes);
 
@@ -1744,8 +1744,10 @@ const WeeklySummariesReport = props => {
   const warningUsers = state.summaries.filter(
     summary => summary.isActive && summary.teamCodeWarning,
   );
-  const showOnlyMismatched = state.showOnlyMismatched && warningUsers.length > 0;
-  const displayedSummaries = showOnlyMismatched ? warningUsers : state.filteredSummaries;
+  const showOnlyMismatched = state.showOnlyMismatched;
+  const displayedSummaries = showOnlyMismatched
+    ? state.filteredSummaries.filter(summary => summary.isActive && summary.teamCodeWarning)
+    : state.filteredSummaries;
 
   const handleToggleMismatchedUsers = () => {
     setState(prev => ({ ...prev, showOnlyMismatched: !prev.showOnlyMismatched }));
