@@ -2,28 +2,15 @@ import { updateBMLesson, deleteBMLesson } from '~/actions/bmdashboard/lessonsAct
 import { likeLessonAction } from '~/actions/bmdashboard/lessonLikesActions';
 import LessonCard from './LessonCard';
 
-function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
-  const onEditLessonSummary = (lessonId, updatedSummary) => {
-    const updatedData = filteredLessons.map(lesson => {
-      if (lesson._id === lessonId) {
-        return {
-          ...lesson,
-          content: updatedSummary,
-        };
-      }
-      return lesson;
-    });
-
+function Lessons({ filteredLessons, dispatch }) {
+  const onEditLessonSummary = (lessonId, updatedSummary) =>
     dispatch(updateBMLesson(lessonId, updatedSummary));
-    setFilteredLessons(updatedData);
-  };
 
   const onDeliteLessonCard = async lessonId => {
     try {
       await dispatch(deleteBMLesson(lessonId));
-      setFilteredLessons(prevLessons => prevLessons.filter(lesson => lesson._id !== lessonId));
-    } catch (error) {
-      // console.error('Error deleting lesson:', error);
+    } catch {
+      /* The action reports failure and leaves the current results intact. */
     }
   };
 
@@ -40,7 +27,6 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
       onEditLessonSummary={onEditLessonSummary}
       onDeliteLessonCard={onDeliteLessonCard}
       filteredLessons={filteredLessons}
-      setFilteredLessons={setFilteredLessons}
       handleLike={handleLike}
     />
   );
