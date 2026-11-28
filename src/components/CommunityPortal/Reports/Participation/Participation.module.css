@@ -1,6 +1,6 @@
 /* ---------- CSS Variables for Dark Mode ---------- */
 :root {
-  --color-text-dark: #ffffff;
+  --color-text-dark: #fff;
   --color-border-dark: #4a5a77;
 }
 
@@ -135,7 +135,7 @@
   color: #fff;
   border-radius: 10px;
   border: 1px solid var(--color-border-dark);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -198,14 +198,8 @@
   border-radius: 5px;
   cursor: pointer;
   transition: border-color 0.2s;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
-}
-
-.trackingHeaderDark .trackingFilters select {
-  background-color: #3A506B;
-  color: var(--color-text-dark);
-  border: 1px solid var(--color-border-dark);
 }
 
 .trackingHeaderDark .trackingFilters select option {
@@ -305,6 +299,48 @@
   border-collapse: collapse;
 }
 
+.comparisonTable th,
+.comparisonTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.comparisonTableDark th,
+.comparisonTableDark td {
+  border-bottom-color: #5a6b7d;
+}
+
+.comparisonTable th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.comparisonTableDark th {
+  background: #5a6b7d;
+  color: #fff;
+}
+
+.valueTable th,
+.valueTable td,
+.trendsTable th,
+.trendsTable td,
+.tableContainer th,
+.tableContainer td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.valueTable th,
+.trendsTable th,
+.tableContainer th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
 .trackingTable thead th {
   text-align: left;
   padding: 10px;
@@ -371,10 +407,6 @@
   background: #2c3e50;
 }
 
-.trackingTableDark tbody tr:hover td {
-  color: #fff;
-}
-
 .trackingRateGreen {
   color: green;
   font-weight: bold;
@@ -436,14 +468,8 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
-}
-
-.insightsHeaderDark .insightsFilters select {
-  background-color: #3A506B;
-  color: var(--color-text-dark);
-  border: 1px solid var(--color-border-dark);
 }
 
 .insightsHeaderDark .insightsFilters select option {
@@ -522,6 +548,18 @@
   color: #333;
 }
 
+.trackingHeaderDark .trackingFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
+.insightsHeaderDark .insightsFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
 .insightsDark .insightsFilters select {
   background-color: #1c2541;
   color: #fff;
@@ -590,13 +628,6 @@
 
 .case-list-item-dark:hover {
   background-color: #2b3f59;
-}
-
-.eventsTableDark .tableContainer tr:hover,
-.monthlyTrendsDark .trendsTable tr:hover,
-.eventTypeValuesDark .valueTable tr:hover,
-.eventTypeTrendsDark .trendsTable tr:hover {
-  background: #304663;
 }
 
 /* Dark mode tab styles */
@@ -867,15 +898,15 @@
   border: 1px solid #dee2e6;
 }
 
-.analyticsPage .navLink:hover {
-  background: #e9ecef;
-  color: #333;
-}
-
 .analyticsPageDark .navLink {
   color: #fff;
   background: #2d3e54;
   border: 1px solid #5a6b7d;
+}
+
+.analyticsPage .navLink:hover {
+  background: #e9ecef;
+  color: #333;
 }
 
 .analyticsPageDark .navLink:hover {
@@ -1363,37 +1394,15 @@
   margin-right: -50vw !important;
 }
 
+.pageHeader {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
 .analyticsPageDark .pageHeader {
   text-align: center;
   max-width: 1200px;
   margin: 0 auto 2rem;
-}
-
-.analyticsPageDark .comparisonCards,
-.analyticsPageDark .valueSummaryCards,
-.analyticsPageDark .trendsSummaryCards,
-.analyticsPageDark .performanceSummaryCards {
-  max-width: 1200px;
-  margin: 0 auto 2rem;
-}
-
-.analyticsPageDark .comparisonTable,
-.analyticsPageDark .eventTypeValues,
-.analyticsPageDark .monthlyTrends,
-.analyticsPageDark .eventTypeTrends,
-.analyticsPageDark .eventsTable,
-.analyticsPageDark .valueTrends,
-.analyticsPageDark .insightsSection,
-.analyticsPageDark .valueInsights,
-.analyticsPageDark .trendInsights,
-.analyticsPageDark .performanceInsights {
-  max-width: 1200px;
-  margin: 0 auto 2rem;
-}
-
-.pageHeader {
-  margin-bottom: 2rem;
-  text-align: center;
 }
 
 .pageTitle {
@@ -1516,21 +1525,11 @@
   border-radius: 10px;
 }
 
-.virtualCardDark .cardHeader .cardIcon,
-.inPersonCardDark .cardHeader .cardIcon {
-  background: #5a6b7d;
-}
-
 .cardHeader h3 {
   font-size: 1.3rem;
   font-weight: 600;
   margin: 0;
   color: #333;
-}
-
-.virtualCardDark .cardHeader h3,
-.inPersonCardDark .cardHeader h3 {
-  color: #fff;
 }
 
 .cardStats {
@@ -1615,8 +1614,11 @@
   color: #fff;
 }
 
-.comparisonTableDark table tbody tr:hover td {
-  color: #fff;
+.eventsTableDark .tableContainer tr:hover,
+.monthlyTrendsDark .trendsTable tr:hover,
+.eventTypeValuesDark .valueTable tr:hover,
+.eventTypeTrendsDark .trendsTable tr:hover {
+  background: #304663;
 }
 
 .comparisonTable h3 {
@@ -1633,29 +1635,6 @@
 .comparisonTable table {
   width: 100%;
   border-collapse: collapse;
-}
-
-.comparisonTable th,
-.comparisonTable td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.comparisonTableDark th,
-.comparisonTableDark td {
-  border-bottom-color: #5a6b7d;
-}
-
-.comparisonTable th {
-  background: #f8f9fa;
-  font-weight: 600;
-  color: #333;
-}
-
-.comparisonTableDark th {
-  background: #5a6b7d;
-  color: #fff;
 }
 
 .metricName {
@@ -1689,6 +1668,14 @@
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
+}
+
+.analyticsPageDark .comparisonCards,
+.analyticsPageDark .valueSummaryCards,
+.analyticsPageDark .trendsSummaryCards,
+.analyticsPageDark .performanceSummaryCards {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
 }
 
 .valueCard,
@@ -1796,17 +1783,6 @@
   min-width: 600px;
 }
 
-.valueTable th,
-.valueTable td,
-.trendsTable th,
-.trendsTable td,
-.tableContainer th,
-.tableContainer td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
 .eventTypeValuesDark .valueTable th,
 .eventTypeValuesDark .valueTable td,
 .monthlyTrendsDark .trendsTable th,
@@ -1818,12 +1794,12 @@
   border-bottom-color: #5a6b7d;
 }
 
-.valueTable th,
-.trendsTable th,
-.tableContainer th {
-  background: #f8f9fa;
-  font-weight: 600;
-  color: #333;
+.trackingTableDark tbody tr:hover td {
+  color: #fff;
+}
+
+.comparisonTableDark table tbody tr:hover td {
+  color: #fff;
 }
 
 .eventTypeValuesDark .valueTable th,
@@ -2074,6 +2050,20 @@
   margin-bottom: 2rem;
 }
 
+.analyticsPageDark .comparisonTable,
+.analyticsPageDark .eventTypeValues,
+.analyticsPageDark .monthlyTrends,
+.analyticsPageDark .eventTypeTrends,
+.analyticsPageDark .eventsTable,
+.analyticsPageDark .valueTrends,
+.analyticsPageDark .insightsSection,
+.analyticsPageDark .valueInsights,
+.analyticsPageDark .trendInsights,
+.analyticsPageDark .performanceInsights {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+}
+
 .insightsSectionDark,
 .valueInsightsDark,
 .trendInsightsDark,
@@ -2097,6 +2087,11 @@
 .valueInsightsDark h3,
 .trendInsightsDark h3,
 .performanceInsightsDark h3 {
+  color: #fff;
+}
+
+.virtualCardDark .cardHeader h3,
+.inPersonCardDark .cardHeader h3 {
   color: #fff;
 }
 
@@ -2182,6 +2177,12 @@
   color: #e5e7eb;
 }
 
+.sectionSubtitle {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
 /* Comprehensive dark mode text contrast fixes */
 .participationLandingPageDark .cardLabel,
 .participationLandingPageDark .cardSubtext,
@@ -2246,12 +2247,6 @@
   border: 1px solid #3a506b;
 }
 
-.sectionSubtitle {
-  color: #666;
-  margin-bottom: 1.5rem;
-  font-size: 1rem;
-}
-
 .analyticsNavigationDark .sectionSubtitle {
   color: #ccc;
 }
@@ -2308,6 +2303,11 @@
 }
 
 .navigationCardDark .cardIcon {
+  background: #5a6b7d;
+}
+
+.virtualCardDark .cardHeader .cardIcon,
+.inPersonCardDark .cardHeader .cardIcon {
   background: #5a6b7d;
 }
 

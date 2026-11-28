@@ -259,6 +259,9 @@ const QuestionnairePage6 = withQuestionnaireAccess(Page6);
 
 // Social Architecture
 
+// Education Portal
+import LessonPlanBuilder from './components/EductionPortal/LessonPlans/LessonPlanBuilder';
+
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -1063,6 +1066,7 @@ export default (
           component={SubmissionReviewPage}
         />
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
+        <EPProtectedRoute path="/educationportal/LessonPlans" exact component={LessonPlanBuilder} />
         <EPProtectedRoute
           path="/educationportal/evaluation-results"
           exact
