@@ -1,315 +1,287 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
 import HelpModal from '../HelpModal';
 import styles from '../HelpModal.module.css';
 
 vi.mock('axios');
-vi.mock('react-toastify');
+vi.mock('react-toastify', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 const mockStore = configureMockStore([]);
 
-const makeStore = () =>
+const makeStore = (darkMode = false) =>
   mockStore({
-    theme: { darkMode: false },
+    theme: { darkMode },
     auth: { user: { userid: 'user1', role: 'Volunteer' } },
   });
 
-const renderHelpModal = (store, props = {}) =>
-  render(
+const renderHelpModal = (store, props = {}) => {
+  const history = createMemoryHistory();
+
+  const view = render(
     <Provider store={store}>
-      <HelpModal show onHide={vi.fn()} {...props} />
+      <Router history={history}>
+        <HelpModal show onHide={vi.fn()} {...props} />
+      </Router>
     </Provider>,
   );
+
+  return { ...view, history };
+};
 
 describe('HelpModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    axios.get.mockResolvedValue({
+      data: [{ name: 'HTML Semantics' }],
+    });
   });
 
-  const mockGet = ({ categories = [{ name: 'HTML Semantics' }], eligibility } = {}) => {
-    axios.get.mockImplementation(url => {
-      if (url === ENDPOINTS.HELP_CATEGORIES) {
-        return Promise.resolve({ data: categories });
-      }
-      if (typeof eligibility === 'function') {
-        return eligibility(url);
-      }
-      return Promise.resolve({ data: eligibility });
-    });
-  };
-
-  const mockEligibilitySequence = responses => {
-    const eligibilityResponses = [...responses];
-    axios.get.mockImplementation(url => {
-      if (url === ENDPOINTS.HELP_CATEGORIES) {
-        return Promise.resolve({ data: [{ name: 'HTML Semantics' }] });
-      }
-      return Promise.resolve({ data: eligibilityResponses.shift() });
-    });
-  };
-
-  const expectEligibilityRequestCount = expectedCount => {
-    const eligibilityRequests = axios.get.mock.calls.filter(
-      ([url]) => url === ENDPOINTS.HELP_REQUEST_ELIGIBILITY,
-    );
-    expect(eligibilityRequests).toHaveLength(expectedCount);
-  };
-
   it('loads help categories from the categories endpoint', async () => {
-    mockGet({ eligibility: { eligible: true, questionnaireCompleted: true } });
-    const store = makeStore();
-    renderHelpModal(store);
+    renderHelpModal(makeStore());
 
     await screen.findByText('Select an option');
+
     expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.HELP_CATEGORIES);
   });
 
-  it('calls the authenticated eligibility endpoint without a userId, never sending userId to the backend', async () => {
-    mockGet({ eligibility: { eligible: true, questionnaireCompleted: true } });
-    const store = makeStore();
-    renderHelpModal(store);
+  it('displays categories returned by the API', async () => {
+    axios.get.mockResolvedValue({
+      data: [{ name: 'HTML Semantics' }, { name: 'Software Support' }],
+    });
 
-    await screen.findByText(/^Select an option$/);
-    expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+    renderHelpModal(makeStore());
+
+    fireEvent.click(await screen.findByText('Select an option'));
+
+    expect(await screen.findByRole('option', { name: 'HTML Semantics' })).toBeInTheDocument();
+
+    expect(screen.getByRole('option', { name: 'Software Support' })).toBeInTheDocument();
   });
 
-  it('does not show the ineligible warning while eligibility is still loading', async () => {
-    let resolveEligibility;
-    axios.get.mockImplementation(url => {
-      if (url === ENDPOINTS.HELP_CATEGORIES) {
-        return Promise.resolve({ data: [] });
-      }
-      return new Promise(resolve => {
-        resolveEligibility = () => resolve({ data: { eligible: false } });
+  it('uses fallback skill options when the API returns an empty list', async () => {
+    axios.get.mockResolvedValue({ data: [] });
+
+    renderHelpModal(makeStore());
+
+    await screen.findByText('Select an option');
+
+    fireEvent.click(screen.getByText('Select an option'));
+
+    expect(await screen.findByRole('listbox')).toBeInTheDocument();
+  });
+
+  it('uses fallback skill options and displays an error when category loading fails', async () => {
+    axios.get.mockRejectedValue(new Error('Request failed'));
+
+    renderHelpModal(makeStore());
+
+    expect(
+      await screen.findByText(
+        'Failed to load help categories from the server. Showing questionnaire skills instead.',
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Select an option'));
+
+    expect(await screen.findByRole('listbox')).toBeInTheDocument();
+  });
+
+  it('displays a loading message while categories are being fetched', () => {
+    axios.get.mockReturnValue(new Promise(() => {}));
+
+    renderHelpModal(makeStore());
+
+    expect(screen.getByText('Loading categories...')).toBeInTheDocument();
+  });
+
+  it('allows the user to select a help category', async () => {
+    renderHelpModal(makeStore());
+
+    fireEvent.click(await screen.findByText('Select an option'));
+
+    fireEvent.click(await screen.findByRole('option', { name: 'HTML Semantics' }));
+
+    expect(screen.getByText('HTML Semantics')).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled();
+  });
+
+  it('keeps Submit disabled until a category is selected', async () => {
+    renderHelpModal(makeStore());
+
+    await screen.findByText('Select an option');
+
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeDisabled();
+  });
+
+  it('submits a help request with the selected category', async () => {
+    axios.post.mockResolvedValue({
+      data: { _id: 'hr1' },
+    });
+
+    const { history } = renderHelpModal(makeStore());
+
+    fireEvent.click(await screen.findByText('Select an option'));
+
+    fireEvent.click(await screen.findByRole('option', { name: 'HTML Semantics' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith(ENDPOINTS.HELP_REQUEST_CREATE, {
+        topic: 'HTML Semantics',
+        description: 'Help request for: HTML Semantics',
       });
     });
-    const store = makeStore();
-    renderHelpModal(store);
 
-    expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
-
-    resolveEligibility();
-    await screen.findByText(/must complete the HGN questionnaire/i);
-  });
-
-  it('enables Submit and hides the warning for an eligible user', async () => {
-    mockGet({ eligibility: { eligible: true, questionnaireCompleted: true } });
-    const store = makeStore();
-    renderHelpModal(store);
-
-    await waitFor(() =>
-      expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument(),
-    );
-  });
-
-  it('shows the ineligible warning and disables Submit for an ineligible user', async () => {
-    mockGet({ eligibility: { eligible: false, questionnaireCompleted: false } });
-    const store = makeStore();
-    renderHelpModal(store);
-
-    await screen.findByText(/must complete the HGN questionnaire/i);
-    expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
-  });
-
-  it('revalidates eligibility when the document becomes visible', async () => {
-    mockEligibilitySequence([
-      { eligible: false, questionnaireCompleted: false },
-      { eligible: true, questionnaireCompleted: true },
-    ]);
-    const store = makeStore();
-    renderHelpModal(store);
-
-    await screen.findByText(/must complete the HGN questionnaire/i);
-    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' });
-    fireEvent(document, new Event('visibilitychange'));
-    expect(axios.get).toHaveBeenCalledTimes(2);
-    expectEligibilityRequestCount(1);
-
-    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
-    fireEvent(document, new Event('visibilitychange'));
-
-    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(3));
-    await waitFor(() =>
-      expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument(),
-    );
-    expect(axios.get).toHaveBeenCalledTimes(3);
-    expectEligibilityRequestCount(2);
-  });
-
-  it('revalidates eligibility when the modal reopens', async () => {
-    mockEligibilitySequence([
-      { eligible: false, questionnaireCompleted: false },
-      { eligible: true, questionnaireCompleted: true },
-    ]);
-    const store = makeStore();
-    const onHide = vi.fn();
-    const { rerender } = renderHelpModal(store, { show: false, onHide });
-
-    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2));
-    expectEligibilityRequestCount(1);
-    rerender(
-      <Provider store={store}>
-        <HelpModal show onHide={onHide} />
-      </Provider>,
-    );
-
-    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(3));
-    expectEligibilityRequestCount(2);
-
-    await screen.findByText('Select an option');
-    fireEvent.click(screen.getByText('Select an option'));
-    fireEvent.click(await screen.findByText('HTML Semantics'));
-    await waitFor(() => expect(screen.getByRole('button', { name: /submit/i })).not.toBeDisabled());
-    expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument();
-    expect(axios.get).toHaveBeenCalledTimes(3);
-  });
-
-  it('shows a neutral error (not an ineligibility message) when the eligibility request fails', async () => {
-    axios.get.mockImplementation(url => {
-      if (url === ENDPOINTS.HELP_CATEGORIES) {
-        return Promise.resolve({ data: [] });
-      }
-      return Promise.reject(new Error('network error'));
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith('Help request submitted successfully!');
     });
-    const store = makeStore();
-    renderHelpModal(store);
 
-    await screen.findByText(/unable to verify your eligibility/i);
-    expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
+    expect(history.location.pathname).toBe('/hgnhelp/community');
+
+    expect(history.location.state).toEqual({
+      initialSkills: [],
+      softwareDevTeamOnly: true,
+      helpTopic: 'HTML Semantics',
+    });
   });
 
-  it('still shows the Suggestions link regardless of eligibility state', async () => {
-    mockGet({ eligibility: { eligible: false, questionnaireCompleted: false } });
-    const store = makeStore();
-    renderHelpModal(store);
-
-    expect(screen.getByText(/if you have any suggestions/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'here' })).toBeInTheDocument();
-  });
-
-  it('submits a help request without sending userId in the body for an eligible user', async () => {
-    mockGet({ eligibility: { eligible: true, questionnaireCompleted: true } });
-    axios.post.mockResolvedValue({ data: { _id: 'hr1' } });
-    const store = makeStore();
-    renderHelpModal(store);
+  it('does not submit a help request when no category is selected', async () => {
+    renderHelpModal(makeStore());
 
     await screen.findByText('Select an option');
-    fireEvent.click(screen.getByText('Select an option'));
-    fireEvent.click(await screen.findByText('HTML Semantics'));
 
-    const submitButton = await screen.findByRole('button', { name: /submit/i });
-    await waitFor(() => expect(submitButton).not.toBeDisabled());
+    expect(axios.post).not.toHaveBeenCalled();
+
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeDisabled();
+  });
+
+  it('displays a network error when the server cannot be reached', async () => {
+    axios.post.mockRejectedValue({
+      code: 'ERR_NETWORK',
+    });
+
+    renderHelpModal(makeStore());
+
+    fireEvent.click(await screen.findByText('Select an option'));
+
+    fireEvent.click(await screen.findByRole('option', { name: 'HTML Semantics' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        'Cannot connect to server. Please ensure the backend is running.',
+      );
+    });
+  });
+
+  it('displays the backend error message when submission fails', async () => {
+    axios.post.mockRejectedValue({
+      response: {
+        data: {
+          message: 'Please complete the HGN Skills Questionnaire before submitting a help request.',
+        },
+      },
+    });
+
+    renderHelpModal(makeStore());
+
+    fireEvent.click(await screen.findByText('Select an option'));
+
+    fireEvent.click(await screen.findByRole('option', { name: 'HTML Semantics' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        'Please complete the HGN Skills Questionnaire before submitting a help request.',
+      );
+    });
+  });
+
+  it('shows the Suggestions link', async () => {
+    renderHelpModal(makeStore());
+
+    expect(await screen.findByRole('button', { name: 'here' })).toBeInTheDocument();
+  });
+
+  it('opens the suggestions modal flag and closes HelpModal when Suggestions is clicked', async () => {
+    const onHide = vi.fn();
+
+    renderHelpModal(makeStore(), { onHide });
+
+    fireEvent.click(await screen.findByRole('button', { name: 'here' }));
+
+    expect(localStorage.getItem('openSuggestionsModal')).toBe('true');
+
+    expect(onHide).toHaveBeenCalledTimes(1);
+  });
+
+  it('applies dark mode styles when dark mode is enabled', async () => {
+    renderHelpModal(makeStore(true));
+
+    const suggestionsLink = await screen.findByRole('button', {
+      name: 'here',
+    });
+
+    expect(suggestionsLink).toHaveClass(styles.suggestionsLink, styles.suggestionsLinkDark);
+  });
+
+  it('disables Submit while a help request is being submitted', async () => {
+    let resolvePost;
+
+    axios.post.mockReturnValue(
+      new Promise(resolve => {
+        resolvePost = resolve;
+      }),
+    );
+
+    renderHelpModal(makeStore());
+
+    // Wait for categories to load.
+    await screen.findByText('Select an option');
+
+    // Open the dropdown and select a category.
+    fireEvent.click(screen.getByText('Select an option'));
+
+    fireEvent.click(await screen.findByRole('option', { name: 'HTML Semantics' }));
+
+    // Verify Submit is enabled after selecting a category.
+    const submitButton = screen.getByRole('button', {
+      name: 'Submit',
+    });
+
+    expect(submitButton).toBeEnabled();
+
+    // Submit the help request.
     fireEvent.click(submitButton);
 
-    await waitFor(() => expect(axios.post).toHaveBeenCalled());
-    expect(axios.post).toHaveBeenCalledWith(
-      ENDPOINTS.HELP_REQUEST_CREATE,
-      expect.not.objectContaining({ userId: expect.anything() }),
-    );
-  });
-  describe('overlapping eligibility requests', () => {
-    const deferredEligibility = () => {
-      const pending = [];
-      axios.get.mockImplementation(url => {
-        if (url === ENDPOINTS.HELP_CATEGORIES) return Promise.resolve({ data: [] });
-        return new Promise((resolve, reject) => pending.push({ resolve, reject }));
-      });
-      return pending;
-    };
+    // Verify the submitting state.
+    expect(screen.getByRole('button', { name: 'Submitting...' })).toBeDisabled();
 
-    const triggerVisibility = () => {
-      Object.defineProperty(document, 'visibilityState', {
-        value: 'visible',
-        configurable: true,
-      });
-      document.dispatchEvent(new Event('visibilitychange'));
-    };
+    // Resolve the pending API request.
+    resolvePost({ data: { _id: 'hr1' } });
 
-    const startOverlappingRequests = async () => {
-      const pending = deferredEligibility();
-      renderHelpModal(makeStore());
-      await waitFor(() => expect(pending).toHaveLength(1));
-      triggerVisibility();
-      await waitFor(() => expect(pending).toHaveLength(2));
-      return pending;
-    };
-
-    const resolveLatestAsEligible = async pending => {
-      pending[1].resolve({ data: { eligible: true, questionnaireCompleted: true } });
-      await waitFor(() =>
-        expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument(),
-      );
-    };
-
-    const expectStillEligible = async () => {
-      await Promise.resolve();
-      await Promise.resolve();
-      expect(screen.queryByText(/Unable to verify your eligibility/i)).not.toBeInTheDocument();
-      expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument();
-    };
-
-    it('does not let an older failed request overwrite a newer successful result', async () => {
-      const pending = await startOverlappingRequests();
-      await resolveLatestAsEligible(pending);
-      pending[0].reject(new Error('Request failed with status code 401'));
-      await expectStillEligible();
+    // After success, the selected category is cleared,
+    // so Submit should become disabled again.
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Submit' })).toBeDisabled();
     });
 
-    it('does not let an older stale ineligible response overwrite a newer eligible result', async () => {
-      const pending = await startOverlappingRequests();
-      await resolveLatestAsEligible(pending);
-      pending[0].resolve({ data: { eligible: false, questionnaireCompleted: false } });
-      await expectStillEligible();
-    });
-
-    it('does not refetch help categories on reopen or visibility revalidation', async () => {
-      mockGet({ eligibility: { eligible: true, questionnaireCompleted: true } });
-      const store = makeStore();
-      const { rerender } = renderHelpModal(store, { show: true });
-      await screen.findByText('Select an option');
-
-      rerender(
-        <Provider store={store}>
-          <HelpModal show={false} onHide={vi.fn()} />
-        </Provider>,
-      );
-      rerender(
-        <Provider store={store}>
-          <HelpModal show onHide={vi.fn()} />
-        </Provider>,
-      );
-      triggerVisibility();
-      await waitFor(() => expectEligibilityRequestCount(3));
-
-      const categoryCalls = axios.get.mock.calls.filter(
-        ([url]) => url === ENDPOINTS.HELP_CATEGORIES,
-      );
-      expect(categoryCalls).toHaveLength(1);
-    });
-  });
-  it('supports an eligible HGN software team volunteer in dark mode', async () => {
-    mockGet({
-      categories: [{ name: 'Software Support' }],
-      eligibility: { eligible: true, questionnaireCompleted: true },
-    });
-    const store = mockStore({
-      theme: { darkMode: true },
-      auth: { user: { userid: 'test-user', role: 'Volunteer' } },
-    });
-    renderHelpModal(store);
-
-    const suggestionsLink = await screen.findByRole('button', { name: 'here' });
-    expect(suggestionsLink).toHaveClass(styles.suggestionsLink, styles.suggestionsLinkDark);
-
-    fireEvent.click(screen.getByRole('button', { name: 'Select an option' }));
-    fireEvent.click(await screen.findByRole('option', { name: 'Software Support' }));
-
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled());
-    expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+    expect(toast.success).toHaveBeenCalledWith('Help request submitted successfully!');
   });
 });
