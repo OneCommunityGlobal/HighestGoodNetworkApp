@@ -18,6 +18,7 @@ import {
   Col,
 } from 'reactstrap';
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
+import CancellationImpactOnVacancy from './LbAnalytics/CancellationImpactOnVacancy/CancellationImpactOnVacancy';
 import WinningVsAverageBidChart from './LbAnalytics/WinningVsAverageBidChart/WinningVsAverageBidChart';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
 import RatingDistribution from './RatingDistribution/RatingDistribution';
@@ -698,6 +699,14 @@ export function LBDashboard() {
         <div className={styles.chartRow}>
           <div className={styles.chartCol}>
             <WinningVsAverageBidChart darkMode={darkMode} />
+          </div>
+        </div>
+      </AnalysisSection>
+
+      <AnalysisSection title="Vacancy Rate and Cancellation Rate" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.fullWidthChartCol}>
+            <CancellationImpactOnVacancy darkMode={darkMode} />
           </div>
         </div>
       </AnalysisSection>
