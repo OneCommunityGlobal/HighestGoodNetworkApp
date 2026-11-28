@@ -7,7 +7,7 @@ on:
 concurrency:
   group: Build and Deploy / ${{ github.ref_name == 'main' && 'Production' || 'Development' }}
   cancel-in-progress: true
-jobs:  
+jobs:
   # Build
   build:
     name: Build
@@ -30,10 +30,11 @@ jobs:
       # - name: Update Browser List
       #   run: npx browserslist@latest --update-db
       - name: Build React App
-        run: yarn run build && cp build/index.html build/200.html 
+        run: yarn run build && cp build/index.html build/200.html
         env:
           NODE_ENV: ${{ github.ref_name == 'main' && 'production' || 'development' }}
           REACT_APP_APIENDPOINT: ${{ vars.REACT_APP_API_ENDPOINT }}
+          REACT_APP_PRODUCTION_IDENTITY_VERIFICATION_ENABLED: ${{ github.ref_name == 'development' }}
           GENERATE_SOURCEMAP: ${{ github.ref_name != 'main' }}
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
