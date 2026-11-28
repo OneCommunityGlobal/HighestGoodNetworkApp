@@ -26,7 +26,11 @@ import {
   showStar,
   viewZeroHouraMembers,
 } from '~/utils/leaderboardPermissions';
-import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
+import {
+  calculateDurationBetweenDates,
+  getAnniversaryStartDate,
+  showTrophyIcon,
+} from '~/utils/anniversaryPermissions';
 import hasPermission from '~/utils/permissions';
 import { permissions } from '../../utils/constants';
 // import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
@@ -102,7 +106,7 @@ function LeaderBoard({
 
   useEffect(() => {
     for (let i = 0; i < leaderBoardData.length; i += 1) {
-      const startDate = leaderBoardData[i].startDate?.split('T')[0];
+      const startDate = getAnniversaryStartDate(leaderBoardData[i])?.split('T')[0];
       const showTrophy = showTrophyIcon(todaysDate, startDate);
       if (!showTrophy && leaderBoardData[i].trophyFollowedUp) {
         postLeaderboardData(leaderBoardData[i].personId, false);
@@ -838,7 +842,7 @@ function LeaderBoard({
                   const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
                     item.personId,
                   );
-                  const startDate = item?.startDate?.split('T')[0];
+                  const startDate = getAnniversaryStartDate(item)?.split('T')[0];
                   const durationSinceStarted = calculateDurationBetweenDates(todaysDate, startDate);
                   const iconContent = handleIconContent(durationSinceStarted);
                   const showTrophy = showTrophyIcon(todaysDate, startDate);
