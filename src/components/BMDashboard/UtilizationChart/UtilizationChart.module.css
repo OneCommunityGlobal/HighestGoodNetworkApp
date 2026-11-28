@@ -374,8 +374,8 @@
 /* Selected tab styling in dark mode */
 
 .utilizationChartContainer.darkMode .toggleButton.toggleButtonActive {
-  background-color: #e8a71c;
-  color: #111827;
+  background-color: #b45309;
+  color: #fff;
   font-weight: 600;
 }
 
