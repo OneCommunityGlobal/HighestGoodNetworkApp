@@ -29,6 +29,7 @@ function EquipmentAttachments({ equipmentId, canManage, onAuditLoaded }) {
   const [busy, setBusy] = useState(false);
   const [editor, setEditor] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
   const [category, setCategory] = useState('');
   const [file, setFile] = useState(null);
 
@@ -100,6 +101,7 @@ function EquipmentAttachments({ equipmentId, canManage, onAuditLoaded }) {
       const { data } = await axios.get(`${path}/${attachment._id}`, { responseType: 'blob' });
       const url = URL.createObjectURL(data);
       if (previewOnly) {
+        setPreviewFailed(false);
         setPreview({ ...attachment, url });
       } else {
         const link = document.createElement('a');
@@ -287,15 +289,42 @@ function EquipmentAttachments({ equipmentId, canManage, onAuditLoaded }) {
         </Modal>
       )}
       {preview && (
-        <Modal isOpen size="lg" toggle={() => setPreview(null)}>
-          <ModalHeader toggle={() => setPreview(null)}>{preview.name}</ModalHeader>
+        <Modal
+          isOpen
+          size="lg"
+          labelledBy="equipment-attachment-preview"
+          toggle={() => setPreview(null)}
+        >
+          <ModalHeader id="equipment-attachment-preview" toggle={() => setPreview(null)}>
+            {preview.name}
+          </ModalHeader>
           <ModalBody>
-            {preview.mimeType === 'application/pdf' ? (
-              <iframe title={preview.name} src={preview.url} className={styles.attachmentPdf} />
-            ) : (
-              <img src={preview.url} alt={preview.name} className={styles.attachmentImage} />
+            {previewFailed && (
+              <p role="status">The preview could not be displayed. Download the file to open it.</p>
+            )}
+            {!previewFailed && preview.mimeType === 'application/pdf' && (
+              <>
+                <p>If the PDF preview is blank, download the file to open it.</p>
+                <iframe title={preview.name} src={preview.url} className={styles.attachmentPdf} />
+              </>
+            )}
+            {!previewFailed && preview.mimeType !== 'application/pdf' && (
+              <img
+                src={preview.url}
+                alt={preview.name}
+                className={styles.attachmentImage}
+                onError={() => setPreviewFailed(true)}
+              />
             )}
           </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" outline onClick={() => setPreview(null)}>
+              Close preview
+            </Button>
+            <Button tag="a" color="primary" href={preview.url} download={preview.name}>
+              Download file
+            </Button>
+          </ModalFooter>
         </Modal>
       )}
     </section>
