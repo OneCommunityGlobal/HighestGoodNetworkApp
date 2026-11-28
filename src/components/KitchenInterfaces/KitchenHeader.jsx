@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Leaf } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from './KitchenHeader.module.css';
 
 const KitchenHeader = () => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const NAV_ITEMS = [
-    { name: 'Dashboard', path: '/kitchenandinventory/dashboard' },
+    { name: 'Dashboard', path: '/kitchenandinventory' },
     { name: 'Production', path: '/kitchenandinventory/production', isDropdown: true },
     { name: 'Processing', path: '/kitchenandinventory/processing' },
     { name: 'Recipes', path: '/kitchenandinventory/recipes' },
@@ -21,15 +24,27 @@ const KitchenHeader = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className={`${styles.headerContainer} ${darkMode ? styles.darkMode : ''}`}>
+    <header
+      className={`${styles.headerContainer} ${darkMode ? styles.darkMode : ''}`}
+      data-theme={darkMode ? 'dark' : 'light'}
+    >
       <div className={styles.brandSection}>
+        <div className={styles.logoTile}>
+          <Leaf size={24} aria-hidden="true" />
+        </div>
         <div className={styles.brandTextContainer}>
           <span className={styles.brandTitle}>Transition Kitchen</span>
           <span className={styles.brandSubtitle}>One Community Global</span>
         </div>
       </div>
 
-      <button className={styles.menuToggle} onClick={toggleMenu} aria-label="Toggle navigation">
+      <button
+        type="button"
+        aria-expanded={isMenuOpen}
+        className={styles.menuToggle}
+        onClick={toggleMenu}
+        aria-label="Toggle navigation"
+      >
         <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} />
       </button>
 
@@ -37,11 +52,11 @@ const KitchenHeader = () => {
         {NAV_ITEMS.map(item => (
           <NavLink
             key={item.name}
+            exact={item.name === 'Dashboard'}
             to={item.path}
             className={styles.navItem}
             activeClassName={styles.activeLink}
             onClick={() => setIsMenuOpen(false)} // Close menu on click
-            isActive={match => !!match}
           >
             {item.name}
             {item.isDropdown && <span className={styles.dropdownArrow}>▼</span>}

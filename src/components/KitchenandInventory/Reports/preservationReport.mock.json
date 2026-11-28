@@ -1,0 +1,60 @@
+{
+  "title": "Reports & Analytics",
+  "description": "Comprehensive insights on usage, spending, waste, and sustainability",
+  "period": "month",
+  "periods": [
+    { "value": "week", "label": "This Week" },
+    { "value": "month", "label": "This Month" },
+    { "value": "quarter", "label": "This Quarter" },
+    { "value": "year", "label": "This Year" }
+  ],
+  "tabs": ["Overview", "Sustainability Dashboard", "Preservation Efficiency", "Forecast Accuracy"],
+  "totalPreserved": 245,
+  "wasteSavedLbs": 180,
+  "jarsUsed": 156,
+  "efficiencyRate": 0.92,
+  "metrics": [
+    {
+      "key": "totalPreserved",
+      "label": "Total Preserved",
+      "icon": "Archive",
+      "tone": "purple",
+      "format": "number"
+    },
+    {
+      "key": "wasteSavedLbs",
+      "label": "Waste Saved",
+      "icon": "Trash2",
+      "tone": "green",
+      "format": "weight"
+    },
+    {
+      "key": "jarsUsed",
+      "label": "Jars Used",
+      "icon": "Archive",
+      "tone": "amber",
+      "format": "number"
+    },
+    {
+      "key": "efficiencyRate",
+      "label": "Efficiency Rate",
+      "icon": "Target",
+      "tone": "green",
+      "format": "percent"
+    }
+  ],
+  "impactTitle": "Preservation Impact",
+  "impactDescription": "How preservation efforts contribute to waste reduction and sustainability",
+  "popularItemsTitle": "Popular Preserved Items",
+  "popularItems": ["Tomato Sauce", "Pickled Vegetables", "Fruit Jam", "Dried Herbs"],
+  "achievementTitle": "Monthly Achievement",
+  "achievementTemplate": "Preserved {totalPreserved} items, preventing {wasteSavedLbs} lbs of food waste.",
+  "successRateLabel": "Success Rate",
+  "jarsUsedLabel": "Jars Used",
+  "environmentTitle": "Environmental Impact",
+  "environmentDescription": "By preserving seasonal produce, we've extended shelf life and reduced dependency on purchased goods.",
+  "shelfLifeLabel": "Extended shelf life",
+  "shelfLifeExtension": "6-12 months",
+  "purchasesLabel": "Reduced purchases",
+  "purchaseReductionPct": -22
+}

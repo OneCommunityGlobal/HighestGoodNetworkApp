@@ -1,0 +1,35 @@
+{
+  "isDemo": true,
+  "demoAverageAccuracyPercent": 92.4,
+  "ingredients": [
+    {
+      "id": "tomatoes",
+      "name": "Tomatoes",
+      "plannedLbs": 50,
+      "actualLbs": 48,
+      "demoAccuracyPercent": 96
+    },
+    {
+      "id": "carrots",
+      "name": "Carrots",
+      "plannedLbs": 35,
+      "actualLbs": 40,
+      "demoAccuracyPercent": 88
+    },
+    {
+      "id": "olive-oil",
+      "name": "Olive Oil",
+      "plannedLbs": 8,
+      "actualLbs": 8,
+      "demoAccuracyPercent": 100
+    },
+    {
+      "id": "quinoa",
+      "name": "Quinoa",
+      "plannedLbs": 20,
+      "actualLbs": 17,
+      "demoAccuracyPercent": 85
+    },
+    { "id": "milk", "name": "Milk", "plannedLbs": 15, "actualLbs": 14, "demoAccuracyPercent": 93 }
+  ]
+}
