@@ -8,6 +8,9 @@ import styles from './issueChart.module.css';
 
 const NARROW_CARD_CHART_WIDTH = 440; // make card-mode IssueChart X-axis labels rotate at 45° when chart width is below this value, below 1296px
 const X_AXIS_MAX_CHARS_PER_LINE = 10;
+// Minimum width per bar so bars for different years stay readable; the chart scrolls sideways when needed
+const MIN_BAR_WIDTH_PX = 14;
+const CHART_AXIS_ALLOWANCE_PX = 120;
 
 // Fixed high-contrast palette so each year keeps a distinct, readable color in both themes
 const YEAR_COLORS = [
@@ -372,13 +375,21 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           .reduce((sum, type) => sum + (issues[type]?.[year] || 0), 0),
       ),
       backgroundColor: yearColorMap[year],
-      borderColor: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
-      borderWidth: 1.5,
-      borderRadius: 6,
+      // Border matches the fill so narrow bars still show their year color instead of a grey outline
+      borderColor: yearColorMap[year],
+      borderRadius: 4,
+      // Chart.js reads bar sizing from the dataset, not from scales.x
+      barPercentage: 0.95,
+      categoryPercentage: 0.9,
     }));
 
     return { labels, datasets };
-  }, [issues, filters, uniqueYears, yearColorMap, darkMode, isSingleYearView, selectedSingleYear]);
+  }, [issues, filters, uniqueYears, yearColorMap, isSingleYearView, selectedSingleYear]);
+
+  // Wide enough for every bar to be readable; the wrapper scrolls sideways if the card is narrower
+  const chartMinWidth =
+    chartData.labels.length * Math.max(1, chartData.datasets.length) * MIN_BAR_WIDTH_PX +
+    CHART_AXIS_ALLOWANCE_PX;
 
   const chartAnalysis = useMemo(() => {
     const labels = chartData?.labels ?? [];
@@ -519,8 +530,6 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
             color: darkMode ? '#cfd7e3' : '#232323',
           },
           grid: { display: false },
-          barPercentage: 0.9,
-          categoryPercentage: 0.8,
           ticks: {
             color: darkMode ? '#e8f0fe' : '#1a1a1a',
             stepSize: 1,
@@ -710,7 +719,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   FilterMenuList.displayName = 'IssueChartFilterMenuList';
 
   const activeFilterSummary = useMemo(() => {
-    const issueTypeCount = filters.issueTypes.length || getValidIssueTypes(issues).length;
+    // Count the issue-type groups actually drawn (e.g. Technical1 + Technical2 are shown as one "Technical" bar)
+    const issueTypeCount = chartData.labels.length;
 
     if (isSingleYearView) {
       return `${issueTypeCount} Issue Types | ${selectedSingleYear ?? 'No year'}`;
@@ -721,14 +731,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
 
     return `${issueTypeCount} Issue Types | ${range}`;
-  }, [
-    filters.issueTypes,
-    filters.years,
-    issues,
-    uniqueYears,
-    isSingleYearView,
-    selectedSingleYear,
-  ]);
+  }, [chartData.labels.length, filters.years, uniqueYears, isSingleYearView, selectedSingleYear]);
 
   const viewToggleButtonClass = isActive =>
     `${styles.issueChartViewToggleButton} ${
@@ -902,12 +905,20 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
               flexDirection: 'column',
               minHeight: isCardVariant ? 0 : undefined,
               position: 'relative',
-              overflow: 'hidden',
+              overflowX: 'auto',
+              overflowY: 'hidden',
               paddingTop: 12,
               paddingBottom: 2,
             }}
           >
-            <div style={{ flex: '1 1 auto', minHeight: 0, position: 'relative' }}>
+            <div
+              style={{
+                flex: '1 1 auto',
+                minHeight: 0,
+                position: 'relative',
+                minWidth: `${chartMinWidth}px`,
+              }}
+            >
               <Bar
                 data={chartData}
                 options={chartOptions}
