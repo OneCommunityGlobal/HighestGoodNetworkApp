@@ -43,6 +43,7 @@ import httpService from '../../../services/httpService';
 import './ButtonStyles.module.css';
 import './EmailOutbox.module.css';
 import ResendEmailModal from './ResendEmailModal';
+import { ENDPOINTS } from '../../../utils/URL';
 
 const EmailOutbox = ({ isActive = true }) => {
   const dispatch = useDispatch();
@@ -161,7 +162,7 @@ const EmailOutbox = ({ isActive = true }) => {
       setProcessingPending(true);
       toast.info('Processing pending and stuck emails...', { autoClose: 2000 });
 
-      const response = await httpService.post('/api/process-pending-and-stuck-emails', {
+      const response = await httpService.post(ENDPOINTS.PROCESS_PENDING_AND_STUCK_EMAILS, {
         requestor: {
           requestorId: currentUser?.userid,
           role: currentUser?.role,
@@ -348,7 +349,9 @@ const EmailOutbox = ({ isActive = true }) => {
 
     try {
       // ISSUE 5 FIX: Add cache-buster to force fresh data
-      const response = await httpService.get(`/api/email-outbox/${email._id}?t=${Date.now()}`);
+      const response = await httpService.get(
+        `${ENDPOINTS.EMAIL_OUTBOX_BY_ID(email._id)}?t=${Date.now()}`,
+      );
       if (response.data.success && response.data.data) {
         // ISSUE 5 FIX: Update selected email with latest data
         setSelectedEmail(response.data.data.email || email);
@@ -444,7 +447,7 @@ const EmailOutbox = ({ isActive = true }) => {
     try {
       toast.info('Retrying failed batches...', { autoClose: 3000 });
 
-      const response = await httpService.post(`/api/retry-email/${emailId}`, {
+      const response = await httpService.post(ENDPOINTS.RETRY_EMAIL(emailId), {
         requestor: {
           requestorId: currentUser?.userid,
           email: currentUser?.email,
