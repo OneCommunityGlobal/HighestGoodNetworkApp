@@ -17,6 +17,8 @@ import {
  */
 export const useTaskLogic = (task, styles, intermediateTasks = []) => {
   const progressPercentage = useMemo(() => calculateProgressPercentage(task, intermediateTasks), [
+    task.task_type,
+    task.status,
     task.logged_hours,
     task.suggested_total_hours,
     intermediateTasks,
@@ -57,6 +59,8 @@ export const useTaskLogic = (task, styles, intermediateTasks = []) => {
   ]);
 
   const progressText = useMemo(() => getProgressText(task, intermediateTasks), [
+    task.task_type,
+    task.status,
     task.logged_hours,
     task.suggested_total_hours,
     intermediateTasks,

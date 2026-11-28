@@ -12,6 +12,7 @@ const ConfirmationModal = ({
   confirmColor = 'primary',
   showDontShowAgain = false,
   onDontShowAgainChange = null,
+  zIndex = 1050,
 }) => {
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
@@ -30,7 +31,7 @@ const ConfirmationModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={handleCancel} centered>
+    <Modal isOpen={isOpen} toggle={handleCancel} centered zIndex={zIndex}>
       <ModalHeader toggle={handleCancel}>{title}</ModalHeader>
       <ModalBody>
         <p style={{ margin: 0, marginBottom: showDontShowAgain ? '1rem' : 0 }}>{message}</p>

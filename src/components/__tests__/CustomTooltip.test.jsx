@@ -28,4 +28,21 @@ describe('CustomTooltip', () => {
     expect(screen.getByText(/Total Hours: 12/)).toBeInTheDocument();
     expect(screen.getByText(/Percentage: 50%/)).toBeInTheDocument();
   });
+
+  it('uses a custom valueLabel when provided (e.g. Team Stats showing Volunteers, not Total Hours)', () => {
+    const payload2 = [{ payload: { name: 'In Team', totalHours: 963 } }];
+    render(<CustomTooltip active payload={payload2} valueLabel="Volunteers" />, container);
+    expect(screen.getByText(/Volunteers: 963/)).toBeInTheDocument();
+    expect(screen.queryByText(/Total Hours/)).not.toBeInTheDocument();
+  });
+
+  it('rounds the value to a whole number when formatValue is set, without affecting callers that leave it off', () => {
+    const payload2 = [{ payload: { name: 'In Team', totalHours: 963.7 } }];
+    render(
+      <CustomTooltip active payload={payload2} valueLabel="Volunteers" formatValue />,
+      container,
+    );
+    expect(screen.getByText(/Volunteers: 964/)).toBeInTheDocument();
+    expect(screen.queryByText(/963\.7/)).not.toBeInTheDocument();
+  });
 });

@@ -1,0 +1,12 @@
+/* Blue ring around the status dot when the user has a note, like the orange box on the Rehireable control */
+.statusDotWithNote {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Bright enough to read on both the light and dark backgrounds */
+  border: 2px solid #339af0;
+  border-radius: 50%;
+  padding: 1px;
+  line-height: 1;
+}

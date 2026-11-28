@@ -1,4 +1,5 @@
 /* stylelint-disable  */
+
 /* src/components/SupportPortal/SupportLogViewer.module.css */
 
 .container {
@@ -82,6 +83,7 @@
 }
 
 .timelineContent {
+  min-width: 0;
   margin-left: 1.75rem;
   background-color: #fff;
   border-radius: 6px;
@@ -122,6 +124,21 @@
   margin: 0.3rem 0 0;
   font-size: 0.9rem;
   color: #555;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.metadataFields {
+  margin: 0.25rem 0;
+}
+
+.metadataFields dd {
+  margin: 0 0 0.5rem 0.75rem;
+}
+
+.metadataList {
+  margin: 0.25rem 0;
+  padding-left: 1rem;
 }
 
 /* ==== Empty ==== */
@@ -130,6 +147,56 @@
   color: #999;
   font-size: 1rem;
   margin-top: 3rem;
+}
+
+/* Match the Support Login and Dashboard palette without changing light-mode styles. */
+.darkMode {
+  background-color: #1a1d23;
+  color: #fff;
+}
+
+.darkMode .title,
+.darkMode .entryDate,
+.darkMode .entryText {
+  color: #fff;
+}
+
+.darkMode .subtitle,
+.darkMode .supportNotes,
+.darkMode .emptyState {
+  color: #cbd5e1;
+}
+
+.darkMode .backLink {
+  color: #80bdff;
+}
+
+.darkMode .backLink:hover {
+  color: #fff;
+}
+
+/* Keep keyboard navigation visible against the charcoal background. */
+.darkMode .backLink:focus-visible {
+  outline: 2px solid #80bdff;
+  outline-offset: 2px;
+}
+
+.darkMode .errorBanner {
+  background-color: #4a1c24;
+  color: #f8d7da;
+}
+
+.darkMode .timeline::before {
+  background-color: #334155;
+}
+
+.darkMode .timelineDot {
+  background-color: #007bff;
+}
+
+.darkMode .timelineContent {
+  background-color: #1e293b;
+  border-color: #334155;
 }
 
 /* ==== Responsive ==== */

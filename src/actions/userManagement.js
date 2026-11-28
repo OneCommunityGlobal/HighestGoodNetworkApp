@@ -15,6 +15,8 @@ import {
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
   FINISH_USER_INFO_UPDATE,
+  RESET_USER_PROFILE_EDIT,
+  CLEAR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
@@ -209,6 +211,7 @@ export const buildUpdatedUserLifecycleDetails = (user, payload) => {
 };
 
 const buildBackendPayload = (userDetails, action) => {
+  console.log('Building backend payload with:', { userDetails, action });
   switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
@@ -329,6 +332,41 @@ export const updateRehireableStatus = (user, isRehireable, notRehireableReason =
       }
     }
     dispatch(userProfileUpdateAction(userProfile));
+    return userProfile;
+  };
+};
+
+/**
+ * Add, edit or delete the note shown on a user's status dot
+ * @param{*} user - the user the note belongs to
+ * @param{string} statusNote - the new note; an empty string deletes it
+ */
+// Shows why a note could not be saved; the backend sends { error } or, for 403, a plain string
+export const getStatusNoteErrorMessage = error => {
+  const data = error?.response?.data;
+  const reason = typeof data === 'string' ? data : data?.error;
+  return reason ? `Unable to save the note: ${reason}` : 'Unable to save the note.';
+};
+
+export const updateStatusNote = (user, statusNote) => {
+  return async (dispatch, getState) => {
+    const note = typeof statusNote === 'string' ? statusNote.trim() : '';
+    const response = await axios.patch(ENDPOINTS.UPDATE_STATUS_NOTE(user._id), {
+      statusNote: note,
+    });
+    const responseData = response?.data || {};
+    const userProfile = {
+      ...user,
+      statusNote: typeof responseData.statusNote === 'string' ? responseData.statusNote : note,
+      statusNoteHistory: Array.isArray(responseData.statusNoteHistory)
+        ? responseData.statusNoteHistory
+        : user.statusNoteHistory || [],
+    };
+    // Only update the User Management list when this user is in it; the reducer assumes it is
+    const listedUsers = getState?.()?.allUserProfiles?.userProfiles;
+    if (Array.isArray(listedUsers) && listedUsers.some(listed => listed._id === user._id)) {
+      dispatch(userProfileUpdateAction(userProfile));
+    }
     return userProfile;
   };
 };
@@ -477,6 +515,10 @@ export const updateUserInfomation = value => dispatch => {
   dispatch({ type: START_USER_INFO_UPDATE, payload: value });
 };
 
+export const clearUserInformation = () => dispatch => {
+  dispatch({ type: CLEAR_USER_INFO_UPDATE });
+};
+
 /**
  * Clears the queue of pending user info edits (newUserData) after they have
  * been successfully saved to the backend. Without this, previously-saved
@@ -486,4 +528,8 @@ export const updateUserInfomation = value => dispatch => {
  */
 export const finishUserInfoUpdate = () => dispatch => {
   dispatch({ type: FINISH_USER_INFO_UPDATE });
+};
+
+export const resetUserProfileEdit = () => dispatch => {
+  dispatch({ type: RESET_USER_PROFILE_EDIT });
 };

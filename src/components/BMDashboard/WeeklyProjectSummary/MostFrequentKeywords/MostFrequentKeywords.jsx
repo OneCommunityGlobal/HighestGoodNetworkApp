@@ -563,7 +563,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const svgRef = useRef();
   const containerRef = useRef();
   const keywordRequest = useRef(0);
-  const [localProjects, setProjects] = useState([]);
+  const [localProjects, setLocalProjects] = useState([]);
   const projects = useSummaryProjects(localProjects);
   const [selectedOption, setSelectedOption] = useSummaryProjectSelection(
     'keywords',
@@ -594,7 +594,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       const res = await axios.get(`${API_BASE}/projects`, {
         headers: { Authorization: token },
       });
-      setProjects(res.data || []);
+      setLocalProjects(res.data || []);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         // eslint-disable-next-line no-console
@@ -615,30 +615,25 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
 
       const token = localStorage.getItem('token');
 
-      try {
-        const response = await axios.get(`${API_BASE}/tags/frequent?${params.toString()}`, {
-          headers: { Authorization: token },
-        });
+      const response = await axios.get(`${API_BASE}/tags/frequent?${params.toString()}`, {
+        headers: { Authorization: token },
+      });
+      if (requestId !== keywordRequest.current) return;
 
-        if (requestId !== keywordRequest.current) return;
-        const responseData = response?.data?.data;
-        if (responseData && responseData.length > 0) {
-          const normalizedData = responseData.slice(0, 8).map(item => ({
+      const responseData = response?.data?.data;
+      const normalizedData = Array.isArray(responseData)
+        ? responseData.slice(0, 8).map(item => ({
             tag: item.tag,
             count: item.count || item.frequency || 1,
             date: item.date || null,
-          }));
-          setAllTags(normalizedData);
-          return;
-        }
+          }))
+        : [];
 
-        // API returned empty — no keywords for this project
-        setAllTags([]);
-      } catch {
-        if (requestId !== keywordRequest.current) return;
-        setError('Failed to load keywords. Please try again.');
-        setAllTags([]);
-      }
+      setAllTags(normalizedData);
+    } catch {
+      if (requestId !== keywordRequest.current) return;
+      setError('Failed to load keywords. Please try again.');
+      setAllTags([]);
     } finally {
       if (requestId === keywordRequest.current) setIsLoading(false);
     }
@@ -656,7 +651,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     } else if (selectedOption.type === 'test') {
       setAllTags(TEST_DATASETS[selectedOption.value].data);
     } else {
-      fetchProjectData(selectedOption.type === 'all' ? '' : selectedOption.value);
+      void fetchProjectData(selectedOption.type === 'all' ? '' : selectedOption.value);
     }
     return () => {
       keywordRequest.current += 1;

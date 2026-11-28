@@ -11,10 +11,10 @@ import styles from './ExpenditureCard.module.css';
 import PropTypes from 'prop-types';
 
 function useProjectList(key) {
-  const [localProjects, setProjectList] = useState([]);
+  const [localProjects, setLocalProjects] = useState([]);
   const projectList = useSummaryProjects(localProjects);
   const summaryScope = useSummaryScope();
-  const [selectedProject, setSelectedProject] = useSummaryProjectSelection(key, '');
+  const [selectedProject, setSelectedProject] = useSummaryProjectSelection(key, 'all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,7 +37,7 @@ function useProjectList(key) {
               name: `Project ${String.fromCodePoint(65 + index)}`,
             }))
           : [];
-        setProjectList(labeled);
+        setLocalProjects(labeled);
         if (labeled.length > 0) setSelectedProject(labeled[0].id);
       })
       .catch(err => {

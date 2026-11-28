@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import CopyQuestionnaireLinkButton from '../HGNForm/access/CopyQuestionnaireLinkButton';
 import Accordion from './Accordion';
 import { PreferenceFilterButtons, SkillFilterButtons } from './FilterButtons';
 import RankedUserList from './RankedUserList';
@@ -26,6 +27,11 @@ function CommunityMembersPage() {
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <h1 className={`${styles.title}`}>Community Member Filters</h1>
+
+      <div className={styles.questionnaireLink}>
+        <CopyQuestionnaireLinkButton />
+        <span>Share this link with people invited through the Dropbox setup process.</span>
+      </div>
 
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} darkMode={darkMode} />
 

@@ -54,6 +54,31 @@
   background-color: #121212;
 }
 
+.borderLight {
+  border: 2px solid #333;
+}
+
+.borderDark {
+  border: 2px solid #f1f1f1;
+}
+
+.textLight {
+  color: #212529;
+}
+
+.textDark {
+  color: #f8f9fa;
+}
+
+.linkDark {
+  color: #90caf9;
+}
+
+:global(body.dark-mode) .linkDark,
+:global(body.bm-dashboard-dark) .linkDark {
+  color: #90caf9 !important;
+}
+
 @media (width <= 1039px) {
   .notFoundContent {
     margin-top: 20rem;

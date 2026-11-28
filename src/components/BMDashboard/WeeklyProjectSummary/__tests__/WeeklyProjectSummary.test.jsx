@@ -1,7 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import axios from 'axios';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import WeeklyProjectSummary from '../WeeklyProjectSummary';
 
 vi.mock('../../../../actions/bmdashboard/materialsActions', () => ({
@@ -14,6 +16,7 @@ vi.mock('../../../../actions/bmdashboard/projectActions', () => ({
   fetchBMProjects: vi.fn(() => ({
     type: 'FETCH_BM_PROJECTS',
   })),
+  setErrors: error => ({ type: 'GET_ERRORS', payload: error }),
 }));
 
 // Keep this regression test focused on WeeklyProjectSummary itself.
@@ -50,8 +53,8 @@ vi.mock('../Financials/CostBreakDown/CostBreakDown', () => ({
   default: () => <div>Cost Breakdown</div>,
 }));
 
-vi.mock('../ExpenditureChart/FinancialsTrackingSection', () => ({
-  default: () => <div>Financial Tracking</div>,
+vi.mock('../Financials/FinancialOverview', () => ({
+  default: () => <div>Financial Overview</div>,
 }));
 
 vi.mock('../../InteractiveMap/InteractiveMap', () => ({
@@ -164,5 +167,66 @@ describe('WeeklyProjectSummary regression tests', () => {
         }),
       ]),
     );
+  });
+
+  it('reports a failed project-list dispatch and still opens the dashboard', async () => {
+    const error = new Error('Project list unavailable');
+    fetchBMProjects.mockReturnValueOnce(() => Promise.reject(error));
+
+    render(
+      <Provider store={store}>
+        <WeeklyProjectSummary />
+      </Provider>,
+    );
+
+    expect(await screen.findByTestId('weekly-project-summary-header')).toBeInTheDocument();
+    expect(store.getActions()).toContainEqual({ type: 'GET_ERRORS', payload: error });
+  });
+
+  it('keeps expenditure filters independent across collapse and reopen in dark mode', async () => {
+    const state = store.getState();
+    state.theme.darkMode = true;
+    state.bmProjects = [
+      { _id: 'new', name: 'New project', createdAt: '2026-10-01' },
+      { _id: 'edited', name: 'Edited project', dateCreated: '2026-01-01', updatedAt: '2026-10-02' },
+    ];
+    const get = vi.spyOn(axios, 'get').mockResolvedValue({ data: { actual: [], planned: [] } });
+    try {
+      render(
+        <Provider store={store}>
+          <WeeklyProjectSummary />
+        </Provider>,
+      );
+
+      const tracking = await screen.findByRole('button', { name: /^Financials Tracking/ });
+      fireEvent.click(tracking);
+      const [actual, planned] = await screen.findAllByRole('combobox', { name: 'Project' });
+      expect(screen.getByTestId('weekly-project-summary-container')).toHaveClass('dark-mode');
+      expect(actual).toHaveValue('edited');
+      expect(planned).toHaveValue('edited');
+      await waitFor(() =>
+        expect(get).toHaveBeenCalledWith(expect.stringMatching(/\/expenditure\/edited\/pie$/)),
+      );
+      expect(await screen.findAllByText('No expenditure data for this project')).toHaveLength(2);
+
+      fireEvent.change(actual, { target: { value: 'all' } });
+      expect(actual).toHaveValue('all');
+      expect(planned).toHaveValue('edited');
+      await waitFor(() =>
+        expect(get).toHaveBeenCalledWith(expect.stringMatching(/\/expenditure\/all\/pie$/)),
+      );
+
+      fireEvent.click(tracking);
+      expect(screen.queryByRole('combobox', { name: 'Project' })).not.toBeInTheDocument();
+      fireEvent.click(tracking);
+      const [reopenedActual, reopenedPlanned] = await screen.findAllByRole('combobox', {
+        name: 'Project',
+      });
+      expect(reopenedActual).toHaveValue('all');
+      expect(reopenedPlanned).toHaveValue('edited');
+      expect(await screen.findAllByText('No expenditure data for this project')).toHaveLength(2);
+    } finally {
+      get.mockRestore();
+    }
   });
 });

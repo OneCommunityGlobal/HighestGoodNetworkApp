@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import PropTypes from 'prop-types';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import styles from './QuantityOfMaterialsUsed.module.css';
 
@@ -69,6 +70,121 @@ function getRandomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
 
+// Materials are grouped by their material type ID, so two types that share a name stay apart
+export const getMaterialKey = material => {
+  const itemType = material?.itemType;
+  if (!itemType?.name) return null;
+  return String(itemType._id || itemType.name);
+};
+
+// Keeps only the selected projects; no selection means all projects
+export const filterMaterialsByProjects = (materials, projectIds) => {
+  if (!Array.isArray(materials)) return [];
+  if (!projectIds?.length) return materials;
+  return materials.filter(material => projectIds.includes(String(material?.project?._id)));
+};
+
+// One label per material type; a shared name gets its unit (or a short ID) added
+export const buildMaterialLabels = materials => {
+  const types = new Map();
+  (materials || []).forEach(material => {
+    const key = getMaterialKey(material);
+    if (key && !types.has(key)) types.set(key, material.itemType);
+  });
+
+  const nameCounts = new Map();
+  types.forEach(type => nameCounts.set(type.name, (nameCounts.get(type.name) || 0) + 1));
+
+  const labels = new Map();
+  types.forEach((type, key) => {
+    const shared = nameCounts.get(type.name) > 1;
+    labels.set(key, shared ? `${type.name} (${type.unit || key.slice(-4)})` : type.name);
+  });
+  return labels;
+};
+
+const getOptionBackground = (darkMode, state) => {
+  if (state.isSelected || state.isFocused) return '#0d55b3';
+  return darkMode ? '#22272e' : '#fff';
+};
+
+const getOptionColor = (darkMode, state) => {
+  if (state.isSelected || darkMode) return '#fff';
+  return '#232323';
+};
+
+const createSelectStyles = darkMode => ({
+  control: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#22272e' : '#fff',
+    borderColor: darkMode ? '#375071' : '#ccc',
+    color: darkMode ? '#fff' : '#232323',
+    minHeight: 38,
+    boxShadow: 'none',
+    borderRadius: 8,
+  }),
+  menu: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#22272e' : '#fff',
+    fontSize: 12,
+    zIndex: 10001,
+    borderRadius: 8,
+    marginTop: 2,
+    color: darkMode ? '#fff' : '#232323',
+  }),
+  menuList: base => ({
+    ...base,
+    maxHeight: 400,
+    overflowY: 'auto',
+    backgroundColor: darkMode ? '#22272e' : '#fff',
+    color: darkMode ? '#fff' : '#232323',
+    padding: 0,
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: getOptionBackground(darkMode, state),
+    color: getOptionColor(darkMode, state),
+    fontSize: 13,
+    padding: '10px 16px',
+    cursor: 'pointer',
+  }),
+  multiValue: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#375071' : '#e2e7ee',
+    borderRadius: 6,
+    fontSize: 12,
+    marginRight: 4,
+  }),
+  multiValueLabel: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#333',
+    fontSize: 12,
+    padding: '2px 6px',
+  }),
+  multiValueRemove: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#333',
+    ':hover': {
+      backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
+      color: '#fff',
+    },
+    borderRadius: 4,
+    padding: 2,
+  }),
+  singleValue: base => ({
+    ...base,
+    color: darkMode ? '#fff' : base.color,
+  }),
+  input: base => ({
+    ...base,
+    color: darkMode ? '#fff' : base.color,
+  }),
+  placeholder: base => ({
+    ...base,
+    color: darkMode ? '#fff' : base.color,
+  }),
+});
+
 function QuantityOfMaterialsUsed({
   data,
   comparisonMode = 'No Comparison',
@@ -92,7 +208,7 @@ function QuantityOfMaterialsUsed({
   const [legendColors, setLegendColors] = useState([]);
   const chartContainerRef = useRef(null);
   const [visibleRange, setVisibleRange] = useState([0, 30]);
-  const [selectedMaterialName, setSelectedMaterialName] = useState(null);
+  const [selectedMaterialKey, setSelectedMaterialKey] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -102,86 +218,7 @@ function QuantityOfMaterialsUsed({
     if (!summaryScope) dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  const selectStyles = useMemo(
-    () => ({
-      control: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        borderColor: darkMode ? '#375071' : '#ccc',
-        color: darkMode ? '#fff' : '#232323',
-        minHeight: 38,
-        boxShadow: 'none',
-        borderRadius: 8,
-      }),
-      menu: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        fontSize: 12,
-        zIndex: 10001,
-        borderRadius: 8,
-        marginTop: 2,
-        color: darkMode ? '#fff' : '#232323',
-      }),
-      menuList: base => ({
-        ...base,
-        maxHeight: 400,
-        overflowY: 'auto',
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        color: darkMode ? '#fff' : '#232323',
-        padding: 0,
-      }),
-      option: (base, state) => ({
-        ...base,
-        backgroundColor: state.isSelected
-          ? '#0d55b3'
-          : state.isFocused
-          ? '#0d55b3'
-          : darkMode
-          ? '#22272e'
-          : '#fff',
-        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
-        fontSize: 13,
-        padding: '10px 16px',
-        cursor: 'pointer',
-      }),
-      multiValue: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#375071' : '#e2e7ee',
-        borderRadius: 6,
-        fontSize: 12,
-        marginRight: 4,
-      }),
-      multiValueLabel: base => ({
-        ...base,
-        color: darkMode ? '#fff' : '#333',
-        fontSize: 12,
-        padding: '2px 6px',
-      }),
-      multiValueRemove: base => ({
-        ...base,
-        color: darkMode ? '#fff' : '#333',
-        ':hover': {
-          backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
-          color: '#fff',
-        },
-        borderRadius: 4,
-        padding: 2,
-      }),
-      singleValue: base => ({
-        ...base,
-        color: darkMode ? '#fff' : base.color,
-      }),
-      input: base => ({
-        ...base,
-        color: darkMode ? '#fff' : base.color,
-      }),
-      placeholder: base => ({
-        ...base,
-        color: darkMode ? '#fff' : base.color,
-      }),
-    }),
-    [darkMode],
-  );
+  const selectStyles = useMemo(() => createSelectStyles(darkMode), [darkMode]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -194,25 +231,30 @@ function QuantityOfMaterialsUsed({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // **Dropdown Options**
-  const materialOptions = useMemo(() => {
-    if (!Array.isArray(data)) return [];
-    const uniqueMaterials = new Map();
-    data.forEach(mat => {
-      if (mat?.itemType?.name) {
-        uniqueMaterials.set(mat.itemType.name, {
-          value: mat.itemType.name,
-          label: mat.itemType.name,
-        });
-      }
-    });
-    return Array.from(uniqueMaterials.values());
-  }, [data]);
+  // Only the selected projects count toward the chart, the materials list and the details pop-up
+  const selectedProjectMaterials = useMemo(
+    () => filterMaterialsByProjects(data, selectedProjects),
+    [data, selectedProjects],
+  );
 
-  const projectOptions = projects.map(project => ({
-    value: project._id,
-    label: project.name,
-  }));
+  const materialLabels = useMemo(() => buildMaterialLabels(selectedProjectMaterials), [
+    selectedProjectMaterials,
+  ]);
+
+  // **Dropdown Options**
+  const materialOptions = useMemo(
+    () => Array.from(materialLabels, ([value, label]) => ({ value, label })),
+    [materialLabels],
+  );
+
+  const projectOptions = useMemo(
+    () =>
+      (Array.isArray(projects) ? projects : []).map(project => ({
+        value: String(project._id),
+        label: project.name,
+      })),
+    [projects],
+  );
 
   const dateOptions = useMemo(
     () => [
@@ -280,7 +322,7 @@ function QuantityOfMaterialsUsed({
   };
 
   useEffect(() => {
-    if (!Array.isArray(data) || data.length === 0) {
+    if (selectedProjectMaterials.length === 0) {
       setChartData({
         labels: [],
         datasets: [
@@ -298,11 +340,9 @@ function QuantityOfMaterialsUsed({
     const periodOneUsageMap = new Map();
     const periodTwoUsageMap = new Map();
 
-    data.forEach(material => {
-      if (!material?.itemType?.name || !material?.updateRecord) return;
-      const materialProjectId = material.project?._id || material.project;
-      if (selectedProjects.length && !selectedProjects.includes(String(materialProjectId))) return;
-      const materialName = material.itemType.name;
+    selectedProjectMaterials.forEach(material => {
+      const materialKey = getMaterialKey(material);
+      if (!materialKey || !material?.updateRecord) return;
       let periodOneUsage = 0;
       let periodTwoUsage = 0;
 
@@ -420,15 +460,14 @@ function QuantityOfMaterialsUsed({
         }
       });
 
-      const existingOne = periodOneUsageMap.get(materialName) || 0;
-      periodOneUsageMap.set(materialName, existingOne + periodOneUsage);
+      const existingOne = periodOneUsageMap.get(materialKey) || 0;
+      periodOneUsageMap.set(materialKey, existingOne + periodOneUsage);
 
-      const existingTwo = periodTwoUsageMap.get(materialName) || 0;
-      periodTwoUsageMap.set(materialName, existingTwo + periodTwoUsage);
+      const existingTwo = periodTwoUsageMap.get(materialKey) || 0;
+      periodTwoUsageMap.set(materialKey, existingTwo + periodTwoUsage);
     });
 
-    const allMaterialNames = data.map(m => m?.itemType?.name).filter(Boolean);
-    const uniqueNames = [...new Set(allMaterialNames)];
+    const uniqueNames = [...materialLabels.keys()];
 
     let sortedMaterials = uniqueNames
       .map(name => ({
@@ -442,7 +481,8 @@ function QuantityOfMaterialsUsed({
       sortedMaterials = sortedMaterials.filter(m => selectedMaterials.includes(m.name));
     }
 
-    const displayMaterials = sortedMaterials.map(m => m.name);
+    const displayKeys = sortedMaterials.map(m => m.name);
+    const displayMaterials = displayKeys.map(key => materialLabels.get(key));
     const usageData = sortedMaterials.map(m => m.totalUsage);
     const previousUsageData = sortedMaterials.map(m => m.previousTotal);
 
@@ -466,13 +506,14 @@ function QuantityOfMaterialsUsed({
       }
 
       sortedPreviousData = sortedPreviousData.sort((a, b) => b[1] - a[1]);
-      const sortedLabels = sortedPreviousData.map(([name]) => name);
+      const sortedKeys = sortedPreviousData.map(([name]) => name);
+      const sortedLabels = sortedKeys.map(key => materialLabels.get(key));
       const sortedUsageData = sortedPreviousData.map(([, usage]) => usage);
       const assignedDotColors = sortedLabels.map(
         (_, index) => colorPalette[index % colorPalette.length] || getRandomColor(),
       );
       setLegendColors(assignedDotColors);
-      const comparisonColorsPrev = sortedLabels.map(name => {
+      const comparisonColorsPrev = sortedKeys.map(name => {
         const prevUsage = periodTwoUsageMap.get(name) || 0;
         const currentUsage = periodOneUsageMap.get(name) || 0;
         if (prevUsage < currentUsage) return 'red';
@@ -481,6 +522,7 @@ function QuantityOfMaterialsUsed({
       });
       setChartData({
         labels: sortedLabels,
+        keys: sortedKeys,
         datasets: [
           {
             label: `${getPeriodLabel(selectedDate).split(' vs ')[1]} Usage`,
@@ -505,6 +547,7 @@ function QuantityOfMaterialsUsed({
 
     setChartData({
       labels: displayMaterials,
+      keys: displayKeys,
       datasets: [
         {
           label:
@@ -540,9 +583,9 @@ function QuantityOfMaterialsUsed({
       ],
     });
   }, [
-    data,
+    selectedProjectMaterials,
+    materialLabels,
     selectedMaterials,
-    selectedProjects,
     selectedDate,
     dateRangeOne,
     dateRangeTwo,
@@ -571,9 +614,11 @@ function QuantityOfMaterialsUsed({
     setVisibleRange([startIndex, endIndex]);
   };
 
-  const getMaterialUsageDetails = materialName => {
-    // First find all materials with the matching name
-    const matchingMaterials = data.filter(m => m?.itemType?.name === materialName);
+  const getMaterialUsageDetails = materialKey => {
+    // All records of this material type in the selected projects
+    const matchingMaterials = selectedProjectMaterials.filter(
+      m => getMaterialKey(m) === materialKey,
+    );
 
     if (!matchingMaterials || matchingMaterials.length === 0) return null;
 
@@ -680,7 +725,7 @@ function QuantityOfMaterialsUsed({
     }
 
     return {
-      name: materialName,
+      name: materialLabels.get(materialKey),
       timeline,
       total: topProjectUsage,
       project: topProject,
@@ -791,6 +836,7 @@ function QuantityOfMaterialsUsed({
             setSelectedMaterials(selectedOptions.map(({ value }) => value))
           }
           placeholder="All Materials testing"
+          aria-label="Materials"
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
           menuPosition="fixed"
@@ -805,8 +851,11 @@ function QuantityOfMaterialsUsed({
           isMulti
           isSearchable
           value={projectOptions.filter(option => selectedProjects.includes(option.value))}
-          onChange={options => setSelectedProjects((options || []).map(option => option.value))}
+          onChange={selectedOptions =>
+            setSelectedProjects((selectedOptions || []).map(({ value }) => value))
+          }
           placeholder="All Projects"
+          aria-label="Projects"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
@@ -850,7 +899,10 @@ function QuantityOfMaterialsUsed({
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range one"
-            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
+              darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
+            }`}
+            calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -895,7 +947,10 @@ function QuantityOfMaterialsUsed({
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range two"
-            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
+              darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
+            }`}
+            calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -935,8 +990,7 @@ function QuantityOfMaterialsUsed({
                 onClick: (event, elements) => {
                   if (!elements.length) return;
                   const { index } = elements[0];
-                  const label = chartData.labels[index];
-                  setSelectedMaterialName(label);
+                  setSelectedMaterialKey(chartData.keys?.[index]);
                   setShowModal(true);
                 },
                 plugins: {
@@ -954,7 +1008,12 @@ function QuantityOfMaterialsUsed({
                 scales: {
                   x: {
                     ticks: {
-                      display: false,
+                      display: true,
+                      color: darkMode ? '#e5e7eb' : '#333',
+                      font: { size: 11 },
+                      autoSkip: false,
+                      maxRotation: 60,
+                      minRotation: 45,
                     },
                     grid: {
                       color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
@@ -963,7 +1022,7 @@ function QuantityOfMaterialsUsed({
                   y: {
                     beginAtZero: true,
                     ticks: {
-                      color: darkMode ? '#ccc' : '#333',
+                      color: darkMode ? '#e5e7eb' : '#333',
                     },
                     grid: {
                       color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
@@ -1056,12 +1115,16 @@ function QuantityOfMaterialsUsed({
             ))}
         </div>
       )}
-      {showModal && selectedMaterialName && (
+      {showModal && selectedMaterialKey && (
         <div className={`${styles.quantityModalOverlay}`}>
-          <div className={`${styles.quantityModalContent}`}>
+          <dialog
+            open
+            className={`${styles.quantityModalContent}`}
+            aria-labelledby="quantity-usage-details-title"
+          >
             <div className={`${styles.quantityModalHeader}`}>
-              <h3 className={`${styles.quantityModalHeading}`}>
-                <span>{selectedMaterialName} – Usage Details</span>
+              <h3 id="quantity-usage-details-title" className={`${styles.quantityModalHeading}`}>
+                <span>{materialLabels.get(selectedMaterialKey)} – Usage Details</span>
               </h3>
               <button
                 type="button"
@@ -1073,7 +1136,7 @@ function QuantityOfMaterialsUsed({
             </div>
 
             {(() => {
-              const details = getMaterialUsageDetails(selectedMaterialName);
+              const details = getMaterialUsageDetails(selectedMaterialKey);
               if (!details) return <p>No usage data available.</p>;
 
               return (
@@ -1103,11 +1166,15 @@ function QuantityOfMaterialsUsed({
                 </>
               );
             })()}
-          </div>
+          </dialog>
         </div>
       )}
     </div>
   );
 }
+
+QuantityOfMaterialsUsed.propTypes = {
+  data: PropTypes.array.isRequired,
+};
 
 export default QuantityOfMaterialsUsed;

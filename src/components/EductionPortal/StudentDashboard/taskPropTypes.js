@@ -12,6 +12,7 @@ export const taskItemPropTypes = {
   task: taskShape.isRequired,
   onMarkAsDone: PropTypes.func,
   onLogTime: PropTypes.func,
+  onUploadComplete: PropTypes.func,
   intermediateTasks: PropTypes.arrayOf(PropTypes.shape({})),
   isExpanded: PropTypes.bool,
   onToggleIntermediateTasks: PropTypes.func,
@@ -22,6 +23,7 @@ export const taskItemPropTypes = {
 export const taskItemDefaultProps = {
   onMarkAsDone: undefined,
   onLogTime: undefined,
+  onUploadComplete: undefined,
   intermediateTasks: [],
   isExpanded: false,
   onToggleIntermediateTasks: undefined,
@@ -33,6 +35,7 @@ export const taskViewPropTypes = {
   tasks: PropTypes.arrayOf(taskShape).isRequired,
   onMarkAsDone: PropTypes.func,
   onLogTime: PropTypes.func,
+  onUploadComplete: PropTypes.func,
   intermediateTasks: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.shape({}))),
   expandedTasks: PropTypes.objectOf(PropTypes.bool),
   onToggleIntermediateTasks: PropTypes.func,
@@ -43,6 +46,7 @@ export const taskViewPropTypes = {
 export const taskViewDefaultProps = {
   onMarkAsDone: undefined,
   onLogTime: undefined,
+  onUploadComplete: undefined,
   intermediateTasks: {},
   expandedTasks: {},
   onToggleIntermediateTasks: undefined,

@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 import PropTypes from 'prop-types';
 
 const SummaryProjects = createContext(null);
@@ -12,7 +20,7 @@ export function getLatestProject(projects = []) {
       ...['updatedAt', 'createdAt', 'dateCreated', 'modifiedDatetime', 'createdDatetime'].map(
         key => {
           const value = project[key];
-          const parsed = value ? new Date(value).getTime() : NaN;
+          const parsed = value ? new Date(value).getTime() : Number.NaN;
           return Number.isFinite(parsed) ? parsed : -Infinity;
         },
       ),
@@ -101,32 +109,22 @@ function projectValue(project, shape) {
 export function useSummaryProjectSelection(key, initialValue, shape = 'id') {
   const scope = useSummaryScope();
   const [localValue, setLocalValue] = useState(initialValue);
-  const [, render] = useState(0);
+  const [, refreshSelection] = useReducer(count => count + 1, 0);
   if (scope?.defaultProject && !scope.selections.has(key)) {
     scope.selections.set(key, projectValue(scope.defaultProject, shape));
   }
-  const value = scope
-    ? scope.selections.has(key)
-      ? scope.selections.get(key)
-      : scope.defaultProject
-      ? projectValue(scope.defaultProject, shape)
-      : localValue
-    : localValue;
+  const value = scope?.selections.has(key) ? scope.selections.get(key) : localValue;
   const setValue = useCallback(
     next => {
       if (!scope) {
         setLocalValue(next);
         return;
       }
-      const previous = scope.selections.has(key)
-        ? scope.selections.get(key)
-        : scope.defaultProject
-        ? projectValue(scope.defaultProject, shape)
-        : localValue;
+      const previous = scope.selections.has(key) ? scope.selections.get(key) : localValue;
       scope.selections.set(key, typeof next === 'function' ? next(previous) : next);
-      render(count => count + 1);
+      refreshSelection();
     },
-    [scope, key, shape, localValue],
+    [scope, key, localValue],
   );
   // Stable identity prevents effects from refetching on unrelated rerenders.
   return [value, setValue];

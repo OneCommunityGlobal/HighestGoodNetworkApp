@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styles from './GroupList.module.css';
+import GroupMemberSelector from './GroupMemberSelector';
+import ConfirmationModal from '../../Announcements/ConfirmationModal';
 
 export default function GroupEditorModal({
   group = null,
@@ -10,12 +12,18 @@ export default function GroupEditorModal({
   onSave,
   onDelete,
   existingGroups = [],
+  pending = false,
+  mutationError = '',
+  saveBlocked = false,
 }) {
   const [name, setName] = useState(group?.name || '');
   const [members, setMembers] = useState(() =>
     Array.isArray(group?.members) ? Array.from(new Set(group.members)) : [],
   );
   const [error, setError] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const confirmationOpen = useRef(false);
+  const deleteInvoked = useRef(false);
   const overlayRef = useRef(null);
   const modalRef = useRef(null);
   const firstInputRef = useRef(null);
@@ -33,9 +41,12 @@ export default function GroupEditorModal({
     document.body.style.overflow = 'hidden';
     const previouslyFocused = document.activeElement;
 
-    requestAnimationFrame(() => firstInputRef.current?.focus());
+    const focusFrame = requestAnimationFrame(() => {
+      if (!confirmationOpen.current) firstInputRef.current?.focus();
+    });
 
     function onKey(e) {
+      if (confirmationOpen.current) return;
       if (e.key === 'Escape') {
         e.preventDefault();
         onClose();
@@ -62,6 +73,7 @@ export default function GroupEditorModal({
     document.addEventListener('keydown', onKey);
 
     return () => {
+      cancelAnimationFrame(focusFrame);
       document.body.style.overflow = prevOverflow;
       document.removeEventListener('keydown', onKey);
       previouslyFocused?.focus();
@@ -102,117 +114,154 @@ export default function GroupEditorModal({
   }, [name, existingGroups, group]);
 
   const save = useCallback(() => {
-    if (!validate()) return;
+    if (pending || saveBlocked || !validate()) return;
     const payload = { ...group, name: name.trim(), members };
     onSave(payload);
-  }, [group, name, members, onSave, validate]);
+  }, [group, name, members, onSave, validate, pending, saveBlocked]);
 
   const remove = useCallback(() => {
-    if (group?.id) onDelete(group.id);
-    else onClose();
-  }, [group, onDelete, onClose]);
+    if (pending) return;
+    if (group?.id) {
+      deleteInvoked.current = false;
+      confirmationOpen.current = true;
+      setConfirmDelete(true);
+    } else onClose();
+  }, [group, onClose, pending]);
 
   return (
-    <div
-      className={`${styles.overlay} ${darkMode ? styles.dark : ''}`}
-      ref={overlayRef}
-      onClick={handleOverlayClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          if (e.target === overlayRef.current) {
-            onClose();
+    <>
+      <ConfirmationModal
+        isOpen={confirmDelete}
+        toggle={() => {
+          setConfirmDelete(false);
+          // Keep the editor's document listener suspended for this dismissal event.
+          requestAnimationFrame(() => {
+            confirmationOpen.current = false;
+          });
+        }}
+        zIndex={1300}
+        title="Delete Student Group"
+        message={`Delete '${group?.name}' and its ${group?.members?.length ??
+          'unknown number of'} ${
+          group?.members?.length === 1 ? 'member' : 'members'
+        }? This can't be undone.`}
+        confirmText="Confirm Delete"
+        confirmColor="danger"
+        onConfirm={() => {
+          if (!pending && group?.id && !deleteInvoked.current) {
+            deleteInvoked.current = true;
+            onDelete(group.id);
           }
-        }
-      }}
-      aria-label="Close dialog"
-    >
+        }}
+      />
       <div
-        className={styles.modal}
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="group-modal-title"
+        className={`${styles.overlay} ${darkMode ? styles.dark : ''}`}
+        ref={overlayRef}
+        onClick={handleOverlayClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (e.target === overlayRef.current) {
+              onClose();
+            }
+          }
+        }}
+        aria-label="Close dialog"
       >
-        <div className={styles.head}>
-          <h3 id="group-modal-title" className={styles.modalTitle}>
-            {group ? 'Edit Group' : 'New Group'}
-          </h3>
-          <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close">
-            ×
-          </button>
-        </div>
-
-        <div className={styles.body}>
-          <div>
-            <label className={styles.field}>
-              <div className={styles.fieldLabel}>Name</div>
-              <input
-                ref={firstInputRef}
-                className={styles.input}
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Group name"
-                aria-label="Group name"
-                aria-invalid={!!error}
-                aria-describedby={error ? 'group-name-error' : undefined}
-              />
-            </label>
-            {error && (
-              <div
-                id="group-name-error"
-                className={styles.fieldError}
-                role="alert"
-                aria-live="assertive"
-              >
-                {error}
-              </div>
-            )}
+        <div
+          className={styles.modal}
+          ref={modalRef}
+          role="dialog"
+          aria-modal="true"
+          aria-busy={pending}
+          aria-labelledby="group-modal-title"
+        >
+          <div className={styles.head}>
+            <h3 id="group-modal-title" className={styles.modalTitle}>
+              {group ? 'Edit Group' : 'New Group'}
+            </h3>
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={onClose}
+              disabled={pending}
+              aria-label="Close"
+            >
+              ×
+            </button>
           </div>
 
-          <div className={styles.membersSection}>
-            <div className={styles.membersTitle}>Members</div>
-            <div className={styles.checklist}>
-              {learners.length === 0 && <div className={styles.empty}>No learners available</div>}
-              {learners.map(l => {
-                const label = l.displayName || l.name || l.email || 'Learner';
-                return (
-                  <label key={l.id} className={styles.checkItem}>
-                    <input
-                      type="checkbox"
-                      checked={members.includes(l.id)}
-                      onChange={() => toggleMember(l.id)}
-                    />
-                    <span className={styles.checkLabel}>{label}</span>
-                  </label>
-                );
-              })}
+          <div className={styles.body}>
+            <div>
+              <label className={styles.field}>
+                <div className={styles.fieldLabel}>Name</div>
+                <input
+                  ref={firstInputRef}
+                  className={styles.input}
+                  value={name}
+                  disabled={pending}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Group name"
+                  aria-label="Group name"
+                  aria-invalid={!!error}
+                  aria-describedby={error ? 'group-name-error' : undefined}
+                />
+              </label>
+              {error && (
+                <div
+                  id="group-name-error"
+                  className={styles.fieldError}
+                  role="alert"
+                  aria-live="assertive"
+                >
+                  {error}
+                </div>
+              )}
+              {mutationError && (
+                <div className={styles.fieldError} role="alert">
+                  {mutationError}
+                </div>
+              )}
+            </div>
+
+            {/* The checklist lives in ./GroupMemberSelector.jsx; selection state and
+              toggleMember stay in this modal. pending disables its checkboxes. */}
+            <GroupMemberSelector
+              learners={learners}
+              members={members}
+              pending={pending}
+              onToggleMember={toggleMember}
+            />
+          </div>
+
+          <div className={styles.footer}>
+            <div>
+              {group && (
+                <button type="button" className={styles.danger} onClick={remove} disabled={pending}>
+                  Delete
+                </button>
+              )}
+            </div>
+
+            <div className={styles.actions}>
+              <button type="button" className={styles.cancel} onClick={onClose} disabled={pending}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.primary}
+                onClick={save}
+                disabled={pending || saveBlocked || !name.trim()}
+              >
+                Save
+              </button>
             </div>
           </div>
         </div>
-
-        <div className={styles.footer}>
-          <div>
-            {group && (
-              <button type="button" className={styles.danger} onClick={remove}>
-                Delete
-              </button>
-            )}
-          </div>
-
-          <div className={styles.actions}>
-            <button type="button" className={styles.cancel} onClick={onClose}>
-              Cancel
-            </button>
-            <button type="button" className={styles.primary} onClick={save} disabled={!name.trim()}>
-              Save
-            </button>
-          </div>
-        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -230,6 +279,9 @@ GroupEditorModal.propTypes = {
       email: PropTypes.string,
     }),
   ),
+  pending: PropTypes.bool,
+  mutationError: PropTypes.string,
+  saveBlocked: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,

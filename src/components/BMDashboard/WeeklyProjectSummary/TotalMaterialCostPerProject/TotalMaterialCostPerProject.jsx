@@ -48,7 +48,7 @@ const projectDemoCosts = {
 
 function TotalMaterialCostPerProject() {
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [localProjects, setAllProjects] = useState([]);
+  const [localProjects, setLocalProjects] = useState([]);
   const allProjects = useSummaryProjects(localProjects);
   const summaryScope = useSummaryScope();
   const [projectCosts, setProjectCosts] = useState({});
@@ -64,21 +64,44 @@ function TotalMaterialCostPerProject() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: { top: 24 } },
     plugins: {
       legend: {
         position: 'top',
         labels: { color: textColor },
       },
+      title: { display: false },
       // Keep bar value labels readable when the globally registered datalabels plugin runs.
       datalabels: {
         // Match label color to the active theme so values stay visible on light and dark charts.
-        color: darkMode ? '#ffffff' : '#000000',
+        color: darkMode ? '#fff' : '#1a1a1a',
+        anchor: 'end',
+        align: 'end',
+        offset: 4,
+        clamp: true,
         // Emphasize the displayed values without changing label position or chart data.
-        font: { weight: 'bold' },
+        font: { weight: '600' },
+        textStrokeColor: darkMode ? '#1a1f26' : '#fff',
+        textStrokeWidth: 3,
         // Round only the displayed label text; keep the chart data unchanged.
-        formatter: value => Number(value).toFixed(3),
+        formatter: value => {
+          const numericValue = Number(value);
+          return Number.isFinite(numericValue) ? numericValue.toFixed(3) : '0.000';
+        },
       },
-      title: { display: false },
+      tooltip: {
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        titleColor: textColor,
+        bodyColor: textColor,
+        borderColor: darkMode ? '#375071' : '#ccc',
+        borderWidth: 1,
+        callbacks: {
+          label(context) {
+            const value = Number(context.parsed.y ?? 0);
+            return `${context.dataset.label}: ${value.toFixed(3)}`;
+          },
+        },
+      },
     },
     scales: {
       x: {
@@ -93,7 +116,7 @@ function TotalMaterialCostPerProject() {
         },
       },
       y: {
-        grid: { color: '#ccc' },
+        grid: { color: darkMode ? '#8b949e' : '#ccc' },
         ticks: { color: textColor },
       },
     },
@@ -116,7 +139,7 @@ function TotalMaterialCostPerProject() {
           label: project.name,
         }));
         if (!summaryScope) setSelectedProjects(projectsFilteredData);
-        setAllProjects(projectsFilteredData);
+        setLocalProjects(projectsFilteredData);
 
         const costResponse = await axios.get(ENDPOINTS.BM_PROJECT_MATERIALS_COST);
         if (costResponse.status < 200 || costResponse.status >= 300) {
@@ -125,16 +148,21 @@ function TotalMaterialCostPerProject() {
           );
         }
         const projectCostsData = costResponse.data.reduce((acc, item) => {
-          acc[item.project] = item.totalCostK;
+          const cost = Number(item.totalCostK);
+          acc[item.project] = Number.isFinite(cost) ? cost : 0;
           return acc;
         }, {});
         setProjectCosts(projectCostsData);
       } catch (error) {
         toast.error(`Error fetching data: ${error.message}`);
-        if (!summaryScope) toast.error('Using mock data as fallback');
-        if (!summaryScope) setSelectedProjects(allDemoProjects);
-        setAllProjects(allDemoProjects);
-        setProjectCosts(summaryScope ? {} : projectDemoCosts);
+        if (!summaryScope) {
+          toast.error('Using mock data as fallback');
+          setSelectedProjects(allDemoProjects);
+          setLocalProjects(allDemoProjects);
+          setProjectCosts(projectDemoCosts);
+        } else {
+          setProjectCosts({});
+        }
       } finally {
         setDataLoaded(true);
       }
@@ -142,14 +170,18 @@ function TotalMaterialCostPerProject() {
     fetchData();
   }, []);
 
-  const displayedProjects = selectedProjects.length ? selectedProjects : allProjects;
+  const displayedProjects =
+    summaryScope && selectedProjects.length === 0 ? allProjects : selectedProjects;
   const data = useMemo(
     () => ({
       labels: displayedProjects.map(p => p.label),
       datasets: [
         {
           label: 'Total Material Cost (*1000$)',
-          data: displayedProjects.map(p => projectCosts[p.value] || 0),
+          data: displayedProjects.map(p => {
+            const cost = Number(projectCosts[p.value]);
+            return Number.isFinite(cost) ? cost : 0;
+          }),
           backgroundColor: 'rgb(23, 154, 197)',
           borderRadius: 10,
         },
@@ -252,7 +284,11 @@ function TotalMaterialCostPerProject() {
             <Select
               isMulti
               isSearchable
-              options={[{ value: 'all', label: 'All Projects' }, ...allProjects]}
+              options={
+                summaryScope
+                  ? [{ value: 'all', label: 'All Projects' }, ...allProjects]
+                  : allProjects
+              }
               value={selectedProjects}
               onChange={options =>
                 setSelectedProjects(
@@ -264,7 +300,7 @@ function TotalMaterialCostPerProject() {
               menuPortalTarget={document.body}
               menuPosition="fixed"
               defaultValue={allProjects}
-              placeholder="All Projects"
+              placeholder={summaryScope ? 'All Projects' : 'Select Projects'}
               closeMenuOnSelect={false}
               hideSelectedOptions={false}
             />
