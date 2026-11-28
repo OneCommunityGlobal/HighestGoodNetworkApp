@@ -8,12 +8,77 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
+import tabStyles from './NoShowInsights.module.css';
 import { filterEventsByDate } from './FilterByDate';
+
+const INSIGHT_TABS = ['Demographics', 'Event type', 'Time', 'Location'];
+// Demographics stays out of the default until it is backed by real data
+const DEFAULT_TAB = 'Event type';
+
+// Demographic breakdown -> field on each event
+const DEMOGRAPHIC_FIELDS = {
+  Age: 'ageGroup',
+  Gender: 'gender',
+  Income: 'incomeLevel',
+  Occupation: 'occupation',
+  Education: 'educationLevel',
+  'User Segment': 'userSegment',
+};
+
+const CATEGORY_DESCRIPTIONS = {
+  'Event type': 'event types',
+  Time: 'time periods',
+  Location: 'locations',
+};
+
+// Grouping key for an event under the active tab
+const getInsightKey = (event, activeTab, demographicType) => {
+  switch (activeTab) {
+    case 'Event type':
+      return event.eventType;
+    case 'Time':
+      return event.eventTime?.split(' ')[0];
+    case 'Location':
+      return event.location;
+    default:
+      return event[DEMOGRAPHIC_FIELDS[demographicType]];
+  }
+};
+
+const getCategoryDescription = (activeTab, demographicType) =>
+  CATEGORY_DESCRIPTIONS[activeTab] || `${demographicType.toLowerCase()} groups`;
+
+const getViewLabel = (activeTab, demographicType) =>
+  activeTab === 'Demographics' ? `Demographics: ${demographicType}` : activeTab;
+
+// Average no-show rate per group
+const calculateStats = (events, activeTab, demographicType) => {
+  const statsMap = new Map();
+
+  events.forEach(event => {
+    const key = getInsightKey(event, activeTab, demographicType);
+    // Skip events without a usable rate so they cannot turn the average into NaN%
+    const percentage = Number.parseInt(event.noShowRate, 10);
+    if (!key || Number.isNaN(percentage)) return;
+
+    const existing = statsMap.get(key) || { totalPercentage: 0, count: 0 };
+    statsMap.set(key, {
+      totalPercentage: existing.totalPercentage + percentage,
+      count: existing.count + 1,
+    });
+  });
+
+  return Array.from(statsMap.entries()).map(([key, value]) => ({
+    label: key,
+    percentage: Math.round(value.totalPercentage / value.count),
+  }));
+};
 
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('This Week');
   const [scopeFilter, setScopeFilter] = useState('My Event');
-  const [activeTab, setActiveTab] = useState('Event type');
+  const [activeTab, setActiveTab] = useState(DEFAULT_TAB);
+  const [demographicType, setDemographicType] = useState('Age');
   const [sortOrder, setSortOrder] = useState('none');
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -33,42 +98,13 @@ function NoShowInsights() {
 
   const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
 
-  const getTooltipContent = () => {
-    let categoryDescription;
-    if (activeTab === 'Event type') categoryDescription = 'event types';
-    else if (activeTab === 'Time') categoryDescription = 'time periods';
-    else categoryDescription = 'locations';
+  const getTooltipContent = () =>
+    `Percentages represent the average no-show rate for each ${getCategoryDescription(
+      activeTab,
+      demographicType,
+    )} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
 
-    return `Percentages represent the average no-show rate for each ${categoryDescription} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
-  };
-
-  const calculateStats = filteredEvents => {
-    const statsMap = new Map();
-
-    filteredEvents.forEach(event => {
-      let key;
-      if (activeTab === 'Event type') key = event.eventType;
-      else if (activeTab === 'Time') key = event.eventTime.split(' ')[0];
-      else if (activeTab === 'Location') key = event.location;
-
-      const percentage = parseInt(event.noShowRate, 10);
-
-      if (statsMap.has(key)) {
-        const existing = statsMap.get(key);
-        statsMap.set(key, {
-          totalPercentage: existing.totalPercentage + percentage,
-          count: existing.count + 1,
-        });
-      } else {
-        statsMap.set(key, { totalPercentage: percentage, count: 1 });
-      }
-    });
-
-    return Array.from(statsMap.entries()).map(([key, value]) => ({
-      label: key,
-      percentage: Math.round(value.totalPercentage / value.count),
-    }));
-  };
+  const viewLabel = getViewLabel(activeTab, demographicType);
 
   const renderStats = () => {
     const dateFilteredEvents = filterEventsByDate(mockEvents, dateFilter);
@@ -77,7 +113,7 @@ function NoShowInsights() {
       scopeFilter === 'My Event'
         ? dateFilteredEvents.filter(event => event.id % 2 === 0)
         : dateFilteredEvents;
-    const stats = calculateStats(filteredEvents);
+    const stats = calculateStats(filteredEvents, activeTab, demographicType);
     const finalStats =
       sortOrder === 'none'
         ? stats
@@ -185,7 +221,7 @@ function NoShowInsights() {
 
       await navigator.share({
         title: 'No-show rate insights',
-        text: `Insights (${scopeFilter}, ${dateFilter}, ${activeTab})`,
+        text: `Insights (${scopeFilter}, ${dateFilter}, ${viewLabel})`,
         files: [file],
       });
 
@@ -235,7 +271,7 @@ function NoShowInsights() {
                   <strong>Filter:</strong> {dateFilter}
                 </div>
                 <div>
-                  <strong>View:</strong> {activeTab}
+                  <strong>View:</strong> {viewLabel}
                 </div>
               </div>
 
@@ -290,9 +326,8 @@ function NoShowInsights() {
               {getTooltipContent()}
             </Tooltip>
           </div>
-          <div
-            className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
-          >
+          {/* Dark mode for these selects comes from .insightsDark .insightsFilters */}
+          <div className={styles.insightsFilters}>
             <select value={scopeFilter} onChange={e => setScopeFilter(e.target.value)}>
               <option value="My Event">My Event</option>
               <option value="All Events">All Events</option>
@@ -310,13 +345,21 @@ function NoShowInsights() {
         </div>
 
         <div className={styles.insightsTabsContainer}>
-          <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDarkMode : ''}`}>
-            {['Event type', 'Time', 'Location'].map(tab => (
+          <div
+            className={`${styles.insightsTabs} ${tabStyles.tabsFit} ${
+              darkMode ? styles.insightsTabsDarkMode : ''
+            }`}
+            role="tablist"
+            aria-label="No-show insight views"
+          >
+            {INSIGHT_TABS.map(tab => (
               <button
                 key={tab}
                 type="button"
+                role="tab"
+                aria-selected={activeTab === tab}
                 className={`
-                ${styles.insightsTab} 
+                ${styles.insightsTab} ${tabStyles.tabFit}
                 ${darkMode ? styles.insightsTabDarkMode : ''} 
                 ${
                   activeTab === tab ? (darkMode ? styles.activeTabDarkMode : styles.activeTab) : ''
@@ -349,6 +392,22 @@ function NoShowInsights() {
             </div>
           </div>
         </div>
+
+        {activeTab === 'Demographics' && (
+          <div className={`${styles.insightsFilters} ${tabStyles.demographicSelect}`}>
+            <select
+              aria-label="Demographic breakdown"
+              value={demographicType}
+              onChange={e => setDemographicType(e.target.value)}
+            >
+              {Object.keys(DEMOGRAPHIC_FIELDS).map(type => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className={styles.insightsContent}>{renderStats()}</div>
       </div>

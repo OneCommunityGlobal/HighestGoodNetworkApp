@@ -1,0 +1,88 @@
+/* Upcoming Events (MyCases) additions: More button beside the title, the selected-day bar,
+   and dark-mode calendar hover fixes. Kept separate from MyCases.module.css so these
+   rules stay self-contained. */
+
+/* ---------- Title + More button ---------- */
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.moreBtn {
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid #0069d9;
+  border-radius: 16px;
+  background-color: transparent;
+  color: #0069d9;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.moreBtn:hover,
+.moreBtn:focus-visible {
+  background-color: #0069d9;
+  color: #fff;
+}
+
+.moreBtnDark {
+  border-color: #93c5fd;
+  color: #93c5fd;
+}
+
+.moreBtnDark:hover,
+.moreBtnDark:focus-visible {
+  background-color: #93c5fd;
+  color: #1c2541;
+}
+
+/* ---------- Selected calendar day (Card/List views) ---------- */
+.selectedDayBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: #e7f3ff;
+  color: #1e3a5f;
+  font-weight: 500;
+}
+
+.selectedDayBarDark {
+  background-color: #1e3a5f;
+  color: #f1f5f9;
+}
+
+.clearDayBtn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Dark calendar hover ----------
+   react-calendar's own hover colors for today/active tiles (e.g. #ffffa9) out-rank the
+   dark tile rules and turned hovered tiles near-white in dark mode. */
+.calendarDarkHover :global(.react-calendar__tile--now:enabled:hover),
+.calendarDarkHover :global(.react-calendar__tile--now:enabled:focus),
+.calendarDarkHover :global(.react-calendar__tile--hasActive:enabled:hover),
+.calendarDarkHover :global(.react-calendar__tile--hasActive:enabled:focus) {
+  background-color: #34495e;
+  color: #fff;
+}
+
+.calendarDarkHover :global(.react-calendar__tile--active:enabled:hover),
+.calendarDarkHover :global(.react-calendar__tile--active:enabled:focus) {
+  background-color: #0056b3;
+  color: #fff;
+}
