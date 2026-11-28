@@ -33,6 +33,21 @@
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.headerControlsLegend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .mockWeekControl {
@@ -95,6 +110,23 @@
   display: flex;
   justify-content: flex-end;
   margin-bottom: 1rem;
+}
+
+.exportButton {
+  align-self: center;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: #1d4ed8;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid #2563eb;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.exportButton:hover,
+.exportButton:focus-visible {
+  background-color: #eff6ff;
 }
 
 .addReviewerButton {
@@ -254,6 +286,16 @@
   border-color: #2563eb;
 }
 
+:global(.dark-mode) .exportButton {
+  color: #93c5fd;
+  border-color: #60a5fa;
+}
+
+:global(.dark-mode) .exportButton:hover,
+:global(.dark-mode) .exportButton:focus-visible {
+  background-color: #1e3a5f;
+}
+
 :global(.dark-mode) .addReviewerButton:hover {
   background-color: #1d4ed8;
 }
@@ -289,10 +331,17 @@
 
   .headerControls {
     width: 100%;
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .mockWeekControl {
     width: 100%;
+    order: -1;
+  }
+
+  .exportButton {
+    align-self: stretch;
   }
 
   .mockWeekMeta {

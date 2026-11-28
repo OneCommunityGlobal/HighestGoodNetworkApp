@@ -26,6 +26,7 @@ const PRGradingView = ({
   onAddReviewer,
   isFinalized,
   onFinalize,
+  onExport,
   searchTerm,
   onSearchTermChange,
   roleFilter,
@@ -132,14 +133,29 @@ const PRGradingView = ({
                     {teamData.teamName} — {teamData.dateRange.start} to {teamData.dateRange.end}
                   </div>
                 </div>
-
-                <Button
-                  variant="primary"
-                  disabled={isSavingPR || isSavingGrade}
-                  onClick={() => onSave?.(filteredReviewers)}
-                >
-                  Save
-                </Button>
+                <fieldset className={styles['pr-grading-screen-header-actions']}>
+                  <legend className={styles['pr-grading-screen-action-legend']}>
+                    Grading actions
+                  </legend>
+                  <Button variant="outline-primary" onClick={onExport} className={dm}>
+                    Export to CSV
+                  </Button>
+                  <Button
+                    variant="primary"
+                    disabled={isSavingPR || isSavingGrade}
+                    onClick={() => onSave?.(filteredReviewers)}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant={isFinalized ? 'secondary' : 'outline-dark'}
+                    disabled={isFinalized}
+                    onClick={onFinalize}
+                    className={`${styles['pr-grading-screen-done-button']} ${dm}`}
+                  >
+                    {isFinalized ? 'Finalized' : 'Done'}
+                  </Button>
+                </fieldset>
               </div>
               {loadError && (
                 <p role="alert" className={`${styles['pr-grading-screen-error-message']} ${dm}`}>
@@ -595,6 +611,7 @@ PRGradingView.propTypes = {
   onAddReviewer: PropTypes.func,
   isFinalized: PropTypes.bool.isRequired,
   onFinalize: PropTypes.func.isRequired,
+  onExport: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
   onSearchTermChange: PropTypes.func.isRequired,
   roleFilter: PropTypes.string.isRequired,

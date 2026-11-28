@@ -10,6 +10,7 @@ import {
   saveGradeChange,
 } from './prGradingPersistence';
 import { usePRPromotion } from './usePRPromotion';
+import { downloadWeeklyPRGradingCsv } from './csvExport';
 
 const hasDuplicatePR = (gradedPrs, value) => {
   const enteredNumbers = value.split('+').map(number => number.trim());
@@ -216,6 +217,10 @@ const PRGradingScreen = ({
     setShowGradingModal(null);
     setGradeError('');
   };
+  const handleFinalize = () => setIsFinalized(true);
+  const handleExport = () => {
+    downloadWeeklyPRGradingCsv(filteredReviewers, teamData.dateRange);
+  };
 
   if (!teamData || !reviewers) return <div>Error: Missing required props</div>;
   const handleAddReviewer = () => {
@@ -276,7 +281,8 @@ const PRGradingScreen = ({
       saveStatus={saveStatus}
       onDismissSaveStatus={onDismissSaveStatus}
       isFinalized={isFinalized}
-      onFinalize={() => setIsFinalized(true)}
+      onFinalize={handleFinalize}
+      onExport={handleExport}
       searchTerm={searchTerm}
       onSearchTermChange={setSearchTerm}
       roleFilter={roleFilter}
