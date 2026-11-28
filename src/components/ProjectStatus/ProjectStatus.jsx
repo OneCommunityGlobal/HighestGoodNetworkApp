@@ -190,6 +190,7 @@ export default function ProjectStatus() {
   const chartOptions = useMemo(
     () => ({
       responsive: true,
+      maintainAspectRatio: false,
       cutout: '65%',
       layout: { padding: 12 },
       plugins: {
