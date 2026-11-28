@@ -1,4 +1,8 @@
-import { hasPermissionListChanged, hasUserPermissionChanges } from '../permissionChanges';
+import {
+  hasPermissionListChanged,
+  hasUserPermissionChanges,
+  listPermissionChanges,
+} from '../permissionChanges';
 
 describe('hasPermissionListChanged', () => {
   it('ignores order', () => {
@@ -97,5 +101,68 @@ describe('hasUserPermissionChanges', () => {
         draftRemoved: [],
       }),
     ).toBe(false);
+  });
+});
+
+describe('listPermissionChanges', () => {
+  const noChanges = { added: [], removed: [] };
+
+  it('lists a permission that is on screen but not saved as added', () => {
+    expect(listPermissionChanges(['postRole'], ['postRole', 'putRole'])).toEqual({
+      added: ['putRole'],
+      removed: [],
+    });
+  });
+
+  it('lists a saved permission that is no longer on screen as removed', () => {
+    expect(listPermissionChanges(['postRole', 'putRole'], ['postRole'])).toEqual({
+      added: [],
+      removed: ['putRole'],
+    });
+  });
+
+  it('lists both sides of a swap', () => {
+    expect(listPermissionChanges(['postRole', 'putRole'], ['postRole', 'deleteRole'])).toEqual({
+      added: ['deleteRole'],
+      removed: ['putRole'],
+    });
+  });
+
+  it('lists nothing after adding and then removing the same permission', () => {
+    const saved = ['postRole'];
+    const added = [...saved, 'putRole'];
+    const removedAgain = added.filter(permission => permission !== 'putRole');
+    expect(listPermissionChanges(saved, added)).toEqual({ added: ['putRole'], removed: [] });
+    expect(listPermissionChanges(saved, removedAgain)).toEqual(noChanges);
+  });
+
+  it('ignores order', () => {
+    expect(listPermissionChanges(['postRole', 'putRole'], ['putRole', 'postRole'])).toEqual(
+      noChanges,
+    );
+  });
+
+  it('lists a permission once, even when a list has it twice', () => {
+    expect(listPermissionChanges(['seeBadges', 'seeBadges'], ['postRole', 'postRole'])).toEqual({
+      added: ['postRole'],
+      removed: ['seeBadges'],
+    });
+  });
+
+  it('treats undefined and null as an empty list', () => {
+    expect(listPermissionChanges(undefined, null)).toEqual(noChanges);
+    expect(listPermissionChanges(null, ['postRole'])).toEqual({ added: ['postRole'], removed: [] });
+    expect(listPermissionChanges(['postRole'], undefined)).toEqual({
+      added: [],
+      removed: ['postRole'],
+    });
+  });
+
+  it('does not change the lists it is given', () => {
+    const saved = ['putRole', 'postRole'];
+    const draft = ['postRole', 'deleteRole', 'deleteRole'];
+    listPermissionChanges(saved, draft);
+    expect(saved).toEqual(['putRole', 'postRole']);
+    expect(draft).toEqual(['postRole', 'deleteRole', 'deleteRole']);
   });
 });

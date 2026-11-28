@@ -9,6 +9,7 @@ function ReminderModal({
   updateProfileOnSubmit,
   changedAccount,
   darkMode,
+  children,
 }) {
   const { modalStatus, updateModalStatus } = useContext(ModalContext);
 
@@ -25,6 +26,7 @@ function ReminderModal({
         <span>
           Please log out and log back in to your account, {changedAccount} to apply the changes.
         </span>
+        {children}
       </div>
       <div className={styles['ReminderButton']}>
         <button

@@ -309,6 +309,16 @@
     width: 200px;
     top: 35%;
     right: 11%;
+
+    /* Centered on 35% of the window, so 70vh keeps the top on screen */
+    max-height: 70vh;
+  }
+
+  /* Lets the changes list shrink when the card reaches its max height */
+  .ReminderBody {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
 
   .ReminderTitle {
@@ -370,5 +380,9 @@
     padding: 15px;
     margin: 20px auto;
     position: relative;
+
+    /* Undo the base offset, so the title stays inside the pop-up */
+    transform: none;
+    right: auto;
   }
 }
