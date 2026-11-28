@@ -75,7 +75,7 @@
   width: 100%;
 }
 
-.dateInput {
+.datePickerWrapper .dateInput {
   width: 100%;
   padding: 8px 30px 8px 12px;
   border-radius: 6px;
@@ -86,7 +86,7 @@
   outline: none;
 }
 
-.dateInput:focus {
+.datePickerWrapper .dateInput:focus {
   border-color: #4285F4;
 }
 

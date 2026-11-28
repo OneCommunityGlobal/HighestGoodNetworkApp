@@ -355,7 +355,7 @@
 }
 
 .wrapperDark .filterInput[type='date']::-webkit-calendar-picker-indicator {
-  filter: invert(1) opacity(0.8);
+  filter: opacity(0.8);
 }
 
 /* ===================== Responsive ===================== */
@@ -437,4 +437,11 @@
   .detailClose {
     display: none;
   }
+}
+
+/* Dark mode date inputs: two classes so the global input[type='date'] rule does not override them */
+.wrapperDark .filterInput {
+  background-color: var(--cb-input-bg);
+  color: var(--cb-text-color);
+  color-scheme: dark;
 }
