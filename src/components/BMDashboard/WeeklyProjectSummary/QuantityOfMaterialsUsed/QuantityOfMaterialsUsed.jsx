@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection, useSummaryScope } from '../summaryProjectSelection';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import Select from 'react-select';
 import { Bar } from 'react-chartjs-2';
@@ -191,6 +192,7 @@ function QuantityOfMaterialsUsed({
   comparisonDateRange = {},
 }) {
   const dispatch = useDispatch();
+  const summaryScope = useSummaryScope();
   const [chartData, setChartData] = useState(null);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedDate, setSelectedDate] = useState('Last Week');
@@ -198,7 +200,11 @@ function QuantityOfMaterialsUsed({
   const [dateRangeTwo, setDateRangeTwo] = useState([null, null]);
   const darkMode = useSelector(state => state.theme.darkMode);
   const projects = useSelector(state => state.bmProjects);
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useSummaryProjectSelection(
+    'material-quantity',
+    [],
+    'ids',
+  );
   const [legendColors, setLegendColors] = useState([]);
   const chartContainerRef = useRef(null);
   const [visibleRange, setVisibleRange] = useState([0, 30]);
@@ -209,7 +215,7 @@ function QuantityOfMaterialsUsed({
   const comparisonEnabled = comparisonMode !== 'No Comparison';
 
   useEffect(() => {
-    dispatch(fetchBMProjects());
+    if (!summaryScope) dispatch(fetchBMProjects());
   }, [dispatch]);
 
   const selectStyles = useMemo(() => createSelectStyles(darkMode), [darkMode]);
@@ -848,7 +854,7 @@ function QuantityOfMaterialsUsed({
           onChange={selectedOptions =>
             setSelectedProjects((selectedOptions || []).map(({ value }) => value))
           }
-          placeholder="Projects"
+          placeholder="All Projects"
           aria-label="Projects"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           classNamePrefix="custom-select"

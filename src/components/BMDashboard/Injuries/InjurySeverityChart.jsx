@@ -1,3 +1,7 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryScope,
+} from '../WeeklyProjectSummary/summaryProjectSelection';
 import { useEffect, useMemo, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import {
@@ -286,18 +290,19 @@ function InjurySeverityBarChart({
 
 function InjurySeverityDashboard(props) {
   const dispatch = useDispatch();
+  const summaryScope = useSummaryScope();
   const bmProjects = useSelector(state => state.bmProjects);
   const rawData = useSelector(state => state.bmInjury?.severityData || []);
   const { darkMode } = props;
 
-  const [selProjects, setSelProjects] = useState([]);
+  const [selProjects, setSelProjects] = useSummaryProjectSelection('injury-severity', [], 'ids');
   const [selTypes, setSelTypes] = useState([]);
   const [selDepts, setSelDepts] = useState(DEFAULT_DEPARTMENTS);
   const [dateRange, setDateRange] = useState([null, null]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchBMProjects());
+    if (!summaryScope) dispatch(fetchBMProjects());
   }, [dispatch]);
 
   useEffect(() => {

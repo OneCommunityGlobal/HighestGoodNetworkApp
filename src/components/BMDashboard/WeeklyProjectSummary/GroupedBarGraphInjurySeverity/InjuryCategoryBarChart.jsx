@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../summaryProjectSelection';
 import { useEffect, useState, useMemo } from 'react';
 import {
   BarChart,
@@ -42,7 +47,12 @@ function InjuryCategoryBarChart() {
   } = useSelector(state => state.bmInjury || {});
   const darkMode = useSelector(state => state.theme?.darkMode);
 
-  const [projectNameFilter, setProjectNameFilter] = useState([]);
+  const summaryScope = useSummaryScope();
+  const [projectNameFilter, setProjectNameFilter] = useSummaryProjectSelection(
+    'injury-category',
+    [],
+    'options',
+  );
   const [severityFilter, setSeverityFilter] = useState([]);
   const [injuryTypeFilter, setInjuryTypeFilter] = useState([]);
   const [startDate, setStartDate] = useState(null);
@@ -101,7 +111,7 @@ function InjuryCategoryBarChart() {
     return labels;
   }, [projects, unfilteredProjects]);
 
-  const projectNameOptions = useMemo(() => {
+  const localProjectNameOptions = useMemo(() => {
     const opts = [];
     for (const p of projects) {
       const id = String(p?._id ?? '');
@@ -113,8 +123,10 @@ function InjuryCategoryBarChart() {
     return opts.sort((a, b) => a.label.localeCompare(b.label));
   }, [projects, projectLabelById]);
 
+  const projectNameOptions = useSummaryProjects(localProjectNameOptions);
+
   useEffect(() => {
-    if (!projectNameFilter.length) return;
+    if (summaryScope || !projectNameFilter.length) return;
     const valid = new Set(projectNameOptions.map(o => o.value));
     const filtered = projectNameFilter.filter(p => valid.has(p.value));
     if (filtered.length !== projectNameFilter.length) setProjectNameFilter(filtered);

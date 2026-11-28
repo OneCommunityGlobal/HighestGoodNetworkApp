@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../WeeklyProjectSummary/summaryProjectSelection';
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
@@ -78,9 +83,15 @@ export default function ReturnedLateChart() {
   const [chartWidth, setChartWidth] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [availableProjects, setAvailableProjects] = useState([]);
+  const [localProjects, setAvailableProjects] = useState([]);
+  const availableProjects = useSummaryProjects(localProjects);
+  const summaryScope = useSummaryScope();
   const [allToolsData, setAllToolsData] = useState([]);
-  const [selectedProject, setSelectedProject] = useState('All');
+  const [selectedProject, setSelectedProject] = useSummaryProjectSelection(
+    'returned-late',
+    'All',
+    'id',
+  );
   const [selectedTools, setSelectedTools] = useState([]);
   const [dateRange, setDateRange] = useState(getCurrentYearRange);
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
@@ -159,7 +170,9 @@ export default function ReturnedLateChart() {
           Authorization: localStorage.getItem('token'),
         };
         const [projectsResult, toolsResult] = await Promise.allSettled([
-          axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, { headers }),
+          summaryScope
+            ? Promise.resolve({ data: [] })
+            : axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, { headers }),
           axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE, { headers }),
         ]);
 

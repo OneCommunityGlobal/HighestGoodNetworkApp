@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from '../summaryProjectSelection';
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -43,9 +48,15 @@ const projectDemoCosts = {
 
 function TotalMaterialCostPerProject() {
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [allProjects, setAllProjects] = useState([]);
+  const [localProjects, setLocalProjects] = useState([]);
+  const allProjects = useSummaryProjects(localProjects);
+  const summaryScope = useSummaryScope();
   const [projectCosts, setProjectCosts] = useState({});
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useSummaryProjectSelection(
+    'material-cost',
+    [],
+    'options',
+  );
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const textColor = darkMode ? '#ffffff' : '#666';
@@ -115,7 +126,9 @@ function TotalMaterialCostPerProject() {
     const fetchData = async () => {
       setDataLoaded(false);
       try {
-        const projectsResponse = await axios.get(ENDPOINTS.BM_PROJECTS);
+        const projectsResponse = summaryScope
+          ? { status: 200, data: summaryScope.projects }
+          : await axios.get(ENDPOINTS.BM_PROJECTS);
         if (projectsResponse.status < 200 || projectsResponse.status >= 300) {
           throw new Error(
             `API request to get projects list failed with status ${projectsResponse.status}`,
@@ -125,8 +138,8 @@ function TotalMaterialCostPerProject() {
           value: project._id,
           label: project.name,
         }));
-        setSelectedProjects(projectsFilteredData);
-        setAllProjects(projectsFilteredData);
+        if (!summaryScope) setSelectedProjects(projectsFilteredData);
+        setLocalProjects(projectsFilteredData);
 
         const costResponse = await axios.get(ENDPOINTS.BM_PROJECT_MATERIALS_COST);
         if (costResponse.status < 200 || costResponse.status >= 300) {
@@ -142,10 +155,14 @@ function TotalMaterialCostPerProject() {
         setProjectCosts(projectCostsData);
       } catch (error) {
         toast.error(`Error fetching data: ${error.message}`);
-        toast.error('Using mock data as fallback');
-        setSelectedProjects(allDemoProjects);
-        setAllProjects(allDemoProjects);
-        setProjectCosts(projectDemoCosts);
+        if (!summaryScope) {
+          toast.error('Using mock data as fallback');
+          setSelectedProjects(allDemoProjects);
+          setLocalProjects(allDemoProjects);
+          setProjectCosts(projectDemoCosts);
+        } else {
+          setProjectCosts({});
+        }
       } finally {
         setDataLoaded(true);
       }
@@ -153,13 +170,15 @@ function TotalMaterialCostPerProject() {
     fetchData();
   }, []);
 
+  const displayedProjects =
+    summaryScope && selectedProjects.length === 0 ? allProjects : selectedProjects;
   const data = useMemo(
     () => ({
-      labels: selectedProjects.map(p => p.label),
+      labels: displayedProjects.map(p => p.label),
       datasets: [
         {
           label: 'Total Material Cost (*1000$)',
-          data: selectedProjects.map(p => {
+          data: displayedProjects.map(p => {
             const cost = Number(projectCosts[p.value]);
             return Number.isFinite(cost) ? cost : 0;
           }),
@@ -168,7 +187,7 @@ function TotalMaterialCostPerProject() {
         },
       ],
     }),
-    [selectedProjects, projectCosts],
+    [displayedProjects, projectCosts],
   );
 
   const selectStyles = useMemo(
@@ -265,21 +284,29 @@ function TotalMaterialCostPerProject() {
             <Select
               isMulti
               isSearchable
-              options={allProjects}
+              options={
+                summaryScope
+                  ? [{ value: 'all', label: 'All Projects' }, ...allProjects]
+                  : allProjects
+              }
               value={selectedProjects}
-              onChange={setSelectedProjects}
+              onChange={options =>
+                setSelectedProjects(
+                  (options || []).some(option => option.value === 'all') ? [] : options || [],
+                )
+              }
               classNamePrefix="select"
               styles={selectStyles}
               menuPortalTarget={document.body}
               menuPosition="fixed"
               defaultValue={allProjects}
-              placeholder="Select Projects"
+              placeholder={summaryScope ? 'All Projects' : 'Select Projects'}
               closeMenuOnSelect={false}
               hideSelectedOptions={false}
             />
           </div>
           <div style={{ overflowX: 'auto' }}>
-            <div style={{ minWidth: `${selectedProjects.length * 20}px`, minHeight: '300px' }}>
+            <div style={{ minWidth: `${displayedProjects.length * 20}px`, minHeight: '300px' }}>
               <Bar data={data} options={options} />
             </div>
           </div>

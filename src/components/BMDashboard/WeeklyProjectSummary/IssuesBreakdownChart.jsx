@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from './summaryProjectSelection';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -156,13 +161,19 @@ export default function IssuesBreakdownChart() {
   const reduxProjects = useSelector(state => state.bmProjects || state.allProjects?.projects || []);
 
   // Filter states
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useSummaryProjectSelection(
+    'issues-breakdown',
+    [],
+    'ids',
+  );
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedIssueTypes, setSelectedIssueTypes] = useState([]);
 
   // Available options states
-  const [availableProjects, setAvailableProjects] = useState([]);
+  const summaryScope = useSummaryScope();
+  const [localProjects, setLocalProjects] = useState([]);
+  const availableProjects = useSummaryProjects(localProjects);
   // Projects seen in chart data, so charted projects missing from the project list stay filterable
   const [chartProjects, setChartProjects] = useState([]);
 
@@ -395,21 +406,22 @@ export default function IssuesBreakdownChart() {
     const fetchProjects = async () => {
       // Use Redux store if available
       if (reduxProjects && reduxProjects.length > 0) {
-        setAvailableProjects(reduxProjects);
+        setLocalProjects(reduxProjects);
         return;
       }
 
+      if (summaryScope) return;
       // Fetch from API if not in Redux - only fetch projects with issues
       try {
         const response = await httpService.get(
           `${process.env.REACT_APP_APIENDPOINT}/bm/projectsNames?withIssuesOnly=true`,
         );
         if (response.data && Array.isArray(response.data)) {
-          setAvailableProjects(response.data);
+          setLocalProjects(response.data);
         }
       } catch (err) {
         // Chart can work without projects filter - set to empty array
-        setAvailableProjects([]);
+        setLocalProjects([]);
       }
     };
 

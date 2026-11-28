@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection, useSummaryProjects } from './summaryProjectSelection';
 import { useEffect, useMemo, useState } from 'react';
 import { Input, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
@@ -13,7 +14,16 @@ import styles from './WeeklyProjectSummary.module.css';
 export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGeneratingPDF = false }) {
   const dispatch = useDispatch();
   const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
-  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter);
+  const savedProjectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter);
+  const [projectFilter, chooseProject] = useSummaryProjectSelection(
+    'header',
+    savedProjectFilter || '',
+    'id',
+  );
+  const projects = useSummaryProjects();
+  useEffect(() => {
+    dispatch(setProjectFilter(projectFilter));
+  }, [dispatch, projectFilter]);
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter);
   const comparisonPeriodFilter = useSelector(
     state => state.weeklyProjectSummary?.comparisonPeriodFilter,
@@ -53,7 +63,7 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
     dispatch(setComparisonPeriodFilter('No Comparison'));
   }, [dispatch]);
 
-  const projectOptions = useMemo(() => ['One Community'], []);
+  const projectOptions = projects;
   const dateRangeOptions = useMemo(() => [getLastTwoCompletedWeeks().lastWeek], []);
   const comparisonOptions = useMemo(() => COMPARISON_OPTIONS, []);
 
@@ -66,12 +76,13 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
           <Input
             type="select"
             value={projectFilter}
-            onChange={e => dispatch(setProjectFilter(e.target.value))}
+            onChange={e => chooseProject(e.target.value)}
             aria-label="Project Filter"
           >
+            <option value="">All Projects</option>
             {projectOptions.map(option => (
-              <option key={option} value={option}>
-                {option}
+              <option key={option._id} value={option._id}>
+                {option.name}
               </option>
             ))}
           </Input>
@@ -83,8 +94,8 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
             aria-label="Select Date Range"
           >
             {dateRangeOptions.map(option => (
-              <option key={option} value={option}>
-                {option}
+              <option key={option._id} value={option._id}>
+                {option.name}
               </option>
             ))}
           </Input>

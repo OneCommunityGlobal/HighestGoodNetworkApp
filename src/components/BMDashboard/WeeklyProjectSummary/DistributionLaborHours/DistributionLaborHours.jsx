@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection, useSummaryProjects } from '../summaryProjectSelection';
 import React, { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
@@ -46,7 +47,9 @@ export default function DistributionLaborHours() {
     to: '',
   });
 
-  const [projectFilter, setProjectFilter] = useState('');
+  const projects = useSummaryProjects(filterOptions.projects);
+  const [projectFilter, setProjectFilter] = useSummaryProjectSelection('labor-hours', '');
+  const [initialProject] = useState(projectFilter);
   const [memberFilter, setMemberFilter] = useState('');
   const [filtersApplied, setFiltersApplied] = useState(false);
 
@@ -102,8 +105,8 @@ export default function DistributionLaborHours() {
   };
 
   useEffect(() => {
-    void fetchData({ from: '', to: '', project: '', member: '' });
-  }, []);
+    void fetchData({ project: initialProject });
+  }, [initialProject]);
 
   const handleSubmit = async () => {
     await fetchData({
@@ -120,8 +123,8 @@ export default function DistributionLaborHours() {
   ]);
 
   const projectOptions = [
-    { value: '', label: 'ALL' },
-    ...filterOptions.projects.map(project => ({ value: project.id, label: project.name })),
+    { value: '', label: 'All Projects' },
+    ...projects.map(project => ({ value: project.id, label: project.name })),
   ];
 
   const memberOptions = [

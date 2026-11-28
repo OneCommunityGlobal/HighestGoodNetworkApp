@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import TotalMaterialCostPerProject from '../TotalMaterialCostPerProject';
+import { SummaryProjectProvider } from '../../summaryProjectSelection';
 
 // Mocks
 vi.mock('axios');
@@ -43,15 +44,35 @@ const mockCosts = [
 
 describe('TotalMaterialCostPerProject', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     axios.get.mockImplementation(url => {
       if (url.includes('/bm/projects')) {
-        return Promise.resolve({ data: mockProjects });
+        return Promise.resolve({ status: 200, data: mockProjects });
       }
       if (url.includes('/material-costs')) {
-        return Promise.resolve({ data: mockCosts });
+        return Promise.resolve({ status: 200, data: mockCosts });
       }
       return Promise.reject(new Error('not found'));
     });
+  });
+
+  it('uses the page metadata default without refetching the project list', async () => {
+    const projects = [
+      { _id: 1, name: 'Project A', createdAt: '2026-09-01' },
+      { _id: 2, name: 'Project B', dateCreated: '2026-01-01', updatedAt: '2026-10-01' },
+    ];
+    render(
+      <Provider store={store}>
+        <SummaryProjectProvider projects={projects}>
+          <TotalMaterialCostPerProject />
+        </SummaryProjectProvider>
+      </Provider>,
+    );
+    expect(await screen.findByTestId('bar-chart')).toHaveTextContent('Project B | 200');
+    expect(screen.getByTestId('bar-chart')).not.toHaveTextContent('Project A');
+    expect(axios.get.mock.calls.some(([url]) => url.includes('/bm/projects'))).toBe(false);
+    await userEvent.click(screen.getByRole('button', { name: 'Remove Project B' }));
+    expect(screen.getByTestId('bar-chart')).toHaveTextContent('Project A,Project B | 100,200');
   });
 
   it('shows loading spinner on initial render and hide the spinner when data loads', async () => {
@@ -122,8 +143,7 @@ describe('TotalMaterialCostPerProject', () => {
 
     // De-Select Project A in the dropdown
     fireEvent.keyDown(mySelectComponent.firstChild, { key: 'ArrowDown' });
-    await waitFor(() => document.querySelector('#react-select-5-option-0'));
-    fireEvent.click(document.querySelector('#react-select-5-option-0'));
+    fireEvent.click(await screen.findByRole('option', { name: 'Project A' }));
     expect(within(barChart).queryByText(/Project A/)).not.toBeInTheDocument();
   });
 

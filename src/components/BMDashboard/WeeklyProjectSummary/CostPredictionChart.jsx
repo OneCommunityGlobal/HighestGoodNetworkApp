@@ -1,3 +1,8 @@
+import {
+  useSummaryProjectSelection,
+  useSummaryProjects,
+  useSummaryScope,
+} from './summaryProjectSelection';
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -331,7 +336,12 @@ function CostPredictionChart({ projectId }) {
   const theme = getTheme(darkMode);
 
   // filter state
-  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const summaryScope = useSummaryScope();
+  const projects = useSummaryProjects(PROJECTS);
+  const [selectedProjectId, setSelectedProjectId] = useSummaryProjectSelection(
+    'cost-prediction',
+    '',
+  );
   const [dateRange, setDateRange] = useState({ start: '', end: '' }); // 'YYYY-MM-DD'
   // Computed each render so it stays correct if the page is left open past midnight.
   const todayStr = getLocalDateString();
@@ -343,44 +353,78 @@ function CostPredictionChart({ projectId }) {
   ];
 
   // Falls back to the projectId prop whenever nothing is explicitly selected, so the chart still loads data by default
-  const effectiveProjectId = selectedProjectId || projectId;
+  const effectiveProjectId = summaryScope ? selectedProjectId : selectedProjectId || projectId;
 
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [costsResponse, predictionsResponse] = await Promise.all([
-          projectCostService.getProjectCosts(effectiveProjectId),
-          projectCostService.getProjectPredictions(effectiveProjectId),
-        ]);
-
-        const costsData = costsResponse.data.costs;
-        const predictionsData = predictionsResponse.data.predictions;
-
-        const predictionsMap = predictionsData.reduce((acc, pred) => {
-          acc[pred.month] = pred.predictedCost;
-          return acc;
-        }, {});
-
-        const combinedData = costsData.map(cost => ({
-          ...cost,
-          predictedCost: predictionsMap[cost.month] || null,
-        }));
-
-        setChartData(combinedData.length ? combinedData : buildSampleData(effectiveProjectId));
-        setError(null);
+        const ids =
+          effectiveProjectId === 'all' ? projects.map(project => project.id) : [effectiveProjectId];
+        const results = await Promise.all(
+          ids.map(async id => {
+            const [costsResponse, predictionsResponse] = await Promise.all([
+              projectCostService.getProjectCosts(id),
+              projectCostService.getProjectPredictions(id),
+            ]);
+            const predictions = new Map(
+              (predictionsResponse.data.predictions || []).map(prediction => [
+                prediction.month,
+                prediction.predictedCost,
+              ]),
+            );
+            return (costsResponse.data.costs || []).map(cost => ({
+              ...cost,
+              predictedCost: predictions.get(cost.month) ?? null,
+            }));
+          }),
+        );
+        const months = new Map();
+        results.flat().forEach(row => {
+          const total = months.get(row.month) || {
+            month: row.month,
+            plannedCost: 0,
+            actualCost: null,
+            predictedCost: null,
+          };
+          total.plannedCost += row.plannedCost || 0;
+          if (row.actualCost != null) total.actualCost = (total.actualCost || 0) + row.actualCost;
+          if (row.predictedCost != null)
+            total.predictedCost = (total.predictedCost || 0) + row.predictedCost;
+          months.set(row.month, total);
+        });
+        const combinedData = [...months.values()].sort(
+          (a, b) => parseMonthLabel(a.month) - parseMonthLabel(b.month),
+        );
+        if (!cancelled) {
+          setChartData(
+            combinedData.length || summaryScope
+              ? combinedData
+              : buildSampleData(effectiveProjectId),
+          );
+          setError(null);
+        }
       } catch {
-        // Backend has no data for this project (common on reviewer machines):
-        // show sample data so the chart is still visible to everyone. Data is fixed per-project so switching the filter still moves the chart.
-        setChartData(buildSampleData(effectiveProjectId));
-        setError(null);
+        if (!cancelled) {
+          setChartData(summaryScope ? [] : buildSampleData(effectiveProjectId));
+          setError(
+            summaryScope ? 'No cost prediction data is available for the selected project.' : null,
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
-
     if (effectiveProjectId) fetchData();
-  }, [effectiveProjectId]);
+    else {
+      setChartData([]);
+      setLoading(false);
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [effectiveProjectId, projects, summaryScope]);
 
   const filteredData = useMemo(() => {
     if (!dateRange.start && !dateRange.end) {
@@ -479,7 +523,8 @@ function CostPredictionChart({ projectId }) {
             onChange={e => setSelectedProjectId(e.target.value)}
           >
             <option value="">Select a project</option>
-            {PROJECTS.map(p => (
+            <option value="all">All Projects</option>
+            {projects.map(p => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
@@ -652,7 +697,7 @@ function CostPredictionChart({ projectId }) {
 }
 
 CostPredictionChart.propTypes = {
-  projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default CostPredictionChart;

@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection, useSummaryProjects } from '../summaryProjectSelection';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -135,7 +136,7 @@ export default function ToolStatusDonutChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [toolId, setToolId] = useState('');
-  const [projectId, setProjectId] = useState('');
+  const [projectId, setProjectId] = useSummaryProjectSelection('tool-status', '', 'id');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [allToolsData, setAllToolsData] = useState(null);
 
@@ -179,12 +180,14 @@ export default function ToolStatusDonutChart() {
       : toolslist || [];
 
   // Get all unique projects from the combined data
-  const uniqueProjects = Array.from(
-    new Map(
-      allAvailableTools
-        .filter(t => t?.projectId)
-        .map(t => [t.projectId, { id: t.projectId, name: t.projectName || 'Unnamed Project' }]),
-    ).values(),
+  const uniqueProjects = useSummaryProjects(
+    Array.from(
+      new Map(
+        allAvailableTools
+          .filter(t => t?.projectId)
+          .map(t => [t.projectId, { id: t.projectId, name: t.projectName || 'Unnamed Project' }]),
+      ).values(),
+    ),
   );
 
   // Get all unique tools from the combined data

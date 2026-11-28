@@ -1,3 +1,4 @@
+import { useSummaryProjectSelection, useSummaryScope } from '../summaryProjectSelection';
 import { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -193,9 +194,11 @@ function ActualVsPlannedCost() {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  const summaryScope = useSummaryScope();
+
   // Persisted filters
-  const [selectedProject, setSelectedProject] = useState(
-    () => localStorage.getItem('bm_avsp_project') || '',
+  const [selectedProject, setSelectedProject] = useSummaryProjectSelection('actual-planned', () =>
+    summaryScope ? '' : localStorage.getItem('bm_avsp_project') || '',
   );
   const [selectedCategory, setSelectedCategory] = useState(
     () => localStorage.getItem('bm_avsp_category') || 'Overall',
@@ -208,25 +211,28 @@ function ActualVsPlannedCost() {
   const [isFiltering, setIsFiltering] = useState(false);
 
   const selectedProjectName = useMemo(
-    () => projects.find(p => p._id === selectedProject)?.name ?? '',
+    () =>
+      selectedProject === 'all'
+        ? 'All Projects'
+        : projects.find(p => p._id === selectedProject)?.name ?? '',
     [projects, selectedProject],
   );
 
   // Sync filters to local storage
   useEffect(() => {
-    if (selectedProject) {
+    if (!summaryScope && selectedProject) {
       localStorage.setItem('bm_avsp_project', selectedProject);
     }
     localStorage.setItem('bm_avsp_category', selectedCategory);
   }, [selectedProject, selectedCategory]);
 
   useEffect(() => {
-    dispatch(fetchBMProjects());
+    if (!summaryScope) dispatch(fetchBMProjects());
   }, [dispatch]);
 
   // Default to first project if none selected
   useEffect(() => {
-    if (!selectedProject && projects.length > 0) {
+    if (!summaryScope && !selectedProject && projects.length > 0) {
       setSelectedProject(projects[0]._id);
     }
   }, [projects, selectedProject]);
@@ -242,11 +248,32 @@ function ActualVsPlannedCost() {
 
   // Fetch project expenses
   useEffect(() => {
+    let cancelled = false;
     if (selectedProject) {
       setLoading(true);
-      axios
-        .get(ENDPOINTS.BM_PROJECT_EXPENSE_BY_ID(selectedProject))
+      const ids =
+        selectedProject === 'all' ? projects.map(project => project._id) : [selectedProject];
+      Promise.all(ids.map(id => axios.get(ENDPOINTS.BM_PROJECT_EXPENSE_BY_ID(id))))
+        .then(responses => ({
+          data: responses.reduce(
+            (total, response) => {
+              const item = response.data;
+              total.totalActualCost += item.totalActualCost || 0;
+              total.totalPlannedCost += item.totalPlannedCost || 0;
+              (item.breakdown || []).forEach(row => {
+                const category = total.breakdown.find(entry => entry.category === row.category);
+                if (category) {
+                  category.actualCost += row.actualCost || 0;
+                  category.plannedCost += row.plannedCost || 0;
+                } else total.breakdown.push({ ...row });
+              });
+              return total;
+            },
+            { totalActualCost: 0, totalPlannedCost: 0, breakdown: [] },
+          ),
+        }))
         .then(({ data }) => {
+          if (cancelled) return;
           setTotals({
             actual: Math.round(data.totalActualCost),
             planned: Math.round(data.totalPlannedCost),
@@ -260,11 +287,17 @@ function ActualVsPlannedCost() {
           );
         })
         .catch(() => {
+          if (cancelled) return;
           setTotals({ actual: 0, planned: 0 });
           setBreakdown([]);
         })
-        .finally(() => setLoading(false));
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
     }
+    return () => {
+      cancelled = true;
+    };
   }, [selectedProject]);
 
   // Derived chart data
@@ -332,6 +365,7 @@ function ActualVsPlannedCost() {
               setSelectedCategory('Overall');
             }}
           >
+            <option value="all">All Projects</option>
             {projects.map(p => (
               <option key={p._id} value={p._id}>
                 {p.name}
