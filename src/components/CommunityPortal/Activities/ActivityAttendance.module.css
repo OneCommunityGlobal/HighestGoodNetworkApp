@@ -259,26 +259,117 @@
   color: var(--text-color);
 }
 
-.infoIconWrapper {
-  display: flex;
+/* Lift the hovered/focused card so its tooltip is not covered by neighbouring cards */
+.statsCard:hover,
+.statsCard:has(:focus-visible) {
+  position: relative;
+  z-index: 2;
+}
+
+.infoTooltipContainer {
+  position: relative;
+  display: inline-flex;
   align-items: center;
+}
+
+/* Reset the browser's default button box so only the "i" circle shows */
+.infoIconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
   cursor: help;
-  color: var(--border-color);
+  line-height: 1;
+  color: #17a2b8;
   transition: color 0.2s ease;
 }
 
-.activityAttendanceDarkMode .infoIconWrapper {
-  color: var(--text-color);
+.infoIconWrapper:hover {
+  color: #117a8b;
 }
 
-.infoIconWrapper:hover,
 .infoIconWrapper:focus {
-  color: var(--heading-color);
   outline: none;
 }
 
+.infoIconWrapper:focus-visible {
+  outline: 2px solid #17a2b8;
+  outline-offset: 2px;
+}
+
+/* !important: public/index.css forces `body.dark-mode * { color: #fff !important }` */
+.activityAttendanceDarkMode .infoIconWrapper,
+.activityAttendanceDarkMode .infoIcon,
+.activityAttendanceDarkMode .infoIcon * {
+  color: #4fc3f7 !important;
+}
+
+.activityAttendanceDarkMode .infoIconWrapper:hover .infoIcon,
+.activityAttendanceDarkMode .infoIconWrapper:hover .infoIcon * {
+  color: #81d4fa !important;
+}
+
+.activityAttendanceDarkMode .infoIconWrapper:focus-visible {
+  outline-color: #4fc3f7;
+}
+
 .infoIcon {
-  font-size: 0.85rem;
+  font-size: 1rem;
+}
+
+/* Tooltip: shown on hover and keyboard focus */
+.infoTooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: max-content;
+  max-width: 220px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background-color: #2b2b2b;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.infoTooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #2b2b2b;
+}
+
+/* :focus-visible (keyboard only) so a mouse-clicked icon doesn't keep its tooltip open */
+.infoTooltipContainer:hover .infoTooltip,
+.infoIconWrapper:focus-visible + .infoTooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.activityAttendanceDarkMode .infoTooltip {
+  background-color: #f1f3f5;
+  color: #1b2a41 !important;
+}
+
+.activityAttendanceDarkMode .infoTooltip::after {
+  border-top-color: #f1f3f5;
 }
 
 /* ======================================

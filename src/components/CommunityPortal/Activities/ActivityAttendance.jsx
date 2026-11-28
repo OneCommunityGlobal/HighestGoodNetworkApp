@@ -4,7 +4,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
 import { FaRegClock, FaIdCard, FaEllipsisV, FaInfoCircle } from 'react-icons/fa';
 import styles from './ActivityAttendance.module.css';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import profileImg from '../../../assets/images/profile.png';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -82,18 +82,25 @@ const exportToCSV = students => {
 };
 
 function StatsCard({ title, value, colorClass, definition }) {
+  const tooltipId = useId();
+
   return (
     <div className={styles.statsCard}>
       <div className={styles.statsCardHeader}>
         <h3>{title}</h3>
-        <button
-          className={styles.infoIconWrapper}
-          title={definition}
-          aria-label={`Definition of ${title}`}
-          type="button"
-        >
-          <FaInfoCircle className={styles.infoIcon} />
-        </button>
+        <span className={styles.infoTooltipContainer}>
+          <button
+            className={styles.infoIconWrapper}
+            aria-label={`Definition of ${title}`}
+            aria-describedby={tooltipId}
+            type="button"
+          >
+            <FaInfoCircle className={styles.infoIcon} aria-hidden="true" />
+          </button>
+          <span id={tooltipId} role="tooltip" className={styles.infoTooltip}>
+            {definition}
+          </span>
+        </span>
       </div>
       <p className={`${styles.statsValue} ${styles[colorClass]}`}>{value}</p>
     </div>
