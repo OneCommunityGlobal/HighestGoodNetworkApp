@@ -18,6 +18,7 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
   const comparisonPeriodFilter = useSelector(
     state => state.weeklyProjectSummary?.comparisonPeriodFilter,
   );
+  const bmProjects = useSelector(state => state.bmProjects || []);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const getLastTwoCompletedWeeks = () => {
@@ -50,11 +51,18 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
   useEffect(() => {
     const { lastWeek } = getLastTwoCompletedWeeks();
     dispatch(setDateRangeFilter(lastWeek));
-    dispatch(setComparisonPeriodFilter('No Comparison'));
+    dispatch(setComparisonPeriodFilter('Week Over Week'));
   }, [dispatch]);
 
-  const projectOptions = useMemo(() => ['One Community'], []);
-  const dateRangeOptions = useMemo(() => [getLastTwoCompletedWeeks().lastWeek], []);
+  const projectOptions = useMemo(() => {
+    const names = bmProjects.map(project => project.name).filter(Boolean);
+    const currentProject = projectFilter && !names.includes(projectFilter) ? [projectFilter] : [];
+    return ['All Projects', ...new Set([...currentProject, ...names])];
+  }, [bmProjects, projectFilter]);
+  const dateRangeOptions = useMemo(() => {
+    const { lastWeek, prevWeek } = getLastTwoCompletedWeeks();
+    return [lastWeek, prevWeek];
+  }, []);
   const comparisonOptions = useMemo(() => COMPARISON_OPTIONS, []);
 
   return (

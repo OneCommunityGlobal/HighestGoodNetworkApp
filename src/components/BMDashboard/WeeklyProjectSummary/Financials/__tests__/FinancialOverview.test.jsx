@@ -108,10 +108,37 @@ describe('FinancialOverview', () => {
 
   it('shows an error when the overview cannot load', async () => {
     axios.get.mockRejectedValue({ response: { data: { message: 'endDate is required' } } });
-    render(<FinancialOverview requestParams={PARAMS} comparisonPeriodFilter="Week Over Week" />);
+    const onRequestStateChange = vi.fn();
+    render(
+      <FinancialOverview
+        requestParams={PARAMS}
+        comparisonPeriodFilter="Week Over Week"
+        onRequestStateChange={onRequestStateChange}
+      />,
+    );
 
     expect(await screen.findByRole('alert')).toHaveTextContent('endDate is required');
     expect(screen.queryByText(/week over week/)).not.toBeInTheDocument();
+    expect(onRequestStateChange).toHaveBeenLastCalledWith({
+      status: 'error',
+      error: 'endDate is required',
+    });
+  });
+
+  it('reports loading and success states to the shared cost breakdown consumer', async () => {
+    mockMetrics();
+    const onRequestStateChange = vi.fn();
+    render(
+      <FinancialOverview
+        requestParams={PARAMS}
+        comparisonPeriodFilter="No Comparison"
+        onRequestStateChange={onRequestStateChange}
+      />,
+    );
+
+    expect(await screen.findByText('$63,234')).toBeInTheDocument();
+    expect(onRequestStateChange).toHaveBeenNthCalledWith(1, { status: 'loading', error: null });
+    expect(onRequestStateChange).toHaveBeenLastCalledWith({ status: 'success', error: null });
   });
 
   it('waits for a date range before loading', async () => {
