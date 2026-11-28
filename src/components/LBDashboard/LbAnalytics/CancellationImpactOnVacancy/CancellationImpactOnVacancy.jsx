@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -16,18 +15,25 @@ import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import httpService from '../../../../services/httpService';
-import { ApiEndpoint } from '../../../../utils/URL';
+import { ENDPOINTS } from '../../../../utils/URL';
+import dashboardStyles from '../../LBDashboard.module.css';
 import styles from './CancellationImpactOnVacancy.module.css';
 
-const CHART_HEIGHT = 350;
+const CHART_HEIGHT = 400;
 const CANCELLATION_COLOR = '#ef4444';
-const VACANCY_COLOR = '#3b82f6';
+const VACANCY_COLOR = '#eab308';
 
 const TIME_UNIT_OPTIONS = [
-  { value: 'week', label: 'Week' },
-  { value: 'months', label: 'Months' },
-  { value: 'last6months', label: 'Last 6 Months' },
-  { value: 'year', label: 'Year' },
+  { value: 'week', label: 'Week', unit: 'day', axis: 'Days', format: 'MMM D' },
+  { value: 'months', label: 'Months', unit: 'isoWeek', axis: 'Weeks', format: 'MMM D' },
+  {
+    value: 'last6months',
+    label: 'Last 6 Months',
+    unit: 'month',
+    axis: 'Months',
+    format: 'MMM YYYY',
+  },
+  { value: 'year', label: 'Year', unit: 'month', axis: 'Months', format: 'MMM YYYY' },
 ];
 
 const CATEGORY_OPTIONS = [
@@ -43,94 +49,86 @@ function hashString(str) {
   return h >>> 0;
 }
 
-/** Deterministic 0..1 from seed + salt (stable across renders, changes when filters change). */
+// Deterministic values keep sample rates stable when the date range changes.
 function unitNoise(seed, salt) {
-  const n = hashString(`${seed}\0${salt}`);
-  return (n % 10000) / 10000;
+  const n = hashString(`${salt}\0${seed}`);
+  return (Math.imul(n, 2654435761) >>> 0) / 2 ** 32;
 }
 
-// Generate X-axis labels based on time unit and date range
-function getTimeAxisLabels(timeUnit, startDate, endDate) {
+function getPresetStart(timeUnit, endDate) {
+  const end = moment(endDate);
+  if (timeUnit === 'week') return end.subtract(6, 'days').toDate();
+  if (timeUnit === 'months')
+    return end
+      .subtract(1, 'month')
+      .add(1, 'day')
+      .toDate();
+  return end
+    .startOf('month')
+    .subtract(timeUnit === 'year' ? 11 : 5, 'months')
+    .toDate();
+}
+
+function generateSampleData({ unit, format }, startDate, endDate, category, selectedOptions) {
   const start = moment(startDate);
   const end = moment(endDate);
-  const labels = [];
+  if (!start.isValid() || !end.isValid() || end.isBefore(start, 'day')) return [];
 
-  if (timeUnit === 'week') {
-    let current = start.clone();
-    while (current.isSameOrBefore(end, 'day')) {
-      labels.push(current.format('MMM D'));
-      current.add(1, 'day');
-    }
-  } else if (timeUnit === 'months') {
-    let current = start.clone().startOf('isoWeek');
-    let weekNum = 1;
-    while (current.isSameOrBefore(end)) {
-      labels.push(`Week ${weekNum}`);
-      weekNum += 1;
-      current.add(1, 'week');
-    }
-  } else if (timeUnit === 'last6months') {
-    let current = end
-      .clone()
-      .startOf('month')
-      .subtract(5, 'month');
-    for (let k = 0; k < 6; k += 1) {
-      labels.push(current.format('MMM YYYY'));
-      current.add(1, 'month');
-    }
-  } else if (timeUnit === 'year') {
-    let current = end
-      .clone()
-      .startOf('month')
-      .subtract(11, 'month');
-    for (let k = 0; k < 12; k += 1) {
-      labels.push(current.format('MMM YYYY'));
-      current.add(1, 'month');
-    }
-  } else {
-    let current = start.clone().startOf('month');
-    while (current.isSameOrBefore(end, 'month')) {
-      labels.push(current.format('MMM YYYY'));
-      current.add(1, 'month');
-    }
+  const groups = selectedOptions.length ? selectedOptions.map(option => option.value) : ['all'];
+  const step = unit === 'isoWeek' ? 'week' : unit;
+  const rows = [];
+  const bucket = start.clone().startOf(unit);
+
+  while (bucket.isSameOrBefore(end, 'day')) {
+    const dateKey = bucket.format('YYYY-MM-DD');
+    const rates = groups.reduce(
+      (totals, group) => {
+        const seed = `${category}|${group}|${unit}|${dateKey}`;
+        return {
+          cancellation: totals.cancellation + 5 + unitNoise(seed, 'c') * 20,
+          vacancy: totals.vacancy + 12 + unitNoise(seed, 'v') * 30,
+        };
+      },
+      { cancellation: 0, vacancy: 0 },
+    );
+    rows.push({
+      time: moment.max(start, bucket).format(format),
+      cancellationRate: Math.round(rates.cancellation / groups.length),
+      vacancyRate: Math.round(rates.vacancy / groups.length),
+    });
+    bucket.add(1, step);
   }
 
-  return labels;
+  return rows;
 }
 
-function buildFilterKey(category, selectedVillages, selectedProperties) {
-  const villagePart = (selectedVillages || [])
-    .map(v => String(v.value))
-    .sort()
-    .join(',');
-  const propertyPart = (selectedProperties || [])
-    .map(p => String(p.value))
-    .sort()
-    .join(',');
-  return `${category}|v:${villagePart}|p:${propertyPart}`;
+async function fetchFilterOptions(category, signal) {
+  const config = { signal, skipGlobalErrorToast: true };
+
+  if (category === 'village') {
+    const { data } = await httpService.get(ENDPOINTS.LB_VILLAGES, config);
+    return data.map(village => ({ value: village._id, label: village.name }));
+  }
+
+  const options = [];
+  let page = 1;
+  let totalPages;
+  do {
+    // The listings endpoint uses page and size headers.
+    // eslint-disable-next-line no-await-in-loop
+    const { data } = await httpService.get(`${ENDPOINTS.LB_LISTINGS_BASE}/listings`, {
+      ...config,
+      headers: { page: String(page), size: '100' },
+    });
+    const { items, pagination } = data.data;
+    options.push(...items.map(listing => ({ value: listing._id, label: listing.title })));
+    totalPages = pagination.totalPages;
+    page += 1;
+  } while (page <= totalPages);
+  return options;
 }
 
-// Generate mock chart data (replace with API when backend is ready)
-function generateMockData(timeUnit, startDate, endDate, filterKey) {
-  const labels = getTimeAxisLabels(timeUnit, startDate, endDate);
-  const rangeKey = `${moment(startDate).format('YYYY-MM-DD')}|${moment(endDate).format(
-    'YYYY-MM-DD',
-  )}`;
-  const baseSeed = hashString(`${timeUnit}|${rangeKey}|${filterKey}`);
-
-  return labels.map((label, i) => {
-    const rowSeed = baseSeed + i * 7919 + hashString(label);
-    const cancelWave = Math.sin(i * 0.5 + baseSeed * 0.001) * 8;
-    const vacancyWave = Math.cos(i * 0.3 + baseSeed * 0.002) * 10;
-    const cancelJitter = unitNoise(rowSeed, 'c') * 12;
-    const vacancyJitter = unitNoise(rowSeed, 'v') * 14;
-    return {
-      time: label,
-      cancellationRate: Math.round(Math.max(0, Math.min(55, 5 + cancelWave + cancelJitter))),
-      vacancyRate: Math.round(Math.max(0, Math.min(55, 12 + vacancyWave + vacancyJitter))),
-    };
-  });
-}
+const formatRate = value => `${value}%`;
 
 const customSelectStyles = darkMode => ({
   control: provided => ({
@@ -138,11 +136,11 @@ const customSelectStyles = darkMode => ({
     backgroundColor: darkMode ? '#1C2541' : '#fff',
     borderColor: darkMode ? '#225163' : '#ccc',
     color: darkMode ? '#fff' : '#333',
-    minWidth: 160,
   }),
   menu: provided => ({
     ...provided,
     backgroundColor: darkMode ? '#1C2541' : '#fff',
+    zIndex: 2,
   }),
   option: (provided, state) => ({
     ...provided,
@@ -157,7 +155,7 @@ const customSelectStyles = darkMode => ({
     ...provided,
     color: darkMode ? '#fff' : '#333',
   }),
-  singleValue: provided => ({
+  placeholder: provided => ({
     ...provided,
     color: darkMode ? '#fff' : '#333',
   }),
@@ -167,84 +165,39 @@ const customSelectStyles = darkMode => ({
   }),
 });
 
-function CancellationImpactOnVacancy({ darkMode }) {
-  const defaultStart = moment()
-    .subtract(6, 'months')
-    .toDate();
-  const defaultEnd = moment().toDate();
-
-  const [startDate, setStartDate] = useState(defaultStart);
-  const [endDate, setEndDate] = useState(defaultEnd);
-  const [timeUnit, setTimeUnit] = useState('last6months');
+function CancellationImpactOnVacancy({ darkMode = false }) {
+  const [endDate, setEndDate] = useState(() => new Date());
+  const [startDate, setStartDate] = useState(() => getPresetStart('last6months', endDate));
+  const [timeUnit, setTimeUnit] = useState(TIME_UNIT_OPTIONS[2]);
   const [category, setCategory] = useState('village');
-  const [selectedVillages, setSelectedVillages] = useState([]);
-  const [selectedProperties, setSelectedProperties] = useState([]);
-  const [villageOptions, setVillageOptions] = useState([]);
-  const [propertyOptions, setPropertyOptions] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [filter, setFilter] = useState({ status: 'loading', options: [] });
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await httpService.get(`${ApiEndpoint}/villages`);
-        if (!mounted) return;
-        const list = Array.isArray(res?.data) ? res.data : [];
-        const opts = list.map(v => ({
-          value: v.name || v.regionId || v._id,
-          label: v.name || v.regionId || 'Unknown',
-        }));
-        setVillageOptions(opts);
-      } catch {
-        if (!mounted) return;
-        setVillageOptions([
-          { value: 'Village 1', label: 'Village 1' },
-          { value: 'Village 2', label: 'Village 2' },
-          { value: 'Village 3', label: 'Village 3' },
-        ]);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    const controller = new AbortController();
+    fetchFilterOptions(category, controller.signal).then(
+      options => {
+        if (!controller.signal.aborted) setFilter({ status: 'ready', options });
+      },
+      () => {
+        if (!controller.signal.aborted) setFilter({ status: 'error', options: [] });
+      },
+    );
+    return () => controller.abort();
+  }, [category]);
 
-  // Mock property options (grouped by village for now)
-  useEffect(() => {
-    const props = [
-      { value: 'Property A', label: 'Property A' },
-      { value: 'Property B', label: 'Property B' },
-      { value: 'Property C', label: 'Property C' },
-      { value: 'Property D', label: 'Property D' },
-    ];
-    setPropertyOptions(props);
-  }, []);
-
-  const filterKey = useMemo(() => buildFilterKey(category, selectedVillages, selectedProperties), [
-    category,
-    selectedVillages,
-    selectedProperties,
-  ]);
-
-  const chartData = useMemo(() => generateMockData(timeUnit, startDate, endDate, filterKey), [
-    timeUnit,
-    startDate,
-    endDate,
-    filterKey,
-  ]);
-
-  const xAxisLabel = useMemo(() => {
-    if (timeUnit === 'week') return 'Days';
-    if (timeUnit === 'months') return 'Weeks';
-    return 'Months';
-  }, [timeUnit]);
+  const chartData = useMemo(
+    () => generateSampleData(timeUnit, startDate, endDate, category, selectedOptions),
+    [timeUnit, startDate, endDate, category, selectedOptions],
+  );
+  const filterName = category === 'village' ? 'villages' : 'properties';
+  const textColor = darkMode ? '#e1e1e1' : '#333';
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkContainer : ''}`}>
-      <div className={styles.header}>
-        <h3 className={`${styles.title} ${darkMode ? styles.darkTitle : ''}`}>
-          Vacancy Rate and Cancellation Rate
-        </h3>
-      </div>
+      <p className={styles.sampleNotice}>
+        <strong>Sample data only.</strong> Live cancellation and vacancy rates are unavailable.
+      </p>
 
       <div className={`${styles.filters} ${darkMode ? styles.darkFilters : ''}`}>
         <fieldset className={`${styles.filterGroup} ${styles.filterGroupFieldset}`}>
@@ -256,27 +209,38 @@ function CancellationImpactOnVacancy({ darkMode }) {
             Dates
           </legend>
           <div className={styles.dateRange}>
+            <label className="sr-only" htmlFor="cancellation-impact-start-date">
+              Start date
+            </label>
             <DatePicker
               id="cancellation-impact-start-date"
               selected={startDate}
-              onChange={date => setStartDate(date)}
+              onChange={setStartDate}
               selectsStart
               startDate={startDate}
               endDate={endDate}
+              maxDate={endDate}
+              placeholderText="Start date"
               dateFormat="MM/dd/yyyy"
               className={darkMode ? styles.datePickerDark : styles.datePicker}
+              calendarClassName={darkMode ? dashboardStyles.datePickerCalendarDark : undefined}
             />
             <span className={styles.dateSeparator}>to</span>
+            <label className="sr-only" htmlFor="cancellation-impact-end-date">
+              End date
+            </label>
             <DatePicker
               id="cancellation-impact-end-date"
               selected={endDate}
-              onChange={date => setEndDate(date)}
+              onChange={setEndDate}
               selectsEnd
               startDate={startDate}
               endDate={endDate}
               minDate={startDate}
+              placeholderText="End date"
               dateFormat="MM/dd/yyyy"
               className={darkMode ? styles.datePickerDark : styles.datePicker}
+              calendarClassName={darkMode ? dashboardStyles.datePickerCalendarDark : undefined}
             />
           </div>
         </fieldset>
@@ -293,8 +257,8 @@ function CancellationImpactOnVacancy({ darkMode }) {
             value={category}
             onChange={e => {
               setCategory(e.target.value);
-              setSelectedVillages([]);
-              setSelectedProperties([]);
+              setSelectedOptions([]);
+              setFilter({ status: 'loading', options: [] });
             }}
             className={`${styles.select} ${darkMode ? styles.selectDark : ''}`}
           >
@@ -309,36 +273,26 @@ function CancellationImpactOnVacancy({ darkMode }) {
         <div className={styles.filterGroup}>
           <label
             className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}
-            htmlFor={
-              category === 'village'
-                ? 'cancellation-impact-villages-select'
-                : 'cancellation-impact-properties-select'
-            }
+            htmlFor="cancellation-impact-entities"
           >
             {category === 'village' ? 'Villages' : 'Properties'}
           </label>
-          {category === 'village' ? (
-            <Select
-              inputId="cancellation-impact-villages-select"
-              isMulti
-              options={villageOptions}
-              value={selectedVillages}
-              onChange={setSelectedVillages}
-              placeholder="Select villages"
-              styles={customSelectStyles(darkMode)}
-              className={styles.reactSelect}
-            />
-          ) : (
-            <Select
-              inputId="cancellation-impact-properties-select"
-              isMulti
-              options={propertyOptions}
-              value={selectedProperties}
-              onChange={setSelectedProperties}
-              placeholder="Select properties"
-              styles={customSelectStyles(darkMode)}
-              className={styles.reactSelect}
-            />
+          <Select
+            inputId="cancellation-impact-entities"
+            isMulti
+            isLoading={filter.status === 'loading'}
+            isDisabled={filter.status !== 'ready' || !filter.options.length}
+            options={filter.options}
+            value={selectedOptions}
+            onChange={setSelectedOptions}
+            placeholder={`Select ${filterName}`}
+            styles={customSelectStyles(darkMode)}
+            className={styles.reactSelect}
+          />
+          {filter.status === 'loading' && <span role="status">Loading {filterName}…</span>}
+          {filter.status === 'error' && <span role="alert">Could not load {filterName}.</span>}
+          {filter.status === 'ready' && !filter.options.length && (
+            <span role="status">No {filterName} found.</span>
           )}
         </div>
 
@@ -347,12 +301,18 @@ function CancellationImpactOnVacancy({ darkMode }) {
             className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}
             htmlFor="cancellation-impact-time-unit"
           >
-            X-axis units
+            Time range
           </label>
           <select
             id="cancellation-impact-time-unit"
-            value={timeUnit}
-            onChange={e => setTimeUnit(e.target.value)}
+            value={timeUnit.value}
+            onChange={e => {
+              const next = TIME_UNIT_OPTIONS.find(option => option.value === e.target.value);
+              const end = endDate || new Date();
+              setTimeUnit(next);
+              setEndDate(end);
+              setStartDate(getPresetStart(next.value, end));
+            }}
             className={`${styles.select} ${darkMode ? styles.selectDark : ''}`}
           >
             {TIME_UNIT_OPTIONS.map(opt => (
@@ -365,62 +325,66 @@ function CancellationImpactOnVacancy({ darkMode }) {
       </div>
 
       <div className={`${styles.chartCard} ${darkMode ? styles.darkChartCard : ''}`}>
-        <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
-          <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#3a506b' : '#e5e7eb'} />
-            <XAxis
-              dataKey="time"
-              tick={{ fontSize: 12, fill: darkMode ? '#e1e1e1' : '#333' }}
-              label={{
-                value: xAxisLabel,
-                position: 'insideBottom',
-                offset: -5,
-                fill: darkMode ? '#e1e1e1' : '#333',
-              }}
-            />
-            <YAxis
-              tick={{ fontSize: 12, fill: darkMode ? '#e1e1e1' : '#333' }}
-              label={{
-                value: 'Rate',
-                angle: -90,
-                position: 'insideLeft',
-                fill: darkMode ? '#e1e1e1' : '#333',
-              }}
-              domain={[0, 'auto']}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: darkMode ? '#1c2541' : '#fff',
-                border: `1px solid ${darkMode ? '#3a506b' : '#e5e7eb'}`,
-                borderRadius: 8,
-              }}
-              labelStyle={{ color: darkMode ? '#fff' : '#333' }}
-              formatter={(value, name) => [value, name]}
-            />
-            <Legend
-              wrapperStyle={{ paddingBottom: 8 }}
-              layout="horizontal"
-              align="center"
-              verticalAlign="top"
-              iconType="square"
-              iconSize={10}
-            />
-            <Bar
-              dataKey="vacancyRate"
-              name="Vacancy Rate"
-              fill={VACANCY_COLOR}
-              stackId="stack"
-              radius={[0, 0, 0, 0]}
-            />
-            <Bar
-              dataKey="cancellationRate"
-              name="Cancellation Rate"
-              fill={CANCELLATION_COLOR}
-              stackId="stack"
-              radius={[0, 0, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        {chartData.length === 0 ? (
+          <div className={styles.emptyChart} style={{ height: CHART_HEIGHT }} role="status">
+            Choose a valid start and end date to view sample rates.
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
+            <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#3a506b' : '#e5e7eb'} />
+              <XAxis
+                dataKey="time"
+                height={42}
+                minTickGap={16}
+                tick={{ fontSize: 12, fill: textColor }}
+                label={{
+                  value: timeUnit.axis,
+                  position: 'insideBottom',
+                  offset: 0,
+                  fill: textColor,
+                }}
+              />
+              <YAxis
+                tick={{ fontSize: 12, fill: textColor }}
+                tickFormatter={formatRate}
+                label={{
+                  value: 'Rate (%)',
+                  angle: -90,
+                  position: 'insideLeft',
+                  fill: textColor,
+                }}
+                domain={[0, 100]}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: darkMode ? '#1c2541' : '#fff',
+                  border: `1px solid ${darkMode ? '#3a506b' : '#e5e7eb'}`,
+                  borderRadius: 8,
+                }}
+                labelStyle={{ color: textColor }}
+                itemStyle={{ color: textColor }}
+                formatter={formatRate}
+              />
+              <Legend
+                wrapperStyle={{ paddingBottom: 8 }}
+                layout="horizontal"
+                align="center"
+                verticalAlign="top"
+                iconType="square"
+                iconSize={10}
+                formatter={value => <span style={{ color: textColor }}>{value}</span>}
+              />
+              <Bar dataKey="vacancyRate" name="Vacancy Rate" fill={VACANCY_COLOR} maxBarSize={36} />
+              <Bar
+                dataKey="cancellationRate"
+                name="Cancellation Rate"
+                fill={CANCELLATION_COLOR}
+                maxBarSize={36}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );
@@ -428,10 +392,6 @@ function CancellationImpactOnVacancy({ darkMode }) {
 
 CancellationImpactOnVacancy.propTypes = {
   darkMode: PropTypes.bool,
-};
-
-CancellationImpactOnVacancy.defaultProps = {
-  darkMode: false,
 };
 
 export default CancellationImpactOnVacancy;

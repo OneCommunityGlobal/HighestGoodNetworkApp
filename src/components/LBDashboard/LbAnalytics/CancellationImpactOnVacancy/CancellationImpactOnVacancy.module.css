@@ -11,19 +11,8 @@
   box-shadow: 0 4px 16px rgb(28 37 65 / 25%);
 }
 
-.header {
-  margin-bottom: 20px;
-}
-
-.title {
-  font-size: 22px;
-  font-weight: 600;
-  margin: 0;
-  color: #000;
-}
-
-.darkTitle {
-  color: #e1e1e1;
+.sampleNotice {
+  margin: 0 0 16px;
 }
 
 .filters {
@@ -47,13 +36,13 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .filterGroupFieldset {
   border: none;
   margin: 0;
   padding: 0;
-  min-width: 0;
 }
 
 .filterLegend {
@@ -73,6 +62,7 @@
 
 .dateRange {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
@@ -92,7 +82,8 @@
   border-radius: 6px;
   border: 1px solid #d1d5db;
   font-size: 14px;
-  min-width: 130px;
+  width: 130px;
+  max-width: 100%;
 }
 
 .datePicker {
@@ -123,7 +114,8 @@
 }
 
 .reactSelect {
-  min-width: 180px;
+  width: 230px;
+  max-width: 100%;
 }
 
 .chartCard {
@@ -140,15 +132,15 @@
   box-shadow: 0 4px 16px rgb(28 37 65 / 25%);
 }
 
-.loading {
+.emptyChart {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 350px;
   color: #6b7280;
+  text-align: center;
 }
 
-.darkChartCard .loading {
+.darkChartCard .emptyChart {
   color: #9ca3af;
 }
 
@@ -162,7 +154,13 @@
     width: 100%;
   }
 
-  .dateRange {
-    flex-wrap: wrap;
+  .container,
+  .filters,
+  .chartCard {
+    padding: 12px;
+  }
+
+  .reactSelect {
+    width: 100%;
   }
 }
