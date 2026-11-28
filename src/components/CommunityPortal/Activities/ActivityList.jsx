@@ -320,51 +320,47 @@ function ActivityList() {
         {!loading && hasActivities && (
           <ul>
             {paginatedActivities.map(activity => (
-              <div
+              <li
                 key={activity.id}
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleActivityClick(activity)}
-                tabIndex={0}
-                role="button"
-                aria-label={`View details for ${activity.name}`}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleActivityClick(activity);
-                  }
-                }}
+                className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
               >
-                <li className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}>
+                <button
+                  type="button"
+                  className={styles.activityItemButton}
+                  onClick={() => handleActivityClick(activity)}
+                  aria-label={`View details for ${activity.name}`}
+                >
                   <strong>{activity.name}</strong>
 
                   {/* Type */}
-                  <div className={styles.altypeRow}>
+                  <span className={styles.altypeRow}>
                     {getTypeIcon(activity.type)}
                     <span className={styles.altypeText}>{activity.type}</span>
-                  </div>
+                  </span>
 
                   {/* Location + Date */}
-                  <div className={styles.allocationDateRow}>
-                    <div className={styles.allocation}>
+                  <span className={styles.allocationDateRow}>
+                    <span className={styles.allocation}>
                       <FaMapMarkerAlt className={styles.alactivityIcon} />
                       <span>{activity.location}</span>
-                    </div>
+                    </span>
 
-                    <div className={styles.aldate}>
+                    <span className={styles.aldate}>
                       <FaCalendarAlt className={styles.alactivityIcon} />
                       <span>{activity.date}</span>
-                    </div>
-                  </div>
+                    </span>
+                  </span>
+                </button>
 
-                  <button
-                    type="button"
-                    onClick={event => goToReschedule(event, activity)}
-                    className="btn btn-primary btn-sm mt-2"
-                    aria-label={`Reschedule ${activity.name}`}
-                  >
-                    Reschedule
-                  </button>
-                </li>
-              </div>
+                <button
+                  type="button"
+                  onClick={event => goToReschedule(event, activity)}
+                  className="btn btn-primary btn-sm mt-2"
+                  aria-label={`Reschedule ${activity.name}`}
+                >
+                  Reschedule
+                </button>
+              </li>
             ))}
           </ul>
         )}

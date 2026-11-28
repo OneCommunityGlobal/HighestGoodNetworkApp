@@ -221,6 +221,28 @@
   box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
+.activityItemButton {
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.activityItemButton:focus-visible {
+  outline: 2px solid #1e3a8a;
+  outline-offset: 4px;
+}
+
+.darkModeItem .activityItemButton:focus-visible {
+  outline-color: #93c5fd;
+}
+
 /* Dark mode list items */
 .darkModeItem {
   background-color: #1e2a3a !important;
