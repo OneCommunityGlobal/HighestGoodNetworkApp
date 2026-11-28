@@ -286,3 +286,42 @@ describe('WeeklyProjectSummary Project Status request state', () => {
     expect(getWeeklyProjectSummaryProjectStatusRequestKey).toHaveBeenCalled();
   });
 });
+
+describe('WeeklyProjectSummary saved card preferences', () => {
+  const prefsKey = 'weeklyProjectSummaryCards:guest';
+  const renderSummary = () =>
+    render(
+      <Provider store={mockStore(createState())}>
+        <WeeklyProjectSummary />
+      </Provider>,
+    );
+
+  afterEach(() => localStorage.removeItem(prefsKey));
+
+  it('shows the new Material Stock-Out Risk card for preferences saved before it existed', () => {
+    localStorage.setItem(
+      prefsKey,
+      JSON.stringify({ visibleKeys: ['Project Status'], cardLimit: 'all' }),
+    );
+    renderSummary();
+
+    expect(screen.getByRole('button', { name: /Material Stock-Out Risk/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Issue Tracking/ })).not.toBeInTheDocument();
+  });
+
+  it('keeps the Material Stock-Out Risk card hidden when the user turned it off', () => {
+    localStorage.setItem(
+      prefsKey,
+      JSON.stringify({
+        visibleKeys: ['Project Status'],
+        cardLimit: 'all',
+        knownKeys: ['Project Status', 'Material Stock-Out Risk'],
+      }),
+    );
+    renderSummary();
+
+    expect(
+      screen.queryByRole('button', { name: /Material Stock-Out Risk/ }),
+    ).not.toBeInTheDocument();
+  });
+});
