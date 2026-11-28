@@ -43,6 +43,29 @@ function MapThemeUpdater({ darkMode }) {
 }
 
 /* -----------------------------------------------------
+   KEEP THE MAP SIZE IN SYNC
+   Leaflet measures its container once; when the section opens or the page resizes later,
+   the tiles and markers drift apart. Re-measure whenever the container changes size.
+----------------------------------------------------- */
+function MapResizeHandler() {
+  const map = useMap();
+  useEffect(() => {
+    const refresh = () => map.invalidateSize({ pan: false });
+    const timer = setTimeout(refresh, 300);
+    if (typeof ResizeObserver === 'undefined') {
+      return () => clearTimeout(timer);
+    }
+    const observer = new ResizeObserver(refresh);
+    observer.observe(map.getContainer());
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [map]);
+  return null;
+}
+
+/* -----------------------------------------------------
    DRAGGABLE LEGEND
 ----------------------------------------------------- */
 function FloatingLegend({ darkMode, mapAreaRef }) {
@@ -499,6 +522,7 @@ export default function InteractiveMap() {
               keyboard={false}
             >
               <MapThemeUpdater darkMode={darkMode} />
+              <MapResizeHandler />
               <TileLayer
                 noWrap
                 bounds={[

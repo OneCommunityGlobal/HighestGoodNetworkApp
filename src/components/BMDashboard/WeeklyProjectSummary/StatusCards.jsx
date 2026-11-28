@@ -87,6 +87,13 @@ export function getProjectStatusChangeColor(metric) {
   return metric.percentageChange > 0 ? '#328D1B' : '#C82F2F';
 }
 
+// Lighter versions of the comparison colors, readable on the dark-mode cards
+const DARK_MODE_CHANGE_COLORS = {
+  '#328D1B': '#4ade80',
+  '#C82F2F': '#f87171',
+  '#000': '#e5e7eb',
+};
+
 export function buildStatusCards(buttons, metrics, comparisonPeriodFilter) {
   return buttons.map(button => {
     const metric = metrics[button.metricKey];
@@ -110,16 +117,17 @@ export function StatusCardGrid({ cards, showComparison, idPrefix }) {
             key={button.metricKey}
             aria-label={button.title}
             className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-            style={{ backgroundColor: button.bgColor }}
+            // Colors are CSS variables (not inline backgrounds), so the dark-mode styles can apply
+            style={{
+              '--status-card-bg': button.bgColor,
+              '--status-button-bg': button.buttonColor,
+            }}
           >
             <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
             {button.description && (
               <div className={styles.projectDurationDescription}>{button.description}</div>
             )}
-            <div
-              className={`${styles.weeklyStatusButton}`}
-              style={{ backgroundColor: button.buttonColor }}
-            >
+            <div className={`${styles.weeklyStatusButton}`}>
               <span className={`${styles.weeklyStatusValue}`}>
                 {button.value}
                 {button.unavailableReason && (
@@ -157,6 +165,8 @@ export function StatusCardGrid({ cards, showComparison, idPrefix }) {
                 style={{
                   color: button.changeColor,
                   '--project-status-change-color': button.changeColor,
+                  '--project-status-change-color-dark':
+                    DARK_MODE_CHANGE_COLORS[button.changeColor] || button.changeColor,
                 }}
               >
                 {button.change}
